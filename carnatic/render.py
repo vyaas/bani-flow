@@ -4,15 +4,17 @@ render.py — Renders musicians.json as a self-contained Cytoscape.js HTML graph
 Nodes clickable (Wikipedia). Edges directed guru→shishya.
 Color-coded by era. Shape-coded by instrument.
 Floating YouTube player: click a node's track list → embedded video, graph stays live.
+Bani Flow panel: filter by composition or raga, chronological listening trail.
 """
 
 import json
 from pathlib import Path
 from collections import defaultdict
 
-ROOT      = Path(__file__).parent
-DATA_FILE = ROOT / "data" / "musicians.json"
-OUT_FILE  = ROOT / "graph.html"
+ROOT              = Path(__file__).parent
+DATA_FILE         = ROOT / "data" / "musicians.json"
+COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"
+OUT_FILE          = ROOT / "graph.html"
 
 # ── visual mappings ────────────────────────────────────────────────────────────
 
@@ -70,6 +72,43 @@ def yt_video_id(url: str) -> str | None:
     m = re.search(r"(?:v=|youtu\.be/|embed/)([A-Za-z0-9_-]{11})", url)
     return m.group(1) if m else None
 
+# ── load compositions data ─────────────────────────────────────────────────────
+
+def load_compositions() -> dict:
+    """Load compositions.json; return empty structure if absent."""
+    if COMPOSITIONS_FILE.exists():
+        return json.loads(COMPOSITIONS_FILE.read_text(encoding="utf-8"))
+    return {"ragas": [], "composers": [], "compositions": []}
+
+def build_composition_lookups(graph: dict, comp_data: dict) -> tuple[dict, dict]:
+    """
+    Build two lookup dicts from the musicians graph:
+      composition_to_nodes: {composition_id: [node_id, ...]}
+      raga_to_nodes:        {raga_id:        [node_id, ...]}
+    A node appears in raga_to_nodes if any youtube entry has raga_id set directly,
+    or has a composition_id whose composition references that raga_id.
+    """
+    comp_raga: dict[str, str] = {
+        c["id"]: c["raga_id"] for c in comp_data.get("compositions", [])
+    }
+    composition_to_nodes: dict[str, list[str]] = defaultdict(list)
+    raga_to_nodes: dict[str, list[str]] = defaultdict(list)
+    for node in graph["nodes"]:
+        node_id = node["id"]
+        for yt in node.get("youtube", []):
+            cid = yt.get("composition_id")
+            rid = yt.get("raga_id")
+            if cid:
+                if node_id not in composition_to_nodes[cid]:
+                    composition_to_nodes[cid].append(node_id)
+                inferred_raga = comp_raga.get(cid)
+                if inferred_raga and node_id not in raga_to_nodes[inferred_raga]:
+                    raga_to_nodes[inferred_raga].append(node_id)
+            if rid:
+                if node_id not in raga_to_nodes[rid]:
+                    raga_to_nodes[rid].append(node_id)
+    return dict(composition_to_nodes), dict(raga_to_nodes)
+
 # ── build cytoscape elements ───────────────────────────────────────────────────
 
 def build_elements(graph: dict) -> list[dict]:
@@ -109,7 +148,13 @@ def build_elements(graph: dict) -> list[dict]:
         for t in node.get("youtube", []):
             vid = yt_video_id(t.get("url", ""))
             if vid:
-                tracks.append({"vid": vid, "label": t.get("label", vid)})
+                tracks.append({
+                    "vid":            vid,
+                    "label":          t.get("label", vid),
+                    "composition_id": t.get("composition_id"),
+                    "raga_id":        t.get("raga_id"),
+                    "year":           t.get("year"),
+                })
 
         elements.append({"data": {
             "id":         node["id"],
@@ -148,10 +193,16 @@ def build_elements(graph: dict) -> list[dict]:
 
 # ── HTML template ──────────────────────────────────────────────────────────────
 
-def render_html(elements: list[dict], graph: dict) -> str:
-    elements_json = json.dumps(elements, indent=2, ensure_ascii=False)
-    node_count    = len(graph["nodes"])
-    edge_count    = len(graph["edges"])
+def render_html(elements: list[dict], graph: dict, comp_data: dict,
+                composition_to_nodes: dict, raga_to_nodes: dict) -> str:
+    elements_json      = json.dumps(elements, indent=2, ensure_ascii=False)
+    ragas_json         = json.dumps(comp_data.get("ragas", []), indent=2, ensure_ascii=False)
+    composers_json     = json.dumps(comp_data.get("composers", []), indent=2, ensure_ascii=False)
+    compositions_json  = json.dumps(comp_data.get("compositions", []), indent=2, ensure_ascii=False)
+    comp_to_nodes_json = json.dumps(composition_to_nodes, indent=2, ensure_ascii=False)
+    raga_to_nodes_json = json.dumps(raga_to_nodes, indent=2, ensure_ascii=False)
+    node_count         = len(graph["nodes"])
+    edge_count         = len(graph["edges"])
 
     legend_items = "".join(
         f'<div class="legend-item">'
@@ -377,6 +428,39 @@ def render_html(elements: list[dict], graph: dict) -> str:
     background: var(--bg3); color: var(--yellow);
     border-color: var(--yellow);
   }}
+
+  /* ── Bani Flow panel ── */
+  :root {{ --teal: #83a598; }}
+  #bani-flow-panel select {{
+    width: 100%; background: var(--bg2); color: var(--fg2);
+    border: 1px solid var(--bg3); font-family: inherit; font-size: 0.74rem;
+    padding: 4px 6px; border-radius: 2px; margin-bottom: 6px; cursor: pointer;
+  }}
+  #bani-flow-panel select:focus {{ outline: none; border-color: var(--teal); }}
+  #bani-clear {{
+    width: 100%; margin-top: 2px; background: var(--bg2);
+    color: var(--gray); border-color: var(--bg3); font-size: 0.72rem; display: none;
+  }}
+  #bani-clear:hover {{ color: var(--red); border-color: var(--red); }}
+  #listening-trail {{ display: none; margin-top: 8px; }}
+  #trail-composer-label {{
+    font-size: 0.72rem; color: var(--teal); font-style: italic;
+    margin-bottom: 6px; padding-bottom: 5px;
+    border-bottom: 1px solid var(--bg2); line-height: 1.5;
+  }}
+  #trail-list {{ list-style: none; }}
+  #trail-list li {{
+    padding: 5px 0; border-bottom: 1px solid var(--bg2);
+    font-size: 0.74rem; color: var(--fg2);
+    display: flex; align-items: flex-start; gap: 5px; line-height: 1.4; flex-wrap: wrap;
+  }}
+  #trail-list li:last-child {{ border-bottom: none; }}
+  .trail-year {{ flex-shrink: 0; color: var(--gray); font-size: 0.68rem; min-width: 30px; margin-top: 2px; }}
+  .trail-artist {{ color: var(--yellow); cursor: pointer; font-weight: bold; flex-shrink: 0; }}
+  .trail-artist:hover {{ text-decoration: underline; }}
+  .trail-play {{ flex-shrink: 0; color: var(--green); cursor: pointer; margin-top: 1px; }}
+  .trail-play:hover {{ color: var(--aqua); }}
+  .trail-label {{ color: var(--fg3); font-size: 0.72rem; width: 100%; padding-left: 35px; }}
 </style>
 </head>
 <body>
@@ -441,6 +525,22 @@ def render_html(elements: list[dict], graph: dict) -> str:
       <a id="edge-src" href="#" target="_blank">source &#8599;</a>
     </div>
 
+    <!-- ── Bani Flow panel ── -->
+    <div class="panel" id="bani-flow-panel">
+      <h3>Bani Flow &#9835;</h3>
+      <select id="bani-comp-select">
+        <option value="">&#8212; Filter by Composition &#8212;</option>
+      </select>
+      <select id="bani-raga-select">
+        <option value="">&#8212; Filter by Raga &#8212;</option>
+      </select>
+      <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
+      <div id="listening-trail">
+        <div id="trail-composer-label"></div>
+        <ul id="trail-list"></ul>
+      </div>
+    </div>
+
     <div class="panel">
       <h3>Era</h3>
       {legend_items}
@@ -451,11 +551,12 @@ def render_html(elements: list[dict], graph: dict) -> str:
     </div>
     <div id="hint">
       Click node to inspect.<br>
-      &#9654; track → plays inline, graph stays live.<br>
+      &#9654; track &#8594; plays inline, graph stays live.<br>
       Drag player anywhere on canvas.<br>
       Click edge to see relationship.<br>
       Double-click node &#8599; Wikipedia.<br>
       Green border = has recordings.<br>
+      Teal border = matches Bani Flow filter.<br>
       Scroll to zoom &middot; drag to pan.
     </div>
   </div>
@@ -463,6 +564,13 @@ def render_html(elements: list[dict], graph: dict) -> str:
 
 <script>
 const elements = {elements_json};
+
+// ── Compositions data (injected by render.py) ─────────────────────────────────
+const ragas        = {ragas_json};
+const composers    = {composers_json};
+const compositions = {compositions_json};
+const compositionToNodes = {comp_to_nodes_json};
+const ragaToNodes        = {raga_to_nodes_json};
 
 // ── Cytoscape init ────────────────────────────────────────────────────────────
 const cy = cytoscape({{
@@ -511,6 +619,10 @@ const cy = cytoscape({{
         'border-color': '#ebdbb2', 'border-width': '3px',
         'label': 'data(label)',
       }}
+    }},
+    {{
+      selector: 'node.bani-match',
+      style: {{ 'border-color': '#83a598', 'border-width': '3.5px' }}
     }},
     {{
       selector: 'edge',
@@ -927,6 +1039,187 @@ function toggleLayout() {{
     relayout();
   }}
 }}
+
+// ── Bani Flow ─────────────────────────────────────────────────────────────────
+
+// Build a node-id → born-year map for fallback sort
+const nodeBorn = {{}};
+cy.nodes().forEach(n => {{ nodeBorn[n.id()] = n.data('born'); }});
+
+// Populate dropdowns (only entries that have tagged recordings)
+(function () {{
+  const compSel = document.getElementById('bani-comp-select');
+  const ragaSel = document.getElementById('bani-raga-select');
+
+  compositions.forEach(c => {{
+    if (compositionToNodes[c.id] && compositionToNodes[c.id].length > 0) {{
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.title;
+      compSel.appendChild(opt);
+    }}
+  }});
+
+  ragas.forEach(r => {{
+    if (ragaToNodes[r.id] && ragaToNodes[r.id].length > 0) {{
+      const opt = document.createElement('option');
+      opt.value = r.id;
+      opt.textContent = r.name;
+      ragaSel.appendChild(opt);
+    }}
+  }});
+}})();
+
+let activeBaniFilter = null; // {{ type: 'comp'|'raga', id: string }}
+
+function applyBaniFilter(type, id) {{
+  activeBaniFilter = {{ type, id }};
+  const matchedNodeIds = type === 'comp'
+    ? (compositionToNodes[id] || [])
+    : (ragaToNodes[id] || []);
+
+  // Dim/highlight nodes
+  cy.elements().addClass('faded');
+  cy.elements().removeClass('highlighted bani-match');
+  matchedNodeIds.forEach(nid => {{
+    const n = cy.getElementById(nid);
+    n.removeClass('faded');
+    n.addClass('bani-match');
+  }});
+
+  // Highlight edges between matched nodes
+  const matchedSet = new Set(matchedNodeIds);
+  cy.edges().forEach(e => {{
+    if (matchedSet.has(e.data('source')) && matchedSet.has(e.data('target'))) {{
+      e.removeClass('faded');
+      e.addClass('highlighted');
+    }}
+  }});
+
+  // Build listening trail
+  buildListeningTrail(type, id, matchedNodeIds);
+
+  document.getElementById('bani-clear').style.display = 'block';
+}}
+
+function buildListeningTrail(type, id, matchedNodeIds) {{
+  const trail = document.getElementById('listening-trail');
+  const composerLabel = document.getElementById('trail-composer-label');
+  const trailList = document.getElementById('trail-list');
+  trailList.innerHTML = '';
+  composerLabel.textContent = '';
+
+  // Composer label (for composition filter only)
+  if (type === 'comp') {{
+    const comp = compositions.find(c => c.id === id);
+    if (comp) {{
+      const raga = ragas.find(r => r.id === comp.raga_id);
+      const composer = composers.find(c => c.id === comp.composer_id);
+      const parts = [
+        composer ? 'Composed by ' + composer.name : null,
+        raga ? raga.name : null,
+        comp.tala ? comp.tala.charAt(0).toUpperCase() + comp.tala.slice(1) : null,
+      ].filter(Boolean);
+      composerLabel.textContent = parts.join(' \u00b7 ');
+    }}
+  }} else {{
+    const raga = ragas.find(r => r.id === id);
+    if (raga) composerLabel.textContent = 'Raga: ' + raga.name;
+  }}
+
+  // Collect matching tracks across matched nodes, sorted by year then born
+  const rows = [];
+  matchedNodeIds.forEach(nid => {{
+    const n = cy.getElementById(nid);
+    if (!n) return;
+    const d = n.data();
+    d.tracks.forEach(t => {{
+      const matches = type === 'comp'
+        ? t.composition_id === id
+        : (t.raga_id === id || (t.composition_id && (() => {{
+            const c = compositions.find(x => x.id === t.composition_id);
+            return c && c.raga_id === id;
+          }})())) ;
+      if (matches) {{
+        rows.push({{ nodeId: nid, artistLabel: d.label, born: d.born, track: t }});
+      }}
+    }});
+  }});
+
+  // Sort: year asc (nulls last), then born asc (nulls last), then label
+  rows.sort((a, b) => {{
+    const ay = a.track.year, by = b.track.year;
+    if (ay !== by) {{
+      if (ay == null) return 1;
+      if (by == null) return -1;
+      return ay - by;
+    }}
+    const ab = a.born, bb = b.born;
+    if (ab !== bb) {{
+      if (ab == null) return 1;
+      if (bb == null) return -1;
+      return ab - bb;
+    }}
+    return a.artistLabel.localeCompare(b.artistLabel);
+  }});
+
+  rows.forEach(row => {{
+    const li = document.createElement('li');
+    const yearSpan = document.createElement('span');
+    yearSpan.className = 'trail-year';
+    yearSpan.textContent = row.track.year || '';
+
+    const artistSpan = document.createElement('span');
+    artistSpan.className = 'trail-artist';
+    artistSpan.textContent = row.artistLabel;
+    artistSpan.addEventListener('click', () => {{
+      cy.elements().removeClass('faded highlighted bani-match');
+      applyBaniFilter(type, id); // re-apply to keep highlight
+      const n = cy.getElementById(row.nodeId);
+      cy.animate({{ fit: {{ eles: n, padding: 80 }} }});
+    }});
+
+    const playSpan = document.createElement('span');
+    playSpan.className = 'trail-play';
+    playSpan.textContent = '\u25b6';
+    playSpan.title = 'Play';
+    playSpan.addEventListener('click', () => loadTrack(row.track.vid, row.track.label, row.artistLabel));
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'trail-label';
+    labelSpan.textContent = row.track.label;
+
+    li.appendChild(yearSpan);
+    li.appendChild(artistSpan);
+    li.appendChild(playSpan);
+    li.appendChild(labelSpan);
+    trailList.appendChild(li);
+  }});
+
+  trail.style.display = rows.length > 0 ? 'block' : 'none';
+}}
+
+function clearBaniFilter() {{
+  activeBaniFilter = null;
+  cy.elements().removeClass('faded highlighted bani-match');
+  document.getElementById('bani-comp-select').value = '';
+  document.getElementById('bani-raga-select').value = '';
+  document.getElementById('bani-clear').style.display = 'none';
+  document.getElementById('listening-trail').style.display = 'none';
+  applyZoomLabels();
+}}
+
+document.getElementById('bani-comp-select').addEventListener('change', function () {{
+  if (!this.value) {{ clearBaniFilter(); return; }}
+  document.getElementById('bani-raga-select').value = '';
+  applyBaniFilter('comp', this.value);
+}});
+
+document.getElementById('bani-raga-select').addEventListener('change', function () {{
+  if (!this.value) {{ clearBaniFilter(); return; }}
+  document.getElementById('bani-comp-select').value = '';
+  applyBaniFilter('raga', this.value);
+}});
 </script>
 </body>
 </html>
@@ -935,9 +1228,11 @@ function toggleLayout() {{
 # ── entry point ────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    graph    = json.loads(DATA_FILE.read_text(encoding="utf-8"))
-    elements = build_elements(graph)
-    html     = render_html(elements, graph)
+    graph     = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    comp_data = load_compositions()
+    composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data)
+    elements  = build_elements(graph)
+    html      = render_html(elements, graph, comp_data, composition_to_nodes, raga_to_nodes)
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
 

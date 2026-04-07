@@ -209,6 +209,39 @@
     background: var(--bg3); color: var(--yellow);
     border-color: var(--yellow);
   }
+
+  /* ── Bani Flow panel ── */
+  :root { --teal: #83a598; }
+  #bani-flow-panel select {
+    width: 100%; background: var(--bg2); color: var(--fg2);
+    border: 1px solid var(--bg3); font-family: inherit; font-size: 0.74rem;
+    padding: 4px 6px; border-radius: 2px; margin-bottom: 6px; cursor: pointer;
+  }
+  #bani-flow-panel select:focus { outline: none; border-color: var(--teal); }
+  #bani-clear {
+    width: 100%; margin-top: 2px; background: var(--bg2);
+    color: var(--gray); border-color: var(--bg3); font-size: 0.72rem; display: none;
+  }
+  #bani-clear:hover { color: var(--red); border-color: var(--red); }
+  #listening-trail { display: none; margin-top: 8px; }
+  #trail-composer-label {
+    font-size: 0.72rem; color: var(--teal); font-style: italic;
+    margin-bottom: 6px; padding-bottom: 5px;
+    border-bottom: 1px solid var(--bg2); line-height: 1.5;
+  }
+  #trail-list { list-style: none; }
+  #trail-list li {
+    padding: 5px 0; border-bottom: 1px solid var(--bg2);
+    font-size: 0.74rem; color: var(--fg2);
+    display: flex; align-items: flex-start; gap: 5px; line-height: 1.4; flex-wrap: wrap;
+  }
+  #trail-list li:last-child { border-bottom: none; }
+  .trail-year { flex-shrink: 0; color: var(--gray); font-size: 0.68rem; min-width: 30px; margin-top: 2px; }
+  .trail-artist { color: var(--yellow); cursor: pointer; font-weight: bold; flex-shrink: 0; }
+  .trail-artist:hover { text-decoration: underline; }
+  .trail-play { flex-shrink: 0; color: var(--green); cursor: pointer; margin-top: 1px; }
+  .trail-play:hover { color: var(--aqua); }
+  .trail-label { color: var(--fg3); font-size: 0.72rem; width: 100%; padding-left: 35px; }
 </style>
 </head>
 <body>
@@ -273,6 +306,22 @@
       <a id="edge-src" href="#" target="_blank">source &#8599;</a>
     </div>
 
+    <!-- ── Bani Flow panel ── -->
+    <div class="panel" id="bani-flow-panel">
+      <h3>Bani Flow &#9835;</h3>
+      <select id="bani-comp-select">
+        <option value="">&#8212; Filter by Composition &#8212;</option>
+      </select>
+      <select id="bani-raga-select">
+        <option value="">&#8212; Filter by Raga &#8212;</option>
+      </select>
+      <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
+      <div id="listening-trail">
+        <div id="trail-composer-label"></div>
+        <ul id="trail-list"></ul>
+      </div>
+    </div>
+
     <div class="panel">
       <h3>Era</h3>
       <div class="legend-item"><span class="dot" style="background:#d79921"></span>The Trinity</div><div class="legend-item"><span class="dot" style="background:#d65d0e"></span>The Bridge</div><div class="legend-item"><span class="dot" style="background:#458588"></span>Golden Age</div><div class="legend-item"><span class="dot" style="background:#689d6a"></span>Disseminators</div><div class="legend-item"><span class="dot" style="background:#b16286"></span>Living Pillars</div><div class="legend-item"><span class="dot" style="background:#98971a"></span>Contemporary</div>
@@ -283,11 +332,12 @@
     </div>
     <div id="hint">
       Click node to inspect.<br>
-      &#9654; track → plays inline, graph stays live.<br>
+      &#9654; track &#8594; plays inline, graph stays live.<br>
       Drag player anywhere on canvas.<br>
       Click edge to see relationship.<br>
       Double-click node &#8599; Wikipedia.<br>
       Green border = has recordings.<br>
+      Teal border = matches Bani Flow filter.<br>
       Scroll to zoom &middot; drag to pan.
     </div>
   </div>
@@ -379,7 +429,10 @@ const elements = [
       "tracks": [
         {
           "vid": "VEB9vZpIIR4",
-          "label": "Veena recitals collection — Vina Dhanammal"
+          "label": "Veena recitals collection — Vina Dhanammal",
+          "composition_id": null,
+          "raga_id": null,
+          "year": null
         }
       ]
     }
@@ -507,7 +560,15 @@ const elements = [
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [
+        {
+          "vid": "_gVQnHRh1IQ",
+          "label": "All India Radio · 27 Nov 1960 — 60th Remembrance Day Special",
+          "composition_id": null,
+          "raga_id": null,
+          "year": 1960
+        }
+      ]
     }
   },
   {
@@ -531,11 +592,17 @@ const elements = [
       "tracks": [
         {
           "vid": "QBn1fuosWIs",
-          "label": "Music Academy, Madras · December Season 1966"
+          "label": "Music Academy, Madras · December Season 1966",
+          "composition_id": null,
+          "raga_id": null,
+          "year": 1966
         },
         {
           "vid": "x5ExBQpVy2k",
-          "label": "Mylapore Fine Arts Club · 26 Nov 1967"
+          "label": "Mylapore Fine Arts Club · 26 Nov 1967",
+          "composition_id": null,
+          "raga_id": null,
+          "year": 1967
         }
       ]
     }
@@ -603,7 +670,10 @@ const elements = [
       "tracks": [
         {
           "vid": "AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 — with T. Viswanathan"
+          "label": "Wesleyan University, 1967 — with T. Viswanathan",
+          "composition_id": null,
+          "raga_id": null,
+          "year": 1967
         }
       ]
     }
@@ -713,7 +783,10 @@ const elements = [
       "tracks": [
         {
           "vid": "AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 — with Ramnad Krishnan"
+          "label": "Wesleyan University, 1967 — with Ramnad Krishnan",
+          "composition_id": null,
+          "raga_id": null,
+          "year": 1967
         }
       ]
     }
@@ -844,7 +917,10 @@ const elements = [
       "tracks": [
         {
           "vid": "lNSJJMWLtfc",
-          "label": "Natabhairavi · Adi"
+          "label": "Natabhairavi · Adi",
+          "composition_id": null,
+          "raga_id": "natabhairavi",
+          "year": null
         }
       ]
     }
@@ -1722,6 +1798,252 @@ const elements = [
   }
 ];
 
+// ── Compositions data (injected by render.py) ─────────────────────────────────
+const ragas        = [
+  {
+    "id": "nata",
+    "name": "Nata",
+    "aliases": [
+      "Ghana Nata"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Nata_(raga)",
+    "notes": "Janya of Dheerashankarabharanam (29th melakarta); one of the five Ghana ragas; associated with grandeur and heroism"
+  },
+  {
+    "id": "gowla",
+    "name": "Gowla",
+    "aliases": [
+      "Gaula"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Gowla",
+    "notes": "Janya of Kharaharapriya (22nd melakarta); one of the five Ghana ragas; evokes pathos and devotion"
+  },
+  {
+    "id": "arabhi",
+    "name": "Arabhi",
+    "aliases": [
+      "Arabi"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Arabhi",
+    "notes": "Janya of Dheerashankarabharanam (29th melakarta); one of the five Ghana ragas; majestic and expansive character"
+  },
+  {
+    "id": "varali",
+    "name": "Varali",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Varali",
+    "notes": "Janya of Tanarupi (6th melakarta); one of the five Ghana ragas; considered auspicious yet difficult; associated with Ganesha"
+  },
+  {
+    "id": "sri",
+    "name": "Sri",
+    "aliases": [
+      "Shri"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Sri_(raga)",
+    "notes": "Janya of Kharaharapriya (22nd melakarta); one of the five Ghana ragas; associated with grandeur and devotion; considered the crown raga of the Pancharatna set"
+  },
+  {
+    "id": "todi",
+    "name": "Todi",
+    "aliases": [
+      "Suddha Todi",
+      "Hamsadhwani Todi"
+    ],
+    "melakarta": 8,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Todi_(Carnatic_raga)",
+    "notes": "8th melakarta; one of the most expansive ragas in the Carnatic canon; evokes pathos, longing, and deep introspection; a favourite for extended alapana"
+  },
+  {
+    "id": "bhairavi",
+    "name": "Bhairavi",
+    "aliases": [
+      "Carnatic Bhairavi"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Bhairavi_(Carnatic_raga)",
+    "notes": "Janya of Natabhairavi (20th melakarta); distinct from Sindhu Bhairavi; evokes pathos and devotion; traditionally used to close concerts"
+  },
+  {
+    "id": "sindhu_bhairavi",
+    "name": "Sindhu Bhairavi",
+    "aliases": [
+      "Sindhu Bhairavi"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Sindhu_Bhairavi",
+    "notes": "Distinct from Bhairavi; janya of Natabhairavi (20th melakarta); popularised in the 20th century; lighter emotional register than Bhairavi; widely used in film music"
+  },
+  {
+    "id": "kalyani",
+    "name": "Kalyani",
+    "aliases": [
+      "Yaman (Hindustani equivalent)"
+    ],
+    "melakarta": 65,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Kalyani_(raga)",
+    "notes": "65th melakarta (Mechakalyani); all sharp notes except natural Sa and Pa; associated with brightness, auspiciousness, and devotion"
+  },
+  {
+    "id": "shankarabharanam",
+    "name": "Shankarabharanam",
+    "aliases": [
+      "Dheerashankarabharanam"
+    ],
+    "melakarta": 29,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Shankarabharanam",
+    "notes": "29th melakarta; equivalent to the Western major scale; considered the most complete and balanced raga; parent of Nata and Arabhi"
+  },
+  {
+    "id": "kambhoji",
+    "name": "Kambhoji",
+    "aliases": [
+      "Kambodhi"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Kambhoji",
+    "notes": "Janya of Harikambhoji (28th melakarta); one of the most popular ragas; associated with bhakti and grandeur; a staple of the concert repertoire"
+  },
+  {
+    "id": "begada",
+    "name": "Begada",
+    "aliases": [
+      "Vegada"
+    ],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Begada",
+    "notes": "Janya of Harikambhoji (28th melakarta); associated with devotion and serenity; a favourite of the Tyagaraja school"
+  },
+  {
+    "id": "saveri",
+    "name": "Saveri",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Saveri",
+    "notes": "Janya of Dheerashankarabharanam (29th melakarta); evokes pathos and longing; associated with morning hours"
+  },
+  {
+    "id": "kedaram",
+    "name": "Kedaram",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Kedaram",
+    "notes": "Janya of Harikambhoji (28th melakarta); associated with devotion and grandeur; a favourite for kritis in the Tyagaraja corpus"
+  },
+  {
+    "id": "natabhairavi",
+    "name": "Natabhairavi",
+    "aliases": [],
+    "melakarta": 20,
+    "parent_raga": null,
+    "wikipedia": "https://en.wikipedia.org/wiki/Natabhairavi",
+    "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours"
+  }
+];
+const composers    = [
+  {
+    "id": "tyagaraja",
+    "name": "Tyagaraja",
+    "musician_node_id": "tyagaraja",
+    "born": 1767,
+    "died": 1847,
+    "wikipedia": "https://en.wikipedia.org/wiki/Tyagaraja"
+  },
+  {
+    "id": "muthuswami_dikshitar",
+    "name": "Muthuswami Dikshitar",
+    "musician_node_id": "muthuswami_dikshitar",
+    "born": 1775,
+    "died": 1835,
+    "wikipedia": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar"
+  },
+  {
+    "id": "shyama_shastri",
+    "name": "Shyama Shastri",
+    "musician_node_id": "shyama_shastri",
+    "born": 1762,
+    "died": 1827,
+    "wikipedia": "https://en.wikipedia.org/wiki/Shyama_Shastri"
+  }
+];
+const compositions = [
+  {
+    "id": "jagadananda_karaka",
+    "title": "Jagadananda Karaka",
+    "composer_id": "tyagaraja",
+    "raga_id": "nata",
+    "tala": "adi",
+    "language": "telugu",
+    "wikipedia": "https://en.wikipedia.org/wiki/Jagadananda_Karaka",
+    "notes": "Pancharatna kriti; opens the Pancharatna set; a paean to Rama in the majestic Ghana raga Nata"
+  },
+  {
+    "id": "dudukugala",
+    "title": "Dudukugala",
+    "composer_id": "tyagaraja",
+    "raga_id": "gowla",
+    "tala": "adi",
+    "language": "telugu",
+    "wikipedia": "https://en.wikipedia.org/wiki/Dudukugala",
+    "notes": "Pancharatna kriti; a self-critical composition in the pathos-laden Ghana raga Gowla"
+  },
+  {
+    "id": "sadhinchane",
+    "title": "Sadhinchane",
+    "composer_id": "tyagaraja",
+    "raga_id": "arabhi",
+    "tala": "adi",
+    "language": "telugu",
+    "wikipedia": "https://en.wikipedia.org/wiki/Sadhinchane",
+    "notes": "Pancharatna kriti; a devotional composition in the majestic Ghana raga Arabhi"
+  },
+  {
+    "id": "kana_kana_ruchira",
+    "title": "Kana Kana Ruchira",
+    "composer_id": "tyagaraja",
+    "raga_id": "varali",
+    "tala": "adi",
+    "language": "telugu",
+    "wikipedia": "https://en.wikipedia.org/wiki/Kana_Kana_Ruchira",
+    "notes": "Pancharatna kriti; set in the auspicious and technically demanding Ghana raga Varali"
+  },
+  {
+    "id": "entharo_mahanubhavulu",
+    "title": "Entharo Mahanubhavulu",
+    "composer_id": "tyagaraja",
+    "raga_id": "sri",
+    "tala": "adi",
+    "language": "telugu",
+    "wikipedia": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
+    "notes": "Pancharatna kriti; considered the crown jewel of the Tyagaraja corpus; a salutation to all great souls; traditionally sung last in the Pancharatna set"
+  }
+];
+const compositionToNodes = {};
+const ragaToNodes        = {
+  "natabhairavi": [
+    "abhishek_raghuram"
+  ]
+};
+
 // ── Cytoscape init ────────────────────────────────────────────────────────────
 const cy = cytoscape({
   container: document.getElementById('cy'),
@@ -1769,6 +2091,10 @@ const cy = cytoscape({
         'border-color': '#ebdbb2', 'border-width': '3px',
         'label': 'data(label)',
       }
+    },
+    {
+      selector: 'node.bani-match',
+      style: { 'border-color': '#83a598', 'border-width': '3.5px' }
     },
     {
       selector: 'edge',
@@ -2185,6 +2511,187 @@ function toggleLayout() {
     relayout();
   }
 }
+
+// ── Bani Flow ─────────────────────────────────────────────────────────────────
+
+// Build a node-id → born-year map for fallback sort
+const nodeBorn = {};
+cy.nodes().forEach(n => { nodeBorn[n.id()] = n.data('born'); });
+
+// Populate dropdowns (only entries that have tagged recordings)
+(function () {
+  const compSel = document.getElementById('bani-comp-select');
+  const ragaSel = document.getElementById('bani-raga-select');
+
+  compositions.forEach(c => {
+    if (compositionToNodes[c.id] && compositionToNodes[c.id].length > 0) {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.title;
+      compSel.appendChild(opt);
+    }
+  });
+
+  ragas.forEach(r => {
+    if (ragaToNodes[r.id] && ragaToNodes[r.id].length > 0) {
+      const opt = document.createElement('option');
+      opt.value = r.id;
+      opt.textContent = r.name;
+      ragaSel.appendChild(opt);
+    }
+  });
+})();
+
+let activeBaniFilter = null; // { type: 'comp'|'raga', id: string }
+
+function applyBaniFilter(type, id) {
+  activeBaniFilter = { type, id };
+  const matchedNodeIds = type === 'comp'
+    ? (compositionToNodes[id] || [])
+    : (ragaToNodes[id] || []);
+
+  // Dim/highlight nodes
+  cy.elements().addClass('faded');
+  cy.elements().removeClass('highlighted bani-match');
+  matchedNodeIds.forEach(nid => {
+    const n = cy.getElementById(nid);
+    n.removeClass('faded');
+    n.addClass('bani-match');
+  });
+
+  // Highlight edges between matched nodes
+  const matchedSet = new Set(matchedNodeIds);
+  cy.edges().forEach(e => {
+    if (matchedSet.has(e.data('source')) && matchedSet.has(e.data('target'))) {
+      e.removeClass('faded');
+      e.addClass('highlighted');
+    }
+  });
+
+  // Build listening trail
+  buildListeningTrail(type, id, matchedNodeIds);
+
+  document.getElementById('bani-clear').style.display = 'block';
+}
+
+function buildListeningTrail(type, id, matchedNodeIds) {
+  const trail = document.getElementById('listening-trail');
+  const composerLabel = document.getElementById('trail-composer-label');
+  const trailList = document.getElementById('trail-list');
+  trailList.innerHTML = '';
+  composerLabel.textContent = '';
+
+  // Composer label (for composition filter only)
+  if (type === 'comp') {
+    const comp = compositions.find(c => c.id === id);
+    if (comp) {
+      const raga = ragas.find(r => r.id === comp.raga_id);
+      const composer = composers.find(c => c.id === comp.composer_id);
+      const parts = [
+        composer ? 'Composed by ' + composer.name : null,
+        raga ? raga.name : null,
+        comp.tala ? comp.tala.charAt(0).toUpperCase() + comp.tala.slice(1) : null,
+      ].filter(Boolean);
+      composerLabel.textContent = parts.join(' · ');
+    }
+  } else {
+    const raga = ragas.find(r => r.id === id);
+    if (raga) composerLabel.textContent = 'Raga: ' + raga.name;
+  }
+
+  // Collect matching tracks across matched nodes, sorted by year then born
+  const rows = [];
+  matchedNodeIds.forEach(nid => {
+    const n = cy.getElementById(nid);
+    if (!n) return;
+    const d = n.data();
+    d.tracks.forEach(t => {
+      const matches = type === 'comp'
+        ? t.composition_id === id
+        : (t.raga_id === id || (t.composition_id && (() => {
+            const c = compositions.find(x => x.id === t.composition_id);
+            return c && c.raga_id === id;
+          })())) ;
+      if (matches) {
+        rows.push({ nodeId: nid, artistLabel: d.label, born: d.born, track: t });
+      }
+    });
+  });
+
+  // Sort: year asc (nulls last), then born asc (nulls last), then label
+  rows.sort((a, b) => {
+    const ay = a.track.year, by = b.track.year;
+    if (ay !== by) {
+      if (ay == null) return 1;
+      if (by == null) return -1;
+      return ay - by;
+    }
+    const ab = a.born, bb = b.born;
+    if (ab !== bb) {
+      if (ab == null) return 1;
+      if (bb == null) return -1;
+      return ab - bb;
+    }
+    return a.artistLabel.localeCompare(b.artistLabel);
+  });
+
+  rows.forEach(row => {
+    const li = document.createElement('li');
+    const yearSpan = document.createElement('span');
+    yearSpan.className = 'trail-year';
+    yearSpan.textContent = row.track.year || '';
+
+    const artistSpan = document.createElement('span');
+    artistSpan.className = 'trail-artist';
+    artistSpan.textContent = row.artistLabel;
+    artistSpan.addEventListener('click', () => {
+      cy.elements().removeClass('faded highlighted bani-match');
+      applyBaniFilter(type, id); // re-apply to keep highlight
+      const n = cy.getElementById(row.nodeId);
+      cy.animate({ fit: { eles: n, padding: 80 } });
+    });
+
+    const playSpan = document.createElement('span');
+    playSpan.className = 'trail-play';
+    playSpan.textContent = '▶';
+    playSpan.title = 'Play';
+    playSpan.addEventListener('click', () => loadTrack(row.track.vid, row.track.label, row.artistLabel));
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'trail-label';
+    labelSpan.textContent = row.track.label;
+
+    li.appendChild(yearSpan);
+    li.appendChild(artistSpan);
+    li.appendChild(playSpan);
+    li.appendChild(labelSpan);
+    trailList.appendChild(li);
+  });
+
+  trail.style.display = rows.length > 0 ? 'block' : 'none';
+}
+
+function clearBaniFilter() {
+  activeBaniFilter = null;
+  cy.elements().removeClass('faded highlighted bani-match');
+  document.getElementById('bani-comp-select').value = '';
+  document.getElementById('bani-raga-select').value = '';
+  document.getElementById('bani-clear').style.display = 'none';
+  document.getElementById('listening-trail').style.display = 'none';
+  applyZoomLabels();
+}
+
+document.getElementById('bani-comp-select').addEventListener('change', function () {
+  if (!this.value) { clearBaniFilter(); return; }
+  document.getElementById('bani-raga-select').value = '';
+  applyBaniFilter('comp', this.value);
+});
+
+document.getElementById('bani-raga-select').addEventListener('change', function () {
+  if (!this.value) { clearBaniFilter(); return; }
+  document.getElementById('bani-comp-select').value = '';
+  applyBaniFilter('raga', this.value);
+});
 </script>
 </body>
 </html>

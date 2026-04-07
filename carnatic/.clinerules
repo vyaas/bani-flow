@@ -3,24 +3,27 @@
 ## Project layout
 ```
 carnatic/
-  data/musicians.json   ← canonical source of truth (nodes + edges + recordings)
-  render.py             ← regenerates graph.html from musicians.json
-  crawl.py              ← Wikipedia scraper (uses disk cache in data/cache/)
-  serve.py              ← zero-dep local server, opens http://localhost:8765/graph.html
-  graph.html            ← derived artefact — NEVER hand-edit
+  data/musicians.json     ← canonical source of truth (nodes + edges + recordings)
+  data/compositions.json  ← ragas[], composers[], compositions[] — bani flow seed data
+  render.py               ← regenerates graph.html from musicians.json + compositions.json
+  crawl.py                ← Wikipedia scraper (uses disk cache in data/cache/)
+  serve.py                ← zero-dep local server, opens http://localhost:8765/graph.html
+  graph.html              ← derived artefact — NEVER hand-edit
 ```
 
 ## Session startup
 1. Read `data/musicians.json` before doing anything. That is the current state.
-2. Read the **Open questions** section below — it is the living memory of this project.
-3. At the end of every session: update the Open questions section, then `git add -A && git commit && git push`.
+2. Read `data/compositions.json` before doing anything composition/raga-related.
+3. Read the **Open questions** section below — it is the living memory of this project.
+4. At the end of every session: update the Open questions section, then `git add -A && git commit && git push`.
 
 ## Core workflow
 1. User drops a Wikipedia URL, YouTube link+title, or verbal correction
 2. Agent patches `musicians.json` (load → modify → check duplicates → save)
-3. Run `python3 render.py` — confirm node/edge counts change as expected
-4. Run `python3 serve.py` to visualise (or remind user to refresh if already running)
-5. **End of session**: update Open questions below, then prompt: "Ready to commit — run `git add -A && git commit -m '<message>' && git push`?"
+3. When tagging recordings: also add `composition_id`, `raga_id`, `year` to youtube entries where identifiable
+4. Run `python3 render.py` — confirm node/edge counts change as expected
+5. Run `python3 serve.py` to visualise (or remind user to refresh if already running)
+6. **End of session**: update Open questions below, then prompt: "Ready to commit — run `git add -A && git commit -m '<message>' && git push`?"
 
 ## Patching rules
 - **Never edit `graph.html` by hand**
@@ -64,16 +67,32 @@ for node in data['nodes']:
 ## Adding YouTube recordings
 - Links **must be annotated** with the video title (URL alone is not enough)
 - Parse title → identify artist(s) → match to existing node `label`
-- Extract 11-char video ID; append `{url, label}` to node's `youtube` array
+- Extract 11-char video ID; append extended object to node's `youtube` array
 - A recording can belong to multiple nodes (duets etc.)
 - Flag unmatched artists — do not silently drop or create unevaluated nodes
+- **Always tag** `composition_id`, `raga_id`, and `year` where identifiable from the title/metadata
+- `composition_id` and `raga_id` must reference IDs in `compositions.json`; add new entries there first if needed
+
+## Adding compositions/ragas
+- New ragas: add to `compositions.json` `ragas[]` — require Wikipedia URL and musicological `notes`
+- New composers: add to `compositions.json` `composers[]` — set `musician_node_id` if they are also a lineage node
+- New compositions: add to `compositions.json` `compositions[]` — require verified `composer_id` and `raga_id`
+- IDs are snake_case and permanent once set — never rename
+- After any change to `compositions.json`, re-run `python3 render.py` to rebuild lookup tables
 
 ## Data model quick reference
 **Node:** `id` (snake_case, never rename), `label`, `wikipedia`, `born`, `died`, `era`, `instrument`, `bani`, `youtube[]`
 **Edge:** `source` (guru id), `target` (shishya id), `confidence` (0–1), `source_url`, `note`
+**YouTube entry (extended):** `url`, `label`, `composition_id` (opt), `raga_id` (opt), `year` (opt)
 **Era values:** `trinity` · `bridge` · `golden_age` · `disseminator` · `living_pillars` · `contemporary`
 **Instrument values:** `vocal` · `veena` · `violin` · `flute` · `mridangam` · `bharatanatyam` (add new freely)
 **Confidence:** 0.95–1.0 explicit · 0.85–0.94 cross-confirmed · 0.70–0.84 single source · <0.70 speculative (must have `note`)
+**compositions.json raga:** `id`, `name`, `aliases`, `melakarta`, `parent_raga`, `wikipedia`, `notes`
+**compositions.json composer:** `id`, `name`, `musician_node_id`, `born`, `died`, `wikipedia`
+**compositions.json composition:** `id`, `title`, `composer_id`, `raga_id`, `tala`, `language`, `wikipedia`, `notes`
+
+## Change log prefixes
+`[NODE+]` · `[EDGE+]` · `[EDGE-]` · `[EDGE~]` · `[YOUTUBE+]` · `[YOUTUBE~]` · `[COMP+]` · `[RAGA+]` · `[COMPOSER+]` · `[FLAG]`
 
 ## Server
 ```bash

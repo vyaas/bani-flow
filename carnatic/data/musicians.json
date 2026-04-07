@@ -116,7 +116,8 @@
       "youtube": [
         {
           "url": "https://youtu.be/_gVQnHRh1IQ",
-          "label": "All India Radio · 27 Nov 1960 — 60th Remembrance Day Special"
+          "label": "All India Radio · 27 Nov 1960 — 60th Remembrance Day Special",
+          "year": 1960
         }
       ]
     },
@@ -132,11 +133,13 @@
       "youtube": [
         {
           "url": "https://youtu.be/QBn1fuosWIs",
-          "label": "Music Academy, Madras · December Season 1966"
+          "label": "Music Academy, Madras · December Season 1966",
+          "year": 1966
         },
         {
           "url": "https://youtu.be/x5ExBQpVy2k",
-          "label": "Mylapore Fine Arts Club · 26 Nov 1967"
+          "label": "Mylapore Fine Arts Club · 26 Nov 1967",
+          "year": 1967
         }
       ]
     },
@@ -174,7 +177,8 @@
       "youtube": [
         {
           "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 \u2014 with T. Viswanathan"
+          "label": "Wesleyan University, 1967 \u2014 with T. Viswanathan",
+          "year": 1967
         }
       ]
     },
@@ -234,7 +238,8 @@
       "youtube": [
         {
           "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 \u2014 with Ramnad Krishnan"
+          "label": "Wesleyan University, 1967 \u2014 with Ramnad Krishnan",
+          "year": 1967
         }
       ]
     },
@@ -305,7 +310,8 @@
       "youtube": [
         {
           "url": "https://youtu.be/lNSJJMWLtfc",
-          "label": "Natabhairavi \u00b7 Adi"
+          "label": "Natabhairavi \u00b7 Adi",
+          "raga_id": "natabhairavi"
         }
       ]
     },
