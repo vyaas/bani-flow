@@ -1,6 +1,6 @@
-# GSTree — Guru-Shishya-Parampapy
+![GSTree — Carnatic Guru-Shishya Tree knowledge graph](screenshots/screenshot_00.png)
 
-> *A play on **guru-shishya-parampara** — the ancient Indian tradition of knowledge transmission from teacher (guru) to student (shishya), passed down through unbroken lineages.*
+# Guru-Shishya Tree
 
 **GSTree** turns any teacher-student lineage into a self-contained, interactive knowledge graph rendered in the browser — no server, no database, no framework. The first instance maps the **Carnatic classical music** tradition.
 
@@ -9,7 +9,7 @@
 
 ---
 
-## Live demo — Carnatic Guru-Shishya Parampara
+## Live demo — Carnatic Guru-Shishya Tree
 
 ```
 carnatic/
