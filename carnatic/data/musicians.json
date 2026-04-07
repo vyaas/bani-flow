@@ -228,7 +228,14 @@
       "era": "disseminator",
       "instrument": "vocal",
       "bani": "mixed",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/7FJu261ER0A",
+          "label": "Gitarthamu · Surutti · Adi - DK Pattammal",
+          "composition_id": "gitarthamu",
+          "raga_id": "surutti"
+        }
+      ]
     },
     {
       "id": "lalgudi_jayaraman",
@@ -250,7 +257,14 @@
       "era": "living_pillars",
       "instrument": "violin",
       "bani": "semmangudi",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/WFFHDuNDSpA",
+          "label": "Gitarthamu · Surutti · Adi - TN Krishnan",
+          "composition_id": "gitarthamu",
+          "raga_id": "surutti"
+        }
+      ]
     },
     {
       "id": "t_viswanathan",
@@ -306,6 +320,18 @@
           "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
           "composition_id": "maakelara_vicaaramu",
           "raga_id": "ravichandrika"
+        },
+        {
+          "url": "https://youtu.be/-_6zvmxD1b4",
+          "label": "Gitarthamu · Surutti · Adi - TM Krishna (younger)",
+          "composition_id": "gitarthamu",
+          "raga_id": "surutti"
+        },
+        {
+          "url": "https://youtu.be/H8vbrGvEnTE",
+          "label": "Gitarthamu · Surutti · Adi - TM Krishna (older)",
+          "composition_id": "gitarthamu",
+          "raga_id": "surutti"
         }
       ]
     },
@@ -352,6 +378,42 @@
           "url": "https://youtu.be/lNSJJMWLtfc",
           "label": "Natabhairavi \u00b7 Adi",
           "raga_id": "natabhairavi"
+        }
+      ]
+    },
+    {
+      "id": "md_ramanathan",
+      "label": "MD Ramanathan",
+      "wikipedia": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
+      "born": 1923,
+      "died": 1984,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "tiger_varadachariar",
+      "youtube": [
+        {
+          "url": "https://youtu.be/M4J_HtniTQA",
+          "label": "Gitarthamu · Surutti · Adi - MD Ramanathan",
+          "composition_id": "gitarthamu",
+          "raga_id": "surutti"
+        }
+      ]
+    },
+    {
+      "id": "kv_narayanaswamy",
+      "label": "KV Narayanaswamy",
+      "wikipedia": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+      "born": 1923,
+      "died": 2002,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "ariyakudi",
+      "youtube": [
+        {
+          "url": "https://youtu.be/HxcQv19oo5g",
+          "label": "Gitarthamu · Surutti · Adi - KV Narayanaswamy",
+          "composition_id": "gitarthamu",
+          "raga_id": "surutti"
         }
       ]
     },
@@ -441,7 +503,14 @@
       "era": "contemporary",
       "instrument": "vocal",
       "bani": "mixed",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/O9xRrQ0Cb00",
+          "label": "Gitarthamu · Surutti · Adi - S. Sowmya",
+          "composition_id": "gitarthamu",
+          "raga_id": "surutti"
+        }
+      ]
     },
     {
       "id": "b_rajam_iyer",

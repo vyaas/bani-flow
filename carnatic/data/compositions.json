@@ -143,6 +143,15 @@
       "parent_raga": "harikambhoji",
       "wikipedia": null,
       "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada. Source: https://sujamusic.wordpress.com/ravichandrika/"
+    },
+    {
+      "id": "surutti",
+      "name": "Surutti",
+      "aliases": [],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "wikipedia": "https://en.wikipedia.org/wiki/Surutti",
+      "notes": "Janya of Harikambhoji (28th melakarta); bhāshāṅga vakra raga (Subbarama Dikshitar classification); ārohana S R₂ M₁ P N₂ D₂ N₂ Ṡ, avarohana Ṡ N₂ D₂ P M₁ G₃ P M₁ R₂ S; equivalent to Mixolydian mode; evokes devotion and pathos; a favourite raga of the Tyagaraja school"
     }
   ],
   "composers": [
@@ -231,6 +240,16 @@
       "language": "telugu",
       "wikipedia": null,
       "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire. Notation source: http://www.shivkumar.org/music/maakelara.ram"
+    },
+    {
+      "id": "gitarthamu",
+      "title": "Gitarthamu",
+      "composer_id": "tyagaraja",
+      "raga_id": "surutti",
+      "tala": "adi",
+      "language": "telugu",
+      "wikipedia": null,
+      "notes": "Tyagaraja kriti in Surutti; a meditation on the meaning of the Gita. Notation sources: https://www.karnatik.com/c2341.shtml ; http://www.shivkumar.org/music/gitarthamu.ram"
     }
   ]
 }
