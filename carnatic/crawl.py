@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
 crawl.py — Wikipedia guru-shishya parampara crawler
-Fetches infobox teacher/student fields + prose mentions.
+Fetches infobox teacher/student fields + prose mentions from Wikipedia sources.
 Respects cache. Updates musicians.json non-destructively.
+
+Only sources with type=="wikipedia" are crawled; other source types are
+user-supplied provenance and are preserved as-is.
 """
 
 import json
@@ -57,9 +60,29 @@ def fetch_page(url: str, force: bool = False) -> Optional[str]:
 
 # ── extraction ─────────────────────────────────────────────────────────────────
 def slug_from_url(url: str) -> str:
-    """wikipedia URL → clean slug for matching against node ids"""
+    """Wikipedia URL → clean slug for matching against node ids."""
     name = url.rstrip("/").split("/")[-1]
     return name.replace("_", " ").lower()
+
+
+def wikipedia_urls_for_node(node: dict) -> list[str]:
+    """
+    Return all Wikipedia URLs associated with a node.
+
+    Supports both the new schema (sources array) and the legacy
+    'wikipedia' string field for backward compatibility.
+    """
+    urls: list[str] = []
+    # New schema: sources array
+    for src in node.get("sources", []):
+        if src.get("type") == "wikipedia" and src.get("url"):
+            urls.append(src["url"])
+    # Legacy fallback: bare 'wikipedia' string key
+    if not urls:
+        legacy = node.get("wikipedia")
+        if legacy:
+            urls.append(legacy)
+    return urls
 
 def extract_infobox_relations(soup: BeautifulSoup, page_url: str) -> list[Edge]:
     """Pull teacher/student rows from Wikipedia infobox."""
@@ -203,19 +226,23 @@ def merge_edges(graph: dict, new_edges: list[Edge]) -> int:
 
 # ── main crawl loop ────────────────────────────────────────────────────────────
 def crawl_node(node: dict, graph: dict, force: bool = False) -> int:
-    url = node.get("wikipedia")
-    if not url:
+    """Crawl all Wikipedia sources for a node and merge discovered edges."""
+    urls = wikipedia_urls_for_node(node)
+    if not urls:
         return 0
-    print(f"[CRAWL] {node['label']}  {url}")
-    html = fetch_page(url, force=force)
-    if not html:
-        return 0
-    soup = BeautifulSoup(html, "html.parser")
-    edges: list[Edge] = []
-    edges += extract_infobox_relations(soup, url)
-    edges += extract_prose_relations(soup, url)
-    print(f"  found {len(edges)} candidate relations")
-    return merge_edges(graph, edges)
+    total_added = 0
+    for url in urls:
+        print(f"[CRAWL] {node['label']}  {url}")
+        html = fetch_page(url, force=force)
+        if not html:
+            continue
+        soup = BeautifulSoup(html, "html.parser")
+        edges: list[Edge] = []
+        edges += extract_infobox_relations(soup, url)
+        edges += extract_prose_relations(soup, url)
+        print(f"  found {len(edges)} candidate relations")
+        total_added += merge_edges(graph, edges)
+    return total_added
 
 def main(force: bool = False) -> None:
     graph = load_graph()

@@ -3,7 +3,9 @@
     {
       "id": "tyagaraja",
       "label": "Tyagaraja",
-      "wikipedia": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Tyagaraja", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1767,
       "died": 1847,
       "era": "trinity",
@@ -14,7 +16,9 @@
     {
       "id": "muthuswami_dikshitar",
       "label": "Muthuswami Dikshitar",
-      "wikipedia": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1775,
       "died": 1835,
       "era": "trinity",
@@ -25,7 +29,9 @@
     {
       "id": "shyama_shastri",
       "label": "Shyama Shastri",
-      "wikipedia": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Shyama_Shastri", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1762,
       "died": 1827,
       "era": "trinity",
@@ -36,7 +42,9 @@
     {
       "id": "vina_dhanammal",
       "label": "Vina Dhanammal",
-      "wikipedia": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1867,
       "died": 1938,
       "era": "bridge",
@@ -52,7 +60,9 @@
     {
       "id": "patnam_subramanya_iyer",
       "label": "Patnam Subramanya Iyer",
-      "wikipedia": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1845,
       "died": 1902,
       "era": "bridge",
@@ -63,7 +73,9 @@
     {
       "id": "maha_vaidyanatha_sivan",
       "label": "Maha Vaidyanatha Sivan",
-      "wikipedia": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1844,
       "died": 1893,
       "era": "bridge",
@@ -74,7 +86,9 @@
     {
       "id": "t_brinda",
       "label": "T. Brinda",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._Brinda",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._Brinda", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1912,
       "died": 1996,
       "era": "golden_age",
@@ -85,7 +99,9 @@
     {
       "id": "ariyakudi_ramanuja_iyengar",
       "label": "Ariyakudi Ramanuja Iyengar",
-      "wikipedia": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1890,
       "died": 1967,
       "era": "golden_age",
@@ -96,7 +112,9 @@
     {
       "id": "madurai_mani_iyer",
       "label": "Madurai Mani Iyer",
-      "wikipedia": "https://en.wikipedia.org/wiki/Madurai_Mani_Iyer",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Madurai_Mani_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1912,
       "died": 1968,
       "era": "golden_age",
@@ -114,7 +132,9 @@
     {
       "id": "gnb",
       "label": "GN Balasubramaniam",
-      "wikipedia": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1910,
       "died": 1965,
       "era": "golden_age",
@@ -131,7 +151,9 @@
     {
       "id": "semmangudi_srinivasa_iyer",
       "label": "Semmangudi Srinivasa Iyer",
-      "wikipedia": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1908,
       "died": 2003,
       "era": "golden_age",
@@ -159,7 +181,9 @@
     {
       "id": "musiri_subramania_iyer",
       "label": "Musiri Subramania Iyer",
-      "wikipedia": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1899,
       "died": 1975,
       "era": "golden_age",
@@ -170,7 +194,9 @@
     {
       "id": "ms_subbulakshmi",
       "label": "MS Subbulakshmi",
-      "wikipedia": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1916,
       "died": 2004,
       "era": "disseminator",
@@ -188,7 +214,10 @@
     {
       "id": "ramnad_krishnan",
       "label": "Ramnad Krishnan",
-      "wikipedia": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan", "label": "Wikipedia", "type": "wikipedia"},
+        {"url": "https://dhvaniohio.org/wp-content/uploads/2012/06/Ramnad_Krishnan.pdf", "label": "Dhvani Ohio — biography", "type": "pdf"}
+      ],
       "born": 1918,
       "died": 1973,
       "era": "disseminator",
@@ -197,7 +226,7 @@
       "youtube": [
         {
           "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 \u2014 with T. Viswanathan",
+          "label": "Wesleyan University, 1967 — with T. Viswanathan",
           "year": 1967
         },
         {
@@ -211,7 +240,9 @@
     {
       "id": "ml_vasanthakumari",
       "label": "ML Vasanthakumari",
-      "wikipedia": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1928,
       "died": 1990,
       "era": "disseminator",
@@ -222,7 +253,9 @@
     {
       "id": "dk_pattammal",
       "label": "DK Pattammal",
-      "wikipedia": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/D._K._Pattammal", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1919,
       "died": 2009,
       "era": "disseminator",
@@ -240,7 +273,9 @@
     {
       "id": "lalgudi_jayaraman",
       "label": "Lalgudi Jayaraman",
-      "wikipedia": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1930,
       "died": 2013,
       "era": "disseminator",
@@ -251,7 +286,9 @@
     {
       "id": "tn_krishnan",
       "label": "TN Krishnan",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._N._Krishnan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._N._Krishnan", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1928,
       "died": 2023,
       "era": "living_pillars",
@@ -269,7 +306,9 @@
     {
       "id": "t_viswanathan",
       "label": "T. Viswanathan",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._Viswanathan", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1927,
       "died": 2002,
       "era": "living_pillars",
@@ -278,7 +317,7 @@
       "youtube": [
         {
           "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 \u2014 with Ramnad Krishnan",
+          "label": "Wesleyan University, 1967 — with Ramnad Krishnan",
           "year": 1967
         }
       ]
@@ -286,7 +325,9 @@
     {
       "id": "palghat_mani_iyer",
       "label": "Palghat Mani Iyer",
-      "wikipedia": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1912,
       "died": 1981,
       "era": "living_pillars",
@@ -297,7 +338,9 @@
     {
       "id": "umayalpuram_sivaraman",
       "label": "Umayalpuram Sivaraman",
-      "wikipedia": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1935,
       "died": null,
       "era": "living_pillars",
@@ -308,7 +351,9 @@
     {
       "id": "tm_krishna",
       "label": "TM Krishna",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._M._Krishna",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._M._Krishna", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1976,
       "died": null,
       "era": "contemporary",
@@ -338,7 +383,9 @@
     {
       "id": "sanjay_subrahmanyan",
       "label": "Sanjay Subrahmanyan",
-      "wikipedia": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1968,
       "died": null,
       "era": "contemporary",
@@ -356,7 +403,9 @@
     {
       "id": "bombay_jayashri",
       "label": "Bombay Jayashri",
-      "wikipedia": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Bombay_Jayashri", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1964,
       "died": null,
       "era": "contemporary",
@@ -367,7 +416,9 @@
     {
       "id": "abhishek_raghuram",
       "label": "Abhishek Raghuram",
-      "wikipedia": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1984,
       "died": null,
       "era": "contemporary",
@@ -376,7 +427,7 @@
       "youtube": [
         {
           "url": "https://youtu.be/lNSJJMWLtfc",
-          "label": "Natabhairavi \u00b7 Adi",
+          "label": "Natabhairavi · Adi",
           "raga_id": "natabhairavi"
         }
       ]
@@ -384,7 +435,9 @@
     {
       "id": "md_ramanathan",
       "label": "MD Ramanathan",
-      "wikipedia": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/M._D._Ramanathan", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1923,
       "died": 1984,
       "era": "disseminator",
@@ -402,7 +455,9 @@
     {
       "id": "kv_narayanaswamy",
       "label": "KV Narayanaswamy",
-      "wikipedia": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1923,
       "died": 2002,
       "era": "living_pillars",
@@ -420,7 +475,9 @@
     {
       "id": "muthiah_bhagavatar",
       "label": "Muthiah Bhagavatar",
-      "wikipedia": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1877,
       "died": 1945,
       "era": "bridge",
@@ -431,7 +488,9 @@
     {
       "id": "tn_seshagopalan",
       "label": "TN Seshagopalan",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._N._Seshagopalan", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1948,
       "died": null,
       "era": "living_pillars",
@@ -442,7 +501,9 @@
     {
       "id": "tr_mahalingam",
       "label": "TR Mahalingam (Mali)",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1926,
       "died": 1986,
       "era": "disseminator",
@@ -453,7 +514,9 @@
     {
       "id": "n_ramani",
       "label": "N. Ramani",
-      "wikipedia": "https://en.wikipedia.org/wiki/N._Ramani",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/N._Ramani", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1934,
       "died": 2019,
       "era": "living_pillars",
@@ -464,7 +527,9 @@
     {
       "id": "calcutta_ks_krishnamurthi",
       "label": "Calcutta KS Krishnamurthi",
-      "wikipedia": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan", "label": "Wikipedia (via Sanjay Subrahmanyan)", "type": "wikipedia"}
+      ],
       "born": null,
       "died": 1999,
       "era": "living_pillars",
@@ -475,7 +540,9 @@
     {
       "id": "t_muktha",
       "label": "T. Muktha",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._Muktha",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._Muktha", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1914,
       "died": 2007,
       "era": "golden_age",
@@ -486,7 +553,9 @@
     {
       "id": "s_ramanathan",
       "label": "S. Ramanathan",
-      "wikipedia": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1917,
       "died": 1988,
       "era": "disseminator",
@@ -497,7 +566,10 @@
     {
       "id": "s_sowmya",
       "label": "S. Sowmya",
-      "wikipedia": "https://en.wikipedia.org/wiki/S._Sowmya",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/S._Sowmya", "label": "Wikipedia", "type": "wikipedia"},
+        {"url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980", "label": "Vaak magazine — profile", "type": "article"}
+      ],
       "born": 1969,
       "died": null,
       "era": "contemporary",
@@ -515,7 +587,9 @@
     {
       "id": "b_rajam_iyer",
       "label": "B. Rajam Iyer",
-      "wikipedia": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1922,
       "died": 2009,
       "era": "living_pillars",
@@ -526,7 +600,9 @@
     {
       "id": "cs_sankarasivam",
       "label": "C.S. Sankarasivam",
-      "wikipedia": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy", "label": "Wikipedia (via Murugabhoopathy)", "type": "wikipedia"}
+      ],
       "born": null,
       "died": null,
       "era": "bridge",
@@ -537,7 +613,9 @@
     {
       "id": "aruna_sairam",
       "label": "Aruna Sairam",
-      "wikipedia": "https://en.wikipedia.org/wiki/Aruna_Sairam",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Aruna_Sairam", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1952,
       "died": null,
       "era": "contemporary",
@@ -548,7 +626,9 @@
     {
       "id": "subbaraya_sastri",
       "label": "Subbaraya Sastri",
-      "wikipedia": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1803,
       "died": 1876,
       "era": "bridge",
@@ -559,7 +639,9 @@
     {
       "id": "jayammal",
       "label": "Jayammal",
-      "wikipedia": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal", "label": "Wikipedia (via Veenai Dhanammal)", "type": "wikipedia"}
+      ],
       "born": 1890,
       "died": 1967,
       "era": "bridge",
@@ -570,7 +652,9 @@
     {
       "id": "kamakshi_dhanammal",
       "label": "Kamakshi (daughter of Dhanammal)",
-      "wikipedia": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal", "label": "Wikipedia (via Veenai Dhanammal)", "type": "wikipedia"}
+      ],
       "born": null,
       "died": null,
       "era": "bridge",
@@ -581,7 +665,9 @@
     {
       "id": "kanchipuram_naina_pillai",
       "label": "Kanchipuram Naina Pillai",
-      "wikipedia": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": null,
       "died": null,
       "era": "bridge",
@@ -592,7 +678,9 @@
     {
       "id": "swaminatha_pillai",
       "label": "Tiruppamparam Swaminatha Pillai",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._Viswanathan", "label": "Wikipedia (via T. Viswanathan)", "type": "wikipedia"}
+      ],
       "born": null,
       "died": null,
       "era": "bridge",
@@ -603,7 +691,9 @@
     {
       "id": "t_balasaraswati",
       "label": "T. Balasaraswati",
-      "wikipedia": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/T._Balasaraswati", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": 1918,
       "died": 1984,
       "era": "disseminator",
@@ -614,7 +704,9 @@
     {
       "id": "gjr_krishnan",
       "label": "G.J.R. Krishnan",
-      "wikipedia": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": null,
       "died": null,
       "era": "contemporary",
@@ -625,7 +717,9 @@
     {
       "id": "lalgudi_vijayalakshmi",
       "label": "Lalgudi Vijayalakshmi",
-      "wikipedia": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": null,
       "died": null,
       "era": "contemporary",
@@ -636,7 +730,9 @@
     {
       "id": "a_kanyakumari",
       "label": "A. Kanyakumari",
-      "wikipedia": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/A._Kanyakumari", "label": "Wikipedia", "type": "wikipedia"}
+      ],
       "born": null,
       "died": null,
       "era": "contemporary",
@@ -746,7 +842,7 @@
       "target": "sanjay_subrahmanyan",
       "confidence": 0.95,
       "source_url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
-      "note": "principal guru 1989\u20131999; shaped Sanjay's mature style"
+      "note": "principal guru 1989–1999; shaped Sanjay's mature style"
     },
     {
       "source": "vina_dhanammal",
@@ -794,7 +890,7 @@
       "target": "ramnad_krishnan",
       "confidence": 0.98,
       "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
-      "note": "principal guru; Dhanammal bani stream \u2014 padams, javalis, gamaka vocabulary"
+      "note": "principal guru; Dhanammal bani stream — padams, javalis, gamaka vocabulary"
     },
     {
       "source": "cs_sankarasivam",
@@ -808,7 +904,7 @@
       "target": "semmangudi_srinivasa_iyer",
       "confidence": 0.9,
       "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
-      "note": "Semmangudi learnt from Brinda \u2014 Dhanammal stream feeding into his style"
+      "note": "Semmangudi learnt from Brinda — Dhanammal stream feeding into his style"
     },
     {
       "source": "t_brinda",

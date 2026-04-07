@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 render.py — Renders musicians.json as a self-contained Cytoscape.js HTML graph.
-Nodes clickable (Wikipedia). Edges directed guru→shishya.
+Nodes clickable (sources). Edges directed guru→shishya.
 Color-coded by era. Shape-coded by instrument.
 Floating YouTube player: click a node's track list → embedded video, graph stays live.
 Bani Flow panel: filter by composition or raga, chronological listening trail.
@@ -156,10 +156,17 @@ def build_elements(graph: dict) -> list[dict]:
                     "year":           t.get("year"),
                 })
 
+        # Sources: new schema (sources array) with legacy fallback
+        raw_sources = node.get("sources", [])
+        if not raw_sources and node.get("wikipedia"):
+            raw_sources = [{"url": node["wikipedia"], "label": "Wikipedia", "type": "wikipedia"}]
+        primary_url = raw_sources[0]["url"] if raw_sources else ""
+
         elements.append({"data": {
             "id":         node["id"],
             "label":      node["label"],
-            "url":        node.get("wikipedia", ""),
+            "url":        primary_url,
+            "sources":    raw_sources,
             "era":        era,
             "era_label":  ERA_LABELS.get(era, era),
             "instrument": instr,
@@ -277,11 +284,12 @@ def render_html(elements: list[dict], graph: dict, comp_data: dict,
   #node-info {{ min-height: 140px; }}
   #node-name {{ font-size: 0.95rem; color: var(--yellow); font-weight: bold; margin-bottom: 4px; }}
   #node-meta {{ color: var(--fg3); line-height: 1.7; }}
-  #node-link {{
-    display: none; margin-top: 8px; color: var(--blue);
-    text-decoration: none; font-size: 0.75rem;
+  #node-sources {{ margin-top: 8px; display: none; }}
+  .node-src-link {{
+    display: block; color: var(--blue);
+    text-decoration: none; font-size: 0.75rem; margin-bottom: 3px;
   }}
-  #node-link:hover {{ text-decoration: underline; }}
+  .node-src-link:hover {{ text-decoration: underline; }}
 
   /* sidebar track list */
   #track-panel {{ display: none; }}
@@ -507,7 +515,7 @@ def render_html(elements: list[dict], graph: dict, comp_data: dict,
       <h3>Selected</h3>
       <div id="node-name">—</div>
       <div id="node-meta"></div>
-      <a id="node-link" href="#" target="_blank">Wikipedia &#8599;</a>
+      <div id="node-sources"></div>
     </div>
 
     <div class="panel" id="track-panel">
@@ -554,7 +562,7 @@ def render_html(elements: list[dict], graph: dict, comp_data: dict,
       &#9654; track &#8594; plays inline, graph stays live.<br>
       Drag player anywhere on canvas.<br>
       Click edge to see relationship.<br>
-      Double-click node &#8599; Wikipedia.<br>
+      Double-click node &#8599; opens primary source.<br>
       Green border = has recordings.<br>
       Teal border = matches Bani Flow filter.<br>
       Scroll to zoom &middot; drag to pan.
@@ -796,8 +804,16 @@ cy.on('tap', 'node', evt => {{
     `<div>${{d.lifespan || ''}}</div>` +
     `<div style="color:var(--gray)">${{d.era_label}}</div>` +
     `<div>${{d.instrument}} · ${{d.bani || ''}}</div>`;
-  const lnk = document.getElementById('node-link');
-  lnk.href = d.url; lnk.style.display = d.url ? 'inline-block' : 'none';
+  const srcDiv = document.getElementById('node-sources');
+  if (d.sources && d.sources.length > 0) {{
+    srcDiv.style.display = 'block';
+    srcDiv.innerHTML = d.sources.map(s =>
+      `<a class="node-src-link" href="${{s.url}}" target="_blank">${{s.label}} &#8599;</a>`
+    ).join('');
+  }} else {{
+    srcDiv.style.display = 'none';
+    srcDiv.innerHTML = '';
+  }}
 
   document.getElementById('node-info').style.display  = 'block';
   document.getElementById('edge-info').style.display  = 'none';

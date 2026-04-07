@@ -27,13 +27,43 @@ The file has two top-level arrays: `nodes` and `edges`.
 |---|---|---|
 | `id` | string | Snake_case unique key. **Never rename once set.** |
 | `label` | string | Display name as the musician is commonly known. |
-| `wikipedia` | string | Canonical Wikipedia URL for this musician. |
+| `sources` | array | List of source objects (see below). At least one required. |
 | `born` | int \| null | Birth year only. `null` if unknown. |
 | `died` | int \| null | Death year only. `null` if living or unknown. |
 | `era` | enum | See Era vocabulary below. |
 | `instrument` | enum | See Instrument vocabulary below. |
 | `bani` | string | Stylistic school / lineage label. Free text. |
 | `youtube` | array | List of extended recording objects. May be empty `[]`. |
+
+### Source object
+
+```json
+{
+  "url":   "https://en.wikipedia.org/wiki/Tyagaraja",
+  "label": "Wikipedia",
+  "type":  "wikipedia"
+}
+```
+
+| field | type | meaning |
+|---|---|---|
+| `url` | string | Full URL to the source. |
+| `label` | string | Human-readable name shown as the link label in the UI. |
+| `type` | enum | See Source type vocabulary below. |
+
+### Source type vocabulary
+
+| value | meaning |
+|---|---|
+| `wikipedia` | English Wikipedia article. Only these are crawled by `crawl.py`. |
+| `pdf` | PDF document (biography, programme note, academic paper). |
+| `article` | Web article, blog post, or magazine piece. |
+| `archive` | Notation archive, audio archive, or similar repository. |
+| `other` | Any source that does not fit the above categories. |
+
+A node may have multiple sources of different types. The first source in the
+array is treated as the primary link (opened on double-click in the graph).
+Wikipedia sources should appear first when present.
 
 ### YouTube recording object (extended)
 
@@ -64,6 +94,9 @@ video ID is what matters.
 | `confidence` | float 0–1 | How well-sourced is this relationship. |
 | `source_url` | string | URL where this relationship is explicitly stated. |
 | `note` | string | Optional qualifier on the nature of the relationship. |
+
+`source_url` on edges is already a generic URL field — it accepts Wikipedia,
+PDFs, articles, or any other URL. It is not constrained to Wikipedia.
 
 ### Era vocabulary
 
@@ -107,7 +140,9 @@ Three top-level arrays: `ragas`, `composers`, `compositions`. All IDs are
   "aliases":     [],
   "melakarta":   null,
   "parent_raga": null,
-  "wikipedia":   "https://en.wikipedia.org/wiki/Sri_(raga)",
+  "sources": [
+    {"url": "https://en.wikipedia.org/wiki/Sri_(raga)", "label": "Wikipedia", "type": "wikipedia"}
+  ],
   "notes":       "Janya of Kharaharapriya; associated with grandeur and devotion"
 }
 ```
@@ -119,7 +154,7 @@ Three top-level arrays: `ragas`, `composers`, `compositions`. All IDs are
 | `aliases` | array of strings | alternate spellings / names |
 | `melakarta` | int \| null | melakarta number (1–72) if applicable |
 | `parent_raga` | string \| null | id of parent raga if janya |
-| `wikipedia` | string \| null | Wikipedia URL |
+| `sources` | array | list of source objects; at least one required |
 | `notes` | string | free-text musicological note |
 
 **Bhairavi and Sindhu Bhairavi are separate entries** — they are distinct ragas
@@ -134,7 +169,9 @@ with different arohanam/avarohanam and different emotional registers.
   "musician_node_id": "tyagaraja",
   "born":             1767,
   "died":             1847,
-  "wikipedia":        "https://en.wikipedia.org/wiki/Tyagaraja"
+  "sources": [
+    {"url": "https://en.wikipedia.org/wiki/Tyagaraja", "label": "Wikipedia", "type": "wikipedia"}
+  ]
 }
 ```
 
@@ -144,7 +181,7 @@ with different arohanam/avarohanam and different emotional registers.
 | `name` | string | canonical name |
 | `musician_node_id` | string \| null | links to a node in `musicians.json` if the composer is also a lineage node; `null` otherwise |
 | `born` / `died` | int \| null | year only |
-| `wikipedia` | string | Wikipedia URL |
+| `sources` | array | list of source objects; at least one required |
 
 ### Composition object
 
@@ -156,7 +193,9 @@ with different arohanam/avarohanam and different emotional registers.
   "raga_id":     "sri",
   "tala":        "adi",
   "language":    "telugu",
-  "wikipedia":   "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
+  "sources": [
+    {"url": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu", "label": "Wikipedia", "type": "wikipedia"}
+  ],
   "notes":       "Pancharatna kriti; considered the crown jewel of the Tyagaraja corpus"
 }
 ```
@@ -169,7 +208,7 @@ with different arohanam/avarohanam and different emotional registers.
 | `raga_id` | string | references `ragas[].id` |
 | `tala` | string | e.g. `adi`, `rupaka`, `misra_chapu` |
 | `language` | string | `telugu`, `sanskrit`, `tamil`, `kannada` |
-| `wikipedia` | string \| null | Wikipedia URL if article exists |
+| `sources` | array | list of source objects; may be empty `[]` if no external reference exists |
 | `notes` | string | free-text musicological note |
 
 ---
@@ -210,14 +249,19 @@ without the user's instruction.
 
 ---
 
-## Workflow B — Wikipedia parsing
+## Workflow B — Source parsing (Wikipedia and other)
 
-**Step 1** — Extract lineage from infobox `teacher`/`students` and prose patterns.
+**Step 1** — Extract lineage from Wikipedia infobox `teacher`/`students` and
+prose patterns, or from any other source the user provides.
 **Step 2** — Check for name-variant collisions before creating any new node.
 **Step 3** — Assess significance (Sangeetha Kalanidhi, trains existing node, necessary topological link).
 **Step 4** — Assess relationship type; use `note` to qualify (`"first guru"`, `"principal guru"`, etc.).
 **Step 5** — Do not infer edges from shared `bani`.
 **Step 6** — Propose and apply changes with change log.
+
+When adding a new node from a non-Wikipedia source, add the source to the
+node's `sources` array with the appropriate `type`. The `source_url` on the
+resulting edge should point to the specific URL where the relationship is stated.
 
 ---
 
@@ -257,7 +301,9 @@ to rebuild the lookup tables and regenerate `graph.html`.
 ## Workflow E — Adding to compositions.json
 
 **Adding a raga:**
-- Require a Wikipedia URL. No Wikipedia page = no raga entry.
+- Require at least one source in the `sources` array. A Wikipedia article is
+  preferred but not mandatory — a notation archive, musicological blog, or
+  academic reference is acceptable.
 - Set `melakarta` if it is a melakarta raga; set `parent_raga` if it is a janya.
 - Write a concise musicological `notes` field.
 - Log as `[RAGA+]`.
@@ -270,8 +316,34 @@ to rebuild the lookup tables and regenerate `graph.html`.
 **Adding a composition:**
 - Require a verified `composer_id` (must exist in `composers[]`) and `raga_id`
   (must exist in `ragas[]`).
-- Set `tala`, `language`, and `wikipedia` where known.
+- Set `tala`, `language`, and `sources` where known. `sources` may be empty `[]`
+  if no external reference exists.
 - Log as `[COMP+]`.
+
+---
+
+## Workflow F — Adding sources to existing nodes
+
+Use this workflow when the user provides a URL (Wikipedia, PDF, article, archive,
+or other) to attach to an existing node, raga, composer, or composition.
+
+**Step 1** — Identify the target object by `id`.
+
+**Step 2** — Determine the source `type` from the URL:
+- `en.wikipedia.org` → `wikipedia`
+- `.pdf` extension or known PDF host → `pdf`
+- Blog, magazine, news site → `article`
+- Notation archive (karnatik.com, shivkumar.org, etc.) → `archive`
+- Anything else → `other`
+
+**Step 3** — Construct the source object:
+```json
+{"url": "...", "label": "descriptive label", "type": "..."}
+```
+
+**Step 4** — Append to the `sources` array. Do not duplicate an existing URL.
+
+**Step 5** — Log as `[SOURCE+] <object_id> — <label> (<type>)`.
 
 ---
 
@@ -291,6 +363,7 @@ Every response that modifies data must follow this format:
 [COMP+]      added: entharo_mahanubhavulu — Sri · Adi · Tyagaraja
 [RAGA+]      added: sri — janya of Kharaharapriya
 [COMPOSER+]  added: tyagaraja — musician_node_id: tyagaraja
+[SOURCE+]    abhishek_raghuram — "The Hindu profile" (article)
 [FLAG]       could not match artist "T. Ranganathan" to any existing node — skipped
 ```
 
@@ -304,8 +377,9 @@ The user will copy this output and save it as the new file.
 ## Hard constraints — never do these
 
 - **Never rename an existing `id` field** in either file. IDs are permanent keys.
-- **Never create a musician node without a `wikipedia` URL.**
-- **Never create a raga without a Wikipedia URL or explicit musicological source.**
+- **Never create a musician node without at least one entry in `sources`.**
+- **Never create a raga without at least one entry in `sources`** (Wikipedia preferred
+  but not required — a notation archive or musicological reference is acceptable).
 - **Never create a composition without a verified `composer_id` and `raga_id`.**
 - **Never infer an edge from shared `bani` alone.** Stylistic similarity is not lineage evidence.
 - **Never silently drop an unmatched YouTube link.** Always flag it.

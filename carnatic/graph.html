@@ -58,11 +58,12 @@
   #node-info { min-height: 140px; }
   #node-name { font-size: 0.95rem; color: var(--yellow); font-weight: bold; margin-bottom: 4px; }
   #node-meta { color: var(--fg3); line-height: 1.7; }
-  #node-link {
-    display: none; margin-top: 8px; color: var(--blue);
-    text-decoration: none; font-size: 0.75rem;
+  #node-sources { margin-top: 8px; display: none; }
+  .node-src-link {
+    display: block; color: var(--blue);
+    text-decoration: none; font-size: 0.75rem; margin-bottom: 3px;
   }
-  #node-link:hover { text-decoration: underline; }
+  .node-src-link:hover { text-decoration: underline; }
 
   /* sidebar track list */
   #track-panel { display: none; }
@@ -288,7 +289,7 @@
       <h3>Selected</h3>
       <div id="node-name">—</div>
       <div id="node-meta"></div>
-      <a id="node-link" href="#" target="_blank">Wikipedia &#8599;</a>
+      <div id="node-sources"></div>
     </div>
 
     <div class="panel" id="track-panel">
@@ -335,7 +336,7 @@
       &#9654; track &#8594; plays inline, graph stays live.<br>
       Drag player anywhere on canvas.<br>
       Click edge to see relationship.<br>
-      Double-click node &#8599; Wikipedia.<br>
+      Double-click node &#8599; opens primary source.<br>
       Green border = has recordings.<br>
       Teal border = matches Bani Flow filter.<br>
       Scroll to zoom &middot; drag to pan.
@@ -350,6 +351,13 @@ const elements = [
       "id": "tyagaraja",
       "label": "Tyagaraja",
       "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "trinity",
       "era_label": "The Trinity",
       "instrument": "vocal",
@@ -371,6 +379,13 @@ const elements = [
       "id": "muthuswami_dikshitar",
       "label": "Muthuswami Dikshitar",
       "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "trinity",
       "era_label": "The Trinity",
       "instrument": "vocal",
@@ -392,6 +407,13 @@ const elements = [
       "id": "shyama_shastri",
       "label": "Shyama Shastri",
       "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "trinity",
       "era_label": "The Trinity",
       "instrument": "vocal",
@@ -413,6 +435,13 @@ const elements = [
       "id": "vina_dhanammal",
       "label": "Vina Dhanammal",
       "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "veena",
@@ -442,6 +471,13 @@ const elements = [
       "id": "patnam_subramanya_iyer",
       "label": "Patnam Subramanya Iyer",
       "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -463,6 +499,13 @@ const elements = [
       "id": "maha_vaidyanatha_sivan",
       "label": "Maha Vaidyanatha Sivan",
       "url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -484,6 +527,13 @@ const elements = [
       "id": "t_brinda",
       "label": "T. Brinda",
       "url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Brinda",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "golden_age",
       "era_label": "Golden Age",
       "instrument": "vocal",
@@ -505,6 +555,13 @@ const elements = [
       "id": "ariyakudi_ramanuja_iyengar",
       "label": "Ariyakudi Ramanuja Iyengar",
       "url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "golden_age",
       "era_label": "Golden Age",
       "instrument": "vocal",
@@ -526,6 +583,13 @@ const elements = [
       "id": "madurai_mani_iyer",
       "label": "Madurai Mani Iyer",
       "url": "https://en.wikipedia.org/wiki/Madurai_Mani_Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Madurai_Mani_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "golden_age",
       "era_label": "Golden Age",
       "instrument": "vocal",
@@ -555,6 +619,13 @@ const elements = [
       "id": "gnb",
       "label": "GN Balasubramaniam",
       "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "golden_age",
       "era_label": "Golden Age",
       "instrument": "vocal",
@@ -584,6 +655,13 @@ const elements = [
       "id": "semmangudi_srinivasa_iyer",
       "label": "Semmangudi Srinivasa Iyer",
       "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "golden_age",
       "era_label": "Golden Age",
       "instrument": "vocal",
@@ -627,6 +705,13 @@ const elements = [
       "id": "musiri_subramania_iyer",
       "label": "Musiri Subramania Iyer",
       "url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "golden_age",
       "era_label": "Golden Age",
       "instrument": "vocal",
@@ -648,6 +733,13 @@ const elements = [
       "id": "ms_subbulakshmi",
       "label": "MS Subbulakshmi",
       "url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "vocal",
@@ -677,6 +769,18 @@ const elements = [
       "id": "ramnad_krishnan",
       "label": "Ramnad Krishnan",
       "url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        },
+        {
+          "url": "https://dhvaniohio.org/wp-content/uploads/2012/06/Ramnad_Krishnan.pdf",
+          "label": "Dhvani Ohio — biography",
+          "type": "pdf"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "vocal",
@@ -713,6 +817,13 @@ const elements = [
       "id": "ml_vasanthakumari",
       "label": "ML Vasanthakumari",
       "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "vocal",
@@ -734,6 +845,13 @@ const elements = [
       "id": "dk_pattammal",
       "label": "DK Pattammal",
       "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "vocal",
@@ -763,6 +881,13 @@ const elements = [
       "id": "lalgudi_jayaraman",
       "label": "Lalgudi Jayaraman",
       "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "violin",
@@ -784,6 +909,13 @@ const elements = [
       "id": "tn_krishnan",
       "label": "TN Krishnan",
       "url": "https://en.wikipedia.org/wiki/T._N._Krishnan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._N._Krishnan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "violin",
@@ -813,6 +945,13 @@ const elements = [
       "id": "t_viswanathan",
       "label": "T. Viswanathan",
       "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "flute",
@@ -842,6 +981,13 @@ const elements = [
       "id": "palghat_mani_iyer",
       "label": "Palghat Mani Iyer",
       "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "mridangam",
@@ -863,6 +1009,13 @@ const elements = [
       "id": "umayalpuram_sivaraman",
       "label": "Umayalpuram Sivaraman",
       "url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "mridangam",
@@ -884,6 +1037,13 @@ const elements = [
       "id": "tm_krishna",
       "label": "TM Krishna",
       "url": "https://en.wikipedia.org/wiki/T._M._Krishna",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._M._Krishna",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "vocal",
@@ -927,6 +1087,13 @@ const elements = [
       "id": "sanjay_subrahmanyan",
       "label": "Sanjay Subrahmanyan",
       "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "vocal",
@@ -956,6 +1123,13 @@ const elements = [
       "id": "bombay_jayashri",
       "label": "Bombay Jayashri",
       "url": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "vocal",
@@ -977,6 +1151,13 @@ const elements = [
       "id": "abhishek_raghuram",
       "label": "Abhishek Raghuram",
       "url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "vocal",
@@ -1006,6 +1187,13 @@ const elements = [
       "id": "md_ramanathan",
       "label": "MD Ramanathan",
       "url": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "vocal",
@@ -1035,6 +1223,13 @@ const elements = [
       "id": "kv_narayanaswamy",
       "label": "KV Narayanaswamy",
       "url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "vocal",
@@ -1064,6 +1259,13 @@ const elements = [
       "id": "muthiah_bhagavatar",
       "label": "Muthiah Bhagavatar",
       "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -1085,6 +1287,13 @@ const elements = [
       "id": "tn_seshagopalan",
       "label": "TN Seshagopalan",
       "url": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "vocal",
@@ -1106,6 +1315,13 @@ const elements = [
       "id": "tr_mahalingam",
       "label": "TR Mahalingam (Mali)",
       "url": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "flute",
@@ -1127,6 +1343,13 @@ const elements = [
       "id": "n_ramani",
       "label": "N. Ramani",
       "url": "https://en.wikipedia.org/wiki/N._Ramani",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/N._Ramani",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "flute",
@@ -1148,6 +1371,13 @@ const elements = [
       "id": "calcutta_ks_krishnamurthi",
       "label": "Calcutta KS Krishnamurthi",
       "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+          "label": "Wikipedia (via Sanjay Subrahmanyan)",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "vocal",
@@ -1169,6 +1399,13 @@ const elements = [
       "id": "t_muktha",
       "label": "T. Muktha",
       "url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Muktha",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "golden_age",
       "era_label": "Golden Age",
       "instrument": "vocal",
@@ -1190,6 +1427,13 @@ const elements = [
       "id": "s_ramanathan",
       "label": "S. Ramanathan",
       "url": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "vocal",
@@ -1211,6 +1455,18 @@ const elements = [
       "id": "s_sowmya",
       "label": "S. Sowmya",
       "url": "https://en.wikipedia.org/wiki/S._Sowmya",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/S._Sowmya",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        },
+        {
+          "url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
+          "label": "Vaak magazine — profile",
+          "type": "article"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "vocal",
@@ -1240,6 +1496,13 @@ const elements = [
       "id": "b_rajam_iyer",
       "label": "B. Rajam Iyer",
       "url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "living_pillars",
       "era_label": "Living Pillars",
       "instrument": "vocal",
@@ -1261,6 +1524,13 @@ const elements = [
       "id": "cs_sankarasivam",
       "label": "C.S. Sankarasivam",
       "url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+          "label": "Wikipedia (via Murugabhoopathy)",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -1282,6 +1552,13 @@ const elements = [
       "id": "aruna_sairam",
       "label": "Aruna Sairam",
       "url": "https://en.wikipedia.org/wiki/Aruna_Sairam",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Aruna_Sairam",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "vocal",
@@ -1303,6 +1580,13 @@ const elements = [
       "id": "subbaraya_sastri",
       "label": "Subbaraya Sastri",
       "url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -1324,6 +1608,13 @@ const elements = [
       "id": "jayammal",
       "label": "Jayammal",
       "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+          "label": "Wikipedia (via Veenai Dhanammal)",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -1345,6 +1636,13 @@ const elements = [
       "id": "kamakshi_dhanammal",
       "label": "Kamakshi (daughter of Dhanammal)",
       "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+          "label": "Wikipedia (via Veenai Dhanammal)",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -1366,6 +1664,13 @@ const elements = [
       "id": "kanchipuram_naina_pillai",
       "label": "Kanchipuram Naina Pillai",
       "url": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "vocal",
@@ -1387,6 +1692,13 @@ const elements = [
       "id": "swaminatha_pillai",
       "label": "Tiruppamparam Swaminatha Pillai",
       "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+          "label": "Wikipedia (via T. Viswanathan)",
+          "type": "wikipedia"
+        }
+      ],
       "era": "bridge",
       "era_label": "The Bridge",
       "instrument": "flute",
@@ -1408,6 +1720,13 @@ const elements = [
       "id": "t_balasaraswati",
       "label": "T. Balasaraswati",
       "url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "disseminator",
       "era_label": "Disseminators",
       "instrument": "bharatanatyam",
@@ -1429,6 +1748,13 @@ const elements = [
       "id": "gjr_krishnan",
       "label": "G.J.R. Krishnan",
       "url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "violin",
@@ -1450,6 +1776,13 @@ const elements = [
       "id": "lalgudi_vijayalakshmi",
       "label": "Lalgudi Vijayalakshmi",
       "url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "violin",
@@ -1471,6 +1804,13 @@ const elements = [
       "id": "a_kanyakumari",
       "label": "A. Kanyakumari",
       "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
       "era": "contemporary",
       "era_label": "Contemporary",
       "instrument": "violin",
@@ -1950,7 +2290,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Nata_(raga)",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Nata_(raga)",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Dheerashankarabharanam (29th melakarta); one of the five Ghana ragas; associated with grandeur and heroism"
   },
   {
@@ -1961,7 +2307,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Gowla",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Gowla",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Kharaharapriya (22nd melakarta); one of the five Ghana ragas; evokes pathos and devotion"
   },
   {
@@ -1972,7 +2324,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Arabhi",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Arabhi",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Dheerashankarabharanam (29th melakarta); one of the five Ghana ragas; majestic and expansive character"
   },
   {
@@ -1981,7 +2339,13 @@ const ragas        = [
     "aliases": [],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Varali",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Varali",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Tanarupi (6th melakarta); one of the five Ghana ragas; considered auspicious yet difficult; associated with Ganesha"
   },
   {
@@ -1992,7 +2356,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Sri_(raga)",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Sri_(raga)",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Kharaharapriya (22nd melakarta); one of the five Ghana ragas; associated with grandeur and devotion; considered the crown raga of the Pancharatna set"
   },
   {
@@ -2004,7 +2374,13 @@ const ragas        = [
     ],
     "melakarta": 8,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Todi_(Carnatic_raga)",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Todi_(Carnatic_raga)",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "8th melakarta; one of the most expansive ragas in the Carnatic canon; evokes pathos, longing, and deep introspection; a favourite for extended alapana"
   },
   {
@@ -2015,7 +2391,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Bhairavi_(Carnatic_raga)",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Bhairavi_(Carnatic_raga)",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Natabhairavi (20th melakarta); distinct from Sindhu Bhairavi; evokes pathos and devotion; traditionally used to close concerts"
   },
   {
@@ -2026,7 +2408,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Sindhu_Bhairavi",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Sindhu_Bhairavi",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Distinct from Bhairavi; janya of Natabhairavi (20th melakarta); popularised in the 20th century; lighter emotional register than Bhairavi; widely used in film music"
   },
   {
@@ -2037,7 +2425,13 @@ const ragas        = [
     ],
     "melakarta": 65,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Kalyani_(raga)",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Kalyani_(raga)",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "65th melakarta (Mechakalyani); all sharp notes except natural Sa and Pa; associated with brightness, auspiciousness, and devotion"
   },
   {
@@ -2048,7 +2442,13 @@ const ragas        = [
     ],
     "melakarta": 29,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Shankarabharanam",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Shankarabharanam",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "29th melakarta; equivalent to the Western major scale; considered the most complete and balanced raga; parent of Nata and Arabhi"
   },
   {
@@ -2059,7 +2459,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Kambhoji",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Kambhoji",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Harikambhoji (28th melakarta); one of the most popular ragas; associated with bhakti and grandeur; a staple of the concert repertoire"
   },
   {
@@ -2070,7 +2476,13 @@ const ragas        = [
     ],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Begada",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Begada",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Harikambhoji (28th melakarta); associated with devotion and serenity; a favourite of the Tyagaraja school"
   },
   {
@@ -2079,7 +2491,13 @@ const ragas        = [
     "aliases": [],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Saveri",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Saveri",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Dheerashankarabharanam (29th melakarta); evokes pathos and longing; associated with morning hours"
   },
   {
@@ -2088,7 +2506,13 @@ const ragas        = [
     "aliases": [],
     "melakarta": null,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Kedaram",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Kedaram",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Harikambhoji (28th melakarta); associated with devotion and grandeur; a favourite for kritis in the Tyagaraja corpus"
   },
   {
@@ -2097,7 +2521,13 @@ const ragas        = [
     "aliases": [],
     "melakarta": 20,
     "parent_raga": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Natabhairavi",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Natabhairavi",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours"
   },
   {
@@ -2106,8 +2536,14 @@ const ragas        = [
     "aliases": [],
     "melakarta": null,
     "parent_raga": "harikambhoji",
-    "wikipedia": null,
-    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada. Source: https://sujamusic.wordpress.com/ravichandrika/"
+    "sources": [
+      {
+        "url": "https://sujamusic.wordpress.com/ravichandrika/",
+        "label": "Suja Music — Ravichandrika scale and kritis",
+        "type": "article"
+      }
+    ],
+    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada"
   },
   {
     "id": "surutti",
@@ -2115,7 +2551,13 @@ const ragas        = [
     "aliases": [],
     "melakarta": null,
     "parent_raga": "harikambhoji",
-    "wikipedia": "https://en.wikipedia.org/wiki/Surutti",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Surutti",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Janya of Harikambhoji (28th melakarta); bhāshāṅga vakra raga (Subbarama Dikshitar classification); ārohana S R₂ M₁ P N₂ D₂ N₂ Ṡ, avarohana Ṡ N₂ D₂ P M₁ G₃ P M₁ R₂ S; equivalent to Mixolydian mode; evokes devotion and pathos; a favourite raga of the Tyagaraja school"
   }
 ];
@@ -2126,7 +2568,13 @@ const composers    = [
     "musician_node_id": "tyagaraja",
     "born": 1767,
     "died": 1847,
-    "wikipedia": "https://en.wikipedia.org/wiki/Tyagaraja"
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
   },
   {
     "id": "muthuswami_dikshitar",
@@ -2134,7 +2582,13 @@ const composers    = [
     "musician_node_id": "muthuswami_dikshitar",
     "born": 1775,
     "died": 1835,
-    "wikipedia": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar"
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
   },
   {
     "id": "shyama_shastri",
@@ -2142,7 +2596,13 @@ const composers    = [
     "musician_node_id": "shyama_shastri",
     "born": 1762,
     "died": 1827,
-    "wikipedia": "https://en.wikipedia.org/wiki/Shyama_Shastri"
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
   }
 ];
 const compositions = [
@@ -2153,7 +2613,13 @@ const compositions = [
     "raga_id": "nata",
     "tala": "adi",
     "language": "telugu",
-    "wikipedia": "https://en.wikipedia.org/wiki/Jagadananda_Karaka",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Jagadananda_Karaka",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Pancharatna kriti; opens the Pancharatna set; a paean to Rama in the majestic Ghana raga Nata"
   },
   {
@@ -2163,7 +2629,13 @@ const compositions = [
     "raga_id": "gowla",
     "tala": "adi",
     "language": "telugu",
-    "wikipedia": "https://en.wikipedia.org/wiki/Dudukugala",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Dudukugala",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Pancharatna kriti; a self-critical composition in the pathos-laden Ghana raga Gowla"
   },
   {
@@ -2173,7 +2645,13 @@ const compositions = [
     "raga_id": "arabhi",
     "tala": "adi",
     "language": "telugu",
-    "wikipedia": "https://en.wikipedia.org/wiki/Sadhinchane",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Sadhinchane",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Pancharatna kriti; a devotional composition in the majestic Ghana raga Arabhi"
   },
   {
@@ -2183,7 +2661,13 @@ const compositions = [
     "raga_id": "varali",
     "tala": "adi",
     "language": "telugu",
-    "wikipedia": "https://en.wikipedia.org/wiki/Kana_Kana_Ruchira",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Kana_Kana_Ruchira",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Pancharatna kriti; set in the auspicious and technically demanding Ghana raga Varali"
   },
   {
@@ -2193,7 +2677,13 @@ const compositions = [
     "raga_id": "sri",
     "tala": "adi",
     "language": "telugu",
-    "wikipedia": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
     "notes": "Pancharatna kriti; considered the crown jewel of the Tyagaraja corpus; a salutation to all great souls; traditionally sung last in the Pancharatna set"
   },
   {
@@ -2203,8 +2693,14 @@ const compositions = [
     "raga_id": "ravichandrika",
     "tala": "deshadi",
     "language": "telugu",
-    "wikipedia": null,
-    "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire. Notation source: http://www.shivkumar.org/music/maakelara.ram"
+    "sources": [
+      {
+        "url": "http://www.shivkumar.org/music/maakelara.ram",
+        "label": "Shivkumar.org — notation",
+        "type": "archive"
+      }
+    ],
+    "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire"
   },
   {
     "id": "gitarthamu",
@@ -2213,8 +2709,19 @@ const compositions = [
     "raga_id": "surutti",
     "tala": "adi",
     "language": "telugu",
-    "wikipedia": null,
-    "notes": "Tyagaraja kriti in Surutti; a meditation on the meaning of the Gita. Notation sources: https://www.karnatik.com/c2341.shtml ; http://www.shivkumar.org/music/gitarthamu.ram"
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/c2341.shtml",
+        "label": "Karnatik.com — notation",
+        "type": "archive"
+      },
+      {
+        "url": "http://www.shivkumar.org/music/gitarthamu.ram",
+        "label": "Shivkumar.org — notation",
+        "type": "archive"
+      }
+    ],
+    "notes": "Tyagaraja kriti in Surutti; a meditation on the meaning of the Gita"
   }
 ];
 const compositionToNodes = {
@@ -2481,8 +2988,16 @@ cy.on('tap', 'node', evt => {
     `<div>${d.lifespan || ''}</div>` +
     `<div style="color:var(--gray)">${d.era_label}</div>` +
     `<div>${d.instrument} · ${d.bani || ''}</div>`;
-  const lnk = document.getElementById('node-link');
-  lnk.href = d.url; lnk.style.display = d.url ? 'inline-block' : 'none';
+  const srcDiv = document.getElementById('node-sources');
+  if (d.sources && d.sources.length > 0) {
+    srcDiv.style.display = 'block';
+    srcDiv.innerHTML = d.sources.map(s =>
+      `<a class="node-src-link" href="${s.url}" target="_blank">${s.label} &#8599;</a>`
+    ).join('');
+  } else {
+    srcDiv.style.display = 'none';
+    srcDiv.innerHTML = '';
+  }
 
   document.getElementById('node-info').style.display  = 'block';
   document.getElementById('edge-info').style.display  = 'none';
