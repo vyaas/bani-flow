@@ -113,7 +113,12 @@
       "era": "golden_age",
       "instrument": "vocal",
       "bani": "gnb",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/_gVQnHRh1IQ",
+          "label": "All India Radio · 27 Nov 1960 — 60th Remembrance Day Special"
+        }
+      ]
     },
     {
       "id": "semmangudi_srinivasa_iyer",
