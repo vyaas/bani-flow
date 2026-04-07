@@ -1,0 +1,594 @@
+{
+  "nodes": [
+    {
+      "id": "tyagaraja",
+      "label": "Tyagaraja",
+      "wikipedia": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "born": 1767,
+      "died": 1847,
+      "era": "trinity",
+      "instrument": "vocal",
+      "bani": "tyagaraja",
+      "youtube": []
+    },
+    {
+      "id": "muthuswami_dikshitar",
+      "label": "Muthuswami Dikshitar",
+      "wikipedia": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "born": 1775,
+      "died": 1835,
+      "era": "trinity",
+      "instrument": "vocal",
+      "bani": "dikshitar",
+      "youtube": []
+    },
+    {
+      "id": "shyama_shastri",
+      "label": "Shyama Shastri",
+      "wikipedia": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+      "born": 1762,
+      "died": 1827,
+      "era": "trinity",
+      "instrument": "vocal",
+      "bani": "shyama_shastri",
+      "youtube": []
+    },
+    {
+      "id": "vina_dhanammal",
+      "label": "Vina Dhanammal",
+      "wikipedia": "https://en.wikipedia.org/wiki/Vina_Dhanammal",
+      "born": 1867,
+      "died": 1938,
+      "era": "bridge",
+      "instrument": "veena",
+      "bani": "dhanammal",
+      "youtube": []
+    },
+    {
+      "id": "patnam_subramanya_iyer",
+      "label": "Patnam Subramanya Iyer",
+      "wikipedia": "https://en.wikipedia.org/wiki/Patnam_Subramanya_Iyer",
+      "born": 1845,
+      "died": 1902,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "tyagaraja",
+      "youtube": []
+    },
+    {
+      "id": "maha_vaidyanatha_sivan",
+      "label": "Maha Vaidyanatha Sivan",
+      "wikipedia": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Sivan",
+      "born": 1844,
+      "died": 1893,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": []
+    },
+    {
+      "id": "t_brinda",
+      "label": "T. Brinda",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._Brinda",
+      "born": 1912,
+      "died": 1996,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "dhanammal",
+      "youtube": []
+    },
+    {
+      "id": "ariyakudi_ramanuja_iyengar",
+      "label": "Ariyakudi Ramanuja Iyengar",
+      "wikipedia": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar",
+      "born": 1890,
+      "died": 1967,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "ariyakudi",
+      "youtube": []
+    },
+    {
+      "id": "madurai_mani_iyer",
+      "label": "Madurai Mani Iyer",
+      "wikipedia": "https://en.wikipedia.org/wiki/Madurai_Mani_Iyer",
+      "born": 1912,
+      "died": 1968,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "madurai",
+      "youtube": []
+    },
+    {
+      "id": "gnb",
+      "label": "GN Balasubramaniam",
+      "wikipedia": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+      "born": 1910,
+      "died": 1965,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "gnb",
+      "youtube": []
+    },
+    {
+      "id": "semmangudi_srinivasa_iyer",
+      "label": "Semmangudi Srinivasa Iyer",
+      "wikipedia": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+      "born": 1908,
+      "died": 2003,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "semmangudi",
+      "youtube": []
+    },
+    {
+      "id": "musiri_subramania_iyer",
+      "label": "Musiri Subramania Iyer",
+      "wikipedia": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+      "born": 1899,
+      "died": 1975,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "tyagaraja",
+      "youtube": []
+    },
+    {
+      "id": "ms_subbulakshmi",
+      "label": "MS Subbulakshmi",
+      "wikipedia": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+      "born": 1916,
+      "died": 2004,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "dhanammal",
+      "youtube": []
+    },
+    {
+      "id": "ramnad_krishnan",
+      "label": "Ramnad Krishnan",
+      "wikipedia": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+      "born": 1918,
+      "died": 1973,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "semmangudi",
+      "youtube": [
+        {
+          "url": "https://youtu.be/AnNb0zRmauM",
+          "label": "Wesleyan University, 1967 — with T. Viswanathan"
+        }
+      ]
+    },
+    {
+      "id": "ml_vasanthakumari",
+      "label": "ML Vasanthakumari",
+      "wikipedia": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+      "born": 1928,
+      "died": 1990,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "gnb",
+      "youtube": []
+    },
+    {
+      "id": "dk_pattammal",
+      "label": "DK Pattammal",
+      "wikipedia": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+      "born": 1919,
+      "died": 2009,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": []
+    },
+    {
+      "id": "lalgudi_jayaraman",
+      "label": "Lalgudi Jayaraman",
+      "wikipedia": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+      "born": 1930,
+      "died": 2013,
+      "era": "disseminator",
+      "instrument": "violin",
+      "bani": "lalgudi",
+      "youtube": []
+    },
+    {
+      "id": "tn_krishnan",
+      "label": "TN Krishnan",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._N._Krishnan",
+      "born": 1928,
+      "died": 2023,
+      "era": "living_pillars",
+      "instrument": "violin",
+      "bani": "semmangudi",
+      "youtube": []
+    },
+    {
+      "id": "t_viswanathan",
+      "label": "T. Viswanathan",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "born": 1927,
+      "died": 2002,
+      "era": "living_pillars",
+      "instrument": "flute",
+      "bani": "dhanammal",
+      "youtube": [
+        {
+          "url": "https://youtu.be/AnNb0zRmauM",
+          "label": "Wesleyan University, 1967 — with Ramnad Krishnan"
+        }
+      ]
+    },
+    {
+      "id": "palghat_mani_iyer",
+      "label": "Palghat Mani Iyer",
+      "wikipedia": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+      "born": 1912,
+      "died": 1981,
+      "era": "living_pillars",
+      "instrument": "mridangam",
+      "bani": "palghat",
+      "youtube": []
+    },
+    {
+      "id": "umayalpuram_sivaraman",
+      "label": "Umayalpuram Sivaraman",
+      "wikipedia": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
+      "born": 1935,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "mridangam",
+      "bani": "palghat",
+      "youtube": []
+    },
+    {
+      "id": "tm_krishna",
+      "label": "TM Krishna",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._M._Krishna",
+      "born": 1976,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "semmangudi",
+      "youtube": []
+    },
+    {
+      "id": "sanjay_subrahmanyan",
+      "label": "Sanjay Subrahmanyan",
+      "wikipedia": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "born": 1968,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "semmangudi",
+      "youtube": []
+    },
+    {
+      "id": "bombay_jayashri",
+      "label": "Bombay Jayashri",
+      "wikipedia": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
+      "born": 1964,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "lalgudi",
+      "youtube": []
+    },
+    {
+      "id": "abhishek_raghuram",
+      "label": "Abhishek Raghuram",
+      "wikipedia": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
+      "born": 1984,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": [
+        {
+          "url": "https://youtu.be/lNSJJMWLtfc",
+          "label": "Natabhairavi · Adi"
+        }
+      ]
+    },
+    {
+      "id": "muthiah_bhagavatar",
+      "label": "Muthiah Bhagavatar",
+      "wikipedia": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "born": 1877,
+      "died": 1945,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "muthiah",
+      "youtube": []
+    },
+    {
+      "id": "tn_seshagopalan",
+      "label": "TN Seshagopalan",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+      "born": 1948,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "muthiah",
+      "youtube": []
+    },
+    {
+      "id": "tr_mahalingam",
+      "label": "TR Mahalingam (Mali)",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+      "born": 1926,
+      "died": 1986,
+      "era": "disseminator",
+      "instrument": "flute",
+      "bani": "mali",
+      "youtube": []
+    },
+    {
+      "id": "n_ramani",
+      "label": "N. Ramani",
+      "wikipedia": "https://en.wikipedia.org/wiki/N._Ramani",
+      "born": 1934,
+      "died": 2019,
+      "era": "living_pillars",
+      "instrument": "flute",
+      "bani": "mali",
+      "youtube": []
+    },
+    {
+      "id": "calcutta_ks_krishnamurthi",
+      "label": "Calcutta KS Krishnamurthi",
+      "wikipedia": "https://en.wikipedia.org/wiki/Calcutta_K._S._Krishnamurthy",
+      "born": null,
+      "died": 1999,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": []
+    },
+    {
+      "id": "t_muktha",
+      "label": "T. Muktha",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._Muktha",
+      "born": 1909,
+      "died": 1999,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "dhanammal",
+      "youtube": []
+    },
+    {
+      "id": "s_ramanathan",
+      "label": "S. Ramanathan",
+      "wikipedia": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
+      "born": 1917,
+      "died": 1988,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": []
+    },
+    {
+      "id": "s_sowmya",
+      "label": "S. Sowmya",
+      "wikipedia": "https://en.wikipedia.org/wiki/S._Sowmya",
+      "born": 1969,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": []
+    },
+    {
+      "id": "b_rajam_iyer",
+      "label": "B. Rajam Iyer",
+      "wikipedia": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+      "born": 1922,
+      "died": 2009,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "ariyakudi",
+      "youtube": []
+    },
+    {
+      "id": "cs_sankarasivam",
+      "label": "C.S. Sankarasivam",
+      "wikipedia": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Sankarasivan",
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "muthiah",
+      "youtube": []
+    },
+    {
+      "id": "aruna_sairam",
+      "label": "Aruna Sairam",
+      "wikipedia": "https://en.wikipedia.org/wiki/Aruna_Sairam",
+      "born": 1952,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "dhanammal",
+      "youtube": []
+    }
+  ],
+  "edges": [
+    {
+      "source": "tyagaraja",
+      "target": "patnam_subramanya_iyer",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Patnam_Subramanya_Iyer"
+    },
+    {
+      "source": "patnam_subramanya_iyer",
+      "target": "ariyakudi_ramanuja_iyengar",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar"
+    },
+    {
+      "source": "patnam_subramanya_iyer",
+      "target": "musiri_subramania_iyer",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "t_brinda",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "ms_subbulakshmi",
+      "confidence": 0.85,
+      "source_url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "t_viswanathan",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan"
+    },
+    {
+      "source": "semmangudi_srinivasa_iyer",
+      "target": "ms_subbulakshmi",
+      "confidence": 0.85,
+      "source_url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+      "note": "second guru"
+    },
+    {
+      "source": "semmangudi_srinivasa_iyer",
+      "target": "tn_krishnan",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._N._Krishnan"
+    },
+    {
+      "source": "semmangudi_srinivasa_iyer",
+      "target": "tm_krishna",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._M._Krishna"
+    },
+    {
+      "source": "gnb",
+      "target": "ml_vasanthakumari",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari"
+    },
+    {
+      "source": "lalgudi_jayaraman",
+      "target": "bombay_jayashri",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Bombay_Jayashri"
+    },
+    {
+      "source": "palghat_mani_iyer",
+      "target": "umayalpuram_sivaraman",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman"
+    },
+    {
+      "source": "muthiah_bhagavatar",
+      "target": "madurai_mani_iyer",
+      "confidence": 0.98,
+      "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "note": "most famous disciple per Wikipedia"
+    },
+    {
+      "source": "muthiah_bhagavatar",
+      "target": "ms_subbulakshmi",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "note": "first guru"
+    },
+    {
+      "source": "tr_mahalingam",
+      "target": "n_ramani",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+      "note": "sister's son and primary disciple; carried Mali style forward"
+    },
+    {
+      "source": "calcutta_ks_krishnamurthi",
+      "target": "sanjay_subrahmanyan",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "note": "principal guru 1989–1999; shaped Sanjay's mature style"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "t_muktha",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "note": "granddaughter via Jayammal; Dhanammal bani custodian alongside T. Brinda"
+    },
+    {
+      "source": "t_muktha",
+      "target": "s_sowmya",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/S._Sowmya"
+    },
+    {
+      "source": "s_ramanathan",
+      "target": "s_sowmya",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/S._Sowmya",
+      "note": "co-teacher with T. Muktha"
+    },
+    {
+      "source": "ariyakudi_ramanuja_iyengar",
+      "target": "b_rajam_iyer",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+      "note": "gurukula training, ~10 years; leading disciple"
+    },
+    {
+      "source": "muthiah_bhagavatar",
+      "target": "cs_sankarasivam",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+      "note": "disciple of Muthiah Bhagavatar"
+    },
+    {
+      "source": "cs_sankarasivam",
+      "target": "ramnad_krishnan",
+      "confidence": 0.98,
+      "source_url": "https://dhvaniohio.org/wp-content/uploads/2012/06/Ramnad_Krishnan.pdf",
+      "note": "first guru; Muthiah Bhagavatar lineage stream"
+    },
+    {
+      "source": "t_brinda",
+      "target": "ramnad_krishnan",
+      "confidence": 0.98,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "principal guru; Dhanammal bani stream — padams, javalis, gamaka vocabulary"
+    },
+    {
+      "source": "cs_sankarasivam",
+      "target": "tn_seshagopalan",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+      "note": "via Ramanathapuram C.S. Sankarasivan"
+    },
+    {
+      "source": "t_brinda",
+      "target": "semmangudi_srinivasa_iyer",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "Semmangudi learnt from Brinda — Dhanammal stream feeding into his style"
+    },
+    {
+      "source": "t_brinda",
+      "target": "aruna_sairam",
+      "confidence": 0.92,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "full-time student"
+    },
+    {
+      "source": "ramnad_krishnan",
+      "target": "aruna_sairam",
+      "confidence": 0.8,
+      "source_url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
+      "note": "also studied under Ramnad Krishnan"
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+#!/usr/bin/env python3
+"""
+crawl.py — Wikipedia guru-shishya parampara crawler
+Fetches infobox teacher/student fields + prose mentions.
+Respects cache. Updates musicians.json non-destructively.
+"""
+
+import json
+import re
+import time
+import hashlib
+from pathlib import Path
+from typing import Optional
+from dataclasses import dataclass, field, asdict
+
+import requests
+from bs4 import BeautifulSoup
+
+# ── paths ──────────────────────────────────────────────────────────────────────
+ROOT        = Path(__file__).parent
+DATA_FILE   = ROOT / "data" / "musicians.json"
+CACHE_DIR   = ROOT / "data" / "cache"
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+HEADERS = {"User-Agent": "CarnaticLineageBot/1.0 (research; contact via github)"}
+CRAWL_DELAY = 1.5  # seconds between requests — be a good citizen
+
+# ── data model ─────────────────────────────────────────────────────────────────
+@dataclass
+class Edge:
+    source: str
+    target: str
+    confidence: float
+    source_url: str
+
+    def key(self) -> str:
+        return f"{self.source}→{self.target}"
+
+# ── cache ──────────────────────────────────────────────────────────────────────
+def cache_path(url: str) -> Path:
+    slug = hashlib.md5(url.encode()).hexdigest()
+    return CACHE_DIR / f"{slug}.html"
+
+def fetch_page(url: str, force: bool = False) -> Optional[str]:
+    cp = cache_path(url)
+    if cp.exists() and not force:
+        return cp.read_text(encoding="utf-8")
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.raise_for_status()
+        cp.write_text(resp.text, encoding="utf-8")
+        time.sleep(CRAWL_DELAY)
+        return resp.text
+    except Exception as e:
+        print(f"  [WARN] fetch failed for {url}: {e}")
+        return None
+
+# ── extraction ─────────────────────────────────────────────────────────────────
+def slug_from_url(url: str) -> str:
+    """wikipedia URL → clean slug for matching against node ids"""
+    name = url.rstrip("/").split("/")[-1]
+    return name.replace("_", " ").lower()
+
+def extract_infobox_relations(soup: BeautifulSoup, page_url: str) -> list[Edge]:
+    """Pull teacher/student rows from Wikipedia infobox."""
+    edges: list[Edge] = []
+    infobox = soup.find("table", class_=re.compile(r"infobox"))
+    if not infobox:
+        return edges
+
+    for row in infobox.find_all("tr"):
+        header = row.find("th")
+        if not header:
+            continue
+        header_text = header.get_text(strip=True).lower()
+
+        is_teacher = any(k in header_text for k in ["teacher", "guru", "trained"])
+        is_student = any(k in header_text for k in ["student", "disciple", "shishya"])
+
+        if not (is_teacher or is_student):
+            continue
+
+        td = row.find("td")
+        if not td:
+            continue
+
+        for link in td.find_all("a", href=True):
+            href = link["href"]
+            if not href.startswith("/wiki/") or ":" in href:
+                continue
+            target_url = "https://en.wikipedia.org" + href
+            target_slug = slug_from_url(target_url)
+            page_slug = slug_from_url(page_url)
+
+            if is_teacher:
+                # link is the teacher, page subject is the student
+                edges.append(Edge(
+                    source=target_slug,
+                    target=page_slug,
+                    confidence=0.90,
+                    source_url=page_url
+                ))
+            else:
+                # link is the student, page subject is the teacher
+                edges.append(Edge(
+                    source=page_slug,
+                    target=target_slug,
+                    confidence=0.90,
+                    source_url=page_url
+                ))
+
+    return edges
+
+def extract_prose_relations(soup: BeautifulSoup, page_url: str) -> list[Edge]:
+    """Scan prose for 'disciple of', 'trained under', 'student of' patterns."""
+    edges: list[Edge] = []
+    page_slug = slug_from_url(page_url)
+
+    patterns = [
+        r"disciple of",
+        r"student of",
+        r"trained under",
+        r"learnt? (from|under)",
+        r"taught by",
+        r"guru (?:was|is)",
+    ]
+    combined = re.compile("|".join(patterns), re.IGNORECASE)
+
+    for para in soup.find_all("p"):
+        text = para.get_text()
+        if not combined.search(text):
+            continue
+        for link in para.find_all("a", href=True):
+            href = link["href"]
+            if not href.startswith("/wiki/") or ":" in href:
+                continue
+            target_url = "https://en.wikipedia.org" + href
+            target_slug = slug_from_url(target_url)
+            if target_slug == page_slug:
+                continue
+            edges.append(Edge(
+                source=target_slug,
+                target=page_slug,
+                confidence=0.70,  # prose is less reliable
+                source_url=page_url
+            ))
+
+    return edges
+
+# ── graph merge ────────────────────────────────────────────────────────────────
+def load_graph() -> dict:
+    return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+
+def save_graph(graph: dict) -> None:
+    DATA_FILE.write_text(json.dumps(graph, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"  [SAVED] {DATA_FILE}")
+
+def node_ids(graph: dict) -> set[str]:
+    return {n["id"] for n in graph["nodes"]}
+
+def name_to_id(name: str) -> str:
+    """Normalise a display name or Wikipedia slug to our id format."""
+    return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
+
+def match_slug_to_node(slug: str, graph: dict) -> Optional[str]:
+    """Try to match a wikipedia slug to an existing node id."""
+    nids = node_ids(graph)
+    # direct id match
+    candidate = name_to_id(slug)
+    if candidate in nids:
+        return candidate
+    # label match
+    slug_lower = slug.lower()
+    for node in graph["nodes"]:
+        if node["label"].lower() == slug_lower:
+            return node["id"]
+    return None
+
+def merge_edges(graph: dict, new_edges: list[Edge]) -> int:
+    """Add edges whose source+target both resolve to known nodes. Return count added."""
+    existing_keys = {(e["source"], e["target"]) for e in graph["edges"]}
+    added = 0
+    for e in new_edges:
+        src_id = match_slug_to_node(e.source, graph)
+        tgt_id = match_slug_to_node(e.target, graph)
+        if not src_id or not tgt_id:
+            continue
+        if src_id == tgt_id:
+            continue
+        key = (src_id, tgt_id)
+        if key in existing_keys:
+            continue
+        graph["edges"].append({
+            "source": src_id,
+            "target": tgt_id,
+            "confidence": e.confidence,
+            "source_url": e.source_url
+        })
+        existing_keys.add(key)
+        added += 1
+        print(f"  [EDGE+] {src_id} → {tgt_id}  (conf={e.confidence:.2f})")
+    return added
+
+# ── main crawl loop ────────────────────────────────────────────────────────────
+def crawl_node(node: dict, graph: dict, force: bool = False) -> int:
+    url = node.get("wikipedia")
+    if not url:
+        return 0
+    print(f"[CRAWL] {node['label']}  {url}")
+    html = fetch_page(url, force=force)
+    if not html:
+        return 0
+    soup = BeautifulSoup(html, "html.parser")
+    edges: list[Edge] = []
+    edges += extract_infobox_relations(soup, url)
+    edges += extract_prose_relations(soup, url)
+    print(f"  found {len(edges)} candidate relations")
+    return merge_edges(graph, edges)
+
+def main(force: bool = False) -> None:
+    graph = load_graph()
+    total_added = 0
+    for node in graph["nodes"]:
+        added = crawl_node(node, graph, force=force)
+        total_added += added
+    save_graph(graph)
+    print(f"\n[DONE] {total_added} new edges added across {len(graph['nodes'])} nodes")
+
+if __name__ == "__main__":
+    import sys
+    force_refetch = "--force" in sys.argv
+    main(force=force_refetch)

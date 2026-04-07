@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+.installed.cfg
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ruff
+.ruff_cache/
+
+# Wikipedia page cache — large, reproducible, not worth tracking
+carnatic/data/cache/
+
+# graph.html is a derived artefact; track it so the repo is self-contained
+# (comment out the line below if you prefer not to commit it)
+# carnatic/graph.html

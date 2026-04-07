@@ -1,0 +1,54 @@
+# Carnatic Guru-Shishya Knowledge Graph — Roo Session Rules
+
+## Project layout
+```
+carnatic/
+  data/musicians.json   ← canonical source of truth (nodes + edges + recordings)
+  render.py             ← regenerates graph.html from musicians.json
+  crawl.py              ← Wikipedia scraper (uses disk cache in data/cache/)
+  serve.py              ← zero-dep local server, opens http://localhost:8765/graph.html
+  graph.html            ← derived artefact — NEVER hand-edit
+```
+
+## Session startup
+Read `data/musicians.json` before doing anything. That is the current state.
+
+## Core workflow
+1. User drops a Wikipedia URL, YouTube link+title, or verbal correction
+2. Agent patches `musicians.json` (load → modify → check duplicates → save)
+3. Run `python3 render.py` — confirm node/edge counts change as expected
+4. Run `python3 serve.py` to visualise (or remind user to refresh if already running)
+
+## Patching rules
+- **Never edit `graph.html` by hand**
+- Patch via Python: load JSON, modify in memory, save — never string-patch the file
+- Log every change: `[NODE+]`, `[EDGE+]`, `[EDGE-]`, `[EDGE~]`
+- Check for duplicate `id` (nodes) and `(source, target)` pair (edges) before appending
+
+## Adding a musician
+1. Fetch Wikipedia page; extract infobox `teacher`/`students` + prose lineage patterns
+2. Check all existing `label` fields for name variant collisions before creating a node
+3. Significance filter: Sangeetha Kalanidhi recipient, or necessary topological link
+4. Use `note` to qualify: `"first guru"`, `"principal guru"`, `"gurukula training, N years"`
+5. **Do not infer edges from shared bani** — require explicit lineage statement
+
+## Adding YouTube recordings
+- Links **must be annotated** with the video title (URL alone is not enough)
+- Parse title → identify artist(s) → match to existing node `label`
+- Extract 11-char video ID; append `{url, label}` to node's `youtube` array
+- A recording can belong to multiple nodes (duets etc.)
+- Flag unmatched artists — do not silently drop or create unevaluated nodes
+
+## Data model quick reference
+**Node:** `id` (snake_case, never rename), `label`, `wikipedia`, `born`, `died`, `era`, `instrument`, `bani`, `youtube[]`
+**Edge:** `source` (guru id), `target` (shishya id), `confidence` (0–1), `source_url`, `note`
+**Era values:** `trinity` · `bridge` · `golden_age` · `disseminator` · `living_pillars` · `contemporary`
+**Instrument values:** `vocal` · `veena` · `violin` · `flute` · `mridangam` (add new freely)
+**Confidence:** 0.95–1.0 explicit · 0.85–0.94 cross-confirmed · 0.70–0.84 single source · <0.70 speculative (must have `note`)
+
+## Server
+```bash
+python3 carnatic/serve.py        # http://localhost:8765/graph.html
+python3 carnatic/serve.py 9000   # custom port
+```
+YouTube embeds require localhost — never open graph.html as a file:// URL.
