@@ -183,23 +183,51 @@
     border-radius: 0 0 4px 4px; opacity: 0.6;
   }
   #mp-resize:hover { opacity: 1; background: var(--bg3); }
+
+  /* ── timeline ruler ── */
+  #timeline-ruler .tick-line {
+    stroke: #504945; stroke-width: 1px;
+  }
+  #timeline-ruler .tick-line.century {
+    stroke: #665c54; stroke-width: 1.5px;
+  }
+  #timeline-ruler .tick-label {
+    fill: #a89984; font-family: 'Courier New', monospace;
+    font-size: 11px; text-anchor: middle; dominant-baseline: hanging;
+  }
+  #timeline-ruler .tick-label.century {
+    fill: #d5c4a1; font-size: 13px; font-weight: bold;
+  }
+  #timeline-ruler .era-band {
+    fill: none; stroke: none;
+  }
+  #timeline-ruler .era-label {
+    fill: #665c54; font-family: 'Courier New', monospace;
+    font-size: 10px; dominant-baseline: middle;
+  }
+  #btn-layout.active {
+    background: var(--bg3); color: var(--yellow);
+    border-color: var(--yellow);
+  }
 </style>
 </head>
 <body>
 
 <header>
   <h1>Carnatic · Guru-Shishya Parampara</h1>
-  <span class="stats">42 musicians · 39 lineage edges</span>
+  <span class="stats">45 musicians · 41 lineage edges</span>
   <div class="controls">
     <button onclick="cy.fit()">Fit</button>
     <button onclick="cy.reset()">Reset</button>
     <button onclick="relayout()">Relayout</button>
     <button onclick="toggleLabels()">Labels</button>
+    <button id="btn-layout" onclick="toggleLayout()">Timeline</button>
   </div>
 </header>
 
 <div id="main">
   <div id="cy"></div>
+  <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
 
   <!-- ── floating media player ── -->
   <div id="media-player">
@@ -277,6 +305,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "tyagaraja",
       "lifespan": "1767–1847",
+      "born": 1767,
       "color": "#d79921",
       "shape": "ellipse",
       "size": 84,
@@ -297,6 +326,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "dikshitar",
       "lifespan": "1775–1835",
+      "born": 1775,
       "color": "#d79921",
       "shape": "ellipse",
       "size": 80,
@@ -317,6 +347,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "shyama_shastri",
       "lifespan": "1762–1827",
+      "born": 1762,
       "color": "#d79921",
       "shape": "ellipse",
       "size": 84,
@@ -337,6 +368,7 @@ const elements = [
       "instrument": "veena",
       "bani": "dhanammal",
       "lifespan": "1867–1938",
+      "born": 1867,
       "color": "#d65d0e",
       "shape": "diamond",
       "size": 93,
@@ -362,6 +394,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "tyagaraja",
       "lifespan": "1845–1902",
+      "born": 1845,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 77,
@@ -382,6 +415,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "mixed",
       "lifespan": "1844–1893",
+      "born": 1844,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 69,
@@ -402,6 +436,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "dhanammal",
       "lifespan": "1912–1996",
+      "born": 1912,
       "color": "#458588",
       "shape": "ellipse",
       "size": 82,
@@ -422,6 +457,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "ariyakudi",
       "lifespan": "1890–1967",
+      "born": 1890,
       "color": "#458588",
       "shape": "ellipse",
       "size": 66,
@@ -442,6 +478,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "madurai",
       "lifespan": "1912–1968",
+      "born": 1912,
       "color": "#458588",
       "shape": "ellipse",
       "size": 62,
@@ -462,6 +499,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "gnb",
       "lifespan": "1910–1965",
+      "born": 1910,
       "color": "#458588",
       "shape": "ellipse",
       "size": 62,
@@ -482,6 +520,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "semmangudi",
       "lifespan": "1908–2003",
+      "born": 1908,
       "color": "#458588",
       "shape": "ellipse",
       "size": 74,
@@ -511,6 +550,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "tyagaraja",
       "lifespan": "1899–1975",
+      "born": 1899,
       "color": "#458588",
       "shape": "ellipse",
       "size": 66,
@@ -531,6 +571,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "dhanammal",
       "lifespan": "1916–2004",
+      "born": 1916,
       "color": "#689d6a",
       "shape": "ellipse",
       "size": 64,
@@ -551,6 +592,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "semmangudi",
       "lifespan": "1918–1973",
+      "born": 1918,
       "color": "#689d6a",
       "shape": "ellipse",
       "size": 64,
@@ -576,6 +618,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "gnb",
       "lifespan": "1928–1990",
+      "born": 1928,
       "color": "#689d6a",
       "shape": "ellipse",
       "size": 56,
@@ -596,6 +639,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "mixed",
       "lifespan": "1919–2009",
+      "born": 1919,
       "color": "#689d6a",
       "shape": "ellipse",
       "size": 52,
@@ -616,12 +660,13 @@ const elements = [
       "instrument": "violin",
       "bani": "lalgudi",
       "lifespan": "1930–2013",
+      "born": 1930,
       "color": "#689d6a",
       "shape": "rectangle",
-      "size": 56,
-      "degree": 1,
+      "size": 64,
+      "degree": 3,
       "label_tier": 1,
-      "font_size": 13,
+      "font_size": 15,
       "font_weight": "normal",
       "tracks": []
     }
@@ -636,6 +681,7 @@ const elements = [
       "instrument": "violin",
       "bani": "semmangudi",
       "lifespan": "1928–2023",
+      "born": 1928,
       "color": "#b16286",
       "shape": "rectangle",
       "size": 52,
@@ -656,6 +702,7 @@ const elements = [
       "instrument": "flute",
       "bani": "dhanammal",
       "lifespan": "1927–2002",
+      "born": 1927,
       "color": "#b16286",
       "shape": "triangle",
       "size": 60,
@@ -681,6 +728,7 @@ const elements = [
       "instrument": "mridangam",
       "bani": "palghat",
       "lifespan": "1912–1981",
+      "born": 1912,
       "color": "#b16286",
       "shape": "hexagon",
       "size": 52,
@@ -701,6 +749,7 @@ const elements = [
       "instrument": "mridangam",
       "bani": "palghat",
       "lifespan": "b. 1935",
+      "born": 1935,
       "color": "#b16286",
       "shape": "hexagon",
       "size": 52,
@@ -721,6 +770,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "semmangudi",
       "lifespan": "b. 1976",
+      "born": 1976,
       "color": "#98971a",
       "shape": "ellipse",
       "size": 48,
@@ -741,6 +791,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "semmangudi",
       "lifespan": "b. 1968",
+      "born": 1968,
       "color": "#98971a",
       "shape": "ellipse",
       "size": 48,
@@ -761,6 +812,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "lalgudi",
       "lifespan": "b. 1964",
+      "born": 1964,
       "color": "#98971a",
       "shape": "ellipse",
       "size": 48,
@@ -781,6 +833,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "mixed",
       "lifespan": "b. 1984",
+      "born": 1984,
       "color": "#98971a",
       "shape": "ellipse",
       "size": 44,
@@ -806,6 +859,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "muthiah",
       "lifespan": "1877–1945",
+      "born": 1877,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 77,
@@ -826,6 +880,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "muthiah",
       "lifespan": "b. 1948",
+      "born": 1948,
       "color": "#b16286",
       "shape": "ellipse",
       "size": 52,
@@ -846,6 +901,7 @@ const elements = [
       "instrument": "flute",
       "bani": "mali",
       "lifespan": "1926–1986",
+      "born": 1926,
       "color": "#689d6a",
       "shape": "triangle",
       "size": 56,
@@ -866,6 +922,7 @@ const elements = [
       "instrument": "flute",
       "bani": "mali",
       "lifespan": "1934–2019",
+      "born": 1934,
       "color": "#b16286",
       "shape": "triangle",
       "size": 52,
@@ -886,6 +943,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "mixed",
       "lifespan": "None–1999",
+      "born": null,
       "color": "#b16286",
       "shape": "ellipse",
       "size": 52,
@@ -906,6 +964,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "dhanammal",
       "lifespan": "1914–2007",
+      "born": 1914,
       "color": "#458588",
       "shape": "ellipse",
       "size": 74,
@@ -926,6 +985,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "mixed",
       "lifespan": "1917–1988",
+      "born": 1917,
       "color": "#689d6a",
       "shape": "ellipse",
       "size": 56,
@@ -946,6 +1006,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "mixed",
       "lifespan": "b. 1969",
+      "born": 1969,
       "color": "#98971a",
       "shape": "ellipse",
       "size": 52,
@@ -966,6 +1027,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "ariyakudi",
       "lifespan": "1922–2009",
+      "born": 1922,
       "color": "#b16286",
       "shape": "ellipse",
       "size": 52,
@@ -986,6 +1048,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "muthiah",
       "lifespan": "b. None",
+      "born": null,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 77,
@@ -1006,6 +1069,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "dhanammal",
       "lifespan": "b. 1952",
+      "born": 1952,
       "color": "#98971a",
       "shape": "ellipse",
       "size": 52,
@@ -1026,6 +1090,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "shyama_shastri",
       "lifespan": "1803–1876",
+      "born": 1803,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 73,
@@ -1046,6 +1111,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "dhanammal",
       "lifespan": "1890–1967",
+      "born": 1890,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 77,
@@ -1066,6 +1132,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "dhanammal",
       "lifespan": "b. None",
+      "born": null,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 77,
@@ -1086,6 +1153,7 @@ const elements = [
       "instrument": "vocal",
       "bani": "mixed",
       "lifespan": "b. None",
+      "born": null,
       "color": "#d65d0e",
       "shape": "ellipse",
       "size": 73,
@@ -1106,6 +1174,7 @@ const elements = [
       "instrument": "flute",
       "bani": "swaminatha_pillai",
       "lifespan": "b. None",
+      "born": null,
       "color": "#d65d0e",
       "shape": "triangle",
       "size": 69,
@@ -1126,12 +1195,76 @@ const elements = [
       "instrument": "bharatanatyam",
       "bani": "dhanammal",
       "lifespan": "1918–1984",
+      "born": 1918,
       "color": "#689d6a",
       "shape": "ellipse",
       "size": 56,
       "degree": 1,
       "label_tier": 1,
       "font_size": 13,
+      "font_weight": "normal",
+      "tracks": []
+    }
+  },
+  {
+    "data": {
+      "id": "gjr_krishnan",
+      "label": "G.J.R. Krishnan",
+      "url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+      "era": "contemporary",
+      "era_label": "Contemporary",
+      "instrument": "violin",
+      "bani": "lalgudi",
+      "lifespan": "b. None",
+      "born": null,
+      "color": "#98971a",
+      "shape": "rectangle",
+      "size": 48,
+      "degree": 1,
+      "label_tier": 2,
+      "font_size": 11,
+      "font_weight": "normal",
+      "tracks": []
+    }
+  },
+  {
+    "data": {
+      "id": "lalgudi_vijayalakshmi",
+      "label": "Lalgudi Vijayalakshmi",
+      "url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+      "era": "contemporary",
+      "era_label": "Contemporary",
+      "instrument": "violin",
+      "bani": "lalgudi",
+      "lifespan": "b. None",
+      "born": null,
+      "color": "#98971a",
+      "shape": "rectangle",
+      "size": 48,
+      "degree": 1,
+      "label_tier": 2,
+      "font_size": 11,
+      "font_weight": "normal",
+      "tracks": []
+    }
+  },
+  {
+    "data": {
+      "id": "a_kanyakumari",
+      "label": "A. Kanyakumari",
+      "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+      "era": "contemporary",
+      "era_label": "Contemporary",
+      "instrument": "violin",
+      "bani": "mixed",
+      "lifespan": "b. None",
+      "born": null,
+      "color": "#98971a",
+      "shape": "rectangle",
+      "size": 44,
+      "degree": 0,
+      "label_tier": 2,
+      "font_size": 11,
       "font_weight": "normal",
       "tracks": []
     }
@@ -1564,6 +1697,28 @@ const elements = [
       "note": "via T.S. Sabhesha Iyer (2-hop); Wikipedia prose: Sabhesh Iyer disciple of Maha Vaidyanatha Iyer, Musiri disciple of Sabhesh Iyer",
       "width": 2.8000000000000003
     }
+  },
+  {
+    "data": {
+      "id": "lalgudi_jayaraman→gjr_krishnan",
+      "source": "lalgudi_jayaraman",
+      "target": "gjr_krishnan",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+      "note": "son and disciple; primary carrier of Lalgudi bani; Sangita Kalanidhi 2022",
+      "width": 3.465
+    }
+  },
+  {
+    "data": {
+      "id": "lalgudi_jayaraman→lalgudi_vijayalakshmi",
+      "source": "lalgudi_jayaraman",
+      "target": "lalgudi_vijayalakshmi",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+      "note": "daughter and disciple; trained under father after initial training from grandfather Lalgudi Gopala Iyer; Sangita Kalanidhi 2022",
+      "width": 3.465
+    }
   }
 ];
 
@@ -1874,6 +2029,161 @@ function relayout() {
     nodeRepulsion: () => 8000, idealEdgeLength: () => 120,
     gravity: 0.25, numIter: 500,
   }).run();
+}
+
+// ── timeline layout ───────────────────────────────────────────────────────────
+const TIMELINE_X_MIN  = 1750;
+const TIMELINE_X_MAX  = 2010;
+const TIMELINE_WIDTH  = 5200;   // virtual graph-space px
+const TIMELINE_UNKNOWN_X = TIMELINE_WIDTH + 400;
+
+// Era lane Y centres (graph-space px). Trinity at top, Contemporary at bottom.
+const ERA_LANE_Y = {
+  trinity:        0,
+  bridge:         220,
+  golden_age:     440,
+  disseminator:   660,
+  living_pillars: 880,
+  contemporary:   1100,
+};
+const LANE_STEP = 55;    // fixed vertical step between nodes in the same lane
+
+let currentLayout = 'graph';
+
+function bornToX(born) {
+  if (born == null) return TIMELINE_UNKNOWN_X;
+  return ((born - TIMELINE_X_MIN) / (TIMELINE_X_MAX - TIMELINE_X_MIN)) * TIMELINE_WIDTH;
+}
+
+function applyTimelineLayout() {
+  // Group nodes by era, sort each group by born year, assign Y offsets
+  const laneNodes = {};
+  cy.nodes().forEach(n => {
+    const era = n.data('era') || 'contemporary';
+    if (!laneNodes[era]) laneNodes[era] = [];
+    laneNodes[era].push(n);
+  });
+
+  const positions = {};
+  Object.entries(laneNodes).forEach(([era, nodes]) => {
+    const laneY = ERA_LANE_Y[era] !== undefined ? ERA_LANE_Y[era] : 1100;
+    // Sort by born year (nulls last)
+    nodes.sort((a, b) => {
+      const ba = a.data('born'), bb = b.data('born');
+      if (ba == null && bb == null) return 0;
+      if (ba == null) return 1;
+      if (bb == null) return -1;
+      return ba - bb;
+    });
+    // Spread nodes vertically within lane to avoid stacking.
+    // Alternate above/below lane centre with a fixed step so nodes never overlap
+    // regardless of how many share the same birth year.
+    nodes.forEach((n, i) => {
+      const born = n.data('born');
+      const x = bornToX(born);
+      const half = Math.floor(i / 2) + 1;
+      const offset = (i % 2 === 0 ? 1 : -1) * half * LANE_STEP;
+      positions[n.id()] = { x, y: laneY + offset };
+    });
+  });
+
+  const layout = cy.layout({
+    name: 'preset',
+    positions: node => positions[node.id()] || { x: TIMELINE_UNKNOWN_X, y: 600 },
+    animate: true,
+    animationDuration: 700,
+    fit: true,
+    padding: 60,
+  });
+  layout.one('layoutstop', () => showTimelineRuler());
+  layout.run();
+}
+
+// ── decade ruler ──────────────────────────────────────────────────────────────
+const ruler = document.getElementById('timeline-ruler');
+
+function graphXtoPx(gx) {
+  // Convert graph-space X to screen-space X using Cytoscape's pan/zoom
+  return gx * cy.zoom() + cy.pan().x;
+}
+
+function graphYtoPx(gy) {
+  return gy * cy.zoom() + cy.pan().y;
+}
+
+function drawRuler() {
+  if (currentLayout !== 'timeline') return;
+  ruler.innerHTML = '';
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const h = ruler.clientHeight || window.innerHeight;
+
+  // Decade ticks from 1750 to 2010
+  for (let year = TIMELINE_X_MIN; year <= TIMELINE_X_MAX; year += 10) {
+    const sx = graphXtoPx(bornToX(year));
+    const isCentury = (year % 100 === 0);
+    const tickH = isCentury ? 18 : 10;
+
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', sx); line.setAttribute('x2', sx);
+    line.setAttribute('y1', 0);  line.setAttribute('y2', h);
+    line.setAttribute('class', 'tick-line' + (isCentury ? ' century' : ''));
+    ruler.appendChild(line);
+
+    const label = document.createElementNS(svgNS, 'text');
+    label.setAttribute('x', sx);
+    label.setAttribute('y', 4);
+    label.setAttribute('class', 'tick-label' + (isCentury ? ' century' : ''));
+    label.textContent = year;
+    ruler.appendChild(label);
+  }
+
+  // Era lane labels on the left margin
+  Object.entries(ERA_LANE_Y).forEach(([era, gy]) => {
+    const sy = graphYtoPx(gy);
+    const eraLabel = {
+      trinity: 'Trinity', bridge: 'Bridge', golden_age: 'Golden Age',
+      disseminator: 'Disseminators', living_pillars: 'Living Pillars',
+      contemporary: 'Contemporary',
+    }[era] || era;
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', 6);
+    text.setAttribute('y', sy);
+    text.setAttribute('class', 'era-label');
+    text.textContent = '— ' + eraLabel;
+    ruler.appendChild(text);
+  });
+}
+
+function showTimelineRuler() {
+  ruler.style.display = 'block';
+  drawRuler();
+}
+
+function hideTimelineRuler() {
+  ruler.style.display = 'none';
+  ruler.innerHTML = '';
+}
+
+cy.on('pan zoom', () => {
+  if (currentLayout === 'timeline') drawRuler();
+});
+
+// ── layout toggle ─────────────────────────────────────────────────────────────
+function toggleLayout() {
+  const btn = document.getElementById('btn-layout');
+  if (currentLayout === 'graph') {
+    currentLayout = 'timeline';
+    btn.textContent = 'Graph';
+    btn.classList.add('active');
+    applyTimelineLayout();
+  } else {
+    currentLayout = 'graph';
+    btn.textContent = 'Timeline';
+    btn.classList.remove('active');
+    hideTimelineRuler();
+    relayout();
+  }
 }
 </script>
 </body>
