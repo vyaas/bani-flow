@@ -155,7 +155,7 @@
       "youtube": [
         {
           "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 — with T. Viswanathan"
+          "label": "Wesleyan University, 1967 \u2014 with T. Viswanathan"
         }
       ]
     },
@@ -215,7 +215,7 @@
       "youtube": [
         {
           "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 — with Ramnad Krishnan"
+          "label": "Wesleyan University, 1967 \u2014 with Ramnad Krishnan"
         }
       ]
     },
@@ -286,7 +286,7 @@
       "youtube": [
         {
           "url": "https://youtu.be/lNSJJMWLtfc",
-          "label": "Natabhairavi · Adi"
+          "label": "Natabhairavi \u00b7 Adi"
         }
       ]
     },
@@ -349,8 +349,8 @@
       "id": "t_muktha",
       "label": "T. Muktha",
       "wikipedia": "https://en.wikipedia.org/wiki/T._Muktha",
-      "born": 1909,
-      "died": 1999,
+      "born": 1914,
+      "died": 2007,
       "era": "golden_age",
       "instrument": "vocal",
       "bani": "dhanammal",
@@ -410,6 +410,72 @@
       "instrument": "vocal",
       "bani": "dhanammal",
       "youtube": []
+    },
+    {
+      "id": "subbaraya_sastri",
+      "label": "Subbaraya Sastri",
+      "wikipedia": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+      "born": 1803,
+      "died": 1876,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "shyama_shastri",
+      "youtube": []
+    },
+    {
+      "id": "jayammal",
+      "label": "Jayammal",
+      "wikipedia": "https://en.wikipedia.org/wiki/Jayammal",
+      "born": 1890,
+      "died": 1967,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "dhanammal",
+      "youtube": []
+    },
+    {
+      "id": "kamakshi_dhanammal",
+      "label": "Kamakshi (daughter of Dhanammal)",
+      "wikipedia": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "dhanammal",
+      "youtube": []
+    },
+    {
+      "id": "kanchipuram_naina_pillai",
+      "label": "Kanchipuram Naina Pillai",
+      "wikipedia": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai",
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": []
+    },
+    {
+      "id": "swaminatha_pillai",
+      "label": "Tiruppamparam Swaminatha Pillai",
+      "wikipedia": "https://en.wikipedia.org/wiki/Tiruppampuram_Swaminatha_Pillai",
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "flute",
+      "bani": "swaminatha_pillai",
+      "youtube": []
+    },
+    {
+      "id": "t_balasaraswati",
+      "label": "T. Balasaraswati",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+      "born": 1918,
+      "died": 1984,
+      "era": "disseminator",
+      "instrument": "bharatanatyam",
+      "bani": "dhanammal",
+      "youtube": []
     }
   ],
   "edges": [
@@ -446,8 +512,9 @@
     {
       "source": "vina_dhanammal",
       "target": "t_viswanathan",
-      "confidence": 0.9,
-      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan"
+      "confidence": 0.85,
+      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "note": "grandson via Jayammal; inherited Dhanammal bani; formal guru was Tiruppamparam Swaminatha Pillai"
     },
     {
       "source": "semmangudi_srinivasa_iyer",
@@ -512,14 +579,14 @@
       "target": "sanjay_subrahmanyan",
       "confidence": 0.95,
       "source_url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
-      "note": "principal guru 1989–1999; shaped Sanjay's mature style"
+      "note": "principal guru 1989\u20131999; shaped Sanjay's mature style"
     },
     {
       "source": "vina_dhanammal",
       "target": "t_muktha",
       "confidence": 0.95,
       "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
-      "note": "granddaughter via Jayammal; Dhanammal bani custodian alongside T. Brinda"
+      "note": "granddaughter via Kamakshi; Dhanammal bani custodian alongside T. Brinda"
     },
     {
       "source": "t_muktha",
@@ -560,7 +627,7 @@
       "target": "ramnad_krishnan",
       "confidence": 0.98,
       "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
-      "note": "principal guru; Dhanammal bani stream — padams, javalis, gamaka vocabulary"
+      "note": "principal guru; Dhanammal bani stream \u2014 padams, javalis, gamaka vocabulary"
     },
     {
       "source": "cs_sankarasivam",
@@ -574,7 +641,7 @@
       "target": "semmangudi_srinivasa_iyer",
       "confidence": 0.9,
       "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
-      "note": "Semmangudi learnt from Brinda — Dhanammal stream feeding into his style"
+      "note": "Semmangudi learnt from Brinda \u2014 Dhanammal stream feeding into his style"
     },
     {
       "source": "t_brinda",
@@ -589,6 +656,83 @@
       "confidence": 0.8,
       "source_url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
       "note": "also studied under Ramnad Krishnan"
+    },
+    {
+      "source": "shyama_shastri",
+      "target": "subbaraya_sastri",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+      "note": "son and primary disciple of Shyama Shastri"
+    },
+    {
+      "source": "subbaraya_sastri",
+      "target": "vina_dhanammal",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "note": "Dhanammal's mother trained under Subbaraya Sastri; Trinity lineage enters Dhanammal bani"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "jayammal",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "note": "daughter; singer; mother of Balasaraswati, T. Ranganathan, T. Viswanathan"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "kamakshi_dhanammal",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "note": "daughter; mother of T. Brinda, T. Muktha, Abhiramasundari"
+    },
+    {
+      "source": "kamakshi_dhanammal",
+      "target": "t_brinda",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "mother; initial training in Dhanammal style"
+    },
+    {
+      "source": "kamakshi_dhanammal",
+      "target": "t_muktha",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "note": "mother; initial training in Dhanammal style"
+    },
+    {
+      "source": "kanchipuram_naina_pillai",
+      "target": "t_brinda",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "substantial training; agility and robustness in laya"
+    },
+    {
+      "source": "kanchipuram_naina_pillai",
+      "target": "t_muktha",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "note": "substantial training alongside Brinda"
+    },
+    {
+      "source": "jayammal",
+      "target": "t_balasaraswati",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+      "note": "mother and accompanist; musical training from infancy"
+    },
+    {
+      "source": "jayammal",
+      "target": "t_viswanathan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "note": "mother; Dhanammal bani transmitted through family"
+    },
+    {
+      "source": "swaminatha_pillai",
+      "target": "t_viswanathan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "note": "principal guru; ~20 years of study; innovator of 7-hole bamboo flute"
     }
   ]
 }

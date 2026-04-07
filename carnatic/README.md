@@ -205,7 +205,7 @@ Nodes with at least one recording show a **green border** in the graph.
 
 ### Instrument vocabulary
 
-`vocal`, `veena`, `violin`, `flute`, `mridangam`
+`vocal`, `veena`, `violin`, `flute`, `mridangam`, `bharatanatyam`
 
 Add new values freely — each gets a distinct node shape in the graph automatically.
 
@@ -255,11 +255,37 @@ Add new values freely — each gets a distinct node shape in the graph automatic
 
 ## Known open questions
 
-- **Vina Dhanammal's connection to the Trinity** — asserted by tradition but not cleanly
-  sourced in Wikipedia. Edges from the Trinity to Dhanammal are currently absent.
+- **Vina Dhanammal's connection to the Trinity** — now partially resolved: Dhanammal's
+  mother trained under Subbaraya Sastri (son of Shyama Shastri), giving a clean
+  `shyama_shastri → subbaraya_sastri → vina_dhanammal` chain. The edge from Subbaraya
+  Sastri to Dhanammal is via her mother (confidence 0.90), not direct tutelage of
+  Dhanammal herself — the `note` field records this.
+
+- **T. Viswanathan's guru** — corrected. His formal guru was Tiruppamparam Swaminatha
+  Pillai (~20 years of study). The `vina_dhanammal → t_viswanathan` edge is retained at
+  0.85 with a note clarifying it represents inherited family *bani*, not direct tutelage.
+  The `swaminatha_pillai → t_viswanathan` edge (0.97) is now the primary guru edge.
+
+- **T. Muktha's dates** — corrected to born 1914, died 2007 (was 1909/1999). The
+  lineage note now correctly names Kamakshi (not Jayammal) as the intermediate.
+
+- **T. Balasaraswati** — added (1918–1984). Sangeetha Kalanidhi 1973, Padma Vibhushan
+  1977. Primarily a Bharatanatyam dancer; instrument field uses `bharatanatyam`. Her
+  musical lineage runs `vina_dhanammal → jayammal → t_balasaraswati`.
+
+- **T. Ranganathan** (1925–1987, mridangam) — brother of Balasaraswati and Viswanathan.
+  No Wikipedia article found; excluded per project rules (no Wikipedia page = no node).
+
+- **Kamakshi and Jayammal** — added as intermediate nodes. Both are daughters of
+  Dhanammal and necessary topological links to the grandchildren generation.
+
+- **Kanchipuram Naina Pillai** — added. Taught both T. Brinda and T. Muktha for a
+  "substantial length of time" (Wikipedia). Dates unknown.
 
 - **MS Subbulakshmi** has two guru edges: Muthiah Bhagavatar (first guru, 0.95) and
   Semmangudi Srinivasa Iyer (second guru, 0.85). Both correct; `note` distinguishes them.
+  Her `bani` field is `dhanammal` — this reflects her stylistic affiliation via T. Brinda
+  and the Dhanammal school, not a direct guru relationship with Dhanammal herself.
 
 - **Madurai Mani Iyer's** lineage before Muthiah Bhagavatar is unestablished.
 
@@ -276,6 +302,12 @@ Add new values freely — each gets a distinct node shape in the graph automatic
 - **The GNB lineage** downstream of ML Vasanthakumari is not yet mapped.
 
 - **Lalgudi Jayaraman's** own guru (Tirukodikaval Krishna Iyer) is not yet a node.
+
+- **Subbaraya Sastri's dates** — set to 1803–1876 based on standard references; verify
+  against a primary source if precision matters.
+
+- **Kanchipuram Naina Pillai's Wikipedia page** — the article title may differ; the
+  current `wikipedia` URL should be verified and corrected if the page does not exist.
 
 ---
 

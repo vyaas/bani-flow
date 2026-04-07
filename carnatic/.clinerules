@@ -11,13 +11,16 @@ carnatic/
 ```
 
 ## Session startup
-Read `data/musicians.json` before doing anything. That is the current state.
+1. Read `data/musicians.json` before doing anything. That is the current state.
+2. Read the **Open questions** section below — it is the living memory of this project.
+3. At the end of every session: update the Open questions section, then `git add -A && git commit && git push`.
 
 ## Core workflow
 1. User drops a Wikipedia URL, YouTube link+title, or verbal correction
 2. Agent patches `musicians.json` (load → modify → check duplicates → save)
 3. Run `python3 render.py` — confirm node/edge counts change as expected
 4. Run `python3 serve.py` to visualise (or remind user to refresh if already running)
+5. **End of session**: update Open questions below, then prompt: "Ready to commit — run `git add -A && git commit -m '<message>' && git push`?"
 
 ## Patching rules
 - **Never edit `graph.html` by hand**
@@ -43,7 +46,7 @@ Read `data/musicians.json` before doing anything. That is the current state.
 **Node:** `id` (snake_case, never rename), `label`, `wikipedia`, `born`, `died`, `era`, `instrument`, `bani`, `youtube[]`
 **Edge:** `source` (guru id), `target` (shishya id), `confidence` (0–1), `source_url`, `note`
 **Era values:** `trinity` · `bridge` · `golden_age` · `disseminator` · `living_pillars` · `contemporary`
-**Instrument values:** `vocal` · `veena` · `violin` · `flute` · `mridangam` (add new freely)
+**Instrument values:** `vocal` · `veena` · `violin` · `flute` · `mridangam` · `bharatanatyam` (add new freely)
 **Confidence:** 0.95–1.0 explicit · 0.85–0.94 cross-confirmed · 0.70–0.84 single source · <0.70 speculative (must have `note`)
 
 ## Server
@@ -52,3 +55,45 @@ python3 carnatic/serve.py        # http://localhost:8765/graph.html
 python3 carnatic/serve.py 9000   # custom port
 ```
 YouTube embeds require localhost — never open graph.html as a file:// URL.
+
+---
+
+## Open questions  ← living memory; update every session
+
+### Resolved
+- **Vina Dhanammal ↔ Trinity**: chain is `shyama_shastri → subbaraya_sastri → vina_dhanammal`
+  (Dhanammal's mother trained under Subbaraya Sastri, son of Shyama Shastri). Confidence 0.90;
+  note records the indirect nature.
+- **T. Muktha dates**: corrected to born 1914, died 2007.
+- **T. Muktha lineage note**: corrected to "via Kamakshi" (not Jayammal).
+- **T. Viswanathan's guru**: formal guru was Tiruppamparam Swaminatha Pillai (~20 years).
+  `vina_dhanammal → t_viswanathan` retained at 0.85 as inherited-bani edge; primary guru
+  edge is `swaminatha_pillai → t_viswanathan` (0.97).
+- **Dhanammal daughter branches**: Kamakshi (→ Brinda, Muktha) and Jayammal (→ Balasaraswati,
+  Viswanathan) are now separate intermediate nodes.
+- **T. Balasaraswati** added (1918–1984, Sangeetha Kalanidhi 1973, Padma Vibhushan 1977).
+- **Kanchipuram Naina Pillai** added — taught both Brinda and Muktha.
+
+### Still open
+- **T. Ranganathan** (mridangam, 1925–1987) — no Wikipedia article; excluded. Re-check
+  periodically; if a page appears, add him under `bridge`/`golden_age` mridangam.
+- **Subbaraya Sastri dates** (set to 1803–1876) — verify against a primary source.
+- **Kanchipuram Naina Pillai Wikipedia URL** — current URL may not resolve; verify and
+  correct if needed.
+- **MS Subbulakshmi bani=dhanammal** — confirmed stylistically via T. Brinda; not a direct
+  Dhanammal tutelage. The field is correct but worth a `note` on the node if confusion arises.
+- **Madurai Mani Iyer** lineage before Muthiah Bhagavatar — unestablished.
+- **Mridangam lineage** underrepresented: Palghat Mani Iyer → Trichy Sankaran, Karaikudi
+  Mani, Guruvayur Dorai not yet added.
+- **C.S. Sankarasivam dates** unknown (`born/died: null`).
+- **Sanjay Subrahmanyan** also studied under Semponarkoil S.R.D. Vaidyanathan (2002–2013);
+  Vaidyanathan not yet assessed for significance.
+- **GNB lineage** downstream of ML Vasanthakumari not yet mapped.
+- **Lalgudi Jayaraman's guru** (Tirukodikaval Krishna Iyer) not yet a node.
+- **Lakshmiratnam** (Dhanammal's daughter, third daughter) — taught both Brinda and Muktha
+  after Naina Pillai. Not yet a node; assess significance.
+- **Walajapet Balakrishna Das ("Padam Baladas")** — taught Dhanammal; repository of
+  Kshetrayya padams. Not yet a node; assess significance.
+- **Satanur Pancanatha Iyer** — also taught Dhanammal. Not yet a node; assess significance.
+- **Abdul Karim Khan** (Kirana Gharana) — learnt Carnatic songs from Dhanammal and released
+  discs. Cross-tradition link; assess whether it belongs in this graph.
