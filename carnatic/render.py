@@ -51,6 +51,18 @@ NODE_SIZES = {
     "contemporary":   44,
 }
 
+# Font sizes mirror cartographic label hierarchy (graph-space px).
+# Cytoscape's min-zoomed-font-size handles hiding when zoomed out too far.
+# Range kept modest so labels never overwhelm nodes.
+ERA_FONT_SIZES = {
+    "trinity":        20,
+    "bridge":         17,
+    "golden_age":     15,
+    "disseminator":   13,
+    "living_pillars": 12,
+    "contemporary":   11,
+}
+
 # ── helpers ────────────────────────────────────────────────────────────────────
 
 def yt_video_id(url: str) -> str | None:
@@ -77,9 +89,9 @@ def build_elements(graph: dict) -> list[dict]:
         base     = NODE_SIZES.get(era, 44)
         deg      = degree.get(node["id"], 0)
         size     = base + int((deg / max_degree) * 28)
-        born     = node.get("born", "?")
-        died     = node.get("died")
-        lifespan = f"{born}–{died}" if died else (f"b. {born}" if born != "?" else "")
+        born      = node.get("born", "?")
+        died      = node.get("died")
+        lifespan  = f"{born}–{died}" if died else (f"b. {born}" if born != "?" else "")
 
         if era in ("trinity", "bridge"):
             label_tier = 0
@@ -87,6 +99,11 @@ def build_elements(graph: dict) -> list[dict]:
             label_tier = 1
         else:
             label_tier = 2
+
+        # Word-cloud font sizing: era base + degree bonus (up to +5px)
+        base_font   = ERA_FONT_SIZES.get(era, 11)
+        font_size   = base_font + int((deg / max_degree) * 5)
+        font_weight = "bold" if era in ("trinity", "bridge") else "normal"
 
         tracks = []
         for t in node.get("youtube", []):
@@ -107,8 +124,10 @@ def build_elements(graph: dict) -> list[dict]:
             "shape":      shape,
             "size":       size,
             "degree":     deg,
-            "label_tier": label_tier,
-            "tracks":     tracks,
+            "label_tier":  label_tier,
+            "font_size":   font_size,
+            "font_weight": font_weight,
+            "tracks":      tracks,
         }})
 
     for edge in graph["edges"]:
@@ -429,16 +448,22 @@ const cy = cytoscape({{
         'width':              'data(size)',
         'height':             'data(size)',
         'label':              'data(label)',
-        'font-family':        'Courier New, monospace',
-        'font-size':          '11px',
-        'color':              '#ebdbb2',
-        'text-valign':        'bottom',
-        'text-halign':        'center',
-        'text-margin-y':      '5px',
-        'text-wrap':          'wrap',
-        'text-max-width':     '100px',
-        'text-outline-color': '#1d2021',
-        'text-outline-width': '2.5px',
+        'font-family':            'Courier New, monospace',
+        'font-size':              'data(font_size)',
+        'font-weight':            'data(font_weight)',
+        'color':                  '#ebdbb2',
+        'text-valign':            'bottom',
+        'text-halign':            'center',
+        'text-margin-y':          '8px',
+        'text-wrap':              'wrap',
+        'text-max-width':         '100px',
+        'text-outline-color':     '#1d2021',
+        'text-outline-width':     '2px',
+        'min-zoomed-font-size':   8,
+        'text-background-color':  '#1d2021',
+        'text-background-opacity': 0.65,
+        'text-background-padding': '3px',
+        'text-background-shape':  'roundrectangle',
         'border-width':       '2px',
         'border-color':       '#665c54',
       }}
@@ -455,7 +480,7 @@ const cy = cytoscape({{
       selector: 'node:selected',
       style: {{
         'border-color': '#ebdbb2', 'border-width': '3px',
-        'label': 'data(label)', 'font-size': '12px',
+        'label': 'data(label)',
       }}
     }},
     {{
@@ -497,7 +522,10 @@ cy.ready(() => {{
   applyZoomLabels();
 }});
 
-// ── zoom-tiered labels ────────────────────────────────────────────────────────
+// ── zoom-tiered labels (word-cloud / cartographic style) ──────────────────────
+// Font sizes are graph-space values — Cytoscape's viewport zoom scales them
+// naturally. min-zoomed-font-size (set in style) hides labels that become
+// too small on screen. We only control tier-based visibility here.
 let labelsOverride = false;
 function applyZoomLabels() {{
   if (labelsOverride) return;
@@ -505,7 +533,12 @@ function applyZoomLabels() {{
   cy.nodes().forEach(n => {{
     if (n.selected()) return;
     const tier = n.data('label_tier');
-    const show = tier === 0 || (tier === 1 && z >= 0.45) || (tier === 2 && z >= 0.72);
+    // Tier-0 (Trinity/Bridge): always visible
+    // Tier-1 (Golden Age/Disseminator): show from z≥0.35
+    // Tier-2 (Living Pillars/Contemporary): show from z≥0.60
+    const show = tier === 0 ||
+                 (tier === 1 && z >= 0.35) ||
+                 (tier === 2 && z >= 0.60);
     n.style('label', show ? n.data('label') : '');
   }});
 }}
