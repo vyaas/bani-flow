@@ -50,12 +50,12 @@
     display: flex; flex-direction: column;
     overflow-y: auto; font-size: 0.78rem;
   }
-  .panel { padding: 12px 14px; border-bottom: 1px solid var(--bg2); }
+  .panel { padding: 12px 14px; border-bottom: 1px solid var(--bg2); flex-shrink: 0; }
   .panel h3 {
     font-size: 0.7rem; color: var(--gray);
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
   }
-  #node-info { min-height: 140px; }
+  #node-info { min-height: 0; }
   #node-name { font-size: 0.95rem; color: var(--yellow); font-weight: bold; margin-bottom: 4px; }
   #node-meta { color: var(--fg3); line-height: 1.7; }
   #node-sources { margin-top: 8px; display: none; }
@@ -71,15 +71,32 @@
   #perf-list li {
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
     font-size: 0.74rem; color: var(--fg2);
-    display: flex; align-items: flex-start;
-    gap: 5px; line-height: 1.4; flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 1px 5px; line-height: 1.4;
   }
   #perf-list li:last-child { border-bottom: none; }
-  .perf-title  { color: var(--yellow); font-weight: bold; flex: 1; }
-  .perf-raga   { color: var(--fg3); font-size: 0.70rem; width: 100%; padding-left: 18px; }
-  .perf-play   { flex-shrink: 0; color: var(--green); cursor: pointer; }
+  .perf-play   {
+    grid-column: 1; grid-row: 1;
+    color: var(--green); cursor: pointer; flex-shrink: 0;
+    align-self: start; padding-top: 1px;
+  }
   .perf-play:hover { color: var(--aqua); }
-  .perf-link   { flex-shrink: 0; color: var(--blue); font-size: 0.70rem; text-decoration: none; }
+  .perf-title  {
+    grid-column: 2; grid-row: 1;
+    color: var(--yellow); font-weight: bold;
+    word-break: break-word; min-width: 0;
+  }
+  .perf-raga   {
+    grid-column: 2; grid-row: 2;
+    color: var(--fg3); font-size: 0.70rem;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .perf-link   {
+    flex-shrink: 0; color: var(--blue); font-size: 0.70rem;
+    text-decoration: none; white-space: nowrap;
+  }
   .perf-link:hover { text-decoration: underline; }
 
   /* sidebar track list */
@@ -9359,22 +9376,25 @@ function buildPerfPanel(nodeId) {
     titleSpan.className = 'perf-title';
     titleSpan.textContent = p.display_title;
 
-    const linkA = document.createElement('a');
-    linkA.className = 'perf-link';
-    linkA.href = ytDirectUrl(p.video_id, p.offset_seconds);
-    linkA.target = '_blank';
-    linkA.textContent = p.timestamp || '↗';
-    linkA.title = 'Open in YouTube at this timestamp';
-
     const ragaSpan = document.createElement('span');
     ragaSpan.className = 'perf-raga';
     const ragaObj = ragas.find(r => r.id === p.raga_id);
     const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
-    ragaSpan.textContent = [ragaName, p.tala, p.title].filter(Boolean).join(' · ');
+    const ragaText = [ragaName, p.tala, p.title].filter(Boolean).join(' · ');
+    if (ragaText) {
+      ragaSpan.appendChild(document.createTextNode(ragaText));
+    }
+
+    const linkA = document.createElement('a');
+    linkA.className = 'perf-link';
+    linkA.href = ytDirectUrl(p.video_id, p.offset_seconds);
+    linkA.target = '_blank';
+    linkA.textContent = (p.timestamp ? p.timestamp + ' ↗' : '↗');
+    linkA.title = 'Open in YouTube at this timestamp';
+    ragaSpan.appendChild(linkA);
 
     li.appendChild(playSpan);
     li.appendChild(titleSpan);
-    li.appendChild(linkA);
     li.appendChild(ragaSpan);
     perfList.appendChild(li);
   });
@@ -9820,7 +9840,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         cy.elements().removeClass('faded highlighted bani-match');
         applyBaniFilter(type, id);
         const n = cy.getElementById(row.nodeId);
-        cy.animate({ fit: { eles: n, padding: 80 } });
+        n.removeClass('faded').addClass('highlighted');
       });
     }
 
