@@ -1102,6 +1102,7 @@ function toggleLabels() {{
 }}
 
 function relayout() {{
+  if (currentLayout === 'timeline') {{ applyTimelineLayout(); return; }}
   cy.layout({{
     name: 'cose', animate: true, animationDuration: 600, randomize: false,
     nodeRepulsion: () => 8000, idealEdgeLength: () => 120,
