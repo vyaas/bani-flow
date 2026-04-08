@@ -318,9 +318,72 @@
         {"url": "https://en.wikipedia.org/wiki/Kharaharapriya", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "notes": "22nd melakarta; equivalent to the Dorian mode; parent of many important janya ragas including Reetigowla, Sriraga, Devamritavarshini, Manirangu, and Devagandhari; associated with devotion and grandeur"
+    },
+    {
+      "id": "kapi",
+      "name": "Kapi",
+      "aliases": ["Kaapi"],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kapi_(raga)", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga admitting both G2 and G3; evokes srngara and karuna; a favourite raga for padams and javalis; associated with the devadasi repertoire"
+    },
+    {
+      "id": "sahana",
+      "name": "Sahana",
+      "aliases": ["Sahanaa"],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Sahana_(raga)", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Harikambhoji (28th melakarta); vakra raga; evokes pathos and longing; associated with padams and javalis of the Kshetrayya tradition; characteristic gamaka-laden phrases"
+    },
+    {
+      "id": "punnagavarali",
+      "name": "Punnaga Varali",
+      "aliases": ["Punnagavarali", "Punnaga Varali"],
+      "melakarta": null,
+      "parent_raga": "tanarupi",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Punnagavarali", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Tanarupi (6th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P D1 S, avarohana S D1 P M1 R1 S; evokes deep pathos and longing; a favourite for padams and javalis; associated with the Kshetrayya tradition"
     }
   ],
   "composers": [
+    {
+      "id": "chinnaiah_pillai",
+      "name": "Chinnaiah Pillai",
+      "musician_node_id": null,
+      "born": 1802,
+      "died": 1856,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Tanjore_Quartet", "label": "Wikipedia — Tanjore Quartet", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "dharmapuri_subbaraya_iyer",
+      "name": "Dharmapuri Subbaraya Iyer",
+      "musician_node_id": null,
+      "born": null,
+      "died": 1908,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "govindasvamy_ayya",
+      "name": "Govindasvamy Ayya",
+      "musician_node_id": null,
+      "born": null,
+      "died": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Govindasami_Ayya", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
     {
       "id": "patnam_subramanya_iyer",
       "name": "Patnam Subramanya Iyer",
@@ -745,6 +808,102 @@
         {"url": "https://www.karnatik.com/c1188.shtml", "label": "Karnatik.com — notation", "type": "archive"}
       ],
       "notes": "Kriti by Muttusvāmi Dīkṣita in Manirangu; misra capu tala; addressed to Lord Pattabhirama"
+    },
+    {
+      "id": "telisenura",
+      "title": "Telisenura",
+      "composer_id": "chinnaiah_pillai",
+      "raga_id": "saveri",
+      "tala": "rupakam",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Tanjore_Quartet", "label": "Wikipedia — Tanjore Quartet", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Chinnaiah Pillai of the Tanjore Quartet in Saveri; Rupakam tala; part of the devadasi padam repertoire"
+    },
+    {
+      "id": "adiyokka_yugamu",
+      "title": "Adiyokka Yugamu",
+      "composer_id": "kshetrayya",
+      "raga_id": "kambhoji",
+      "tala": "tisra_triputa",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kshetrayya", "label": "Wikipedia — Kshetrayya", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Kshetrayya in Kambhoji; Tisra Triputa tala; part of the Kshetrayya padam tradition addressed to Muvvagopala"
+    },
+    {
+      "id": "parulanna_matta",
+      "title": "Parulanna Matta",
+      "composer_id": "dharmapuri_subbaraya_iyer",
+      "raga_id": "kapi",
+      "tala": "rupakam",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer", "label": "Wikipedia — Dharmapuri Subbaraya Iyer", "type": "wikipedia"}
+      ],
+      "notes": "Javali by Dharmapuri Subbaraya Iyer in Kapi; Rupakam tala; part of the javali repertoire of the devadasi tradition"
+    },
+    {
+      "id": "mora_topu",
+      "title": "Mora Topu",
+      "composer_id": "kshetrayya",
+      "raga_id": "sahana",
+      "tala": "tisra_triputa",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kshetrayya", "label": "Wikipedia — Kshetrayya", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Kshetrayya in Sahana; Tisra Triputa tala; part of the Kshetrayya padam tradition"
+    },
+    {
+      "id": "pusadaramu",
+      "title": "Pusadaramu",
+      "composer_id": "govindasvamy_ayya",
+      "raga_id": "todi",
+      "tala": "tisra_triputa",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Govindasami_Ayya", "label": "Wikipedia — Govindasami Ayya", "type": "wikipedia"}
+      ],
+      "notes": "Javali by Govindasvamy Ayya in Todi; Tisra Triputa tala"
+    },
+    {
+      "id": "narimani",
+      "title": "Narimani",
+      "composer_id": "dharmapuri_subbaraya_iyer",
+      "raga_id": "khamas",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer", "label": "Wikipedia — Dharmapuri Subbaraya Iyer", "type": "wikipedia"}
+      ],
+      "notes": "Javali by Dharmapuri Subbaraya Iyer in Khamas; Adi tala"
+    },
+    {
+      "id": "yala_padare",
+      "title": "Yala Padare",
+      "composer_id": "kshetrayya",
+      "raga_id": "begada",
+      "tala": "tisra_triputa",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kshetrayya", "label": "Wikipedia — Kshetrayya", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Kshetrayya in Begada; Tisra Triputa tala; part of the Kshetrayya padam tradition"
+    },
+    {
+      "id": "ninnu_juchi",
+      "title": "Ninnu Juchi",
+      "composer_id": "kshetrayya",
+      "raga_id": "punnagavarali",
+      "tala": "tisra_triputa",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kshetrayya", "label": "Wikipedia — Kshetrayya", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Kshetrayya in Punnaga Varali; Tisra Triputa tala; part of the Kshetrayya padam tradition"
     }
   ]
 }
