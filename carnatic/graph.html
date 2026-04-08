@@ -155,69 +155,54 @@
   #hp-name { font-size: 1rem; font-weight: bold; color: var(--yellow); line-height: 1.3; }
   #hp-sub  { font-size: 0.75rem; color: var(--fg3); margin-top: 3px; line-height: 1.5; }
 
-  /* ── floating media player ── */
-  #media-player {
+  /* ── floating media player (multi-window, class-based) ── */
+  .media-player {
     position: absolute;
-    top: 18px; left: 18px;
     width: 340px;
     background: var(--bg1);
     border: 1px solid var(--bg3);
     border-radius: 4px;
     box-shadow: 0 6px 28px rgba(0,0,0,0.65);
-    z-index: 800;
-    display: none;
+    display: flex;
     flex-direction: column;
     user-select: none;
   }
-  #media-player.visible { display: flex; }
 
   /* title bar / drag handle */
-  #mp-bar {
+  .mp-bar {
     display: flex; align-items: center; gap: 8px;
     padding: 7px 10px;
     background: var(--bg2); border-radius: 4px 4px 0 0;
     cursor: grab; border-bottom: 1px solid var(--bg3);
   }
-  #mp-bar:active { cursor: grabbing; }
-  #mp-title {
+  .mp-bar:active { cursor: grabbing; }
+  .mp-title {
     flex: 1; font-size: 0.78rem; font-weight: bold; color: var(--yellow);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  #mp-close {
+  .mp-close {
     background: none; border: none; color: var(--gray);
     font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
     flex-shrink: 0;
   }
-  #mp-close:hover { color: var(--red); }
+  .mp-close:hover { color: var(--red); }
 
   /* 16:9 iframe wrapper */
-  #mp-video-wrap {
+  .mp-video-wrap {
     position: relative; width: 100%; padding-top: 56.25%; background: #000;
   }
-  #mp-iframe {
+  .mp-iframe {
     position: absolute; top: 0; left: 0;
     width: 100%; height: 100%; border: none;
   }
 
-  /* player track list */
-  #mp-tracks { max-height: 150px; overflow-y: auto; padding: 4px 0; }
-  .mp-track {
-    padding: 5px 12px; cursor: pointer; font-size: 0.74rem;
-    color: var(--fg3); display: flex; align-items: flex-start;
-    gap: 6px; line-height: 1.4;
-  }
-  .mp-track:hover  { background: var(--bg2); color: var(--fg); }
-  .mp-track.active { background: var(--bg2); color: var(--aqua); }
-  .mp-track .ti    { flex-shrink: 0; color: var(--green); }
-  .mp-track.active .ti { color: var(--aqua); }
-
   /* resize grip at bottom */
-  #mp-resize {
+  .mp-resize {
     height: 7px; cursor: ns-resize;
     background: var(--bg2); border-top: 1px solid var(--bg3);
     border-radius: 0 0 4px 4px; opacity: 0.6;
   }
-  #mp-resize:hover { opacity: 1; background: var(--bg3); }
+  .mp-resize:hover { opacity: 1; background: var(--bg3); }
 
   /* ── timeline ruler ── */
   #timeline-ruler .tick-line {
@@ -296,21 +281,6 @@
 <div id="main">
   <div id="cy"></div>
   <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
-
-  <!-- ── floating media player ── -->
-  <div id="media-player">
-    <div id="mp-bar">
-      <span id="mp-title">—</span>
-      <button id="mp-close" title="Close">✕</button>
-    </div>
-    <div id="mp-video-wrap">
-      <iframe id="mp-iframe" src=""
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-        allowfullscreen></iframe>
-    </div>
-    <div id="mp-tracks"></div>
-    <div id="mp-resize" title="Drag to resize"></div>
-  </div>
 
   <!-- ── hover popover ── -->
   <div id="hover-popover">
@@ -13915,12 +13885,11 @@ cy.on('mousemove', 'node', evt => {
   popover.style.top  = (y + 16 + ph > window.innerHeight ? y - ph - 10 : y + 16) + 'px';
 });
 
-// ── media player ──────────────────────────────────────────────────────────────
-const player   = document.getElementById('media-player');
-const mpIframe = document.getElementById('mp-iframe');
-const mpTitle  = document.getElementById('mp-title');
-const mpTracks = document.getElementById('mp-tracks');
-let   currentVid = null;
+// ── media player manager ──────────────────────────────────────────────────────
+// Registry: vid (11-char YouTube ID) → player instance { el, iframe, titleEl, vid }
+const playerRegistry = new Map();
+let topZ = 800;
+let spawnCount = 0;
 
 function ytEmbedUrl(vid, startSeconds) {
   const t = (startSeconds && startSeconds > 0) ? `&start=${startSeconds}` : '';
@@ -13932,70 +13901,105 @@ function ytDirectUrl(vid, startSeconds) {
   return `https://youtu.be/${vid}${t}`;
 }
 
-function loadTrack(vid, label, artistName, startSeconds) {
-  currentVid = vid;
-  mpIframe.src = ytEmbedUrl(vid, startSeconds);
-  mpTitle.textContent = artistName ? `${artistName} — ${label}` : label;
-  mpTracks.querySelectorAll('.mp-track').forEach(el =>
-    el.classList.toggle('active', el.dataset.vid === vid));
-  document.querySelectorAll('#track-list li').forEach(el =>
-    el.classList.toggle('playing', el.dataset.vid === vid));
-  player.classList.add('visible');
+function nextSpawnPosition() {
+  const offset = (spawnCount % 8) * 28;
+  spawnCount += 1;
+  return { top: 18 + offset, left: 18 + offset };
 }
 
-function buildPlayerTracks(tracks, artistName) {
-  mpTracks.innerHTML = '';
-  tracks.forEach(t => {
-    const div = document.createElement('div');
-    div.className  = 'mp-track' + (t.vid === currentVid ? ' active' : '');
-    div.dataset.vid = t.vid;
-    div.innerHTML   = `<span class="ti">&#9654;</span><span>${t.label}</span>`;
-    div.addEventListener('click', () => loadTrack(t.vid, t.label, artistName));
-    mpTracks.appendChild(div);
+function bringToFront(player) {
+  topZ += 1;
+  player.el.style.zIndex = topZ;
+}
+
+function refreshPlayingIndicators() {
+  document.querySelectorAll('[data-vid]').forEach(el => {
+    el.classList.toggle('playing', playerRegistry.has(el.dataset.vid));
   });
 }
 
-document.getElementById('mp-close').addEventListener('click', () => {
-  player.classList.remove('visible');
-  mpIframe.src = '';
-  currentVid   = null;
-  document.querySelectorAll('#track-list li').forEach(el => el.classList.remove('playing'));
-  mpTracks.querySelectorAll('.mp-track').forEach(el => el.classList.remove('active'));
-});
-
-// drag
-(function () {
-  const bar = document.getElementById('mp-bar');
+function wireDrag(el, bar) {
   let dragging = false, ox = 0, oy = 0;
   bar.addEventListener('mousedown', e => {
     dragging = true;
-    ox = e.clientX - player.offsetLeft;
-    oy = e.clientY - player.offsetTop;
+    ox = e.clientX - el.offsetLeft;
+    oy = e.clientY - el.offsetTop;
     e.preventDefault();
   });
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
-    const p = player.parentElement.getBoundingClientRect();
-    player.style.left = Math.max(0, Math.min(e.clientX - ox, p.width  - player.offsetWidth))  + 'px';
-    player.style.top  = Math.max(0, Math.min(e.clientY - oy, p.height - player.offsetHeight)) + 'px';
+    const p = el.parentElement.getBoundingClientRect();
+    el.style.left = Math.max(0, Math.min(e.clientX - ox, p.width  - el.offsetWidth))  + 'px';
+    el.style.top  = Math.max(0, Math.min(e.clientY - oy, p.height - el.offsetHeight)) + 'px';
   });
   document.addEventListener('mouseup', () => { dragging = false; });
-})();
+}
 
-// vertical resize
-(function () {
-  const handle = document.getElementById('mp-resize');
+function wireResize(el, handle) {
   let resizing = false, startY = 0, startH = 0;
   handle.addEventListener('mousedown', e => {
-    resizing = true; startY = e.clientY; startH = player.offsetHeight;
+    resizing = true; startY = e.clientY; startH = el.offsetHeight;
     e.preventDefault();
   });
   document.addEventListener('mousemove', e => {
     if (!resizing) return;
-    player.style.height = Math.max(180, startH + e.clientY - startY) + 'px';
+    el.style.height = Math.max(180, startH + e.clientY - startY) + 'px';
   });
   document.addEventListener('mouseup', () => { resizing = false; });
-})();
+}
+
+function createPlayer(vid, label, artistName, startSeconds) {
+  const pos = nextSpawnPosition();
+  const el = document.createElement('div');
+  el.className = 'media-player';
+  el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${++topZ};`;
+
+  el.innerHTML = `
+    <div class="mp-bar">
+      <span class="mp-title">${artistName ? artistName + ' — ' : ''}${label}</span>
+      <button class="mp-close" title="Close">✕</button>
+    </div>
+    <div class="mp-video-wrap">
+      <iframe class="mp-iframe"
+        src="${ytEmbedUrl(vid, startSeconds)}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+        allowfullscreen></iframe>
+    </div>
+    <div class="mp-resize" title="Drag to resize"></div>
+  `;
+
+  const instance = {
+    el,
+    iframe:   el.querySelector('.mp-iframe'),
+    titleEl:  el.querySelector('.mp-title'),
+    vid,
+  };
+
+  el.querySelector('.mp-close').addEventListener('click', () => {
+    instance.iframe.src = '';
+    el.remove();
+    playerRegistry.delete(vid);
+    refreshPlayingIndicators();
+  });
+
+  wireDrag(el, el.querySelector('.mp-bar'));
+  wireResize(el, el.querySelector('.mp-resize'));
+  el.addEventListener('mousedown', () => bringToFront(instance));
+
+  document.getElementById('main').appendChild(el);
+  bringToFront(instance);
+  return instance;
+}
+
+function openOrFocusPlayer(vid, label, artistName, startSeconds) {
+  if (playerRegistry.has(vid)) {
+    bringToFront(playerRegistry.get(vid));
+    return;
+  }
+  const p = createPlayer(vid, label, artistName, startSeconds);
+  playerRegistry.set(vid, p);
+  refreshPlayingIndicators();
+}
 
 // ── buildPerfPanel ────────────────────────────────────────────────────────────
 function buildPerfPanel(nodeId) {
@@ -14017,7 +14021,7 @@ function buildPerfPanel(nodeId) {
     playSpan.textContent = '▶';
     playSpan.title = `Play from ${p.timestamp || '0:00'}`;
     playSpan.addEventListener('click', () =>
-      loadTrack(p.video_id, p.display_title, p.title, p.offset_seconds));
+      openOrFocusPlayer(p.video_id, p.display_title, p.title, p.offset_seconds));
 
     const titleSpan = document.createElement('span');
     titleSpan.className = 'perf-title';
@@ -14078,13 +14082,12 @@ cy.on('tap', 'node', evt => {
 
   if (d.tracks && d.tracks.length > 0) {
     trackPanel.style.display = 'block';
-    buildPlayerTracks(d.tracks, d.label);
     d.tracks.forEach(t => {
       const li = document.createElement('li');
       li.dataset.vid = t.vid;
-      li.className   = t.vid === currentVid ? 'playing' : '';
+      li.className   = playerRegistry.has(t.vid) ? 'playing' : '';
       li.innerHTML   = `<span class="play-icon">&#9654;</span><span>${t.label}</span>`;
-      li.addEventListener('click', () => loadTrack(t.vid, t.label, d.label));
+      li.addEventListener('click', () => openOrFocusPlayer(t.vid, t.label, d.label));
       trackList.appendChild(li);
     });
   } else {
@@ -14503,8 +14506,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     playSpan.textContent = '▶';
     playSpan.title = row.isStructured ? `Play from ${row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}` : 'Play';
     playSpan.addEventListener('click', () =>
-      loadTrack(row.track.vid, row.track.label, row.artistLabel,
-                row.isStructured ? row.track.offset_seconds : undefined));
+      openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
+                        row.isStructured ? row.track.offset_seconds : undefined));
 
     const labelSpan = document.createElement('span');
     labelSpan.className = 'trail-label';
