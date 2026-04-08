@@ -1,0 +1,131 @@
+{
+  "id": "brinda_muktha_air_padams_javalis_1960s",
+  "video_id": "loy04TTE_MU",
+  "url": "https://youtu.be/loy04TTE_MU",
+  "title": "Padams and Javalis — T. Brinda & T. Muktha, Akashvani AIR, 1960s",
+  "date": "1960s",
+  "venue": "Akashvani (All India Radio)",
+  "occasion": "AIR studio recording; padams and javalis from the Dhanammal bani",
+  "sources": [
+    {
+      "url": "https://youtu.be/loy04TTE_MU",
+      "label": "YouTube",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Unknown"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Unknown"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "telisenura",
+          "raga_id": "saveri",
+          "tala": "rupakam",
+          "composer_id": "chinnaiah_pillai",
+          "display_title": "Telisenura",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:04:53",
+          "offset_seconds": 293,
+          "composition_id": "adiyokka_yugamu",
+          "raga_id": "kambhoji",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Adiyokka Yugamu",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:15:48",
+          "offset_seconds": 948,
+          "composition_id": "parulanna_matta",
+          "raga_id": "kapi",
+          "tala": "rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Parulanna Matta",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:21:11",
+          "offset_seconds": 1271,
+          "composition_id": "mora_topu",
+          "raga_id": "sahana",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Mora Topu",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:30:04",
+          "offset_seconds": 1804,
+          "composition_id": "pusadaramu",
+          "raga_id": "todi",
+          "tala": "tisra_triputa",
+          "composer_id": "govindasvamy_ayya",
+          "display_title": "Pusadaramu",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:41:36",
+          "offset_seconds": 2496,
+          "composition_id": "narimani",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Narimani",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:45:03",
+          "offset_seconds": 2703,
+          "composition_id": "yala_padare",
+          "raga_id": "begada",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Yala Padare",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:51:33",
+          "offset_seconds": 3093,
+          "composition_id": "ninnu_juchi",
+          "raga_id": "punnagavarali",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Ninnu Juchi",
+          "notes": "padam"
+        }
+      ]
+    }
+  ]
+}

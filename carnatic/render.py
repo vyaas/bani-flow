@@ -82,7 +82,27 @@ def load_compositions() -> dict:
     return {"ragas": [], "composers": [], "compositions": []}
 
 def load_recordings() -> dict:
-    """Load recordings.json; return empty structure if absent."""
+    """
+    Load recordings from carnatic/data/recordings/ (one .json per recording).
+    Each file is a bare recording object — no {"recordings": [...]} wrapper.
+    Files are sorted alphabetically by name for a deterministic compile order.
+    Files whose names start with '_' (e.g. _index.json) are skipped.
+
+    Falls back to the legacy monolithic recordings.json if the directory does
+    not exist (backward-compatible during migration).
+    """
+    recordings_dir = ROOT / "data" / "recordings"
+    if recordings_dir.is_dir():
+        files = sorted(
+            f for f in recordings_dir.glob("*.json")
+            if not f.name.startswith("_")
+        )
+        recordings = [
+            json.loads(f.read_text(encoding="utf-8"))
+            for f in files
+        ]
+        return {"recordings": recordings}
+    # legacy fallback: monolithic recordings.json
     if RECORDINGS_FILE.exists():
         return json.loads(RECORDINGS_FILE.read_text(encoding="utf-8"))
     return {"recordings": []}

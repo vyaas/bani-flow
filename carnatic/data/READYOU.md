@@ -1,14 +1,16 @@
 # READYOU.md — Instructions for the AI receiving this file
 
-You have received two files:
+You have received these files:
 
 - **`musicians.json`** — the canonical data file for a Carnatic classical music
   guru-shishya (teacher-student) lineage knowledge graph.
 - **`compositions.json`** — the companion file for ragas, composers, and compositions,
   used to power the Bani Flow listening trail in the graph visualisation.
+- **`recordings/`** — a directory of structured concert recordings, one JSON file per
+  recording event. See `recordings/READYOU.md` for the full schema and workflow.
 - **This file** — your operating instructions.
 
-Read all three before doing anything. Then wait for the user's instruction.
+Read all files before doing anything. Then wait for the user's instruction.
 
 The governing principle of this dataset is **significance over completeness**.
 A musician belongs here if they materially shaped the sound, transmission, or
@@ -347,6 +349,38 @@ or other) to attach to an existing node, raga, composer, or composition.
 
 ---
 
+## Workflow G — Adding or editing a structured recording
+
+Structured concert recordings live in `carnatic/data/recordings/` as **one JSON file
+per recording**. See `recordings/READYOU.md` for the full schema.
+
+**To add a new recording:**
+
+**Step 1** — Choose an `id`: snake_case, unique, descriptive (e.g. `music_academy_1972_semmangudi`).
+
+**Step 2** — Create `carnatic/data/recordings/{id}.json` as a bare recording object
+(no `{"recordings": [...]}` wrapper). Filename must equal the `id` field.
+
+**Step 3** — For each performer: set `musician_id` if the musician exists in
+`musicians.json`; otherwise set `musician_id: null` and `unmatched_name: "Raw Name"`.
+
+**Step 4** — For each performance: set `composition_id`, `raga_id`, `composer_id` from
+`compositions.json` where known; set to `null` with a `notes` explanation otherwise.
+
+**Step 5** — Run `python3 carnatic/render.py` to rebuild `graph.html`.
+
+**Step 6** — Log as `[RECORDING+] {id} — {title}`.
+
+**To edit an existing recording:**
+
+Edit only `carnatic/data/recordings/{id}.json`. Run `python3 carnatic/render.py`.
+Log as `[RECORDING~]`, `[PERF~]`, `[SESSION+]`, etc.
+
+**Output contract for recordings:** Return only the single affected file — not the
+entire directory. The file is self-contained; no other recording file is touched.
+
+---
+
 ## Output contract
 
 Every response that modifies data must follow this format:
@@ -364,24 +398,33 @@ Every response that modifies data must follow this format:
 [RAGA+]      added: sri — janya of Kharaharapriya
 [COMPOSER+]  added: tyagaraja — musician_node_id: tyagaraja
 [SOURCE+]    abhishek_raghuram — "The Hindu profile" (article)
+[RECORDING+] added: music_academy_1972_semmangudi — Music Academy December Season 1972
+[RECORDING~] corrected: poonamallee_1965 session 2 performance 3 — offset_seconds 3770→3780
+[PERF+]      added to poonamallee_1965 session 1: "bālē bālēndu bhūṣaṇi" (reetigowla)
 [FLAG]       could not match artist "T. Ranganathan" to any existing node — skipped
 ```
 
-**2. Full JSON** — return the complete, valid file content in a fenced code block.
-Not a diff. Not a snippet. The entire file.
+**2. Full content** — for `musicians.json` and `compositions.json`: return the complete,
+valid file content in a fenced code block. Not a diff. Not a snippet. The entire file.
 
-The user will copy this output and save it as the new file.
+For recording files in `carnatic/data/recordings/`: return only the single affected
+file. Each recording is self-contained — never return the entire directory.
+
+The user will save the output to the appropriate path.
 
 ---
 
 ## Hard constraints — never do these
 
-- **Never rename an existing `id` field** in either file. IDs are permanent keys.
+- **Never rename an existing `id` field** in any file. IDs are permanent keys.
 - **Never create a musician node without at least one entry in `sources`.**
 - **Never create a raga without at least one entry in `sources`** (Wikipedia preferred
   but not required — a notation archive or musicological reference is acceptable).
 - **Never create a composition without a verified `composer_id` and `raga_id`.**
 - **Never infer an edge from shared `bani` alone.** Stylistic similarity is not lineage evidence.
 - **Never silently drop an unmatched YouTube link.** Always flag it.
-- **Never return partial JSON.** Always return the complete file.
+- **Never return partial JSON.** Always return the complete file (or the complete single
+  recording file for recordings).
 - **Never add speculative edges without a `note` field** when `confidence` is below 0.70.
+- **Never wrap a recording file** in `{"recordings": [...]}`. Each file is a bare object.
+- **Never set `musician_id`** to a value that does not exist in `musicians.json`.

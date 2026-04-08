@@ -43,10 +43,15 @@ recordings, any set of Wikipedia articles. The Carnatic data is the seed instanc
 carnatic/
   README.md               <- this file — AI agent briefing + human reference
   crawl.py                <- Wikipedia scraper, updates musicians.json
-  render.py               <- reads musicians.json, emits graph.html
+  render.py               <- reads all data files, emits graph.html
+  migrate_recordings.py   <- one-shot migration: split recordings.json → recordings/
   graph.html              <- derived artefact — always regenerate, never hand-edit
   data/
-    musicians.json        <- canonical source of truth: nodes, edges, recordings
+    musicians.json        <- canonical source of truth: nodes and edges
+    compositions.json     <- ragas, composers, compositions
+    recordings/           <- one JSON file per structured concert recording
+      READYOU.md          <- schema and workflow for recording files
+      {id}.json           <- bare recording object; filename = id field
     cache/
       <md5>.html          <- raw Wikipedia page cache, keyed by URL hash
 ```
@@ -330,10 +335,10 @@ Add new values freely — each gets a distinct node shape in the graph automatic
   A sibling edge is not a guru-shishya edge; no lineage edge added. His guru lineage
   is not yet established.
 
-- **Poonamallee 1965 recording** (`recordings.json`) — the `recordings.json` schema is
-  new (see `plans/youtube_recording_integration.md`). `render.py` has not yet been
-  updated to consume this file. The architectural plan at that path defines the full
-  `render.py` changes needed to surface structured concert data in `graph.html`.
+- **Structured recordings** — `render.py` now compiles from `carnatic/data/recordings/`
+  (one JSON file per concert). The Poonamallee 1965, Dhanammal Columbia 1932, Brinda/Muktha
+  AIR 1960s, and Wesleyan 1967 recordings are all live in the graph. Add new concerts by
+  creating `carnatic/data/recordings/{id}.json` — see `data/recordings/READYOU.md`.
 
 ---
 

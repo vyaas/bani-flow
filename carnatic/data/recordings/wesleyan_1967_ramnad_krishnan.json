@@ -1,0 +1,137 @@
+{
+  "id": "wesleyan_1967_ramnad_krishnan",
+  "video_id": "AnNb0zRmauM",
+  "url": "https://youtu.be/AnNb0zRmauM",
+  "title": "Wesleyan University Concert, 1967 — Ramnad Krishnan & T. Viswanathan",
+  "date": "1967",
+  "venue": "Wesleyan University, USA",
+  "occasion": "Concert performed for the students of Wesleyan University. Tribute upload by Vaak on the 106th birth anniversary of Ramnad Krishnan (14 Sep 1918). Photograph used is from the original concert.",
+  "sources": [
+    {
+      "url": "https://youtu.be/AnNb0zRmauM",
+      "label": "YouTube — Vaak",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_viswanathan",
+          "role": "flute"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "V. Tyagarajan"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "T. Ranganathan"
+        },
+        {
+          "musician_id": null,
+          "role": "tampura",
+          "unmatched_name": "Jon B. Higgins"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "yagnadulu_sukhamanu",
+          "raga_id": "jayamanohari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Yagnadulu Sukhamanu",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:10:56",
+          "offset_seconds": 656,
+          "composition_id": "enduku_nirdaya",
+          "raga_id": "harikambhoji",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Enduku Nirdaya",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:33:42",
+          "offset_seconds": 2022,
+          "composition_id": "bantureeti_kolu",
+          "raga_id": "hamsanadam",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Bantureeti Kolu",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:44:41",
+          "offset_seconds": 2681,
+          "composition_id": "kaligiyunte",
+          "raga_id": "keeravani",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Kaligiyunte",
+          "notes": "2 kalai"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "01:18:33",
+          "offset_seconds": 4713,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": "percussion solo; 2 kalai",
+          "type": "tani"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:24:04",
+          "offset_seconds": 5044,
+          "composition_id": "samayamide_rara",
+          "raga_id": "behag",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Samayamide Rara",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:34:27",
+          "offset_seconds": 5667,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Janathi Ramam (Sloka) — Ragamalika",
+          "notes": "sloka set as ragamalika traversing Saveri, Sahana, Surutti; no single composition_id applicable"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:54:33",
+          "offset_seconds": 6873,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Roopamulaku",
+          "notes": "mangalam"
+        }
+      ]
+    }
+  ]
+}

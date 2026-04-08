@@ -1,0 +1,210 @@
+{
+  "id": "dhanammal_veena_columbia_1932",
+  "video_id": "VEB9vZpIIR4",
+  "url": "https://youtu.be/VEB9vZpIIR4",
+  "title": "Dhanammal's Veena — Columbia Records session, c.1932",
+  "date": "1932",
+  "venue": "Columbia Records studio session, Chennai",
+  "occasion": "Solo veena recordings by Veenai Dhanammal; one of the earliest surviving audio documents of the Dhanammal bani. Compiled and edited by Shreeraam Shankar (Vaak). Source: Metropolitan Museum of Arts, New York & Darbar Festival.",
+  "sources": [
+    {
+      "url": "https://youtu.be/VEB9vZpIIR4",
+      "label": "YouTube — Vaak compilation",
+      "type": "other"
+    },
+    {
+      "url": "https://excavatedshellac.com",
+      "label": "Excavated Shellac",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "vina_dhanammal",
+          "role": "veena"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "intha_chalamu",
+          "raga_id": "begada",
+          "tala": "adi",
+          "composer_id": "veenai_kuppayyar",
+          "display_title": "Intha Chalamu",
+          "notes": "varnam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "06:18",
+          "offset_seconds": 378,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ghana Raga Thanamalika",
+          "notes": "thanamalika — medley traversing all five Ghana ragas: Naatai, Gowlai, Aarabhi, Sri, Varali; no single composition or raga_id applicable"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "12:37",
+          "offset_seconds": 757,
+          "composition_id": "himadri_sute",
+          "raga_id": "kalyani",
+          "tala": "rupakam",
+          "composer_id": "shyama_shastri",
+          "display_title": "Himadri Sute",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "15:35",
+          "offset_seconds": 935,
+          "composition_id": "nannu_brovu",
+          "raga_id": "lalitha",
+          "tala": "misra_capu",
+          "composer_id": "shyama_shastri",
+          "display_title": "Nannu Brovu",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "18:35",
+          "offset_seconds": 1115,
+          "composition_id": "nenarunchinanu",
+          "raga_id": "malavi",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nenarunchinanu",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "21:32",
+          "offset_seconds": 1292,
+          "composition_id": "rama_nee_samanamevaru",
+          "raga_id": "kharaharapriya",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Rama Nee Samanamevaru",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "24:31",
+          "offset_seconds": 1471,
+          "composition_id": "nijamarmamulanu",
+          "raga_id": "umaabharanam",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nijamarmamulanu",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "27:28",
+          "offset_seconds": 1648,
+          "composition_id": "brova_bharama",
+          "raga_id": "bahudari",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Brova Bharama",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "30:23",
+          "offset_seconds": 1823,
+          "composition_id": "sri_narada",
+          "raga_id": "kaanada",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Sri Narada",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "33:18",
+          "offset_seconds": 1998,
+          "composition_id": "sri_raghuvara",
+          "raga_id": "bhairavi",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Sri Raghuvara",
+          "notes": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "36:16",
+          "offset_seconds": 2176,
+          "composition_id": null,
+          "raga_id": "shankarabharanam",
+          "tala": "rupakam",
+          "composer_id": null,
+          "display_title": "Mahima Theliya",
+          "notes": "composer attributed to 'Anai Ayya' in source; no Wikipedia page found for this composer — composition_id and composer_id withheld pending verification"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "39:15",
+          "offset_seconds": 2355,
+          "composition_id": "pattakura",
+          "raga_id": "ananda_bhairavi",
+          "tala": "rupakam",
+          "composer_id": "sarangapani",
+          "display_title": "Pattakura",
+          "notes": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "42:13",
+          "offset_seconds": 2533,
+          "composition_id": "narimani",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Narimani",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "45:08",
+          "offset_seconds": 2708,
+          "composition_id": null,
+          "raga_id": "kapi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Viruttam (Pasuram) — Kulam Tharum",
+          "notes": "source notes 'Wrongly marked'; composer and composition unverified — withheld pending identification"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "48:04",
+          "offset_seconds": 2884,
+          "composition_id": "vadiga_gopaluni",
+          "raga_id": "mohanam",
+          "tala": "misra_capu",
+          "composer_id": "kshetrayya",
+          "display_title": "Vadiga Gopaluni",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "50:59",
+          "offset_seconds": 3059,
+          "composition_id": null,
+          "raga_id": "todi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Agre Krtva",
+          "notes": "Sanskrit shloka/mangalam; composer not identified in source — withheld pending verification"
+        }
+      ]
+    }
+  ]
+}

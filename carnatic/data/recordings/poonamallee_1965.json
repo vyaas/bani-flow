@@ -1,0 +1,471 @@
+{
+  "id": "poonamallee_1965",
+  "video_id": "_rj8fHJiSLA",
+  "url": "https://youtu.be/_rj8fHJiSLA",
+  "title": "Srinivasa Farms Concert, Poonamallee 1965",
+  "date": "1965-01",
+  "venue": "Srinivasa Farms, Poonamallee, outskirts of Madras",
+  "occasion": "Celebration of the conferment of the Sangita Kalanidhi award on Alathur Sivasubramania Iyer (Subbaiyer) by the Music Academy, Madras",
+  "sources": [
+    {
+      "url": "https://youtu.be/_rj8fHJiSLA",
+      "label": "YouTube",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "bale_balendu_bhushani",
+          "raga_id": "reetigowla",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "bālē bālēndu bhūṣaṇi",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "04:00",
+          "offset_seconds": 240,
+          "composition_id": "abhimanamennedu",
+          "raga_id": "begada",
+          "tala": "adi",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "abhimānamenneḍu",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "16:50",
+          "offset_seconds": 1010,
+          "composition_id": "bhajana_parulakela",
+          "raga_id": "surutti",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "bhajana parulakēla",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "27:34",
+          "offset_seconds": 1654,
+          "composition_id": "sri_manimi_manohara",
+          "raga_id": "poornashadjam",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "śrī māninī manōhara",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 2,
+      "performers": [
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "kv_narayanaswamy",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "31:55",
+          "offset_seconds": 1915,
+          "composition_id": "enduku_peddala",
+          "raga_id": "shankarabharanam",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "enduku peddala",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "58:35",
+          "offset_seconds": 3515,
+          "composition_id": "alarsara_paritapam",
+          "raga_id": "surutti",
+          "tala": "misra_capu",
+          "composer_id": "swati_tirunal",
+          "display_title": "alarśara paritāpam",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "01:02:50",
+          "offset_seconds": 3770,
+          "composition_id": "karuna_samudra",
+          "raga_id": "devagandhari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "karuṇā samudrā",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "01:13:20",
+          "offset_seconds": 4400,
+          "composition_id": "marubari_talalEnurA",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "composer_id": "pattabhiramayya",
+          "display_title": "marubārī tāḷalēnurā",
+          "notes": "jāvaḷi"
+        }
+      ]
+    },
+    {
+      "session_index": 3,
+      "performers": [
+        {
+          "musician_id": "musiri_subramania_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "01:18:11",
+          "offset_seconds": 4691,
+          "composition_id": "evarani_nirnayancirera",
+          "raga_id": "devamritavarshini",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "evarani nirṇayiñcirirā",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 4,
+      "performers": [
+        {
+          "musician_id": "alathur_brothers",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "01:27:08",
+          "offset_seconds": 5228,
+          "composition_id": "jagadananda_karaka",
+          "raga_id": "nata",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "jagadānandakāraka",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "01:36:30",
+          "offset_seconds": 5790,
+          "composition_id": "nama_kusumamulace",
+          "raga_id": "sriraga",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "nāma kusumamulacē pūjiñcē",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "01:51:00",
+          "offset_seconds": 6660,
+          "composition_id": "eti_janmamidi",
+          "raga_id": "varali",
+          "tala": "misra_capu",
+          "composer_id": "tyagaraja",
+          "display_title": "ēṭi janmamidi",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "01:55:43",
+          "offset_seconds": 7143,
+          "composition_id": "cakkani_rajamargamulu",
+          "raga_id": "kharaharapriya",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "cakkani rājamārgamulu",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "02:05:01",
+          "offset_seconds": 7501,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "tani āvartana",
+          "notes": "percussion solo",
+          "type": "tani"
+        }
+      ]
+    },
+    {
+      "session_index": 5,
+      "performers": [
+        {
+          "musician_id": "dk_pattammal",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "ms_subbulakshmi",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+        },
+        {
+          "musician_id": "ramnad_raghavan",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "Alangudi Ramachandran"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:15:49",
+          "offset_seconds": 8149,
+          "composition_id": "koluvamaregada",
+          "raga_id": "todi",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "koluvamaregadā",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 6,
+      "performers": [
+        {
+          "musician_id": "dk_pattammal",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "vocal",
+          "unmatched_name": "Unidentified artiste"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "Alangudi Ramachandran"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:26:40",
+          "offset_seconds": 8800,
+          "composition_id": "lalite_kanci_nagara",
+          "raga_id": "bhairavi",
+          "tala": "adi",
+          "composer_id": "annasami_shastri",
+          "display_title": "lalitē kāñci nagara nivāsinī",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "02:33:14",
+          "offset_seconds": 9194,
+          "composition_id": "callare_ramacandruniki",
+          "raga_id": "ahiri",
+          "tala": "misra_capu",
+          "composer_id": "tyagaraja",
+          "display_title": "callarē rāmacandruni",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "02:37:24",
+          "offset_seconds": 9444,
+          "composition_id": "cittam_eppaDiyO",
+          "raga_id": "nadanamakriya",
+          "tala": "misra_capu",
+          "composer_id": "samuel_vedanayagam_pillai",
+          "display_title": "cittam eppaḍiyō",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 7,
+      "performers": [
+        {
+          "musician_id": "ms_subbulakshmi",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "radha_viswanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+        },
+        {
+          "musician_id": "ramnad_raghavan",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "Alangudi Ramachandran"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:42:12",
+          "offset_seconds": 9732,
+          "composition_id": "kshira_sagara_shayana",
+          "raga_id": "mayamalavagowla",
+          "tala": "caturaśra_dhruva",
+          "composer_id": "jayachamarajendra_wadiyar",
+          "display_title": "kṣīra sāgara śayana",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "02:51:51",
+          "offset_seconds": 10311,
+          "composition_id": "kuvalayakshiro",
+          "raga_id": "gowlipantu",
+          "tala": "misra_capu",
+          "composer_id": "kshetrayya",
+          "display_title": "kuvalayākṣirō",
+          "notes": "padam"
+        }
+      ]
+    },
+    {
+      "session_index": 8,
+      "performers": [
+        {
+          "musician_id": "dk_pattammal",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "ms_subbulakshmi",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+        },
+        {
+          "musician_id": "ramnad_raghavan",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "Alangudi Ramachandran"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "03:00:11",
+          "offset_seconds": 10811,
+          "composition_id": "mamava_pattabhirama",
+          "raga_id": "manirangu",
+          "tala": "misra_capu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "māmava paṭṭābhirāma",
+          "notes": null
+        }
+      ]
+    }
+  ]
+}
