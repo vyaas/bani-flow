@@ -186,9 +186,221 @@
         {"url": "https://en.wikipedia.org/wiki/Surutti", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "notes": "Janya of Harikambhoji (28th melakarta); bhāshāṅga vakra raga (Subbarama Dikshitar classification); ārohana S R₂ M₁ P N₂ D₂ N₂ Ṡ, avarohana Ṡ N₂ D₂ P M₁ G₃ P M₁ R₂ S; equivalent to Mixolydian mode; evokes devotion and pathos; a favourite raga of the Tyagaraja school"
+    },
+    {
+      "id": "reetigowla",
+      "name": "Reetigowla",
+      "aliases": ["Ritigaula", "Reethigowla", "Reethi Gowla"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Reetigowla", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Kharaharapriya (22nd melakarta); vakra shadava-sampoorna raga (6 notes ascending, 7 descending); evokes bhakti mixed with joy; a favourite of the Tyagaraja school"
+    },
+    {
+      "id": "poornashadjam",
+      "name": "Poorna Shadjam",
+      "aliases": ["Purna Shadja", "Purnashadjam", "Poornashadjam"],
+      "melakarta": null,
+      "parent_raga": "natabhairavi",
+      "sources": [
+        {"url": "https://www.drmradhakrishnan.com/post/rare-raga-series-poornashadjam-janya-of-mela-20-ragam-natabhairavi", "label": "Dr. M. Radhakrishnan — Rare Raga Series: Poornashadjam", "type": "article"}
+      ],
+      "notes": "Janya of Natabhairavi (20th melakarta); oudava-shadava raga (5 notes ascending, 6 descending); ārohana S R2 G2 M1 N2 N2 S, avarohana S N2 P M1 G2 R2 S; rare raga popularised by the Tyagaraja school; principal compositions are Tyagaraja's 'Śrī māninī manōhara' and 'Lavanya Rāma'"
+    },
+    {
+      "id": "devamritavarshini",
+      "name": "Devamritavarshini",
+      "aliases": ["Deva Amrita Varshini", "dEvaamrutavarshani"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1505.shtml", "label": "Karnatik.com — evarani nirNayincirirA notation", "type": "archive"}
+      ],
+      "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 G2 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; distinct from Amritavarshini (which is a Dikshitar creation, janya of Chitrambari); associated with the Tyagaraja school"
+    },
+    {
+      "id": "sriraga",
+      "name": "Sriraga",
+      "aliases": ["Shree", "Sri", "Sreeraga", "Shri"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Shree_%28Carnatic_raga%29", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Asampurna melakarta equivalent of Kharaharapriya (22nd melakarta); audava-vakra-sampurna raga (5 notes ascending, zig-zag descending); no gandharam or dhaivatam in ascending scale; ancient raga; not related to the Hindustani raga Shree"
+    },
+    {
+      "id": "ahiri",
+      "name": "Ahiri",
+      "aliases": [],
+      "melakarta": null,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ahiri", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Vakulabharanam (14th melakarta); also associated with Hanumatodi (8th melakarta); sampurna raga with vakra swaras in ascending scale; evokes karuna rasa (compassion); considered an early-morning raga; ancient raga mentioned in Sangita Makarandha"
+    },
+    {
+      "id": "nadanamakriya",
+      "name": "Nadanamakriya",
+      "aliases": ["Nada Namakriya"],
+      "melakarta": null,
+      "parent_raga": "mayamalavagowla",
+      "sources": [
+        {"url": "https://sujamusic.wordpress.com/nadanamakriya/", "label": "Suja Music — Nadanamakriya scale and notes", "type": "article"}
+      ],
+      "notes": "Janya of Mayamalavagowla (15th melakarta); nishandantya raga (highest note is Nishada); ārohana S R1 G3 M1 P D1 N3, avarohana N3 D1 P M1 G3 R1 S N3; evokes a questioning, yearning, contemplative mood; associated with slow-tempo padams and meditative compositions"
+    },
+    {
+      "id": "gowlipantu",
+      "name": "Gowlipantu",
+      "aliases": ["Gaulipantu", "Goulipantu", "gauLipantu"],
+      "melakarta": null,
+      "parent_raga": "mayamalavagowla",
+      "sources": [
+        {"url": "https://www.karnatik.com/ragasg.shtml#gauLipantu", "label": "Karnatik.com — raga index", "type": "archive"}
+      ],
+      "notes": "Janya of Mayamalavagowla (15th melakarta); audava-vakra raga (5 notes ascending, vakra descending); ārohana S R₁ M₁ P N₃ S, avarohana S N₃ D₁ P M₁ D₁ M₁ G₃ R₁ S; associated with padams and javalis of the Kshetrayya tradition"
+    },
+    {
+      "id": "manirangu",
+      "name": "Manirangu",
+      "aliases": ["maNirangu"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://www.karnatik.com/ragasm.shtml#maNirangu", "label": "Karnatik.com — raga index", "type": "archive"}
+      ],
+      "notes": "Janya of Kharaharapriya (22nd melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; associated with Muttusvāmi Dīkṣita compositions"
+    },
+    {
+      "id": "devagandhari",
+      "name": "Devagandhari",
+      "aliases": ["Deva Gandhari"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Devagandhari", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Kharaharapriya (22nd melakarta); evokes devotion and grandeur; associated with compositions of Tyagaraja"
+    },
+    {
+      "id": "khamas",
+      "name": "Khamas",
+      "aliases": ["Kamas", "Kamaas"],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Khamas", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga; evokes romance and longing; widely used in javalis and padams"
+    },
+    {
+      "id": "mayamalavagowla",
+      "name": "Mayamalavagowla",
+      "aliases": ["Maya Malava Gowla", "Mayamalavagaula"],
+      "melakarta": 15,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Mayamalavagowla", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "15th melakarta; one of the first ragas taught to beginners; evokes pathos and devotion; parent of Nadanamakriya and Gowlipantu among others"
+    },
+    {
+      "id": "kharaharapriya",
+      "name": "Kharaharapriya",
+      "aliases": ["Kara Harapriya"],
+      "melakarta": 22,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kharaharapriya", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "22nd melakarta; equivalent to the Dorian mode; parent of many important janya ragas including Reetigowla, Sriraga, Devamritavarshini, Manirangu, and Devagandhari; associated with devotion and grandeur"
     }
   ],
   "composers": [
+    {
+      "id": "patnam_subramanya_iyer",
+      "name": "Patnam Subramanya Iyer",
+      "musician_node_id": "patnam_subramanya_iyer",
+      "born": 1845,
+      "died": 1902,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "muthuswami_dikshitar",
+      "name": "Muthuswami Dikshitar",
+      "musician_node_id": "muthuswami_dikshitar",
+      "born": 1775,
+      "died": 1835,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "swati_tirunal",
+      "name": "Swati Tirunal",
+      "musician_node_id": null,
+      "born": 1813,
+      "died": 1846,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Swati_Tirunal", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "jayachamarajendra_wadiyar",
+      "name": "Jayachamarajendra Wadiyar",
+      "musician_node_id": null,
+      "born": 1919,
+      "died": 1974,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Jayachamarajendra_Wadiyar", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "kshetrayya",
+      "name": "Kshetrayya",
+      "musician_node_id": null,
+      "born": null,
+      "died": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kshetrayya", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "pattabhiramayya",
+      "name": "Tiruppaṇandāḷ Paṭṭābhirāmaiyyā",
+      "musician_node_id": null,
+      "born": null,
+      "died": null,
+      "sources": [
+        {"url": "http://www.carnatica.net/composer/pattabhiramayya.htm", "label": "Carnatica.net — composer profile", "type": "article"}
+      ]
+    },
+    {
+      "id": "annasami_shastri",
+      "name": "Annasami Shastri",
+      "musician_node_id": null,
+      "born": 1899,
+      "died": null,
+      "sources": [
+        {"url": "https://www.karnatik.com/co1124.shtml", "label": "Karnatik.com — composer profile", "type": "archive"}
+      ]
+    },
+    {
+      "id": "samuel_vedanayagam_pillai",
+      "name": "Samuel Vedanayagam Pillai",
+      "musician_node_id": null,
+      "born": 1826,
+      "died": 1889,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Samuel_Vedanayagam_Pillai", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
     {
       "id": "tyagaraja",
       "name": "Tyagaraja",
@@ -305,6 +517,234 @@
         {"url": "http://www.shivkumar.org/music/gitarthamu.ram", "label": "Shivkumar.org — notation", "type": "archive"}
       ],
       "notes": "Tyagaraja kriti in Surutti; a meditation on the meaning of the Gita"
+    },
+    {
+      "id": "bale_balendu_bhushani",
+      "title": "Bālē Bālēndu Bhūṣaṇi",
+      "composer_id": "tyagaraja",
+      "raga_id": "reetigowla",
+      "tala": "adi",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.anupallavi.com/song/bale-balendu/", "label": "Anupallavi.com — notation and meaning", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Reetigowla; addressed to the Mother at Tiruvaiyaru; pallavi uses the epithet 'bālē' (O Mother)"
+    },
+    {
+      "id": "abhimanamennedu",
+      "title": "Abhimānamenneḍu",
+      "composer_id": "patnam_subramanya_iyer",
+      "raga_id": "begada",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Kriti by Patnam Subramanya Iyer in Begada"
+    },
+    {
+      "id": "bhajana_parulakela",
+      "title": "Bhajana Parulakēla",
+      "composer_id": "tyagaraja",
+      "raga_id": "surutti",
+      "tala": "rupakam",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Surutti; set to Rupakam tala"
+    },
+    {
+      "id": "sri_manimi_manohara",
+      "title": "Śrī Māninī Manōhara",
+      "composer_id": "tyagaraja",
+      "raga_id": "poornashadjam",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-sri-maanini-raga.html", "label": "Thyagaraja Vaibhavam blog — notation and meaning", "type": "article"}
+      ],
+      "notes": "Tyagaraja kriti in the rare raga Poorna Shadjam; Tyagaraja pleads with the Lord to grant him service at His feet"
+    },
+    {
+      "id": "enduku_peddala",
+      "title": "Enduku Peddala",
+      "composer_id": "tyagaraja",
+      "raga_id": "shankarabharanam",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Shankarabharanam"
+    },
+    {
+      "id": "alarsara_paritapam",
+      "title": "Alarśara Paritāpam",
+      "composer_id": "swati_tirunal",
+      "raga_id": "surutti",
+      "tala": "misra_capu",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Swati_Tirunal", "label": "Wikipedia — Swati Tirunal", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Swati Tirunal in Surutti; misra capu tala"
+    },
+    {
+      "id": "karuna_samudra",
+      "title": "Karuṇā Samudrā",
+      "composer_id": "tyagaraja",
+      "raga_id": "devagandhari",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Devagandhari"
+    },
+    {
+      "id": "marubari_talalEnurA",
+      "title": "Marubārī Tāḷalēnurā",
+      "composer_id": "pattabhiramayya",
+      "raga_id": "khamas",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "http://www.carnatica.net/composer/pattabhiramayya.htm", "label": "Carnatica.net — composer profile", "type": "article"}
+      ],
+      "notes": "Jāvaḷi by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā in Khamas; one of his most popular compositions; mudra: Talavam"
+    },
+    {
+      "id": "evarani_nirnayancirera",
+      "title": "Evarani Nirṇayiñcirirā",
+      "composer_id": "tyagaraja",
+      "raga_id": "devamritavarshini",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1505.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Devamritavarshini; Tyagaraja asks who can determine the nature of the Lord"
+    },
+    {
+      "id": "nama_kusumamulace",
+      "title": "Nāma Kusumamulacē Pūjiñcē",
+      "composer_id": "tyagaraja",
+      "raga_id": "sriraga",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Sriraga"
+    },
+    {
+      "id": "eti_janmamidi",
+      "title": "Ēṭi Janmamidi",
+      "composer_id": "tyagaraja",
+      "raga_id": "varali",
+      "tala": "misra_capu",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Varali; misra capu tala"
+    },
+    {
+      "id": "cakkani_rajamargamulu",
+      "title": "Cakkani Rājamārgamulu",
+      "composer_id": "tyagaraja",
+      "raga_id": "kharaharapriya",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Kharaharapriya"
+    },
+    {
+      "id": "koluvamaregada",
+      "title": "Koluvamaregadā",
+      "composer_id": "tyagaraja",
+      "raga_id": "todi",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Todi; a devotional composition asking whether the Lord is pleased"
+    },
+    {
+      "id": "lalite_kanci_nagara",
+      "title": "Lalitē Kāñci Nagara Nivāsinī",
+      "composer_id": "annasami_shastri",
+      "raga_id": "bhairavi",
+      "tala": "adi",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.karnatik.com/co1124.shtml", "label": "Karnatik.com — composer profile", "type": "archive"}
+      ],
+      "notes": "Kriti by Annasami Shastri in Bhairavi; addressed to the goddess of Kanchipuram"
+    },
+    {
+      "id": "callare_ramacandruniki",
+      "title": "Callarē Rāmacandruni",
+      "composer_id": "tyagaraja",
+      "raga_id": "ahiri",
+      "tala": "misra_capu",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Ahiri; misra capu tala"
+    },
+    {
+      "id": "cittam_eppaDiyO",
+      "title": "Cittam Eppaḍiyō",
+      "composer_id": "samuel_vedanayagam_pillai",
+      "raga_id": "nadanamakriya",
+      "tala": "misra_capu",
+      "language": "tamil",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Samuel_Vedanayagam_Pillai", "label": "Wikipedia — Samuel Vedanayagam Pillai", "type": "wikipedia"}
+      ],
+      "notes": "Tamil composition by Mayuram Vedanayagam Pillai (Samuel Vedanayagam Pillai) in Nadanamakriya; misra capu tala"
+    },
+    {
+      "id": "kshira_sagara_shayana",
+      "title": "Kṣīra Sāgara Śayana",
+      "composer_id": "jayachamarajendra_wadiyar",
+      "raga_id": "mayamalavagowla",
+      "tala": "caturaśra_dhruva",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Jayachamarajendra_Wadiyar", "label": "Wikipedia — Jayachamarajendra Wadiyar", "type": "wikipedia"}
+      ],
+      "notes": "Composition by Maharaja Jayachamarajendra Wadiyar of Mysore in Mayamalavagowla; caturaśra dhruva tala"
+    },
+    {
+      "id": "kuvalayakshiro",
+      "title": "Kuvalayākṣirō",
+      "composer_id": "kshetrayya",
+      "raga_id": "gowlipantu",
+      "tala": "misra_capu",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kshetrayya", "label": "Wikipedia — Kshetrayya", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Kshetrayya in Gowlipantu; misra capu tala; part of the Kshetrayya padam tradition"
+    },
+    {
+      "id": "mamava_pattabhirama",
+      "title": "Māmava Paṭṭābhirāma",
+      "composer_id": "muthuswami_dikshitar",
+      "raga_id": "manirangu",
+      "tala": "misra_capu",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1188.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Kriti by Muttusvāmi Dīkṣita in Manirangu; misra capu tala; addressed to Lord Pattabhirama"
     }
   ]
 }

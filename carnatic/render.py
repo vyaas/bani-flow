@@ -14,6 +14,7 @@ from collections import defaultdict
 ROOT              = Path(__file__).parent
 DATA_FILE         = ROOT / "data" / "musicians.json"
 COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"
+RECORDINGS_FILE   = ROOT / "data" / "recordings.json"
 OUT_FILE          = ROOT / "graph.html"
 
 # ── visual mappings ────────────────────────────────────────────────────────────
@@ -79,6 +80,93 @@ def load_compositions() -> dict:
     if COMPOSITIONS_FILE.exists():
         return json.loads(COMPOSITIONS_FILE.read_text(encoding="utf-8"))
     return {"ragas": [], "composers": [], "compositions": []}
+
+def load_recordings() -> dict:
+    """Load recordings.json; return empty structure if absent."""
+    if RECORDINGS_FILE.exists():
+        return json.loads(RECORDINGS_FILE.read_text(encoding="utf-8"))
+    return {"recordings": []}
+
+def timestamp_to_seconds(ts: str) -> int:
+    """Convert 'MM:SS' or 'HH:MM:SS' to integer seconds."""
+    parts = [int(p) for p in ts.strip().split(":")]
+    if len(parts) == 2:
+        return parts[0] * 60 + parts[1]
+    elif len(parts) == 3:
+        return parts[0] * 3600 + parts[1] * 60 + parts[2]
+    raise ValueError(f"Unrecognised timestamp format: {ts!r}")
+
+def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dict, dict, dict]:
+    """
+    Build three denormalised lookup dicts from recordings.json:
+      musician_to_performances:     {musician_id: [PerformanceRef, ...]}
+      composition_to_performances:  {composition_id: [PerformanceRef, ...]}
+      raga_to_performances:         {raga_id: [PerformanceRef, ...]}
+
+    Each PerformanceRef is a flat dict carrying everything the UI needs.
+    """
+    comp_raga: dict[str, str] = {
+        c["id"]: c["raga_id"] for c in comp_data.get("compositions", [])
+    }
+
+    musician_to_performances:    dict[str, list[dict]] = defaultdict(list)
+    composition_to_performances: dict[str, list[dict]] = defaultdict(list)
+    raga_to_performances:        dict[str, list[dict]] = defaultdict(list)
+
+    for rec in recordings_data.get("recordings", []):
+        rec_id   = rec["id"]
+        video_id = rec["video_id"]
+        title    = rec["title"]
+        date     = rec.get("date", "")
+
+        for session in rec.get("sessions", []):
+            performers = session.get("performers", [])
+
+            for perf in session.get("performances", []):
+                # Infer raga_id from composition if not set directly
+                raga_id = perf.get("raga_id")
+                comp_id = perf.get("composition_id")
+                if not raga_id and comp_id:
+                    raga_id = comp_raga.get(comp_id)
+
+                ref: dict = {
+                    "recording_id":      rec_id,
+                    "video_id":          video_id,
+                    "title":             title,
+                    "date":              date,
+                    "session_index":     session["session_index"],
+                    "performance_index": perf["performance_index"],
+                    "timestamp":         perf.get("timestamp", ""),
+                    "offset_seconds":    perf.get("offset_seconds", 0),
+                    "display_title":     perf.get("display_title", ""),
+                    "composition_id":    comp_id,
+                    "raga_id":           raga_id,
+                    "tala":              perf.get("tala"),
+                    "composer_id":       perf.get("composer_id"),
+                    "notes":             perf.get("notes"),
+                    "type":              perf.get("type"),
+                    "performers":        performers,
+                }
+
+                # Index by musician
+                for pf in performers:
+                    mid = pf.get("musician_id")
+                    if mid:
+                        musician_to_performances[mid].append(ref)
+
+                # Index by composition
+                if comp_id:
+                    composition_to_performances[comp_id].append(ref)
+
+                # Index by raga
+                if raga_id:
+                    raga_to_performances[raga_id].append(ref)
+
+    return (
+        dict(musician_to_performances),
+        dict(composition_to_performances),
+        dict(raga_to_performances),
+    )
 
 def build_composition_lookups(graph: dict, comp_data: dict) -> tuple[dict, dict]:
     """
@@ -200,16 +288,29 @@ def build_elements(graph: dict) -> list[dict]:
 
 # ── HTML template ──────────────────────────────────────────────────────────────
 
-def render_html(elements: list[dict], graph: dict, comp_data: dict,
-                composition_to_nodes: dict, raga_to_nodes: dict) -> str:
-    elements_json      = json.dumps(elements, indent=2, ensure_ascii=False)
-    ragas_json         = json.dumps(comp_data.get("ragas", []), indent=2, ensure_ascii=False)
-    composers_json     = json.dumps(comp_data.get("composers", []), indent=2, ensure_ascii=False)
-    compositions_json  = json.dumps(comp_data.get("compositions", []), indent=2, ensure_ascii=False)
-    comp_to_nodes_json = json.dumps(composition_to_nodes, indent=2, ensure_ascii=False)
-    raga_to_nodes_json = json.dumps(raga_to_nodes, indent=2, ensure_ascii=False)
-    node_count         = len(graph["nodes"])
-    edge_count         = len(graph["edges"])
+def render_html(
+    elements: list[dict],
+    graph: dict,
+    comp_data: dict,
+    composition_to_nodes: dict,
+    raga_to_nodes: dict,
+    recordings_data: dict,
+    musician_to_performances: dict,
+    composition_to_performances: dict,
+    raga_to_performances: dict,
+) -> str:
+    elements_json            = json.dumps(elements, indent=2, ensure_ascii=False)
+    ragas_json               = json.dumps(comp_data.get("ragas", []), indent=2, ensure_ascii=False)
+    composers_json           = json.dumps(comp_data.get("composers", []), indent=2, ensure_ascii=False)
+    compositions_json        = json.dumps(comp_data.get("compositions", []), indent=2, ensure_ascii=False)
+    comp_to_nodes_json       = json.dumps(composition_to_nodes, indent=2, ensure_ascii=False)
+    raga_to_nodes_json       = json.dumps(raga_to_nodes, indent=2, ensure_ascii=False)
+    recordings_json          = json.dumps(recordings_data.get("recordings", []), indent=2, ensure_ascii=False)
+    musician_to_perf_json    = json.dumps(musician_to_performances, indent=2, ensure_ascii=False)
+    composition_to_perf_json = json.dumps(composition_to_performances, indent=2, ensure_ascii=False)
+    raga_to_perf_json        = json.dumps(raga_to_performances, indent=2, ensure_ascii=False)
+    node_count               = len(graph["nodes"])
+    edge_count               = len(graph["edges"])
 
     legend_items = "".join(
         f'<div class="legend-item">'
@@ -290,6 +391,23 @@ def render_html(elements: list[dict], graph: dict, comp_data: dict,
     text-decoration: none; font-size: 0.75rem; margin-bottom: 3px;
   }}
   .node-src-link:hover {{ text-decoration: underline; }}
+
+  /* ── Performances panel (structured concert recordings) ── */
+  #perf-panel {{ display: none; }}
+  #perf-list  {{ list-style: none; margin-top: 4px; max-height: 220px; overflow-y: auto; }}
+  #perf-list li {{
+    padding: 5px 0; border-bottom: 1px solid var(--bg2);
+    font-size: 0.74rem; color: var(--fg2);
+    display: flex; align-items: flex-start;
+    gap: 5px; line-height: 1.4; flex-wrap: wrap;
+  }}
+  #perf-list li:last-child {{ border-bottom: none; }}
+  .perf-title  {{ color: var(--yellow); font-weight: bold; flex: 1; }}
+  .perf-raga   {{ color: var(--fg3); font-size: 0.70rem; width: 100%; padding-left: 18px; }}
+  .perf-play   {{ flex-shrink: 0; color: var(--green); cursor: pointer; }}
+  .perf-play:hover {{ color: var(--aqua); }}
+  .perf-link   {{ flex-shrink: 0; color: var(--blue); font-size: 0.70rem; text-decoration: none; }}
+  .perf-link:hover {{ text-decoration: underline; }}
 
   /* sidebar track list */
   #track-panel {{ display: none; }}
@@ -523,6 +641,12 @@ def render_html(elements: list[dict], graph: dict, comp_data: dict,
       <ul id="track-list"></ul>
     </div>
 
+    <!-- ── Structured concert performances ── -->
+    <div class="panel" id="perf-panel">
+      <h3>Concert Performances &#127911;</h3>
+      <ul id="perf-list"></ul>
+    </div>
+
     <div class="panel" id="edge-info">
       <h3>Selected Edge</h3>
       <div id="edge-guru"></div>
@@ -579,6 +703,12 @@ const composers    = {composers_json};
 const compositions = {compositions_json};
 const compositionToNodes = {comp_to_nodes_json};
 const ragaToNodes        = {raga_to_nodes_json};
+
+// ── Recordings data (injected by render.py) ───────────────────────────────────
+const recordings             = {recordings_json};
+const musicianToPerformances = {musician_to_perf_json};
+const compositionToPerf      = {composition_to_perf_json};
+const ragaToPerf             = {raga_to_perf_json};
 
 // ── Cytoscape init ────────────────────────────────────────────────────────────
 const cy = cytoscape({{
@@ -725,14 +855,19 @@ const mpTitle  = document.getElementById('mp-title');
 const mpTracks = document.getElementById('mp-tracks');
 let   currentVid = null;
 
-function ytEmbedUrl(vid) {{
-  return `https://www.youtube.com/embed/${{vid}}?autoplay=1&rel=0`;
+function ytEmbedUrl(vid, startSeconds) {{
+  const t = (startSeconds && startSeconds > 0) ? `&start=${{startSeconds}}` : '';
+  return `https://www.youtube.com/embed/${{vid}}?autoplay=1&rel=0${{t}}`;
 }}
 
-function loadTrack(vid, label, artistName) {{
-  if (currentVid === vid) return;
+function ytDirectUrl(vid, startSeconds) {{
+  const t = (startSeconds && startSeconds > 0) ? `?t=${{startSeconds}}` : '';
+  return `https://youtu.be/${{vid}}${{t}}`;
+}}
+
+function loadTrack(vid, label, artistName, startSeconds) {{
   currentVid = vid;
-  mpIframe.src = ytEmbedUrl(vid);
+  mpIframe.src = ytEmbedUrl(vid, startSeconds);
   mpTitle.textContent = artistName ? `${{artistName}} — ${{label}}` : label;
   mpTracks.querySelectorAll('.mp-track').forEach(el =>
     el.classList.toggle('active', el.dataset.vid === vid));
@@ -795,6 +930,55 @@ document.getElementById('mp-close').addEventListener('click', () => {{
   document.addEventListener('mouseup', () => {{ resizing = false; }});
 }})();
 
+// ── buildPerfPanel ────────────────────────────────────────────────────────────
+function buildPerfPanel(nodeId) {{
+  const perfPanel = document.getElementById('perf-panel');
+  const perfList  = document.getElementById('perf-list');
+  perfList.innerHTML = '';
+
+  const perfs = musicianToPerformances[nodeId] || [];
+  if (perfs.length === 0) {{
+    perfPanel.style.display = 'none';
+    return;
+  }}
+
+  perfs.forEach(p => {{
+    const li = document.createElement('li');
+
+    const playSpan = document.createElement('span');
+    playSpan.className = 'perf-play';
+    playSpan.textContent = '▶';
+    playSpan.title = `Play from ${{p.timestamp || '0:00'}}`;
+    playSpan.addEventListener('click', () =>
+      loadTrack(p.video_id, p.display_title, p.title, p.offset_seconds));
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'perf-title';
+    titleSpan.textContent = p.display_title;
+
+    const linkA = document.createElement('a');
+    linkA.className = 'perf-link';
+    linkA.href = ytDirectUrl(p.video_id, p.offset_seconds);
+    linkA.target = '_blank';
+    linkA.textContent = p.timestamp || '↗';
+    linkA.title = 'Open in YouTube at this timestamp';
+
+    const ragaSpan = document.createElement('span');
+    ragaSpan.className = 'perf-raga';
+    const ragaObj = ragas.find(r => r.id === p.raga_id);
+    const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
+    ragaSpan.textContent = [ragaName, p.tala, p.title].filter(Boolean).join(' · ');
+
+    li.appendChild(playSpan);
+    li.appendChild(titleSpan);
+    li.appendChild(linkA);
+    li.appendChild(ragaSpan);
+    perfList.appendChild(li);
+  }});
+
+  perfPanel.style.display = 'block';
+}}
+
 // ── node tap ──────────────────────────────────────────────────────────────────
 cy.on('tap', 'node', evt => {{
   const d = evt.target.data();
@@ -837,6 +1021,9 @@ cy.on('tap', 'node', evt => {{
     trackPanel.style.display = 'none';
   }}
 
+  // structured concert performances
+  buildPerfPanel(d.id);
+
   cy.elements().addClass('faded');
   evt.target.removeClass('faded');
   evt.target.connectedEdges().removeClass('faded').addClass('highlighted');
@@ -865,6 +1052,7 @@ cy.on('tap', 'edge', evt => {{
 
   document.getElementById('node-info').style.display   = 'none';
   document.getElementById('track-panel').style.display = 'none';
+  document.getElementById('perf-panel').style.display  = 'none';
   document.getElementById('edge-info').style.display   = 'block';
 
   cy.elements().addClass('faded');
@@ -879,9 +1067,9 @@ cy.on('tap', evt => {{
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent     = '—';
   document.getElementById('node-meta').innerHTML       = '';
-  document.getElementById('node-link').style.display   = 'none';
   document.getElementById('node-info').style.display   = 'block';
   document.getElementById('track-panel').style.display = 'none';
+  document.getElementById('perf-panel').style.display  = 'none';
   document.getElementById('edge-info').style.display   = 'none';
   applyZoomLabels();
 }});
@@ -1062,13 +1250,15 @@ function toggleLayout() {{
 const nodeBorn = {{}};
 cy.nodes().forEach(n => {{ nodeBorn[n.id()] = n.data('born'); }});
 
-// Populate dropdowns (only entries that have tagged recordings)
+// Populate dropdowns (entries that have tagged recordings OR structured performances)
 (function () {{
   const compSel = document.getElementById('bani-comp-select');
   const ragaSel = document.getElementById('bani-raga-select');
 
   compositions.forEach(c => {{
-    if (compositionToNodes[c.id] && compositionToNodes[c.id].length > 0) {{
+    const hasNode = compositionToNodes[c.id] && compositionToNodes[c.id].length > 0;
+    const hasPerf = compositionToPerf[c.id]  && compositionToPerf[c.id].length  > 0;
+    if (hasNode || hasPerf) {{
       const opt = document.createElement('option');
       opt.value = c.id;
       opt.textContent = c.title;
@@ -1077,7 +1267,9 @@ cy.nodes().forEach(n => {{ nodeBorn[n.id()] = n.data('born'); }});
   }});
 
   ragas.forEach(r => {{
-    if (ragaToNodes[r.id] && ragaToNodes[r.id].length > 0) {{
+    const hasNode = ragaToNodes[r.id] && ragaToNodes[r.id].length > 0;
+    const hasPerf = ragaToPerf[r.id]  && ragaToPerf[r.id].length  > 0;
+    if (hasNode || hasPerf) {{
       const opt = document.createElement('option');
       opt.value = r.id;
       opt.textContent = r.name;
@@ -1143,7 +1335,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
     if (raga) composerLabel.textContent = 'Raga: ' + raga.name;
   }}
 
-  // Collect matching tracks across matched nodes, sorted by year then born
+  // Collect matching tracks across matched nodes (from musicians.json youtube[])
   const rows = [];
   matchedNodeIds.forEach(nid => {{
     const n = cy.getElementById(nid);
@@ -1157,8 +1349,40 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
             return c && c.raga_id === id;
           }})())) ;
       if (matches) {{
-        rows.push({{ nodeId: nid, artistLabel: d.label, born: d.born, track: t }});
+        rows.push({{ nodeId: nid, artistLabel: d.label, born: d.born, track: t, isStructured: false }});
       }}
+    }});
+  }});
+
+  // Also collect from structured recordings (recordings.json)
+  const structuredPerfs = type === 'comp'
+    ? (compositionToPerf[id] || [])
+    : (ragaToPerf[id] || []);
+
+  structuredPerfs.forEach(p => {{
+    const primaryPerformer = p.performers.find(pf => pf.role === 'vocal') || p.performers[0];
+    let artistLabel, nodeId, born;
+    if (primaryPerformer && primaryPerformer.musician_id) {{
+      const pNode = cy.getElementById(primaryPerformer.musician_id);
+      artistLabel = (pNode && pNode.data('label')) || primaryPerformer.unmatched_name || p.title;
+      nodeId = primaryPerformer.musician_id;
+      born   = pNode ? pNode.data('born') : null;
+    }} else {{
+      artistLabel = (primaryPerformer && primaryPerformer.unmatched_name) || p.title;
+      nodeId = null;
+      born   = null;
+    }}
+    rows.push({{
+      nodeId,
+      artistLabel,
+      born,
+      track: {{
+        vid:            p.video_id,
+        label:          p.display_title,
+        year:           p.date ? parseInt(p.date) : null,
+        offset_seconds: p.offset_seconds,
+      }},
+      isStructured: true,
     }});
   }});
 
@@ -1188,18 +1412,22 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
     const artistSpan = document.createElement('span');
     artistSpan.className = 'trail-artist';
     artistSpan.textContent = row.artistLabel;
-    artistSpan.addEventListener('click', () => {{
-      cy.elements().removeClass('faded highlighted bani-match');
-      applyBaniFilter(type, id); // re-apply to keep highlight
-      const n = cy.getElementById(row.nodeId);
-      cy.animate({{ fit: {{ eles: n, padding: 80 }} }});
-    }});
+    if (row.nodeId) {{
+      artistSpan.addEventListener('click', () => {{
+        cy.elements().removeClass('faded highlighted bani-match');
+        applyBaniFilter(type, id);
+        const n = cy.getElementById(row.nodeId);
+        cy.animate({{ fit: {{ eles: n, padding: 80 }} }});
+      }});
+    }}
 
     const playSpan = document.createElement('span');
     playSpan.className = 'trail-play';
     playSpan.textContent = '\u25b6';
-    playSpan.title = 'Play';
-    playSpan.addEventListener('click', () => loadTrack(row.track.vid, row.track.label, row.artistLabel));
+    playSpan.title = row.isStructured ? `Play from ${{row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}}` : 'Play';
+    playSpan.addEventListener('click', () =>
+      loadTrack(row.track.vid, row.track.label, row.artistLabel,
+                row.isStructured ? row.track.offset_seconds : undefined));
 
     const labelSpan = document.createElement('span');
     labelSpan.className = 'trail-label';
@@ -1244,11 +1472,21 @@ document.getElementById('bani-raga-select').addEventListener('change', function 
 # ── entry point ────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    graph     = json.loads(DATA_FILE.read_text(encoding="utf-8"))
-    comp_data = load_compositions()
+    graph            = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    comp_data        = load_compositions()
+    recordings_data  = load_recordings()
     composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data)
-    elements  = build_elements(graph)
-    html      = render_html(elements, graph, comp_data, composition_to_nodes, raga_to_nodes)
+    musician_to_performances, composition_to_performances, raga_to_performances = \
+        build_recording_lookups(recordings_data, comp_data)
+    elements = build_elements(graph)
+    html     = render_html(
+        elements, graph, comp_data,
+        composition_to_nodes, raga_to_nodes,
+        recordings_data,
+        musician_to_performances,
+        composition_to_performances,
+        raga_to_performances,
+    )
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
 

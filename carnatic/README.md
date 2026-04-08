@@ -309,6 +309,32 @@ Add new values freely — each gets a distinct node shape in the graph automatic
 - **Kanchipuram Naina Pillai's Wikipedia page** — the article title may differ; the
   current `wikipedia` URL should be verified and corrected if the page does not exist.
 
+- **Annasami Shastri → Vina Dhanammal lineage** — Karnatik.com states that Annasami
+  Shastri's disciples include Sundarammal, who is Veena Dhanammal's mother. This is a
+  significant lineage connection (Shyama Shastri → Subbaraya Sastri → Annasami Shastri →
+  Sundarammal → Vina Dhanammal) that would add a second Trinity-to-Dhanammal chain.
+  Requires verification against a primary source before adding an edge. Annasami Shastri
+  is currently in `compositions.json` as a composer only (born 1899); if the lineage is
+  confirmed he would also need a musician node.
+
+- **Thiruvalangadu N Sundaresa Iyer** (violin) — appears in Sessions 5–8 of the
+  Poonamallee 1965 recording. No Wikipedia page found at any spelling variant. Flagged
+  as `unmatched_name` in `recordings.json`. Add a node if a Wikipedia page appears.
+
+- **Alangudi Ramachandran** (ghatam) — appears in Sessions 5–8 of the Poonamallee 1965
+  recording. No Wikipedia page found. Flagged as `unmatched_name` in `recordings.json`.
+  Add a node if a Wikipedia page appears.
+
+- **Ramnad Raghavan** (mridangam, 1927–2009) — added as a node (Sessions 5, 7, 8 of
+  Poonamallee 1965). Wikipedia confirms he is the younger brother of Ramnad Krishnan.
+  A sibling edge is not a guru-shishya edge; no lineage edge added. His guru lineage
+  is not yet established.
+
+- **Poonamallee 1965 recording** (`recordings.json`) — the `recordings.json` schema is
+  new (see `plans/youtube_recording_integration.md`). `render.py` has not yet been
+  updated to consume this file. The architectural plan at that path defines the full
+  `render.py` changes needed to surface structured concert data in `graph.html`.
+
 ---
 
 ## Interaction guide (graph.html)
