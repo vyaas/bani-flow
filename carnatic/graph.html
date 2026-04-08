@@ -14326,26 +14326,32 @@ cy.nodes().forEach(n => { nodeBorn[n.id()] = n.data('born'); });
   const compSel = document.getElementById('bani-comp-select');
   const ragaSel = document.getElementById('bani-raga-select');
 
+  const compOpts = [];
   compositions.forEach(c => {
     const hasNode = compositionToNodes[c.id] && compositionToNodes[c.id].length > 0;
     const hasPerf = compositionToPerf[c.id]  && compositionToPerf[c.id].length  > 0;
-    if (hasNode || hasPerf) {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.title;
-      compSel.appendChild(opt);
-    }
+    if (hasNode || hasPerf) compOpts.push({ id: c.id, text: c.title });
+  });
+  compOpts.sort((a, b) => a.text.localeCompare(b.text));
+  compOpts.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.id;
+    opt.textContent = o.text;
+    compSel.appendChild(opt);
   });
 
+  const ragaOpts = [];
   ragas.forEach(r => {
     const hasNode = ragaToNodes[r.id] && ragaToNodes[r.id].length > 0;
     const hasPerf = ragaToPerf[r.id]  && ragaToPerf[r.id].length  > 0;
-    if (hasNode || hasPerf) {
-      const opt = document.createElement('option');
-      opt.value = r.id;
-      opt.textContent = r.name;
-      ragaSel.appendChild(opt);
-    }
+    if (hasNode || hasPerf) ragaOpts.push({ id: r.id, text: r.name });
+  });
+  ragaOpts.sort((a, b) => a.text.localeCompare(b.text));
+  ragaOpts.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.id;
+    opt.textContent = o.text;
+    ragaSel.appendChild(opt);
   });
 })();
 
