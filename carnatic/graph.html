@@ -646,6 +646,13 @@ const elements = [
           "composition_id": "maakelara_vicaaramu",
           "raga_id": "ravichandrika",
           "year": null
+        },
+        {
+          "vid": "Rgy83EjWNn0",
+          "label": "Vinatā Suta Vāhana · Jayantasena · Adi - Madurai Mani Iyer, Music Academy 1967",
+          "composition_id": "vinata_suta_vahana",
+          "raga_id": "jayantasena",
+          "year": 1967
         }
       ]
     }
@@ -2003,11 +2010,11 @@ const elements = [
   {
     "data": {
       "id": "vellore_ramabhadran",
-      "label": "Vellore Ramabhadran",
-      "url": "https://en.wikipedia.org/wiki/Vellore_Ramabhadran",
+      "label": "Vellore G. Ramabhadran",
+      "url": "https://en.wikipedia.org/wiki/Vellore_G._Ramabhadran",
       "sources": [
         {
-          "url": "https://en.wikipedia.org/wiki/Vellore_Ramabhadran",
+          "url": "https://en.wikipedia.org/wiki/Vellore_G._Ramabhadran",
           "label": "Wikipedia",
           "type": "wikipedia"
         }
@@ -3571,6 +3578,28 @@ const ragas        = [
     "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R1 G3 M1 P N3 S, avarohana S N3 D1 P M1 G3 R1 S; evokes devotion and auspiciousness; traditionally used for mangalam compositions; associated with Tyagaraja's 'Ni Nama Roopamulaku'"
   },
   {
+    "id": "jayantasena",
+    "name": "Jayantasena",
+    "aliases": [
+      "jayantasEna"
+    ],
+    "melakarta": null,
+    "parent_raga": "kharaharapriya",
+    "sources": [
+      {
+        "url": "https://www.shivkumar.org/music/vinatasuta.htm",
+        "label": "Shivkumar.org — Vinata Suta Vahana notation (scale explicitly stated)",
+        "type": "archive"
+      },
+      {
+        "url": "https://www.karnatik.com/ragasj.shtml#jayantasEna",
+        "label": "Karnatik.com — raga index (jayantasEna entry)",
+        "type": "archive"
+      }
+    ],
+    "notes": "Janya of Kharaharapriya (22nd melakarta); shadava raga (6 notes ascending and descending, no Rishabha); ārohana S G2 M1 P D2 S, avarohana S N2 D2 P M1 G2 S; a rare raga; best known for Tyagaraja's 'Vinatā Suta Vāhana'"
+  },
+  {
     "id": "hamsadhwani",
     "name": "Hamsadhwani",
     "aliases": [
@@ -4656,6 +4685,22 @@ const compositions = [
     "notes": "Mangalam by Tyagaraja in Sowrashtram; Adi tala; traditionally sung to close a concert"
   },
   {
+    "id": "vinata_suta_vahana",
+    "title": "Vinatā Suta Vāhana",
+    "composer_id": "tyagaraja",
+    "raga_id": "jayantasena",
+    "tala": "adi",
+    "language": "telugu",
+    "sources": [
+      {
+        "url": "https://www.shivkumar.org/music/vinatasuta.htm",
+        "label": "Shivkumar.org — notation and meaning",
+        "type": "archive"
+      }
+    ],
+    "notes": "Tyagaraja kriti in Jayantasena; Adi tala; pallavi 'Vinatā Suta Vāhana Śrī Ramaṇā'; a meditation on the futility of life without the Lord's darshana and the virtue of sat-sangati (company of the pious); one of the principal compositions defining raga Jayantasena in the concert repertoire"
+  },
+  {
     "id": "jalajaksha_varnam",
     "title": "jalajākṣi ninnēḍabāsi",
     "composer_id": "maanambuchaavadi_venkatasubbaiyer",
@@ -4685,6 +4730,9 @@ const compositionToNodes = {
     "ramnad_krishnan",
     "tm_krishna",
     "sanjay_subrahmanyan"
+  ],
+  "vinata_suta_vahana": [
+    "madurai_mani_iyer"
   ],
   "abhimanamennedu": [
     "musiri_subramania_iyer",
@@ -4925,6 +4973,9 @@ const ragaToNodes        = {
     "ramnad_krishnan",
     "tm_krishna",
     "sanjay_subrahmanyan"
+  ],
+  "jayantasena": [
+    "madurai_mani_iyer"
   ],
   "begada": [
     "musiri_subramania_iyer",

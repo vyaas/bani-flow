@@ -121,6 +121,13 @@
           "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Madurai Mani Iyer",
           "composition_id": "maakelara_vicaaramu",
           "raga_id": "ravichandrika"
+        },
+        {
+          "url": "https://youtu.be/Rgy83EjWNn0",
+          "label": "Vinatā Suta Vāhana · Jayantasena · Adi - Madurai Mani Iyer, Music Academy 1967",
+          "composition_id": "vinata_suta_vahana",
+          "raga_id": "jayantasena",
+          "year": 1967
         }
       ]
     },
@@ -824,9 +831,9 @@
     },
     {
       "id": "vellore_ramabhadran",
-      "label": "Vellore Ramabhadran",
+      "label": "Vellore G. Ramabhadran",
       "sources": [
-        {"url": "https://en.wikipedia.org/wiki/Vellore_Ramabhadran", "label": "Wikipedia", "type": "wikipedia"}
+        {"url": "https://en.wikipedia.org/wiki/Vellore_G._Ramabhadran", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "born": 1929,
       "died": 2012,
