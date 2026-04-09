@@ -494,9 +494,31 @@
         {"url": "https://en.wikipedia.org/wiki/Sowrashtram", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R1 G3 M1 P N3 S, avarohana S N3 D1 P M1 G3 R1 S; evokes devotion and auspiciousness; traditionally used for mangalam compositions; associated with Tyagaraja's 'Ni Nama Roopamulaku'"
+    },
+    {
+      "id": "hamsadhwani",
+      "name": "Hamsadhwani",
+      "aliases": ["Hansadhwani"],
+      "melakarta": null,
+      "parent_raga": "mechakalyani",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Hamsadhwani", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes, no Madhyama or Dhaivata); ārohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes brightness, auspiciousness, and joy; a favourite opening raga for concerts; best known for Dikshitar's 'Vatapi Ganapatim' and the jalajAksha varnam of Maanambuchaavadi Venkatasubbaiyer"
     }
   ],
   "composers": [
+    {
+      "id": "maanambuchaavadi_venkatasubbaiyer",
+      "name": "Maanambuchaavadi Venkatasubbaiyer",
+      "musician_node_id": null,
+      "born": null,
+      "died": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Maanambuchaavadi_Venkatasubba_Iyer", "label": "Wikipedia", "type": "wikipedia"},
+        {"url": "https://www.karnatik.com/co1090.shtml", "label": "Karnatik.com — composer profile", "type": "archive"}
+      ]
+    },
     {
       "id": "chinnaiah_pillai",
       "name": "Chinnaiah Pillai",
@@ -1271,6 +1293,19 @@
         {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
       ],
       "notes": "Mangalam by Tyagaraja in Sowrashtram; Adi tala; traditionally sung to close a concert"
+    },
+    {
+      "id": "jalajaksha_varnam",
+      "title": "jalajākṣi ninnēḍabāsi",
+      "composer_id": "maanambuchaavadi_venkatasubbaiyer",
+      "raga_id": "hamsadhwani",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.shivkumar.org/music/varnams/jalajakshi.htm", "label": "Shivkumar.org — notation and meaning", "type": "archive"},
+        {"url": "https://www.karnatik.com/co1090.shtml", "label": "Karnatik.com — composer profile (lists this varnam)", "type": "archive"}
+      ],
+      "notes": "Ata-tala varnam by Maanambuchaavadi Venkatasubbaiyer in Hamsadhwani; Adi tala; pallavi 'jalajakshi ninnedabasi chala marulu konnadira'; mudra 'Venkatesa'; one of the most frequently performed varnams in the concert repertoire; the karnatik.com source notes the composer took varnamettu-s left by Tyagaraja and fitted his own words"
     }
   ]
 }
