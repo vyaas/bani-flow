@@ -184,7 +184,14 @@
       "era": "golden_age",
       "instrument": "vocal",
       "bani": "tyagaraja",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/mBSh-ti602Y",
+          "label": "abhimānamenneḍu · Begada · Adi - Musiri Subramania Iyer",
+          "composition_id": "abhimanamennedu",
+          "raga_id": "begada"
+        }
+      ]
     },
     {
       "id": "ms_subbulakshmi",
@@ -347,41 +354,47 @@
     },
     {
       "id": "tm_krishna",
-      "label": "TM Krishna",
-      "sources": [
-        {"url": "https://en.wikipedia.org/wiki/T._M._Krishna", "label": "Wikipedia", "type": "wikipedia"}
-      ],
-      "born": 1976,
-      "died": null,
-      "era": "contemporary",
-      "instrument": "vocal",
-      "bani": "semmangudi",
-      "youtube": [
-        {
-          "url": "https://youtu.be/BIEzjDD3pvA",
-          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
-          "composition_id": "maakelara_vicaaramu",
-          "raga_id": "ravichandrika"
-        },
-        {
-          "url": "https://youtu.be/-_6zvmxD1b4",
-          "label": "Gitarthamu · Surutti · Adi - TM Krishna (younger)",
-          "composition_id": "gitarthamu",
-          "raga_id": "surutti"
-        },
-        {
-          "url": "https://youtu.be/H8vbrGvEnTE",
-          "label": "Gitarthamu · Surutti · Adi - TM Krishna (older)",
-          "composition_id": "gitarthamu",
-          "raga_id": "surutti"
-        },
-        {
-          "url": "https://youtu.be/5MAI223JEVc",
-          "label": "Jagadananda Karaka · Nattai · Adi - TM Krishna",
-          "composition_id": "jagadananda_karaka",
-          "raga_id": "nata"
-        }
-      ]
+        "label": "TM Krishna",
+        "sources": [
+          {"url": "https://en.wikipedia.org/wiki/T._M._Krishna", "label": "Wikipedia", "type": "wikipedia"}
+        ],
+        "born": 1976,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "semmangudi",
+        "youtube": [
+          {
+            "url": "https://youtu.be/BIEzjDD3pvA",
+            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
+            "composition_id": "maakelara_vicaaramu",
+            "raga_id": "ravichandrika"
+          },
+          {
+            "url": "https://youtu.be/-_6zvmxD1b4",
+            "label": "Gitarthamu · Surutti · Adi - TM Krishna (younger)",
+            "composition_id": "gitarthamu",
+            "raga_id": "surutti"
+          },
+          {
+            "url": "https://youtu.be/H8vbrGvEnTE",
+            "label": "Gitarthamu · Surutti · Adi - TM Krishna (older)",
+            "composition_id": "gitarthamu",
+            "raga_id": "surutti"
+          },
+          {
+            "url": "https://youtu.be/5MAI223JEVc",
+            "label": "Jagadananda Karaka · Nattai · Adi - TM Krishna",
+            "composition_id": "jagadananda_karaka",
+            "raga_id": "nata"
+          },
+          {
+            "url": "https://youtu.be/9YgUBjlAzhI",
+            "label": "abhimānamenneḍu · Begada · Adi - TM Krishna (teaching, classroom)",
+            "composition_id": "abhimanamennedu",
+            "raga_id": "begada"
+          }
+        ]
     },
     {
       "id": "sanjay_subrahmanyan",
@@ -800,6 +813,12 @@
           "label": "Jagadananda Karaka · Nattai · Adi - M. Balamuralikrishna",
           "composition_id": "jagadananda_karaka",
           "raga_id": "nata"
+        },
+        {
+          "url": "https://youtu.be/x-q9-MQrWhk",
+          "label": "abhimānamenneḍu · Begada · Adi - M. Balamuralikrishna",
+          "composition_id": "abhimanamennedu",
+          "raga_id": "begada"
         }
       ]
     },
@@ -880,6 +899,12 @@
           "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Hyderabad Brothers",
           "composition_id": "jalajaksha_varnam",
           "raga_id": "hamsadhwani"
+        },
+        {
+          "url": "https://youtu.be/td1q_Rzrdso",
+          "label": "abhimānamenneḍu · Begada · Adi - Hyderabad Brothers",
+          "composition_id": "abhimanamennedu",
+          "raga_id": "begada"
         }
       ]
     },
@@ -902,6 +927,53 @@
           "raga_id": "hamsadhwani"
         }
       ]
+    },
+    {
+      "id": "sripada_pinakapani",
+      "label": "Sripada Pinakapani",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Sripada_Pinakapani", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1913,
+      "died": 2013,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": []
+    },
+    {
+      "id": "voleti_venkateshwarlu",
+      "label": "Voleti Venkateshwarlu",
+      "sources": [
+        {"url": "https://www.carnaticheritage.in/singers/profile/3", "label": "Carnatic Heritage — singer profile", "type": "article"},
+        {"url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/", "label": "eAmbalam — Legends Series no. 3 (compiled by Sashi Kulkarni & T.V. Ramprasadh)", "type": "article"}
+      ],
+      "born": 1928,
+      "died": 1989,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "pinakapani",
+      "youtube": [
+        {
+          "url": "https://youtu.be/nsa5v9s8o8E",
+          "label": "abhimānamenneḍu · Begada · Adi - Voleti Venkateshwarlu",
+          "composition_id": "abhimanamennedu",
+          "raga_id": "begada"
+        }
+      ]
+    },
+    {
+      "id": "malladi_brothers",
+      "label": "Malladi Brothers",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Malladi_Brothers", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1962,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "musiri",
+      "youtube": []
     }
   ],
   "edges": [
@@ -1187,6 +1259,27 @@
       "confidence": 0.95,
       "source_url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
       "note": "principal guru; Sudha Ragunathan trained under MLV from an early age; carries the GNB bani forward"
+    },
+    {
+      "source": "sripada_pinakapani",
+      "target": "voleti_venkateshwarlu",
+      "confidence": 0.9,
+      "source_url": "https://www.carnaticheritage.in/singers/profile/3",
+      "note": "polishing guru; Pinakapani called Voleti a genius; sourced from carnaticheritage.in and eambalam.com Legends Series; no Wikipedia page for Voleti — editorial override applied"
+    },
+    {
+      "source": "sripada_pinakapani",
+      "target": "malladi_brothers",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Malladi_Brothers",
+      "note": "principal guru; Wikipedia infobox lists Sripada Pinakapani as teacher of the Malladi Brothers"
+    },
+    {
+      "source": "voleti_venkateshwarlu",
+      "target": "malladi_brothers",
+      "confidence": 0.8,
+      "source_url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/",
+      "note": "Malladi Suri Babu associated with Voleti at AIR Vijayawada for a long time and imbibed his style; stylistic transmission rather than formal gurukula"
     }
   ]
 }
