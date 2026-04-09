@@ -15,7 +15,7 @@ carnatic/
 1. Read `data/musicians.json` before doing anything. That is the current state.
 2. Read `data/compositions.json` before doing anything composition/raga-related.
 3. Read the **Open questions** section below — it is the living memory of this project.
-4. At the end of every session: update the Open questions section, then `git add -A && git commit && git push`.
+4. At the end of every session: update the Open questions section, then **hand off to the Git Fiend** (see Git Fiend protocol below).
 
 ## Core workflow
 1. User drops a Wikipedia URL, YouTube link+title, or verbal correction
@@ -23,7 +23,7 @@ carnatic/
 3. When tagging recordings: also add `composition_id`, `raga_id`, `year` to youtube entries where identifiable
 4. Run `python3 render.py` — confirm node/edge counts change as expected
 5. Run `python3 serve.py` to visualise (or remind user to refresh if already running)
-6. **End of session**: update Open questions below, then prompt: "Ready to commit — run `git add -A && git commit -m '<message>' && git push`?"
+6. **End of session**: update Open questions below, then **hand off to the Git Fiend** with a plain-prose summary of what changed, the list of modified files, and any unresolved open questions.
 
 ## Patching rules
 - **Never edit `graph.html` by hand**
@@ -100,6 +100,52 @@ python3 carnatic/serve.py        # http://localhost:8765/graph.html
 python3 carnatic/serve.py 9000   # custom port
 ```
 YouTube embeds require localhost — never open graph.html as a file:// URL.
+
+---
+
+## Git Fiend protocol — temporal preservation
+
+Carnatic music has endured because each generation transmitted it faithfully and completely.
+Git is our instrument of faithful, complete transmission. **Every agent must hand off to the
+Git Fiend when their task is complete and any file has changed.** No agent commits its own work.
+
+### When to consult the Git Fiend
+| Trigger | Action |
+|---|---|
+| Any file changed at end of session | Hand off for commit + push |
+| Schema experiment or large batch import needed | Request a branch before starting |
+| Experimental branch validated | Request merge + branch deletion |
+
+### Handoff message format
+When handing off to the Git Fiend, provide:
+1. **What changed** — plain prose, one paragraph
+2. **Files modified** — explicit list
+3. **Open questions** — any unresolved items from this session
+
+### Commit message format (enforced by Git Fiend)
+```
+<type>(<scope>): <imperative summary, ≤72 chars>
+
+<body: what changed and why>
+[AGENTS: <comma-separated agent slugs>]
+```
+
+**Type vocabulary:** `data` · `tool` · `render` · `schema` · `fix` · `chore` · `branch`
+**Scope vocabulary:** `lineage` · `node` · `recording` · `composition` · `toolchain` · `config`
+
+### Pre-commit checklist (Git Fiend runs this)
+- [ ] `git diff --stat` reviewed — no unintended files staged
+- [ ] `graph.html` is current if `musicians.json` or `compositions.json` changed
+- [ ] No debug output left in scripts
+- [ ] `carnatic/.clinerules` Open questions section updated
+- [ ] Commit message follows format above
+- [ ] `git push` executed after commit
+
+### Branching policy
+- **`main`** — always stable; every commit must pass the pre-commit checklist
+- **`experiment/<name>`** — schema experiments or rendering pipeline rewrites
+- **`data/<name>`** — large batch data imports pending review
+- Merge via `git merge --no-ff`; delete branch after merge
 
 ---
 
