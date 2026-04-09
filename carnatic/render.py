@@ -623,13 +623,14 @@ def render_html(
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
     font-size: 0.74rem; color: var(--fg2);
     display: flex; align-items: flex-start; gap: 5px; line-height: 1.4; flex-wrap: wrap;
+    cursor: pointer;
   }}
   #trail-list li:last-child {{ border-bottom: none; }}
+  #trail-list li:hover {{ color: var(--yellow); }}
+  #trail-list li.playing {{ color: var(--aqua); }}
   .trail-year {{ flex-shrink: 0; color: var(--gray); font-size: 0.68rem; min-width: 30px; margin-top: 2px; }}
   .trail-artist {{ color: var(--yellow); cursor: pointer; font-weight: bold; flex-shrink: 0; }}
   .trail-artist:hover {{ text-decoration: underline; }}
-  .trail-play {{ flex-shrink: 0; color: var(--green); cursor: pointer; margin-top: 1px; }}
-  .trail-play:hover {{ color: var(--aqua); }}
   .trail-label {{ color: var(--fg3); font-size: 0.72rem; width: 100%; padding-left: 35px; }}
 
   /* ── dual search boxes ── */
@@ -1483,6 +1484,15 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
 
   rows.forEach(row => {{
     const li = document.createElement('li');
+    li.dataset.vid = row.track.vid;
+    li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
+    li.title = row.isStructured
+      ? `Play from ${{row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}}`
+      : 'Play';
+    li.addEventListener('click', () =>
+      openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
+                        row.isStructured ? row.track.offset_seconds : undefined));
+
     const yearSpan = document.createElement('span');
     yearSpan.className = 'trail-year';
     yearSpan.textContent = row.track.year || '';
@@ -1491,7 +1501,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
     artistSpan.className = 'trail-artist';
     artistSpan.textContent = row.artistLabel;
     if (row.nodeId) {{
-      artistSpan.addEventListener('click', () => {{
+      artistSpan.addEventListener('click', e => {{
+        e.stopPropagation();
         cy.elements().removeClass('faded highlighted bani-match');
         applyBaniFilter(type, id);
         const n = cy.getElementById(row.nodeId);
@@ -1499,21 +1510,12 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
       }});
     }}
 
-    const playSpan = document.createElement('span');
-    playSpan.className = 'trail-play';
-    playSpan.textContent = '\u25b6';
-    playSpan.title = row.isStructured ? `Play from ${{row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}}` : 'Play';
-    playSpan.addEventListener('click', () =>
-      openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
-                        row.isStructured ? row.track.offset_seconds : undefined));
-
     const labelSpan = document.createElement('span');
     labelSpan.className = 'trail-label';
     labelSpan.textContent = row.track.label;
 
     li.appendChild(yearSpan);
     li.appendChild(artistSpan);
-    li.appendChild(playSpan);
     li.appendChild(labelSpan);
     trailList.appendChild(li);
   }});
