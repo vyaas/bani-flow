@@ -1086,9 +1086,9 @@ function buildPerfPanel(nodeId) {{
   perfPanel.style.display = 'block';
 }}
 
-// ── node tap ──────────────────────────────────────────────────────────────────
-cy.on('tap', 'node', evt => {{
-  const d = evt.target.data();
+// ── selectNode — shared selection logic (sidebar + graph highlight) ───────────
+function selectNode(node) {{
+  const d = node.data();
 
   document.getElementById('node-name').textContent = d.label;
   document.getElementById('node-meta').innerHTML =
@@ -1131,9 +1131,14 @@ cy.on('tap', 'node', evt => {{
   buildPerfPanel(d.id);
 
   cy.elements().addClass('faded');
-  evt.target.removeClass('faded');
-  evt.target.connectedEdges().removeClass('faded').addClass('highlighted');
-  evt.target.connectedEdges().connectedNodes().removeClass('faded');
+  node.removeClass('faded');
+  node.connectedEdges().removeClass('faded').addClass('highlighted');
+  node.connectedEdges().connectedNodes().removeClass('faded');
+}}
+
+// ── node tap ──────────────────────────────────────────────────────────────────
+cy.on('tap', 'node', evt => {{
+  selectNode(evt.target);
 }});
 
 cy.on('dbltap', 'node', evt => {{
@@ -1506,7 +1511,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
         cy.elements().removeClass('faded highlighted bani-match');
         applyBaniFilter(type, id);
         const n = cy.getElementById(row.nodeId);
-        n.removeClass('faded').addClass('highlighted');
+        if (n && n.length) selectNode(n);
       }});
     }}
 
@@ -1636,9 +1641,8 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {{
 
   makeDropdown(input, dropdown, getItems, item => {{
     const node = cy.getElementById(item.id);
-    if (!node) return;
-    // Fire the existing tap handler
-    node.emit('tap');
+    if (!node || !node.length) return;
+    selectNode(node);
   }});
 }})();
 
