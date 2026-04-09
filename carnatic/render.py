@@ -1637,8 +1637,6 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {{
     if (!node) return;
     // Fire the existing tap handler
     node.emit('tap');
-    // Pan and zoom to the node
-    cy.animate({{ fit: {{ eles: node, padding: 120 }}, duration: 400 }});
   }});
 }})();
 
