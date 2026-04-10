@@ -690,6 +690,26 @@
       "sources": [
         {"url": "https://en.wikipedia.org/wiki/Sarangapani_(poet)", "label": "Wikipedia", "type": "wikipedia"}
       ]
+    },
+    {
+      "id": "lalgudi_jayaraman",
+      "name": "Lalgudi Jayaraman",
+      "musician_node_id": "lalgudi_jayaraman",
+      "born": 1930,
+      "died": 2013,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "subbaraya_sastri",
+      "name": "Subbaraya Sastri",
+      "musician_node_id": "subbaraya_sastri",
+      "born": 1803,
+      "died": 1876,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri", "label": "Wikipedia", "type": "wikipedia"}
+      ]
     }
   ],
   "compositions": [
@@ -1330,6 +1350,43 @@
         {"url": "https://www.karnatik.com/co1090.shtml", "label": "Karnatik.com — composer profile (lists this varnam)", "type": "archive"}
       ],
       "notes": "Ata-tala varnam by Maanambuchaavadi Venkatasubbaiyer in Hamsadhwani; Adi tala; pallavi 'jalajakshi ninnedabasi chala marulu konnadira'; mudra 'Venkatesa'; one of the most frequently performed varnams in the concert repertoire; the karnatik.com source notes the composer took varnamettu-s left by Tyagaraja and fitted his own words"
+    },
+    {
+      "id": "shankari_neeve",
+      "title": "Śaṅkarī Nīvē",
+      "composer_id": "subbaraya_sastri",
+      "raga_id": "begada",
+      "tala": "rupakam",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1830.shtml", "label": "Karnatik.com — notation and lyrics", "type": "archive"}
+      ],
+      "notes": "Kriti by Subbaraya Sastri in Begada; Rupakam tala; pallavi 'śaṅkarī nīvē (amba) śaṅkarī nīvani ninnu santatamu kōri vacciti'; addressed to the goddess Kamakshi of Kanchipuram; one of the principal compositions of the Shyama Shastri lineage in Begada"
+    },
+    {
+      "id": "ento_premato",
+      "title": "entō prēmatō",
+      "composer_id": "veenai_kuppayyar",
+      "raga_id": "surutti",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c2997.shtml", "label": "Karnatik.com — notation and lyrics", "type": "archive"},
+        {"url": "https://en.wikipedia.org/wiki/Veenai_Kuppayyar", "label": "Wikipedia — Veenai Kuppayyar", "type": "wikipedia"}
+      ],
+      "notes": "Ata-tala varnam by Veenai Kuppayyar in Surutti; Adi tala; one of the most frequently performed varnams in the Carnatic concert repertoire; pallavi 'entō prēmatō'; a standard varnam taught across all schools"
+    },
+    {
+      "id": "ento_prematonu",
+      "title": "entō prēmatōnu",
+      "composer_id": "lalgudi_jayaraman",
+      "raga_id": "bahudari",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://patantara.com/notations/OsO7w5TDuUUkKQMcwqQbwpsAwqJFwplAVVcg", "label": "Patantara — notation (Varnam: Bahudari)", "type": "archive"}
+      ],
+      "notes": "Varnam by Lalgudi Jayaraman in Bahudari; Adi tala; distinct from the Veenai Kuppayyar varnam of the same name in Surutti; part of the Lalgudi varnam corpus"
     }
   ]
 }

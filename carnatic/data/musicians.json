@@ -177,6 +177,12 @@
           "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Semmangudi Srinivasa Iyer",
           "composition_id": "maakelara_vicaaramu",
           "raga_id": "ravichandrika"
+        },
+        {
+          "url": "https://youtu.be/ii0dLAbW9hA",
+          "label": "entō prēmatō · Surutti · Adi - Semmangudi Srinivasa Iyer",
+          "composition_id": "ento_premato",
+          "raga_id": "surutti"
         }
       ]
     },
@@ -223,6 +229,12 @@
           "label": "Jagadananda Karaka · Nattai · Adi - MS Subbulakshmi",
           "composition_id": "jagadananda_karaka",
           "raga_id": "nata"
+        },
+        {
+          "url": "https://youtu.be/uhfOQl-HSqg",
+          "label": "entō prēmatō · Surutti · Adi - MS Subbulakshmi",
+          "composition_id": "ento_premato",
+          "raga_id": "surutti"
         }
       ]
     },
@@ -298,7 +310,14 @@
       "era": "disseminator",
       "instrument": "violin",
       "bani": "lalgudi",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/Ws45axUFbwY",
+          "label": "Śaṅkarī Nīvē · Begada · Rupakam - Lalgudi Jayaraman",
+          "composition_id": "shankari_neeve",
+          "raga_id": "begada"
+        }
+      ]
     },
     {
       "id": "tn_krishnan",
@@ -420,6 +439,12 @@
           "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Sanjay Subrahmanyan",
           "composition_id": "maakelara_vicaaramu",
           "raga_id": "ravichandrika"
+        },
+        {
+          "url": "https://youtu.be/pIjpXnKVN00",
+          "label": "entō prēmatō · Surutti · Adi - Sanjay Subrahmanyan",
+          "composition_id": "ento_premato",
+          "raga_id": "surutti"
         }
       ]
     },
@@ -434,7 +459,14 @@
       "era": "contemporary",
       "instrument": "vocal",
       "bani": "lalgudi",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/YAbWJYP_BWo",
+          "label": "entō prēmatōnu · Bahudari · Adi - Bombay Jayashri",
+          "composition_id": "ento_prematonu",
+          "raga_id": "bahudari"
+        }
+      ]
     },
     {
       "id": "abhishek_raghuram",
@@ -981,6 +1013,46 @@
       "instrument": "vocal",
       "bani": "musiri",
       "youtube": []
+    },
+    {
+      "id": "ranjani_gayatri",
+      "label": "Ranjani-Gayatri",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ranjani%E2%80%93Gayatri", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1973,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": [
+        {
+          "url": "https://youtu.be/43IgYHie488",
+          "label": "entō prēmatō · Surutti · Adi - Ranjani-Gayatri",
+          "composition_id": "ento_premato",
+          "raga_id": "surutti"
+        }
+      ]
+    },
+    {
+      "id": "r_vedavalli",
+      "label": "R. Vedavalli",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Vedavalli", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1935,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": [
+        {
+          "url": "https://youtu.be/Vwpj8TSdljg",
+          "label": "entō prēmatō · Surutti · Adi - R. Vedavalli",
+          "composition_id": "ento_premato",
+          "raga_id": "surutti"
+        }
+      ]
     }
   ],
   "edges": [
@@ -1287,6 +1359,13 @@
       "confidence": 0.8,
       "source_url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/",
       "note": "Malladi Suri Babu associated with Voleti at AIR Vijayawada for a long time and imbibed his style; stylistic transmission rather than formal gurukula"
+    },
+    {
+      "source": "t_muktha",
+      "target": "r_vedavalli",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Vedavalli",
+      "note": "Central Government scholarship; Vedavalli received specialised training in padams and javalis under T. Muktha"
     }
   ]
 }
