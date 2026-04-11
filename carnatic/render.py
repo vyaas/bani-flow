@@ -685,10 +685,20 @@ def render_html(
   }}
   .trail-link:hover {{ text-decoration: underline; }}
 
-  /* ── dual search boxes ── */
-  .search-group {{
-    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  /* ── panel-level search bars ── */
+  .panel-search-wrap {{
+    padding: 8px 14px 0;
+    border-bottom: 1px solid var(--bg2);
   }}
+  .panel-search {{
+    width: 100% !important;
+    box-sizing: border-box;
+    background: var(--bg2); color: var(--fg2); border: 1px solid var(--bg3);
+    padding: 4px 8px; font-family: inherit; font-size: 0.72rem;
+    border-radius: 2px;
+  }}
+  .panel-search:focus {{ outline: none; border-color: var(--yellow); }}
+  .panel-search::placeholder {{ color: var(--gray); font-style: italic; }}
   .search-wrap {{
     position: relative;
   }}
@@ -727,18 +737,6 @@ def render_html(
 <header>
   <h1>Carnatic · Guru-Shishya Parampara</h1>
   <span class="stats">{node_count} musicians · {edge_count} lineage edges</span>
-  <div class="search-group">
-    <div class="search-wrap" id="musician-search-wrap">
-      <input id="musician-search-input" class="search-input" type="text"
-             placeholder="&#128269; Search musician&#8230;" autocomplete="off" spellcheck="false">
-      <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
-    </div>
-    <div class="search-wrap" id="bani-search-wrap">
-      <input id="bani-search-input" class="search-input" type="text"
-             placeholder="&#9833; Search composition / raga&#8230;" autocomplete="off" spellcheck="false">
-      <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
-    </div>
-  </div>
   <div class="controls">
     <button onclick="cy.fit()">Fit</button>
     <button onclick="cy.reset()">Reset</button>
@@ -754,6 +752,12 @@ def render_html(
     <!-- ── Bani Flow panel ── -->
     <div class="panel" id="bani-flow-panel">
       <h3>Bani Flow &#9835;</h3>
+      <div class="search-wrap" id="bani-search-wrap">
+        <input id="bani-search-input" class="search-input panel-search" type="text"
+               placeholder="&#9833; Search raga / composition"
+               autocomplete="off" spellcheck="false">
+        <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
+      </div>
       <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
       <div id="listening-trail">
         <div id="trail-composer-label"></div>
@@ -782,6 +786,12 @@ def render_html(
 
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
+    <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
+      <input id="musician-search-input" class="search-input panel-search" type="text"
+             placeholder="&#128269; Search musician&#8230;"
+             autocomplete="off" spellcheck="false">
+      <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
+    </div>
     <div id="node-info">
       <div id="node-header">
         <span id="node-shape-icon" class="node-shape-icon ellipse"></span>

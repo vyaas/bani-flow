@@ -1,7 +1,8 @@
 # ADR-002: Dual Search Boxes — Musician Finder and Bani Flow Autocomplete
 
-**Status:** Proposed  
+**Status:** Superseded by [ADR-007](ADR-007-search-bar-colocation.md)
 **Date:** 2026-04-09
+**Superseded:** 2026-04-11
 
 ---
 
