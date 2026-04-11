@@ -583,6 +583,61 @@
         {"url": "https://en.wikipedia.org/wiki/Bilahari", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 P D2 S, avarohana S N3 D2 P M1 G3 R2 S; evokes joy and auspiciousness; a favourite raga for thillanas; associated with Ariyakudi Ramanuja Iyengar's thillana"
+    },
+    {
+      "id": "pantuvarali",
+      "name": "Pantuvarali",
+      "aliases": ["Purvi Kalyani", "Kamavardani"],
+      "melakarta": 51,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Kamavardhini", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "51st melakarta (Kamavardhini); ārohana S R1 G3 M2 P D1 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes pathos and grandeur; associated with Tyagaraja's 'Aparama Bhakthi' and Dikshitar's 'Sri Satyanarayanam'; one of the most expansive melakartas for alapana"
+    },
+    {
+      "id": "ishamanohari",
+      "name": "Ishamanohari",
+      "aliases": ["Isha Manohari"],
+      "melakarta": null,
+      "parent_raga": "natabhairavi",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ishamanohara", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Natabhairavi (20th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 S; evokes devotion and serenity; best known for Tyagaraja's 'Manasa Sri Ramachandruni'"
+    },
+    {
+      "id": "dwijavanthi",
+      "name": "Dwijavanthi",
+      "aliases": ["Dvijāvanti", "Dwijawanthi"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Dwijavanthi", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes devotion and grandeur; best known for Muthuswami Dikshitar's 'Chetasri Balakrishnam'; a favourite raga of the Dikshitar school"
+    },
+    {
+      "id": "abheri",
+      "name": "Abheri",
+      "aliases": ["Aberi"],
+      "melakarta": null,
+      "parent_raga": "natabhairavi",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Abheri", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Natabhairavi (20th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S G2 M1 P N2 S, avarohana S N2 D1 P M1 G2 S; evokes pathos and longing; best known for Tyagaraja's 'Nagumomu Ganaleni'; a favourite raga for the main piece in a concert"
+    },
+    {
+      "id": "shubapantuvarali",
+      "name": "Shubapantuvarali",
+      "aliases": ["Shubha Pantuvarali", "Cybele"],
+      "melakarta": null,
+      "parent_raga": "pantuvarali",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Shubhapantuvarali", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Kamavardhini (51st melakarta); vakra raga; ārohana S R1 G3 M2 P M2 G3 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes grandeur and devotion; best known for Muthuswami Dikshitar's 'Sri Satyanarayanam'; associated with the Dikshitar school"
     }
   ],
   "composers": [
@@ -825,6 +880,27 @@
       "died": 1967,
       "sources": [
         {"url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "ramnad_sreenivasa_iyengar",
+      "name": "Ramnad Sreenivasa Iyengar",
+      "musician_node_id": null,
+      "born": null,
+      "died": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Poochi_Srinivasa_Iyengar", "label": "Wikipedia", "type": "wikipedia"},
+        {"url": "https://www.shivkumar.org/music/varnams/ninnukori.htm", "label": "Shivkumar.org — Ninnu Kori notation (composer explicitly stated)", "type": "archive"}
+      ]
+    },
+    {
+      "id": "oothukadu_venkata_kavi",
+      "name": "Oothukadu Venkata Kavi",
+      "musician_node_id": null,
+      "born": 1700,
+      "died": 1765,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Oothukkadu_Venkata_Kavi", "label": "Wikipedia", "type": "wikipedia"}
       ]
     }
   ],
@@ -1635,6 +1711,116 @@
         {"url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar", "label": "Wikipedia — Ariyakudi Ramanuja Iyengar", "type": "wikipedia"}
       ],
       "notes": "Thillana by Ariyakudi Ramanuja Iyengar in Bilahari; Adi tala; one of the most celebrated thillanas in the concert repertoire; a signature composition of the Ariyakudi school"
+    },
+    {
+      "id": "ninnu_kori",
+      "title": "Ninnu Kori",
+      "composer_id": "ramnad_sreenivasa_iyengar",
+      "raga_id": "mohanam",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.shivkumar.org/music/varnams/ninnukori.htm", "label": "Shivkumar.org — notation and meaning", "type": "archive"},
+        {"url": "https://www.karnatik.com/c1388.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Varnam by Ramnad Sreenivasa Iyengar in Mohanam; Adi tala; pallavi 'ninnu kori yunna nura nikila loka nayaka'; mudra 'Sreenivasa'; one of the standard Mohanam varnams in the concert repertoire; note: the tracklist of the Jamshedpur 1961 concert attributes this to 'Poochi Srinivasa Iyengar' — the shivkumar.org notation source explicitly names Ramnad Sreenivasa Iyengar as composer"
+    },
+    {
+      "id": "aparama_bhakthi",
+      "title": "Aparama Bhakthi",
+      "composer_id": "tyagaraja",
+      "raga_id": "pantuvarali",
+      "tala": "rupakam",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1388.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Pantuvarali (Kamavardhini); Rupakam tala; one of the principal compositions defining this raga in the concert repertoire"
+    },
+    {
+      "id": "suryamurte",
+      "title": "Suryamurte",
+      "composer_id": "muthuswami_dikshitar",
+      "raga_id": "sowrashtram",
+      "tala": "dhruva",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1191.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Kriti by Muthuswami Dikshitar in Sowrashtram; Dhruva tala; addressed to the Sun deity; part of the Navagraha Kritis cycle"
+    },
+    {
+      "id": "manasa_sri_ramachandruni",
+      "title": "Manasa Sri Ramachandruni",
+      "composer_id": "tyagaraja",
+      "raga_id": "ishamanohari",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c2543.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Ishamanohari; Adi tala; one of the principal compositions defining this raga in the concert repertoire"
+    },
+    {
+      "id": "vasudevayani",
+      "title": "Vasudevayani",
+      "composer_id": "tyagaraja",
+      "raga_id": "kalyani",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1287.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Kalyani; Adi tala; a devotional composition addressed to Vasudeva (Krishna); one of the standard Kalyani kritis in the concert repertoire"
+    },
+    {
+      "id": "chetasri_balakrishnam",
+      "title": "Chetasri Balakrishnam",
+      "composer_id": "muthuswami_dikshitar",
+      "raga_id": "dwijavanthi",
+      "tala": "thisra_ekam",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.karnatik.com/c5667.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Kriti by Muthuswami Dikshitar in Dwijavanthi; Thisra Ekam tala; addressed to the child Krishna; one of the principal compositions defining raga Dwijavanthi in the concert repertoire"
+    },
+    {
+      "id": "thaye_yashodha",
+      "title": "Thaye Yashodha",
+      "composer_id": "oothukadu_venkata_kavi",
+      "raga_id": "todi",
+      "tala": "adi",
+      "language": "tamil",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1446.shtml", "label": "Karnatik.com — notation", "type": "archive"},
+        {"url": "https://en.wikipedia.org/wiki/Oothukkadu_Venkata_Kavi", "label": "Wikipedia — Oothukadu Venkata Kavi", "type": "wikipedia"}
+      ],
+      "notes": "Tamil composition attributed to Oothukadu Venkata Kavi in Todi; Adi tala; a vision of the child Krishna in Yashoda's courtyard; authorship disputed in scholarly literature — some sources attribute it to anonymous folk tradition; the neraval on 'kalinil silambu' is one of the most celebrated moments in the Carnatic concert repertoire"
+    },
+    {
+      "id": "nagumomu_ganaleni",
+      "title": "Nagumomu Ganaleni",
+      "composer_id": "tyagaraja",
+      "raga_id": "abheri",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1329.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Abheri; Adi tala; pallavi 'nagumomu ganaleni natajana manamu'; one of the most celebrated kritis in the Carnatic repertoire; a meditation on the beauty of Rama's face; the principal composition defining raga Abheri in the concert tradition"
+    },
+    {
+      "id": "sri_satyanarayanam",
+      "title": "Sri Satyanarayanam",
+      "composer_id": "muthuswami_dikshitar",
+      "raga_id": "shubapantuvarali",
+      "tala": "thisra_ekam",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.karnatik.com/c3316.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Kriti by Muthuswami Dikshitar in Shubapantuvarali; Thisra Ekam tala; addressed to Lord Satyanarayana; one of the principal compositions defining raga Shubapantuvarali in the concert repertoire"
     }
   ]
 }

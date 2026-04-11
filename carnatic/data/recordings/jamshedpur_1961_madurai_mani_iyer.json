@@ -1,0 +1,242 @@
+{
+  "id": "jamshedpur_1961_madurai_mani_iyer",
+  "video_id": "CUyf7Ukn9Y8",
+  "url": "https://youtu.be/CUyf7Ukn9Y8",
+  "title": "Madurai Mani Iyer — Jamshedpur, 1961 (Vaak Foundation)",
+  "short_title": "Jamshedpur 1961",
+  "date": "1961",
+  "venue": "Jamshedpur",
+  "occasion": "Krishna Jayanthi concert; uploaded by Vaak Foundation as part of their archival initiative",
+  "sources": [
+    {
+      "url": "https://youtu.be/CUyf7Ukn9Y8",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "madurai_mani_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "vocal_support",
+          "unmatched_name": "TS Vembu Iyer"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "TS Vilvadri Iyer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "ninnu_kori",
+          "raga_id": "mohanam",
+          "tala": "adi",
+          "composer_id": "ramnad_sreenivasa_iyengar",
+          "display_title": "Ninnu Kori (Varnam)",
+          "notes": "Tracklist credits 'Poochi Srinivasa Iyengar'; shivkumar.org notation source explicitly names Ramnad Sreenivasa Iyengar as composer — source wins over tracklist label"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:08:20",
+          "offset_seconds": 500,
+          "composition_id": "aparama_bhakthi",
+          "raga_id": "pantuvarali",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Aparama Bhakthi",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:22:35",
+          "offset_seconds": 1355,
+          "composition_id": "suryamurte",
+          "raga_id": "sowrashtram",
+          "tala": "dhruva",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Suryamurte",
+          "notes": "Dikshitar Navagraha Kriti"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:26:18",
+          "offset_seconds": 1578,
+          "composition_id": null,
+          "raga_id": "ravichandrika",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ravichandrika — Alapana",
+          "notes": null,
+          "type": "alapana"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:33:34",
+          "offset_seconds": 2014,
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Makelara Vicharamu",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:40:47",
+          "offset_seconds": 2447,
+          "composition_id": "manasa_sri_ramachandruni",
+          "raga_id": "ishamanohari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Manasa Sri Ramachandruni",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:44:31",
+          "offset_seconds": 2671,
+          "composition_id": null,
+          "raga_id": "kalyani",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kalyani — Alapana",
+          "notes": null,
+          "type": "alapana"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:00:40",
+          "offset_seconds": 3640,
+          "composition_id": "vasudevayani",
+          "raga_id": "kalyani",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Vasudevayani",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:16:52",
+          "offset_seconds": 4612,
+          "composition_id": "chetasri_balakrishnam",
+          "raga_id": "dwijavanthi",
+          "tala": "thisra_ekam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Chetasri Balakrishnam",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:23:00",
+          "offset_seconds": 4980,
+          "composition_id": null,
+          "raga_id": "todi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi — Alapana",
+          "notes": null,
+          "type": "alapana"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:35:06",
+          "offset_seconds": 5706,
+          "composition_id": "thaye_yashodha",
+          "raga_id": "todi",
+          "tala": "adi",
+          "composer_id": "oothukadu_venkata_kavi",
+          "display_title": "Thaye Yashodha",
+          "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:51:45",
+          "offset_seconds": 6705,
+          "composition_id": "nagumomu_ganaleni",
+          "raga_id": "abheri",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nagumomu Ganaleni",
+          "notes": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:05:37",
+          "offset_seconds": 7537,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": "Percussion solo — Vellore G. Ramabhadran (mridangam) and TS Vilvadri Iyer (ghatam)",
+          "type": "tani"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:19:25",
+          "offset_seconds": 8365,
+          "composition_id": "sri_satyanarayanam",
+          "raga_id": "shubapantuvarali",
+          "tala": "thisra_ekam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Sri Satyanarayanam",
+          "notes": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:25:07",
+          "offset_seconds": 8707,
+          "composition_id": null,
+          "raga_id": "kambhoji",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kambhoji — Ragam",
+          "notes": null,
+          "type": "alapana"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:43:52",
+          "offset_seconds": 9832,
+          "composition_id": null,
+          "raga_id": "kambhoji",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kambhoji — Thanam",
+          "notes": null,
+          "type": "thanam"
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:54:56",
+          "offset_seconds": 10496,
+          "composition_id": null,
+          "raga_id": "kambhoji",
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Kambhoji — Pallavi: Parimala Rangapathe, Mam Pahi (2 Kalai) — Ragamalika Swaras in Behag & Kanada",
+          "notes": "Ragam-Tanam-Pallavi; Adi tala, 2 Kalai; ragamalika swaras in Behag and Kanada; concert is incomplete — recording ends here",
+          "type": "pallavi"
+        }
+      ]
+    }
+  ]
+}
