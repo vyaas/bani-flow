@@ -11,6 +11,17 @@ carnatic/
   graph.html              ← derived artefact — NEVER hand-edit
 ```
 
+## Agent domain boundaries — HARD RULES
+
+| Agent | May edit | Must never edit |
+|---|---|---|
+| 📚 Librarian | `*.json` data files only | `.py`, `.html`, `.js` code files |
+| 🎵 Carnatic Coder | `.py`, `.html`, `.js`, `.md`, `.sh`, `.css` | Any `.json` file directly |
+| 🏛️ Graph Architect | `plans/*.md` ADRs | Data files, code files |
+| 🔱 Git Fiend | git operations only | Data files, code files |
+
+**The Carnatic Coder must never directly edit or create any `.json` file.** If a JSON file needs changing, the Coder writes a script; the Librarian reviews and applies it.
+
 ## Session startup
 1. Read `data/musicians.json` before doing anything. That is the current state.
 2. Read `data/compositions.json` before doing anything composition/raga-related.
@@ -108,6 +119,22 @@ YouTube embeds require localhost — never open graph.html as a file:// URL.
 Carnatic music has endured because each generation transmitted it faithfully and completely.
 Git is our instrument of faithful, complete transmission. **Every agent must hand off to the
 Git Fiend when their task is complete and any file has changed.** No agent commits its own work.
+
+### ⚠️ Mandatory Git Fiend handoff
+
+**Any session that modifies one or more files MUST end with this prompt to the user:**
+
+```
+## 🔱 Handoff to Git Fiend
+**What changed:** <one paragraph plain prose>
+**Files modified:** <explicit list>
+**Open questions:** <any unresolved items>
+
+⚠️ Please switch to 🔱 Git Fiend mode now to commit and preserve this work.
+```
+
+This applies to ALL agents: Librarian, Carnatic Coder, Graph Architect, and Orchestrator.
+Do not end a session with file changes without issuing this prompt.
 
 ### When to consult the Git Fiend
 | Trigger | Action |
