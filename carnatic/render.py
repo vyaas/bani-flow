@@ -487,7 +487,7 @@ def render_html(
 
   /* ── left sidebar (global controls: Bani Flow, legends) ── */
   #left-sidebar {{
-    width: 280px; background: var(--bg1);
+    width: 260px; background: var(--bg1);
     border-right: 1px solid var(--bg2);
     display: flex; flex-direction: column;
     overflow-y: auto; font-size: 0.78rem;
@@ -496,7 +496,7 @@ def render_html(
 
   /* ── right sidebar (node-specific: selection, recordings, edge) ── */
   #right-sidebar {{
-    width: 240px; background: var(--bg1);
+    width: 260px; background: var(--bg1);
     border-left: 1px solid var(--bg2);
     display: flex; flex-direction: column;
     overflow-y: auto; font-size: 0.78rem;
@@ -537,15 +537,18 @@ def render_html(
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   }}
 
-  /* ── recording filter input ── */
-  #rec-filter {{
+  /* ── recording filter input + trail filter input ── */
+  #rec-filter,
+  #trail-filter {{
     width: 100%; background: var(--bg2); color: var(--fg2);
     border: 1px solid var(--bg3); padding: 4px 8px;
     font-family: inherit; font-size: 0.72rem; border-radius: 2px;
     margin-top: 6px; display: none; box-sizing: border-box;
   }}
-  #rec-filter:focus {{ outline: none; border-color: var(--yellow); }}
-  #rec-filter::placeholder {{ color: var(--gray); font-style: italic; }}
+  #rec-filter:focus,
+  #trail-filter:focus {{ outline: none; border-color: var(--yellow); }}
+  #rec-filter::placeholder,
+  #trail-filter::placeholder {{ color: var(--gray); font-style: italic; }}
 
   /* ── unified recordings panel ── */
   #recordings-panel {{ display: none; }}
@@ -686,11 +689,6 @@ def render_html(
     padding: 4px 6px; border-radius: 2px; margin-bottom: 6px; cursor: pointer;
   }}
   #bani-flow-panel select:focus {{ outline: none; border-color: var(--teal); }}
-  #bani-clear {{
-    width: 100%; margin-top: 2px; background: var(--bg2);
-    color: var(--gray); border-color: var(--bg3); font-size: 0.72rem; display: none;
-  }}
-  #bani-clear:hover {{ color: var(--red); border-color: var(--red); }}
   #listening-trail {{ display: none; margin-top: 8px; }}
   #trail-composer-label {{
     font-size: 0.72rem; color: var(--teal); font-style: italic;
@@ -801,7 +799,7 @@ def render_html(
     <!-- ── Bani Flow panel ── -->
     <div class="panel" id="bani-flow-panel">
       <h3>Bani Flow &#9835;</h3>
-      <div class="search-wrap" id="bani-search-wrap">
+      <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
         <input id="bani-search-input" class="search-input panel-search" type="text"
                placeholder="&#9833; Search raga / composition"
                autocomplete="off" spellcheck="false">
@@ -810,7 +808,8 @@ def render_html(
           searching all compositions
         </div>
       </div>
-      <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
+      <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
+             style="display:none" autocomplete="off" spellcheck="false" />
       <div id="listening-trail">
         <div id="trail-composer-label"></div>
         <ul id="trail-list"></ul>
@@ -841,7 +840,7 @@ def render_html(
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
     <div class="panel" id="musician-panel">
-      <h3>Musician</h3>
+      <h3>Musician &#9835;</h3>
       <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
         <input id="musician-search-input" class="search-input panel-search" type="text"
                placeholder="&#128269; Search musician&#8230;"
@@ -1542,6 +1541,39 @@ document.getElementById('rec-filter').addEventListener('input', function() {{
   }}
 }});
 
+// ── trail-filter event listener ───────────────────────────────────────────────
+document.getElementById('trail-filter').addEventListener('input', function() {{
+  const q         = this.value.toLowerCase().trim();
+  const trailList = document.getElementById('trail-list');
+  const items     = trailList.querySelectorAll('li:not(.trail-no-match)');
+  let anyVisible  = false;
+
+  items.forEach(li => {{
+    if (!q) {{ li.style.display = 'flex'; anyVisible = true; return; }}
+    // Match artist name (trail-artist text) and composition title (trail-label)
+    const artistText = (li.querySelector('.trail-artist') || {{}}).textContent || '';
+    const labelText  = (li.querySelector('.trail-label')  || {{}}).textContent || '';
+    const matches    = artistText.toLowerCase().includes(q) ||
+                       labelText.toLowerCase().includes(q);
+    li.style.display = matches ? 'flex' : 'none';
+    if (matches) anyVisible = true;
+  }});
+
+  let noMatch = trailList.querySelector('.trail-no-match');
+  if (!anyVisible && q) {{
+    if (!noMatch) {{
+      noMatch = document.createElement('li');
+      noMatch.className = 'trail-no-match';
+      noMatch.style.cssText = 'color:var(--gray);font-style:italic;cursor:default;padding:5px 0;';
+      noMatch.textContent = 'no match';
+      trailList.appendChild(noMatch);
+    }}
+    noMatch.style.display = 'flex';
+  }} else if (noMatch) {{
+    noMatch.style.display = 'none';
+  }}
+}});
+
 // ── node tap ──────────────────────────────────────────────────────────────────
 cy.on('tap', 'node', evt => {{
   selectNode(evt.target);
@@ -1800,7 +1832,8 @@ function applyBaniFilter(type, id) {{
   // Build listening trail
   buildListeningTrail(type, id, matchedNodeIds);
 
-  document.getElementById('bani-clear').style.display = 'block';
+  document.getElementById('trail-filter').style.display = 'block';
+  document.getElementById('trail-filter').value = '';
 }}
 
 function buildListeningTrail(type, id, matchedNodeIds) {{
@@ -1986,7 +2019,8 @@ function clearBaniFilter() {{
   activeBaniFilter = null;
   cy.elements().removeClass('faded highlighted bani-match');
   document.getElementById('bani-search-input').value = '';
-  document.getElementById('bani-clear').style.display = 'none';
+  document.getElementById('trail-filter').style.display = 'none';
+  document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
   applyZoomLabels();
   // Mutual exclusion: clear chip filters when Bani Flow filter clears
