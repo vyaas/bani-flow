@@ -84,6 +84,10 @@ set whenever identifiable from the title or metadata. They reference IDs in
 `compositions.json`. The old `{url, label}` format remains valid for recordings
 where raga/composition cannot be identified.
 
+The `version` field is **optional**. Use it when the same musician has more than
+one recording of the same composition — e.g. `"standalone clip"`, `"Music Academy 1966"`,
+`"younger"`, `"older"`. Omit it when only one version exists. It is free text, not an enum.
+
 Any YouTube URL form is valid: `watch?v=`, `youtu.be/`, `embed/`. The 11-character
 video ID is what matters.
 

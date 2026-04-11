@@ -120,7 +120,8 @@
           "url": "https://youtu.be/3h_ltCBmNbs",
           "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Madurai Mani Iyer",
           "composition_id": "maakelara_vicaaramu",
-          "raga_id": "ravichandrika"
+          "raga_id": "ravichandrika",
+          "version": "standalone clip"
         },
         {
           "url": "https://youtu.be/Rgy83EjWNn0",
@@ -404,15 +405,17 @@
           },
           {
             "url": "https://youtu.be/-_6zvmxD1b4",
-            "label": "Gitarthamu · Surutti · Adi - TM Krishna (younger)",
+            "label": "Gitarthamu · Surutti · Adi - TM Krishna",
             "composition_id": "gitarthamu",
-            "raga_id": "surutti"
+            "raga_id": "surutti",
+            "version": "younger"
           },
           {
             "url": "https://youtu.be/H8vbrGvEnTE",
-            "label": "Gitarthamu · Surutti · Adi - TM Krishna (older)",
+            "label": "Gitarthamu · Surutti · Adi - TM Krishna",
             "composition_id": "gitarthamu",
-            "raga_id": "surutti"
+            "raga_id": "surutti",
+            "version": "older"
           },
           {
             "url": "https://youtu.be/5MAI223JEVc",

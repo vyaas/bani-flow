@@ -114,6 +114,7 @@ A session is a continuous performance block by a fixed set of performers. A mult
 | `display_title` | string | Title shown in the UI. Use transliterated form when available. |
 | `notes` | string \| null | Free text: `"padam"`, `"javali"`, `"varnam"`, `"2 kalai"`, etc. |
 | `type` | string | Only set for non-composition items: `"tani"` for percussion solos. |
+| `version` | string \| null | Optional. Distinguishes this recording from other versions of the same composition by the same musician. Free text: `"Jamshedpur 1961"`, `"standalone clip"`, `"AIR Madras 1960s"`, `"younger"`. Omit if only one version exists. |
 
 ---
 
