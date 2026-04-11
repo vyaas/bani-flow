@@ -517,6 +517,72 @@
         {"url": "https://en.wikipedia.org/wiki/Hamsadhwani", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes, no Madhyama or Dhaivata); ārohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes brightness, auspiciousness, and joy; a favourite opening raga for concerts; best known for Dikshitar's 'Vatapi Ganapatim' and the jalajAksha varnam of Maanambuchaavadi Venkatasubbaiyer"
+    },
+    {
+      "id": "gundakriya",
+      "name": "Gundakriya",
+      "aliases": ["Gundakri", "Gundakriya"],
+      "melakarta": null,
+      "parent_raga": "mayamalavagowla",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Gundakriya", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 G3 M1 N3 S, avarohana S N3 M1 G3 R1 S; evokes pathos and devotion; a rare raga used primarily in the early segments of a concert; best known for Tyagaraja's 'Intanuchu Varimpa'"
+    },
+    {
+      "id": "huseni",
+      "name": "Huseni",
+      "aliases": ["Hussaini", "Husaini"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Huseni", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes pathos and longing; associated with padams and swarajathis; best known for Swati Tirunal's swarajathi 'Pahimam Brhannayike'"
+    },
+    {
+      "id": "simhendramadhyamam",
+      "name": "Simhendramadhyamam",
+      "aliases": ["Simhendra Madhyamam"],
+      "melakarta": 57,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Simhendramadhyamam", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "57th melakarta; ārohana S R1 G1 M2 P D1 N3 S, avarohana S N3 D1 P M2 G1 R1 S; evokes pathos and devotion; a favourite raga of Papanasam Sivan; best known for his composition 'En Manam'"
+    },
+    {
+      "id": "suddha_saveri",
+      "name": "Suddha Saveri",
+      "aliases": ["Sudha Saveri", "Shuddha Saveri"],
+      "melakarta": null,
+      "parent_raga": "dheerashankarabharanam",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Suddha_Saveri", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava raga (5 notes ascending and descending, no Gandhara or Nishada); ārohana S R2 M1 P D2 S, avarohana S D2 P M1 R2 S; evokes serenity and devotion; associated with compositions of Periyasami Tooran and the Tamil devotional repertoire"
+    },
+    {
+      "id": "manji",
+      "name": "Manji",
+      "aliases": ["Maanji"],
+      "melakarta": null,
+      "parent_raga": "kharaharapriya",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Manji_(raga)", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 P D2 N2 P M1 G2 R2 S; evokes pathos and longing; associated with Shyama Shastri's compositions, particularly 'Brovavamma Tamasame'"
+    },
+    {
+      "id": "bilahari",
+      "name": "Bilahari",
+      "aliases": [],
+      "melakarta": null,
+      "parent_raga": "dheerashankarabharanam",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Bilahari", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 P D2 S, avarohana S N3 D2 P M1 G3 R2 S; evokes joy and auspiciousness; a favourite raga for thillanas; associated with Ariyakudi Ramanuja Iyengar's thillana"
     }
   ],
   "composers": [
@@ -709,6 +775,56 @@
       "died": 1876,
       "sources": [
         {"url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "pacchimiriyam_adiapayya",
+      "name": "Pacchimiriyam Adiapayya",
+      "musician_node_id": null,
+      "born": null,
+      "died": 1821,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Pacchimiriyam_Adiyappayya", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "papanasam_sivan",
+      "name": "Papanasam Sivan",
+      "musician_node_id": null,
+      "born": 1890,
+      "died": 1973,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Papanasam_Sivan", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "periyasami_tooran",
+      "name": "Periyasami Tooran",
+      "musician_node_id": null,
+      "born": 1908,
+      "died": 1975,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Periyasami_Tooran", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "kamalesha_vittala_dasa",
+      "name": "Kamalesha Vittala Dasa",
+      "musician_node_id": null,
+      "born": null,
+      "died": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Haridasa", "label": "Wikipedia — Haridasa tradition", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "ariyakudi_ramanuja_iyengar",
+      "name": "Ariyakudi Ramanuja Iyengar",
+      "musician_node_id": "ariyakudi_ramanuja_iyengar",
+      "born": 1890,
+      "died": 1967,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar", "label": "Wikipedia", "type": "wikipedia"}
       ]
     }
   ],
@@ -1387,6 +1503,138 @@
         {"url": "https://patantara.com/notations/OsO7w5TDuUUkKQMcwqQbwpsAwqJFwplAVVcg", "label": "Patantara — notation (Varnam: Bahudari)", "type": "archive"}
       ],
       "notes": "Varnam by Lalgudi Jayaraman in Bahudari; Adi tala; distinct from the Veenai Kuppayyar varnam of the same name in Surutti; part of the Lalgudi varnam corpus"
+    },
+    {
+      "id": "viriboni",
+      "title": "Viriboni",
+      "composer_id": "pacchimiriyam_adiapayya",
+      "raga_id": "bhairavi",
+      "tala": "ata",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Viriboni", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Ata-tala varnam by Pacchimiriyam Adiapayya in Bhairavi; one of the most celebrated varnams in the Carnatic repertoire; traditionally placed at the opening of a concert; pallavi 'viriboni bhāvamulanu'"
+    },
+    {
+      "id": "intanuchu_varimpa",
+      "title": "Intanuchu Varimpa",
+      "composer_id": "tyagaraja",
+      "raga_id": "gundakriya",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c2697.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Gundakriya; Adi tala; one of the principal compositions defining this rare raga in the concert repertoire"
+    },
+    {
+      "id": "pahimam_brhannayike",
+      "title": "Pahimam Brhannayike",
+      "composer_id": "swati_tirunal",
+      "raga_id": "huseni",
+      "tala": "rupakam",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Swati_Tirunal", "label": "Wikipedia — Swati Tirunal", "type": "wikipedia"}
+      ],
+      "notes": "Swarajathi by Swati Tirunal in Huseni; Rupakam tala; authorship disputed in some scholarly sources; one of the most celebrated swarajathis in the concert repertoire"
+    },
+    {
+      "id": "en_manam",
+      "title": "En Manam",
+      "composer_id": "papanasam_sivan",
+      "raga_id": "simhendramadhyamam",
+      "tala": "adi",
+      "language": "tamil",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Papanasam_Sivan", "label": "Wikipedia — Papanasam Sivan", "type": "wikipedia"}
+      ],
+      "notes": "Tamil kriti by Papanasam Sivan in Simhendramadhyamam; Adi tala; one of the principal compositions defining this raga in the Tamil devotional repertoire"
+    },
+    {
+      "id": "thaye_tripura",
+      "title": "Thaye Tripura",
+      "composer_id": "periyasami_tooran",
+      "raga_id": "suddha_saveri",
+      "tala": "khanda_chapu",
+      "language": "tamil",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Periyasami_Tooran", "label": "Wikipedia — Periyasami Tooran", "type": "wikipedia"}
+      ],
+      "notes": "Tamil kriti by Periyasami Tooran in Suddha Saveri; Khanda Chapu tala; addressed to the goddess Tripurasundari"
+    },
+    {
+      "id": "akshaya_linga_vibho",
+      "title": "Akshaya Linga Vibho",
+      "composer_id": "muthuswami_dikshitar",
+      "raga_id": "shankarabharanam",
+      "tala": "misra_capu",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.karnatik.com/c1040.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Kriti by Muthuswami Dikshitar in Shankarabharanam; Misra Chapu tala; addressed to Lord Shiva as Akshayalinga; one of the principal Dikshitar compositions in this raga"
+    },
+    {
+      "id": "brovavamma_tamasame",
+      "title": "Brovavamma Tamasame",
+      "composer_id": "shyama_shastri",
+      "raga_id": "manji",
+      "tala": "misra_capu",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Shyama_Shastri", "label": "Wikipedia — Shyama Shastri", "type": "wikipedia"}
+      ],
+      "notes": "Kriti by Shyama Shastri in Manji; Misra Chapu tala; a supplication to the goddess; one of the principal compositions defining raga Manji in the concert repertoire"
+    },
+    {
+      "id": "kandu_dhanyanade",
+      "title": "Kandu Dhanyanade",
+      "composer_id": "kamalesha_vittala_dasa",
+      "raga_id": "behag",
+      "tala": "adi",
+      "language": "kannada",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Haridasa", "label": "Wikipedia — Haridasa tradition", "type": "wikipedia"}
+      ],
+      "notes": "Kannada devaranama by Kamalesha Vittala Dasa in Behag; Adi tala; part of the Haridasa devotional repertoire"
+    },
+    {
+      "id": "azhagu_vadivai_vandhu",
+      "title": "Azhagu Vadivai Vandhu",
+      "composer_id": null,
+      "raga_id": null,
+      "tala": null,
+      "language": "tamil",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Virutham", "label": "Wikipedia — Virutham", "type": "wikipedia"}
+      ],
+      "notes": "Tamil virutham (free-verse devotional poem) sung as a ragamalika; no single raga or tala; composer not definitively established in standard references; frequently sung in the Tamil devotional concert tradition"
+    },
+    {
+      "id": "jalaja_bandhu",
+      "title": "Jalaja Bandhu",
+      "composer_id": "swati_tirunal",
+      "raga_id": "surutti",
+      "tala": "misra_capu",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Swati_Tirunal", "label": "Wikipedia — Swati Tirunal", "type": "wikipedia"}
+      ],
+      "notes": "Padam by Swati Tirunal in Surutti; Misra Chapu tala; distinct from 'Alarśara Paritāpam' though both are Swati Tirunal padams in Surutti; frequently paired with 'Alasara Parithapam' in concert performance"
+    },
+    {
+      "id": "thillana_bilahari_ariyakudi",
+      "title": "Thillana in Bilahari",
+      "composer_id": "ariyakudi_ramanuja_iyengar",
+      "raga_id": "bilahari",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar", "label": "Wikipedia — Ariyakudi Ramanuja Iyengar", "type": "wikipedia"}
+      ],
+      "notes": "Thillana by Ariyakudi Ramanuja Iyengar in Bilahari; Adi tala; one of the most celebrated thillanas in the concert repertoire; a signature composition of the Ariyakudi school"
     }
   ]
 }
