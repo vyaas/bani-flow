@@ -49,8 +49,8 @@
     display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
   }
   .filter-separator {
-    width: 1px; height: 14px; background: var(--bg3);
-    flex-shrink: 0; margin: 0 2px;
+    width: 1px; height: 18px; background: var(--fg3);
+    flex-shrink: 0; margin: 0 6px; opacity: 0.4;
   }
 
   /* ── individual chips ── */
@@ -461,13 +461,16 @@
 
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
-    <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
-      <input id="musician-search-input" class="search-input panel-search" type="text"
-             placeholder="&#128269; Search musician&#8230;"
-             autocomplete="off" spellcheck="false">
-      <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
-      <div class="search-scope-label" id="musician-scope-label" style="display:none">
-        searching all 61 musicians
+    <div class="panel" id="musician-panel">
+      <h3>Musician</h3>
+      <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
+        <input id="musician-search-input" class="search-input panel-search" type="text"
+               placeholder="&#128269; Search musician&#8230;"
+               autocomplete="off" spellcheck="false">
+        <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
+        <div class="search-scope-label" id="musician-scope-label" style="display:none">
+          searching all 61 musicians
+        </div>
       </div>
     </div>
     <div id="node-info">
@@ -15276,11 +15279,11 @@ function buildFilterChips() {
 
   const instrOrder = ['vocal', 'veena', 'violin', 'flute', 'mridangam'];
   const instrLabels = {
-    vocal:     'vocal',
-    veena:     'veena',
-    violin:    'violin',
-    flute:     'flute',
-    mridangam: 'mridangam',
+    vocal:     'Vocal',
+    veena:     'Veena',
+    violin:    'Violin',
+    flute:     'Flute',
+    mridangam: 'Mridangam',
   };
   instrOrder.forEach(instr => {
     const chip = document.createElement('span');
