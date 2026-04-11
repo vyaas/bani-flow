@@ -153,6 +153,7 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
                     "recording_id":      rec_id,
                     "video_id":          video_id,
                     "title":             title,
+                    "short_title":       rec.get("short_title", ""),
                     "date":              date,
                     "session_index":     session["session_index"],
                     "performance_index": perf["performance_index"],
@@ -443,54 +444,80 @@ def render_html(
     font-size: 0.7rem; color: var(--gray);
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
   }}
-  #node-info {{ min-height: 0; }}
-  #node-name {{ font-size: 0.95rem; color: var(--yellow); font-weight: bold; margin-bottom: 4px; }}
-  #node-meta {{ color: var(--fg3); line-height: 1.7; }}
-  #node-sources {{ margin-top: 8px; display: none; }}
-  .node-src-link {{
-    display: block; color: var(--blue);
-    text-decoration: none; font-size: 0.75rem; margin-bottom: 3px;
-  }}
-  .node-src-link:hover {{ text-decoration: underline; }}
 
-  /* ── Performances panel (structured concert recordings) ── */
-  #perf-panel {{ display: none; }}
-  #perf-list  {{ list-style: none; margin-top: 4px; max-height: 220px; overflow-y: auto; }}
-  #perf-list li {{
+  /* ── node header (collapsed single-line) ── */
+  #node-info {{ padding: 8px 14px; border-bottom: 1px solid var(--bg2); flex-shrink: 0; }}
+  #node-header {{ display: flex; align-items: center; gap: 5px; }}
+  #node-name {{ font-size: 0.85rem; color: var(--yellow); font-weight: bold; }}
+  #node-lifespan {{ font-size: 0.70rem; color: var(--gray); margin-left: 4px; }}
+  .node-wiki-link {{
+    margin-left: auto; flex-shrink: 0;
+    color: var(--blue); font-size: 0.72rem; text-decoration: none;
+  }}
+  .node-wiki-link:hover {{ text-decoration: underline; }}
+
+  /* era dot and instrument icon — same vocabulary as Bani Flow trail */
+  .node-era-dot {{
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; flex-shrink: 0;
+  }}
+  .node-instr-icon {{
+    width: 8px; height: 8px; display: inline-block;
+    background: var(--gray); flex-shrink: 0;
+  }}
+  .node-instr-icon.ellipse   {{ border-radius: 50%; }}
+  .node-instr-icon.diamond   {{ transform: rotate(45deg); border-radius: 1px; }}
+  .node-instr-icon.rectangle {{ border-radius: 1px; }}
+  .node-instr-icon.triangle  {{
+    width: 0; height: 0; background: none;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 8px solid var(--gray);
+  }}
+  .node-instr-icon.hexagon {{
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }}
+
+  /* ── recording filter input ── */
+  #rec-filter {{
+    width: 100%; background: var(--bg2); color: var(--fg2);
+    border: 1px solid var(--bg3); padding: 4px 8px;
+    font-family: inherit; font-size: 0.72rem; border-radius: 2px;
+    margin-top: 6px; display: none; box-sizing: border-box;
+  }}
+  #rec-filter:focus {{ outline: none; border-color: var(--yellow); }}
+  #rec-filter::placeholder {{ color: var(--gray); font-style: italic; }}
+
+  /* ── unified recordings panel ── */
+  #recordings-panel {{ display: none; }}
+  #recordings-list {{ list-style: none; margin-top: 4px; }}
+  #recordings-list li {{
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
-    cursor: pointer; color: var(--fg2); font-size: 0.74rem;
-    display: flex; flex-direction: column; gap: 2px; line-height: 1.4;
+    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+    line-height: 1.4;
   }}
-  #perf-list li:last-child {{ border-bottom: none; }}
-  #perf-list li:hover  {{ color: var(--yellow); }}
-  #perf-list li.playing {{ color: var(--aqua); }}
-  .perf-title  {{
-    color: var(--yellow); font-weight: bold;
-    word-break: break-word;
+  #recordings-list li:last-child {{ border-bottom: none; }}
+  #recordings-list li:hover {{ color: var(--yellow); }}
+  #recordings-list li.playing {{ color: var(--aqua); }}
+  .rec-row1 {{ display: flex; align-items: baseline; width: 100%; gap: 4px; }}
+  .rec-title {{
+    color: var(--yellow); font-weight: bold; font-size: 0.74rem;
+    flex: 1; min-width: 0; word-break: break-word;
   }}
-  .perf-raga   {{
+  .rec-year {{
+    flex-shrink: 0; color: var(--gray); font-size: 0.68rem;
+    margin-left: auto; padding-left: 6px;
+  }}
+  .rec-row2 {{ display: flex; align-items: baseline; width: 100%; gap: 4px; }}
+  .rec-row3 {{ display: flex; align-items: baseline; width: 100%; gap: 4px; }}
+  .rec-meta {{
     color: var(--fg3); font-size: 0.70rem;
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    flex: 1; min-width: 0;
   }}
-  .perf-link   {{
+  .rec-link {{
     flex-shrink: 0; color: var(--blue); font-size: 0.70rem;
     text-decoration: none; white-space: nowrap;
   }}
-  .perf-link:hover {{ text-decoration: underline; }}
-
-  /* sidebar track list */
-  #track-panel {{ display: none; }}
-  #track-list  {{ list-style: none; margin-top: 2px; }}
-  #track-list li {{
-    padding: 5px 0; border-bottom: 1px solid var(--bg2);
-    cursor: pointer; color: var(--fg2); font-size: 0.75rem;
-    display: flex; align-items: flex-start; gap: 6px; line-height: 1.4;
-  }}
-  #track-list li:last-child {{ border-bottom: none; }}
-  #track-list li:hover  {{ color: var(--yellow); }}
-  #track-list li.playing {{ color: var(--aqua); }}
-  .play-icon {{ flex-shrink: 0; color: var(--green); margin-top: 1px; }}
-  li.playing .play-icon {{ color: var(--aqua); }}
+  .rec-link:hover {{ text-decoration: underline; }}
 
   /* edge info */
   #edge-info    {{ display: none; }}
@@ -762,25 +789,25 @@ def render_html(
 
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
-    <div class="panel" id="node-info">
-      <h3>Selected</h3>
-      <div id="node-name">—</div>
-      <div id="node-meta"></div>
-      <div id="node-sources"></div>
+    <div id="node-info">
+      <div id="node-header">
+        <span id="node-era-dot" class="node-era-dot"></span>
+        <span id="node-instr-icon" class="node-instr-icon ellipse"></span>
+        <span id="node-name">—</span>
+        <span id="node-lifespan"></span>
+        <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
+           style="display:none">&#8599;</a>
+      </div>
+      <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
+             style="display:none" autocomplete="off" spellcheck="false" />
     </div>
 
-    <div class="panel" id="track-panel">
-      <h3>Recordings &#9654;</h3>
-      <ul id="track-list"></ul>
+    <div class="panel" id="recordings-panel" style="display:none">
+      <h3>Recordings</h3>
+      <ul id="recordings-list"></ul>
     </div>
 
-    <!-- ── Structured concert performances ── -->
-    <div class="panel" id="perf-panel">
-      <h3>Concert Performances &#127911;</h3>
-      <ul id="perf-list"></ul>
-    </div>
-
-    <div class="panel" id="edge-info">
+    <div class="panel" id="edge-info" style="display:none">
       <h3>Selected Edge</h3>
       <div id="edge-guru"></div>
       <div id="edge-arrow">&#8595; guru &middot; shishya</div>
@@ -1072,105 +1099,223 @@ function openOrFocusPlayer(vid, label, artistName, startSeconds) {{
   refreshPlayingIndicators();
 }}
 
-// ── buildPerfPanel ────────────────────────────────────────────────────────────
-function buildPerfPanel(nodeId) {{
-  const perfPanel = document.getElementById('perf-panel');
-  const perfList  = document.getElementById('perf-list');
-  perfList.innerHTML = '';
+// ── buildRecordingsList — unified legacy + structured recordings ───────────────
+function buildRecordingsList(nodeId, nodeData) {{
+  const recPanel  = document.getElementById('recordings-panel');
+  const recList   = document.getElementById('recordings-list');
+  const recFilter = document.getElementById('rec-filter');
+  recList.innerHTML = '';
 
-  const perfs = musicianToPerformances[nodeId] || [];
-  if (perfs.length === 0) {{
-    perfPanel.style.display = 'none';
-    return;
-  }}
+  const nd = nodeData || cy.getElementById(nodeId).data();
+  const legacyTracks    = nd.tracks || [];
+  const structuredPerfs = musicianToPerformances[nodeId] || [];
 
-  perfs.forEach(p => {{
-    const li = document.createElement('li');
-    li.dataset.vid = p.video_id;
-    li.className   = playerRegistry.has(p.video_id) ? 'playing' : '';
-    li.title = `Play from ${{p.timestamp || '0:00'}}`;
-    li.addEventListener('click', () =>
-      openOrFocusPlayer(p.video_id, p.display_title, p.title, p.offset_seconds));
+  const allRecs = [];
 
-    const titleSpan = document.createElement('span');
-    titleSpan.className = 'perf-title';
-    titleSpan.textContent = p.display_title;
-
-    const ragaSpan = document.createElement('span');
-    ragaSpan.className = 'perf-raga';
-    const ragaObj = ragas.find(r => r.id === p.raga_id);
-    const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
-    const ragaText = [ragaName, p.tala, p.title].filter(Boolean).join(' · ');
-    if (ragaText) {{
-      ragaSpan.appendChild(document.createTextNode(ragaText));
-    }}
-
-    const linkA = document.createElement('a');
-    linkA.className = 'perf-link';
-    linkA.href = ytDirectUrl(p.video_id, p.offset_seconds);
-    linkA.target = '_blank';
-    linkA.textContent = (p.timestamp ? p.timestamp + ' ↗' : '↗');
-    linkA.title = 'Open in YouTube at this timestamp';
-    linkA.addEventListener('click', e => e.stopPropagation());
-    ragaSpan.appendChild(linkA);
-
-    li.appendChild(titleSpan);
-    li.appendChild(ragaSpan);
-    perfList.appendChild(li);
+  legacyTracks.forEach(t => {{
+    allRecs.push({{
+      vid:            t.vid,
+      title:          t.label,
+      composition_id: t.composition_id || null,
+      raga_id:        t.raga_id        || null,
+      year:           t.year           || null,
+      offset_seconds: 0,
+      tala:           null,
+      context:        null,
+      type:           t.type           || null,
+      isLegacy:       true,
+    }});
   }});
 
-  perfPanel.style.display = 'block';
+  structuredPerfs.forEach(p => {{
+    allRecs.push({{
+      vid:            p.video_id,
+      title:          p.display_title,
+      composition_id: p.composition_id || null,
+      raga_id:        p.raga_id        || null,
+      year:           p.date ? parseInt(p.date) : null,
+      offset_seconds: p.offset_seconds || 0,
+      tala:           p.tala           || null,
+      context:        p.short_title || p.date || null,
+      type:           p.type           || null,
+      isLegacy:       false,
+    }});
+  }});
+
+  // Sort: year asc (nulls last), performances before non-performances, then title
+  allRecs.sort((a, b) => {{
+    if (a.year !== b.year) {{
+      if (a.year == null) return 1;
+      if (b.year == null) return -1;
+      return a.year - b.year;
+    }}
+    const aIsPerf = !!(a.composition_id && a.raga_id);
+    const bIsPerf = !!(b.composition_id && b.raga_id);
+    if (aIsPerf !== bIsPerf) return aIsPerf ? -1 : 1;
+    return (a.title || '').localeCompare(b.title || '');
+  }});
+
+  const artistLabel = nd.label || '';
+
+  allRecs.forEach(rec => {{
+    const li = document.createElement('li');
+    li.dataset.vid = rec.vid;
+    li.className   = playerRegistry.has(rec.vid) ? 'playing' : '';
+    li.addEventListener('click', () =>
+      openOrFocusPlayer(rec.vid, rec.title, artistLabel,
+                        rec.offset_seconds > 0 ? rec.offset_seconds : undefined));
+
+    // Row 1: title + year
+    const row1 = document.createElement('div');
+    row1.className = 'rec-row1';
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'rec-title';
+    if (rec.composition_id && rec.raga_id) {{
+      const comp = compositions.find(c => c.id === rec.composition_id);
+      titleSpan.textContent = comp ? comp.title : rec.title;
+    }} else {{
+      const typeIcon = {{ interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }}[rec.type] || '';
+      titleSpan.textContent = typeIcon + (rec.title || '');
+    }}
+
+    const yearSpan = document.createElement('span');
+    yearSpan.className = 'rec-year';
+    yearSpan.textContent = '';
+
+    row1.appendChild(titleSpan);
+    row1.appendChild(yearSpan);
+
+    // Build the YouTube link (shared by all rows)
+    const linkA = document.createElement('a');
+    linkA.className = 'rec-link';
+    linkA.href      = ytDirectUrl(rec.vid, rec.offset_seconds > 0 ? rec.offset_seconds : undefined);
+    linkA.target    = '_blank';
+    linkA.textContent = rec.offset_seconds > 0
+      ? formatTimestamp(rec.offset_seconds) + ' \u2197'
+      : '00:00 \u2197';
+    linkA.title = rec.offset_seconds > 0
+      ? 'Open in YouTube at this timestamp'
+      : 'Open in YouTube';
+    linkA.addEventListener('click', e => e.stopPropagation());
+
+    // Row 2: raga name (composition) or context (non-composition)
+    const row2 = document.createElement('div');
+    row2.className = 'rec-row2';
+    const ragaSpan = document.createElement('span');
+    ragaSpan.className = 'rec-meta';
+    if (rec.composition_id && rec.raga_id) {{
+      const ragaObj = ragas.find(r => r.id === rec.raga_id);
+      ragaSpan.textContent = ragaObj ? ragaObj.name : (rec.raga_id || '');
+    }} else {{
+      ragaSpan.textContent = rec.context || '';
+    }}
+    row2.appendChild(ragaSpan);
+
+    // Row 3 (only when context exists): context + link
+    // When no context: link goes on row 2 alongside raga
+    const hasContext = !!(rec.composition_id && rec.raga_id && rec.context);
+    if (hasContext) {{
+      const row3 = document.createElement('div');
+      row3.className = 'rec-row3';
+      const ctxSpan = document.createElement('span');
+      ctxSpan.className = 'rec-meta';
+      ctxSpan.textContent = rec.context;
+      row3.appendChild(ctxSpan);
+      row3.appendChild(linkA);
+      li.appendChild(row1);
+      li.appendChild(row2);
+      li.appendChild(row3);
+    }} else {{
+      // No context — link shares row 2 with raga
+      row2.appendChild(linkA);
+      li.appendChild(row1);
+      li.appendChild(row2);
+    }}
+    recList.appendChild(li);
+  }});
+
+  if (allRecs.length > 0) {{
+    recPanel.style.display  = 'block';
+    recFilter.style.display = 'block';
+  }} else {{
+    recPanel.style.display  = 'none';
+    recFilter.style.display = 'none';
+  }}
 }}
 
 // ── selectNode — shared selection logic (sidebar + graph highlight) ───────────
 function selectNode(node) {{
   const d = node.data();
 
-  document.getElementById('node-name').textContent = d.label;
-  document.getElementById('node-meta').innerHTML =
-    `<div>${{d.lifespan || ''}}</div>` +
-    `<div style="color:var(--gray)">${{d.era_label}}</div>` +
-    `<div>${{d.instrument}} · ${{d.bani || ''}}</div>`;
-  const srcDiv = document.getElementById('node-sources');
-  if (d.sources && d.sources.length > 0) {{
-    srcDiv.style.display = 'block';
-    srcDiv.innerHTML = d.sources.map(s =>
-      `<a class="node-src-link" href="${{s.url}}" target="_blank">${{s.label}} &#8599;</a>`
-    ).join('');
+  // Collapsed single-line header
+  document.getElementById('node-name').textContent     = d.label;
+  document.getElementById('node-lifespan').textContent = d.lifespan || '';
+
+  const eraDot = document.getElementById('node-era-dot');
+  eraDot.style.background = d.color || 'var(--gray)';
+
+  const instrIcon = document.getElementById('node-instr-icon');
+  instrIcon.className = 'node-instr-icon ' + (d.shape || 'ellipse');
+
+  const wikiLink   = document.getElementById('node-wiki-link');
+  const primarySrc = d.sources && d.sources.length > 0 ? d.sources[0] : null;
+  if (primarySrc) {{
+    wikiLink.href         = primarySrc.url;
+    wikiLink.title        = primarySrc.label;
+    wikiLink.style.display = 'inline';
   }} else {{
-    srcDiv.style.display = 'none';
-    srcDiv.innerHTML = '';
+    wikiLink.style.display = 'none';
   }}
 
-  document.getElementById('node-info').style.display  = 'block';
-  document.getElementById('edge-info').style.display  = 'none';
+  document.getElementById('node-info').style.display = 'block';
+  document.getElementById('edge-info').style.display = 'none';
 
-  const trackPanel = document.getElementById('track-panel');
-  const trackList  = document.getElementById('track-list');
-  trackList.innerHTML = '';
+  // Clear filter and rebuild unified recordings list
+  const recFilter = document.getElementById('rec-filter');
+  recFilter.value = '';
+  recFilter.dispatchEvent(new Event('input'));
 
-  if (d.tracks && d.tracks.length > 0) {{
-    trackPanel.style.display = 'block';
-    d.tracks.forEach(t => {{
-      const li = document.createElement('li');
-      li.dataset.vid = t.vid;
-      li.className   = playerRegistry.has(t.vid) ? 'playing' : '';
-      li.innerHTML   = `<span class="play-icon">&#9654;</span><span>${{t.label}}</span>`;
-      li.addEventListener('click', () => openOrFocusPlayer(t.vid, t.label, d.label));
-      trackList.appendChild(li);
-    }});
-  }} else {{
-    trackPanel.style.display = 'none';
-  }}
-
-  // structured concert performances
-  buildPerfPanel(d.id);
+  buildRecordingsList(d.id, d);
 
   cy.elements().addClass('faded');
   node.removeClass('faded');
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
 }}
+
+// ── rec-filter event listener ─────────────────────────────────────────────────
+document.getElementById('rec-filter').addEventListener('input', function() {{
+  const q       = this.value.toLowerCase().trim();
+  const recList = document.getElementById('recordings-list');
+  const items   = recList.querySelectorAll('li:not(.rec-no-match)');
+  let anyVisible = false;
+
+  items.forEach(li => {{
+    if (!q) {{ li.style.display = 'flex'; anyVisible = true; return; }}
+    // Match only musicological content — title and meta, not year or timestamp
+    const titleText = (li.querySelector('.rec-title') || {{}}).textContent || '';
+    const metaText  = (li.querySelector('.rec-meta')  || {{}}).textContent || '';
+    const matches   = titleText.toLowerCase().includes(q) ||
+                      metaText.toLowerCase().includes(q);
+    li.style.display = matches ? 'flex' : 'none';
+    if (matches) anyVisible = true;
+  }});
+
+  let noMatch = recList.querySelector('.rec-no-match');
+  if (!anyVisible && q) {{
+    if (!noMatch) {{
+      noMatch = document.createElement('li');
+      noMatch.className = 'rec-no-match';
+      noMatch.style.cssText = 'color:var(--gray);font-style:italic;cursor:default;padding:5px 0;';
+      noMatch.textContent = 'no match';
+      recList.appendChild(noMatch);
+    }}
+    noMatch.style.display = 'flex';
+  }} else if (noMatch) {{
+    noMatch.style.display = 'none';
+  }}
+}});
 
 // ── node tap ──────────────────────────────────────────────────────────────────
 cy.on('tap', 'node', evt => {{
@@ -1197,10 +1342,9 @@ cy.on('tap', 'edge', evt => {{
   srcA.href = d.source_url;
   srcA.style.display = d.source_url ? 'inline-block' : 'none';
 
-  document.getElementById('node-info').style.display   = 'none';
-  document.getElementById('track-panel').style.display = 'none';
-  document.getElementById('perf-panel').style.display  = 'none';
-  document.getElementById('edge-info').style.display   = 'block';
+  document.getElementById('node-info').style.display        = 'none';
+  document.getElementById('recordings-panel').style.display = 'none';
+  document.getElementById('edge-info').style.display        = 'block';
 
   cy.elements().addClass('faded');
   evt.target.removeClass('faded').addClass('highlighted');
@@ -1212,12 +1356,14 @@ cy.on('tap', 'edge', evt => {{
 cy.on('tap', evt => {{
   if (evt.target !== cy) return;
   cy.elements().removeClass('faded highlighted');
-  document.getElementById('node-name').textContent     = '—';
-  document.getElementById('node-meta').innerHTML       = '';
-  document.getElementById('node-info').style.display   = 'block';
-  document.getElementById('track-panel').style.display = 'none';
-  document.getElementById('perf-panel').style.display  = 'none';
-  document.getElementById('edge-info').style.display   = 'none';
+  document.getElementById('node-name').textContent          = '—';
+  document.getElementById('node-lifespan').textContent      = '';
+  document.getElementById('node-wiki-link').style.display   = 'none';
+  document.getElementById('rec-filter').style.display       = 'none';
+  document.getElementById('rec-filter').value               = '';
+  document.getElementById('node-info').style.display        = 'block';
+  document.getElementById('recordings-panel').style.display = 'none';
+  document.getElementById('edge-info').style.display        = 'none';
   applyZoomLabels();
 }});
 
