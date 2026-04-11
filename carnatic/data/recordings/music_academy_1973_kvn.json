@@ -1,0 +1,246 @@
+{
+  "id": "music_academy_1973_kvn",
+  "video_id": "GVZ0rYQjegc",
+  "url": "https://youtu.be/GVZ0rYQjegc",
+  "title": "KV Narayanaswamy — Music Academy Concert, December Season 1973",
+  "short_title": "Music Academy 1973 (KVN)",
+  "date": "1973-12-22",
+  "venue": "Music Academy, Madras",
+  "occasion": "December Season 1973 concert. Archived and uploaded by Vaak. Audio cleaned for listening quality.",
+  "sources": [
+    {
+      "url": "https://youtu.be/GVZ0rYQjegc",
+      "label": "YouTube — Vaak",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "kv_narayanaswamy",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "cr_mani_iyer",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_raghu",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "khanjira",
+          "unmatched_name": "CK Shyamsundar"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "viriboni",
+          "raga_id": "bhairavi",
+          "tala": "ata",
+          "composer_id": "pacchimiriyam_adiapayya",
+          "display_title": "Viriboni (Varnam)",
+          "notes": "Ata-tala varnam; concert opener"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:06:26",
+          "offset_seconds": 386,
+          "composition_id": "intanuchu_varimpa",
+          "raga_id": "gundakriya",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Intanuchu Varimpa",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:10:27",
+          "offset_seconds": 627,
+          "composition_id": "pahimam_brhannayike",
+          "raga_id": "huseni",
+          "tala": "rupakam",
+          "composer_id": "swati_tirunal",
+          "display_title": "Pahimam Brhannayike (Swarajathi)",
+          "notes": "Swarajathi; authorship attributed to Swati Tirunal, disputed in some scholarly sources"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:18:05",
+          "offset_seconds": 1085,
+          "composition_id": null,
+          "raga_id": "simhendramadhyamam",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Simhendramadhyamam — Alapana",
+          "notes": "Extended alapana preceding the kriti",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:21:10",
+          "offset_seconds": 1270,
+          "composition_id": "en_manam",
+          "raga_id": "simhendramadhyamam",
+          "tala": "adi",
+          "composer_id": "papanasam_sivan",
+          "display_title": "En Manam",
+          "notes": "Tamil kriti by Papanasam Sivan"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:26:34",
+          "offset_seconds": 1594,
+          "composition_id": null,
+          "raga_id": "suddha_saveri",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Suddha Saveri — Alapana",
+          "notes": "Extended alapana preceding the kriti",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:31:07",
+          "offset_seconds": 1867,
+          "composition_id": "thaye_tripura",
+          "raga_id": "suddha_saveri",
+          "tala": "khanda_chapu",
+          "composer_id": "periyasami_tooran",
+          "display_title": "Thaye Tripura",
+          "notes": "Tamil kriti by Periyasami Tooran; Khanda Chapu tala"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:41:47",
+          "offset_seconds": 2507,
+          "composition_id": null,
+          "raga_id": "shankarabharanam",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Shankarabharanam — Alapana",
+          "notes": "Extended alapana of approximately 14 minutes preceding the Dikshitar kriti",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "00:55:49",
+          "offset_seconds": 3349,
+          "composition_id": "akshaya_linga_vibho",
+          "raga_id": "shankarabharanam",
+          "tala": "misra_capu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Akshaya Linga Vibho",
+          "notes": "Dikshitar kriti; Misra Chapu tala; main item of the concert"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:20:14",
+          "offset_seconds": 4814,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "misra_capu",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": "Percussion solo by Palghat Raghu (mridangam) and CK Shyamsundar (khanjira); Misra Chapu",
+          "type": "tani"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:37:08",
+          "offset_seconds": 5828,
+          "composition_id": null,
+          "raga_id": "todi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi — Alapana",
+          "notes": "Brief alapana preceding the kriti",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:39:50",
+          "offset_seconds": 5990,
+          "composition_id": null,
+          "raga_id": "todi",
+          "tala": "deshadi",
+          "composer_id": null,
+          "display_title": "Amba Nannu Brovave",
+          "notes": "Kriti in Thodi; Deshadi tala; attributed to 'Anai Ayya' in the concert listing — composer identity unverified in standard references; composition_id withheld pending source confirmation"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:43:57",
+          "offset_seconds": 6237,
+          "composition_id": "brovavamma_tamasame",
+          "raga_id": "manji",
+          "tala": "misra_capu",
+          "composer_id": "shyama_shastri",
+          "display_title": "Brovavamma Tamasame",
+          "notes": "Shyama Shastri kriti in Manji; Misra Chapu tala"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "01:50:00",
+          "offset_seconds": 6600,
+          "composition_id": "kandu_dhanyanade",
+          "raga_id": "behag",
+          "tala": "adi",
+          "composer_id": "kamalesha_vittala_dasa",
+          "display_title": "Kandu Dhanyanade",
+          "notes": "Kannada devaranama by Kamalesha Vittala Dasa in Behag"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "01:56:05",
+          "offset_seconds": 6965,
+          "composition_id": "azhagu_vadivai_vandhu",
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Azhagu Vadivai Vandhu (Virutham — Ragamalika)",
+          "notes": "Tamil virutham sung as a ragamalika; no single raga or tala applicable; composer not definitively established"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:11:19",
+          "offset_seconds": 7879,
+          "composition_id": "alarsara_paritapam",
+          "raga_id": "surutti",
+          "tala": "misra_capu",
+          "composer_id": "swati_tirunal",
+          "display_title": "Alasara Parithapam / Jalaja Bandhu (Padam)",
+          "notes": "Two Swati Tirunal padams in Surutti performed together; primary entry is 'Alarśara Paritāpam'; 'Jalaja Bandhu' (composition_id: jalaja_bandhu) follows immediately"
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:14:16",
+          "offset_seconds": 8056,
+          "composition_id": "thillana_bilahari_ariyakudi",
+          "raga_id": "bilahari",
+          "tala": "adi",
+          "composer_id": "ariyakudi_ramanuja_iyengar",
+          "display_title": "Thillana (Bilahari)",
+          "notes": "Thillana by Ariyakudi Ramanuja Iyengar; Adi tala"
+        },
+        {
+          "performance_index": 18,
+          "timestamp": "02:16:31",
+          "offset_seconds": 8191,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku (Mangalam)",
+          "notes": "Mangalam; concert close"
+        }
+      ]
+    }
+  ]
+}
