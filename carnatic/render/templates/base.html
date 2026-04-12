@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carnatic Guru-Shishya Parampara</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<style>
+  :root {
+    --bg:     #282828; --bg1: #3c3836; --bg2: #504945; --bg3: #665c54;
+    --fg:     #ebdbb2; --fg2: #d5c4a1; --fg3: #bdae93;
+    --yellow: #d79921; --orange: #d65d0e; --blue: #458588;
+    --aqua:   #689d6a; --purple: #b16286; --green: #98971a;
+    --red:    #cc241d; --gray:   #a89984;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font-family: 'Courier New', monospace;
+    height: 100vh; display: flex; flex-direction: column;
+  }
+
+  /* ── header ── */
+  header {
+    padding: 10px 18px; background: var(--bg1);
+    border-bottom: 1px solid var(--bg3);
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  header h1 {
+    font-size: 1rem; color: var(--yellow);
+    letter-spacing: 0.08em; text-transform: uppercase; font-weight: bold;
+  }
+  .stats  { font-size: 0.75rem; color: var(--gray); }
+  .controls { display: flex; gap: 8px; margin-left: auto; }
+
+  /* ── canvas column (filter bar + graph) ── */
+  #canvas-wrap {
+    flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;
+  }
+  #filter-bar {
+    display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
+    padding: 5px 10px;
+    background: var(--bg1); border-bottom: 1px solid var(--bg2);
+    flex-shrink: 0;
+  }
+
+  /* ── filter groups ── */
+  .filter-group {
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+  }
+  .filter-separator {
+    width: 1px; height: 18px; background: var(--fg3);
+    flex-shrink: 0; margin: 0 6px; opacity: 0.4;
+  }
+
+  /* ── individual chips ── */
+  .filter-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 7px; border-radius: 2px;
+    border: 1px solid var(--bg3); background: var(--bg1);
+    color: var(--fg3); font-size: 0.68rem;
+    cursor: pointer; user-select: none;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+    white-space: nowrap;
+  }
+  .filter-chip:hover { border-color: var(--fg3); color: var(--fg); }
+  .filter-chip.active {
+    border-color: var(--yellow); color: var(--yellow); background: var(--bg2);
+  }
+  .filter-chip .chip-dot {
+    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  }
+  .filter-chip .chip-dot.diamond   { transform: rotate(45deg); border-radius: 1px; }
+  .filter-chip .chip-dot.rectangle { border-radius: 1px; }
+  .filter-chip .chip-dot.triangle  {
+    width: 0; height: 0; background: none !important;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 7px solid var(--gray);
+  }
+  .filter-chip.active .chip-dot.triangle { border-bottom-color: var(--yellow); }
+  .filter-chip .chip-dot.hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  /* ── clear-all button ── */
+  .filter-clear {
+    font-size: 0.65rem; color: var(--gray);
+    background: none; border: none; cursor: pointer;
+    padding: 2px 4px; margin-left: 4px;
+  }
+  .filter-clear:hover { color: var(--fg); }
+
+  /* ── scope label ── */
+  .search-scope-label {
+    font-size: 0.65rem; color: var(--gray);
+    font-style: italic; padding: 2px 0 4px 2px; line-height: 1.3;
+  }
+  button {
+    background: var(--bg2); color: var(--fg2); border: 1px solid var(--bg3);
+    padding: 4px 10px; font-family: inherit; font-size: 0.75rem;
+    cursor: pointer; border-radius: 2px;
+  }
+  button:hover { background: var(--bg3); color: var(--fg); background: var(--bg3); }
+
+  /* ── main layout ── */
+  #main { display: flex; flex: 1; overflow: hidden; position: relative; }
+  #cy   { flex: 1; background: var(--bg); min-height: 0; }
+
+  /* ── left sidebar (global controls: Bani Flow, legends) ── */
+  #left-sidebar {
+    width: 260px; background: var(--bg1);
+    border-right: 1px solid var(--bg2);
+    display: flex; flex-direction: column;
+    overflow-y: auto; font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+
+  /* ── right sidebar (node-specific: selection, recordings, edge) ── */
+  #right-sidebar {
+    width: 260px; background: var(--bg1);
+    border-left: 1px solid var(--bg2);
+    display: flex; flex-direction: column;
+    overflow-y: auto; font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+  .panel { padding: 12px 14px; border-bottom: 1px solid var(--bg2); flex-shrink: 0; }
+  .panel h3 {
+    font-size: 0.7rem; color: var(--gray);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+
+  /* ── node header (collapsed single-line) ── */
+  #node-info { padding: 8px 14px; border-bottom: 1px solid var(--bg2); flex-shrink: 0; }
+  #node-header { display: flex; align-items: center; gap: 5px; }
+  #node-name { font-size: 0.85rem; color: var(--yellow); font-weight: bold; }
+  #node-lifespan { font-size: 0.70rem; color: var(--gray); margin-left: 4px; }
+  .node-wiki-link {
+    margin-left: auto; flex-shrink: 0;
+    color: var(--blue); font-size: 0.72rem; text-decoration: none;
+  }
+  .node-wiki-link:hover { text-decoration: underline; }
+
+  /* Single coloured shape — shape = instrument, colour = era */
+  .node-shape-icon {
+    width: 10px; height: 10px; display: inline-block;
+    flex-shrink: 0;
+    /* background-color set dynamically via JS: d.color */
+  }
+  .node-shape-icon.ellipse   { border-radius: 50%; }
+  .node-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
+  .node-shape-icon.rectangle { border-radius: 1px; }
+  .node-shape-icon.triangle  {
+    width: 0; height: 0; background: none !important;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-bottom: 10px solid var(--gray); /* overridden by JS for triangle */
+  }
+  .node-shape-icon.hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  /* ── recording filter input + trail filter input ── */
+  #rec-filter,
+  #trail-filter {
+    width: 100%; background: var(--bg2); color: var(--fg2);
+    border: 1px solid var(--bg3); padding: 4px 8px;
+    font-family: inherit; font-size: 0.72rem; border-radius: 2px;
+    margin-top: 6px; display: none; box-sizing: border-box;
+  }
+  #rec-filter:focus,
+  #trail-filter:focus { outline: none; border-color: var(--yellow); }
+  #rec-filter::placeholder,
+  #trail-filter::placeholder { color: var(--gray); font-style: italic; }
+
+  /* ── unified recordings panel ── */
+  #recordings-panel { display: none; }
+  #recordings-list { list-style: none; margin-top: 4px; }
+
+  /* ── concert bracket (ADR-018) ── */
+  .concert-bracket {
+    border-bottom: 1px solid var(--bg2);
+    padding: 0;
+  }
+  .concert-bracket:last-child { border-bottom: none; }
+
+  .concert-header {
+    display: flex; align-items: flex-start; gap: 6px;
+    padding: 6px 0; cursor: pointer;
+  }
+  .concert-header:hover .concert-title { color: var(--yellow); }
+
+  .concert-chevron {
+    font-size: 0; color: var(--gray);
+    flex-shrink: 0; margin-top: 3px; width: 10px; text-align: center;
+    user-select: none;
+  }
+  .concert-chevron::before { font-size: 0.60rem; content: '▶'; }
+  .concert-bracket.expanded .concert-chevron::before { content: '▼'; }
+
+  .concert-header-body { flex: 1; min-width: 0; }
+
+  .concert-title-row {
+    display: flex; align-items: baseline; gap: 4px; width: 100%;
+  }
+  .concert-title {
+    font-size: 0.78rem; font-weight: bold; color: var(--fg1);
+    flex: 1; min-width: 0;
+  }
+  .concert-date {
+    font-size: 0.68rem; color: var(--gray);
+    flex-shrink: 0; margin-left: auto; padding-left: 6px;
+  }
+
+  .concert-performers {
+    font-size: 0.68rem; color: var(--fg3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .concert-bracket.expanded .concert-performers {
+    white-space: normal;
+  }
+
+  .concert-count {
+    font-size: 0.65rem; color: var(--gray); margin-top: 2px;
+  }
+  .concert-bracket.expanded .concert-count { display: none; }
+
+  /* ── composition list inside bracket ── */
+  .concert-perf-list {
+    list-style: none;
+    padding-left: 16px;
+    margin-bottom: 4px;
+  }
+  .concert-perf-item {
+    padding: 4px 0; border-bottom: 1px solid var(--bg2);
+    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+  }
+  .concert-perf-item:last-child { border-bottom: none; }
+  .concert-perf-item:hover .rec-title { color: var(--yellow); }
+  .concert-perf-item.playing .rec-title { color: var(--aqua); }
+
+  /* ── legacy flat items ── */
+  li.rec-legacy {
+    padding: 5px 0; border-bottom: 1px solid var(--bg2);
+    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+    line-height: 1.4;
+  }
+  li.rec-legacy:last-child { border-bottom: none; }
+  li.rec-legacy:hover .rec-title { color: var(--yellow); }
+  li.rec-legacy.playing .rec-title { color: var(--aqua); }
+
+  .rec-row1 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  .rec-title {
+    color: var(--yellow); font-weight: bold; font-size: 0.74rem;
+    flex: 1; min-width: 0; word-break: break-word;
+  }
+  .rec-year {
+    flex-shrink: 0; color: var(--gray); font-size: 0.68rem;
+    margin-left: auto; padding-left: 6px;
+  }
+  .rec-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  .rec-row3 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  .rec-meta {
+    color: var(--fg3); font-size: 0.70rem;
+    flex: 1; min-width: 0;
+  }
+  .rec-link {
+    flex-shrink: 0; color: var(--blue); font-size: 0.70rem;
+    text-decoration: none; white-space: nowrap;
+  }
+  .rec-link:hover { text-decoration: underline; }
+
+  /* edge info */
+  #edge-info    { display: none; }
+  #edge-guru    { color: var(--yellow); font-weight: bold; }
+  #edge-arrow   { color: var(--gray); font-size: 0.8rem; margin: 2px 0; }
+  #edge-shishya { color: var(--aqua);  font-weight: bold; }
+  #edge-note    { margin-top: 6px; color: var(--orange); font-style: italic; font-size: 0.8rem; }
+  #edge-conf    { margin-top: 4px; color: var(--fg3); font-size: 0.75rem; }
+  #edge-src     {
+    display: none; margin-top: 6px; color: var(--blue);
+    font-size: 0.75rem; text-decoration: none;
+  }
+  #edge-src:hover { text-decoration: underline; }
+
+
+  /* ── hover popover ── */
+  #hover-popover {
+    position: fixed; display: none; pointer-events: none;
+    background: var(--bg1); border: 1px solid var(--yellow); border-radius: 3px;
+    padding: 7px 12px; z-index: 900; max-width: 220px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  }
+  #hp-name { font-size: 1rem; font-weight: bold; color: var(--yellow); line-height: 1.3; }
+  #hp-sub  { font-size: 0.75rem; color: var(--fg3); margin-top: 3px; line-height: 1.5; }
+
+  /* ── floating media player (multi-window, class-based) ── */
+  .media-player {
+    position: absolute;
+    width: 340px;
+    background: var(--bg1);
+    border: 1px solid var(--bg3);
+    border-radius: 4px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.65);
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+  }
+
+  /* title bar / drag handle */
+  .mp-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px;
+    background: var(--bg2); border-radius: 4px 4px 0 0;
+    cursor: grab; border-bottom: 1px solid var(--bg3);
+  }
+  .mp-bar:active { cursor: grabbing; }
+  .mp-title {
+    flex: 1; font-size: 0.78rem; font-weight: bold; color: var(--yellow);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mp-close {
+    background: none; border: none; color: var(--gray);
+    font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
+    flex-shrink: 0;
+  }
+  .mp-close:hover { color: var(--red); }
+
+  /* 16:9 iframe wrapper */
+  .mp-video-wrap {
+    position: relative; width: 100%; padding-top: 56.25%; background: #000;
+  }
+  .mp-iframe {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; border: none;
+  }
+
+  /* resize grip at bottom */
+  .mp-resize {
+    height: 7px; cursor: ns-resize;
+    background: var(--bg2); border-top: 1px solid var(--bg3);
+    border-radius: 0 0 4px 4px; opacity: 0.6;
+  }
+  .mp-resize:hover { opacity: 1; background: var(--bg3); }
+
+  /* ── timeline ruler ── */
+  #timeline-ruler .tick-line {
+    stroke: #504945; stroke-width: 1px;
+  }
+  #timeline-ruler .tick-line.century {
+    stroke: #665c54; stroke-width: 1.5px;
+  }
+  #timeline-ruler .tick-label {
+    fill: #a89984; font-family: 'Courier New', monospace;
+    font-size: 11px; text-anchor: middle; dominant-baseline: hanging;
+  }
+  #timeline-ruler .tick-label.century {
+    fill: #d5c4a1; font-size: 13px; font-weight: bold;
+  }
+  #timeline-ruler .era-band {
+    fill: none; stroke: none;
+  }
+  #timeline-ruler .era-label {
+    fill: #665c54; font-family: 'Courier New', monospace;
+    font-size: 10px; dominant-baseline: middle;
+  }
+  /* ── Three-view selector (ADR-023) ── */
+  .view-selector {
+    display: inline-flex;
+    border: 1px solid var(--bg3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-left: 8px;
+  }
+  .view-btn {
+    background: var(--bg1);
+    color: var(--fg2);
+    border: none;
+    border-right: 1px solid var(--bg3);
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .view-btn:last-child { border-right: none; }
+  .view-btn:hover { background: var(--bg2); color: var(--fg1); }
+  .view-btn.active {
+    background: var(--bg3);
+    color: var(--yellow);
+    font-weight: bold;
+  }
+
+  /* ── Bani Flow panel ── */
+  :root { --teal: #83a598; }
+  #bani-flow-panel select {
+    width: 100%; background: var(--bg2); color: var(--fg2);
+    border: 1px solid var(--bg3); font-family: inherit; font-size: 0.74rem;
+    padding: 4px 6px; border-radius: 2px; margin-bottom: 6px; cursor: pointer;
+  }
+  #bani-flow-panel select:focus { outline: none; border-color: var(--teal); }
+  #listening-trail { display: none; margin-top: 8px; }
+  /* ── bani subject header (ADR-020) ── */
+  #bani-subject-header {
+    padding: 8px 0 6px;
+    border-bottom: 1px solid var(--bg2);
+    flex-shrink: 0;
+  }
+  #bani-subject-name-row {
+    display: flex; align-items: center; gap: 5px;
+  }
+  #bani-subject-name {
+    font-size: 0.85rem; color: var(--yellow); font-weight: bold;
+    flex: 1; min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bani-subject-link {
+    margin-left: auto; flex-shrink: 0;
+    color: var(--blue); font-size: 0.72rem; text-decoration: none;
+  }
+  .bani-subject-link:hover { text-decoration: underline; }
+  .bani-subject-icon {
+    width: 10px; height: 10px; display: inline-block;
+    flex-shrink: 0;
+    background: var(--teal);
+    border-radius: 50%;
+  }
+  #bani-subject-sub {
+    font-size: 0.70rem; color: var(--fg3);
+    margin-top: 3px; line-height: 1.5;
+    display: flex; flex-wrap: wrap; gap: 2px 0;
+  }
+  .bani-sub-link {
+    color: var(--blue); text-decoration: none; cursor: pointer;
+  }
+  .bani-sub-link:hover { text-decoration: underline; }
+  #bani-subject-aliases {
+    font-size: 0.68rem; color: var(--gray);
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  /* ── Raga panel navigability (ADR-022) ── */
+  #bani-subject-aliases-row {
+    font-size: 0.68rem; color: var(--gray);
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #bani-janyas-row {
+    margin-top: 4px;
+    font-size: 0.68rem;
+  }
+  .bani-janyas-toggle {
+    color: var(--teal); cursor: pointer;
+    user-select: none;
+  }
+  .bani-janyas-toggle:hover { text-decoration: underline; }
+  .bani-janyas-count {
+    color: var(--gray); margin-left: 2px;
+  }
+  /* Janyas filter input */
+  #bani-janyas-filter {
+    width: 100%; box-sizing: border-box;
+    margin-top: 4px;
+    padding: 3px 5px;
+    background: var(--bg2); border: 1px solid var(--bg3);
+    border-radius: 2px;
+    color: var(--fg); font-size: 0.68rem; font-family: inherit;
+    outline: none;
+  }
+  #bani-janyas-filter:focus { border-color: var(--teal); }
+  #bani-janyas-filter::placeholder { color: var(--gray); }
+  /* Janyas filtered list */
+  .bani-janyas-list {
+    margin-top: 3px;
+    padding: 2px 0;
+    max-height: 130px;
+    overflow-y: auto;
+  }
+  .bani-janya-link {
+    display: block;
+    padding: 2px 4px;
+    color: var(--blue); text-decoration: none; cursor: pointer;
+    font-size: 0.68rem; border-radius: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bani-janya-link:hover { background: var(--bg2); text-decoration: underline; }
+  .bani-janyas-empty {
+    padding: 2px 4px; font-size: 0.68rem; color: var(--gray);
+  }
+  #trail-list { list-style: none; }
+  #trail-list li {
+    padding: 5px 0; border-bottom: 1px solid var(--bg2);
+    font-size: 0.74rem; color: var(--fg2);
+    display: flex; flex-direction: column; gap: 2px; line-height: 1.4;
+    cursor: pointer;
+  }
+  #trail-list li:last-child { border-bottom: none; }
+  #trail-list li:hover { color: var(--yellow); }
+  #trail-list li.playing { color: var(--aqua); }
+  .trail-header { display: flex; flex-direction: column; width: 100%; gap: 1px; }
+  .trail-header-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
+  .trail-lifespan { flex-shrink: 0; color: var(--gray); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }
+  .trail-artist { color: var(--yellow); cursor: pointer; font-weight: bold; flex-shrink: 0; display: inline-flex; align-items: center; gap: 0; }
+  .trail-artist:hover { text-decoration: underline; }
+  .trail-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  .trail-label { color: var(--fg3); font-size: 0.72rem; flex: 1; min-width: 0; }
+  .trail-shape-icon {
+    width: 8px; height: 8px; display: inline-block;
+    margin-right: 6px; vertical-align: middle; flex-shrink: 0;
+  }
+  .trail-shape-icon.ellipse   { border-radius: 50%; }
+  .trail-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
+  .trail-shape-icon.rectangle { border-radius: 1px; }
+  .trail-shape-icon.triangle  {
+    width: 0; height: 0; background: none;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 8px solid var(--gray);
+  }
+  .trail-shape-icon.hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+  .trail-link {
+    flex-shrink: 0; color: var(--blue); font-size: 0.70rem;
+    text-decoration: none; white-space: nowrap; margin-left: auto;
+  }
+  .trail-link:hover { text-decoration: underline; }
+
+  /* ── co-performer display in trail (ADR-019) ── */
+  .trail-artist-primary {
+    font-weight: bold;
+    color: var(--yellow);
+  }
+  .trail-artist-co {
+    font-weight: normal;
+    font-size: 0.72rem;
+    color: var(--fg3);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0;
+  }
+  .trail-artist-co:hover { color: var(--yellow); text-decoration: underline; }
+  .trail-coperformer-row {
+    display: flex; align-items: center; width: 100%;
+  }
+  .trail-context {
+    font-size: 0.65rem;
+    color: var(--gray);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── panel-level search bars ── */
+  .panel-search-wrap {
+    padding: 8px 14px 0;
+    border-bottom: 1px solid var(--bg2);
+  }
+  .panel-search {
+    width: 100% !important;
+    box-sizing: border-box;
+    background: var(--bg2); color: var(--fg2); border: 1px solid var(--bg3);
+    padding: 4px 8px; font-family: inherit; font-size: 0.72rem;
+    border-radius: 2px;
+  }
+  .panel-search:focus { outline: none; border-color: var(--yellow); }
+  .panel-search::placeholder { color: var(--gray); font-style: italic; }
+  .search-wrap {
+    position: relative;
+  }
+  .search-input {
+    background: var(--bg2); color: var(--fg2); border: 1px solid var(--bg3);
+    padding: 4px 10px; font-family: inherit; font-size: 0.75rem;
+    cursor: text; border-radius: 2px; width: 200px;
+  }
+  .search-input:focus {
+    outline: none; border-color: var(--yellow);
+  }
+  .search-dropdown {
+    position: absolute; top: 100%; left: 0; width: 100%;
+    background: var(--bg1); border: 1px solid var(--bg3);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    max-height: 280px; overflow-y: auto; z-index: 950;
+  }
+  .search-result-item {
+    padding: 6px 10px; cursor: pointer;
+    border-bottom: 1px solid var(--bg2);
+    font-size: 0.78rem;
+  }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-item:hover,
+  .search-result-item.active {
+    background: var(--bg2); color: var(--yellow);
+  }
+  .search-result-secondary {
+    font-size: 0.70rem; color: var(--gray); margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Carnatic · Guru-Shishya Parampara</h1>
+  <span class="stats">{node_count} musicians · {edge_count} lineage edges</span>
+  <div class="controls">
+    <button id="btn-fit" onclick="cy.fit()">Fit</button>
+    <button id="btn-reset" onclick="cy.reset()">Reset</button>
+    <button id="btn-relayout" onclick="relayout()">Relayout</button>
+    <button id="btn-labels" onclick="toggleLabels()">Labels</button>
+    <div class="view-selector" id="view-selector">
+      <button class="view-btn active" id="view-btn-graph"
+              onclick="switchView('graph')" title="Guru-shishya lineage graph">Graph</button>
+      <button class="view-btn" id="view-btn-timeline"
+              onclick="switchView('timeline')" title="Chronological timeline">Timeline</button>
+      <button class="view-btn" id="view-btn-raga"
+              onclick="switchView('raga')" title="Melakarta raga wheel">Ragas</button>
+    </div>
+  </div>
+</header>
+
+<div id="main">
+  <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->
+  <div id="left-sidebar">
+    <!-- ── Bani Flow panel ── -->
+    <div class="panel" id="bani-flow-panel">
+      <h3>Bani Flow &#9835;</h3>
+      <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
+        <input id="bani-search-input" class="search-input panel-search" type="text"
+               placeholder="&#9833; Search raga / composition"
+               autocomplete="off" spellcheck="false">
+        <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
+        <div class="search-scope-label" id="bani-scope-label" style="display:none">
+          searching all compositions
+        </div>
+      </div>
+      <!-- Subject header — shown when a raga/composition is selected (ADR-020) -->
+      <div id="bani-subject-header" style="display:none">
+        <div id="bani-subject-name-row">
+          <span id="bani-subject-icon" class="bani-subject-icon"></span>
+          <span id="bani-subject-name"></span>
+          <a id="bani-subject-link" class="bani-subject-link" href="#"
+             target="_blank" style="display:none">&#8599;</a>
+        </div>
+        <div id="bani-subject-sub"></div>
+        <!-- Row 3: aliases (ADR-022) -->
+        <div id="bani-subject-aliases-row" style="display:none"></div>
+        <!-- Row 4: janyas toggle + filter + list (ADR-022, mela ragas only) -->
+        <div id="bani-janyas-row" style="display:none">
+          <span id="bani-janyas-toggle" class="bani-janyas-toggle">&#9654; Janyas</span>
+          <span id="bani-janyas-count" class="bani-janyas-count"></span>
+          <div id="bani-janyas-panel" style="display:none">
+            <input id="bani-janyas-filter" type="text"
+                   placeholder="filter janyas&#8230;" autocomplete="off" spellcheck="false">
+            <div id="bani-janyas-list" class="bani-janyas-list"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
+      <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
+             style="display:none" autocomplete="off" spellcheck="false" />
+      <div id="listening-trail">
+        <ul id="trail-list"></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── canvas column: filter bar + graph ── -->
+  <div id="canvas-wrap">
+    <div id="filter-bar">
+      <div class="filter-group" id="era-filter-group" data-group="era"></div>
+      <div class="filter-separator"></div>
+      <div class="filter-group" id="instr-filter-group" data-group="instrument"></div>
+      <button class="filter-clear" id="filter-clear-all"
+              style="display:none" title="Clear all filters" onclick="clearAllChipFilters()">&#10005; Show all</button>
+    </div>
+    <div id="cy"></div>
+    <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
+    <!-- Raga wheel (ADR-023) -->
+    <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;"></svg>
+  </div>
+
+  <!-- ── hover popover ── -->
+  <div id="hover-popover">
+    <div id="hp-name"></div>
+    <div id="hp-sub"></div>
+  </div>
+
+  <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
+  <div id="right-sidebar">
+    <div class="panel" id="musician-panel">
+      <h3>Musician &#9835;</h3>
+      <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
+        <input id="musician-search-input" class="search-input panel-search" type="text"
+               placeholder="&#128269; Search musician&#8230;"
+               autocomplete="off" spellcheck="false">
+        <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
+        <div class="search-scope-label" id="musician-scope-label" style="display:none">
+          searching all {node_count} musicians
+        </div>
+      </div>
+    </div>
+    <div id="node-info">
+      <div id="node-header">
+        <span id="node-shape-icon" class="node-shape-icon ellipse"></span>
+        <span id="node-name">—</span>
+        <span id="node-lifespan"></span>
+        <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
+           style="display:none">&#8599;</a>
+      </div>
+      <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
+             style="display:none" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="panel" id="recordings-panel" style="display:none">
+      <h3>Recordings</h3>
+      <ul id="recordings-list"></ul>
+    </div>
+
+    <div class="panel" id="edge-info" style="display:none">
+      <h3>Selected Edge</h3>
+      <div id="edge-guru"></div>
+      <div id="edge-arrow">&#8595; guru &middot; shishya</div>
+      <div id="edge-shishya"></div>
+      <div id="edge-note"></div>
+      <div id="edge-conf"></div>
+      <a id="edge-src" href="#" target="_blank">source &#8599;</a>
+    </div>
+  </div>
+</div>
+<!-- INJECT_SCRIPTS -->
+</body>
+</html>
