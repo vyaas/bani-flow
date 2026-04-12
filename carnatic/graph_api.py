@@ -276,6 +276,64 @@ class CarnaticGraph:
         """Return all compositions in the given raga."""
         return [c for c in self._compositions if c.get("raga_id") == raga_id]
 
+    # ── Melakarta / Cakra traversal (ADR-021) ─────────────────────────────────
+
+    def is_melakarta(self, raga_id: str) -> bool:
+        """Return True if the raga has is_melakarta=True."""
+        raga = self._raga_by_id.get(raga_id)
+        if raga is None:
+            return False
+        return bool(raga.get("is_melakarta", False))
+
+    def get_janyas_of(self, mela_raga_id: str) -> list[dict]:
+        """Return all ragas with parent_raga == mela_raga_id, sorted by name."""
+        return sorted(
+            [r for r in self._ragas if r.get("parent_raga") == mela_raga_id],
+            key=lambda r: r.get("name", "").lower(),
+        )
+
+    def get_mela_of(self, janya_raga_id: str) -> dict | None:
+        """Return the parent mela raga object for a janya raga, or None."""
+        raga = self._raga_by_id.get(janya_raga_id)
+        if raga is None:
+            return None
+        parent_id = raga.get("parent_raga")
+        if not parent_id:
+            return None
+        return self._raga_by_id.get(parent_id)
+
+    def get_cakra_of(self, raga_id: str) -> int | None:
+        """
+        Return the cakra number for a raga.
+        For a mela raga: returns its own cakra field.
+        For a janya raga: climbs to the parent mela and returns its cakra.
+        Returns None if the cakra cannot be determined.
+        """
+        raga = self._raga_by_id.get(raga_id)
+        if raga is None:
+            return None
+        # Direct cakra field (mela ragas)
+        cakra = raga.get("cakra")
+        if cakra is not None:
+            return int(cakra)
+        # Climb to parent mela
+        parent = self.get_mela_of(raga_id)
+        if parent is not None:
+            parent_cakra = parent.get("cakra")
+            if parent_cakra is not None:
+                return int(parent_cakra)
+        return None
+
+    def get_melas_in_cakra(self, cakra: int) -> list[dict]:
+        """Return all mela ragas with cakra == N, sorted by melakarta number."""
+        return sorted(
+            [
+                r for r in self._ragas
+                if r.get("is_melakarta") and r.get("cakra") == cakra
+            ],
+            key=lambda r: r.get("melakarta") or 0,
+        )
+
     def get_compositions_by_composer(self, composer_id: str) -> list[dict]:
         """Return all compositions by the given composer."""
         return [c for c in self._compositions if c.get("composer_id") == composer_id]

@@ -1,0 +1,145 @@
+[
+  {
+    "op": "patch",
+    "id": "thodi",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 2
+    },
+    "wikipedia_name": "Hanumatodi",
+    "melakarta": 8,
+    "cakra_name": "Netra"
+  },
+  {
+    "op": "patch",
+    "id": "vakulabharanam",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 3
+    },
+    "wikipedia_name": "Vakuḷābharaṇam",
+    "melakarta": 14,
+    "cakra_name": "Agni"
+  },
+  {
+    "op": "patch",
+    "id": "mayamalavagowla",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 3
+    },
+    "wikipedia_name": "Māyāmāḻavagowla",
+    "melakarta": 15,
+    "cakra_name": "Agni"
+  },
+  {
+    "op": "patch",
+    "id": "chakravakam",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 3
+    },
+    "wikipedia_name": "Chakravākam",
+    "melakarta": 16,
+    "cakra_name": "Agni"
+  },
+  {
+    "op": "patch",
+    "id": "natabhairavi",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 4
+    },
+    "wikipedia_name": "Naṭabhairavi",
+    "melakarta": 20,
+    "cakra_name": "Veda"
+  },
+  {
+    "op": "patch",
+    "id": "keeravani",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 4
+    },
+    "wikipedia_name": "Kīravāṇi",
+    "melakarta": 21,
+    "cakra_name": "Veda"
+  },
+  {
+    "op": "patch",
+    "id": "kharaharapriya",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 4
+    },
+    "wikipedia_name": "Kharaharapriyā",
+    "melakarta": 22,
+    "cakra_name": "Veda"
+  },
+  {
+    "op": "patch",
+    "id": "gowrimanohari",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 4
+    },
+    "wikipedia_name": "Gourimanohari",
+    "melakarta": 23,
+    "cakra_name": "Veda"
+  },
+  {
+    "op": "patch",
+    "id": "harikambhoji",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 5
+    },
+    "wikipedia_name": "Harikāmbhōji",
+    "melakarta": 28,
+    "cakra_name": "Bana"
+  },
+  {
+    "op": "patch",
+    "id": "shankarabharanam",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 5
+    },
+    "wikipedia_name": "Dhīraśankarābharaṇam",
+    "melakarta": 29,
+    "cakra_name": "Bana"
+  },
+  {
+    "op": "patch",
+    "id": "pantuvarali",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 9
+    },
+    "wikipedia_name": "Kāmavardhini",
+    "melakarta": 51,
+    "cakra_name": "Brahma"
+  },
+  {
+    "op": "patch",
+    "id": "simhendramadhyamam",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 10
+    },
+    "wikipedia_name": "Simhendramadhyamam",
+    "melakarta": 57,
+    "cakra_name": "Disi"
+  },
+  {
+    "op": "patch",
+    "id": "kalyani",
+    "fields": {
+      "is_melakarta": true,
+      "cakra": 11
+    },
+    "wikipedia_name": "Mechakalyāni",
+    "melakarta": 65,
+    "cakra_name": "Rudra"
+  }
+]

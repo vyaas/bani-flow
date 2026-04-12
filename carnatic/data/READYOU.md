@@ -55,6 +55,18 @@ python3 carnatic/cli.py co-performers-of   <musician_id>
 python3 carnatic/cli.py concerts-with      <musician_id_a> <musician_id_b>
 python3 carnatic/cli.py concert            <recording_id>  [--json]
 
+# Melakarta / Cakra traversal (ADR-021)
+# Exit 0 = is a melakarta; exit 1 = janya or not found
+python3 carnatic/cli.py is-mela            <raga_id>
+# List all janya ragas whose parent_raga == mela_raga_id
+python3 carnatic/cli.py janyas-of          <mela_raga_id>
+# Print the parent mela raga for a janya raga
+python3 carnatic/cli.py mela-of            <janya_raga_id>
+# Print the cakra number and name for any raga (climbs to parent if janya)
+python3 carnatic/cli.py cakra-of           <raga_id>
+# List all 6 mela ragas in a given cakra (1–12)
+python3 carnatic/cli.py melas-in-cakra     <cakra_number>
+
 # Validation (run after any write session)
 python3 carnatic/cli.py validate
 ```
@@ -115,6 +127,15 @@ python3 carnatic/write_cli.py add-raga \
     [--aliases <csv>] [--melakarta <int>] \
     [--parent-raga <id>] [--notes <text>]
 
+python3 carnatic/write_cli.py patch-raga \
+    --id <raga_id> --field <field> --value <value>
+# Permitted fields: name, parent_raga, melakarta, is_melakarta, cakra, notes
+# (id and sources are immutable via this command)
+# is_melakarta: use 'true' or 'false'
+# cakra: integer 1–12 or 'null'
+# melakarta: integer 1–72 or 'null'
+# parent_raga: existing raga id or 'null'
+
 python3 carnatic/write_cli.py add-composer \
     --id <id> --name <name> \
     --source-url <url> --source-label <label> --source-type <type> \
@@ -130,7 +151,7 @@ python3 carnatic/write_cli.py add-composition \
 
 **Exit codes:** 0 = written or duplicate-skipped. 1 = validation error (file unchanged).
 
-**Output prefixes:** `[NODE+]` `[EDGE+]` `[EDGE-]` `[EDGE~]` `[YOUTUBE+]` `[RAGA+]` `[COMPOSER+]` `[COMP+]` `[SOURCE+]` `SKIP (duplicate)` `ERROR`
+**Output prefixes:** `[NODE+]` `[EDGE+]` `[EDGE-]` `[EDGE~]` `[YOUTUBE+]` `[RAGA+]` `[RAGA~]` `[COMPOSER+]` `[COMP+]` `[SOURCE+]` `SKIP (duplicate)` `ERROR`
 
 > **When to use `apply_diff` instead of `write_cli.py`:**
 > Recording files (`recordings/*.json`), adding `notes` fields to compositions,
@@ -235,10 +256,23 @@ New values may be added freely — each gets a distinct visual shape in the grap
 | `id` | string | snake_case, permanent |
 | `name` | string | canonical name |
 | `aliases` | array of strings | alternate spellings / names |
-| `melakarta` | int \| null | melakarta number (1–72) if applicable |
-| `parent_raga` | string \| null | id of parent raga if janya |
+| `melakarta` | int \| null | melakarta number (1–72); for mela ragas = their own number; deprecated on janya ragas (use `parent_raga` instead) |
+| `is_melakarta` | bool | `true` if this raga is one of the 72 melakartas; absent or `false` for janya ragas (ADR-021) |
+| `cakra` | int \| null | cakra number (1–12) for melakarta ragas; `null` for janya ragas (ADR-021) |
+| `parent_raga` | string \| null | id of parent mela raga if janya; `null` for mela ragas |
 | `sources` | array | list of source objects; at least one required |
 | `notes` | string | free-text musicological note |
+
+**Cakra vocabulary** (ADR-021):
+
+| cakra | name | melas | cakra | name | melas |
+|---|---|---|---|---|---|
+| 1 | Indu | 1–6 | 7 | Rishi | 37–42 |
+| 2 | Netra | 7–12 | 8 | Vasu | 43–48 |
+| 3 | Agni | 13–18 | 9 | Brahma | 49–54 |
+| 4 | Veda | 19–24 | 10 | Disi | 55–60 |
+| 5 | Bana | 25–30 | 11 | Rudra | 61–66 |
+| 6 | Rutu | 31–36 | 12 | Aditya | 67–72 |
 
 ### compositions.json — Composer object
 

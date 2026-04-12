@@ -1,0 +1,1005 @@
+[
+  {
+    "id": "kanakangi",
+    "name": "Kanakāngi",
+    "aliases": [],
+    "melakarta": 1,
+    "is_melakarta": true,
+    "cakra": 1,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "1th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "ratnangi",
+    "name": "Ratnāngi",
+    "aliases": [],
+    "melakarta": 2,
+    "is_melakarta": true,
+    "cakra": 1,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "2th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "ganamurti",
+    "name": "Gānamūrti",
+    "aliases": [],
+    "melakarta": 3,
+    "is_melakarta": true,
+    "cakra": 1,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "3th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "vanaspati",
+    "name": "Vanaspati",
+    "aliases": [],
+    "melakarta": 4,
+    "is_melakarta": true,
+    "cakra": 1,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "4th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "manavati",
+    "name": "Mānavati",
+    "aliases": [],
+    "melakarta": 5,
+    "is_melakarta": true,
+    "cakra": 1,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "5th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "tanarupi",
+    "name": "Tānarūpi",
+    "aliases": [],
+    "melakarta": 6,
+    "is_melakarta": true,
+    "cakra": 1,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "6th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "senavati",
+    "name": "Senāvati",
+    "aliases": [],
+    "melakarta": 7,
+    "is_melakarta": true,
+    "cakra": 2,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "7th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "dhenuka",
+    "name": "Dhenukā",
+    "aliases": [],
+    "melakarta": 9,
+    "is_melakarta": true,
+    "cakra": 2,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "9th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "natakapriya",
+    "name": "Nātakapriyā",
+    "aliases": [],
+    "melakarta": 10,
+    "is_melakarta": true,
+    "cakra": 2,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "10th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "kokilapriya",
+    "name": "Kokilapriyā",
+    "aliases": [],
+    "melakarta": 11,
+    "is_melakarta": true,
+    "cakra": 2,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "11th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "rupavati",
+    "name": "Rūpavati",
+    "aliases": [],
+    "melakarta": 12,
+    "is_melakarta": true,
+    "cakra": 2,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "12th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "gayakapriya",
+    "name": "Gāyakapriyā",
+    "aliases": [],
+    "melakarta": 13,
+    "is_melakarta": true,
+    "cakra": 3,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "13th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "suryakantam",
+    "name": "Sūryakāntam",
+    "aliases": [],
+    "melakarta": 17,
+    "is_melakarta": true,
+    "cakra": 3,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "17th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "hatakambari",
+    "name": "Hātakāmbari",
+    "aliases": [],
+    "melakarta": 18,
+    "is_melakarta": true,
+    "cakra": 3,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "18th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "jhankaradhvani",
+    "name": "Jhankāradhvani",
+    "aliases": [],
+    "melakarta": 19,
+    "is_melakarta": true,
+    "cakra": 4,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "19th melakarta; Cakra 4 (Veda); arohana: S R₂ G₂ M₁ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "varunapriya",
+    "name": "Varuṇapriyā",
+    "aliases": [],
+    "melakarta": 24,
+    "is_melakarta": true,
+    "cakra": 4,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "24th melakarta; Cakra 4 (Veda); arohana: S R₂ G₂ M₁ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "mararanjani",
+    "name": "Māraranjani",
+    "aliases": [],
+    "melakarta": 25,
+    "is_melakarta": true,
+    "cakra": 5,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "25th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "charukesi",
+    "name": "Chārukesi",
+    "aliases": [],
+    "melakarta": 26,
+    "is_melakarta": true,
+    "cakra": 5,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "26th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "sarasangi",
+    "name": "Sarasāngi",
+    "aliases": [],
+    "melakarta": 27,
+    "is_melakarta": true,
+    "cakra": 5,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "27th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "naganandini",
+    "name": "Nāganandini",
+    "aliases": [],
+    "melakarta": 30,
+    "is_melakarta": true,
+    "cakra": 5,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "30th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "yagapriya",
+    "name": "Yāgapriyā",
+    "aliases": [],
+    "melakarta": 31,
+    "is_melakarta": true,
+    "cakra": 6,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "31th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "ragavardhini",
+    "name": "Rāgavardhini",
+    "aliases": [],
+    "melakarta": 32,
+    "is_melakarta": true,
+    "cakra": 6,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "32th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "gangeyabhusani",
+    "name": "Gāngeyabhuśani",
+    "aliases": [],
+    "melakarta": 33,
+    "is_melakarta": true,
+    "cakra": 6,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "33th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "vagadhisvari",
+    "name": "Vāgadhīśvari",
+    "aliases": [],
+    "melakarta": 34,
+    "is_melakarta": true,
+    "cakra": 6,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "34th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "sulini",
+    "name": "Śūlini",
+    "aliases": [],
+    "melakarta": 35,
+    "is_melakarta": true,
+    "cakra": 6,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "35th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "chalanata",
+    "name": "Chalanāṭa",
+    "aliases": [],
+    "melakarta": 36,
+    "is_melakarta": true,
+    "cakra": 6,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "36th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "salagam",
+    "name": "Sālagam",
+    "aliases": [],
+    "melakarta": 37,
+    "is_melakarta": true,
+    "cakra": 7,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "37th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "jalarnavam",
+    "name": "Jalārnavam",
+    "aliases": [],
+    "melakarta": 38,
+    "is_melakarta": true,
+    "cakra": 7,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "38th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "jhalavarali",
+    "name": "Jhālavarāḷi",
+    "aliases": [],
+    "melakarta": 39,
+    "is_melakarta": true,
+    "cakra": 7,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "39th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "navanitam",
+    "name": "Navanītam",
+    "aliases": [],
+    "melakarta": 40,
+    "is_melakarta": true,
+    "cakra": 7,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "40th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "pavani",
+    "name": "Pāvani",
+    "aliases": [],
+    "melakarta": 41,
+    "is_melakarta": true,
+    "cakra": 7,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "41th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "raghupriya",
+    "name": "Raghupriyā",
+    "aliases": [],
+    "melakarta": 42,
+    "is_melakarta": true,
+    "cakra": 7,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "42th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "gavambhodi",
+    "name": "Gavāmbhodi",
+    "aliases": [],
+    "melakarta": 43,
+    "is_melakarta": true,
+    "cakra": 8,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "43th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "bhavapriya",
+    "name": "Bhavapriyā",
+    "aliases": [],
+    "melakarta": 44,
+    "is_melakarta": true,
+    "cakra": 8,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "44th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "subhapantuvarali",
+    "name": "Śubhapantuvarāḷi",
+    "aliases": [],
+    "melakarta": 45,
+    "is_melakarta": true,
+    "cakra": 8,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "45th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "shadvidamargini",
+    "name": "Shaḍvidamārgini",
+    "aliases": [],
+    "melakarta": 46,
+    "is_melakarta": true,
+    "cakra": 8,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "46th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "suvarnangi",
+    "name": "Suvarnāngi",
+    "aliases": [],
+    "melakarta": 47,
+    "is_melakarta": true,
+    "cakra": 8,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "47th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "divyamani",
+    "name": "Divyamaṇi",
+    "aliases": [],
+    "melakarta": 48,
+    "is_melakarta": true,
+    "cakra": 8,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "48th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "dhavalambari",
+    "name": "Dhavaḻāmbari",
+    "aliases": [],
+    "melakarta": 49,
+    "is_melakarta": true,
+    "cakra": 9,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "49th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "namanarayani",
+    "name": "Nāmanārāyaṇi",
+    "aliases": [],
+    "melakarta": 50,
+    "is_melakarta": true,
+    "cakra": 9,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "50th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "ramapriya",
+    "name": "Rāmapriyā",
+    "aliases": [],
+    "melakarta": 52,
+    "is_melakarta": true,
+    "cakra": 9,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "52th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "gamanasrama",
+    "name": "Gamanāśrama",
+    "aliases": [],
+    "melakarta": 53,
+    "is_melakarta": true,
+    "cakra": 9,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "53th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "visvambari",
+    "name": "Viśvambari",
+    "aliases": [],
+    "melakarta": 54,
+    "is_melakarta": true,
+    "cakra": 9,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "54th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "samalangi",
+    "name": "Śāmaḻāngi",
+    "aliases": [],
+    "melakarta": 55,
+    "is_melakarta": true,
+    "cakra": 10,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "55th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "sanmukhapriya",
+    "name": "Śanmukhapriyā",
+    "aliases": [],
+    "melakarta": 56,
+    "is_melakarta": true,
+    "cakra": 10,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "56th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "hemavati",
+    "name": "Hemavati",
+    "aliases": [],
+    "melakarta": 58,
+    "is_melakarta": true,
+    "cakra": 10,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "58th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "dharmavati",
+    "name": "Dharmavati",
+    "aliases": [],
+    "melakarta": 59,
+    "is_melakarta": true,
+    "cakra": 10,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "59th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "nitimati",
+    "name": "Nītimati",
+    "aliases": [],
+    "melakarta": 60,
+    "is_melakarta": true,
+    "cakra": 10,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "60th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "kantamani",
+    "name": "Kāntāmaṇi",
+    "aliases": [],
+    "melakarta": 61,
+    "is_melakarta": true,
+    "cakra": 11,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "61th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "risabhapriya",
+    "name": "Riśabhapriyā",
+    "aliases": [],
+    "melakarta": 62,
+    "is_melakarta": true,
+    "cakra": 11,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "62th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "latangi",
+    "name": "Latāngi",
+    "aliases": [],
+    "melakarta": 63,
+    "is_melakarta": true,
+    "cakra": 11,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "63th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "vachaspati",
+    "name": "Vāchaspati",
+    "aliases": [],
+    "melakarta": 64,
+    "is_melakarta": true,
+    "cakra": 11,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "64th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "chitrambari",
+    "name": "Chitrāmbari",
+    "aliases": [],
+    "melakarta": 66,
+    "is_melakarta": true,
+    "cakra": 11,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "66th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₃ N₃ Ṡ"
+  },
+  {
+    "id": "sucharitra",
+    "name": "Sucharitrā",
+    "aliases": [],
+    "melakarta": 67,
+    "is_melakarta": true,
+    "cakra": 12,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "67th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₁ N₁ Ṡ"
+  },
+  {
+    "id": "jyoti_svarupini",
+    "name": "Jyoti svarupini",
+    "aliases": [],
+    "melakarta": 68,
+    "is_melakarta": true,
+    "cakra": 12,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "68th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "dhathuvardhani",
+    "name": "Dhāthuvardhani",
+    "aliases": [],
+    "melakarta": 69,
+    "is_melakarta": true,
+    "cakra": 12,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "69th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "nasikabhusani",
+    "name": "Nāsikābhūśaṇi",
+    "aliases": [],
+    "melakarta": 70,
+    "is_melakarta": true,
+    "cakra": 12,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "70th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₂ N₂ Ṡ"
+  },
+  {
+    "id": "kosalam",
+    "name": "Kōsalam",
+    "aliases": [],
+    "melakarta": 71,
+    "is_melakarta": true,
+    "cakra": 12,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "71th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₂ N₃ Ṡ"
+  },
+  {
+    "id": "rasikapriya",
+    "name": "Rasikapriyā",
+    "aliases": [],
+    "melakarta": 72,
+    "is_melakarta": true,
+    "cakra": 12,
+    "parent_raga": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Melakarta",
+        "label": "Wikipedia — Melakarta",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "72th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₃ N₃ Ṡ"
+  }
+]

@@ -64,6 +64,7 @@ VALID_SOURCE_TYPES = {"wikipedia", "pdf", "article", "archive", "other"}
 
 PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
+PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes"}
 
 
 # ── WriteResult ────────────────────────────────────────────────────────────────
@@ -680,3 +681,97 @@ class CarnaticWriter:
             "[COMP+]",
             f"added: {id} — \"{title}\"  raga: {raga_id}  composer: {composer_id}"
         )
+
+    def patch_raga(
+        self,
+        compositions_path: Path,
+        *,
+        raga_id: str,
+        field: str,
+        value: Any,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """
+        Update a single field on an existing raga object in compositions.json.
+
+        Permitted fields: name, parent_raga, melakarta, is_melakarta, cakra, notes
+        id and sources are immutable via this command.
+
+        Validations:
+          - raga_id must exist in ragas[]
+          - field must be in PATCHABLE_RAGA_FIELDS
+          - if field == parent_raga: value must be an existing raga id or "null"
+          - if field == is_melakarta: value must be "true" or "false"
+          - if field == cakra or melakarta: value must be an integer string (or "null")
+        """
+        if field == "id":
+            return _err("id is immutable — cannot be patched")
+        if field == "sources":
+            return _err("sources is immutable via patch-raga — use add-source instead")
+        if field not in PATCHABLE_RAGA_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a raga\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_RAGA_FIELDS))}"
+            )
+
+        data = json.loads(compositions_path.read_text(encoding="utf-8"))
+        ragas: list[dict] = data.get("ragas", [])
+        existing_ids = {r["id"] for r in ragas}
+
+        if raga_id not in existing_ids:
+            return _err(f"raga_id \"{raga_id}\" does not exist in ragas[]")
+
+        # Coerce value for typed fields
+        coerced: Any = value
+
+        if field == "parent_raga":
+            if value in (None, "null", ""):
+                coerced = None
+            else:
+                if value not in existing_ids:
+                    return _err(
+                        f"parent_raga \"{value}\" does not exist in ragas[]\n"
+                        f"       Add the parent raga first before setting this reference."
+                    )
+
+        elif field == "is_melakarta":
+            if str(value).lower() in ("true", "1", "yes"):
+                coerced = True
+            elif str(value).lower() in ("false", "0", "no"):
+                coerced = False
+            else:
+                return _err(
+                    f"is_melakarta must be \"true\" or \"false\", got \"{value}\""
+                )
+
+        elif field == "cakra":
+            if value in (None, "null", ""):
+                coerced = None
+            else:
+                try:
+                    coerced = int(value)
+                except (ValueError, TypeError):
+                    return _err(f"cakra must be an integer (1–12) or \"null\", got \"{value}\"")
+                if not (1 <= coerced <= 12):
+                    return _err(f"cakra {coerced} is out of range [1, 12]")
+
+        elif field == "melakarta":
+            if value in (None, "null", ""):
+                coerced = None
+            else:
+                try:
+                    coerced = int(value)
+                except (ValueError, TypeError):
+                    return _err(f"melakarta must be an integer (1–72) or \"null\", got \"{value}\"")
+                if not (1 <= coerced <= 72):
+                    return _err(f"melakarta {coerced} is out of range [1, 72]")
+
+        # Apply patch
+        raga = next(r for r in ragas if r["id"] == raga_id)
+        old_value = raga.get(field)
+        raga[field] = coerced
+
+        data["ragas"] = ragas
+        _atomic_write(compositions_path, data)
+
+        return _ok("[RAGA~]", f"patched: {raga_id}  {field}: {old_value!r} → {coerced!r}")

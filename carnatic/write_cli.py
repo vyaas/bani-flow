@@ -46,6 +46,10 @@ Usage:
                                                     [--aliases <csv>] [--melakarta <int>] \\
                                                     [--parent-raga <id>] [--notes <text>]
 
+    python3 carnatic/write_cli.py patch-raga       --id <raga_id> --field <field> --value <value>
+    # Permitted fields: name, parent_raga, melakarta, is_melakarta, cakra, notes
+    # (id and sources are immutable via this command)
+
     python3 carnatic/write_cli.py add-composer     --id <id> --name <name> \\
                                                     --source-url <url> --source-label <label> \\
                                                     --source-type <type> \\
@@ -200,6 +204,16 @@ def cmd_add_raga(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
     )
 
 
+def cmd_patch_raga(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
+    return w.patch_raga(
+        _compositions_path(),
+        raga_id=args.id,
+        field=args.field,
+        value=args.value,
+        graph_path=_graph_path(),
+    )
+
+
 def cmd_add_composer(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
     born = int(args.born) if args.born is not None else None
     died = int(args.died) if args.died is not None else None
@@ -322,6 +336,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--parent-raga",  default=None,  dest="parent_raga", help="Parent raga id")
     p.add_argument("--notes",        default=None,  help="Free-text musicological notes")
 
+    # ── patch-raga ────────────────────────────────────────────────────────────
+    p = sub.add_parser("patch-raga", help="Update a scalar field on an existing raga object (ADR-021)")
+    p.add_argument("--id",    required=True, help="Raga id (must exist in ragas[])")
+    p.add_argument("--field", required=True,
+                   help="Field to patch: name|parent_raga|melakarta|is_melakarta|cakra|notes")
+    p.add_argument("--value", required=True,
+                   help="New value (use 'null' for nullable fields, 'true'/'false' for is_melakarta)")
+
     # ── add-composer ──────────────────────────────────────────────────────────
     p = sub.add_parser("add-composer", help="Add a new composer to compositions.json")
     p.add_argument("--id",               required=True,              help="snake_case unique id")
@@ -363,6 +385,7 @@ HANDLERS = {
     "patch-musician":  cmd_patch_musician,
     "patch-edge":      cmd_patch_edge,
     "add-raga":        cmd_add_raga,
+    "patch-raga":      cmd_patch_raga,
     "add-composer":    cmd_add_composer,
     "add-composition": cmd_add_composition,
 }

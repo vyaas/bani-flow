@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-cli.py — Librarian orientation CLI (ADR-014).
+cli.py — Librarian orientation CLI (ADR-014, ADR-021).
 
 Thin wrapper over CarnaticGraph. All subcommands are read-only.
 Exit 0 = found/valid. Exit 1 = not found/invalid/errors.
@@ -25,6 +25,13 @@ Usage:
     python3 carnatic/cli.py concerts-with     <musician_id_a> <musician_id_b>
     python3 carnatic/cli.py concert           <recording_id>  [--json]
     python3 carnatic/cli.py validate
+
+    # Melakarta / Cakra traversal (ADR-021)
+    python3 carnatic/cli.py is-mela          <raga_id>
+    python3 carnatic/cli.py janyas-of        <mela_raga_id>
+    python3 carnatic/cli.py mela-of          <janya_raga_id>
+    python3 carnatic/cli.py cakra-of         <raga_id>
+    python3 carnatic/cli.py melas-in-cakra   <cakra_number>
 """
 
 from __future__ import annotations
@@ -260,14 +267,23 @@ def cmd_get_raga(g: CarnaticGraph, args: list[str]) -> int:
     if raga is None:
         print(f"NOT FOUND  \"{ids[0]}\"")
         return 1
-    _dump(raga) if want_json else _dump({
-        "id":          raga.get("id"),
-        "name":        raga.get("name"),
-        "aliases":     raga.get("aliases", []),
-        "melakarta":   raga.get("melakarta"),
-        "parent_raga": raga.get("parent_raga"),
-        "notes":       raga.get("notes"),
-    })
+    if want_json:
+        _dump(raga)
+    else:
+        janyas_count = len(g.get_janyas_of(ids[0])) if raga.get("is_melakarta") else None
+        summary = {
+            "id":           raga.get("id"),
+            "name":         raga.get("name"),
+            "aliases":      raga.get("aliases", []),
+            "melakarta":    raga.get("melakarta"),
+            "is_melakarta": raga.get("is_melakarta", False),
+            "cakra":        raga.get("cakra"),
+            "parent_raga":  raga.get("parent_raga"),
+            "notes":        raga.get("notes"),
+        }
+        if janyas_count is not None:
+            summary["janyas_count"] = janyas_count
+        _dump(summary)
     return 0
 
 
@@ -502,6 +518,157 @@ def cmd_concert(g: CarnaticGraph, args: list[str]) -> int:
     return 0
 
 
+# ── Melakarta / Cakra traversal commands (ADR-021) ────────────────────────────
+
+CAKRA_NAMES = {
+    1:  "Indu",
+    2:  "Netra",
+    3:  "Agni",
+    4:  "Veda",
+    5:  "Bana",
+    6:  "Rutu",
+    7:  "Rishi",
+    8:  "Vasu",
+    9:  "Brahma",
+    10: "Disi",
+    11: "Rudra",
+    12: "Aditya",
+}
+
+
+def cmd_is_mela(g: CarnaticGraph, args: list[str]) -> int:
+    """Exit 0 if raga is a melakarta; exit 1 otherwise."""
+    if not args:
+        print("Usage: is-mela <raga_id>", file=sys.stderr)
+        return 1
+    raga_id = args[0]
+    raga = g.get_raga(raga_id)
+    if raga is None:
+        print(f"NOT FOUND  raga \"{raga_id}\"")
+        return 1
+    if g.is_melakarta(raga_id):
+        mela_num   = raga.get("melakarta", "?")
+        cakra_num  = raga.get("cakra", "?")
+        cakra_name = CAKRA_NAMES.get(cakra_num, str(cakra_num)) if isinstance(cakra_num, int) else "?"
+        print(f"YES — Mela {mela_num}, Cakra {cakra_num} ({cakra_name})")
+        return 0
+    else:
+        parent_id = raga.get("parent_raga")
+        if parent_id:
+            parent = g.get_raga(parent_id)
+            parent_name = parent.get("name", parent_id) if parent else parent_id
+            print(f"NO — janya of {parent_id} ({parent_name})")
+        else:
+            print(f"NO — janya raga (parent_raga not set)")
+        return 1
+
+
+def cmd_janyas_of(g: CarnaticGraph, args: list[str]) -> int:
+    if not args:
+        print("Usage: janyas-of <mela_raga_id>", file=sys.stderr)
+        return 1
+    mela_id = args[0]
+    mela = g.get_raga(mela_id)
+    if mela is None:
+        print(f"NOT FOUND  raga \"{mela_id}\"")
+        return 1
+    janyas = g.get_janyas_of(mela_id)
+    mela_num = mela.get("melakarta", "?")
+    print(f"Janyas of {mela.get('name', mela_id)} (Mela {mela_num}):")
+    if not janyas:
+        print("  (none found — parent_raga links may not yet be set)")
+        return 0
+    for j in janyas:
+        print(f"  {j['id']:<35} {j.get('name', '')}")
+    print(f"  ({len(janyas)} total)")
+    return 0
+
+
+def cmd_mela_of(g: CarnaticGraph, args: list[str]) -> int:
+    if not args:
+        print("Usage: mela-of <janya_raga_id>", file=sys.stderr)
+        return 1
+    janya_id = args[0]
+    janya = g.get_raga(janya_id)
+    if janya is None:
+        print(f"NOT FOUND  raga \"{janya_id}\"")
+        return 1
+    if g.is_melakarta(janya_id):
+        mela_num  = janya.get("melakarta", "?")
+        cakra_num = janya.get("cakra", "?")
+        cakra_name = CAKRA_NAMES.get(cakra_num, str(cakra_num)) if isinstance(cakra_num, int) else "?"
+        print(f"{janya_id} is itself a melakarta — Mela {mela_num}, Cakra {cakra_num} ({cakra_name})")
+        return 0
+    parent = g.get_mela_of(janya_id)
+    if parent is None:
+        parent_id = janya.get("parent_raga")
+        if parent_id:
+            print(f"Parent raga id '{parent_id}' is set but not found in ragas[] — referential integrity gap")
+        else:
+            print(f"No parent_raga set for \"{janya_id}\" — janya parentage not yet encoded")
+        return 1
+    mela_num  = parent.get("melakarta", "?")
+    cakra_num = parent.get("cakra", "?")
+    cakra_name = CAKRA_NAMES.get(cakra_num, str(cakra_num)) if isinstance(cakra_num, int) else "?"
+    print(
+        f"Parent mela: {parent['id']} ({parent.get('name', '')}) "
+        f"— Mela {mela_num}, Cakra {cakra_num} ({cakra_name})"
+    )
+    return 0
+
+
+def cmd_cakra_of(g: CarnaticGraph, args: list[str]) -> int:
+    if not args:
+        print("Usage: cakra-of <raga_id>", file=sys.stderr)
+        return 1
+    raga_id = args[0]
+    raga = g.get_raga(raga_id)
+    if raga is None:
+        print(f"NOT FOUND  raga \"{raga_id}\"")
+        return 1
+    cakra_num = g.get_cakra_of(raga_id)
+    if cakra_num is None:
+        print(f"Cakra unknown for \"{raga_id}\" — melakarta data not yet populated")
+        return 1
+    cakra_name = CAKRA_NAMES.get(cakra_num, str(cakra_num))
+    # Compute mela range for this cakra
+    mela_start = (cakra_num - 1) * 6 + 1
+    mela_end   = cakra_num * 6
+    print(f"Cakra {cakra_num} — {cakra_name} (Melas {mela_start}–{mela_end})")
+    return 0
+
+
+def cmd_melas_in_cakra(g: CarnaticGraph, args: list[str]) -> int:
+    if not args:
+        print("Usage: melas-in-cakra <cakra_number>", file=sys.stderr)
+        return 1
+    try:
+        cakra_num = int(args[0])
+    except ValueError:
+        print(f"ERROR: cakra_number must be an integer 1–12, got \"{args[0]}\"", file=sys.stderr)
+        return 1
+    if not (1 <= cakra_num <= 12):
+        print(f"ERROR: cakra_number {cakra_num} is out of range [1, 12]", file=sys.stderr)
+        return 1
+    cakra_name = CAKRA_NAMES.get(cakra_num, str(cakra_num))
+    mela_start = (cakra_num - 1) * 6 + 1
+    mela_end   = cakra_num * 6
+    melas = g.get_melas_in_cakra(cakra_num)
+    print(f"Cakra {cakra_num} — {cakra_name} (Melas {mela_start}–{mela_end}):")
+    if not melas:
+        print("  (no mela ragas found — melakarta data not yet populated)")
+        return 0
+    # Show all 6 slots; mark missing ones
+    present_by_num = {m.get("melakarta"): m for m in melas}
+    for n in range(mela_start, mela_end + 1):
+        m = present_by_num.get(n)
+        if m:
+            print(f"  {n:<3}  {m['id']:<35} {m.get('name', '')}")
+        else:
+            print(f"  {n:<3}  (not yet in ragas[])")
+    return 0
+
+
 def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
     errors: list[str] = []
 
@@ -612,6 +779,12 @@ COMMANDS: dict[str, object] = {
     "concerts-with":        cmd_concerts_with,
     "concert":              cmd_concert,
     "validate":             cmd_validate,
+    # Melakarta / Cakra traversal (ADR-021)
+    "is-mela":              cmd_is_mela,
+    "janyas-of":            cmd_janyas_of,
+    "mela-of":              cmd_mela_of,
+    "cakra-of":             cmd_cakra_of,
+    "melas-in-cakra":       cmd_melas_in_cakra,
 }
 
 
