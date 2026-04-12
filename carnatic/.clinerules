@@ -356,6 +356,8 @@ Entries are terse — this is a log, not an essay.
 
 ### 🏛️ Graph Architect
 
+- 2026-04-12: ADR-023 proposes the raga wheel as a third view (SVG, not Cytoscape) — the circle is fixed geometry derived from the melakarta reference image; outer layers (janyas, compositions, musicians) emanate on demand via click; the three-way view selector replaces the binary Graph/Timeline toggle; no schema change required — all data is already present after ADR-021 migration; musician nodes bridge both views via triggerBaniSearch.
+
 - 2026-04-11: When the same composition appears in both a structured recording file and a musicians.json youtube entry, the disambiguation is a `version` field (free text, e.g. "Jamshedpur 1961" or "standalone clip") — not a new object type; `composition_id` is the stable identity, `version` is the context label that survives the unified migration.
 - 2026-04-12: .roomodes customInstructions values are single-line JSON strings; all .roomodes mutations must go through a dedicated transform script — never apply_diff directly on .roomodes.
 - 2026-04-12: The PerformanceRef shape already carries recording_id, session_index, performers[], short_title, and date — the UI was discarding them by flattening; concert bracketing is always a rendering fix, never a schema change.
