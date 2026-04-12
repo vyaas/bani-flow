@@ -254,8 +254,8 @@ their own work at the end of every session in which files changed.**
 ## Open questions  ← living memory; update every session
 
 
-#### Raga wheel — music coverage bug (flagged 2026-04-12)
-- **hamir_kalyani (and all janyas with no compositions.json entry)** do not show an exploded view on the raga wheel because `compsByRaga` in `raga_wheel.js` is built only from `compositions.json` compositions[], ignoring `musicians.json` youtube `raga_id` tags and `recordings/*.json` `raga_id` fields. **This is unacceptable: the raga wheel is a raga wheel, not a composition wheel.** The Coder must extend `compsByRaga` / `rtpByRaga` to also index all youtube entries and recording performances tagged with a given `raga_id`, so that any raga with tagged music shows an exploded satellite layer.
+#### Raga wheel — music coverage bug (resolved 2026-04-13)
+- **RESOLVED** — `compsByRaga` in `raga_wheel.js` now indexes three sources: (1) compositions.json compositions[], (2) ragaToPerf structured recording performances, (3) elements[].data.tracks[] youtube entries. hamir_kalyani now shows 2 satellite nodes; 24 synthetic entries added across all ragas. See Carnatic Coder learning log 2026-04-13.
 ### Resolved
 - **Vina Dhanammal ↔ Trinity**: chain is `shyama_shastri → subbaraya_sastri → vina_dhanammal`
   (Dhanammal's mother trained under Subbaraya Sastri, son of Shyama Shastri). Confidence 0.90;
@@ -374,6 +374,8 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-13: ADR-025 pan/zoom state must be module-level: any state that must survive a full SVG rebuild (innerHTML = '') cannot live in a closure inside drawRagaWheel. Lift _vx/_vy/_vscale/_dragging/_dragMoved to IIFE module scope; _applyTransform() must look up #wheel-viewport by ID (not close over a local vp reference) and be called immediately after vp is appended to restore the saved transform.
 - 2026-04-13: ADR-025 drag-end fires click on background rect: a pan gesture (mousedown + mousemove + mouseup) ends with a click event on whatever element is under the pointer — in this case the transparent background rect, which calls _collapseAll. Guard with a _dragMoved flag (set when pointer moves >3px during drag) that suppresses the collapse handler and resets on the next mousedown.
 - 2026-04-13: ADR-025 _triggerMelaExpand three-level dispatch: to highlight a specific comp node via syncRagaWheelToFilter, a third setTimeout is needed after the janya click settles. For mela-direct comps (no janya intermediary, targetRagaId=null), add an else-if branch that dispatches the comp click directly after the mela expansion settles — the janya branch is skipped entirely.
+
+- 2026-04-13: Raga wheel music coverage bug: compsByRaga was built only from compositions.json compositions[]; ragas with no canonical compositions (e.g. hamir_kalyani) showed no satellite layer. Fix: three-source build — (1) compositions.json, (2) ragaToPerf structured recording performances, (3) elements[].data.tracks[] youtube entries. The tracks field (not youtube) is what graph_builder.py injects into Cytoscape elements. Synthetic items carry _isPerf:true so tooltip and _expandMusicians handle them via ragaToNodes fallback. _ytShortTitle() extracts the piece name before the first " · " or " - " separator to keep wheel node labels compact. Also fixed dead rtpByRaga loop which iterated rec.tracks (old flat schema) instead of rec.sessions[].performances (current nested schema).
 
 ### 🏛️ Graph Architect
 
