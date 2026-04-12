@@ -818,21 +818,36 @@ def render_html(
   .bani-janyas-count {{
     color: var(--gray); margin-left: 2px;
   }}
-  .bani-janyas-list {{
+  /* Janyas filter input */
+  #bani-janyas-filter {{
+    width: 100%; box-sizing: border-box;
     margin-top: 4px;
-    padding: 4px 6px;
-    background: var(--bg2);
-    border-radius: 3px;
-    display: flex; flex-wrap: wrap; gap: 2px 6px;
-    font-size: 0.68rem;
-    max-height: 120px;
+    padding: 3px 5px;
+    background: var(--bg2); border: 1px solid var(--bg3);
+    border-radius: 2px;
+    color: var(--fg); font-size: 0.68rem; font-family: inherit;
+    outline: none;
+  }}
+  #bani-janyas-filter:focus {{ border-color: var(--teal); }}
+  #bani-janyas-filter::placeholder {{ color: var(--gray); }}
+  /* Janyas filtered list */
+  .bani-janyas-list {{
+    margin-top: 3px;
+    padding: 2px 0;
+    max-height: 130px;
     overflow-y: auto;
   }}
   .bani-janya-link {{
+    display: block;
+    padding: 2px 4px;
     color: var(--blue); text-decoration: none; cursor: pointer;
-    white-space: nowrap;
+    font-size: 0.68rem; border-radius: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }}
-  .bani-janya-link:hover {{ text-decoration: underline; }}
+  .bani-janya-link:hover {{ background: var(--bg2); text-decoration: underline; }}
+  .bani-janyas-empty {{
+    padding: 2px 4px; font-size: 0.68rem; color: var(--gray);
+  }}
   #trail-list {{ list-style: none; }}
   #trail-list li {{
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
@@ -983,11 +998,15 @@ def render_html(
         <div id="bani-subject-sub"></div>
         <!-- Row 3: aliases (ADR-022) -->
         <div id="bani-subject-aliases-row" style="display:none"></div>
-        <!-- Row 4: janyas toggle + dropdown (ADR-022, mela ragas only) -->
+        <!-- Row 4: janyas toggle + filter + list (ADR-022, mela ragas only) -->
         <div id="bani-janyas-row" style="display:none">
           <span id="bani-janyas-toggle" class="bani-janyas-toggle">&#9654; Janyas</span>
           <span id="bani-janyas-count" class="bani-janyas-count"></span>
-          <div id="bani-janyas-list" class="bani-janyas-list" style="display:none"></div>
+          <div id="bani-janyas-panel" style="display:none">
+            <input id="bani-janyas-filter" type="text"
+                   placeholder="filter janyas&#8230;" autocomplete="off" spellcheck="false">
+            <div id="bani-janyas-list" class="bani-janyas-list"></div>
+          </div>
         </div>
       </div>
       <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
@@ -2199,8 +2218,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
-  document.getElementById('bani-janyas-list').style.display = 'none';
+  document.getElementById('bani-janyas-panel').style.display = 'none';
   document.getElementById('bani-janyas-list').innerHTML = '';
+  document.getElementById('bani-janyas-filter').value = '';
 
   if (type === 'comp') {{
     const comp     = compositions.find(c => c.id === id);
@@ -2331,41 +2351,67 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
       aliasesRow.style.display = 'block';
     }}
 
-    // Row 4 (#bani-janyas-row): janyas toggle (mela ragas only)
+    // Row 4 (#bani-janyas-row): janyas filter + list (mela ragas only)
     const janyasRow    = document.getElementById('bani-janyas-row');
+    const janyasPanel  = document.getElementById('bani-janyas-panel');
     const janyasList   = document.getElementById('bani-janyas-list');
     const janyasToggle = document.getElementById('bani-janyas-toggle');
     const janyasCount  = document.getElementById('bani-janyas-count');
+    const janyasFilter = document.getElementById('bani-janyas-filter');
     janyasRow.style.display = 'none';
-    janyasList.style.display = 'none';
+    janyasPanel.style.display = 'none';
     janyasList.innerHTML = '';
+    janyasFilter.value = '';
 
     if (raga && raga.is_melakarta) {{
       const janyas = ragas.filter(r => r.parent_raga === id);
+      janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
       if (janyas.length > 0) {{
         janyasCount.textContent = `(${{janyas.length}})`;
         janyasToggle.textContent = '\u25b6 Janyas';
         janyasRow.style.display = 'block';
 
-        // Populate janya links
-        janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-        janyas.forEach(j => {{
-          const a = document.createElement('a');
-          a.className = 'bani-janya-link';
-          a.href = '#';
-          a.textContent = j.name || j.id;
-          a.addEventListener('click', e => {{
-            e.preventDefault();
-            triggerBaniSearch('raga', j.id);
-          }});
-          janyasList.appendChild(a);
-        }});
+        // Render filtered list of janya links
+        function renderJanyaList(filter) {{
+          janyasList.innerHTML = '';
+          const q = filter.trim().toLowerCase();
+          const visible = q ? janyas.filter(j => (j.name || j.id).toLowerCase().includes(q)) : janyas;
+          if (visible.length === 0) {{
+            const empty = document.createElement('span');
+            empty.className = 'bani-janyas-empty';
+            empty.textContent = 'no match';
+            janyasList.appendChild(empty);
+          }} else {{
+            visible.forEach(j => {{
+              const a = document.createElement('a');
+              a.className = 'bani-janya-link';
+              a.href = '#';
+              a.textContent = j.name || j.id;
+              a.addEventListener('click', e => {{
+                e.preventDefault();
+                triggerBaniSearch('raga', j.id);
+              }});
+              janyasList.appendChild(a);
+            }});
+          }}
+        }}
+
+        renderJanyaList('');
+
+        // Live filter on input
+        janyasFilter.oninput = () => renderJanyaList(janyasFilter.value);
 
         // Toggle behaviour
         janyasToggle.onclick = () => {{
-          const open = janyasList.style.display !== 'none';
-          janyasList.style.display = open ? 'none' : 'flex';
+          const open = janyasPanel.style.display !== 'none';
+          janyasPanel.style.display = open ? 'none' : 'block';
           janyasToggle.textContent = open ? '\u25b6 Janyas' : '\u25bc Janyas';
+          if (!open) {{
+            janyasFilter.value = '';
+            renderJanyaList('');
+            janyasFilter.focus();
+          }}
         }};
       }}
     }}
@@ -2624,8 +2670,9 @@ function clearBaniFilter() {{
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
-  document.getElementById('bani-janyas-list').style.display = 'none';
+  document.getElementById('bani-janyas-panel').style.display = 'none';
   document.getElementById('bani-janyas-list').innerHTML = '';
+  document.getElementById('bani-janyas-filter').value = '';
   applyZoomLabels();
   // Mutual exclusion: clear chip filters when Bani Flow filter clears
   clearAllChipFilters();
