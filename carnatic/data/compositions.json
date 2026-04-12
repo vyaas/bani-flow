@@ -638,6 +638,61 @@
         {"url": "https://en.wikipedia.org/wiki/Shubhapantuvarali", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "notes": "Janya of Kamavardhini (51st melakarta); vakra raga; ārohana S R1 G3 M2 P M2 G3 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes grandeur and devotion; best known for Muthuswami Dikshitar's 'Sri Satyanarayanam'; associated with the Dikshitar school"
+    },
+    {
+      "id": "sriranjini",
+      "name": "Sriranjini",
+      "aliases": ["Shree Ranjani", "Sreeranjani"],
+      "melakarta": null,
+      "parent_raga": "kalyani",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Shree_ranjani", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Mechakalyani (65th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 M2 D2 S, avarohana S N3 D2 P M2 G3 R2 S; evokes romance and longing; a favourite raga for padams and javalis; best known for Tyagaraja's 'Brochevarevare'"
+    },
+    {
+      "id": "mukhari",
+      "name": "Mukhari",
+      "aliases": ["Moukhari"],
+      "melakarta": null,
+      "parent_raga": "natabhairavi",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Mukhari_(raga)", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Natabhairavi (20th melakarta); sampurna raga with vakra phrases; ārohana S R2 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 G2 S; evokes pathos and devotion; one of the most expansive ragas for alapana; best known for Tyagaraja's 'Sarasiruhanana'"
+    },
+    {
+      "id": "nattakurinji",
+      "name": "Nattakurinji",
+      "aliases": ["Nata Kurinji"],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Nattakurinji", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Harikambhoji (28th melakarta); vakra raga; ārohana S R2 G3 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; evokes romance and longing; a favourite raga for the main piece in a concert; best known for Tyagaraja's 'Manasu Vishaya'"
+    },
+    {
+      "id": "vakulabharanam",
+      "name": "Vakulabharanam",
+      "aliases": ["Vakula Bharanam"],
+      "melakarta": 14,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Vakulabharanam", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "14th melakarta; ārohana S R1 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R1 S; evokes pathos and devotion; a rare melakarta raga; best known for the composition 'Konniyada Tharama' attributed to Garbhapurivasa"
+    },
+    {
+      "id": "balahamsa",
+      "name": "Balahamsa",
+      "aliases": ["Bala Hamsa"],
+      "melakarta": null,
+      "parent_raga": "natabhairavi",
+      "sources": [
+        {"url": "https://www.karnatik.com/c31490.shtml", "label": "Karnatik.com — Viraja Turaga notation (raga confirmed)", "type": "archive"}
+      ],
+      "notes": "Janya of Natabhairavi (20th melakarta); rare raga; best known for Tyagaraja's 'Viraja Turaga'; no standalone Wikipedia article confirmed"
     }
   ],
   "composers": [
@@ -901,6 +956,37 @@
       "died": 1765,
       "sources": [
         {"url": "https://en.wikipedia.org/wiki/Oothukkadu_Venkata_Kavi", "label": "Wikipedia", "type": "wikipedia"}
+      ]
+    },
+    {
+      "id": "karur_devudu_iyer",
+      "name": "Karur Devudu Iyer",
+      "musician_node_id": null,
+      "born": 1861,
+      "died": 1901,
+      "sources": [
+        {"url": "https://www.oxfordreference.com/display/10.1093/oi/authority.20110803095714787", "label": "Oxford Reference — Karur Brothers entry", "type": "article"},
+        {"url": "https://patantara.com/notations/w5jCpEjCkM", "label": "Patantara — Sami Ninne Kori notation (composer confirmed)", "type": "archive"}
+      ]
+    },
+    {
+      "id": "garbhapurivasa",
+      "name": "Garbhapuri Srinivasa",
+      "musician_node_id": null,
+      "born": null,
+      "died": null,
+      "sources": [
+        {"url": "https://www.karnatik.com/co1023.shtml", "label": "Karnatik.com — composer profile (ankita: Garbhapurivasa)", "type": "archive"}
+      ]
+    },
+    {
+      "id": "arunagirinathar",
+      "name": "Arunagirinathar",
+      "musician_node_id": null,
+      "born": null,
+      "died": 1500,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Arunagirinathar", "label": "Wikipedia", "type": "wikipedia"}
       ]
     }
   ],
@@ -1821,6 +1907,151 @@
         {"url": "https://www.karnatik.com/c3316.shtml", "label": "Karnatik.com — notation", "type": "archive"}
       ],
       "notes": "Kriti by Muthuswami Dikshitar in Shubapantuvarali; Thisra Ekam tala; addressed to Lord Satyanarayana; one of the principal compositions defining raga Shubapantuvarali in the concert repertoire"
+    },
+    {
+      "id": "sami_ninne_kori",
+      "title": "Sami Ninne Kori",
+      "composer_id": "karur_devudu_iyer",
+      "raga_id": "sri",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://patantara.com/notations/w5jCpEjCkM", "label": "Patantara — notation", "type": "archive"}
+      ],
+      "notes": "Varnam by Karur Devudu Iyer in Sri raga; Adi tala; one of the standard Sri raga varnams in the concert repertoire"
+    },
+    {
+      "id": "sri_maha_ganapathim",
+      "title": "Sri Maha Ganapathim",
+      "composer_id": "muthuswami_dikshitar",
+      "raga_id": "gowla",
+      "tala": "misra_capu",
+      "language": "sanskrit",
+      "sources": [
+        {"url": "https://www.karnatik.com/c3577.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Kriti by Muthuswami Dikshitar in Gowla; Misra Chapu tala; addressed to Ganesha; one of the principal Dikshitar compositions in this raga"
+    },
+    {
+      "id": "brochevarevare",
+      "title": "Brochevarevare",
+      "composer_id": "tyagaraja",
+      "raga_id": "sriranjini",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.shivkumar.org/music/brochevarevare.htm", "label": "Shivkumar.org — notation and meaning", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Sriranjini; Adi tala; pallavi 'brochevarevare ra ninu vina'; a supplication asking who else will protect him; the principal composition defining raga Sriranjini in the concert repertoire"
+    },
+    {
+      "id": "sarasiruhanana",
+      "title": "Sarasiruhanana",
+      "composer_id": "tyagaraja",
+      "raga_id": "mukhari",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c2813.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Mukhari; Adi tala; pallavi 'sarasiruhanana'; one of the principal compositions defining raga Mukhari in the concert repertoire"
+    },
+    {
+      "id": "ide_bhagyamu",
+      "title": "Ide Bhagyamu",
+      "composer_id": "tyagaraja",
+      "raga_id": "kaanada",
+      "tala": "misra_capu",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c2346.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Kaanada; Misra Chapu tala; pallavi 'ide bhagyamu'; a meditation on the fortune of devotion to Rama"
+    },
+    {
+      "id": "lavanya_rama",
+      "title": "Lavanya Rama",
+      "composer_id": "tyagaraja",
+      "raga_id": "poornashadjam",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c2528.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Poorna Shadjam; Adi tala; one of the two principal compositions defining this rare raga in the concert repertoire (alongside 'Sri Manimi Manohara')"
+    },
+    {
+      "id": "manasu_vishaya",
+      "title": "Manasu Vishaya",
+      "composer_id": "tyagaraja",
+      "raga_id": "nattakurinji",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c2546.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Nattakurinji; Adi tala; the principal composition defining raga Nattakurinji in the concert repertoire"
+    },
+    {
+      "id": "konniyada_tharama",
+      "title": "Konniyada Tharama",
+      "composer_id": "garbhapurivasa",
+      "raga_id": "vakulabharanam",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c17987.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Kriti by Garbhapuri Srinivasa (ankita: Garbhapurivasa) in Vakulabharanam; Adi tala; one of the principal compositions defining this rare melakarta raga in the concert repertoire"
+    },
+    {
+      "id": "viraja_turaga",
+      "title": "Viraja Turaga",
+      "composer_id": "tyagaraja",
+      "raga_id": "balahamsa",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.gaanapriya.in/vgovindan/Tyagaraja%20Kritis/English/V/virAja%20turaga-balahaMsa.html", "label": "Gaanapriya.in — notation", "type": "archive"},
+        {"url": "https://www.karnatik.com/c31490.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Balahamsa; Adi tala; the principal composition defining this rare raga in the concert repertoire"
+    },
+    {
+      "id": "apadooruku",
+      "title": "Apadooruku",
+      "composer_id": "pattabhiramayya",
+      "raga_id": "khamas",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/c26046.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Javali by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā in Khamas; Adi tala; distinct from 'Marubari Talalenu' by the same composer"
+    },
+    {
+      "id": "sirsirakkumeni",
+      "title": "Sirsirakkumeni (Thirupugazh)",
+      "composer_id": "arunagirinathar",
+      "raga_id": null,
+      "tala": "khanda_triputa",
+      "language": "tamil",
+      "sources": [
+        {"url": "https://karnatik.com/c15445.shtml", "label": "Karnatik.com — notation", "type": "archive"}
+      ],
+      "notes": "Thirupugazh by Arunagirinathar; Khanda Triputa tala; performed as a ragamalika (raga_id null as no single raga applies); a devotional hymn to Murugan"
+    },
+    {
+      "id": "thillana_behag_lalgudi",
+      "title": "Thillana in Behag",
+      "composer_id": "lalgudi_jayaraman",
+      "raga_id": "behag",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman", "label": "Wikipedia — Lalgudi Jayaraman (composer of thillanas)", "type": "wikipedia"}
+      ],
+      "notes": "Thillana by Lalgudi Jayaraman in Behag; Adi tala; part of the celebrated Lalgudi thillana corpus; performed at the Music Academy December Season 1965"
     }
   ]
 }

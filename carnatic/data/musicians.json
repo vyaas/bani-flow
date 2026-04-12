@@ -1088,6 +1088,32 @@
       "instrument": "violin",
       "bani": "lalgudi",
       "youtube": []
+    },
+    {
+      "id": "palghat_rajamani",
+      "label": "Palghat Rajamani",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer", "label": "Wikipedia (via Palghat Mani Iyer)", "type": "wikipedia"}
+      ],
+      "born": 1949,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "mridangam",
+      "bani": "palghat",
+      "youtube": []
+    },
+    {
+      "id": "lalgudi_srimathi_brahmananda",
+      "label": "Lalgudi Srimathi Brahmananda",
+      "sources": [
+        {"url": "https://www.sruti.com/artist/interview", "label": "Sruti — Senior Musician award interview", "type": "article"}
+      ],
+      "born": null,
+      "died": null,
+      "era": "disseminator",
+      "instrument": "violin",
+      "bani": "lalgudi",
+      "youtube": []
     }
   ],
   "edges": [
@@ -1408,6 +1434,13 @@
       "confidence": 0.99,
       "source_url": "https://en.wikipedia.org/wiki/Palghat_Raghu",
       "note": "son and primary disciple; inherited the Palghat mridangam school; Sangeetha Kalanidhi 1981"
+    },
+    {
+      "source": "palghat_mani_iyer",
+      "target": "palghat_rajamani",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+      "note": "son and disciple; accompanied his father in double-mridangam concerts; carried the Palghat school forward"
     }
   ]
 }
