@@ -1,7 +1,7 @@
 {
   "id": "music_academy_1966_semmangudi",
-  "video_id": "_EYAbIrXf9k",
-  "url": "https://youtu.be/_EYAbIrXf9k",
+  "video_id": "QBn1fuosWIs",
+  "url": "https://www.youtube.com/watch?v=QBn1fuosWIs",
   "title": "Semmangudi Srinivasa Iyer — Madras Music Academy, 26 December 1966 (Vaak Foundation)",
   "short_title": "Music Academy 1966",
   "date": "1966-12-26",
@@ -226,12 +226,12 @@
           "performance_index": 17,
           "timestamp": "03:09:37",
           "offset_seconds": 11377,
-          "composition_id": "parulanna_mata",
+          "composition_id": "parulanna_matta",
           "raga_id": "kapi",
-          "tala": "adi",
+          "tala": "rupakam",
           "composer_id": "dharmapuri_subbaraya_iyer",
-          "display_title": "Parulanna Mata (Javali)",
-          "notes": "Javali by Dharmapuri Subbaraya Iyer in Kapi, Adi tala; concert finale"
+          "display_title": "Parulanna Matta (Javali)",
+          "notes": "Javali by Dharmapuri Subbaraya Iyer in Kapi, Rupakam tala; concert finale; tracklist erroneously listed Adi tala"
         }
       ]
     }

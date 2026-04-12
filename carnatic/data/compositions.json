@@ -4697,22 +4697,6 @@
         }
       ],
       "notes": "Tyagaraja kriti in Neelambari raga, Adi tala; a lullaby-like kriti often sung as a concert closer"
-    },
-    {
-      "id": "parulanna_mata",
-      "title": "Parulanna Mata",
-      "composer_id": "dharmapuri_subbaraya_iyer",
-      "raga_id": "kapi",
-      "tala": "Adi",
-      "language": "Telugu",
-      "sources": [
-        {
-          "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer",
-          "label": "Wikipedia — Dharmapuri Subbaraya Iyer",
-          "type": "wikipedia"
-        }
-      ],
-      "notes": "Javali by Dharmapuri Subbaraya Iyer in Kapi raga, Adi tala; a popular concert javali"
     }
   ]
 }
