@@ -426,12 +426,16 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
             errors.append(f"Edge target '{tgt}' not in musicians")
 
     # ── composition referential integrity ──────────────────────────────────────
+    # null composer_id and null raga_id are valid (ragamalika / anonymous-composer
+    # compositions are documented with notes explaining the null).
     for comp in g.get_all_compositions():
         cid = comp.get("id", "?")
-        if comp.get("composer_id") not in known_composer_ids:
-            errors.append(f"Composition {cid}: composer_id '{comp.get('composer_id')}' not in composers")
-        if comp.get("raga_id") not in known_raga_ids:
-            errors.append(f"Composition {cid}: raga_id '{comp.get('raga_id')}' not in ragas")
+        composer_id = comp.get("composer_id")
+        if composer_id is not None and composer_id not in known_composer_ids:
+            errors.append(f"Composition {cid}: composer_id '{composer_id}' not in composers")
+        raga_id = comp.get("raga_id")
+        if raga_id is not None and raga_id not in known_raga_ids:
+            errors.append(f"Composition {cid}: raga_id '{raga_id}' not in ragas")
 
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
