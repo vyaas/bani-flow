@@ -593,6 +593,32 @@
   .search-result-secondary {
     font-size: 0.70rem; color: var(--gray); margin-top: 2px;
   }
+
+  /* ── ADR-025: explicit play button ── */
+  .rec-play-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--bg3);
+    color: var(--aqua);
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: 2px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .rec-play-btn:hover {
+    background: var(--bg2);
+    border-color: var(--aqua);
+    color: var(--fg);
+  }
+
+  /* ── ADR-025: raga name link in rec-meta ── */
+  .rec-raga-link {
+    color: var(--teal);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .rec-raga-link:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -37882,9 +37908,11 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       const li = document.createElement('li');
       li.className = 'concert-perf-item' + (playerRegistry.has(p.video_id) ? ' playing' : '');
       li.dataset.vid = p.video_id;
-      li.addEventListener('click', () =>
-        openOrFocusPlayer(p.video_id, p.display_title, artistLabel,
-                          p.offset_seconds > 0 ? p.offset_seconds : undefined));
+      // Row click → cross-navigate (composition or raga)
+      li.addEventListener('click', () => {
+        if (p.composition_id) triggerBaniSearch('comp', p.composition_id);
+        else if (p.raga_id)   triggerBaniSearch('raga', p.raga_id);
+      });
 
       // Row 1: composition title
       const row1 = document.createElement('div');
@@ -37900,6 +37928,18 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       }
       row1.appendChild(titleEl);
 
+      // ▶ button → play only
+      const playBtn = document.createElement('button');
+      playBtn.className = 'rec-play-btn';
+      playBtn.title = 'Play';
+      playBtn.textContent = '▶';
+      playBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openOrFocusPlayer(p.video_id, p.display_title, artistLabel,
+                          p.offset_seconds > 0 ? p.offset_seconds : undefined);
+      });
+      row1.appendChild(playBtn);
+
       // Row 2: raga · tala + timestamp link
       const row2 = document.createElement('div');
       row2.className = 'rec-row2';
@@ -37908,7 +37948,22 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
       const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
       const talaPart = p.tala || '';
-      metaSpan.textContent = [ragaName, talaPart].filter(Boolean).join(' · ');
+      if (ragaObj && p.raga_id) {
+        const ragaLink = document.createElement('span');
+        ragaLink.className = 'rec-raga-link';
+        ragaLink.textContent = ragaObj.name;
+        ragaLink.title = 'Explore raga in Bani Flow';
+        ragaLink.addEventListener('click', e => {
+          e.stopPropagation();
+          triggerBaniSearch('raga', p.raga_id);
+        });
+        metaSpan.appendChild(ragaLink);
+        if (talaPart) {
+          metaSpan.appendChild(document.createTextNode(' · ' + talaPart));
+        }
+      } else {
+        metaSpan.textContent = [ragaName, talaPart].filter(Boolean).join(' · ');
+      }
 
       const linkA = document.createElement('a');
       linkA.className = 'rec-link';
@@ -37999,8 +38054,11 @@ function buildRecordingsList(nodeId, nodeData) {
     const li = document.createElement('li');
     li.className = 'rec-legacy' + (playerRegistry.has(t.vid) ? ' playing' : '');
     li.dataset.vid = t.vid;
-    li.addEventListener('click', () =>
-      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined));
+    // Row click → cross-navigate
+    li.addEventListener('click', () => {
+      if (t.composition_id) triggerBaniSearch('comp', t.composition_id);
+      else if (t.raga_id)   triggerBaniSearch('raga', t.raga_id);
+    });
 
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
@@ -38014,13 +38072,36 @@ function buildRecordingsList(nodeId, nodeData) {
     row1.appendChild(titleSpan);
     row1.appendChild(yearSpan);
 
+    // ▶ button → play only
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn';
+    playBtn.title = 'Play';
+    playBtn.textContent = '▶';
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined);
+    });
+    row1.appendChild(playBtn);
+
     const row2 = document.createElement('div');
     row2.className = 'rec-row2';
     const metaSpan = document.createElement('span');
     metaSpan.className = 'rec-meta';
     if (t.raga_id) {
       const ragaObj = ragas.find(r => r.id === t.raga_id);
-      metaSpan.textContent = ragaObj ? ragaObj.name : t.raga_id;
+      if (ragaObj) {
+        const ragaLink = document.createElement('span');
+        ragaLink.className = 'rec-raga-link';
+        ragaLink.textContent = ragaObj.name;
+        ragaLink.title = 'Explore raga in Bani Flow';
+        ragaLink.addEventListener('click', e => {
+          e.stopPropagation();
+          triggerBaniSearch('raga', t.raga_id);
+        });
+        metaSpan.appendChild(ragaLink);
+      } else {
+        metaSpan.textContent = t.raga_id;
+      }
     }
     const linkA = document.createElement('a');
     linkA.className = 'rec-link';
@@ -38315,6 +38396,8 @@ function hideWheelTooltip() {
 
 let _expandedMela = null, _expandedJanya = null, _expandedComp = null;
 let _labelLayer = null;  // top-most <g> in vp — all text labels go here
+let _wheelMouseMove = null;
+let _wheelMouseUp   = null;
 
 // Re-append _labelLayer so it is always the last (topmost) child of vp
 function _bringLabelsToFront(vp) {
@@ -38374,10 +38457,14 @@ window.drawRagaWheel = function() {
   // Fix 4: pan/zoom state
   let _vx = 0, _vy = 0, _vscale = 1;
   let _dragging = false, _dragStartX = 0, _dragStartY = 0, _dragVX = 0, _dragVY = 0;
+  let _dragMoved = false;  // true if the pointer actually moved during this drag gesture
 
-  // Background click → collapse all
+  // Background click → collapse all, but NOT if the click was the end of a pan gesture
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
-  bg.addEventListener('click', () => _collapseAll(svg, melaByNum));
+  bg.addEventListener('click', () => {
+    if (_dragMoved) { _dragMoved = false; return; }
+    _collapseAll(vp, melaByNum);
+  });
   svg.appendChild(bg);
 
   // Fix 4: viewport group — all wheel content goes inside this <g>
@@ -38405,19 +38492,28 @@ window.drawRagaWheel = function() {
   svg.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
     _dragging = true;
+    _dragMoved = false;
     _dragStartX = e.clientX; _dragStartY = e.clientY;
     _dragVX = _vx; _dragVY = _vy;
     svg.style.cursor = 'grabbing';
   });
-  window.addEventListener('mousemove', (e) => {
+  // Remove any stale handlers from a previous drawRagaWheel call
+  if (_wheelMouseMove) window.removeEventListener('mousemove', _wheelMouseMove);
+  if (_wheelMouseUp)   window.removeEventListener('mouseup',   _wheelMouseUp);
+
+  _wheelMouseMove = (e) => {
     if (!_dragging) return;
-    _vx = _dragVX + (e.clientX - _dragStartX);
-    _vy = _dragVY + (e.clientY - _dragStartY);
+    const dx = e.clientX - _dragStartX, dy = e.clientY - _dragStartY;
+    if (!_dragMoved && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) _dragMoved = true;
+    _vx = _dragVX + dx;
+    _vy = _dragVY + dy;
     _applyTransform();
-  });
-  window.addEventListener('mouseup', () => {
+  };
+  _wheelMouseUp = () => {
     if (_dragging) { _dragging = false; svg.style.cursor = ''; }
-  });
+  };
+  window.addEventListener('mousemove', _wheelMouseMove);
+  window.addEventListener('mouseup',   _wheelMouseUp);
 
   // Double-click to reset pan/zoom
   svg.addEventListener('dblclick', (e) => {
@@ -38548,6 +38644,7 @@ function _collapseAll(vp, melaByNum) {
     c.setAttribute('stroke', raga ? '#ebdbb2' : '#504945');
     c.setAttribute('stroke-width', raga ? 1.5 : 1);
   });
+  vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
   hideWheelTooltip();
 }
@@ -38610,15 +38707,23 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         if (_labelLayer) _labelLayer.querySelectorAll('.sat-label').forEach(el => el.remove());
         vp.querySelectorAll('.janya-node circle').forEach(c => {
           c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
+          c.setAttribute('opacity', '0.35');   // dim all janyas first
         });
-        if (_expandedJanya === janya.id) { _expandedJanya = null; return; }
+        if (_expandedJanya === janya.id) {
+          // un-dim all on collapse
+          vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
+          _expandedJanya = null;
+          return;
+        }
         jCircle.setAttribute('stroke', '#fabd2f');
         jCircle.setAttribute('stroke-width', 2.5);
+        jCircle.setAttribute('opacity', '0.75');   // restore selected janya to full opacity
         _expandedJanya = janya.id;
         _expandedComp = null;
         _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
           R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
           compsByRaga, rtpByRaga, melaColor, minDim);
+        triggerBaniSearch('raga', janya.id);
       });
       // Janya label goes into _labelLayer so it is always on top
       if (_labelLayer) {
@@ -38724,10 +38829,17 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       if (_labelLayer) _labelLayer.querySelectorAll('.sat-label-musc').forEach(el => el.remove());
       vp.querySelectorAll('.comp-node circle').forEach(c => {
         c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
+        c.setAttribute('opacity', '0.35');   // dim all comp nodes first
       });
-      if (_expandedComp === item.id) { _expandedComp = null; return; }
+      if (_expandedComp === item.id) {
+        // un-dim all on collapse
+        vp.querySelectorAll('.comp-node circle').forEach(c => c.setAttribute('opacity', '0.85'));
+        _expandedComp = null;
+        return;
+      }
       cCircle.setAttribute('stroke', '#fabd2f');
       cCircle.setAttribute('stroke-width', 2.5);
+      cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       _expandedComp = item.id;
       if (!isRtp) triggerBaniSearch('comp', item.id);
       _expandMusicians(vp, svg, item, cAngle, cPos, cx, cy,
@@ -38799,11 +38911,10 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
     mg.addEventListener('click', (e) => {
       e.stopPropagation();
       if (node && node.length) {
-        cy.elements().removeClass('highlighted bani-match');
-        node.addClass('bani-match');
-        triggerBaniSearch('raga', comp.raga_id || '');
+        switchView('graph');
+        cy.elements().removeClass('faded highlighted bani-match');
+        selectNode(node);
       }
-      if (typeof showMusicianInfo === 'function') showMusicianInfo(node);
     });
     g.appendChild(mg);
   });
@@ -38811,7 +38922,77 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
   _bringLabelsToFront(vp);
 }
 
+  // Expose _triggerMelaExpand at window level so syncRagaWheelToFilter (outside IIFE) can call it
+  window._triggerMelaExpand = function(melaNum, targetRagaId, targetCompId) {
+    window._wheelSyncInProgress = true;   // prevent syncRagaWheelToFilter re-entry
+
+    // Find the mela node <g> by data-mela attribute and dispatch a click
+    const melaG = document.querySelector(
+      `#wheel-viewport .mela-node[data-mela="${melaNum}"]`
+    );
+    if (melaG) melaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    // If targetRagaId is a janya, also expand it
+    if (targetRagaId) {
+      // Use setTimeout to allow the mela expansion to render first
+      setTimeout(() => {
+        const janyaG = document.querySelector(
+          `#wheel-viewport .janya-node[data-id="${targetRagaId}"]`
+        );
+        if (janyaG) janyaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+        // If a specific composition should also be highlighted, click it after janya expands
+        if (targetCompId) {
+          setTimeout(() => {
+            const compG = document.querySelector(
+              `#wheel-viewport .comp-node[data-id="${targetCompId}"]`
+            );
+            if (compG) compG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            window._wheelSyncInProgress = false;   // re-enable after comp click settles
+          }, 50);
+        } else {
+          window._wheelSyncInProgress = false;   // re-enable after janya click settles
+        }
+      }, 50);
+    } else {
+      window._wheelSyncInProgress = false;
+    }
+  };
+
 })(); // end raga-wheel IIFE
+
+/**
+ * Programmatically expand the raga wheel to show the given raga or
+ * the raga of the given composition. No-op if the raga view is not active.
+ * @param {'raga'|'comp'} type
+ * @param {string} id
+ */
+function syncRagaWheelToFilter(type, id) {
+  if (currentView !== 'raga') return;
+  if (window._wheelSyncInProgress) return;   // guard against re-entrant calls from within the wheel
+
+  let ragaId = id;
+  if (type === 'comp') {
+    const comp = compositions.find(c => c.id === id);
+    if (!comp || !comp.raga_id) return;
+    ragaId = comp.raga_id;
+  }
+
+  const raga = ragas.find(r => r.id === ragaId);
+  if (!raga) return;
+
+  // Resolve to the melakarta: if janya, climb to parent_raga
+  const melaId = raga.is_melakarta ? raga.id : raga.parent_raga;
+  if (!melaId) return;
+
+  const melaRaga = ragas.find(r => r.id === melaId);
+  if (!melaRaga || !melaRaga.melakarta) return;
+
+  // Redraw the wheel and expand the resolved mela (and optionally a specific composition)
+  drawRagaWheel();
+  const targetCompId = (type === 'comp') ? id : null;
+  window._triggerMelaExpand(melaRaga.melakarta, raga.is_melakarta ? null : ragaId, targetCompId);
+}
 
 
 // ── Bani Flow ─────────────────────────────────────────────────────────────────
@@ -38851,6 +39032,11 @@ function applyBaniFilter(type, id) {
 
   document.getElementById('trail-filter').style.display = 'block';
   document.getElementById('trail-filter').value = '';
+
+  // Sync raga wheel if it is the active view
+  if (typeof syncRagaWheelToFilter === 'function') {
+    syncRagaWheelToFilter(type, id);
+  }
 }
 
 function buildListeningTrail(type, id, matchedNodeIds) {
@@ -39213,12 +39399,8 @@ function buildTrailItem(row, type, id) {
   const li = document.createElement('li');
   li.dataset.vid = row.track.vid;
   li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
-  li.title = row.isStructured
-    ? `Play from ${row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}`
-    : 'Play';
-  li.addEventListener('click', () =>
-    openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
-                      row.isStructured ? row.track.offset_seconds : undefined));
+  // li click is now a no-op; ▶ button handles play
+  li.title = '';
 
   // ── Row 1: primary artist + lifespan; then one row per co-performer ─────────
   const headerDiv = document.createElement('div');
@@ -39270,6 +39452,20 @@ function buildTrailItem(row, type, id) {
   row2Div.className = 'trail-row2';
   row2Div.appendChild(labelSpan);
   row2Div.appendChild(linkA);
+
+  // ▶ button → play only
+  const trailPlayBtn = document.createElement('button');
+  trailPlayBtn.className = 'rec-play-btn';
+  trailPlayBtn.title = row.isStructured
+    ? `Play from ${row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}`
+    : 'Play';
+  trailPlayBtn.textContent = '▶';
+  trailPlayBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
+                      row.isStructured ? row.track.offset_seconds : undefined);
+  });
+  row2Div.appendChild(trailPlayBtn);
 
   li.appendChild(headerDiv);
   li.appendChild(row2Div);
