@@ -52,28 +52,98 @@ python3 carnatic/cli.py lineage           <musician_id>
 python3 carnatic/cli.py recordings-for    <musician_id>
 python3 carnatic/cli.py compositions-in-raga <raga_id>
 
-# Validation (run after any apply_diff patch)
+# Validation (run after any write or apply_diff patch)
 python3 carnatic/cli.py validate
 ```
 
-### YouTube ingestion — mandatory pre-checks
+## Write CLI Tools (ADR-015)
+
+**Use these commands for all standard write operations.** They are atomic, validate
+referential integrity before writing, and are idempotent (safe to run twice).
+`write_cli.py` writes only to `musicians.json` and `compositions.json` — never to
+`graph.json` (a derived artefact). After any write session, run `python3 carnatic/render.py`.
+
+```bash
+# Musician graph writes
+python3 carnatic/write_cli.py add-musician     --id <id> --label <label> --era <era> \
+                                                --instrument <inst> --source-url <url> \
+                                                --source-label <label> --source-type <type> \
+                                                [--born <year>] [--died <year>] [--bani <bani>]
+
+python3 carnatic/write_cli.py add-edge         --source <guru_id> --target <shishya_id> \
+                                                --confidence <float> --source-url <url> \
+                                                [--note <text>]
+
+python3 carnatic/write_cli.py add-youtube      --musician-id <id> --url <yt_url> \
+                                                --label <label> \
+                                                [--composition-id <id>] [--raga-id <id>] \
+                                                [--year <int>] [--version <text>]
+
+python3 carnatic/write_cli.py add-source       --musician-id <id> --url <url> \
+                                                --label <label> --type <type>
+
+python3 carnatic/write_cli.py remove-edge      --source <guru_id> --target <shishya_id>
+
+python3 carnatic/write_cli.py patch-musician   --id <id> --field <field> --value <value>
+# Permitted fields: label, born, died, era, instrument, bani  (id is immutable)
+
+python3 carnatic/write_cli.py patch-edge       --source <guru_id> --target <shishya_id> \
+                                                --field <field> --value <value>
+# Permitted fields: confidence, source_url, note
+
+# Composition data writes
+python3 carnatic/write_cli.py add-raga         --id <id> --name <name> \
+                                                --source-url <url> --source-label <label> \
+                                                --source-type <type> \
+                                                [--aliases <csv>] [--melakarta <int>] \
+                                                [--parent-raga <id>] [--notes <text>]
+
+python3 carnatic/write_cli.py add-composer     --id <id> --name <name> \
+                                                --source-url <url> --source-label <label> \
+                                                --source-type <type> \
+                                                [--musician-node-id <id>] \
+                                                [--born <year>] [--died <year>]
+
+python3 carnatic/write_cli.py add-composition  --id <id> --title <title> \
+                                                --composer-id <id> --raga-id <id> \
+                                                [--tala <tala>] [--language <lang>] \
+                                                [--source-url <url>] [--source-label <label>] \
+                                                [--source-type <type>] [--notes <text>]
+```
+
+**Exit codes:** 0 = written or duplicate-skipped. 1 = validation error (file unchanged).
+**Output prefixes:** `[NODE+]` `[EDGE+]` `[EDGE-]` `[EDGE~]` `[YOUTUBE+]` `[RAGA+]` `[COMPOSER+]` `[COMP+]` `[SOURCE+]` `SKIP (duplicate)` `ERROR`
+
+> **When to use `apply_diff` instead:** Recording files (`recordings/*.json`), adding
+> `notes` fields to compositions, or any operation not yet covered by `write_cli.py`.
+
+### YouTube ingestion — mandatory pre-checks (Workflow A + H)
 Before adding any YouTube link:
 1. `python3 carnatic/cli.py url-exists <url>` — if FOUND, report and stop.
 2. `python3 carnatic/cli.py musician-exists "<artist name>"` — note exact id if FOUND; flag if NOT FOUND.
-3. `python3 carnatic/cli.py raga-exists "<raga name>"` — note exact id if FOUND; add raga first if NOT FOUND.
-4. `python3 carnatic/cli.py composition-exists "<composition name>"` — note exact id if FOUND; add composition first if NOT FOUND.
+3. `python3 carnatic/cli.py raga-exists "<raga name>"` — note exact id if FOUND; add raga first (`add-raga`) if NOT FOUND, then `render.py`.
+4. `python3 carnatic/cli.py composition-exists "<composition name>"` — note exact id if FOUND; add composition first (`add-composition`) if NOT FOUND, then `render.py`.
+5. `python3 carnatic/write_cli.py add-youtube --musician-id <id> --url <url> --label <label> [--raga-id <id>] [--composition-id <id>] [--year <year>]`
+
+### Playlist ingestion (Workflow H — batch from playlist_meta.py output)
+```
+Step 0: python3 carnatic/render.py  (ensure graph.json is current)
+Step 1: For each playlist entry — run pre-checks 1–4 above, then add-youtube.
+Step 2: python3 carnatic/render.py && python3 carnatic/cli.py validate
+```
 
 ## Core workflow
 1. User drops a Wikipedia URL, YouTube link+title, or verbal correction
-2. Agent patches `musicians.json` (load → modify → check duplicates → save)
+2. **Use `write_cli.py` commands** for standard mutations; fall back to `apply_diff` only for operations not covered
 3. When tagging recordings: also add `composition_id`, `raga_id`, `year` to youtube entries where identifiable
-4. Run `python3 render.py` — confirm node/edge counts change as expected
-5. Run `python3 serve.py` to visualise (or remind user to refresh if already running)
+4. Run `python3 carnatic/render.py` — confirm node/edge counts change as expected
+5. Run `python3 carnatic/serve.py` to visualise (or remind user to refresh if already running)
 6. **End of session**: update Open questions below, then **hand off to the Git Fiend** with a plain-prose summary of what changed, the list of modified files, and any unresolved open questions.
 
 ## Patching rules
 - **Never edit `graph.html` by hand**
-- Patch via Python: load JSON, modify in memory, save — never string-patch the file
+- **Prefer `write_cli.py` commands** over hand-constructed `apply_diff` blocks for all covered operations
+- `apply_diff` remains valid for recording files and uncovered operations
 - Log every change: `[NODE+]`, `[EDGE+]`, `[EDGE-]`, `[EDGE~]`
 - Check for duplicate `id` (nodes) and `(source, target)` pair (edges) before appending
 
