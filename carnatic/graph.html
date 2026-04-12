@@ -38936,6 +38936,22 @@ function abbrev(name, maxLen) {
   return name.slice(0, maxLen - 1) + '\u2026';
 }
 
+// Extract a short display title from a YouTube label.
+// Labels follow the pattern: "<piece> · <raga> - <artist>, <venue> <year>"
+// We want just the piece name (before the first ' · ' or ' - ').
+// Falls back to the full label truncated to 28 chars.
+function _ytShortTitle(label) {
+  if (!label) return '';
+  // Try ' · ' separator first (most common in this dataset)
+  const dotIdx = label.indexOf(' \u00b7 ');
+  if (dotIdx > 0) return label.slice(0, dotIdx).trim();
+  // Try ' - ' separator
+  const dashIdx = label.indexOf(' - ');
+  if (dashIdx > 0) return label.slice(0, dashIdx).trim();
+  // Fallback: truncate
+  return label.length > 28 ? label.slice(0, 27) + '\u2026' : label;
+}
+
 let _tooltipGroup = null;
 function showWheelTooltip(svg, x, y, lines) {
   hideWheelTooltip();
@@ -39020,24 +39036,96 @@ window.drawRagaWheel = function() {
     if (!janyasByMela[r.parent_raga]) janyasByMela[r.parent_raga] = [];
     janyasByMela[r.parent_raga].push(r);
   });
+
+  // ── compsByRaga: three sources ────────────────────────────────────────────
+  // Source 1: compositions.json compositions[] — canonical compositions
   const compsByRaga = {};
   compositions.forEach(c => {
     if (!c.raga_id) return;
     if (!compsByRaga[c.raga_id]) compsByRaga[c.raga_id] = [];
     compsByRaga[c.raga_id].push(c);
   });
-  // Fix 5: build RTP lookup: raga_id → [recording objects that are RTP/alapana]
+
+  // Source 2: structured recordings (sessions/performances) tagged with raga_id.
+  // ragaToPerf is injected by render.py: {raga_id: [PerformanceRef, ...]}
+  // Each PerformanceRef has: recording_id, video_id, title, short_title, date,
+  //   display_title, composition_id, raga_id, type, performers[].
+  // We deduplicate by composition_id (already in Source 1) or by recording+display_title.
+  const _seenPerfIds = new Set();
+  compositions.forEach(c => { if (c.id) _seenPerfIds.add(c.id); });
+  Object.entries(ragaToPerf || {}).forEach(([ragaId, perfs]) => {
+    perfs.forEach(perf => {
+      // Skip if this performance's composition is already in compsByRaga from Source 1
+      if (perf.composition_id && _seenPerfIds.has(perf.composition_id)) return;
+      const syntheticId = perf.composition_id ||
+        (perf.recording_id + '__' + (perf.display_title || perf.title || ''));
+      if (_seenPerfIds.has(syntheticId)) return;
+      _seenPerfIds.add(syntheticId);
+      if (!compsByRaga[ragaId]) compsByRaga[ragaId] = [];
+      const isRtp = (perf.type === 'rtp' || perf.type === 'alapana' || perf.type === 'tanam' ||
+                     (perf.display_title && /ragam.tanam|alapana|rtp/i.test(perf.display_title)));
+      compsByRaga[ragaId].push({
+        id:          syntheticId,
+        title:       perf.display_title || perf.title || ragaId,
+        raga_id:     ragaId,
+        _isPerf:     true,
+        _isRtp:      isRtp,
+        concert:     perf.short_title || perf.title || '',
+        date:        perf.date || '',
+        performers:  perf.performers || [],
+      });
+    });
+  });
+
+  // Source 3: musicians.json youtube[] entries tagged with raga_id only.
+  // In the rendered elements array, youtube entries are stored as data.tracks[]
+  // with fields: vid, label, composition_id, raga_id, year.
+  // (no url field — use vid as the unique key)
+  elements.forEach(el => {
+    if (!el.data || el.data.source !== undefined) return;  // skip edges
+    const nodeId = el.data.id;
+    if (!nodeId) return;
+    (el.data.tracks || []).forEach(tr => {
+      const ragaId = tr.raga_id;
+      if (!ragaId) return;
+      // If it also has a composition_id already in Source 1, skip
+      if (tr.composition_id && _seenPerfIds.has(tr.composition_id)) return;
+      const syntheticId = 'yt__' + (tr.vid || '') + '__' + ragaId;
+      if (_seenPerfIds.has(syntheticId)) return;
+      _seenPerfIds.add(syntheticId);
+      if (!compsByRaga[ragaId]) compsByRaga[ragaId] = [];
+      compsByRaga[ragaId].push({
+        id:         syntheticId,
+        title:      _ytShortTitle(tr.label) || ragaId,  // short name for wheel node label
+        _fullLabel: tr.label || '',                      // full label for tooltip
+        raga_id:    ragaId,
+        _isPerf:    true,
+        _isRtp:     false,
+        _ytVid:     tr.vid || '',
+        _nodeId:    nodeId,
+        year:       tr.year || null,
+      });
+    });
+  });
+
+  // ── rtpByRaga: structured recordings only (nested sessions/performances schema)
+  // Kept as a separate lookup for the tooltip "Ragam-Tanam-Pallavi" badge.
   const rtpByRaga = {};
   recordings.forEach(rec => {
-    (rec.tracks || []).forEach(tr => {
-      if (!tr.raga_id) return;
-      const isRtp = (tr.type === 'rtp' || tr.type === 'alapana' ||
-                     (tr.title && /ragam.tanam|alapana|rtp/i.test(tr.title)));
-      if (!isRtp) return;
-      if (!rtpByRaga[tr.raga_id]) rtpByRaga[tr.raga_id] = [];
-      rtpByRaga[tr.raga_id].push({ title: tr.title, concert: rec.concert || rec.id,
-                                     musician_id: tr.primary_performer || null,
-                                     id: tr.id || (rec.id + '_' + tr.title) });
+    (rec.sessions || []).forEach(session => {
+      (session.performances || []).forEach(perf => {
+        if (!perf.raga_id) return;
+        const isRtp = (perf.type === 'rtp' || perf.type === 'alapana' || perf.type === 'tanam' ||
+                       (perf.display_title && /ragam.tanam|alapana|rtp/i.test(perf.display_title)));
+        if (!isRtp) return;
+        if (!rtpByRaga[perf.raga_id]) rtpByRaga[perf.raga_id] = [];
+        rtpByRaga[perf.raga_id].push({
+          title:       perf.display_title || rec.title || 'RTP',
+          concert:     rec.short_title || rec.title || rec.id,
+          musician_id: (session.performers[0] || {}).musician_id || null,
+          id:          rec.id + '__' + perf.performance_index,
+        });
+      });
     });
   });
 
@@ -39237,10 +39325,9 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
   const melaPos = polar(cx, cy, R_MELA, melaAngle);
   const g = svgEl('g', { class: 'janya-group', 'data-parent': raga.id });
 
-  // Fix 8: always show the mela's own compositions/RTPs directly at R_COMP.
-  // They appear at melaAngle (straight out from the mela node).
-  // Janya satellites (if any) are spread around melaAngle at R_JANYA.
-  const melaDirect = (compsByRaga[raga.id] || []).length + (rtpByRaga[raga.id] || []).length;
+  // Always show the mela's own music (compositions + performances) directly at R_COMP.
+  // compsByRaga already includes all three sources (compositions, recordings, youtube).
+  const melaDirect = (compsByRaga[raga.id] || []).length;
 
   if (janyas.length === 0 && melaDirect === 0) {
     // Nothing to show at all
@@ -39331,16 +39418,14 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
   }
 }
 
-// Fix 5: _expandComps now includes RTP recordings alongside compositions
+// _expandComps: show all music tagged to this raga — compositions, structured
+// recording performances, and youtube-only entries (Sources 1–3 from compsByRaga).
 function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
     compsByRaga, rtpByRaga, parentColor, minDim) {
-  const comps = compsByRaga[janya.id] || [];
-  // Build unified item list: compositions + RTP recordings for this janya
-  const rtps = (rtpByRaga[janya.id] || []).map(r => ({
-    ...r, _isRtp: true, title: r.title || 'RTP'
-  }));
-  const items = [...comps.map(c => ({ ...c, _isRtp: false })), ...rtps];
+  // compsByRaga already contains all three sources; rtpByRaga is kept for
+  // the tooltip badge only — no need to merge again here.
+  const items = compsByRaga[janya.id] || [];
 
   const g = svgEl('g', { class: 'comp-group', 'data-parent': janya.id });
 
@@ -39389,10 +39474,21 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     }
 
     cg.addEventListener('mouseenter', () => {
-      const lines = [item.title || ''];
+      // For _isPerf items, show the full label as the tooltip header if available
+      const lines = [(item._isPerf && item._fullLabel) ? item._fullLabel : (item.title || '')];
       if (isRtp) {
         lines.push('Ragam-Tanam-Pallavi');
         if (item.concert) lines.push('Concert: ' + item.concert);
+        if (item.date) lines.push(item.date);
+      } else if (item._isPerf) {
+        // Structured recording performance or youtube-only entry
+        if (item.concert) lines.push('Concert: ' + item.concert);
+        if (item.date) lines.push(item.date);
+        if (item.year) lines.push(String(item.year));
+        if (item._ytVid) lines.push('YouTube recording');
+        if (item.performers && item.performers.length) {
+          lines.push(item.performers.map(p => p.musician_id || p).join(', '));
+        }
       } else {
         if (item.composer_id) {
           const composer = composers.find(c => c.id === item.composer_id);
@@ -39421,9 +39517,15 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('stroke-width', 2.5);
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       _expandedComp = item.id;
-      triggerBaniSearch('comp', item.id);  // sync bani flow for all comp/RTP items
+      // For canonical compositions, sync bani flow by comp id.
+      // For synthetic perf/youtube items, sync by raga id (no comp node exists).
+      if (!item._isPerf) {
+        triggerBaniSearch('comp', item.id);
+      } else {
+        triggerBaniSearch('raga', item.raga_id || janya.id);
+      }
       _expandMusicians(vp, svg, item, cAngle, cPos, cx, cy,
-        R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim);
+        R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim, janya.id);
     });
     g.appendChild(cg);
   });
@@ -39432,8 +39534,28 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
 }
 
 function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
-    R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim) {
-  const muscIds = compositionToNodes[comp.id] || [];
+    R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim, fallbackRagaId) {
+  // For canonical compositions: look up by composition id.
+  // For synthetic perf/youtube items (_isPerf): look up by raga id via ragaToNodes,
+  // or use the performers[] array embedded in the item itself.
+  let muscIds;
+  if (!comp._isPerf) {
+    muscIds = compositionToNodes[comp.id] || [];
+  } else {
+    const ragaId = comp.raga_id || fallbackRagaId;
+    // Start from ragaToNodes (covers both youtube and recording sources)
+    const fromRaga = ragaToNodes[ragaId] || [];
+    // Also include any performers[] embedded directly in the item
+    const fromPerf = (comp.performers || [])
+      .map(p => p.musician_id || p)
+      .filter(Boolean);
+    // Merge, deduplicate
+    const seen = new Set(fromRaga);
+    muscIds = [...fromRaga];
+    fromPerf.forEach(mid => { if (!seen.has(mid)) { seen.add(mid); muscIds.push(mid); } });
+    // If item has a single _nodeId (youtube source), include it too
+    if (comp._nodeId && !seen.has(comp._nodeId)) muscIds.push(comp._nodeId);
+  }
   const g = svgEl('g', { class: 'musc-group', 'data-parent': comp.id });
 
   if (muscIds.length === 0) {
