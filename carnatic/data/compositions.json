@@ -72,24 +72,6 @@
       "is_melakarta": false
     },
     {
-      "id": "todi",
-      "name": "Todi",
-      "aliases": [
-        "Suddha Todi"
-      ],
-      "melakarta": 8,
-      "parent_raga": "thodi",
-      "sources": [
-        {
-          "url": "https://en.wikipedia.org/wiki/Todi_(Carnatic_raga)",
-          "label": "Wikipedia",
-          "type": "wikipedia"
-        }
-      ],
-      "notes": "8th melakarta; one of the most expansive ragas in the Carnatic canon; evokes pathos, longing, and deep introspection; a favourite for extended alapana",
-      "is_melakarta": false
-    },
-    {
       "id": "bhairavi",
       "name": "Bhairavi",
       "aliases": [
@@ -1393,7 +1375,9 @@
       "name": "Thodi",
       "aliases": [
         "Shubhapantuvarali",
-        "Hanumatodi"
+        "Hanumatodi",
+        "Suddha Todi",
+        "Todi"
       ],
       "melakarta": 8,
       "parent_raga": null,
@@ -2690,7 +2674,7 @@
       "id": "koluvamaregada",
       "title": "Koluvamaregadā",
       "composer_id": "tyagaraja",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "language": "telugu",
       "sources": [
@@ -2866,7 +2850,7 @@
       "id": "pusadaramu",
       "title": "Pusadaramu",
       "composer_id": "govindasvamy_ayya",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "tisra_triputa",
       "language": "telugu",
       "sources": [
@@ -3569,7 +3553,7 @@
       "id": "thaye_yashodha",
       "title": "Thaye Yashodha",
       "composer_id": "oothukadu_venkata_kavi",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "language": "tamil",
       "sources": [
@@ -4809,7 +4793,7 @@
       "id": "dasukova",
       "title": "Dasukova",
       "composer_id": "tyagaraja",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "language": "Telugu",
       "sources": [
         {

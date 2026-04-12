@@ -1319,7 +1319,7 @@ const elements = [
           "vid": "Sec_Do-ppV4",
           "label": "Dasukova · Todi · Tyagaraja — Ramnad Krishnan",
           "composition_id": "dasukova",
-          "raga_id": "todi",
+          "raga_id": "thodi",
           "year": null
         },
         {
@@ -1354,7 +1354,7 @@ const elements = [
           "vid": "rHDxG5tUyZo",
           "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
           "composition_id": null,
-          "raga_id": "todi",
+          "raga_id": "thodi",
           "year": null
         },
         {
@@ -1375,7 +1375,7 @@ const elements = [
           "vid": "UIw75iHSNnk",
           "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
           "composition_id": null,
-          "raga_id": "todi",
+          "raga_id": "thodi",
           "year": null
         },
         {
@@ -1389,7 +1389,7 @@ const elements = [
           "vid": "zPwYCAH5DfE",
           "label": "Dasukova · Todi · Tyagaraja — Ramnad Krishnan",
           "composition_id": "dasukova",
-          "raga_id": "todi",
+          "raga_id": "thodi",
           "year": null
         },
         {
@@ -1494,7 +1494,7 @@ const elements = [
           "vid": "r1XdtcCBkdw",
           "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
           "composition_id": null,
-          "raga_id": "todi",
+          "raga_id": "thodi",
           "year": null
         },
         {
@@ -4927,24 +4927,6 @@ const ragas        = [
     "is_melakarta": false
   },
   {
-    "id": "todi",
-    "name": "Todi",
-    "aliases": [
-      "Suddha Todi"
-    ],
-    "melakarta": 8,
-    "parent_raga": "thodi",
-    "sources": [
-      {
-        "url": "https://en.wikipedia.org/wiki/Todi_(Carnatic_raga)",
-        "label": "Wikipedia",
-        "type": "wikipedia"
-      }
-    ],
-    "notes": "8th melakarta; one of the most expansive ragas in the Carnatic canon; evokes pathos, longing, and deep introspection; a favourite for extended alapana",
-    "is_melakarta": false
-  },
-  {
     "id": "bhairavi",
     "name": "Bhairavi",
     "aliases": [
@@ -6248,7 +6230,9 @@ const ragas        = [
     "name": "Thodi",
     "aliases": [
       "Shubhapantuvarali",
-      "Hanumatodi"
+      "Hanumatodi",
+      "Suddha Todi",
+      "Todi"
     ],
     "melakarta": 8,
     "parent_raga": null,
@@ -7545,7 +7529,7 @@ const compositions = [
     "id": "koluvamaregada",
     "title": "Koluvamaregadā",
     "composer_id": "tyagaraja",
-    "raga_id": "todi",
+    "raga_id": "thodi",
     "tala": "adi",
     "language": "telugu",
     "sources": [
@@ -7721,7 +7705,7 @@ const compositions = [
     "id": "pusadaramu",
     "title": "Pusadaramu",
     "composer_id": "govindasvamy_ayya",
-    "raga_id": "todi",
+    "raga_id": "thodi",
     "tala": "tisra_triputa",
     "language": "telugu",
     "sources": [
@@ -8424,7 +8408,7 @@ const compositions = [
     "id": "thaye_yashodha",
     "title": "Thaye Yashodha",
     "composer_id": "oothukadu_venkata_kavi",
-    "raga_id": "todi",
+    "raga_id": "thodi",
     "tala": "adi",
     "language": "tamil",
     "sources": [
@@ -9664,7 +9648,7 @@ const compositions = [
     "id": "dasukova",
     "title": "Dasukova",
     "composer_id": "tyagaraja",
-    "raga_id": "todi",
+    "raga_id": "thodi",
     "language": "Telugu",
     "sources": [
       {
@@ -10672,13 +10656,17 @@ const ragaToNodes        = {
     "palghat_raghu",
     "dk_pattammal"
   ],
-  "todi": [
+  "thodi": [
     "ramnad_krishnan",
+    "tm_krishna",
+    "akkarai_subbulakshmi",
+    "gnb",
+    "lalgudi_jayaraman",
+    "coimbatore_n_ramaswamy",
     "t_brinda",
     "t_muktha",
     "vina_dhanammal",
     "madurai_mani_iyer",
-    "lalgudi_jayaraman",
     "vellore_ramabhadran",
     "kv_narayanaswamy",
     "cr_mani_iyer",
@@ -10765,13 +10753,6 @@ const ragaToNodes        = {
   "nalinakanthi": [
     "tm_krishna",
     "akkarai_subbulakshmi"
-  ],
-  "thodi": [
-    "tm_krishna",
-    "akkarai_subbulakshmi",
-    "gnb",
-    "lalgudi_jayaraman",
-    "coimbatore_n_ramaswamy"
   ],
   "kannada_gowla": [
     "tm_krishna",
@@ -10907,10 +10888,13 @@ const ragaToNodes        = {
   "sriraga": [
     "tm_krishna",
     "akkarai_subbulakshmi",
+    "lalgudi_jayaraman",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani",
     "alathur_brothers",
     "semmangudi_srinivasa_iyer",
     "tn_krishnan",
-    "lalgudi_jayaraman",
     "umayalpuram_sivaraman",
     "vellore_ramabhadran"
   ],
@@ -11024,12 +11008,6 @@ const ragaToNodes        = {
     "madurai_mani_iyer",
     "lalgudi_jayaraman",
     "vellore_ramabhadran"
-  ],
-  "sri": [
-    "lalgudi_jayaraman",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani"
   ],
   "gowla": [
     "lalgudi_jayaraman",
@@ -11403,7 +11381,7 @@ const recordings             = [
             "timestamp": "00:30:04",
             "offset_seconds": 1804,
             "composition_id": "pusadaramu",
-            "raga_id": "todi",
+            "raga_id": "thodi",
             "tala": "tisra_triputa",
             "composer_id": "govindasvamy_ayya",
             "display_title": "Pusadaramu",
@@ -11647,7 +11625,7 @@ const recordings             = [
             "timestamp": "50:59",
             "offset_seconds": 3059,
             "composition_id": null,
-            "raga_id": "todi",
+            "raga_id": "thodi",
             "tala": null,
             "composer_id": null,
             "display_title": "Agre Krtva",
@@ -11808,7 +11786,7 @@ const recordings             = [
             "timestamp": "01:23:00",
             "offset_seconds": 4980,
             "composition_id": null,
-            "raga_id": "todi",
+            "raga_id": "thodi",
             "tala": null,
             "composer_id": null,
             "display_title": "Thodi — Alapana",
@@ -11820,7 +11798,7 @@ const recordings             = [
             "timestamp": "01:35:06",
             "offset_seconds": 5706,
             "composition_id": "thaye_yashodha",
-            "raga_id": "todi",
+            "raga_id": "thodi",
             "tala": "adi",
             "composer_id": "oothukadu_venkata_kavi",
             "display_title": "Thaye Yashodha",
@@ -11943,7 +11921,7 @@ const recordings             = [
             "timestamp": "00:00:00",
             "offset_seconds": 0,
             "composition_id": null,
-            "raga_id": "sri",
+            "raga_id": "sriraga",
             "tala": null,
             "composer_id": null,
             "display_title": "Tuning (in Sri Ragam)",
@@ -11955,7 +11933,7 @@ const recordings             = [
             "timestamp": "00:00:53",
             "offset_seconds": 53,
             "composition_id": "sami_ninne_kori",
-            "raga_id": "sri",
+            "raga_id": "sriraga",
             "tala": "adi",
             "composer_id": "karur_devudu_iyer",
             "display_title": "Sami Ninne Kori (Varnam)",
@@ -12601,7 +12579,7 @@ const recordings             = [
             "timestamp": "01:37:08",
             "offset_seconds": 5828,
             "composition_id": null,
-            "raga_id": "todi",
+            "raga_id": "thodi",
             "tala": null,
             "composer_id": null,
             "display_title": "Thodi — Alapana",
@@ -12613,7 +12591,7 @@ const recordings             = [
             "timestamp": "01:39:50",
             "offset_seconds": 5990,
             "composition_id": null,
-            "raga_id": "todi",
+            "raga_id": "thodi",
             "tala": "deshadi",
             "composer_id": null,
             "display_title": "Amba Nannu Brovave",
@@ -13001,7 +12979,7 @@ const recordings             = [
             "timestamp": "02:15:49",
             "offset_seconds": 8149,
             "composition_id": "koluvamaregada",
-            "raga_id": "todi",
+            "raga_id": "thodi",
             "tala": "adi",
             "composer_id": "tyagaraja",
             "display_title": "koluvamaregadā",
@@ -14334,7 +14312,7 @@ const musicianToPerformances = {
       "offset_seconds": 4980,
       "display_title": "Thodi — Alapana",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": null,
       "composer_id": null,
       "notes": null,
@@ -14376,7 +14354,7 @@ const musicianToPerformances = {
       "offset_seconds": 5706,
       "display_title": "Thaye Yashodha",
       "composition_id": "thaye_yashodha",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "oothukadu_venkata_kavi",
       "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert",
@@ -14670,7 +14648,7 @@ const musicianToPerformances = {
       "offset_seconds": 0,
       "display_title": "Tuning (in Sri Ragam)",
       "composition_id": null,
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": null,
       "composer_id": null,
       "notes": "Pre-concert tuning; no composition",
@@ -14706,7 +14684,7 @@ const musicianToPerformances = {
       "offset_seconds": 53,
       "display_title": "Sami Ninne Kori (Varnam)",
       "composition_id": "sami_ninne_kori",
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": "adi",
       "composer_id": "karur_devudu_iyer",
       "notes": "varnam",
@@ -17112,7 +17090,7 @@ const musicianToPerformances = {
       "offset_seconds": 1804,
       "display_title": "Pusadaramu",
       "composition_id": "pusadaramu",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "tisra_triputa",
       "composer_id": "govindasvamy_ayya",
       "notes": "javali",
@@ -17418,7 +17396,7 @@ const musicianToPerformances = {
       "offset_seconds": 1804,
       "display_title": "Pusadaramu",
       "composition_id": "pusadaramu",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "tisra_triputa",
       "composer_id": "govindasvamy_ayya",
       "notes": "javali",
@@ -17932,7 +17910,7 @@ const musicianToPerformances = {
       "offset_seconds": 3059,
       "display_title": "Agre Krtva",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": null,
       "composer_id": null,
       "notes": "Sanskrit shloka/mangalam; composer not identified in source — withheld pending verification",
@@ -18336,7 +18314,7 @@ const musicianToPerformances = {
       "offset_seconds": 4980,
       "display_title": "Thodi — Alapana",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": null,
       "composer_id": null,
       "notes": null,
@@ -18378,7 +18356,7 @@ const musicianToPerformances = {
       "offset_seconds": 5706,
       "display_title": "Thaye Yashodha",
       "composition_id": "thaye_yashodha",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "oothukadu_venkata_kavi",
       "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert",
@@ -19052,7 +19030,7 @@ const musicianToPerformances = {
       "offset_seconds": 4980,
       "display_title": "Thodi — Alapana",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": null,
       "composer_id": null,
       "notes": null,
@@ -19094,7 +19072,7 @@ const musicianToPerformances = {
       "offset_seconds": 5706,
       "display_title": "Thaye Yashodha",
       "composition_id": "thaye_yashodha",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "oothukadu_venkata_kavi",
       "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert",
@@ -19942,7 +19920,7 @@ const musicianToPerformances = {
       "offset_seconds": 0,
       "display_title": "Tuning (in Sri Ragam)",
       "composition_id": null,
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": null,
       "composer_id": null,
       "notes": "Pre-concert tuning; no composition",
@@ -19978,7 +19956,7 @@ const musicianToPerformances = {
       "offset_seconds": 53,
       "display_title": "Sami Ninne Kori (Varnam)",
       "composition_id": "sami_ninne_kori",
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": "adi",
       "composer_id": "karur_devudu_iyer",
       "notes": "varnam",
@@ -20772,7 +20750,7 @@ const musicianToPerformances = {
       "offset_seconds": 0,
       "display_title": "Tuning (in Sri Ragam)",
       "composition_id": null,
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": null,
       "composer_id": null,
       "notes": "Pre-concert tuning; no composition",
@@ -20808,7 +20786,7 @@ const musicianToPerformances = {
       "offset_seconds": 53,
       "display_title": "Sami Ninne Kori (Varnam)",
       "composition_id": "sami_ninne_kori",
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": "adi",
       "composer_id": "karur_devudu_iyer",
       "notes": "varnam",
@@ -21602,7 +21580,7 @@ const musicianToPerformances = {
       "offset_seconds": 0,
       "display_title": "Tuning (in Sri Ragam)",
       "composition_id": null,
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": null,
       "composer_id": null,
       "notes": "Pre-concert tuning; no composition",
@@ -21638,7 +21616,7 @@ const musicianToPerformances = {
       "offset_seconds": 53,
       "display_title": "Sami Ninne Kori (Varnam)",
       "composition_id": "sami_ninne_kori",
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": "adi",
       "composer_id": "karur_devudu_iyer",
       "notes": "varnam",
@@ -25082,7 +25060,7 @@ const musicianToPerformances = {
       "offset_seconds": 5828,
       "display_title": "Thodi — Alapana",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": null,
       "composer_id": null,
       "notes": "Brief alapana preceding the kriti",
@@ -25119,7 +25097,7 @@ const musicianToPerformances = {
       "offset_seconds": 5990,
       "display_title": "Amba Nannu Brovave",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "deshadi",
       "composer_id": null,
       "notes": "Kriti in Thodi; Deshadi tala; attributed to 'Anai Ayya' in the concert listing — composer identity unverified in standard references; composition_id withheld pending source confirmation",
@@ -25910,7 +25888,7 @@ const musicianToPerformances = {
       "offset_seconds": 5828,
       "display_title": "Thodi — Alapana",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": null,
       "composer_id": null,
       "notes": "Brief alapana preceding the kriti",
@@ -25947,7 +25925,7 @@ const musicianToPerformances = {
       "offset_seconds": 5990,
       "display_title": "Amba Nannu Brovave",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "deshadi",
       "composer_id": null,
       "notes": "Kriti in Thodi; Deshadi tala; attributed to 'Anai Ayya' in the concert listing — composer identity unverified in standard references; composition_id withheld pending source confirmation",
@@ -26578,7 +26556,7 @@ const musicianToPerformances = {
       "offset_seconds": 5828,
       "display_title": "Thodi — Alapana",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": null,
       "composer_id": null,
       "notes": "Brief alapana preceding the kriti",
@@ -26615,7 +26593,7 @@ const musicianToPerformances = {
       "offset_seconds": 5990,
       "display_title": "Amba Nannu Brovave",
       "composition_id": null,
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "deshadi",
       "composer_id": null,
       "notes": "Kriti in Thodi; Deshadi tala; attributed to 'Anai Ayya' in the concert listing — composer identity unverified in standard references; composition_id withheld pending source confirmation",
@@ -28012,7 +27990,7 @@ const musicianToPerformances = {
       "offset_seconds": 8149,
       "display_title": "koluvamaregadā",
       "composition_id": "koluvamaregada",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "tyagaraja",
       "notes": null,
@@ -28215,7 +28193,7 @@ const musicianToPerformances = {
       "offset_seconds": 8149,
       "display_title": "koluvamaregadā",
       "composition_id": "koluvamaregada",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "tyagaraja",
       "notes": null,
@@ -28385,7 +28363,7 @@ const musicianToPerformances = {
       "offset_seconds": 8149,
       "display_title": "koluvamaregadā",
       "composition_id": "koluvamaregada",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "tyagaraja",
       "notes": null,
@@ -29361,7 +29339,7 @@ const compositionToPerf      = {
       "offset_seconds": 1804,
       "display_title": "Pusadaramu",
       "composition_id": "pusadaramu",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "tisra_triputa",
       "composer_id": "govindasvamy_ayya",
       "notes": "javali",
@@ -30139,7 +30117,7 @@ const compositionToPerf      = {
       "offset_seconds": 5706,
       "display_title": "Thaye Yashodha",
       "composition_id": "thaye_yashodha",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "oothukadu_venkata_kavi",
       "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert",
@@ -30271,7 +30249,7 @@ const compositionToPerf      = {
       "offset_seconds": 53,
       "display_title": "Sami Ninne Kori (Varnam)",
       "composition_id": "sami_ninne_kori",
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": "adi",
       "composer_id": "karur_devudu_iyer",
       "notes": "varnam",
@@ -32372,7 +32350,7 @@ const compositionToPerf      = {
       "offset_seconds": 8149,
       "display_title": "koluvamaregadā",
       "composition_id": "koluvamaregada",
-      "raga_id": "todi",
+      "raga_id": "thodi",
       "tala": "adi",
       "composer_id": "tyagaraja",
       "notes": null,
@@ -33153,6 +33131,268 @@ const ragaToPerf             = {
           "role": "mridangam"
         }
       ]
+    },
+    {
+      "recording_id": "brinda_muktha_air_padams_javalis_1960s",
+      "video_id": "loy04TTE_MU",
+      "title": "Padams and Javalis — T. Brinda & T. Muktha, Akashvani AIR, 1960s",
+      "short_title": "AIR 1960s",
+      "date": "1960s",
+      "session_index": 1,
+      "performance_index": 5,
+      "timestamp": "00:30:04",
+      "offset_seconds": 1804,
+      "display_title": "Pusadaramu",
+      "composition_id": "pusadaramu",
+      "raga_id": "thodi",
+      "tala": "tisra_triputa",
+      "composer_id": "govindasvamy_ayya",
+      "notes": "javali",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Unknown"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Unknown"
+        }
+      ]
+    },
+    {
+      "recording_id": "dhanammal_veena_columbia_1932",
+      "video_id": "VEB9vZpIIR4",
+      "title": "Dhanammal's Veena — Columbia Records session, c.1932",
+      "short_title": "Columbia 1932",
+      "date": "1932",
+      "session_index": 1,
+      "performance_index": 16,
+      "timestamp": "50:59",
+      "offset_seconds": 3059,
+      "display_title": "Agre Krtva",
+      "composition_id": null,
+      "raga_id": "thodi",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Sanskrit shloka/mangalam; composer not identified in source — withheld pending verification",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "vina_dhanammal",
+          "role": "veena"
+        }
+      ]
+    },
+    {
+      "recording_id": "jamshedpur_1961_madurai_mani_iyer",
+      "video_id": "CUyf7Ukn9Y8",
+      "title": "Madurai Mani Iyer — Jamshedpur, 1961 (Vaak Foundation)",
+      "short_title": "Jamshedpur 1961",
+      "date": "1961",
+      "session_index": 1,
+      "performance_index": 10,
+      "timestamp": "01:23:00",
+      "offset_seconds": 4980,
+      "display_title": "Thodi — Alapana",
+      "composition_id": null,
+      "raga_id": "thodi",
+      "tala": null,
+      "composer_id": null,
+      "notes": null,
+      "type": "alapana",
+      "performers": [
+        {
+          "musician_id": "madurai_mani_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "vocal_support",
+          "unmatched_name": "TS Vembu Iyer"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "TS Vilvadri Iyer"
+        }
+      ]
+    },
+    {
+      "recording_id": "jamshedpur_1961_madurai_mani_iyer",
+      "video_id": "CUyf7Ukn9Y8",
+      "title": "Madurai Mani Iyer — Jamshedpur, 1961 (Vaak Foundation)",
+      "short_title": "Jamshedpur 1961",
+      "date": "1961",
+      "session_index": 1,
+      "performance_index": 11,
+      "timestamp": "01:35:06",
+      "offset_seconds": 5706,
+      "display_title": "Thaye Yashodha",
+      "composition_id": "thaye_yashodha",
+      "raga_id": "thodi",
+      "tala": "adi",
+      "composer_id": "oothukadu_venkata_kavi",
+      "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "madurai_mani_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "vocal_support",
+          "unmatched_name": "TS Vembu Iyer"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "TS Vilvadri Iyer"
+        }
+      ]
+    },
+    {
+      "recording_id": "music_academy_1973_kvn",
+      "video_id": "GVZ0rYQjegc",
+      "title": "KV Narayanaswamy — Music Academy Concert, December Season 1973",
+      "short_title": "Music Academy 1973 (KVN)",
+      "date": "1973-12-22",
+      "session_index": 1,
+      "performance_index": 11,
+      "timestamp": "01:37:08",
+      "offset_seconds": 5828,
+      "display_title": "Thodi — Alapana",
+      "composition_id": null,
+      "raga_id": "thodi",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Brief alapana preceding the kriti",
+      "type": "alapana",
+      "performers": [
+        {
+          "musician_id": "kv_narayanaswamy",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "cr_mani_iyer",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_raghu",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "khanjira",
+          "unmatched_name": "CK Shyamsundar"
+        }
+      ]
+    },
+    {
+      "recording_id": "music_academy_1973_kvn",
+      "video_id": "GVZ0rYQjegc",
+      "title": "KV Narayanaswamy — Music Academy Concert, December Season 1973",
+      "short_title": "Music Academy 1973 (KVN)",
+      "date": "1973-12-22",
+      "session_index": 1,
+      "performance_index": 12,
+      "timestamp": "01:39:50",
+      "offset_seconds": 5990,
+      "display_title": "Amba Nannu Brovave",
+      "composition_id": null,
+      "raga_id": "thodi",
+      "tala": "deshadi",
+      "composer_id": null,
+      "notes": "Kriti in Thodi; Deshadi tala; attributed to 'Anai Ayya' in the concert listing — composer identity unverified in standard references; composition_id withheld pending source confirmation",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "kv_narayanaswamy",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "cr_mani_iyer",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_raghu",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "khanjira",
+          "unmatched_name": "CK Shyamsundar"
+        }
+      ]
+    },
+    {
+      "recording_id": "poonamallee_1965",
+      "video_id": "_rj8fHJiSLA",
+      "title": "Srinivasa Farms Concert, Poonamallee 1965",
+      "short_title": "Poonamallee 1965",
+      "date": "1965-01",
+      "session_index": 5,
+      "performance_index": 1,
+      "timestamp": "02:15:49",
+      "offset_seconds": 8149,
+      "display_title": "koluvamaregadā",
+      "composition_id": "koluvamaregada",
+      "raga_id": "thodi",
+      "tala": "adi",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "dk_pattammal",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "ms_subbulakshmi",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+        },
+        {
+          "musician_id": "ramnad_raghavan",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": null,
+          "role": "ghatam",
+          "unmatched_name": "Alangudi Ramachandran"
+        }
+      ]
     }
   ],
   "surutti": [
@@ -33638,270 +33878,6 @@ const ragaToPerf             = {
           "unmatched_name": "K Narayanaswamy",
           "role": "ghatam",
           "note": "Ghatam player; no musician node exists yet for ghatam artists — flagged for future addition"
-        }
-      ]
-    }
-  ],
-  "todi": [
-    {
-      "recording_id": "brinda_muktha_air_padams_javalis_1960s",
-      "video_id": "loy04TTE_MU",
-      "title": "Padams and Javalis — T. Brinda & T. Muktha, Akashvani AIR, 1960s",
-      "short_title": "AIR 1960s",
-      "date": "1960s",
-      "session_index": 1,
-      "performance_index": 5,
-      "timestamp": "00:30:04",
-      "offset_seconds": 1804,
-      "display_title": "Pusadaramu",
-      "composition_id": "pusadaramu",
-      "raga_id": "todi",
-      "tala": "tisra_triputa",
-      "composer_id": "govindasvamy_ayya",
-      "notes": "javali",
-      "type": null,
-      "performers": [
-        {
-          "musician_id": "t_brinda",
-          "role": "vocal"
-        },
-        {
-          "musician_id": "t_muktha",
-          "role": "vocal"
-        },
-        {
-          "musician_id": null,
-          "role": "violin",
-          "unmatched_name": "Unknown"
-        },
-        {
-          "musician_id": null,
-          "role": "mridangam",
-          "unmatched_name": "Unknown"
-        }
-      ]
-    },
-    {
-      "recording_id": "dhanammal_veena_columbia_1932",
-      "video_id": "VEB9vZpIIR4",
-      "title": "Dhanammal's Veena — Columbia Records session, c.1932",
-      "short_title": "Columbia 1932",
-      "date": "1932",
-      "session_index": 1,
-      "performance_index": 16,
-      "timestamp": "50:59",
-      "offset_seconds": 3059,
-      "display_title": "Agre Krtva",
-      "composition_id": null,
-      "raga_id": "todi",
-      "tala": null,
-      "composer_id": null,
-      "notes": "Sanskrit shloka/mangalam; composer not identified in source — withheld pending verification",
-      "type": null,
-      "performers": [
-        {
-          "musician_id": "vina_dhanammal",
-          "role": "veena"
-        }
-      ]
-    },
-    {
-      "recording_id": "jamshedpur_1961_madurai_mani_iyer",
-      "video_id": "CUyf7Ukn9Y8",
-      "title": "Madurai Mani Iyer — Jamshedpur, 1961 (Vaak Foundation)",
-      "short_title": "Jamshedpur 1961",
-      "date": "1961",
-      "session_index": 1,
-      "performance_index": 10,
-      "timestamp": "01:23:00",
-      "offset_seconds": 4980,
-      "display_title": "Thodi — Alapana",
-      "composition_id": null,
-      "raga_id": "todi",
-      "tala": null,
-      "composer_id": null,
-      "notes": null,
-      "type": "alapana",
-      "performers": [
-        {
-          "musician_id": "madurai_mani_iyer",
-          "role": "vocal"
-        },
-        {
-          "musician_id": null,
-          "role": "vocal_support",
-          "unmatched_name": "TS Vembu Iyer"
-        },
-        {
-          "musician_id": "lalgudi_jayaraman",
-          "role": "violin"
-        },
-        {
-          "musician_id": "vellore_ramabhadran",
-          "role": "mridangam"
-        },
-        {
-          "musician_id": null,
-          "role": "ghatam",
-          "unmatched_name": "TS Vilvadri Iyer"
-        }
-      ]
-    },
-    {
-      "recording_id": "jamshedpur_1961_madurai_mani_iyer",
-      "video_id": "CUyf7Ukn9Y8",
-      "title": "Madurai Mani Iyer — Jamshedpur, 1961 (Vaak Foundation)",
-      "short_title": "Jamshedpur 1961",
-      "date": "1961",
-      "session_index": 1,
-      "performance_index": 11,
-      "timestamp": "01:35:06",
-      "offset_seconds": 5706,
-      "display_title": "Thaye Yashodha",
-      "composition_id": "thaye_yashodha",
-      "raga_id": "todi",
-      "tala": "adi",
-      "composer_id": "oothukadu_venkata_kavi",
-      "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert",
-      "type": null,
-      "performers": [
-        {
-          "musician_id": "madurai_mani_iyer",
-          "role": "vocal"
-        },
-        {
-          "musician_id": null,
-          "role": "vocal_support",
-          "unmatched_name": "TS Vembu Iyer"
-        },
-        {
-          "musician_id": "lalgudi_jayaraman",
-          "role": "violin"
-        },
-        {
-          "musician_id": "vellore_ramabhadran",
-          "role": "mridangam"
-        },
-        {
-          "musician_id": null,
-          "role": "ghatam",
-          "unmatched_name": "TS Vilvadri Iyer"
-        }
-      ]
-    },
-    {
-      "recording_id": "music_academy_1973_kvn",
-      "video_id": "GVZ0rYQjegc",
-      "title": "KV Narayanaswamy — Music Academy Concert, December Season 1973",
-      "short_title": "Music Academy 1973 (KVN)",
-      "date": "1973-12-22",
-      "session_index": 1,
-      "performance_index": 11,
-      "timestamp": "01:37:08",
-      "offset_seconds": 5828,
-      "display_title": "Thodi — Alapana",
-      "composition_id": null,
-      "raga_id": "todi",
-      "tala": null,
-      "composer_id": null,
-      "notes": "Brief alapana preceding the kriti",
-      "type": "alapana",
-      "performers": [
-        {
-          "musician_id": "kv_narayanaswamy",
-          "role": "vocal"
-        },
-        {
-          "musician_id": "cr_mani_iyer",
-          "role": "violin"
-        },
-        {
-          "musician_id": "palghat_raghu",
-          "role": "mridangam"
-        },
-        {
-          "musician_id": null,
-          "role": "khanjira",
-          "unmatched_name": "CK Shyamsundar"
-        }
-      ]
-    },
-    {
-      "recording_id": "music_academy_1973_kvn",
-      "video_id": "GVZ0rYQjegc",
-      "title": "KV Narayanaswamy — Music Academy Concert, December Season 1973",
-      "short_title": "Music Academy 1973 (KVN)",
-      "date": "1973-12-22",
-      "session_index": 1,
-      "performance_index": 12,
-      "timestamp": "01:39:50",
-      "offset_seconds": 5990,
-      "display_title": "Amba Nannu Brovave",
-      "composition_id": null,
-      "raga_id": "todi",
-      "tala": "deshadi",
-      "composer_id": null,
-      "notes": "Kriti in Thodi; Deshadi tala; attributed to 'Anai Ayya' in the concert listing — composer identity unverified in standard references; composition_id withheld pending source confirmation",
-      "type": null,
-      "performers": [
-        {
-          "musician_id": "kv_narayanaswamy",
-          "role": "vocal"
-        },
-        {
-          "musician_id": "cr_mani_iyer",
-          "role": "violin"
-        },
-        {
-          "musician_id": "palghat_raghu",
-          "role": "mridangam"
-        },
-        {
-          "musician_id": null,
-          "role": "khanjira",
-          "unmatched_name": "CK Shyamsundar"
-        }
-      ]
-    },
-    {
-      "recording_id": "poonamallee_1965",
-      "video_id": "_rj8fHJiSLA",
-      "title": "Srinivasa Farms Concert, Poonamallee 1965",
-      "short_title": "Poonamallee 1965",
-      "date": "1965-01",
-      "session_index": 5,
-      "performance_index": 1,
-      "timestamp": "02:15:49",
-      "offset_seconds": 8149,
-      "display_title": "koluvamaregadā",
-      "composition_id": "koluvamaregada",
-      "raga_id": "todi",
-      "tala": "adi",
-      "composer_id": "tyagaraja",
-      "notes": null,
-      "type": null,
-      "performers": [
-        {
-          "musician_id": "dk_pattammal",
-          "role": "vocal"
-        },
-        {
-          "musician_id": "ms_subbulakshmi",
-          "role": "vocal"
-        },
-        {
-          "musician_id": null,
-          "role": "violin",
-          "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
-        },
-        {
-          "musician_id": "ramnad_raghavan",
-          "role": "mridangam"
-        },
-        {
-          "musician_id": null,
-          "role": "ghatam",
-          "unmatched_name": "Alangudi Ramachandran"
         }
       ]
     }
@@ -35588,7 +35564,7 @@ const ragaToPerf             = {
       ]
     }
   ],
-  "sri": [
+  "sriraga": [
     {
       "recording_id": "music_academy_1965_lalgudi",
       "video_id": "9ybawXkMF4c",
@@ -35601,7 +35577,7 @@ const ragaToPerf             = {
       "offset_seconds": 0,
       "display_title": "Tuning (in Sri Ragam)",
       "composition_id": null,
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": null,
       "composer_id": null,
       "notes": "Pre-concert tuning; no composition",
@@ -35637,7 +35613,7 @@ const ragaToPerf             = {
       "offset_seconds": 53,
       "display_title": "Sami Ninne Kori (Varnam)",
       "composition_id": "sami_ninne_kori",
-      "raga_id": "sri",
+      "raga_id": "sriraga",
       "tala": "adi",
       "composer_id": "karur_devudu_iyer",
       "notes": "varnam",
@@ -35657,6 +35633,50 @@ const ragaToPerf             = {
         },
         {
           "musician_id": "palghat_rajamani",
+          "role": "mridangam"
+        }
+      ]
+    },
+    {
+      "recording_id": "poonamallee_1965",
+      "video_id": "_rj8fHJiSLA",
+      "title": "Srinivasa Farms Concert, Poonamallee 1965",
+      "short_title": "Poonamallee 1965",
+      "date": "1965-01",
+      "session_index": 4,
+      "performance_index": 2,
+      "timestamp": "01:36:30",
+      "offset_seconds": 5790,
+      "display_title": "nāma kusumamulacē pūjiñcē",
+      "composition_id": "nama_kusumamulace",
+      "raga_id": "sriraga",
+      "tala": "adi",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "alathur_brothers",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
           "role": "mridangam"
         }
       ]
@@ -37287,52 +37307,6 @@ const ragaToPerf             = {
       "display_title": "jagadānandakāraka",
       "composition_id": "jagadananda_karaka",
       "raga_id": "nata",
-      "tala": "adi",
-      "composer_id": "tyagaraja",
-      "notes": null,
-      "type": null,
-      "performers": [
-        {
-          "musician_id": "alathur_brothers",
-          "role": "vocal"
-        },
-        {
-          "musician_id": "semmangudi_srinivasa_iyer",
-          "role": "vocal"
-        },
-        {
-          "musician_id": "tn_krishnan",
-          "role": "violin"
-        },
-        {
-          "musician_id": "lalgudi_jayaraman",
-          "role": "violin"
-        },
-        {
-          "musician_id": "umayalpuram_sivaraman",
-          "role": "mridangam"
-        },
-        {
-          "musician_id": "vellore_ramabhadran",
-          "role": "mridangam"
-        }
-      ]
-    }
-  ],
-  "sriraga": [
-    {
-      "recording_id": "poonamallee_1965",
-      "video_id": "_rj8fHJiSLA",
-      "title": "Srinivasa Farms Concert, Poonamallee 1965",
-      "short_title": "Poonamallee 1965",
-      "date": "1965-01",
-      "session_index": 4,
-      "performance_index": 2,
-      "timestamp": "01:36:30",
-      "offset_seconds": 5790,
-      "display_title": "nāma kusumamulacē pūjiñcē",
-      "composition_id": "nama_kusumamulace",
-      "raga_id": "sriraga",
       "tala": "adi",
       "composer_id": "tyagaraja",
       "notes": null,

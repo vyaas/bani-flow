@@ -336,7 +336,7 @@
             "url": "https://www.youtube.com/watch?v=Sec_Do-ppV4",
             "label": "Dasukova · Todi · Tyagaraja — Ramnad Krishnan",
             "composition_id": "dasukova",
-            "raga_id": "todi"
+            "raga_id": "thodi"
           },
           {
             "url": "https://www.youtube.com/watch?v=49plQGtYu60",
@@ -366,7 +366,7 @@
           {
             "url": "https://www.youtube.com/watch?v=rHDxG5tUyZo",
             "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
-            "raga_id": "todi"
+            "raga_id": "thodi"
           },
           {
             "url": "https://www.youtube.com/watch?v=BMzVphOxKFs",
@@ -383,7 +383,7 @@
           {
             "url": "https://www.youtube.com/watch?v=UIw75iHSNnk",
             "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
-            "raga_id": "todi"
+            "raga_id": "thodi"
           },
           {
             "url": "https://www.youtube.com/watch?v=97sIjZjJJAY",
@@ -395,7 +395,7 @@
             "url": "https://www.youtube.com/watch?v=zPwYCAH5DfE",
             "label": "Dasukova · Todi · Tyagaraja — Ramnad Krishnan",
             "composition_id": "dasukova",
-            "raga_id": "todi"
+            "raga_id": "thodi"
           },
           {
             "url": "https://www.youtube.com/watch?v=0hYtkW5RgLA",
@@ -482,7 +482,7 @@
           {
             "url": "https://www.youtube.com/watch?v=r1XdtcCBkdw",
             "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
-            "raga_id": "todi"
+            "raga_id": "thodi"
           },
           {
             "url": "https://www.youtube.com/watch?v=zmQ3i3JxkLQ",
@@ -2987,24 +2987,6 @@
         "is_melakarta": false
       },
       {
-        "id": "todi",
-        "name": "Todi",
-        "aliases": [
-          "Suddha Todi"
-        ],
-        "melakarta": 8,
-        "parent_raga": "thodi",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Todi_(Carnatic_raga)",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "notes": "8th melakarta; one of the most expansive ragas in the Carnatic canon; evokes pathos, longing, and deep introspection; a favourite for extended alapana",
-        "is_melakarta": false
-      },
-      {
         "id": "bhairavi",
         "name": "Bhairavi",
         "aliases": [
@@ -4308,7 +4290,9 @@
         "name": "Thodi",
         "aliases": [
           "Shubhapantuvarali",
-          "Hanumatodi"
+          "Hanumatodi",
+          "Suddha Todi",
+          "Todi"
         ],
         "melakarta": 8,
         "parent_raga": null,
@@ -5605,7 +5589,7 @@
         "id": "koluvamaregada",
         "title": "Koluvamaregadā",
         "composer_id": "tyagaraja",
-        "raga_id": "todi",
+        "raga_id": "thodi",
         "tala": "adi",
         "language": "telugu",
         "sources": [
@@ -5781,7 +5765,7 @@
         "id": "pusadaramu",
         "title": "Pusadaramu",
         "composer_id": "govindasvamy_ayya",
-        "raga_id": "todi",
+        "raga_id": "thodi",
         "tala": "tisra_triputa",
         "language": "telugu",
         "sources": [
@@ -6484,7 +6468,7 @@
         "id": "thaye_yashodha",
         "title": "Thaye Yashodha",
         "composer_id": "oothukadu_venkata_kavi",
-        "raga_id": "todi",
+        "raga_id": "thodi",
         "tala": "adi",
         "language": "tamil",
         "sources": [
@@ -7724,7 +7708,7 @@
         "id": "dasukova",
         "title": "Dasukova",
         "composer_id": "tyagaraja",
-        "raga_id": "todi",
+        "raga_id": "thodi",
         "language": "Telugu",
         "sources": [
           {
