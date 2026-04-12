@@ -314,7 +314,8 @@ Nodes whose `wikipedia` field has no own article — flagged for community atten
 - **Akkarai Subbulakshmi** (violin, contemporary) — node added 2026-04-12. Primary guru is
   her father Akkarai Swaminathan (no Wikipedia page); also trained under V Janakiraman (no
   Wikipedia page). Both gurus deferred until Wikipedia pages exist. 69 co-performer youtube
-  entries added to her node.
+  entries added to her node (all 69 fully annotated with raga_id/composition_id/year as of
+  2026-04-12). TMK node has 88 youtube entries (5 pre-existing + 50 from ingest_03 + 33 new).
 - **T. Ranganathan** (mridangam, 1925–1987) — no Wikipedia article; excluded. Re-check
   periodically; if a page appears, add him under `golden_age` mridangam.
 - **Subbaraya Sastri dates** (set to 1803–1876) — verify against a primary source.
