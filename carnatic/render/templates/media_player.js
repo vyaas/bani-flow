@@ -71,7 +71,52 @@ function wireResize(el, handle) {
   document.addEventListener('mouseup', () => { resizing = false; });
 }
 
-function createPlayer(vid, label, artistName, startSeconds) {
+// ── buildPlayerTrackList — build the <ul> of track items for the in-player selector ──
+function buildPlayerTrackList(vid, tracks, instance) {
+  const ul = document.createElement('ul');
+  ul.className = 'mp-track-items';
+
+  tracks.forEach(t => {
+    const li = document.createElement('li');
+    li.className = 'mp-track-item';
+    li.dataset.offset = t.offset_seconds;
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'mp-track-label';
+    labelSpan.textContent = t.display_title;
+
+    const metaSpan = document.createElement('span');
+    metaSpan.className = 'mp-track-meta';
+    const parts = [t.raga_name, t.tala].filter(Boolean);
+    metaSpan.textContent = (parts.length ? parts.join(' \u00b7 ') + ' \u00b7 ' : '') + (t.timestamp || '00:00');
+
+    li.appendChild(labelSpan);
+    li.appendChild(metaSpan);
+
+    li.addEventListener('click', () => {
+      const player = playerRegistry.get(vid);
+      if (!player) return;
+      player.iframe.src = ytEmbedUrl(vid, t.offset_seconds > 0 ? t.offset_seconds : undefined);
+      player.currentOffset = t.offset_seconds;
+      // Update active indicator
+      ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
+      li.classList.add('mp-track-active');
+      refreshPlayingIndicators();
+    });
+
+    ul.appendChild(li);
+  });
+
+  return ul;
+}
+
+function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks) {
+  const displayTitle = concertTitle
+    ? (artistName ? artistName + ' \u2014 ' : '') + concertTitle
+    : (artistName ? artistName + ' \u2014 ' : '') + trackLabel;
+
+  const hasTracks = Array.isArray(tracks) && tracks.length > 0;
+
   const pos = nextSpawnPosition();
   const el = document.createElement('div');
   el.className = 'media-player';
@@ -79,9 +124,11 @@ function createPlayer(vid, label, artistName, startSeconds) {
 
   el.innerHTML = `
     <div class="mp-bar">
-      <span class="mp-title">${artistName ? artistName + ' \u2014 ' : ''}${label}</span>
+      <span class="mp-title">${displayTitle}</span>
+      ${hasTracks ? '<button class="mp-tracklist-toggle" title="Track list">\u2261</button>' : ''}
       <button class="mp-close" title="Close">\u2715</button>
     </div>
+    ${hasTracks ? '<div class="mp-tracklist" style="display:none"></div>' : ''}
     <div class="mp-video-wrap">
       <iframe class="mp-iframe"
         src="${ytEmbedUrl(vid, startSeconds)}"
@@ -93,9 +140,11 @@ function createPlayer(vid, label, artistName, startSeconds) {
 
   const instance = {
     el,
-    iframe:   el.querySelector('.mp-iframe'),
-    titleEl:  el.querySelector('.mp-title'),
+    iframe:       el.querySelector('.mp-iframe'),
+    titleEl:      el.querySelector('.mp-title'),
+    tracklistEl:  el.querySelector('.mp-tracklist'),   // null for legacy tracks
     vid,
+    currentOffset: startSeconds || 0,
   };
 
   el.querySelector('.mp-close').addEventListener('click', () => {
@@ -104,6 +153,27 @@ function createPlayer(vid, label, artistName, startSeconds) {
     playerRegistry.delete(vid);
     refreshPlayingIndicators();
   });
+
+  // Wire track list toggle and populate track items
+  if (hasTracks && instance.tracklistEl) {
+    const trackUl = buildPlayerTrackList(vid, tracks, instance);
+    instance.tracklistEl.appendChild(trackUl);
+
+    const toggleBtn = el.querySelector('.mp-tracklist-toggle');
+    toggleBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const isOpen = instance.tracklistEl.style.display !== 'none';
+      instance.tracklistEl.style.display = isOpen ? 'none' : 'block';
+      toggleBtn.classList.toggle('mp-tracklist-open', !isOpen);
+      if (!isOpen) {
+        // Mark the active track when opening
+        trackUl.querySelectorAll('.mp-track-item').forEach(li => {
+          li.classList.toggle('mp-track-active',
+            parseInt(li.dataset.offset, 10) === instance.currentOffset);
+        });
+      }
+    });
+  }
 
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
@@ -114,18 +184,24 @@ function createPlayer(vid, label, artistName, startSeconds) {
   return instance;
 }
 
-function openOrFocusPlayer(vid, label, artistName, startSeconds) {
+function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks) {
   if (playerRegistry.has(vid)) {
     const existing = playerRegistry.get(vid);
-    // Always update: new track in same concert → replace iframe src + title
+    // Jump to new timestamp; title does NOT change — concert identity is stable
     existing.iframe.src = ytEmbedUrl(vid, startSeconds);
-    existing.titleEl.textContent =
-      (artistName ? artistName + ' \u2014 ' : '') + label;
+    existing.currentOffset = startSeconds || 0;
+    // Update active indicator in track list if open
+    if (existing.tracklistEl) {
+      existing.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
+        li.classList.toggle('mp-track-active',
+          parseInt(li.dataset.offset, 10) === existing.currentOffset);
+      });
+    }
     bringToFront(existing);
     refreshPlayingIndicators();
     return;
   }
-  const p = createPlayer(vid, label, artistName, startSeconds);
+  const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks);
   playerRegistry.set(vid, p);
   refreshPlayingIndicators();
 }
@@ -253,8 +329,34 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       playBtn.textContent = '▶';
       playBtn.addEventListener('click', e => {
         e.stopPropagation();
-        openOrFocusPlayer(p.video_id, p.display_title, artistLabel,
-                          p.offset_seconds > 0 ? p.offset_seconds : undefined);
+        // Assemble ordered track list across all sessions for the in-player selector
+        const playerTracks = [];
+        concert.sessions.forEach(sess => {
+          const sortedSessPerfs = sess.perfs.slice().sort(
+            (a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0)
+          );
+          sortedSessPerfs.forEach(sp => {
+            const spRagaObj = sp.raga_id ? ragas.find(r => r.id === sp.raga_id) : null;
+            playerTracks.push({
+              offset_seconds: sp.offset_seconds || 0,
+              display_title:  sp.display_title || '',
+              raga_id:        sp.raga_id || null,
+              raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
+              tala:           sp.tala || null,
+              timestamp:      sp.timestamp || '00:00',
+            });
+          });
+        });
+        playerTracks.sort((a, b) => a.offset_seconds - b.offset_seconds);
+
+        openOrFocusPlayer(
+          p.video_id,
+          p.display_title,
+          artistLabel,
+          p.offset_seconds > 0 ? p.offset_seconds : undefined,
+          concert.short_title || concert.title,
+          playerTracks
+        );
       });
       row1.appendChild(playBtn);
 

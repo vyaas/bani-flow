@@ -619,6 +619,70 @@
     text-decoration: none;
   }
   .rec-raga-link:hover { text-decoration: underline; }
+
+  /* ── ADR-026: in-player track list ── */
+  .mp-tracklist-toggle {
+    background: none;
+    border: none;
+    color: var(--gray);
+    font-size: 0.85rem;
+    padding: 0 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .mp-tracklist-toggle:hover,
+  .mp-tracklist-toggle.mp-tracklist-open {
+    color: var(--yellow);
+  }
+
+  .mp-tracklist {
+    max-height: 180px;
+    overflow-y: auto;
+    background: var(--bg1);
+    border-bottom: 1px solid var(--bg3);
+  }
+
+  .mp-track-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mp-track-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 0.70rem;
+    border-bottom: 1px solid var(--bg2);
+  }
+  .mp-track-item:last-child { border-bottom: none; }
+  .mp-track-item:hover .mp-track-label { color: var(--yellow); }
+
+  .mp-track-label {
+    color: var(--fg2);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mp-track-meta {
+    color: var(--gray);
+    flex-shrink: 0;
+    font-size: 0.65rem;
+  }
+
+  .mp-track-item.mp-track-active .mp-track-label {
+    color: var(--aqua);
+  }
+  .mp-track-item.mp-track-active .mp-track-meta {
+    color: var(--teal);
+  }
 </style>
 </head>
 <body>
