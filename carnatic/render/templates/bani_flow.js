@@ -81,17 +81,17 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
     if (raga) {
       const ragaSpan = document.createElement('span');
-      const ragaSrc  = raga.sources && raga.sources[0];
-      if (ragaSrc) {
-        const a = document.createElement('a');
-        a.className = 'bani-sub-link';
-        a.href = ragaSrc.url;
-        a.target = '_blank';
-        a.textContent = raga.name;
-        ragaSpan.appendChild(a);
-      } else {
-        ragaSpan.textContent = raga.name;
-      }
+      // Raga name → in-app navigation: summon raga into Bani Flow + raga wheel
+      const ragaBtn = document.createElement('span');
+      ragaBtn.className = 'bani-sub-link';
+      ragaBtn.style.cursor = 'pointer';
+      ragaBtn.textContent = raga.name;
+      ragaBtn.title = 'Explore ' + raga.name + ' in Bani Flow';
+      ragaBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        triggerBaniSearch('raga', raga.id);
+      });
+      ragaSpan.appendChild(ragaBtn);
       parts.push(ragaSpan);
     }
 

@@ -32,6 +32,11 @@ function switchView(name) {
     hideTimelineRuler();
     document.getElementById('cy').style.display = 'none';
     showRagaWheel();
+    // Re-apply the current Bani filter to the wheel (ADR-025 sync gap)
+    if (typeof activeBaniFilter !== 'undefined' && activeBaniFilter &&
+        typeof syncRagaWheelToFilter === 'function') {
+      syncRagaWheelToFilter(activeBaniFilter.type, activeBaniFilter.id);
+    }
   }
 }
 
