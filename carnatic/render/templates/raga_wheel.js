@@ -434,6 +434,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
           R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
           compsByRaga, rtpByRaga, melaColor, minDim);
+        triggerBaniSearch('raga', janya.id);
       });
       // Janya label goes into _labelLayer so it is always on top
       if (_labelLayer) {
@@ -614,11 +615,10 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
     mg.addEventListener('click', (e) => {
       e.stopPropagation();
       if (node && node.length) {
-        cy.elements().removeClass('highlighted bani-match');
-        node.addClass('bani-match');
-        triggerBaniSearch('raga', comp.raga_id || '');
+        switchView('graph');
+        cy.elements().removeClass('faded highlighted bani-match');
+        selectNode(node);
       }
-      if (typeof showMusicianInfo === 'function') showMusicianInfo(node);
     });
     g.appendChild(mg);
   });
@@ -626,5 +626,56 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
   _bringLabelsToFront(vp);
 }
 
+  // Expose _triggerMelaExpand at window level so syncRagaWheelToFilter (outside IIFE) can call it
+  window._triggerMelaExpand = function(melaNum, targetRagaId) {
+    // Find the mela node <g> by data-mela attribute and dispatch a click
+    const melaG = document.querySelector(
+      `#wheel-viewport .mela-node[data-mela="${melaNum}"]`
+    );
+    if (melaG) melaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    // If targetRagaId is a janya, also expand it
+    if (targetRagaId) {
+      // Use setTimeout to allow the mela expansion to render first
+      setTimeout(() => {
+        const janyaG = document.querySelector(
+          `#wheel-viewport .janya-node[data-id="${targetRagaId}"]`
+        );
+        if (janyaG) janyaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      }, 50);
+    }
+  };
+
 })(); // end raga-wheel IIFE
+
+/**
+ * Programmatically expand the raga wheel to show the given raga or
+ * the raga of the given composition. No-op if the raga view is not active.
+ * @param {'raga'|'comp'} type
+ * @param {string} id
+ */
+function syncRagaWheelToFilter(type, id) {
+  if (currentView !== 'raga') return;
+
+  let ragaId = id;
+  if (type === 'comp') {
+    const comp = compositions.find(c => c.id === id);
+    if (!comp || !comp.raga_id) return;
+    ragaId = comp.raga_id;
+  }
+
+  const raga = ragas.find(r => r.id === ragaId);
+  if (!raga) return;
+
+  // Resolve to the melakarta: if janya, climb to parent_raga
+  const melaId = raga.is_melakarta ? raga.id : raga.parent_raga;
+  if (!melaId) return;
+
+  const melaRaga = ragas.find(r => r.id === melaId);
+  if (!melaRaga || !melaRaga.melakarta) return;
+
+  // Redraw the wheel and expand the resolved mela
+  drawRagaWheel();
+  window._triggerMelaExpand(melaRaga.melakarta, raga.is_melakarta ? null : ragaId);
+}
 

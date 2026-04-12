@@ -593,6 +593,32 @@
   .search-result-secondary {
     font-size: 0.70rem; color: var(--gray); margin-top: 2px;
   }
+
+  /* ── ADR-025: explicit play button ── */
+  .rec-play-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--bg3);
+    color: var(--aqua);
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: 2px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .rec-play-btn:hover {
+    background: var(--bg2);
+    border-color: var(--aqua);
+    color: var(--fg);
+  }
+
+  /* ── ADR-025: raga name link in rec-meta ── */
+  .rec-raga-link {
+    color: var(--teal);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .rec-raga-link:hover { text-decoration: underline; }
 </style>
 </head>
 <body>

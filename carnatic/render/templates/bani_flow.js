@@ -35,6 +35,11 @@ function applyBaniFilter(type, id) {
 
   document.getElementById('trail-filter').style.display = 'block';
   document.getElementById('trail-filter').value = '';
+
+  // Sync raga wheel if it is the active view
+  if (typeof syncRagaWheelToFilter === 'function') {
+    syncRagaWheelToFilter(type, id);
+  }
 }
 
 function buildListeningTrail(type, id, matchedNodeIds) {
@@ -397,12 +402,8 @@ function buildTrailItem(row, type, id) {
   const li = document.createElement('li');
   li.dataset.vid = row.track.vid;
   li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
-  li.title = row.isStructured
-    ? `Play from ${row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}`
-    : 'Play';
-  li.addEventListener('click', () =>
-    openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
-                      row.isStructured ? row.track.offset_seconds : undefined));
+  // li click is now a no-op; ▶ button handles play
+  li.title = '';
 
   // ── Row 1: primary artist + lifespan; then one row per co-performer ─────────
   const headerDiv = document.createElement('div');
@@ -454,6 +455,20 @@ function buildTrailItem(row, type, id) {
   row2Div.className = 'trail-row2';
   row2Div.appendChild(labelSpan);
   row2Div.appendChild(linkA);
+
+  // ▶ button → play only
+  const trailPlayBtn = document.createElement('button');
+  trailPlayBtn.className = 'rec-play-btn';
+  trailPlayBtn.title = row.isStructured
+    ? `Play from ${row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}`
+    : 'Play';
+  trailPlayBtn.textContent = '▶';
+  trailPlayBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
+                      row.isStructured ? row.track.offset_seconds : undefined);
+  });
+  row2Div.appendChild(trailPlayBtn);
 
   li.appendChild(headerDiv);
   li.appendChild(row2Div);

@@ -226,9 +226,11 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       const li = document.createElement('li');
       li.className = 'concert-perf-item' + (playerRegistry.has(p.video_id) ? ' playing' : '');
       li.dataset.vid = p.video_id;
-      li.addEventListener('click', () =>
-        openOrFocusPlayer(p.video_id, p.display_title, artistLabel,
-                          p.offset_seconds > 0 ? p.offset_seconds : undefined));
+      // Row click → cross-navigate (composition or raga)
+      li.addEventListener('click', () => {
+        if (p.composition_id) triggerBaniSearch('comp', p.composition_id);
+        else if (p.raga_id)   triggerBaniSearch('raga', p.raga_id);
+      });
 
       // Row 1: composition title
       const row1 = document.createElement('div');
@@ -244,6 +246,18 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       }
       row1.appendChild(titleEl);
 
+      // ▶ button → play only
+      const playBtn = document.createElement('button');
+      playBtn.className = 'rec-play-btn';
+      playBtn.title = 'Play';
+      playBtn.textContent = '▶';
+      playBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openOrFocusPlayer(p.video_id, p.display_title, artistLabel,
+                          p.offset_seconds > 0 ? p.offset_seconds : undefined);
+      });
+      row1.appendChild(playBtn);
+
       // Row 2: raga · tala + timestamp link
       const row2 = document.createElement('div');
       row2.className = 'rec-row2';
@@ -252,7 +266,22 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
       const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
       const talaPart = p.tala || '';
-      metaSpan.textContent = [ragaName, talaPart].filter(Boolean).join(' · ');
+      if (ragaObj && p.raga_id) {
+        const ragaLink = document.createElement('span');
+        ragaLink.className = 'rec-raga-link';
+        ragaLink.textContent = ragaObj.name;
+        ragaLink.title = 'Explore raga in Bani Flow';
+        ragaLink.addEventListener('click', e => {
+          e.stopPropagation();
+          triggerBaniSearch('raga', p.raga_id);
+        });
+        metaSpan.appendChild(ragaLink);
+        if (talaPart) {
+          metaSpan.appendChild(document.createTextNode(' · ' + talaPart));
+        }
+      } else {
+        metaSpan.textContent = [ragaName, talaPart].filter(Boolean).join(' · ');
+      }
 
       const linkA = document.createElement('a');
       linkA.className = 'rec-link';
@@ -343,8 +372,11 @@ function buildRecordingsList(nodeId, nodeData) {
     const li = document.createElement('li');
     li.className = 'rec-legacy' + (playerRegistry.has(t.vid) ? ' playing' : '');
     li.dataset.vid = t.vid;
-    li.addEventListener('click', () =>
-      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined));
+    // Row click → cross-navigate
+    li.addEventListener('click', () => {
+      if (t.composition_id) triggerBaniSearch('comp', t.composition_id);
+      else if (t.raga_id)   triggerBaniSearch('raga', t.raga_id);
+    });
 
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
@@ -358,13 +390,36 @@ function buildRecordingsList(nodeId, nodeData) {
     row1.appendChild(titleSpan);
     row1.appendChild(yearSpan);
 
+    // ▶ button → play only
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn';
+    playBtn.title = 'Play';
+    playBtn.textContent = '▶';
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined);
+    });
+    row1.appendChild(playBtn);
+
     const row2 = document.createElement('div');
     row2.className = 'rec-row2';
     const metaSpan = document.createElement('span');
     metaSpan.className = 'rec-meta';
     if (t.raga_id) {
       const ragaObj = ragas.find(r => r.id === t.raga_id);
-      metaSpan.textContent = ragaObj ? ragaObj.name : t.raga_id;
+      if (ragaObj) {
+        const ragaLink = document.createElement('span');
+        ragaLink.className = 'rec-raga-link';
+        ragaLink.textContent = ragaObj.name;
+        ragaLink.title = 'Explore raga in Bani Flow';
+        ragaLink.addEventListener('click', e => {
+          e.stopPropagation();
+          triggerBaniSearch('raga', t.raga_id);
+        });
+        metaSpan.appendChild(ragaLink);
+      } else {
+        metaSpan.textContent = t.raga_id;
+      }
     }
     const linkA = document.createElement('a');
     linkA.className = 'rec-link';
