@@ -38399,6 +38399,18 @@ let _labelLayer = null;  // top-most <g> in vp — all text labels go here
 let _wheelMouseMove = null;
 let _wheelMouseUp   = null;
 
+// Pan/zoom state — module-level so it survives drawRagaWheel redraws
+let _vx = 0, _vy = 0, _vscale = 1;
+let _dragging = false, _dragStartX = 0, _dragStartY = 0, _dragVX = 0, _dragVY = 0;
+let _dragMoved = false;
+
+// Apply the current pan/zoom transform to the viewport group.
+// Looks up #wheel-viewport by ID so it works after a full SVG rebuild.
+function _applyTransform() {
+  const vp = document.getElementById('wheel-viewport');
+  if (vp) vp.setAttribute('transform', `translate(${_vx},${_vy}) scale(${_vscale})`);
+}
+
 // Re-append _labelLayer so it is always the last (topmost) child of vp
 function _bringLabelsToFront(vp) {
   if (_labelLayer && _labelLayer.parentNode === vp) vp.appendChild(_labelLayer);
@@ -38454,11 +38466,6 @@ window.drawRagaWheel = function() {
     });
   });
 
-  // Fix 4: pan/zoom state
-  let _vx = 0, _vy = 0, _vscale = 1;
-  let _dragging = false, _dragStartX = 0, _dragStartY = 0, _dragVX = 0, _dragVY = 0;
-  let _dragMoved = false;  // true if the pointer actually moved during this drag gesture
-
   // Background click → collapse all, but NOT if the click was the end of a pan gesture
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
   bg.addEventListener('click', () => {
@@ -38467,13 +38474,10 @@ window.drawRagaWheel = function() {
   });
   svg.appendChild(bg);
 
-  // Fix 4: viewport group — all wheel content goes inside this <g>
+  // Viewport group — all wheel content goes inside this <g>
   const vp = svgEl('g', { id: 'wheel-viewport' });
   svg.appendChild(vp);
-
-  function _applyTransform() {
-    vp.setAttribute('transform', `translate(${_vx},${_vy}) scale(${_vscale})`);
-  }
+  _applyTransform();  // restore saved pan/zoom after SVG rebuild
 
   // Wheel zoom (mouse wheel)
   svg.addEventListener('wheel', (e) => {
@@ -38600,6 +38604,7 @@ window.drawRagaWheel = function() {
           circle.setAttribute('stroke', '#fabd2f');
           circle.setAttribute('stroke-width', 2.5);
           _expandedMela = raga.id;
+          triggerBaniSearch('raga', raga.id);  // sync bani flow to this mela
         }
       });
     }
@@ -38841,7 +38846,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('stroke-width', 2.5);
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       _expandedComp = item.id;
-      if (!isRtp) triggerBaniSearch('comp', item.id);
+      triggerBaniSearch('comp', item.id);  // sync bani flow for all comp/RTP items
       _expandMusicians(vp, svg, item, cAngle, cPos, cx, cy,
         R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim);
     });
@@ -38953,6 +38958,15 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
         } else {
           window._wheelSyncInProgress = false;   // re-enable after janya click settles
         }
+      }, 50);
+    } else if (targetCompId) {
+      // Mela-direct composition (no janya intermediary) — click comp after mela expands
+      setTimeout(() => {
+        const compG = document.querySelector(
+          `#wheel-viewport .comp-node[data-id="${targetCompId}"]`
+        );
+        if (compG) compG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        window._wheelSyncInProgress = false;
       }, 50);
     } else {
       window._wheelSyncInProgress = false;
