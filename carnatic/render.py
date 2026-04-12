@@ -776,7 +776,8 @@ def render_html(
   #trail-list li:last-child {{ border-bottom: none; }}
   #trail-list li:hover {{ color: var(--yellow); }}
   #trail-list li.playing {{ color: var(--aqua); }}
-  .trail-header {{ display: flex; align-items: center; width: 100%; gap: 4px; }}
+  .trail-header {{ display: flex; flex-direction: column; width: 100%; gap: 1px; }}
+  .trail-header-primary {{ display: flex; align-items: center; width: 100%; gap: 4px; }}
   .trail-lifespan {{ flex-shrink: 0; color: var(--gray); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }}
   .trail-artist {{ color: var(--yellow); cursor: pointer; font-weight: bold; flex-shrink: 0; display: inline-flex; align-items: center; gap: 0; }}
   .trail-artist:hover {{ text-decoration: underline; }}
@@ -802,6 +803,31 @@ def render_html(
     text-decoration: none; white-space: nowrap; margin-left: auto;
   }}
   .trail-link:hover {{ text-decoration: underline; }}
+
+  /* ── co-performer display in trail (ADR-019) ── */
+  .trail-artist-primary {{
+    font-weight: bold;
+    color: var(--yellow);
+  }}
+  .trail-artist-co {{
+    font-weight: normal;
+    font-size: 0.72rem;
+    color: var(--fg3);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0;
+  }}
+  .trail-artist-co:hover {{ color: var(--yellow); text-decoration: underline; }}
+  .trail-coperformer-row {{
+    display: flex; align-items: center; width: 100%;
+  }}
+  .trail-context {{
+    font-size: 0.65rem;
+    color: var(--gray);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }}
 
   /* ── panel-level search bars ── */
   .panel-search-wrap {{
@@ -1774,11 +1800,15 @@ document.getElementById('trail-filter').addEventListener('input', function() {{
 
   items.forEach(li => {{
     if (!q) {{ li.style.display = 'flex'; anyVisible = true; return; }}
-    // Match artist name (trail-artist text) and composition title (trail-label)
-    const artistText = (li.querySelector('.trail-artist') || {{}}).textContent || '';
+    // Match primary artist name
+    const primaryText = (li.querySelector('.trail-artist-primary') || {{}}).textContent || '';
+    // Match co-performer names (ADR-019)
+    const coTexts = [...li.querySelectorAll('.trail-artist-co')]
+      .map(el => el.textContent).join(' ');
+    // Match composition title
     const labelText  = (li.querySelector('.trail-label')  || {{}}).textContent || '';
-    const matches    = artistText.toLowerCase().includes(q) ||
-                       labelText.toLowerCase().includes(q);
+    const matches    = [primaryText, coTexts, labelText]
+      .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
   }});
@@ -2085,8 +2115,10 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
     if (raga) composerLabel.textContent = 'Raga: ' + raga.name;
   }}
 
-  // Collect matching tracks across matched nodes (from musicians.json youtube[])
-  const rows = [];
+  // ── 1. Collect raw rows ────────────────────────────────────────────────────
+
+  // Legacy youtube[] entries from matched musician nodes
+  const rawRows = [];
   matchedNodeIds.forEach(nid => {{
     const n = cy.getElementById(nid);
     if (!n) return;
@@ -2099,12 +2131,20 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
             return c && c.raga_id === id;
           }})())) ;
       if (matches) {{
-        rows.push({{ nodeId: nid, artistLabel: d.label, born: d.born, lifespan: d.lifespan, color: d.color, shape: d.shape, track: t, isStructured: false }});
+        const vid = t.vid || '';
+        const offset = t.offset_seconds || 0;
+        rawRows.push({{
+          nodeId: nid, artistLabel: d.label, born: d.born,
+          lifespan: d.lifespan, color: d.color, shape: d.shape,
+          track: t, isStructured: false,
+          perfKey: `${{vid}}::${{offset}}`,
+          allPerformers: null,
+        }});
       }}
     }});
   }});
 
-  // Also collect from structured recordings (recordings.json)
+  // Structured recordings
   const structuredPerfs = type === 'comp'
     ? (compositionToPerf[id] || [])
     : (ragaToPerf[id] || []);
@@ -2123,7 +2163,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
       nodeId = null;
       born   = null;
     }}
-    rows.push({{
+    rawRows.push({{
       nodeId,
       artistLabel,
       born,
@@ -2135,13 +2175,60 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
         label:          p.display_title,
         year:           p.date ? parseInt(p.date) : null,
         offset_seconds: p.offset_seconds,
+        composition_id: p.composition_id,
       }},
       isStructured: true,
+      perfKey: `${{p.recording_id}}::${{p.session_index}}::${{p.performance_index}}`,
+      allPerformers: p.performers,
     }});
   }});
 
-  // Sort: year asc (nulls last), then born asc (nulls last), then label
-  rows.sort((a, b) => {{
+  // ── 2. Deduplicate by perfKey ──────────────────────────────────────────────
+  const perfMap = new Map(); // perfKey → merged row
+
+  rawRows.forEach(row => {{
+    if (!perfMap.has(row.perfKey)) {{
+      perfMap.set(row.perfKey, {{ ...row, coPerformers: [] }});
+    }} else {{
+      const existing = perfMap.get(row.perfKey);
+      const alreadyPresent = existing.nodeId === row.nodeId ||
+        existing.coPerformers.some(cp => cp.nodeId === row.nodeId);
+      if (!alreadyPresent) {{
+        existing.coPerformers.push({{
+          nodeId:      row.nodeId,
+          artistLabel: row.artistLabel,
+          color:       row.color,
+          shape:       row.shape,
+        }});
+      }}
+    }}
+  }});
+
+  // Placeholder labels that should never appear in the UI
+  const UNKNOWN_LABELS = new Set(['Unknown', 'Unidentified artiste', '?']);
+
+  // For structured recordings: populate coPerformers from performers[] directly
+  // (more reliable than relying on node-iteration order)
+  perfMap.forEach(row => {{
+    if (row.isStructured && row.allPerformers) {{
+      row.coPerformers = [];
+      row.allPerformers.forEach(pf => {{
+        if (pf.musician_id === row.nodeId) return; // skip primary
+        const coNode = pf.musician_id ? cy.getElementById(pf.musician_id) : null;
+        const coLabel = (coNode && coNode.length) ? coNode.data('label') : (pf.unmatched_name || null);
+        if (!coLabel || UNKNOWN_LABELS.has(coLabel)) return; // skip unknown/placeholder names
+        row.coPerformers.push({{
+          nodeId:      pf.musician_id || null,
+          artistLabel: coLabel,
+          color:       (coNode && coNode.length) ? coNode.data('color') : null,
+          shape:       (coNode && coNode.length) ? coNode.data('shape') : null,
+        }});
+      }});
+    }}
+  }});
+
+  // ── 3. Sort deduplicated rows ──────────────────────────────────────────────
+  const rows = [...perfMap.values()].sort((a, b) => {{
     const ay = a.track.year, by = b.track.year;
     if (ay !== by) {{
       if (ay == null) return 1;
@@ -2157,86 +2244,115 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
     return a.artistLabel.localeCompare(b.artistLabel);
   }});
 
+  // ── 4. Render one <li> per deduplicated row ────────────────────────────────
   rows.forEach(row => {{
-    const li = document.createElement('li');
-    li.dataset.vid = row.track.vid;
-    li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
-    li.title = row.isStructured
-      ? `Play from ${{row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}}`
-      : 'Play';
-    li.addEventListener('click', () =>
-      openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
-                        row.isStructured ? row.track.offset_seconds : undefined));
-
-    const artistSpan = document.createElement('span');
-    artistSpan.className = 'trail-artist';
-
-    if (row.color || row.shape) {{
-      const shapeIcon = document.createElement('span');
-      shapeIcon.className = `trail-shape-icon ${{row.shape || 'ellipse'}}`;
-      if ((row.shape || 'ellipse') === 'triangle') {{
-        shapeIcon.style.borderBottomColor = row.color || 'var(--gray)';
-      }} else {{
-        shapeIcon.style.background = row.color || 'var(--gray)';
-      }}
-      artistSpan.appendChild(shapeIcon);
-    }}
-
-    artistSpan.appendChild(document.createTextNode(row.artistLabel));
-
-    const lifespanSpan = document.createElement('span');
-    lifespanSpan.className = 'trail-lifespan';
-    lifespanSpan.textContent = row.lifespan || '';
-
-    if (row.nodeId) {{
-      artistSpan.addEventListener('click', e => {{
-        e.stopPropagation();
-        cy.elements().removeClass('faded highlighted bani-match');
-        applyBaniFilter(type, id);
-        const n = cy.getElementById(row.nodeId);
-        if (n && n.length) selectNode(n);
-      }});
-    }}
-
-    // For legacy tracks, resolve composition title from compositions array.
-    // For structured tracks, track.label is already the clean display_title.
-    let compTitle = row.track.label;
-    if (!row.isStructured && row.track.composition_id) {{
-      const comp = compositions.find(c => c.id === row.track.composition_id);
-      if (comp) compTitle = comp.title;
-    }}
-
-    const labelSpan = document.createElement('span');
-    labelSpan.className = 'trail-label';
-    labelSpan.textContent = compTitle;
-
-    const offsetSecs = row.isStructured ? row.track.offset_seconds : 0;
-    const linkA = document.createElement('a');
-    linkA.className = 'trail-link';
-    linkA.href = ytDirectUrl(row.track.vid, offsetSecs || undefined);
-    linkA.target = '_blank';
-    linkA.textContent = (offsetSecs > 0)
-      ? `${{formatTimestamp(offsetSecs)}} \u2197`
-      : `00:00 \u2197`;
-    linkA.title = offsetSecs > 0 ? 'Open in YouTube at this timestamp' : 'Open in YouTube';
-    linkA.addEventListener('click', e => e.stopPropagation());
-
-    const headerDiv = document.createElement('div');
-    headerDiv.className = 'trail-header';
-    headerDiv.appendChild(artistSpan);
-    headerDiv.appendChild(lifespanSpan);
-
-    const row2Div = document.createElement('div');
-    row2Div.className = 'trail-row2';
-    row2Div.appendChild(labelSpan);
-    row2Div.appendChild(linkA);
-
-    li.appendChild(headerDiv);
-    li.appendChild(row2Div);
-    trailList.appendChild(li);
+    trailList.appendChild(buildTrailItem(row, type, id));
   }});
 
   trail.style.display = rows.length > 0 ? 'block' : 'none';
+}}
+
+// ── buildTrailItem: render one <li> for a deduplicated performance row ────────
+function buildTrailItem(row, type, id) {{
+  const li = document.createElement('li');
+  li.dataset.vid = row.track.vid;
+  li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
+  li.title = row.isStructured
+    ? `Play from ${{row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}}`
+    : 'Play';
+  li.addEventListener('click', () =>
+    openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
+                      row.isStructured ? row.track.offset_seconds : undefined));
+
+  // ── Row 1: primary artist + lifespan; then one row per co-performer ─────────
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'trail-header';
+
+  // Primary artist row (artist name + lifespan on same line)
+  const primaryRow = document.createElement('div');
+  primaryRow.className = 'trail-header-primary';
+  primaryRow.appendChild(buildArtistSpan(row, true, type, id));
+  const lifespanSpan = document.createElement('span');
+  lifespanSpan.className = 'trail-lifespan';
+  lifespanSpan.textContent = row.lifespan || (row.track.year ? String(row.track.year) : '');
+  primaryRow.appendChild(lifespanSpan);
+  headerDiv.appendChild(primaryRow);
+
+  // One row per co-performer (indented below primary)
+  if (row.coPerformers && row.coPerformers.length > 0) {{
+    row.coPerformers.forEach(cp => {{
+      const coRow = document.createElement('div');
+      coRow.className = 'trail-coperformer-row';
+      coRow.appendChild(buildArtistSpan(cp, false, type, id));
+      headerDiv.appendChild(coRow);
+    }});
+  }}
+
+  // ── Row 2: composition title + timestamp link ──────────────────────────────
+  let compTitle = row.track.label;
+  if (!row.isStructured && row.track.composition_id) {{
+    const comp = compositions.find(c => c.id === row.track.composition_id);
+    if (comp) compTitle = comp.title;
+  }}
+
+  const labelSpan = document.createElement('span');
+  labelSpan.className = 'trail-label';
+  labelSpan.textContent = compTitle;
+
+  const offsetSecs = row.isStructured ? row.track.offset_seconds : 0;
+  const linkA = document.createElement('a');
+  linkA.className = 'trail-link';
+  linkA.href = ytDirectUrl(row.track.vid, offsetSecs || undefined);
+  linkA.target = '_blank';
+  linkA.textContent = (offsetSecs > 0)
+    ? `${{formatTimestamp(offsetSecs)}} \u2197`
+    : `00:00 \u2197`;
+  linkA.title = offsetSecs > 0 ? 'Open in YouTube at this timestamp' : 'Open in YouTube';
+  linkA.addEventListener('click', e => e.stopPropagation());
+
+  const row2Div = document.createElement('div');
+  row2Div.className = 'trail-row2';
+  row2Div.appendChild(labelSpan);
+  row2Div.appendChild(linkA);
+
+  li.appendChild(headerDiv);
+  li.appendChild(row2Div);
+  return li;
+}}
+
+// ── buildArtistSpan: render a clickable artist name with shape icon ────────────
+function buildArtistSpan(artistRow, isPrimary, type, id) {{
+  const span = document.createElement('span');
+  span.className = isPrimary
+    ? 'trail-artist trail-artist-primary'
+    : 'trail-artist trail-artist-co';
+
+  if (artistRow.color || artistRow.shape) {{
+    const icon = document.createElement('span');
+    icon.className = `trail-shape-icon ${{artistRow.shape || 'ellipse'}}`;
+    if ((artistRow.shape || 'ellipse') === 'triangle') {{
+      icon.style.borderBottomColor = artistRow.color || 'var(--gray)';
+    }} else {{
+      icon.style.background = artistRow.color || 'var(--gray)';
+    }}
+    span.appendChild(icon);
+  }}
+
+  span.appendChild(document.createTextNode(artistRow.artistLabel));
+
+  // Always stop propagation so clicking any artist name never opens the player.
+  // Only call selectNode when the artist has a graph node.
+  span.addEventListener('click', e => {{
+    e.stopPropagation();
+    if (artistRow.nodeId) {{
+      cy.elements().removeClass('faded highlighted bani-match');
+      applyBaniFilter(type, id);
+      const n = cy.getElementById(artistRow.nodeId);
+      if (n && n.length) selectNode(n);
+    }}
+  }});
+
+  return span;
 }}
 
 function clearBaniFilter() {{

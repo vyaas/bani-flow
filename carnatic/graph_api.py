@@ -333,38 +333,62 @@ class CarnaticGraph:
 
     # ── Cross-domain traversal ─────────────────────────────────────────────────
 
+    # Labels that should never appear as co-performer names in the output
+    _UNKNOWN_LABELS: frozenset[str] = frozenset({"Unknown", "Unidentified artiste", "?"})
+
     def get_bani_flow(self, composition_id: str) -> list[dict]:
         """
-        Return a chronologically sorted list of PerformanceRef dicts for the
-        given composition, across all recordings and all musicians.
+        Return a chronologically sorted list of deduplicated PerformanceRef dicts
+        for the given composition, across all recordings and all musicians.
 
-        This is the data that powers the Bani Flow listening trail.
+        Each entry represents one distinct performance event. Co-performers are
+        listed in the ``co_performers`` field (all performers except the primary).
+
+        Deduplication key:
+          - Structured recordings: ``(recording_id, session_index, performance_index)``
+          - Legacy youtube[] entries: ``(video_id, offset_seconds)``
+
         Entries without a date sort last.
         """
-        refs: list[dict] = []
+        raw_refs: list[dict] = []
 
-        # Structured recordings
+        # ── Structured recordings ──────────────────────────────────────────────
         for rec in self._all_recordings_loaded():
             for session in rec.get("sessions", []):
                 performers = session.get("performers", [])
                 for perf in session.get("performances", []):
                     if perf.get("composition_id") == composition_id:
-                        refs.append(self._make_perf_ref(rec, session, perf, performers))
+                        ref = self._make_perf_ref(rec, session, perf, performers)
+                        ref["_perf_key"] = (
+                            f"{ref['recording_id']}::{ref['session_index']}"
+                            f"::{ref['performance_index']}"
+                        )
+                        # Identify primary performer (vocal or first)
+                        primary = next(
+                            (p for p in performers if p.get("role") == "vocal"),
+                            performers[0] if performers else None,
+                        )
+                        ref["_primary_musician_id"] = (
+                            primary.get("musician_id") if primary else None
+                        )
+                        raw_refs.append(ref)
 
-        # Legacy youtube[] entries
+        # ── Legacy youtube[] entries ───────────────────────────────────────────
         for node in self._musician_nodes:
             for yt in node.get("youtube", []):
                 if yt.get("composition_id") == composition_id:
-                    refs.append({
+                    vid    = self._yt_video_id(yt.get("url", ""))
+                    offset = 0
+                    ref = {
                         "recording_id":      None,
-                        "video_id":          self._yt_video_id(yt.get("url", "")),
+                        "video_id":          vid,
                         "title":             yt.get("label", ""),
                         "short_title":       yt.get("label", ""),
                         "date":              str(yt.get("year", "")),
                         "session_index":     None,
                         "performance_index": None,
                         "timestamp":         None,
-                        "offset_seconds":    0,
+                        "offset_seconds":    offset,
                         "display_title":     yt.get("label", ""),
                         "composition_id":    composition_id,
                         "raga_id":           yt.get("raga_id"),
@@ -374,13 +398,75 @@ class CarnaticGraph:
                         "type":              "youtube_legacy",
                         "performers":        [{"musician_id": node["id"], "role": node.get("instrument", "vocal")}],
                         "version":           yt.get("version"),
+                        "_perf_key":         f"{vid}::{offset}",
+                        "_primary_musician_id": node["id"],
+                    }
+                    raw_refs.append(ref)
+
+        # ── Deduplicate by _perf_key ───────────────────────────────────────────
+        seen: dict[str, dict] = {}
+        for ref in raw_refs:
+            key = ref["_perf_key"]
+            if key not in seen:
+                seen[key] = ref
+                seen[key].setdefault("co_performers", [])
+            else:
+                existing = seen[key]
+                primary_id = existing.get("_primary_musician_id")
+                for pf in ref.get("performers", []):
+                    mid = pf.get("musician_id")
+                    if mid == primary_id:
+                        continue
+                    already = any(
+                        cp.get("musician_id") == mid
+                        for cp in existing["co_performers"]
+                    )
+                    if not already:
+                        node_label = (
+                            self._musician_by_id.get(mid, {}).get("label")
+                            if mid else None
+                        )
+                        label = node_label or pf.get("unmatched_name", "?")
+                        if label not in self._UNKNOWN_LABELS:
+                            existing["co_performers"].append({
+                                "musician_id": mid,
+                                "label":       label,
+                                "role":        pf.get("role"),
+                            })
+
+        # For structured recordings: build co_performers from performers[] directly
+        for ref in seen.values():
+            if ref.get("recording_id") is not None:  # structured
+                primary_id = ref.get("_primary_musician_id")
+                ref["co_performers"] = []
+                for pf in ref.get("performers", []):
+                    mid = pf.get("musician_id")
+                    if mid == primary_id:
+                        continue
+                    node_label = (
+                        self._musician_by_id.get(mid, {}).get("label")
+                        if mid else None
+                    )
+                    label = node_label or pf.get("unmatched_name")
+                    if not label or label in self._UNKNOWN_LABELS:
+                        continue
+                    ref["co_performers"].append({
+                        "musician_id": mid,
+                        "label":       label,
+                        "role":        pf.get("role"),
                     })
 
-        # Sort chronologically; entries without a date sort last
+        # ── Strip internal keys and sort ──────────────────────────────────────
+        result = []
+        for ref in seen.values():
+            ref.pop("_perf_key", None)
+            ref.pop("_primary_musician_id", None)
+            result.append(ref)
+
         def sort_key(r: dict) -> str:
             return r.get("date") or "9999"
 
-        return sorted(refs, key=sort_key)
+        return sorted(result, key=sort_key)
 
     def get_concert_programme(self, recording_id: str) -> dict | None:
         """
