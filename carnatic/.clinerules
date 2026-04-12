@@ -357,6 +357,9 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-12: ADR-023 raga wheel (third view): SVG z-order is DOM order — the only reliable way to keep all text above all circles is a module-level _labelLayer <g> that is re-appended as the last child of the viewport after every expansion step via _bringLabelsToFront(vp); never put labels inside their node <g>.
 - 2026-04-12: ADR-023 label cleanup on collapse: use two CSS classes — sat-label (all satellite labels) and sat-label-musc (musician tier only) — so the janya click handler can clear comp+musc labels while the comp click handler clears only musc labels, without disturbing the layers above.
 - 2026-04-12: ADR-023 mela compositions: _expandComps accepts any raga object (not just janyas), so calling it directly with the mela raga after _expandMela draws janyas gives mela ragas their own composition layer without any code duplication.
+- 2026-04-12: Phase 1 render-refactor: extract a monolithic render.py into a carnatic/render/ package using a one-shot extraction script (_phase1_extract.py) that slices exact line ranges via splitlines(keepends=True) — safer than hand-editing a 3,634-line file; the script is committed as an audit trail and can be deleted in Phase 2.
+- 2026-04-12: render_html() uses ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES from the same module in the original file — when moving it to html_generator.py, add an explicit import from .graph_builder; the NameError only surfaces at runtime, not at import time, because the constants are referenced inside the function body not at module level.
+- 2026-04-12: The \s SyntaxWarning in html_generator.py is a pre-existing issue in the embedded JS regex string inside the triple-quoted f-string — it is a warning not an error; Phase 2 (template extraction) will resolve it by moving the JS into a raw string or a separate file.
 
 ### 🏛️ Graph Architect
 
