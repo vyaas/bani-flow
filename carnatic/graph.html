@@ -434,21 +434,36 @@
   .bani-janyas-count {
     color: var(--gray); margin-left: 2px;
   }
-  .bani-janyas-list {
+  /* Janyas filter input */
+  #bani-janyas-filter {
+    width: 100%; box-sizing: border-box;
     margin-top: 4px;
-    padding: 4px 6px;
-    background: var(--bg2);
-    border-radius: 3px;
-    display: flex; flex-wrap: wrap; gap: 2px 6px;
-    font-size: 0.68rem;
-    max-height: 120px;
+    padding: 3px 5px;
+    background: var(--bg2); border: 1px solid var(--bg3);
+    border-radius: 2px;
+    color: var(--fg); font-size: 0.68rem; font-family: inherit;
+    outline: none;
+  }
+  #bani-janyas-filter:focus { border-color: var(--teal); }
+  #bani-janyas-filter::placeholder { color: var(--gray); }
+  /* Janyas filtered list */
+  .bani-janyas-list {
+    margin-top: 3px;
+    padding: 2px 0;
+    max-height: 130px;
     overflow-y: auto;
   }
   .bani-janya-link {
+    display: block;
+    padding: 2px 4px;
     color: var(--blue); text-decoration: none; cursor: pointer;
-    white-space: nowrap;
+    font-size: 0.68rem; border-radius: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .bani-janya-link:hover { text-decoration: underline; }
+  .bani-janya-link:hover { background: var(--bg2); text-decoration: underline; }
+  .bani-janyas-empty {
+    padding: 2px 4px; font-size: 0.68rem; color: var(--gray);
+  }
   #trail-list { list-style: none; }
   #trail-list li {
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
@@ -599,11 +614,15 @@
         <div id="bani-subject-sub"></div>
         <!-- Row 3: aliases (ADR-022) -->
         <div id="bani-subject-aliases-row" style="display:none"></div>
-        <!-- Row 4: janyas toggle + dropdown (ADR-022, mela ragas only) -->
+        <!-- Row 4: janyas toggle + filter + list (ADR-022, mela ragas only) -->
         <div id="bani-janyas-row" style="display:none">
           <span id="bani-janyas-toggle" class="bani-janyas-toggle">&#9654; Janyas</span>
           <span id="bani-janyas-count" class="bani-janyas-count"></span>
-          <div id="bani-janyas-list" class="bani-janyas-list" style="display:none"></div>
+          <div id="bani-janyas-panel" style="display:none">
+            <input id="bani-janyas-filter" type="text"
+                   placeholder="filter janyas&#8230;" autocomplete="off" spellcheck="false">
+            <div id="bani-janyas-list" class="bani-janyas-list"></div>
+          </div>
         </div>
       </div>
       <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
@@ -4622,7 +4641,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "65th melakarta (Mechakalyani); all sharp notes except natural Sa and Pa; associated with brightness, auspiciousness, and devotion"
+    "notes": "65th melakarta (Mechakalyani); all sharp notes except natural Sa and Pa; associated with brightness, auspiciousness, and devotion",
+    "is_melakarta": true,
+    "cakra": 11
   },
   {
     "id": "shankarabharanam",
@@ -4639,7 +4660,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "29th melakarta; equivalent to the Western major scale; considered the most complete and balanced raga; parent of Nata and Arabhi"
+    "notes": "29th melakarta; equivalent to the Western major scale; considered the most complete and balanced raga; parent of Nata and Arabhi",
+    "is_melakarta": true,
+    "cakra": 5
   },
   {
     "id": "kambhoji",
@@ -4718,7 +4741,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours"
+    "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours",
+    "is_melakarta": true,
+    "cakra": 4
   },
   {
     "id": "ravichandrika",
@@ -4733,7 +4758,8 @@ const ragas        = [
         "type": "article"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada"
+    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada",
+    "is_melakarta": false
   },
   {
     "id": "surutti",
@@ -4748,7 +4774,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); bhāshāṅga vakra raga (Subbarama Dikshitar classification); ārohana S R₂ M₁ P N₂ D₂ N₂ Ṡ, avarohana Ṡ N₂ D₂ P M₁ G₃ P M₁ R₂ S; equivalent to Mixolydian mode; evokes devotion and pathos; a favourite raga of the Tyagaraja school"
+    "notes": "Janya of Harikambhoji (28th melakarta); bhāshāṅga vakra raga (Subbarama Dikshitar classification); ārohana S R₂ M₁ P N₂ D₂ N₂ Ṡ, avarohana Ṡ N₂ D₂ P M₁ G₃ P M₁ R₂ S; equivalent to Mixolydian mode; evokes devotion and pathos; a favourite raga of the Tyagaraja school",
+    "is_melakarta": false
   },
   {
     "id": "reetigowla",
@@ -4767,7 +4794,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); vakra shadava-sampoorna raga (6 notes ascending, 7 descending); evokes bhakti mixed with joy; a favourite of the Tyagaraja school"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); vakra shadava-sampoorna raga (6 notes ascending, 7 descending); evokes bhakti mixed with joy; a favourite of the Tyagaraja school",
+    "is_melakarta": false
   },
   {
     "id": "poornashadjam",
@@ -4786,7 +4814,8 @@ const ragas        = [
         "type": "article"
       }
     ],
-    "notes": "Janya of Natabhairavi (20th melakarta); oudava-shadava raga (5 notes ascending, 6 descending); ārohana S R2 G2 M1 N2 N2 S, avarohana S N2 P M1 G2 R2 S; rare raga popularised by the Tyagaraja school; principal compositions are Tyagaraja's 'Śrī māninī manōhara' and 'Lavanya Rāma'"
+    "notes": "Janya of Natabhairavi (20th melakarta); oudava-shadava raga (5 notes ascending, 6 descending); ārohana S R2 G2 M1 N2 N2 S, avarohana S N2 P M1 G2 R2 S; rare raga popularised by the Tyagaraja school; principal compositions are Tyagaraja's 'Śrī māninī manōhara' and 'Lavanya Rāma'",
+    "is_melakarta": false
   },
   {
     "id": "devamritavarshini",
@@ -4804,7 +4833,8 @@ const ragas        = [
         "type": "archive"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 G2 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; distinct from Amritavarshini (which is a Dikshitar creation, janya of Chitrambari); associated with the Tyagaraja school"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 G2 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; distinct from Amritavarshini (which is a Dikshitar creation, janya of Chitrambari); associated with the Tyagaraja school",
+    "is_melakarta": false
   },
   {
     "id": "sriraga",
@@ -4824,7 +4854,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Asampurna melakarta equivalent of Kharaharapriya (22nd melakarta); audava-vakra-sampurna raga (5 notes ascending, zig-zag descending); no gandharam or dhaivatam in ascending scale; ancient raga; not related to the Hindustani raga Shree"
+    "notes": "Asampurna melakarta equivalent of Kharaharapriya (22nd melakarta); audava-vakra-sampurna raga (5 notes ascending, zig-zag descending); no gandharam or dhaivatam in ascending scale; ancient raga; not related to the Hindustani raga Shree",
+    "is_melakarta": false
   },
   {
     "id": "ahiri",
@@ -4856,7 +4887,8 @@ const ragas        = [
         "type": "article"
       }
     ],
-    "notes": "Janya of Mayamalavagowla (15th melakarta); nishandantya raga (highest note is Nishada); ārohana S R1 G3 M1 P D1 N3, avarohana N3 D1 P M1 G3 R1 S N3; evokes a questioning, yearning, contemplative mood; associated with slow-tempo padams and meditative compositions"
+    "notes": "Janya of Mayamalavagowla (15th melakarta); nishandantya raga (highest note is Nishada); ārohana S R1 G3 M1 P D1 N3, avarohana N3 D1 P M1 G3 R1 S N3; evokes a questioning, yearning, contemplative mood; associated with slow-tempo padams and meditative compositions",
+    "is_melakarta": false
   },
   {
     "id": "gowlipantu",
@@ -4875,7 +4907,8 @@ const ragas        = [
         "type": "archive"
       }
     ],
-    "notes": "Janya of Mayamalavagowla (15th melakarta); audava-vakra raga (5 notes ascending, vakra descending); ārohana S R₁ M₁ P N₃ S, avarohana S N₃ D₁ P M₁ D₁ M₁ G₃ R₁ S; associated with padams and javalis of the Kshetrayya tradition"
+    "notes": "Janya of Mayamalavagowla (15th melakarta); audava-vakra raga (5 notes ascending, vakra descending); ārohana S R₁ M₁ P N₃ S, avarohana S N₃ D₁ P M₁ D₁ M₁ G₃ R₁ S; associated with padams and javalis of the Kshetrayya tradition",
+    "is_melakarta": false
   },
   {
     "id": "manirangu",
@@ -4892,7 +4925,8 @@ const ragas        = [
         "type": "archive"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; associated with Muttusvāmi Dīkṣita compositions"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; associated with Muttusvāmi Dīkṣita compositions",
+    "is_melakarta": false
   },
   {
     "id": "devagandhari",
@@ -4909,7 +4943,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); evokes devotion and grandeur; associated with compositions of Tyagaraja"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); evokes devotion and grandeur; associated with compositions of Tyagaraja",
+    "is_melakarta": false
   },
   {
     "id": "khamas",
@@ -4927,7 +4962,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga; evokes romance and longing; widely used in javalis and padams"
+    "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga; evokes romance and longing; widely used in javalis and padams",
+    "is_melakarta": false
   },
   {
     "id": "mayamalavagowla",
@@ -4945,7 +4981,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "15th melakarta; one of the first ragas taught to beginners; evokes pathos and devotion; parent of Nadanamakriya and Gowlipantu among others"
+    "notes": "15th melakarta; one of the first ragas taught to beginners; evokes pathos and devotion; parent of Nadanamakriya and Gowlipantu among others",
+    "is_melakarta": true,
+    "cakra": 3
   },
   {
     "id": "kharaharapriya",
@@ -4963,8 +5001,8 @@ const ragas        = [
       }
     ],
     "notes": "22nd melakarta; equivalent to the Dorian mode; parent of many important janya ragas including Reetigowla, Sriraga, Devamritavarshini, Manirangu, and Devagandhari; associated with devotion and grandeur",
-    "is_melakarta": false,
-    "cakra": null
+    "is_melakarta": true,
+    "cakra": 4
   },
   {
     "id": "kapi",
@@ -4981,7 +5019,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga admitting both G2 and G3; evokes srngara and karuna; a favourite raga for padams and javalis; associated with the devadasi repertoire"
+    "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga admitting both G2 and G3; evokes srngara and karuna; a favourite raga for padams and javalis; associated with the devadasi repertoire",
+    "is_melakarta": false
   },
   {
     "id": "sahana",
@@ -4998,7 +5037,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga; evokes pathos and longing; associated with padams and javalis of the Kshetrayya tradition; characteristic gamaka-laden phrases"
+    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga; evokes pathos and longing; associated with padams and javalis of the Kshetrayya tradition; characteristic gamaka-laden phrases",
+    "is_melakarta": false
   },
   {
     "id": "punnagavarali",
@@ -5016,7 +5056,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Tanarupi (6th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P D1 S, avarohana S D1 P M1 R1 S; evokes deep pathos and longing; a favourite for padams and javalis; associated with the Kshetrayya tradition"
+    "notes": "Janya of Tanarupi (6th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P D1 S, avarohana S D1 P M1 R1 S; evokes deep pathos and longing; a favourite for padams and javalis; associated with the Kshetrayya tradition",
+    "is_melakarta": false
   },
   {
     "id": "lalitha",
@@ -5033,7 +5074,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mayamalavagowla (15th melakarta); audava-shadava raga (5 notes ascending, 6 descending); ārohana S R1 G3 M1 P S, avarohana S N3 P M1 G3 R1 S; evokes tenderness and devotion; associated with Shyama Shastri's compositions, particularly 'Nannu Brovu'"
+    "notes": "Janya of Mayamalavagowla (15th melakarta); audava-shadava raga (5 notes ascending, 6 descending); ārohana S R1 G3 M1 P S, avarohana S N3 P M1 G3 R1 S; evokes tenderness and devotion; associated with Shyama Shastri's compositions, particularly 'Nannu Brovu'",
+    "is_melakarta": false
   },
   {
     "id": "malavi",
@@ -5050,7 +5092,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P N3 S, avarohana S N3 P M1 R1 S; evokes pathos and longing; associated with Tyagaraja's 'Nenarunchinanu'"
+    "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P N3 S, avarohana S N3 P M1 R1 S; evokes pathos and longing; associated with Tyagaraja's 'Nenarunchinanu'",
+    "is_melakarta": false
   },
   {
     "id": "umaabharanam",
@@ -5068,7 +5111,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-audava raga (6 notes ascending, 5 descending); ārohana S R1 G3 M1 P D1 S, avarohana S N3 P M1 G3 R1 S; evokes devotion and grandeur; associated with Tyagaraja's 'Nijamarmamulanu'"
+    "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-audava raga (6 notes ascending, 5 descending); ārohana S R1 G3 M1 P D1 S, avarohana S N3 P M1 G3 R1 S; evokes devotion and grandeur; associated with Tyagaraja's 'Nijamarmamulanu'",
+    "is_melakarta": false
   },
   {
     "id": "bahudari",
@@ -5085,7 +5129,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); audava-shadava raga (5 notes ascending, 6 descending); ārohana S R2 M1 P D2 S, avarohana S N2 D2 P M1 R2 S; evokes devotion and serenity; associated with Tyagaraja's 'Brova Bharama'"
+    "notes": "Janya of Harikambhoji (28th melakarta); audava-shadava raga (5 notes ascending, 6 descending); ārohana S R2 M1 P D2 S, avarohana S N2 D2 P M1 R2 S; evokes devotion and serenity; associated with Tyagaraja's 'Brova Bharama'",
+    "is_melakarta": false
   },
   {
     "id": "kaanada",
@@ -5103,7 +5148,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga with characteristic zigzag phrases; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 N2 P M1 G2 R2 S; evokes grandeur and devotion; associated with Tyagaraja's 'Sri Narada'"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga with characteristic zigzag phrases; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 N2 P M1 G2 R2 S; evokes grandeur and devotion; associated with Tyagaraja's 'Sri Narada'",
+    "is_melakarta": false
   },
   {
     "id": "ananda_bhairavi",
@@ -5120,7 +5166,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Natabhairavi (20th melakarta); bhashanga vakra raga; ārohana S G2 R2 G2 M1 P D2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes srngara and karuna; a favourite for padams and javalis; associated with Sarangapani's compositions"
+    "notes": "Janya of Natabhairavi (20th melakarta); bhashanga vakra raga; ārohana S G2 R2 G2 M1 P D2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes srngara and karuna; a favourite for padams and javalis; associated with Sarangapani's compositions",
+    "is_melakarta": false
   },
   {
     "id": "mohanam",
@@ -5138,7 +5185,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); audava raga (5 notes ascending and descending, no M or N); ārohana S R2 G3 P D2 S, avarohana S D2 P G3 R2 S; evokes joy, beauty, and devotion; one of the most popular pentatonic ragas in the Carnatic canon"
+    "notes": "Janya of Harikambhoji (28th melakarta); audava raga (5 notes ascending and descending, no M or N); ārohana S R2 G3 P D2 S, avarohana S D2 P G3 R2 S; evokes joy, beauty, and devotion; one of the most popular pentatonic ragas in the Carnatic canon",
+    "is_melakarta": false
   },
   {
     "id": "harikambhoji",
@@ -5155,7 +5203,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "28th melakarta; equivalent to the Western Mixolydian mode; ārohana S R2 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; parent of Kambhoji, Khamas, Surutti, Sahana, Mohanam, Bahudari, Kedaram, Begada, Ravichandrika, and Kapi among others; associated with bhakti and grandeur"
+    "notes": "28th melakarta; equivalent to the Western Mixolydian mode; ārohana S R2 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; parent of Kambhoji, Khamas, Surutti, Sahana, Mohanam, Bahudari, Kedaram, Begada, Ravichandrika, and Kapi among others; associated with bhakti and grandeur",
+    "is_melakarta": true,
+    "cakra": 5
   },
   {
     "id": "jayamanohari",
@@ -5172,7 +5222,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R2 G3 M1 D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; evokes joy and devotion; associated with Tyagaraja's 'Yagnadulu Sukhamanu'"
+    "notes": "Janya of Harikambhoji (28th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R2 G3 M1 D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; evokes joy and devotion; associated with Tyagaraja's 'Yagnadulu Sukhamanu'",
+    "is_melakarta": false
   },
   {
     "id": "hamsanadam",
@@ -5189,7 +5240,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes ascending and descending); ārohana S G3 M2 P N3 S, avarohana S N3 P M2 G3 S; evokes grandeur and devotion; associated with Tyagaraja's 'Bantureeti Kolu'"
+    "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes ascending and descending); ārohana S G3 M2 P N3 S, avarohana S N3 P M2 G3 S; evokes grandeur and devotion; associated with Tyagaraja's 'Bantureeti Kolu'",
+    "is_melakarta": false
   },
   {
     "id": "keeravani",
@@ -5206,7 +5258,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "21st melakarta; ārohana S R2 G2 M1 P D1 N3 S, avarohana S N3 D1 P M1 G2 R2 S; equivalent to the Western harmonic minor scale; evokes pathos and longing; associated with Tyagaraja's 'Kaligiyunte'"
+    "notes": "21st melakarta; ārohana S R2 G2 M1 P D1 N3 S, avarohana S N3 D1 P M1 G2 R2 S; equivalent to the Western harmonic minor scale; evokes pathos and longing; associated with Tyagaraja's 'Kaligiyunte'",
+    "is_melakarta": true,
+    "cakra": 4
   },
   {
     "id": "behag",
@@ -5223,7 +5277,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); bhashanga vakra raga admitting both M1 and M2; ārohana S G3 M1 P N2 S, avarohana S N2 D2 P M1 G3 M1 R2 S; evokes romance and longing; a favourite raga for javalis and padams; associated with Patnam Subramanya Iyer's 'Samayamide Rara'"
+    "notes": "Janya of Harikambhoji (28th melakarta); bhashanga vakra raga admitting both M1 and M2; ārohana S G3 M1 P N2 S, avarohana S N2 D2 P M1 G3 M1 R2 S; evokes romance and longing; a favourite raga for javalis and padams; associated with Patnam Subramanya Iyer's 'Samayamide Rara'",
+    "is_melakarta": false
   },
   {
     "id": "sowrashtram",
@@ -5241,7 +5296,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R1 G3 M1 P N3 S, avarohana S N3 D1 P M1 G3 R1 S; evokes devotion and auspiciousness; traditionally used for mangalam compositions; associated with Tyagaraja's 'Ni Nama Roopamulaku'"
+    "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R1 G3 M1 P N3 S, avarohana S N3 D1 P M1 G3 R1 S; evokes devotion and auspiciousness; traditionally used for mangalam compositions; associated with Tyagaraja's 'Ni Nama Roopamulaku'",
+    "is_melakarta": false
   },
   {
     "id": "jayantasena",
@@ -5263,7 +5319,8 @@ const ragas        = [
         "type": "archive"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); shadava raga (6 notes ascending and descending, no Rishabha); ārohana S G2 M1 P D2 S, avarohana S N2 D2 P M1 G2 S; a rare raga; best known for Tyagaraja's 'Vinatā Suta Vāhana'"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); shadava raga (6 notes ascending and descending, no Rishabha); ārohana S G2 M1 P D2 S, avarohana S N2 D2 P M1 G2 S; a rare raga; best known for Tyagaraja's 'Vinatā Suta Vāhana'",
+    "is_melakarta": false
   },
   {
     "id": "hamsadhwani",
@@ -5280,7 +5337,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes, no Madhyama or Dhaivata); ārohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes brightness, auspiciousness, and joy; a favourite opening raga for concerts; best known for Dikshitar's 'Vatapi Ganapatim' and the jalajAksha varnam of Maanambuchaavadi Venkatasubbaiyer"
+    "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes, no Madhyama or Dhaivata); ārohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes brightness, auspiciousness, and joy; a favourite opening raga for concerts; best known for Dikshitar's 'Vatapi Ganapatim' and the jalajAksha varnam of Maanambuchaavadi Venkatasubbaiyer",
+    "is_melakarta": false
   },
   {
     "id": "gundakriya",
@@ -5298,7 +5356,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 G3 M1 N3 S, avarohana S N3 M1 G3 R1 S; evokes pathos and devotion; a rare raga used primarily in the early segments of a concert; best known for Tyagaraja's 'Intanuchu Varimpa'"
+    "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 G3 M1 N3 S, avarohana S N3 M1 G3 R1 S; evokes pathos and devotion; a rare raga used primarily in the early segments of a concert; best known for Tyagaraja's 'Intanuchu Varimpa'",
+    "is_melakarta": false
   },
   {
     "id": "huseni",
@@ -5316,7 +5375,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes pathos and longing; associated with padams and swarajathis; best known for Swati Tirunal's swarajathi 'Pahimam Brhannayike'"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes pathos and longing; associated with padams and swarajathis; best known for Swati Tirunal's swarajathi 'Pahimam Brhannayike'",
+    "is_melakarta": false
   },
   {
     "id": "simhendramadhyamam",
@@ -5333,7 +5393,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "57th melakarta; ārohana S R1 G1 M2 P D1 N3 S, avarohana S N3 D1 P M2 G1 R1 S; evokes pathos and devotion; a favourite raga of Papanasam Sivan; best known for his composition 'En Manam'"
+    "notes": "57th melakarta; ārohana S R1 G1 M2 P D1 N3 S, avarohana S N3 D1 P M2 G1 R1 S; evokes pathos and devotion; a favourite raga of Papanasam Sivan; best known for his composition 'En Manam'",
+    "is_melakarta": true,
+    "cakra": 10
   },
   {
     "id": "suddha_saveri",
@@ -5351,7 +5413,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava raga (5 notes ascending and descending, no Gandhara or Nishada); ārohana S R2 M1 P D2 S, avarohana S D2 P M1 R2 S; evokes serenity and devotion; associated with compositions of Periyasami Tooran and the Tamil devotional repertoire"
+    "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava raga (5 notes ascending and descending, no Gandhara or Nishada); ārohana S R2 M1 P D2 S, avarohana S D2 P M1 R2 S; evokes serenity and devotion; associated with compositions of Periyasami Tooran and the Tamil devotional repertoire",
+    "is_melakarta": false
   },
   {
     "id": "manji",
@@ -5368,7 +5431,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 P D2 N2 P M1 G2 R2 S; evokes pathos and longing; associated with Shyama Shastri's compositions, particularly 'Brovavamma Tamasame'"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 P D2 N2 P M1 G2 R2 S; evokes pathos and longing; associated with Shyama Shastri's compositions, particularly 'Brovavamma Tamasame'",
+    "is_melakarta": false
   },
   {
     "id": "bilahari",
@@ -5383,7 +5447,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 P D2 S, avarohana S N3 D2 P M1 G3 R2 S; evokes joy and auspiciousness; a favourite raga for thillanas; associated with Ariyakudi Ramanuja Iyengar's thillana"
+    "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 P D2 S, avarohana S N3 D2 P M1 G3 R2 S; evokes joy and auspiciousness; a favourite raga for thillanas; associated with Ariyakudi Ramanuja Iyengar's thillana",
+    "is_melakarta": false
   },
   {
     "id": "pantuvarali",
@@ -5401,7 +5466,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "51st melakarta (Kamavardhini); ārohana S R1 G3 M2 P D1 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes pathos and grandeur; associated with Tyagaraja's 'Aparama Bhakthi' and Dikshitar's 'Sri Satyanarayanam'; one of the most expansive melakartas for alapana"
+    "notes": "51st melakarta (Kamavardhini); ārohana S R1 G3 M2 P D1 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes pathos and grandeur; associated with Tyagaraja's 'Aparama Bhakthi' and Dikshitar's 'Sri Satyanarayanam'; one of the most expansive melakartas for alapana",
+    "is_melakarta": true,
+    "cakra": 9
   },
   {
     "id": "ishamanohari",
@@ -5418,7 +5485,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Natabhairavi (20th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 S; evokes devotion and serenity; best known for Tyagaraja's 'Manasa Sri Ramachandruni'"
+    "notes": "Janya of Natabhairavi (20th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 S; evokes devotion and serenity; best known for Tyagaraja's 'Manasa Sri Ramachandruni'",
+    "is_melakarta": false
   },
   {
     "id": "dwijavanthi",
@@ -5436,7 +5504,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes devotion and grandeur; best known for Muthuswami Dikshitar's 'Chetasri Balakrishnam'; a favourite raga of the Dikshitar school"
+    "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes devotion and grandeur; best known for Muthuswami Dikshitar's 'Chetasri Balakrishnam'; a favourite raga of the Dikshitar school",
+    "is_melakarta": false
   },
   {
     "id": "abheri",
@@ -5453,7 +5522,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Natabhairavi (20th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S G2 M1 P N2 S, avarohana S N2 D1 P M1 G2 S; evokes pathos and longing; best known for Tyagaraja's 'Nagumomu Ganaleni'; a favourite raga for the main piece in a concert"
+    "notes": "Janya of Natabhairavi (20th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S G2 M1 P N2 S, avarohana S N2 D1 P M1 G2 S; evokes pathos and longing; best known for Tyagaraja's 'Nagumomu Ganaleni'; a favourite raga for the main piece in a concert",
+    "is_melakarta": false
   },
   {
     "id": "shubapantuvarali",
@@ -5471,7 +5541,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kamavardhini (51st melakarta); vakra raga; ārohana S R1 G3 M2 P M2 G3 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes grandeur and devotion; best known for Muthuswami Dikshitar's 'Sri Satyanarayanam'; associated with the Dikshitar school"
+    "notes": "Janya of Kamavardhini (51st melakarta); vakra raga; ārohana S R1 G3 M2 P M2 G3 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes grandeur and devotion; best known for Muthuswami Dikshitar's 'Sri Satyanarayanam'; associated with the Dikshitar school",
+    "is_melakarta": false
   },
   {
     "id": "sriranjini",
@@ -5489,7 +5560,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Mechakalyani (65th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 M2 D2 S, avarohana S N3 D2 P M2 G3 R2 S; evokes romance and longing; a favourite raga for padams and javalis; best known for Tyagaraja's 'Brochevarevare'"
+    "notes": "Janya of Mechakalyani (65th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 M2 D2 S, avarohana S N3 D2 P M2 G3 R2 S; evokes romance and longing; a favourite raga for padams and javalis; best known for Tyagaraja's 'Brochevarevare'",
+    "is_melakarta": false
   },
   {
     "id": "mukhari",
@@ -5506,7 +5578,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Natabhairavi (20th melakarta); sampurna raga with vakra phrases; ārohana S R2 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 G2 S; evokes pathos and devotion; one of the most expansive ragas for alapana; best known for Tyagaraja's 'Sarasiruhanana'"
+    "notes": "Janya of Natabhairavi (20th melakarta); sampurna raga with vakra phrases; ārohana S R2 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 G2 S; evokes pathos and devotion; one of the most expansive ragas for alapana; best known for Tyagaraja's 'Sarasiruhanana'",
+    "is_melakarta": false
   },
   {
     "id": "nattakurinji",
@@ -5523,7 +5596,8 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga; ārohana S R2 G3 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; evokes romance and longing; a favourite raga for the main piece in a concert; best known for Tyagaraja's 'Manasu Vishaya'"
+    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga; ārohana S R2 G3 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; evokes romance and longing; a favourite raga for the main piece in a concert; best known for Tyagaraja's 'Manasu Vishaya'",
+    "is_melakarta": false
   },
   {
     "id": "vakulabharanam",
@@ -5540,7 +5614,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "14th melakarta; ārohana S R1 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R1 S; evokes pathos and devotion; a rare melakarta raga; best known for the composition 'Konniyada Tharama' attributed to Garbhapurivasa"
+    "notes": "14th melakarta; ārohana S R1 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R1 S; evokes pathos and devotion; a rare melakarta raga; best known for the composition 'Konniyada Tharama' attributed to Garbhapurivasa",
+    "is_melakarta": true,
+    "cakra": 3
   },
   {
     "id": "balahamsa",
@@ -5557,7 +5633,8 @@ const ragas        = [
         "type": "archive"
       }
     ],
-    "notes": "Janya of Natabhairavi (20th melakarta); rare raga; best known for Tyagaraja's 'Viraja Turaga'; no standalone Wikipedia article confirmed"
+    "notes": "Janya of Natabhairavi (20th melakarta); rare raga; best known for Tyagaraja's 'Viraja Turaga'; no standalone Wikipedia article confirmed",
+    "is_melakarta": false
   },
   {
     "id": "atana",
@@ -5606,7 +5683,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "23rd melakarta (Kanakangi group). Sampurna raga, serene majestic character."
+    "notes": "23rd melakarta (Kanakangi group). Sampurna raga, serene majestic character.",
+    "is_melakarta": true,
+    "cakra": 4
   },
   {
     "id": "hamir_kalyani",
@@ -5857,7 +5936,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "8th melakarta (Todi group). One of the most important ragas in Carnatic music. Deep emotive character, parent of many janya ragas."
+    "notes": "8th melakarta (Todi group). One of the most important ragas in Carnatic music. Deep emotive character, parent of many janya ragas.",
+    "is_melakarta": true,
+    "cakra": 2
   },
   {
     "id": "yadukulakhamboji",
@@ -5979,7 +6060,9 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "16th melakarta raga; arohana S R1 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R1 S; evokes pathos and devotion; a favourite of Tyagaraja who composed several kritis in this raga"
+    "notes": "16th melakarta raga; arohana S R1 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R1 S; evokes pathos and devotion; a favourite of Tyagaraja who composed several kritis in this raga",
+    "is_melakarta": true,
+    "cakra": 3
   },
   {
     "id": "narayanagowla",
@@ -38076,8 +38159,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
-  document.getElementById('bani-janyas-list').style.display = 'none';
+  document.getElementById('bani-janyas-panel').style.display = 'none';
   document.getElementById('bani-janyas-list').innerHTML = '';
+  document.getElementById('bani-janyas-filter').value = '';
 
   if (type === 'comp') {
     const comp     = compositions.find(c => c.id === id);
@@ -38208,41 +38292,67 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       aliasesRow.style.display = 'block';
     }
 
-    // Row 4 (#bani-janyas-row): janyas toggle (mela ragas only)
+    // Row 4 (#bani-janyas-row): janyas filter + list (mela ragas only)
     const janyasRow    = document.getElementById('bani-janyas-row');
+    const janyasPanel  = document.getElementById('bani-janyas-panel');
     const janyasList   = document.getElementById('bani-janyas-list');
     const janyasToggle = document.getElementById('bani-janyas-toggle');
     const janyasCount  = document.getElementById('bani-janyas-count');
+    const janyasFilter = document.getElementById('bani-janyas-filter');
     janyasRow.style.display = 'none';
-    janyasList.style.display = 'none';
+    janyasPanel.style.display = 'none';
     janyasList.innerHTML = '';
+    janyasFilter.value = '';
 
     if (raga && raga.is_melakarta) {
       const janyas = ragas.filter(r => r.parent_raga === id);
+      janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
       if (janyas.length > 0) {
         janyasCount.textContent = `(${janyas.length})`;
         janyasToggle.textContent = '▶ Janyas';
         janyasRow.style.display = 'block';
 
-        // Populate janya links
-        janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-        janyas.forEach(j => {
-          const a = document.createElement('a');
-          a.className = 'bani-janya-link';
-          a.href = '#';
-          a.textContent = j.name || j.id;
-          a.addEventListener('click', e => {
-            e.preventDefault();
-            triggerBaniSearch('raga', j.id);
-          });
-          janyasList.appendChild(a);
-        });
+        // Render filtered list of janya links
+        function renderJanyaList(filter) {
+          janyasList.innerHTML = '';
+          const q = filter.trim().toLowerCase();
+          const visible = q ? janyas.filter(j => (j.name || j.id).toLowerCase().includes(q)) : janyas;
+          if (visible.length === 0) {
+            const empty = document.createElement('span');
+            empty.className = 'bani-janyas-empty';
+            empty.textContent = 'no match';
+            janyasList.appendChild(empty);
+          } else {
+            visible.forEach(j => {
+              const a = document.createElement('a');
+              a.className = 'bani-janya-link';
+              a.href = '#';
+              a.textContent = j.name || j.id;
+              a.addEventListener('click', e => {
+                e.preventDefault();
+                triggerBaniSearch('raga', j.id);
+              });
+              janyasList.appendChild(a);
+            });
+          }
+        }
+
+        renderJanyaList('');
+
+        // Live filter on input
+        janyasFilter.oninput = () => renderJanyaList(janyasFilter.value);
 
         // Toggle behaviour
         janyasToggle.onclick = () => {
-          const open = janyasList.style.display !== 'none';
-          janyasList.style.display = open ? 'none' : 'flex';
+          const open = janyasPanel.style.display !== 'none';
+          janyasPanel.style.display = open ? 'none' : 'block';
           janyasToggle.textContent = open ? '▶ Janyas' : '▼ Janyas';
+          if (!open) {
+            janyasFilter.value = '';
+            renderJanyaList('');
+            janyasFilter.focus();
+          }
         };
       }
     }
@@ -38501,8 +38611,9 @@ function clearBaniFilter() {
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
-  document.getElementById('bani-janyas-list').style.display = 'none';
+  document.getElementById('bani-janyas-panel').style.display = 'none';
   document.getElementById('bani-janyas-list').innerHTML = '';
+  document.getElementById('bani-janyas-filter').value = '';
   applyZoomLabels();
   // Mutual exclusion: clear chip filters when Bani Flow filter clears
   clearAllChipFilters();
