@@ -1039,7 +1039,7 @@
         "Sreeranjani"
       ],
       "melakarta": null,
-      "parent_raga": "kalyani",
+      "parent_raga": "kharaharapriya",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Shree_ranjani",
@@ -1047,7 +1047,7 @@
           "type": "wikipedia"
         }
       ],
-      "notes": "Janya of Mechakalyani (65th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 M2 D2 S, avarohana S N3 D2 P M2 G3 R2 S; evokes romance and longing; a favourite raga for padams and javalis; best known for Tyagaraja's 'Brochevarevare'",
+      "notes": "Janya of Kharaharapriya (22nd melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana: S R2 G2 M1 D2 S, avarohana: S N2 D2 P M1 G2 R2 S; evokes romance and longing; a favourite raga for padams and javalis; best known for Tyagaraja's 'Brochevarevare'",
       "is_melakarta": false
     },
     {
@@ -1341,7 +1341,7 @@
         "Poorvi"
       ],
       "melakarta": null,
-      "parent_raga": "kalyani",
+      "parent_raga": "mayamalavagowla",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Purvi_(raga)",
@@ -1349,7 +1349,7 @@
           "type": "wikipedia"
         }
       ],
-      "notes": "Corresponds to Hindustani Purvi. Serious evening raga, contemplative character. Used by Dikshitar.",
+      "notes": "Janya of Mayamalavagowla (15th melakarta); ārohana: S R1 G3 M1 D1 N3 S, avarohana: S N3 D1 P M1 G3 R1 S; corresponds to Hindustani Purvi; serious evening raga, contemplative character; used by Dikshitar",
       "is_melakarta": false
     },
     {
@@ -1411,28 +1411,12 @@
       "is_melakarta": false
     },
     {
-      "id": "yaman_kalyan",
-      "name": "Yaman Kalyan",
-      "aliases": [
-        "Yaman"
-      ],
-      "melakarta": null,
-      "parent_raga": "kalyani",
-      "sources": [
-        {
-          "url": "https://en.wikipedia.org/wiki/Yaman_Kalyan",
-          "label": "Wikipedia",
-          "type": "wikipedia"
-        }
-      ],
-      "notes": "Corresponds to Hindustani Yaman Kalyan. Related to Carnatic Kalyani. Used for bhajans and devotional music.",
-      "is_melakarta": false
-    },
-    {
       "id": "yamuna_kalyani",
       "name": "Yamuna Kalyani",
       "aliases": [
-        "Yamunakalyani"
+        "Yamunakalyani",
+        "Yaman Kalyani",
+        "Yaman Kalyan"
       ],
       "melakarta": null,
       "parent_raga": "kalyani",
