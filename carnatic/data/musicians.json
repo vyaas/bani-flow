@@ -183,13 +183,7 @@
       "era": "golden_age",
       "instrument": "vocal",
       "bani": "gnb",
-      "youtube": [
-        {
-          "url": "https://youtu.be/_gVQnHRh1IQ",
-          "label": "All India Radio · 27 Nov 1960 — 60th Remembrance Day Special",
-          "year": 1960
-        }
-      ]
+      "youtube": []
     },
     {
       "id": "semmangudi_srinivasa_iyer",
@@ -2363,6 +2357,23 @@
           "year": 2025
         }
       ]
+    },
+    {
+      "id": "coimbatore_n_ramaswamy",
+      "label": "Coimbatore N Ramaswamy",
+      "sources": [
+        {
+          "url": "https://brahmanya.wordpress.com/2012/08/13/my-coimbatore-10/",
+          "label": "Brahmanya blog — Famous Musicians from my City",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "mridangam",
+      "bani": "palani",
+      "youtube": []
     }
   ],
   "edges": [

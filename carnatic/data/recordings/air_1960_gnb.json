@@ -1,0 +1,153 @@
+{
+  "id": "air_1960_gnb",
+  "video_id": "_gVQnHRh1IQ",
+  "url": "https://youtu.be/_gVQnHRh1IQ",
+  "title": "GN Balasubramaniam — All India Radio, 27 November 1960 (Vaak Foundation — 60th Remembrance Day)",
+  "short_title": "AIR 1960",
+  "date": "1960-11-27",
+  "venue": "All India Radio",
+  "occasion": "AIR studio concert, originally broadcast 27 November 1960; uploaded by Vaak Foundation on GNB's 60th Remembrance Day as part of their archival initiative",
+  "sources": [
+    {
+      "url": "https://youtu.be/_gVQnHRh1IQ",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "gnb",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "coimbatore_n_ramaswamy",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "AIR Announcement",
+          "notes": "All India Radio station announcement preceding the concert",
+          "type": "announcement"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:00:17",
+          "offset_seconds": 17,
+          "composition_id": "ee_vasudha_sahana",
+          "raga_id": "sahana",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ee Vasudha",
+          "notes": "Tyagaraja kriti in Sahana raga. The tracklist pairs this with Sahana; karnatik.com c2369 confirms a distinct Sahana setting of 'Ee Vasudha' separate from the Kanada version (id: yee_vasudha). GNB's performance is in Sahana."
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:05:40",
+          "offset_seconds": 340,
+          "composition_id": null,
+          "raga_id": "poorvikalyani",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Poorvikalyani — Alapana",
+          "notes": null,
+          "type": "alapana"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:12:02",
+          "offset_seconds": 722,
+          "composition_id": "paraloka_sadhaname",
+          "raga_id": "poorvikalyani",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Paraloka Sadhaname",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:18:13",
+          "offset_seconds": 1093,
+          "composition_id": null,
+          "raga_id": "chakravakam",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Chakravakam — Alapana",
+          "notes": "Tracklist spells this 'Chakravaham'; canonical Carnatic spelling is Chakravakam.",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:25:43",
+          "offset_seconds": 1543,
+          "composition_id": "sugunamule_cheppukonti",
+          "raga_id": "chakravakam",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Sugunamule Cheppukonti",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:37:28",
+          "offset_seconds": 2248,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi — Alapana",
+          "notes": null,
+          "type": "alapana"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:47:42",
+          "offset_seconds": 2862,
+          "composition_id": "emi_jesithe",
+          "raga_id": "thodi",
+          "tala": "misra_chapu",
+          "composer_id": "tyagaraja",
+          "display_title": "Emi Jesithe",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "00:57:36",
+          "offset_seconds": 3456,
+          "composition_id": null,
+          "raga_id": "surutti",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Surutti — Alapana",
+          "notes": null,
+          "type": "alapana"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "00:58:48",
+          "offset_seconds": 3528,
+          "composition_id": "paramukham_elara",
+          "raga_id": "surutti",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Paramukham Elara",
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

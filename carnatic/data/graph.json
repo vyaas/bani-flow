@@ -185,13 +185,7 @@
         "era": "golden_age",
         "instrument": "vocal",
         "bani": "gnb",
-        "youtube": [
-          {
-            "url": "https://youtu.be/_gVQnHRh1IQ",
-            "label": "All India Radio · 27 Nov 1960 — 60th Remembrance Day Special",
-            "year": 1960
-          }
-        ]
+        "youtube": []
       },
       {
         "id": "semmangudi_srinivasa_iyer",
@@ -2365,6 +2359,23 @@
             "year": 2025
           }
         ]
+      },
+      {
+        "id": "coimbatore_n_ramaswamy",
+        "label": "Coimbatore N Ramaswamy",
+        "sources": [
+          {
+            "url": "https://brahmanya.wordpress.com/2012/08/13/my-coimbatore-10/",
+            "label": "Brahmanya blog — Famous Musicians from my City",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "mridangam",
+        "bani": "palani",
+        "youtube": []
       }
     ],
     "edges": [
@@ -4168,6 +4179,42 @@
           }
         ],
         "notes": "Corresponds to Hindustani Darbari Kanada. Janya of Natabhairavi (20th melakarta). Deep, serious, late-night raga. Used in Carnatic music for devotional and Shiva-related compositions."
+      },
+      {
+        "id": "poorvikalyani",
+        "name": "Poorvikalyani",
+        "aliases": [
+          "Purvikalyani",
+          "Poorvi Kalyani"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Poorvikalyani",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya of Kalyani (65th melakarta); pentatonic (audava-audava) raga; arohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes devotion and serenity; frequently used in Tyagaraja kritis"
+      },
+      {
+        "id": "chakravakam",
+        "name": "Chakravakam",
+        "aliases": [
+          "Chakravaham",
+          "Chakravaka"
+        ],
+        "melakarta": 16,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Chakravakam",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "16th melakarta raga; arohana S R1 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R1 S; evokes pathos and devotion; a favourite of Tyagaraja who composed several kritis in this raga"
       }
     ],
     "composers": [
@@ -7019,10 +7066,103 @@
           }
         ],
         "notes": "Bengali patriotic song by Dwijendralal Roy. Performed by TM Krishna in concert as a tribute to Bengal. Not assigned to a specific Carnatic raga."
+      },
+      {
+        "id": "ee_vasudha_sahana",
+        "title": "Ee Vasudha",
+        "composer_id": "tyagaraja",
+        "raga_id": "sahana",
+        "tala": "Adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2369.shtml",
+            "label": "Karnatik.com — Ee Vasudha (Sahana)",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Sahana raga. Distinct from 'Yee Vasudha' (id: yee_vasudha) which is set in Kanada. Both share the same opening words; the Sahana version is confirmed at karnatik.com c2369."
+      },
+      {
+        "id": "paraloka_sadhaname",
+        "title": "Paraloka Sadhaname",
+        "composer_id": "tyagaraja",
+        "raga_id": "poorvikalyani",
+        "tala": "Deshadi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1830.shtml",
+            "label": "Karnatik.com — Paraloka Sadhaname",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Poorvikalyani raga, Deshadi tala."
+      },
+      {
+        "id": "sugunamule_cheppukonti",
+        "title": "Sugunamule Cheppukonti",
+        "composer_id": "tyagaraja",
+        "raga_id": "chakravakam",
+        "tala": "Rupakam",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2516.shtml",
+            "label": "Karnatik.com — Sugunamule Cheppukonti",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Chakravakam raga, Rupakam tala."
+      },
+      {
+        "id": "emi_jesithe",
+        "title": "Emi Jesithe",
+        "composer_id": "tyagaraja",
+        "raga_id": "thodi",
+        "tala": "Misra Chapu",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c0869.shtml",
+            "label": "Karnatik.com — Emi Jesithe",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Thodi raga, Misra Chapu tala."
+      },
+      {
+        "id": "paramukham_elara",
+        "title": "Paramukham Elara",
+        "composer_id": "tyagaraja",
+        "raga_id": "surutti",
+        "tala": "Adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1820.shtml",
+            "label": "Karnatik.com — Paramukham Elara",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Surutti raga, Adi tala."
       }
     ]
   },
   "recording_refs": [
+    {
+      "id": "air_1960_gnb",
+      "path": "recordings/air_1960_gnb.json",
+      "title": "GN Balasubramaniam — All India Radio, 27 November 1960 (Vaak Foundation — 60th Remembrance Day)",
+      "short_title": "AIR 1960",
+      "date": "1960-11-27",
+      "venue": "All India Radio",
+      "primary_musician_ids": [
+        "gnb",
+        "lalgudi_jayaraman",
+        "coimbatore_n_ramaswamy"
+      ]
+    },
     {
       "id": "brinda_muktha_air_padams_javalis_1960s",
       "path": "recordings/brinda_muktha_air_padams_javalis_1960s.json",
@@ -7119,6 +7259,1907 @@
       "primary_musician_ids": [
         "ramnad_krishnan",
         "t_viswanathan"
+      ]
+    }
+  ],
+  "recordings": [
+    {
+      "id": "air_1960_gnb",
+      "video_id": "_gVQnHRh1IQ",
+      "url": "https://youtu.be/_gVQnHRh1IQ",
+      "title": "GN Balasubramaniam — All India Radio, 27 November 1960 (Vaak Foundation — 60th Remembrance Day)",
+      "short_title": "AIR 1960",
+      "date": "1960-11-27",
+      "venue": "All India Radio",
+      "occasion": "AIR studio concert, originally broadcast 27 November 1960; uploaded by Vaak Foundation on GNB's 60th Remembrance Day as part of their archival initiative",
+      "sources": [
+        {
+          "url": "https://youtu.be/_gVQnHRh1IQ",
+          "label": "YouTube — Vaak Foundation",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "gnb",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "lalgudi_jayaraman",
+              "role": "violin"
+            },
+            {
+              "musician_id": "coimbatore_n_ramaswamy",
+              "role": "mridangam"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00:00",
+              "offset_seconds": 0,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": null,
+              "composer_id": null,
+              "display_title": "AIR Announcement",
+              "notes": "All India Radio station announcement preceding the concert",
+              "type": "announcement"
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "00:00:17",
+              "offset_seconds": 17,
+              "composition_id": "ee_vasudha_sahana",
+              "raga_id": "sahana",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Ee Vasudha",
+              "notes": "Tyagaraja kriti in Sahana raga. The tracklist pairs this with Sahana; karnatik.com c2369 confirms a distinct Sahana setting of 'Ee Vasudha' separate from the Kanada version (id: yee_vasudha). GNB's performance is in Sahana."
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "00:05:40",
+              "offset_seconds": 340,
+              "composition_id": null,
+              "raga_id": "poorvikalyani",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Poorvikalyani — Alapana",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "00:12:02",
+              "offset_seconds": 722,
+              "composition_id": "paraloka_sadhaname",
+              "raga_id": "poorvikalyani",
+              "tala": "deshadi",
+              "composer_id": "tyagaraja",
+              "display_title": "Paraloka Sadhaname",
+              "notes": null
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "00:18:13",
+              "offset_seconds": 1093,
+              "composition_id": null,
+              "raga_id": "chakravakam",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Chakravakam — Alapana",
+              "notes": "Tracklist spells this 'Chakravaham'; canonical Carnatic spelling is Chakravakam.",
+              "type": "alapana"
+            },
+            {
+              "performance_index": 6,
+              "timestamp": "00:25:43",
+              "offset_seconds": 1543,
+              "composition_id": "sugunamule_cheppukonti",
+              "raga_id": "chakravakam",
+              "tala": "rupakam",
+              "composer_id": "tyagaraja",
+              "display_title": "Sugunamule Cheppukonti",
+              "notes": null
+            },
+            {
+              "performance_index": 7,
+              "timestamp": "00:37:28",
+              "offset_seconds": 2248,
+              "composition_id": null,
+              "raga_id": "thodi",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Thodi — Alapana",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 8,
+              "timestamp": "00:47:42",
+              "offset_seconds": 2862,
+              "composition_id": "emi_jesithe",
+              "raga_id": "thodi",
+              "tala": "misra_chapu",
+              "composer_id": "tyagaraja",
+              "display_title": "Emi Jesithe",
+              "notes": null
+            },
+            {
+              "performance_index": 9,
+              "timestamp": "00:57:36",
+              "offset_seconds": 3456,
+              "composition_id": null,
+              "raga_id": "surutti",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Surutti — Alapana",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 10,
+              "timestamp": "00:58:48",
+              "offset_seconds": 3528,
+              "composition_id": "paramukham_elara",
+              "raga_id": "surutti",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Paramukham Elara",
+              "notes": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "brinda_muktha_air_padams_javalis_1960s",
+      "video_id": "loy04TTE_MU",
+      "url": "https://youtu.be/loy04TTE_MU",
+      "title": "Padams and Javalis — T. Brinda & T. Muktha, Akashvani AIR, 1960s",
+      "short_title": "AIR 1960s",
+      "date": "1960s",
+      "venue": "Akashvani (All India Radio)",
+      "occasion": "AIR studio recording; padams and javalis from the Dhanammal bani",
+      "sources": [
+        {
+          "url": "https://youtu.be/loy04TTE_MU",
+          "label": "YouTube",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "t_brinda",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "t_muktha",
+              "role": "vocal"
+            },
+            {
+              "musician_id": null,
+              "role": "violin",
+              "unmatched_name": "Unknown"
+            },
+            {
+              "musician_id": null,
+              "role": "mridangam",
+              "unmatched_name": "Unknown"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00:00",
+              "offset_seconds": 0,
+              "composition_id": "telisenura",
+              "raga_id": "saveri",
+              "tala": "rupakam",
+              "composer_id": "chinnaiah_pillai",
+              "display_title": "Telisenura",
+              "notes": "padam"
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "00:04:53",
+              "offset_seconds": 293,
+              "composition_id": "adiyokka_yugamu",
+              "raga_id": "kambhoji",
+              "tala": "tisra_triputa",
+              "composer_id": "kshetrayya",
+              "display_title": "Adiyokka Yugamu",
+              "notes": "padam"
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "00:15:48",
+              "offset_seconds": 948,
+              "composition_id": "parulanna_matta",
+              "raga_id": "kapi",
+              "tala": "rupakam",
+              "composer_id": "dharmapuri_subbaraya_iyer",
+              "display_title": "Parulanna Matta",
+              "notes": "javali"
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "00:21:11",
+              "offset_seconds": 1271,
+              "composition_id": "mora_topu",
+              "raga_id": "sahana",
+              "tala": "tisra_triputa",
+              "composer_id": "kshetrayya",
+              "display_title": "Mora Topu",
+              "notes": "padam"
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "00:30:04",
+              "offset_seconds": 1804,
+              "composition_id": "pusadaramu",
+              "raga_id": "todi",
+              "tala": "tisra_triputa",
+              "composer_id": "govindasvamy_ayya",
+              "display_title": "Pusadaramu",
+              "notes": "javali"
+            },
+            {
+              "performance_index": 6,
+              "timestamp": "00:41:36",
+              "offset_seconds": 2496,
+              "composition_id": "narimani",
+              "raga_id": "khamas",
+              "tala": "adi",
+              "composer_id": "dharmapuri_subbaraya_iyer",
+              "display_title": "Narimani",
+              "notes": "javali"
+            },
+            {
+              "performance_index": 7,
+              "timestamp": "00:45:03",
+              "offset_seconds": 2703,
+              "composition_id": "yala_padare",
+              "raga_id": "begada",
+              "tala": "tisra_triputa",
+              "composer_id": "kshetrayya",
+              "display_title": "Yala Padare",
+              "notes": "padam"
+            },
+            {
+              "performance_index": 8,
+              "timestamp": "00:51:33",
+              "offset_seconds": 3093,
+              "composition_id": "ninnu_juchi",
+              "raga_id": "punnagavarali",
+              "tala": "tisra_triputa",
+              "composer_id": "kshetrayya",
+              "display_title": "Ninnu Juchi",
+              "notes": "padam"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dhanammal_veena_columbia_1932",
+      "video_id": "VEB9vZpIIR4",
+      "url": "https://youtu.be/VEB9vZpIIR4",
+      "title": "Dhanammal's Veena — Columbia Records session, c.1932",
+      "short_title": "Columbia 1932",
+      "date": "1932",
+      "venue": "Columbia Records studio session, Chennai",
+      "occasion": "Solo veena recordings by Veenai Dhanammal; one of the earliest surviving audio documents of the Dhanammal bani. Compiled and edited by Shreeraam Shankar (Vaak). Source: Metropolitan Museum of Arts, New York & Darbar Festival.",
+      "sources": [
+        {
+          "url": "https://youtu.be/VEB9vZpIIR4",
+          "label": "YouTube — Vaak compilation",
+          "type": "other"
+        },
+        {
+          "url": "https://excavatedshellac.com",
+          "label": "Excavated Shellac",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "vina_dhanammal",
+              "role": "veena"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00",
+              "offset_seconds": 0,
+              "composition_id": "intha_chalamu",
+              "raga_id": "begada",
+              "tala": "adi",
+              "composer_id": "veenai_kuppayyar",
+              "display_title": "Intha Chalamu",
+              "notes": "varnam"
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "06:18",
+              "offset_seconds": 378,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Ghana Raga Thanamalika",
+              "notes": "thanamalika — medley traversing all five Ghana ragas: Naatai, Gowlai, Aarabhi, Sri, Varali; no single composition or raga_id applicable"
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "12:37",
+              "offset_seconds": 757,
+              "composition_id": "himadri_sute",
+              "raga_id": "kalyani",
+              "tala": "rupakam",
+              "composer_id": "shyama_shastri",
+              "display_title": "Himadri Sute",
+              "notes": null
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "15:35",
+              "offset_seconds": 935,
+              "composition_id": "nannu_brovu",
+              "raga_id": "lalitha",
+              "tala": "misra_capu",
+              "composer_id": "shyama_shastri",
+              "display_title": "Nannu Brovu",
+              "notes": null
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "18:35",
+              "offset_seconds": 1115,
+              "composition_id": "nenarunchinanu",
+              "raga_id": "malavi",
+              "tala": "deshadi",
+              "composer_id": "tyagaraja",
+              "display_title": "Nenarunchinanu",
+              "notes": null
+            },
+            {
+              "performance_index": 6,
+              "timestamp": "21:32",
+              "offset_seconds": 1292,
+              "composition_id": "rama_nee_samanamevaru",
+              "raga_id": "kharaharapriya",
+              "tala": "rupakam",
+              "composer_id": "tyagaraja",
+              "display_title": "Rama Nee Samanamevaru",
+              "notes": null
+            },
+            {
+              "performance_index": 7,
+              "timestamp": "24:31",
+              "offset_seconds": 1471,
+              "composition_id": "nijamarmamulanu",
+              "raga_id": "umaabharanam",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Nijamarmamulanu",
+              "notes": null
+            },
+            {
+              "performance_index": 8,
+              "timestamp": "27:28",
+              "offset_seconds": 1648,
+              "composition_id": "brova_bharama",
+              "raga_id": "bahudari",
+              "tala": "deshadi",
+              "composer_id": "tyagaraja",
+              "display_title": "Brova Bharama",
+              "notes": null
+            },
+            {
+              "performance_index": 9,
+              "timestamp": "30:23",
+              "offset_seconds": 1823,
+              "composition_id": "sri_narada",
+              "raga_id": "kaanada",
+              "tala": "rupakam",
+              "composer_id": "tyagaraja",
+              "display_title": "Sri Narada",
+              "notes": null
+            },
+            {
+              "performance_index": 10,
+              "timestamp": "33:18",
+              "offset_seconds": 1998,
+              "composition_id": "sri_raghuvara",
+              "raga_id": "bhairavi",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Sri Raghuvara",
+              "notes": null
+            },
+            {
+              "performance_index": 11,
+              "timestamp": "36:16",
+              "offset_seconds": 2176,
+              "composition_id": null,
+              "raga_id": "shankarabharanam",
+              "tala": "rupakam",
+              "composer_id": null,
+              "display_title": "Mahima Theliya",
+              "notes": "composer attributed to 'Anai Ayya' in source; no Wikipedia page found for this composer — composition_id and composer_id withheld pending verification"
+            },
+            {
+              "performance_index": 12,
+              "timestamp": "39:15",
+              "offset_seconds": 2355,
+              "composition_id": "pattakura",
+              "raga_id": "ananda_bhairavi",
+              "tala": "rupakam",
+              "composer_id": "sarangapani",
+              "display_title": "Pattakura",
+              "notes": null
+            },
+            {
+              "performance_index": 13,
+              "timestamp": "42:13",
+              "offset_seconds": 2533,
+              "composition_id": "narimani",
+              "raga_id": "khamas",
+              "tala": "adi",
+              "composer_id": "dharmapuri_subbaraya_iyer",
+              "display_title": "Narimani",
+              "notes": "javali"
+            },
+            {
+              "performance_index": 14,
+              "timestamp": "45:08",
+              "offset_seconds": 2708,
+              "composition_id": null,
+              "raga_id": "kapi",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Viruttam (Pasuram) — Kulam Tharum",
+              "notes": "source notes 'Wrongly marked'; composer and composition unverified — withheld pending identification"
+            },
+            {
+              "performance_index": 15,
+              "timestamp": "48:04",
+              "offset_seconds": 2884,
+              "composition_id": "vadiga_gopaluni",
+              "raga_id": "mohanam",
+              "tala": "misra_capu",
+              "composer_id": "kshetrayya",
+              "display_title": "Vadiga Gopaluni",
+              "notes": "padam"
+            },
+            {
+              "performance_index": 16,
+              "timestamp": "50:59",
+              "offset_seconds": 3059,
+              "composition_id": null,
+              "raga_id": "todi",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Agre Krtva",
+              "notes": "Sanskrit shloka/mangalam; composer not identified in source — withheld pending verification"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jamshedpur_1961_madurai_mani_iyer",
+      "video_id": "CUyf7Ukn9Y8",
+      "url": "https://youtu.be/CUyf7Ukn9Y8",
+      "title": "Madurai Mani Iyer — Jamshedpur, 1961 (Vaak Foundation)",
+      "short_title": "Jamshedpur 1961",
+      "date": "1961",
+      "venue": "Jamshedpur",
+      "occasion": "Krishna Jayanthi concert; uploaded by Vaak Foundation as part of their archival initiative",
+      "sources": [
+        {
+          "url": "https://youtu.be/CUyf7Ukn9Y8",
+          "label": "YouTube — Vaak Foundation",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "madurai_mani_iyer",
+              "role": "vocal"
+            },
+            {
+              "musician_id": null,
+              "role": "vocal_support",
+              "unmatched_name": "TS Vembu Iyer"
+            },
+            {
+              "musician_id": "lalgudi_jayaraman",
+              "role": "violin"
+            },
+            {
+              "musician_id": "vellore_ramabhadran",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": null,
+              "role": "ghatam",
+              "unmatched_name": "TS Vilvadri Iyer"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00:00",
+              "offset_seconds": 0,
+              "composition_id": "ninnu_kori",
+              "raga_id": "mohanam",
+              "tala": "adi",
+              "composer_id": "ramnad_sreenivasa_iyengar",
+              "display_title": "Ninnu Kori (Varnam)",
+              "notes": "Tracklist credits 'Poochi Srinivasa Iyengar'; shivkumar.org notation source explicitly names Ramnad Sreenivasa Iyengar as composer — source wins over tracklist label"
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "00:08:20",
+              "offset_seconds": 500,
+              "composition_id": "aparama_bhakthi",
+              "raga_id": "pantuvarali",
+              "tala": "rupakam",
+              "composer_id": "tyagaraja",
+              "display_title": "Aparama Bhakthi",
+              "notes": null
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "00:22:35",
+              "offset_seconds": 1355,
+              "composition_id": "suryamurte",
+              "raga_id": "sowrashtram",
+              "tala": "dhruva",
+              "composer_id": "muthuswami_dikshitar",
+              "display_title": "Suryamurte",
+              "notes": "Dikshitar Navagraha Kriti"
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "00:26:18",
+              "offset_seconds": 1578,
+              "composition_id": null,
+              "raga_id": "ravichandrika",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Ravichandrika — Alapana",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "00:33:34",
+              "offset_seconds": 2014,
+              "composition_id": "maakelara_vicaaramu",
+              "raga_id": "ravichandrika",
+              "tala": "deshadi",
+              "composer_id": "tyagaraja",
+              "display_title": "Makelara Vicharamu",
+              "notes": null,
+              "version": "Jamshedpur 1961"
+            },
+            {
+              "performance_index": 6,
+              "timestamp": "00:40:47",
+              "offset_seconds": 2447,
+              "composition_id": "manasa_sri_ramachandruni",
+              "raga_id": "ishamanohari",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Manasa Sri Ramachandruni",
+              "notes": null
+            },
+            {
+              "performance_index": 7,
+              "timestamp": "00:44:31",
+              "offset_seconds": 2671,
+              "composition_id": null,
+              "raga_id": "kalyani",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Kalyani — Alapana",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 8,
+              "timestamp": "01:00:40",
+              "offset_seconds": 3640,
+              "composition_id": "vasudevayani",
+              "raga_id": "kalyani",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Vasudevayani",
+              "notes": null
+            },
+            {
+              "performance_index": 9,
+              "timestamp": "01:16:52",
+              "offset_seconds": 4612,
+              "composition_id": "chetasri_balakrishnam",
+              "raga_id": "dwijavanthi",
+              "tala": "thisra_ekam",
+              "composer_id": "muthuswami_dikshitar",
+              "display_title": "Chetasri Balakrishnam",
+              "notes": null
+            },
+            {
+              "performance_index": 10,
+              "timestamp": "01:23:00",
+              "offset_seconds": 4980,
+              "composition_id": null,
+              "raga_id": "todi",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Thodi — Alapana",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 11,
+              "timestamp": "01:35:06",
+              "offset_seconds": 5706,
+              "composition_id": "thaye_yashodha",
+              "raga_id": "todi",
+              "tala": "adi",
+              "composer_id": "oothukadu_venkata_kavi",
+              "display_title": "Thaye Yashodha",
+              "notes": "Authorship disputed; attributed to Oothukadu Venkata Kavi in standard references; the neraval on 'kalinil silambu' is one of the celebrated moments of this concert"
+            },
+            {
+              "performance_index": 12,
+              "timestamp": "01:51:45",
+              "offset_seconds": 6705,
+              "composition_id": "nagumomu_ganaleni",
+              "raga_id": "abheri",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Nagumomu Ganaleni",
+              "notes": null
+            },
+            {
+              "performance_index": 13,
+              "timestamp": "02:05:37",
+              "offset_seconds": 7537,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": "adi",
+              "composer_id": null,
+              "display_title": "Tani Avarthanam",
+              "notes": "Percussion solo — Vellore G. Ramabhadran (mridangam) and TS Vilvadri Iyer (ghatam)",
+              "type": "tani"
+            },
+            {
+              "performance_index": 14,
+              "timestamp": "02:19:25",
+              "offset_seconds": 8365,
+              "composition_id": "sri_satyanarayanam",
+              "raga_id": "shubapantuvarali",
+              "tala": "thisra_ekam",
+              "composer_id": "muthuswami_dikshitar",
+              "display_title": "Sri Satyanarayanam",
+              "notes": null
+            },
+            {
+              "performance_index": 15,
+              "timestamp": "02:25:07",
+              "offset_seconds": 8707,
+              "composition_id": null,
+              "raga_id": "kambhoji",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Kambhoji — Ragam",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 16,
+              "timestamp": "02:43:52",
+              "offset_seconds": 9832,
+              "composition_id": null,
+              "raga_id": "kambhoji",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Kambhoji — Thanam",
+              "notes": null,
+              "type": "thanam"
+            },
+            {
+              "performance_index": 17,
+              "timestamp": "02:54:56",
+              "offset_seconds": 10496,
+              "composition_id": null,
+              "raga_id": "kambhoji",
+              "tala": "adi",
+              "composer_id": null,
+              "display_title": "Kambhoji — Pallavi: Parimala Rangapathe, Mam Pahi (2 Kalai) — Ragamalika Swaras in Behag & Kanada",
+              "notes": "Ragam-Tanam-Pallavi; Adi tala, 2 Kalai; ragamalika swaras in Behag and Kanada; concert is incomplete — recording ends here",
+              "type": "pallavi"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "music_academy_1965_lalgudi",
+      "video_id": "9ybawXkMF4c",
+      "url": "https://youtu.be/9ybawXkMF4c",
+      "title": "Lalgudi G Jayaraman & Srimathi Brahmananda — Music Academy December Season 1965",
+      "short_title": "Music Academy 1965 — Lalgudi",
+      "date": "1965-12-23",
+      "venue": "The Music Academy, Madras",
+      "occasion": "Inaugural concert of Lalgudi G Jayaraman & Srimathi Brahmananda for the December Season; double mridangam by Palghat Mani Iyer and Palghat Rajamani",
+      "sources": [
+        {
+          "url": "https://youtu.be/9ybawXkMF4c",
+          "label": "YouTube — Vaak Foundation archive",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "lalgudi_jayaraman",
+              "role": "violin"
+            },
+            {
+              "musician_id": "lalgudi_srimathi_brahmananda",
+              "role": "violin"
+            },
+            {
+              "musician_id": "palghat_mani_iyer",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": "palghat_rajamani",
+              "role": "mridangam"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00:00",
+              "offset_seconds": 0,
+              "composition_id": null,
+              "raga_id": "sri",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Tuning (in Sri Ragam)",
+              "notes": "Pre-concert tuning; no composition",
+              "type": "misc"
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "00:00:53",
+              "offset_seconds": 53,
+              "composition_id": "sami_ninne_kori",
+              "raga_id": "sri",
+              "tala": "adi",
+              "composer_id": "karur_devudu_iyer",
+              "display_title": "Sami Ninne Kori (Varnam)",
+              "notes": "varnam"
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "00:06:15",
+              "offset_seconds": 375,
+              "composition_id": "sri_maha_ganapathim",
+              "raga_id": "gowla",
+              "tala": "misra_capu",
+              "composer_id": "muthuswami_dikshitar",
+              "display_title": "Sri Maha Ganapathim",
+              "notes": null
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "00:12:33",
+              "offset_seconds": 753,
+              "composition_id": null,
+              "raga_id": "begada",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Begada — Ragam",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "00:17:31",
+              "offset_seconds": 1051,
+              "composition_id": "shankari_neeve",
+              "raga_id": "begada",
+              "tala": "rupakam",
+              "composer_id": "subbaraya_sastri",
+              "display_title": "Shankari Neeve",
+              "notes": null
+            },
+            {
+              "performance_index": 6,
+              "timestamp": "00:26:48",
+              "offset_seconds": 1608,
+              "composition_id": null,
+              "raga_id": "sriranjini",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Sriranjini — Ragam",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 7,
+              "timestamp": "00:32:40",
+              "offset_seconds": 1960,
+              "composition_id": "brochevarevare",
+              "raga_id": "sriranjini",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Brochevarevare",
+              "notes": null
+            },
+            {
+              "performance_index": 8,
+              "timestamp": "00:40:40",
+              "offset_seconds": 2440,
+              "composition_id": "sarasiruhanana",
+              "raga_id": "mukhari",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Sarasiruhanana",
+              "notes": null
+            },
+            {
+              "performance_index": 9,
+              "timestamp": "00:48:05",
+              "offset_seconds": 2885,
+              "composition_id": null,
+              "raga_id": "kaanada",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Kannada — Ragam",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 10,
+              "timestamp": "00:51:54",
+              "offset_seconds": 3114,
+              "composition_id": "ide_bhagyamu",
+              "raga_id": "kaanada",
+              "tala": "misra_capu",
+              "composer_id": "tyagaraja",
+              "display_title": "Ide Bhagyamu",
+              "notes": null
+            },
+            {
+              "performance_index": 11,
+              "timestamp": "01:06:11",
+              "offset_seconds": 3971,
+              "composition_id": "lavanya_rama",
+              "raga_id": "poornashadjam",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Lavanya Rama",
+              "notes": null
+            },
+            {
+              "performance_index": 12,
+              "timestamp": "01:10:02",
+              "offset_seconds": 4202,
+              "composition_id": null,
+              "raga_id": "nattakurinji",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Nattakurinji — Ragam",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 13,
+              "timestamp": "01:18:22",
+              "offset_seconds": 4702,
+              "composition_id": "manasu_vishaya",
+              "raga_id": "nattakurinji",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Manasu Vishaya",
+              "notes": null
+            },
+            {
+              "performance_index": 14,
+              "timestamp": "01:27:01",
+              "offset_seconds": 5221,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": "adi",
+              "composer_id": null,
+              "display_title": "Tani Avartanam",
+              "notes": "percussion solo — Palghat Mani Iyer & Palghat Rajamani (double mridangam)",
+              "type": "tani"
+            },
+            {
+              "performance_index": 15,
+              "timestamp": "01:42:39",
+              "offset_seconds": 6159,
+              "composition_id": "konniyada_tharama",
+              "raga_id": "vakulabharanam",
+              "tala": "adi",
+              "composer_id": "garbhapurivasa",
+              "display_title": "Konniyada Tharama",
+              "notes": null
+            },
+            {
+              "performance_index": 16,
+              "timestamp": "01:46:41",
+              "offset_seconds": 6401,
+              "composition_id": "viraja_turaga",
+              "raga_id": "balahamsa",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Viraja Turaga",
+              "notes": null
+            },
+            {
+              "performance_index": 17,
+              "timestamp": "01:50:43",
+              "offset_seconds": 6643,
+              "composition_id": null,
+              "raga_id": "bhairavi",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Bhairavi — Ragam",
+              "notes": null,
+              "type": "alapana"
+            },
+            {
+              "performance_index": 18,
+              "timestamp": "02:10:16",
+              "offset_seconds": 7816,
+              "composition_id": null,
+              "raga_id": "bhairavi",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Bhairavi — Tanam",
+              "notes": null,
+              "type": "tanam"
+            },
+            {
+              "performance_index": 19,
+              "timestamp": "02:14:08",
+              "offset_seconds": 8048,
+              "composition_id": null,
+              "raga_id": "bhairavi",
+              "tala": "misra_jathi_ata",
+              "composer_id": null,
+              "display_title": "Bhairavi — Pallavi (Misra Jathi Ata)",
+              "notes": "improvised pallavi; Misra Jathi Ata tala",
+              "type": "pallavi"
+            },
+            {
+              "performance_index": 20,
+              "timestamp": "02:34:37",
+              "offset_seconds": 9277,
+              "composition_id": "apadooruku",
+              "raga_id": "khamas",
+              "tala": "adi",
+              "composer_id": "pattabhiramayya",
+              "display_title": "Apadooruku (Javali)",
+              "notes": "javali"
+            },
+            {
+              "performance_index": 21,
+              "timestamp": "02:38:24",
+              "offset_seconds": 9504,
+              "composition_id": "sirsirakkumeni",
+              "raga_id": null,
+              "tala": "khanda_triputa",
+              "composer_id": "arunagirinathar",
+              "display_title": "Sirsirakkumeni (Thirupugazh) — Ragamalika",
+              "notes": "Thirupugazh; performed as ragamalika"
+            },
+            {
+              "performance_index": 22,
+              "timestamp": "02:44:04",
+              "offset_seconds": 9844,
+              "composition_id": "thillana_behag_lalgudi",
+              "raga_id": "behag",
+              "tala": "adi",
+              "composer_id": "lalgudi_jayaraman",
+              "display_title": "Thillana in Behag",
+              "notes": "thillana; own composition"
+            },
+            {
+              "performance_index": 23,
+              "timestamp": "02:48:24",
+              "offset_seconds": 10104,
+              "composition_id": "ni_nama_roopamulaku",
+              "raga_id": "sowrashtram",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Ni Nama Rupamulaku (Mangalam)",
+              "notes": "mangalam"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "music_academy_1973_kvn",
+      "video_id": "GVZ0rYQjegc",
+      "url": "https://youtu.be/GVZ0rYQjegc",
+      "title": "KV Narayanaswamy — Music Academy Concert, December Season 1973",
+      "short_title": "Music Academy 1973 (KVN)",
+      "date": "1973-12-22",
+      "venue": "Music Academy, Madras",
+      "occasion": "December Season 1973 concert. Archived and uploaded by Vaak. Audio cleaned for listening quality.",
+      "sources": [
+        {
+          "url": "https://youtu.be/GVZ0rYQjegc",
+          "label": "YouTube — Vaak",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "kv_narayanaswamy",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "cr_mani_iyer",
+              "role": "violin"
+            },
+            {
+              "musician_id": "palghat_raghu",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": null,
+              "role": "khanjira",
+              "unmatched_name": "CK Shyamsundar"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00:00",
+              "offset_seconds": 0,
+              "composition_id": "viriboni",
+              "raga_id": "bhairavi",
+              "tala": "ata",
+              "composer_id": "pacchimiriyam_adiapayya",
+              "display_title": "Viriboni (Varnam)",
+              "notes": "Ata-tala varnam; concert opener"
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "00:06:26",
+              "offset_seconds": 386,
+              "composition_id": "intanuchu_varimpa",
+              "raga_id": "gundakriya",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Intanuchu Varimpa",
+              "notes": null
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "00:10:27",
+              "offset_seconds": 627,
+              "composition_id": "pahimam_brhannayike",
+              "raga_id": "huseni",
+              "tala": "rupakam",
+              "composer_id": "swati_tirunal",
+              "display_title": "Pahimam Brhannayike (Swarajathi)",
+              "notes": "Swarajathi; authorship attributed to Swati Tirunal, disputed in some scholarly sources"
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "00:18:05",
+              "offset_seconds": 1085,
+              "composition_id": null,
+              "raga_id": "simhendramadhyamam",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Simhendramadhyamam — Alapana",
+              "notes": "Extended alapana preceding the kriti",
+              "type": "alapana"
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "00:21:10",
+              "offset_seconds": 1270,
+              "composition_id": "en_manam",
+              "raga_id": "simhendramadhyamam",
+              "tala": "adi",
+              "composer_id": "papanasam_sivan",
+              "display_title": "En Manam",
+              "notes": "Tamil kriti by Papanasam Sivan"
+            },
+            {
+              "performance_index": 6,
+              "timestamp": "00:26:34",
+              "offset_seconds": 1594,
+              "composition_id": null,
+              "raga_id": "suddha_saveri",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Suddha Saveri — Alapana",
+              "notes": "Extended alapana preceding the kriti",
+              "type": "alapana"
+            },
+            {
+              "performance_index": 7,
+              "timestamp": "00:31:07",
+              "offset_seconds": 1867,
+              "composition_id": "thaye_tripura",
+              "raga_id": "suddha_saveri",
+              "tala": "khanda_chapu",
+              "composer_id": "periyasami_tooran",
+              "display_title": "Thaye Tripura",
+              "notes": "Tamil kriti by Periyasami Tooran; Khanda Chapu tala"
+            },
+            {
+              "performance_index": 8,
+              "timestamp": "00:41:47",
+              "offset_seconds": 2507,
+              "composition_id": null,
+              "raga_id": "shankarabharanam",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Shankarabharanam — Alapana",
+              "notes": "Extended alapana of approximately 14 minutes preceding the Dikshitar kriti",
+              "type": "alapana"
+            },
+            {
+              "performance_index": 9,
+              "timestamp": "00:55:49",
+              "offset_seconds": 3349,
+              "composition_id": "akshaya_linga_vibho",
+              "raga_id": "shankarabharanam",
+              "tala": "misra_capu",
+              "composer_id": "muthuswami_dikshitar",
+              "display_title": "Akshaya Linga Vibho",
+              "notes": "Dikshitar kriti; Misra Chapu tala; main item of the concert"
+            },
+            {
+              "performance_index": 10,
+              "timestamp": "01:20:14",
+              "offset_seconds": 4814,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": "misra_capu",
+              "composer_id": null,
+              "display_title": "Tani Avarthanam",
+              "notes": "Percussion solo by Palghat Raghu (mridangam) and CK Shyamsundar (khanjira); Misra Chapu",
+              "type": "tani"
+            },
+            {
+              "performance_index": 11,
+              "timestamp": "01:37:08",
+              "offset_seconds": 5828,
+              "composition_id": null,
+              "raga_id": "todi",
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Thodi — Alapana",
+              "notes": "Brief alapana preceding the kriti",
+              "type": "alapana"
+            },
+            {
+              "performance_index": 12,
+              "timestamp": "01:39:50",
+              "offset_seconds": 5990,
+              "composition_id": null,
+              "raga_id": "todi",
+              "tala": "deshadi",
+              "composer_id": null,
+              "display_title": "Amba Nannu Brovave",
+              "notes": "Kriti in Thodi; Deshadi tala; attributed to 'Anai Ayya' in the concert listing — composer identity unverified in standard references; composition_id withheld pending source confirmation"
+            },
+            {
+              "performance_index": 13,
+              "timestamp": "01:43:57",
+              "offset_seconds": 6237,
+              "composition_id": "brovavamma_tamasame",
+              "raga_id": "manji",
+              "tala": "misra_capu",
+              "composer_id": "shyama_shastri",
+              "display_title": "Brovavamma Tamasame",
+              "notes": "Shyama Shastri kriti in Manji; Misra Chapu tala"
+            },
+            {
+              "performance_index": 14,
+              "timestamp": "01:50:00",
+              "offset_seconds": 6600,
+              "composition_id": "kandu_dhanyanade",
+              "raga_id": "behag",
+              "tala": "adi",
+              "composer_id": "kamalesha_vittala_dasa",
+              "display_title": "Kandu Dhanyanade",
+              "notes": "Kannada devaranama by Kamalesha Vittala Dasa in Behag"
+            },
+            {
+              "performance_index": 15,
+              "timestamp": "01:56:05",
+              "offset_seconds": 6965,
+              "composition_id": "azhagu_vadivai_vandhu",
+              "raga_id": null,
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Azhagu Vadivai Vandhu (Virutham — Ragamalika)",
+              "notes": "Tamil virutham sung as a ragamalika; no single raga or tala applicable; composer not definitively established"
+            },
+            {
+              "performance_index": 16,
+              "timestamp": "02:11:19",
+              "offset_seconds": 7879,
+              "composition_id": "alarsara_paritapam",
+              "raga_id": "surutti",
+              "tala": "misra_capu",
+              "composer_id": "swati_tirunal",
+              "display_title": "Alasara Parithapam / Jalaja Bandhu (Padam)",
+              "notes": "Two Swati Tirunal padams in Surutti performed together; primary entry is 'Alarśara Paritāpam'; 'Jalaja Bandhu' (composition_id: jalaja_bandhu) follows immediately"
+            },
+            {
+              "performance_index": 17,
+              "timestamp": "02:14:16",
+              "offset_seconds": 8056,
+              "composition_id": "thillana_bilahari_ariyakudi",
+              "raga_id": "bilahari",
+              "tala": "adi",
+              "composer_id": "ariyakudi_ramanuja_iyengar",
+              "display_title": "Thillana (Bilahari)",
+              "notes": "Thillana by Ariyakudi Ramanuja Iyengar; Adi tala"
+            },
+            {
+              "performance_index": 18,
+              "timestamp": "02:16:31",
+              "offset_seconds": 8191,
+              "composition_id": "ni_nama_roopamulaku",
+              "raga_id": "sowrashtram",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Ni Nama Rupamulaku (Mangalam)",
+              "notes": "Mangalam; concert close"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "poonamallee_1965",
+      "video_id": "_rj8fHJiSLA",
+      "url": "https://youtu.be/_rj8fHJiSLA",
+      "title": "Srinivasa Farms Concert, Poonamallee 1965",
+      "short_title": "Poonamallee 1965",
+      "date": "1965-01",
+      "venue": "Srinivasa Farms, Poonamallee, outskirts of Madras",
+      "occasion": "Celebration of the conferment of the Sangita Kalanidhi award on Alathur Sivasubramania Iyer (Subbaiyer) by the Music Academy, Madras",
+      "sources": [
+        {
+          "url": "https://youtu.be/_rj8fHJiSLA",
+          "label": "YouTube",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "ramnad_krishnan",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "tn_krishnan",
+              "role": "violin"
+            },
+            {
+              "musician_id": "vellore_ramabhadran",
+              "role": "mridangam"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00",
+              "offset_seconds": 0,
+              "composition_id": "bale_balendu_bhushani",
+              "raga_id": "reetigowla",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "bālē bālēndu bhūṣaṇi",
+              "notes": null
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "04:00",
+              "offset_seconds": 240,
+              "composition_id": "abhimanamennedu",
+              "raga_id": "begada",
+              "tala": "adi",
+              "composer_id": "patnam_subramanya_iyer",
+              "display_title": "abhimānamenneḍu",
+              "notes": null
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "16:50",
+              "offset_seconds": 1010,
+              "composition_id": "bhajana_parulakela",
+              "raga_id": "surutti",
+              "tala": "rupakam",
+              "composer_id": "tyagaraja",
+              "display_title": "bhajana parulakēla",
+              "notes": null
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "27:34",
+              "offset_seconds": 1654,
+              "composition_id": "sri_manimi_manohara",
+              "raga_id": "poornashadjam",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "śrī māninī manōhara",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "session_index": 2,
+          "performers": [
+            {
+              "musician_id": "semmangudi_srinivasa_iyer",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "kv_narayanaswamy",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "lalgudi_jayaraman",
+              "role": "violin"
+            },
+            {
+              "musician_id": "umayalpuram_sivaraman",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": "vellore_ramabhadran",
+              "role": "mridangam"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "31:55",
+              "offset_seconds": 1915,
+              "composition_id": "enduku_peddala",
+              "raga_id": "shankarabharanam",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "enduku peddala",
+              "notes": null
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "58:35",
+              "offset_seconds": 3515,
+              "composition_id": "alarsara_paritapam",
+              "raga_id": "surutti",
+              "tala": "misra_capu",
+              "composer_id": "swati_tirunal",
+              "display_title": "alarśara paritāpam",
+              "notes": "padam"
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "01:02:50",
+              "offset_seconds": 3770,
+              "composition_id": "karuna_samudra",
+              "raga_id": "devagandhari",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "karuṇā samudrā",
+              "notes": null
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "01:13:20",
+              "offset_seconds": 4400,
+              "composition_id": "marubari_talalEnurA",
+              "raga_id": "khamas",
+              "tala": "adi",
+              "composer_id": "pattabhiramayya",
+              "display_title": "marubārī tāḷalēnurā",
+              "notes": "jāvaḷi"
+            }
+          ]
+        },
+        {
+          "session_index": 3,
+          "performers": [
+            {
+              "musician_id": "musiri_subramania_iyer",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "semmangudi_srinivasa_iyer",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "tn_krishnan",
+              "role": "violin"
+            },
+            {
+              "musician_id": "lalgudi_jayaraman",
+              "role": "violin"
+            },
+            {
+              "musician_id": "umayalpuram_sivaraman",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": "vellore_ramabhadran",
+              "role": "mridangam"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "01:18:11",
+              "offset_seconds": 4691,
+              "composition_id": "evarani_nirnayancirera",
+              "raga_id": "devamritavarshini",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "evarani nirṇayiñcirirā",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "session_index": 4,
+          "performers": [
+            {
+              "musician_id": "alathur_brothers",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "semmangudi_srinivasa_iyer",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "tn_krishnan",
+              "role": "violin"
+            },
+            {
+              "musician_id": "lalgudi_jayaraman",
+              "role": "violin"
+            },
+            {
+              "musician_id": "umayalpuram_sivaraman",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": "vellore_ramabhadran",
+              "role": "mridangam"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "01:27:08",
+              "offset_seconds": 5228,
+              "composition_id": "jagadananda_karaka",
+              "raga_id": "nata",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "jagadānandakāraka",
+              "notes": null
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "01:36:30",
+              "offset_seconds": 5790,
+              "composition_id": "nama_kusumamulace",
+              "raga_id": "sriraga",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "nāma kusumamulacē pūjiñcē",
+              "notes": null
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "01:51:00",
+              "offset_seconds": 6660,
+              "composition_id": "eti_janmamidi",
+              "raga_id": "varali",
+              "tala": "misra_capu",
+              "composer_id": "tyagaraja",
+              "display_title": "ēṭi janmamidi",
+              "notes": null
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "01:55:43",
+              "offset_seconds": 7143,
+              "composition_id": "cakkani_rajamargamulu",
+              "raga_id": "kharaharapriya",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "cakkani rājamārgamulu",
+              "notes": null
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "02:05:01",
+              "offset_seconds": 7501,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": null,
+              "composer_id": null,
+              "display_title": "tani āvartana",
+              "notes": "percussion solo",
+              "type": "tani"
+            }
+          ]
+        },
+        {
+          "session_index": 5,
+          "performers": [
+            {
+              "musician_id": "dk_pattammal",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "ms_subbulakshmi",
+              "role": "vocal"
+            },
+            {
+              "musician_id": null,
+              "role": "violin",
+              "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+            },
+            {
+              "musician_id": "ramnad_raghavan",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": null,
+              "role": "ghatam",
+              "unmatched_name": "Alangudi Ramachandran"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "02:15:49",
+              "offset_seconds": 8149,
+              "composition_id": "koluvamaregada",
+              "raga_id": "todi",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "koluvamaregadā",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "session_index": 6,
+          "performers": [
+            {
+              "musician_id": "dk_pattammal",
+              "role": "vocal"
+            },
+            {
+              "musician_id": null,
+              "role": "vocal",
+              "unmatched_name": "Unidentified artiste"
+            },
+            {
+              "musician_id": null,
+              "role": "violin",
+              "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+            },
+            {
+              "musician_id": null,
+              "role": "ghatam",
+              "unmatched_name": "Alangudi Ramachandran"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "02:26:40",
+              "offset_seconds": 8800,
+              "composition_id": "lalite_kanci_nagara",
+              "raga_id": "bhairavi",
+              "tala": "adi",
+              "composer_id": "annasami_shastri",
+              "display_title": "lalitē kāñci nagara nivāsinī",
+              "notes": null
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "02:33:14",
+              "offset_seconds": 9194,
+              "composition_id": "callare_ramacandruniki",
+              "raga_id": "ahiri",
+              "tala": "misra_capu",
+              "composer_id": "tyagaraja",
+              "display_title": "callarē rāmacandruni",
+              "notes": null
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "02:37:24",
+              "offset_seconds": 9444,
+              "composition_id": "cittam_eppaDiyO",
+              "raga_id": "nadanamakriya",
+              "tala": "misra_capu",
+              "composer_id": "samuel_vedanayagam_pillai",
+              "display_title": "cittam eppaḍiyō",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "session_index": 7,
+          "performers": [
+            {
+              "musician_id": "ms_subbulakshmi",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "radha_viswanathan",
+              "role": "vocal"
+            },
+            {
+              "musician_id": null,
+              "role": "violin",
+              "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+            },
+            {
+              "musician_id": "ramnad_raghavan",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": null,
+              "role": "ghatam",
+              "unmatched_name": "Alangudi Ramachandran"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "02:42:12",
+              "offset_seconds": 9732,
+              "composition_id": "kshira_sagara_shayana",
+              "raga_id": "mayamalavagowla",
+              "tala": "caturaśra_dhruva",
+              "composer_id": "jayachamarajendra_wadiyar",
+              "display_title": "kṣīra sāgara śayana",
+              "notes": null
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "02:51:51",
+              "offset_seconds": 10311,
+              "composition_id": "kuvalayakshiro",
+              "raga_id": "gowlipantu",
+              "tala": "misra_capu",
+              "composer_id": "kshetrayya",
+              "display_title": "kuvalayākṣirō",
+              "notes": "padam"
+            }
+          ]
+        },
+        {
+          "session_index": 8,
+          "performers": [
+            {
+              "musician_id": "dk_pattammal",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "ms_subbulakshmi",
+              "role": "vocal"
+            },
+            {
+              "musician_id": null,
+              "role": "violin",
+              "unmatched_name": "Thiruvalangadu N Sundaresa Iyer"
+            },
+            {
+              "musician_id": "ramnad_raghavan",
+              "role": "mridangam"
+            },
+            {
+              "musician_id": null,
+              "role": "ghatam",
+              "unmatched_name": "Alangudi Ramachandran"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "03:00:11",
+              "offset_seconds": 10811,
+              "composition_id": "mamava_pattabhirama",
+              "raga_id": "manirangu",
+              "tala": "misra_capu",
+              "composer_id": "muthuswami_dikshitar",
+              "display_title": "māmava paṭṭābhirāma",
+              "notes": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wesleyan_1967_ramnad_krishnan",
+      "video_id": "AnNb0zRmauM",
+      "url": "https://youtu.be/AnNb0zRmauM",
+      "title": "Wesleyan University Concert, 1967 — Ramnad Krishnan & T. Viswanathan",
+      "short_title": "Wesleyan 1967",
+      "date": "1967",
+      "venue": "Wesleyan University, USA",
+      "occasion": "Concert performed for the students of Wesleyan University. Tribute upload by Vaak on the 106th birth anniversary of Ramnad Krishnan (14 Sep 1918). Photograph used is from the original concert.",
+      "sources": [
+        {
+          "url": "https://youtu.be/AnNb0zRmauM",
+          "label": "YouTube — Vaak",
+          "type": "other"
+        }
+      ],
+      "sessions": [
+        {
+          "session_index": 1,
+          "performers": [
+            {
+              "musician_id": "ramnad_krishnan",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "t_viswanathan",
+              "role": "flute"
+            },
+            {
+              "musician_id": null,
+              "role": "violin",
+              "unmatched_name": "V. Tyagarajan"
+            },
+            {
+              "musician_id": null,
+              "role": "mridangam",
+              "unmatched_name": "T. Ranganathan"
+            },
+            {
+              "musician_id": null,
+              "role": "tampura",
+              "unmatched_name": "Jon B. Higgins"
+            }
+          ],
+          "performances": [
+            {
+              "performance_index": 1,
+              "timestamp": "00:00:00",
+              "offset_seconds": 0,
+              "composition_id": "yagnadulu_sukhamanu",
+              "raga_id": "jayamanohari",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Yagnadulu Sukhamanu",
+              "notes": null
+            },
+            {
+              "performance_index": 2,
+              "timestamp": "00:10:56",
+              "offset_seconds": 656,
+              "composition_id": "enduku_nirdaya",
+              "raga_id": "harikambhoji",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Enduku Nirdaya",
+              "notes": null
+            },
+            {
+              "performance_index": 3,
+              "timestamp": "00:33:42",
+              "offset_seconds": 2022,
+              "composition_id": "bantureeti_kolu",
+              "raga_id": "hamsanadam",
+              "tala": "deshadi",
+              "composer_id": "tyagaraja",
+              "display_title": "Bantureeti Kolu",
+              "notes": null
+            },
+            {
+              "performance_index": 4,
+              "timestamp": "00:44:41",
+              "offset_seconds": 2681,
+              "composition_id": "kaligiyunte",
+              "raga_id": "keeravani",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Kaligiyunte",
+              "notes": "2 kalai"
+            },
+            {
+              "performance_index": 5,
+              "timestamp": "01:18:33",
+              "offset_seconds": 4713,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": "adi",
+              "composer_id": null,
+              "display_title": "Tani Avarthanam",
+              "notes": "percussion solo; 2 kalai",
+              "type": "tani"
+            },
+            {
+              "performance_index": 6,
+              "timestamp": "01:24:04",
+              "offset_seconds": 5044,
+              "composition_id": "samayamide_rara",
+              "raga_id": "behag",
+              "tala": "rupakam",
+              "composer_id": "patnam_subramanya_iyer",
+              "display_title": "Samayamide Rara",
+              "notes": "javali"
+            },
+            {
+              "performance_index": 7,
+              "timestamp": "01:34:27",
+              "offset_seconds": 5667,
+              "composition_id": null,
+              "raga_id": null,
+              "tala": null,
+              "composer_id": null,
+              "display_title": "Janathi Ramam (Sloka) — Ragamalika",
+              "notes": "sloka set as ragamalika traversing Saveri, Sahana, Surutti; no single composition_id applicable"
+            },
+            {
+              "performance_index": 8,
+              "timestamp": "01:54:33",
+              "offset_seconds": 6873,
+              "composition_id": "ni_nama_roopamulaku",
+              "raga_id": "sowrashtram",
+              "tala": "adi",
+              "composer_id": "tyagaraja",
+              "display_title": "Ni Nama Roopamulaku",
+              "notes": "mangalam"
+            }
+          ]
+        }
       ]
     }
   ]

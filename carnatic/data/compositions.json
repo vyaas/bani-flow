@@ -1471,6 +1471,42 @@
         }
       ],
       "notes": "Corresponds to Hindustani Darbari Kanada. Janya of Natabhairavi (20th melakarta). Deep, serious, late-night raga. Used in Carnatic music for devotional and Shiva-related compositions."
+    },
+    {
+      "id": "poorvikalyani",
+      "name": "Poorvikalyani",
+      "aliases": [
+        "Purvikalyani",
+        "Poorvi Kalyani"
+      ],
+      "melakarta": null,
+      "parent_raga": null,
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Poorvikalyani",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "notes": "Janya of Kalyani (65th melakarta); pentatonic (audava-audava) raga; arohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes devotion and serenity; frequently used in Tyagaraja kritis"
+    },
+    {
+      "id": "chakravakam",
+      "name": "Chakravakam",
+      "aliases": [
+        "Chakravaham",
+        "Chakravaka"
+      ],
+      "melakarta": 16,
+      "parent_raga": null,
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Chakravakam",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "notes": "16th melakarta raga; arohana S R1 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R1 S; evokes pathos and devotion; a favourite of Tyagaraja who composed several kritis in this raga"
     }
   ],
   "composers": [
@@ -4322,6 +4358,86 @@
         }
       ],
       "notes": "Bengali patriotic song by Dwijendralal Roy. Performed by TM Krishna in concert as a tribute to Bengal. Not assigned to a specific Carnatic raga."
+    },
+    {
+      "id": "ee_vasudha_sahana",
+      "title": "Ee Vasudha",
+      "composer_id": "tyagaraja",
+      "raga_id": "sahana",
+      "tala": "Adi",
+      "language": "Telugu",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/c2369.shtml",
+          "label": "Karnatik.com — Ee Vasudha (Sahana)",
+          "type": "other"
+        }
+      ],
+      "notes": "Tyagaraja kriti in Sahana raga. Distinct from 'Yee Vasudha' (id: yee_vasudha) which is set in Kanada. Both share the same opening words; the Sahana version is confirmed at karnatik.com c2369."
+    },
+    {
+      "id": "paraloka_sadhaname",
+      "title": "Paraloka Sadhaname",
+      "composer_id": "tyagaraja",
+      "raga_id": "poorvikalyani",
+      "tala": "Deshadi",
+      "language": "Telugu",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/c1830.shtml",
+          "label": "Karnatik.com — Paraloka Sadhaname",
+          "type": "other"
+        }
+      ],
+      "notes": "Tyagaraja kriti in Poorvikalyani raga, Deshadi tala."
+    },
+    {
+      "id": "sugunamule_cheppukonti",
+      "title": "Sugunamule Cheppukonti",
+      "composer_id": "tyagaraja",
+      "raga_id": "chakravakam",
+      "tala": "Rupakam",
+      "language": "Telugu",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/c2516.shtml",
+          "label": "Karnatik.com — Sugunamule Cheppukonti",
+          "type": "other"
+        }
+      ],
+      "notes": "Tyagaraja kriti in Chakravakam raga, Rupakam tala."
+    },
+    {
+      "id": "emi_jesithe",
+      "title": "Emi Jesithe",
+      "composer_id": "tyagaraja",
+      "raga_id": "thodi",
+      "tala": "Misra Chapu",
+      "language": "Telugu",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/c0869.shtml",
+          "label": "Karnatik.com — Emi Jesithe",
+          "type": "other"
+        }
+      ],
+      "notes": "Tyagaraja kriti in Thodi raga, Misra Chapu tala."
+    },
+    {
+      "id": "paramukham_elara",
+      "title": "Paramukham Elara",
+      "composer_id": "tyagaraja",
+      "raga_id": "surutti",
+      "tala": "Adi",
+      "language": "Telugu",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/c1820.shtml",
+          "label": "Karnatik.com — Paramukham Elara",
+          "type": "other"
+        }
+      ],
+      "notes": "Tyagaraja kriti in Surutti raga, Adi tala."
     }
   ]
 }
