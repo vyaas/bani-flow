@@ -266,6 +266,7 @@ their own work at the end of every session in which files changed.**
   Viswanathan) are now separate intermediate nodes.
 - **T. Balasaraswati** added (1918–1984, Sangeetha Kalanidhi 1973, Padma Vibhushan 1977).
 - **Kanchipuram Naina Pillai** added — taught both Brinda and Muktha.
+- **ADR-021 Phase 3 melakarta migration** completed 2026-04-12: 13 mela ragas patched with is_melakarta=true and cakra; 53 janya ragas set to is_melakarta=false. ADR-022 UI now fully functional for mela/janya navigation.
 
 ### Still open
 
@@ -336,6 +337,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-12: When a co-performer ingest script runs before the primary artist's youtube array is populated, entries get raw playlist titles as labels with no raga/composition metadata; after the primary artist's array is populated, patch the co-performer's entries by copying label/raga_id/composition_id/year from the matching primary-artist entry using a vid-keyed lookup.
 - 2026-04-12: A single Tyagaraja composition title (e.g. "Ee Vasudha") can exist in multiple ragas as genuinely distinct compositions; always check karnatik.com for the raga before assuming a tracklist raga label is an error — create separate composition IDs rather than overwriting the canonical raga_id.
 - 2026-04-12: A Ragam-Tanam-Pallavi (RTP) is modelled as multiple sequential performance entries (type: alapana, tanam, pallavi) sharing the same raga_id, not as a single composition; Ghanaragamalika swaras are noted in the pallavi entry's notes field; Tani Avartanam gets its own entry with type: tani and raga_id: null.
+- 2026-04-12: ADR-021 Phase 3 melakarta migration applied via inline Python script: set is_melakarta=true and cakra on 13 existing mela ragas from melakarta_patch.json; set is_melakarta=false on 53 janya ragas that had parent_raga set but is_melakarta=null. The patch script is idempotent and safe to re-run.
 
 ### 🎵 Carnatic Coder
 
