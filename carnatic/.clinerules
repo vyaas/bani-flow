@@ -342,6 +342,8 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-12: Expert review of mela-janya connections revealed several errors in the initial batch: begada is janya of shankarabharanam (mela 29) not harikambhoji (mela 28); varali is janya of jhalavarali (mela 39) not pantuvarali (mela 51); hamsanadam is janya of gamanashrama (mela 53) not kalyani (mela 65); suruti is an alias of surutti (both janya of harikambhoji mela 28); nata (id) is an alias of Nattai (display name). Always verify parent mela against karnatik.com or Wikipedia svara structure before accepting expert-review proposals.
 - 2026-04-12: When a raga parent mela is not in the database, add the melakarta node first (Wikipedia URL, melakarta number, cakra), then set the janya parent_raga. Cakra formula: cakra = ceil(mela_number / 6). New mela nodes added this session: jhalavarali (39, cakra 7), gamanashrama (53, cakra 9), tanarupi (6, cakra 1).
 
+- 2026-04-12: When ingesting a playlist JSON, always run composition-exists with multiple spelling variants before declaring a composition missing — titles like "Rama Ni Samanamevaru", "Kaligiyunte", and "Siva Siva Siva Ena Radha" exist under canonical spellings that differ from the playlist title; the CLI fuzzy-matches on prefix so try shortened forms too.
+
 ### 🎵 Carnatic Coder
 
 - 2026-04-11: When adding a cross-cutting capability to all agents, write a transform script that reads the target file, applies the change idempotently, and writes back — never patch JSON by hand.
