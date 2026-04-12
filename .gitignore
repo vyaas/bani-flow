@@ -47,3 +47,6 @@ carnatic/data/recordings.json.bak
 # playlist_meta.py output — generated, not tracked
 playlist_metadata.json
 playlist_metadata.txt
+carnatic/data/raga_mela_review_recommendations.html
+carnatic/data/raga_mela_review.md
+carnatic/playlists/*
