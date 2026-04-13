@@ -79,7 +79,7 @@ TOKENS = {
     "accentMatch":  _P["blue_bright"],    # bani-match node border
 
     # Node state borders
-    "nodeDefault":   _P["bg3"],           # default node border
+    "nodeDefault":   _P["fg3"],           # default node border — fg3 so shapes are legible on dark canvas
     "nodeHasTracks": _P["aqua"],          # node with recordings (green border)
     "nodeHovered":   _P["yellow"],        # hovered node
     "nodeSelected":  _P["fg"],            # selected node (bright fg)

@@ -126,7 +126,9 @@
 
   /* ── main layout ── */
   #main { display: flex; flex: 1; overflow: hidden; position: relative; }
-  #cy   { flex: 1; background: var(--bg-deep); min-height: 0; }
+  /* #cy-wrap: positioned parent for SVG overlays, scoped below the filter bar */
+  #cy-wrap { flex: 1; position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  #cy      { flex: 1; background: var(--bg-deep); min-height: 0; }
 
   /* ── left sidebar (global controls: Bani Flow, legends) ── */
   #left-sidebar {
@@ -903,10 +905,12 @@
       <button class="filter-clear" id="filter-clear-all"
               style="visibility:hidden" title="Clear all filters" onclick="clearAllChipFilters()">&#10005; Show all</button>
     </div>
-    <div id="cy"></div>
-    <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
-    <!-- Raga wheel (ADR-023) -->
-    <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);"></svg>
+    <div id="cy-wrap">
+      <div id="cy"></div>
+      <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
+      <!-- Raga wheel (ADR-023) -->
+      <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);"></svg>
+    </div>
   </div>
 
   <!-- ── hover popover ── -->
@@ -44576,6 +44580,23 @@ const cy = cytoscape({
         'border-width':       '2px',
         'border-color':       THEME.nodeDefault,
       }
+    },
+    // Non-ellipse shapes need a thicker border so their geometry reads clearly
+    {
+      selector: 'node[shape = "diamond"]',
+      style: { 'border-width': '3px' }
+    },
+    {
+      selector: 'node[shape = "rectangle"]',
+      style: { 'border-width': '3px' }
+    },
+    {
+      selector: 'node[shape = "triangle"]',
+      style: { 'border-width': '3px' }
+    },
+    {
+      selector: 'node[shape = "hexagon"]',
+      style: { 'border-width': '3px' }
     },
     {
       selector: 'node.has-tracks',

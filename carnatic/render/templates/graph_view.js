@@ -38,6 +38,23 @@ const cy = cytoscape({
         'border-color':       THEME.nodeDefault,
       }
     },
+    // Non-ellipse shapes need a thicker border so their geometry reads clearly
+    {
+      selector: 'node[shape = "diamond"]',
+      style: { 'border-width': '3px' }
+    },
+    {
+      selector: 'node[shape = "rectangle"]',
+      style: { 'border-width': '3px' }
+    },
+    {
+      selector: 'node[shape = "triangle"]',
+      style: { 'border-width': '3px' }
+    },
+    {
+      selector: 'node[shape = "hexagon"]',
+      style: { 'border-width': '3px' }
+    },
     {
       selector: 'node.has-tracks',
       style: { 'border-color': THEME.nodeHasTracks, 'border-width': '2.5px' }
