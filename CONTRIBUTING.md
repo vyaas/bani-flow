@@ -63,8 +63,8 @@ always welcome.
 ## Development setup
 
 ```bash
-git clone https://github.com/vyaas/gstree.git
-cd gstree
+git clone https://github.com/vyaas/bani-flow.git
+cd bani-flow
 pip install -e ".[dev]"
 ```
 
@@ -105,7 +105,7 @@ pytest
 
 ## Reporting issues
 
-Use [GitHub Issues](https://github.com/vyaas/gstree/issues). For data issues,
+Use [GitHub Issues](https://github.com/vyaas/bani-flow/issues). For data issues,
 please include:
 
 - The node `id` or edge `(source, target)` pair in question
