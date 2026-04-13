@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carnatic Guru-Shishya Parampara</title>
+<title>Carnatic Music Explorer</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <style>
   /* INJECT_CSS_VARS */
@@ -24,6 +24,7 @@
   header h1 {
     font-size: 1.05rem; color: var(--accent);
     letter-spacing: 0.08em; text-transform: uppercase; font-weight: bold;
+    white-space: nowrap;
   }
   .stats  { font-size: 0.78rem; color: var(--fg-sub); }
   .controls { display: flex; gap: 8px; margin-left: auto; }
@@ -64,14 +65,14 @@
     border-color: var(--accent); color: var(--accent); background: var(--bg-input);
   }
   .filter-chip .chip-dot {
-    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
   }
   .filter-chip .chip-dot.diamond   { transform: rotate(45deg); border-radius: 1px; }
   .filter-chip .chip-dot.rectangle { border-radius: 1px; }
   .filter-chip .chip-dot.triangle  {
     width: 0; height: 0; background: none !important;
-    border-left: 4px solid transparent; border-right: 4px solid transparent;
-    border-bottom: 7px solid var(--fg-muted);
+    border-left: 6px solid transparent; border-right: 6px solid transparent;
+    border-bottom: 11px solid var(--fg-muted);
   }
   .filter-chip.active .chip-dot.triangle { border-bottom-color: var(--accent); }
   .filter-chip .chip-dot.hexagon {
@@ -151,6 +152,14 @@
   .panel h3 {
     font-size: 0.72rem; color: var(--fg-sub);
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+  /* Sidebar panel titles (BANI FLOW / MUSICIAN) — larger, more prominent */
+  #bani-flow-panel > h3,
+  #musician-panel > h3 {
+    font-size: 1.0rem;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 10px;
   }
 
   /* ── node header (collapsed single-line) ── */
@@ -449,8 +458,8 @@
   }
   #bani-subject-sub {
     font-size: 0.70rem; color: var(--fg-dim);
-    margin-top: 3px; line-height: 1.5;
-    display: flex; flex-wrap: wrap; gap: 2px 0;
+    margin-top: 5px; line-height: 1.8;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 3px 4px;
   }
   .bani-sub-link {
     color: var(--accent-link); text-decoration: none; cursor: pointer;
@@ -491,21 +500,16 @@
   }
   #bani-janyas-filter:focus { border-color: var(--accent-sub); }
   #bani-janyas-filter::placeholder { color: var(--fg-muted); }
-  /* Janyas filtered list */
+  /* Janyas filtered list — chips wrap freely */
   .bani-janyas-list {
-    margin-top: 3px;
+    margin-top: 4px;
     padding: 2px 0;
-    max-height: 130px;
+    max-height: 160px;
     overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px 2px;
   }
-  .bani-janya-link {
-    display: block;
-    padding: 2px 4px;
-    color: var(--accent-link); text-decoration: none; cursor: pointer;
-    font-size: 0.68rem; border-radius: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .bani-janya-link:hover { background: var(--bg-input); text-decoration: underline; }
   .bani-janyas-empty {
     padding: 2px 4px; font-size: 0.68rem; color: var(--fg-muted);
   }
@@ -658,6 +662,35 @@
   }
   .rec-raga-link:hover { text-decoration: underline; }
 
+  /* ── Raga chip: first-class raga badge used wherever a raga is navigable ──
+     Uniform across: composition subject header, trail rows, raga wheel.
+     Teal border + teal text signals "this is a raga — click to explore". */
+  .raga-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 1px 7px;
+    border: 1px solid var(--accent-match);
+    border-radius: 10px;
+    color: var(--accent-match);
+    font-size: 0.74rem;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    background: transparent;
+    transition: background 0.12s, color 0.12s;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .raga-chip::before {
+    content: '◈';
+    font-size: 0.65rem;
+    opacity: 0.8;
+  }
+  .raga-chip:hover {
+    background: rgba(131, 165, 152, 0.12);  /* --accent-match at low opacity */
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
+
   /* ── ADR-026: in-player track list ── */
   .mp-tracklist-toggle {
     background: none;
@@ -750,35 +783,58 @@
     flex: 1;
     min-width: 0;
   }
+  /* ── Sruti buttons: Winamp-style raised relief ── */
   .sruti-btn {
     flex: 1;                  /* equispaced: each button takes equal share */
     padding: 5px 2px;
-    background: transparent;
-    border: 1px solid var(--border-strong);
-    border-right: none;       /* collapse borders between adjacent buttons */
+    /* Raised bevel: light top/left, dark bottom/right */
+    background: var(--bg-input);
+    border-top:    1px solid var(--fg-muted);
+    border-left:   1px solid var(--fg-muted);
+    border-bottom: 2px solid #111;
+    border-right:  2px solid #111;
+    /* Collapse adjacent borders — override with margin trick */
+    margin-right: -1px;
     color: var(--fg-dim);
-    font-size: 0.78rem;       /* matches view-btn and general button size */
+    font-size: 0.78rem;
     font-family: var(--font-ui);
     cursor: pointer;
     text-align: center;
-    transition: border-color 0.1s, color 0.1s, background 0.1s;
+    transition: color 0.1s, background 0.1s, box-shadow 0.05s, transform 0.05s;
     white-space: nowrap;
     user-select: none;
-    border-radius: 0;
+    border-radius: 2px;
+    position: relative;
+    box-shadow: 1px 1px 0 #111, inset 0 1px 0 rgba(255,255,255,0.07);
   }
-  .sruti-btn:first-child { border-radius: 2px 0 0 2px; }
-  .sruti-btn:last-child  { border-right: 1px solid var(--border-strong); border-radius: 0 2px 2px 0; }
+  .sruti-btn:first-child { border-radius: 3px 2px 2px 3px; }
+  .sruti-btn:last-child  { border-radius: 2px 3px 3px 2px; margin-right: 0; }
   .sruti-btn:hover {
-    border-color: var(--accent);
     color: var(--accent);
-    background: var(--bg-input);
-    z-index: 1; position: relative;
+    background: var(--bg-active);
+    z-index: 1;
+  }
+  /* Pressed state: invert bevel, push down */
+  .sruti-btn:active {
+    border-top:    2px solid #111;
+    border-left:   2px solid #111;
+    border-bottom: 1px solid var(--fg-muted);
+    border-right:  1px solid var(--fg-muted);
+    box-shadow: none;
+    transform: translate(1px, 1px);
+    color: var(--accent);
+    background: var(--bg-active);
   }
   .sruti-btn.sruti-active {
-    border-color: var(--accent-sub);
-    color: var(--accent-sub);
-    background: var(--bg-input);
-    z-index: 1; position: relative;
+    border-top:    2px solid #111;
+    border-left:   2px solid #111;
+    border-bottom: 1px solid var(--fg-muted);
+    border-right:  1px solid var(--fg-muted);
+    box-shadow: none;
+    transform: translate(1px, 1px);
+    color: var(--accent-select);   /* bright yellow — high contrast on pressed bg */
+    background: var(--bg-active);
+    z-index: 1;
   }
   .sruti-btn.sharp { font-size: 0.68rem; }
 
@@ -827,7 +883,7 @@
 <body>
 
 <header>
-  <h1>Carnatic · Guru-Shishya Parampara</h1>
+  <h1>Carnatic · Music Explorer</h1>
   <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
   <div id="sruti-strip">
     <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>

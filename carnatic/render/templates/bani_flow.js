@@ -105,19 +105,17 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const parts = [];
 
     if (raga) {
-      const ragaSpan = document.createElement('span');
       // Raga name → in-app navigation: summon raga into Bani Flow + raga wheel
+      // Rendered as a .raga-chip badge — uniform with all other raga occurrences
       const ragaBtn = document.createElement('span');
-      ragaBtn.className = 'bani-sub-link';
-      ragaBtn.style.cursor = 'pointer';
+      ragaBtn.className = 'raga-chip';
       ragaBtn.textContent = raga.name;
       ragaBtn.title = 'Explore ' + raga.name + ' in Bani Flow';
       ragaBtn.addEventListener('click', e => {
         e.stopPropagation();
         triggerBaniSearch('raga', raga.id);
       });
-      ragaSpan.appendChild(ragaBtn);
-      parts.push(ragaSpan);
+      parts.push(ragaBtn);
     }
 
     if (comp && comp.tala) {
@@ -182,8 +180,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       const perfRaga = ragas.find(r => r.id === ref.raga_id);
       if (perfRaga) {
         const ragaBtn = document.createElement('span');
-        ragaBtn.className = 'bani-sub-link';
-        ragaBtn.style.cursor = 'pointer';
+        ragaBtn.className = 'raga-chip';
         ragaBtn.textContent = perfRaga.name;
         ragaBtn.title = 'Explore ' + perfRaga.name + ' in Bani Flow';
         ragaBtn.addEventListener('click', e => {
@@ -244,8 +241,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const ytParts = [];
     if (ytRaga) {
       const ytRagaBtn = document.createElement('span');
-      ytRagaBtn.className = 'bani-sub-link';
-      ytRagaBtn.style.cursor = 'pointer';
+      ytRagaBtn.className = 'raga-chip';
       ytRagaBtn.textContent = ytRaga.name;
       ytRagaBtn.title = 'Explore ' + ytRaga.name + ' in Bani Flow';
       ytRagaBtn.addEventListener('click', e => {
@@ -301,19 +297,21 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       // Janya raga: show parent mela as a clickable link
       const parentRaga = ragas.find(r => r.id === raga.parent_raga);
       const parentName = parentRaga ? parentRaga.name : raga.parent_raga;
-      const janyaLabel = document.createElement('span');
-      janyaLabel.textContent = 'Janya of ';
-      janyaLabel.style.color = 'var(--fg3)';
-      const parentLink = document.createElement('a');
-      parentLink.className = 'bani-sub-link';
-      parentLink.href = '#';
+      // "Janya of" label
+      const janyaOfText = document.createElement('span');
+      janyaOfText.textContent = 'Janya of\u00a0';
+      janyaOfText.style.color = 'var(--fg-muted)';
+      subjectSub.appendChild(janyaOfText);
+      // Parent raga as a .raga-chip — uniform with all other raga occurrences
+      const parentLink = document.createElement('span');
+      parentLink.className = 'raga-chip';
       parentLink.textContent = parentName;
+      parentLink.title = 'Explore ' + parentName + ' in Bani Flow';
       parentLink.addEventListener('click', e => {
-        e.preventDefault();
+        e.stopPropagation();
         triggerBaniSearch('raga', raga.parent_raga);
       });
-      janyaLabel.appendChild(parentLink);
-      subjectSub.appendChild(janyaLabel);
+      subjectSub.appendChild(parentLink);
     }
     // (if neither: sub-label is empty — graceful degradation)
 
@@ -344,10 +342,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
       if (janyas.length > 0) {
         janyasCount.textContent = `(${janyas.length})`;
-        janyasToggle.textContent = '\u25b6 Janyas';
+        // Toggle label styled like a raga category header: ◈ prefix signals "ragas inside"
+        janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
         janyasRow.style.display = 'block';
 
-        // Render filtered list of janya links
+        // Render filtered list of janya links — each as a .raga-chip
         function renderJanyaList(filter) {
           janyasList.innerHTML = '';
           const q = filter.trim().toLowerCase();
@@ -359,15 +358,17 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             janyasList.appendChild(empty);
           } else {
             visible.forEach(j => {
-              const a = document.createElement('a');
-              a.className = 'bani-janya-link';
-              a.href = '#';
-              a.textContent = j.name || j.id;
-              a.addEventListener('click', e => {
-                e.preventDefault();
+              const chip = document.createElement('span');
+              chip.className = 'raga-chip';
+              chip.style.display = 'inline-flex';
+              chip.style.margin = '2px 3px';
+              chip.textContent = j.name || j.id;
+              chip.title = 'Explore ' + (j.name || j.id) + ' in Bani Flow';
+              chip.addEventListener('click', e => {
+                e.stopPropagation();
                 triggerBaniSearch('raga', j.id);
               });
-              janyasList.appendChild(a);
+              janyasList.appendChild(chip);
             });
           }
         }
@@ -381,7 +382,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         janyasToggle.onclick = () => {
           const open = janyasPanel.style.display !== 'none';
           janyasPanel.style.display = open ? 'none' : 'block';
-          janyasToggle.textContent = open ? '\u25b6 Janyas' : '\u25bc Janyas';
+          janyasToggle.textContent = open ? '\u25b6\u00a0\u25c8 Janyas' : '\u25bc\u00a0\u25c8 Janyas';
           if (!open) {
             janyasFilter.value = '';
             renderJanyaList('');
