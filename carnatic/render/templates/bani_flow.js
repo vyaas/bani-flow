@@ -700,6 +700,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
             raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
             tala:           sp.tala || null,
             timestamp:      sp.timestamp || '00:00',
+            composition_id: sp.composition_id || null,
           };
         });
       const concertTitle = row.track.short_title || row.track.concert_title;

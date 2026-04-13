@@ -101,6 +101,8 @@ function buildPlayerTrackList(vid, tracks, instance) {
       // Update active indicator
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
       li.classList.add('mp-track-active');
+      // Update footer chips to reflect the newly selected track
+      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null);
       refreshPlayingIndicators();
     });
 
@@ -215,6 +217,25 @@ function buildPlayerFooter(meta) {
   }
 
   return footer;
+}
+
+// ── updatePlayerFooter — replace the footer in-place when a track is selected ─
+// Called by buildPlayerTrackList on track click to keep chips in sync.
+function updatePlayerFooter(player, ragaId, compositionId) {
+  const el = player.el;
+  // Remove existing footer if present
+  const existing = el.querySelector('.mp-footer');
+  if (existing) existing.remove();
+  // Build and insert new footer (before .mp-resize)
+  const newFooter = buildPlayerFooter({ ragaId, compositionId });
+  if (newFooter) {
+    const resize = el.querySelector('.mp-resize');
+    if (resize) {
+      el.insertBefore(newFooter, resize);
+    } else {
+      el.appendChild(newFooter);
+    }
+  }
 }
 
 function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
@@ -459,6 +480,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
               raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
               tala:           sp.tala || null,
               timestamp:      sp.timestamp || '00:00',
+              composition_id: sp.composition_id || null,
             });
           });
         });
