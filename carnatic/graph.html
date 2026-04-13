@@ -135,8 +135,19 @@
     width: 260px; background: var(--bg-panel);
     border-right: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow-y: auto; font-size: 0.78rem;
+    overflow: hidden; font-size: 0.78rem;
     flex-shrink: 0;
+  }
+
+  /* Sticky (non-scrolling) zone inside left sidebar */
+  #bani-sticky {
+    flex-shrink: 0;
+    display: flex; flex-direction: column;
+  }
+
+  /* Scrollable zone inside left sidebar — only the trail list scrolls */
+  #bani-scroll {
+    flex: 1; overflow-y: auto; min-height: 0;
   }
 
   /* ── right sidebar (node-specific: selection, recordings, edge) ── */
@@ -144,8 +155,19 @@
     width: 260px; background: var(--bg-panel);
     border-left: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow-y: auto; font-size: 0.78rem;
+    overflow: hidden; font-size: 0.78rem;
     flex-shrink: 0;
+  }
+
+  /* Sticky (non-scrolling) zone inside right sidebar */
+  #right-sticky {
+    flex-shrink: 0;
+    display: flex; flex-direction: column;
+  }
+
+  /* Scrollable zone inside right sidebar — only recordings/edge scroll */
+  #right-scroll {
+    flex: 1; overflow-y: auto; min-height: 0;
   }
   .panel { padding: 12px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .panel h3 {
@@ -852,48 +874,52 @@
 <div id="main">
   <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->
   <div id="left-sidebar">
-    <!-- ── Bani Flow panel ── -->
-    <div class="panel" id="bani-flow-panel">
-      <h3>Bani Flow &#9835;</h3>
-      <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
-        <input id="bani-search-input" class="search-input panel-search" type="text"
-               placeholder="&#9833; Search raga / composition"
-               autocomplete="off" spellcheck="false">
-        <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
-        <div class="search-scope-label" id="bani-scope-label" style="display:none">
-          searching all compositions
-        </div>
-      </div>
-      <!-- Subject header — shown when a raga/composition is selected (ADR-020) -->
-      <div id="bani-subject-header" style="display:none">
-        <div id="bani-subject-name-row">
-          <span id="bani-subject-icon" class="bani-subject-icon"></span>
-          <span id="bani-subject-name"></span>
-          <a id="bani-subject-link" class="bani-subject-link" href="#"
-             target="_blank" style="display:none">&#8599;</a>
-        </div>
-        <div id="bani-subject-sub"></div>
-        <!-- Row 3: aliases (ADR-022) -->
-        <div id="bani-subject-aliases-row" style="display:none"></div>
-        <!-- Row 4: janyas toggle + filter + list (ADR-022, mela ragas only) -->
-        <div id="bani-janyas-row" style="display:none">
-          <span id="bani-janyas-toggle" class="bani-janyas-toggle">&#9654; Janyas</span>
-          <span id="bani-janyas-count" class="bani-janyas-count"></span>
-          <div id="bani-janyas-panel" style="display:none">
-            <input id="bani-janyas-filter" type="text"
-                   placeholder="filter janyas&#8230;" autocomplete="off" spellcheck="false">
-            <div id="bani-janyas-list" class="bani-janyas-list"></div>
+    <!-- ── sticky zone: search bar + subject header + trail filter ── -->
+    <div id="bani-sticky">
+      <div class="panel" id="bani-flow-panel">
+        <h3>Bani Flow &#9835;</h3>
+        <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
+          <input id="bani-search-input" class="search-input panel-search" type="text"
+                 placeholder="&#9833; Search raga / composition"
+                 autocomplete="off" spellcheck="false">
+          <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
+          <div class="search-scope-label" id="bani-scope-label" style="display:none">
+            searching all compositions
           </div>
         </div>
+        <!-- Subject header — shown when a raga/composition is selected (ADR-020) -->
+        <div id="bani-subject-header" style="display:none">
+          <div id="bani-subject-name-row">
+            <span id="bani-subject-icon" class="bani-subject-icon"></span>
+            <span id="bani-subject-name"></span>
+            <a id="bani-subject-link" class="bani-subject-link" href="#"
+               target="_blank" style="display:none">&#8599;</a>
+          </div>
+          <div id="bani-subject-sub"></div>
+          <!-- Row 3: aliases (ADR-022) -->
+          <div id="bani-subject-aliases-row" style="display:none"></div>
+          <!-- Row 4: janyas toggle + filter + list (ADR-022, mela ragas only) -->
+          <div id="bani-janyas-row" style="display:none">
+            <span id="bani-janyas-toggle" class="bani-janyas-toggle">&#9654; Janyas</span>
+            <span id="bani-janyas-count" class="bani-janyas-count"></span>
+            <div id="bani-janyas-panel" style="display:none">
+              <input id="bani-janyas-filter" type="text"
+                     placeholder="filter janyas&#8230;" autocomplete="off" spellcheck="false">
+              <div id="bani-janyas-list" class="bani-janyas-list"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
+        <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
+               style="display:none" autocomplete="off" spellcheck="false" />
       </div>
-      <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
-      <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
-             style="display:none" autocomplete="off" spellcheck="false" />
-      <div id="listening-trail">
+    </div>
+    <!-- ── scrollable zone: trail list only ── -->
+    <div id="bani-scroll">
+      <div id="listening-trail" style="display:none; padding: 0 14px;">
         <ul id="trail-list"></ul>
       </div>
     </div>
-
   </div>
 
   <!-- ── canvas column: filter bar + graph ── -->
@@ -921,43 +947,48 @@
 
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
-    <div class="panel" id="musician-panel">
-      <h3>Musician &#9835;</h3>
-      <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
-        <input id="musician-search-input" class="search-input panel-search" type="text"
-               placeholder="&#128269; Search musician&#8230;"
-               autocomplete="off" spellcheck="false">
-        <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
-        <div class="search-scope-label" id="musician-scope-label" style="display:none">
-          searching all 68 musicians
+    <!-- ── sticky zone: musician search + node header + rec filter ── -->
+    <div id="right-sticky">
+      <div class="panel" id="musician-panel">
+        <h3>Musician &#9835;</h3>
+        <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
+          <input id="musician-search-input" class="search-input panel-search" type="text"
+                 placeholder="&#128269; Search musician&#8230;"
+                 autocomplete="off" spellcheck="false">
+          <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
+          <div class="search-scope-label" id="musician-scope-label" style="display:none">
+            searching all 68 musicians
+          </div>
         </div>
       </div>
-    </div>
-    <div id="node-info">
-      <div id="node-header">
-        <span id="node-shape-icon" class="node-shape-icon ellipse"></span>
-        <span id="node-name">—</span>
-        <span id="node-lifespan"></span>
-        <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
-           style="display:none">&#8599;</a>
+      <div id="node-info">
+        <div id="node-header">
+          <span id="node-shape-icon" class="node-shape-icon ellipse"></span>
+          <span id="node-name">—</span>
+          <span id="node-lifespan"></span>
+          <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
+             style="display:none">&#8599;</a>
+        </div>
+        <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
+               style="display:none" autocomplete="off" spellcheck="false" />
       </div>
-      <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
-             style="display:none" autocomplete="off" spellcheck="false" />
     </div>
+    <!-- ── scrollable zone: recordings + edge info ── -->
+    <div id="right-scroll">
+      <div class="panel" id="recordings-panel" style="display:none">
+        <h3>Recordings</h3>
+        <ul id="recordings-list"></ul>
+      </div>
 
-    <div class="panel" id="recordings-panel" style="display:none">
-      <h3>Recordings</h3>
-      <ul id="recordings-list"></ul>
-    </div>
-
-    <div class="panel" id="edge-info" style="display:none">
-      <h3>Selected Edge</h3>
-      <div id="edge-guru"></div>
-      <div id="edge-arrow">&#8595; guru &middot; shishya</div>
-      <div id="edge-shishya"></div>
-      <div id="edge-note"></div>
-      <div id="edge-conf"></div>
-      <a id="edge-src" href="#" target="_blank">source &#8599;</a>
+      <div class="panel" id="edge-info" style="display:none">
+        <h3>Selected Edge</h3>
+        <div id="edge-guru"></div>
+        <div id="edge-arrow">&#8595; guru &middot; shishya</div>
+        <div id="edge-shishya"></div>
+        <div id="edge-note"></div>
+        <div id="edge-conf"></div>
+        <a id="edge-src" href="#" target="_blank">source &#8599;</a>
+      </div>
     </div>
   </div>
 </div>
