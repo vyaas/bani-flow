@@ -522,6 +522,20 @@
     text-decoration: none; white-space: nowrap; margin-left: auto;
   }
   .trail-link:hover { text-decoration: underline; }
+  /* version badge — shown only when multiple recordings of the same composition
+     exist for the same musician in the current trail (ADR-010) */
+  .trail-version {
+    flex-shrink: 0;
+    font-size: 0.60rem; color: var(--bg1);
+    background: var(--bg3);
+    border-radius: 2px;
+    padding: 0px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+    cursor: default;
+  }
 
   /* ── co-performer display in trail (ADR-019) ── */
   .trail-artist-primary {

@@ -57,6 +57,7 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
                     "notes":             perf.get("notes"),
                     "type":              perf.get("type"),
                     "performers":        performers,
+                    "version":           perf.get("version"),
                 }
 
                 # Index by musician

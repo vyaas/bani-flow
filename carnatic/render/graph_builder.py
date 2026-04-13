@@ -99,6 +99,7 @@ def build_elements(graph: dict) -> list[dict]:
                     "composition_id": t.get("composition_id"),
                     "raga_id":        t.get("raga_id"),
                     "year":           t.get("year"),
+                    "version":        t.get("version"),
                 })
 
         # Sources: new schema (sources array) with legacy fallback

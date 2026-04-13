@@ -479,6 +479,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         timestamp:      p.timestamp || '00:00',
         raga_id:        p.raga_id || null,
         tala:           p.tala || null,
+        version:        p.version || null,
       },
       isStructured: true,
       perfKey: `${p.recording_id}::${p.session_index}::${p.performance_index}`,
@@ -547,16 +548,44 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     return a.artistLabel.localeCompare(b.artistLabel);
   });
 
-  // ── 4. Render one <li> per deduplicated row ────────────────────────────────
+  // ── 4. Assign ordinal version labels for nodeId::composition_id groups ─────
+  // When the same musician has multiple recordings of the same composition,
+  // each entry gets a version label. If `track.version` is set, use it verbatim.
+  // Otherwise assign a 1-based ordinal: v1, v2, v3, … in trail order.
+  const compVersionCount = new Map(); // "nodeId::composition_id" → count
   rows.forEach(row => {
-    trailList.appendChild(buildTrailItem(row, type, id));
+    const cid = row.track.composition_id;
+    if (!cid || !row.nodeId) return;
+    const key = `${row.nodeId}::${cid}`;
+    compVersionCount.set(key, (compVersionCount.get(key) || 0) + 1);
+  });
+  const multiVersionKeys = new Set(
+    [...compVersionCount.entries()].filter(([, n]) => n > 1).map(([k]) => k)
+  );
+
+  // Assign ordinal counters per group (in sorted trail order)
+  const compVersionOrdinal = new Map(); // "nodeId::composition_id" → next ordinal
+  rows.forEach(row => {
+    const cid = row.track.composition_id;
+    if (!cid || !row.nodeId) return;
+    const key = `${row.nodeId}::${cid}`;
+    if (!multiVersionKeys.has(key)) return;
+    const n = (compVersionOrdinal.get(key) || 0) + 1;
+    compVersionOrdinal.set(key, n);
+    // Attach resolved version label directly onto the track object for this row
+    row.track._versionLabel = row.track.version || `v${n}`;
+  });
+
+  // ── 5. Render one <li> per deduplicated row ────────────────────────────────
+  rows.forEach(row => {
+    trailList.appendChild(buildTrailItem(row, type, id, multiVersionKeys));
   });
 
   trail.style.display = rows.length > 0 ? 'block' : 'none';
 }
 
 // ── buildTrailItem: render one <li> for a deduplicated performance row ────────
-function buildTrailItem(row, type, id) {
+function buildTrailItem(row, type, id, multiVersionKeys) {
   const li = document.createElement('li');
   li.dataset.vid = row.track.vid;
   li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
@@ -618,6 +647,22 @@ function buildTrailItem(row, type, id) {
   const row2Div = document.createElement('div');
   row2Div.className = 'trail-row2';
   row2Div.appendChild(labelSpan);
+
+  // Version badge — shown only when this nodeId::composition_id has multiple entries.
+  // _versionLabel is pre-computed in buildListeningTrail: explicit version string or v1/v2/…
+  const versionKey = row.nodeId && row.track.composition_id
+    ? `${row.nodeId}::${row.track.composition_id}`
+    : null;
+  const showVersion = versionKey && multiVersionKeys && multiVersionKeys.has(versionKey)
+    && row.track._versionLabel;
+  if (showVersion) {
+    const versionBadge = document.createElement('span');
+    versionBadge.className = 'trail-version';
+    versionBadge.textContent = row.track._versionLabel;
+    versionBadge.title = 'Version: ' + row.track._versionLabel;
+    row2Div.appendChild(versionBadge);
+  }
+
   row2Div.appendChild(linkA);
 
   // ▶ button → play only
