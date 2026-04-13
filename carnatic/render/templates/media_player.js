@@ -110,11 +110,114 @@ function buildPlayerTrackList(vid, tracks, instance) {
   return ul;
 }
 
-function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks) {
-  const displayTitle = concertTitle
-    ? (artistName ? artistName + ' \u2014 ' : '') + concertTitle
-    : (artistName ? artistName + ' \u2014 ' : '') + trackLabel;
+// ── buildPlayerBar — lean title bar: [artist chip] — [title] [≡] [✕] ────────
+// meta = { nodeId } — nodeId drives the artist chip click
+function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta) {
+  meta = meta || {};
+  const bar = document.createElement('div');
+  bar.className = 'mp-bar';
 
+  // ── Artist chip ────────────────────────────────────────────────────────────
+  if (artistName) {
+    const artistChip = document.createElement('span');
+    artistChip.className = 'mp-artist-chip';
+    artistChip.textContent = artistName;
+    if (meta.nodeId) {
+      artistChip.title = 'Pan to ' + artistName + ' on graph';
+      artistChip.addEventListener('click', e => {
+        e.stopPropagation();
+        if (typeof orientToNode === 'function') orientToNode(meta.nodeId);
+      });
+    } else {
+      artistChip.style.cursor = 'default';
+    }
+    bar.appendChild(artistChip);
+  }
+
+  // ── Concert title only (plain text, fills remaining space) ────────────────
+  // When a concertTitle is available, show it — it identifies the recording.
+  // trackLabel (individual performance title) is omitted here: it is already
+  // surfaced in the footer via the composition chip, avoiding redundancy.
+  const titleText = concertTitle || '';
+  if (titleText) {
+    if (artistName) {
+      const sep = document.createElement('span');
+      sep.className = 'mp-bar-sep';
+      sep.textContent = ' \u2014 ';
+      bar.appendChild(sep);
+    }
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'mp-title';
+    titleSpan.textContent = titleText;
+    bar.appendChild(titleSpan);
+  }
+
+  // ── Track list toggle + close (right-anchored) ────────────────────────────
+  const rightGroup = document.createElement('span');
+  rightGroup.className = 'mp-bar-right';
+
+  if (hasTracks) {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'mp-tracklist-toggle';
+    toggleBtn.title = 'Track list';
+    toggleBtn.textContent = '\u2261';
+    rightGroup.appendChild(toggleBtn);
+  }
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'mp-close';
+  closeBtn.title = 'Close';
+  closeBtn.textContent = '\u2715';
+  rightGroup.appendChild(closeBtn);
+
+  bar.appendChild(rightGroup);
+  return bar;
+}
+
+// ── buildPlayerFooter — raga + composition chips below the video ──────────────
+// Only rendered when at least one of ragaId / compositionId is present.
+// meta = { ragaId, compositionId } — both optional
+function buildPlayerFooter(meta) {
+  if (!meta) return null;
+  const { ragaId, compositionId } = meta;
+  if (!ragaId && !compositionId) return null;
+
+  const footer = document.createElement('div');
+  footer.className = 'mp-footer';
+
+  if (ragaId) {
+    const ragaObj = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
+    const ragaName = ragaObj ? ragaObj.name : ragaId;
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'mp-raga-chip';
+    ragaChip.textContent = ragaName;
+    ragaChip.title = 'Explore ' + ragaName + ' in Bani Flow';
+    ragaChip.addEventListener('click', e => {
+      e.stopPropagation();
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
+    });
+    footer.appendChild(ragaChip);
+  }
+
+  if (compositionId) {
+    const compObj = (typeof compositions !== 'undefined')
+      ? compositions.find(c => c.id === compositionId) : null;
+    const compName = compObj ? compObj.title : compositionId;
+    const compChip = document.createElement('span');
+    compChip.className = 'mp-comp-chip';
+    compChip.textContent = compName;
+    compChip.title = 'Explore ' + compName + ' in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compositionId);
+    });
+    footer.appendChild(compChip);
+  }
+
+  return footer;
+}
+
+function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
   const hasTracks = Array.isArray(tracks) && tracks.length > 0;
 
   const pos = nextSpawnPosition();
@@ -122,27 +225,38 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
   el.className = 'media-player';
   el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${++topZ};`;
 
-  el.innerHTML = `
-    <div class="mp-bar">
-      <span class="mp-title">${displayTitle}</span>
-      ${hasTracks ? '<button class="mp-tracklist-toggle" title="Track list">\u2261</button>' : ''}
-      <button class="mp-close" title="Close">\u2715</button>
-    </div>
-    ${hasTracks ? '<div class="mp-tracklist" style="display:none"></div>' : ''}
-    <div class="mp-video-wrap">
-      <iframe class="mp-iframe"
-        src="${ytEmbedUrl(vid, startSeconds)}"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-        allowfullscreen></iframe>
-    </div>
-    <div class="mp-resize" title="Drag to resize"></div>
-  `;
+  const bar = buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta || {});
+  el.appendChild(bar);
+
+  if (hasTracks) {
+    const tracklistDiv = document.createElement('div');
+    tracklistDiv.className = 'mp-tracklist';
+    tracklistDiv.style.display = 'none';
+    el.appendChild(tracklistDiv);
+  }
+
+  const videoWrap = document.createElement('div');
+  videoWrap.className = 'mp-video-wrap';
+  videoWrap.innerHTML = `<iframe class="mp-iframe"
+    src="${ytEmbedUrl(vid, startSeconds)}"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+    allowfullscreen></iframe>`;
+  el.appendChild(videoWrap);
+
+  // ── Footer: raga + composition chips (below video, above resize grip) ──────
+  const footer = buildPlayerFooter(meta || {});
+  if (footer) el.appendChild(footer);
+
+  const resizeHandle = document.createElement('div');
+  resizeHandle.className = 'mp-resize';
+  resizeHandle.title = 'Drag to resize';
+  el.appendChild(resizeHandle);
 
   const instance = {
     el,
     iframe:       el.querySelector('.mp-iframe'),
     titleEl:      el.querySelector('.mp-title'),
-    tracklistEl:  el.querySelector('.mp-tracklist'),   // null for legacy tracks
+    tracklistEl:  el.querySelector('.mp-tracklist') || null,
     vid,
     currentOffset: startSeconds || 0,
   };
@@ -184,7 +298,8 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
   return instance;
 }
 
-function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks) {
+// meta = { nodeId, ragaId, compositionId } — all optional; drives clickable chips in title bar
+function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
   if (playerRegistry.has(vid)) {
     const existing = playerRegistry.get(vid);
     // Jump to new timestamp; title does NOT change — concert identity is stable
@@ -201,7 +316,7 @@ function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTit
     refreshPlayingIndicators();
     return;
   }
-  const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks);
+  const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
   playerRegistry.set(vid, p);
   refreshPlayingIndicators();
 }
@@ -355,7 +470,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           artistLabel,
           p.offset_seconds > 0 ? p.offset_seconds : undefined,
           concert.short_title || concert.title,
-          playerTracks
+          playerTracks,
+          { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null }
         );
       });
       row1.appendChild(playBtn);
@@ -499,7 +615,8 @@ function buildRecordingsList(nodeId, nodeData) {
     playBtn.textContent = '▶';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined);
+      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined, undefined, undefined,
+        { nodeId, ragaId: t.raga_id || null, compositionId: t.composition_id || null });
     });
     row1.appendChild(playBtn);
 
@@ -588,19 +705,22 @@ function openPlayer(videoId, title, playerId) {
   el.style.left     = 'auto';
   el.style.width    = playerWidth + 'px';
 
-  el.innerHTML = `
-    <div class="mp-bar">
-      <span class="mp-title">${title}</span>
-      <button class="mp-close" title="Close">\u2715</button>
-    </div>
-    <div class="mp-video-wrap">
-      <iframe class="mp-iframe"
-        src="${ytEmbedUrl(videoId)}"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-        allowfullscreen></iframe>
-    </div>
-    <div class="mp-resize" title="Drag to resize"></div>
-  `;
+  // Build bar via DOM (no innerHTML) — consistent with createPlayer
+  const namedBar = buildPlayerBar(videoId, '', title, title, false, {});
+  el.appendChild(namedBar);
+
+  const namedVideoWrap = document.createElement('div');
+  namedVideoWrap.className = 'mp-video-wrap';
+  namedVideoWrap.innerHTML = `<iframe class="mp-iframe"
+    src="${ytEmbedUrl(videoId)}"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+    allowfullscreen></iframe>`;
+  el.appendChild(namedVideoWrap);
+
+  const namedResize = document.createElement('div');
+  namedResize.className = 'mp-resize';
+  namedResize.title = 'Drag to resize';
+  el.appendChild(namedResize);
 
   const instance = {
     el,

@@ -318,7 +318,13 @@ function selectNode(node) {
   const d = node.data();
 
   // Collapsed single-line header
-  document.getElementById('node-name').textContent     = d.label;
+  const nameEl = document.getElementById('node-name');
+  nameEl.textContent = d.label;
+  nameEl.title = 'Pan to ' + d.label + ' on graph';
+  nameEl.style.cursor = 'pointer';
+  // Clicking the name re-centres the view on this node
+  nameEl.onclick = () => orientToNode(node.id());
+
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
   const shapeIcon = document.getElementById('node-shape-icon');
@@ -355,6 +361,23 @@ function selectNode(node) {
   node.removeClass('faded');
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
+}
+
+// ── orientToNode — pan + zoom to a node by id, show node + neighbourhood ─────
+function orientToNode(nodeId) {
+  const n = cy.getElementById(nodeId);
+  if (!n || !n.length) return;
+  // Fit to the node's closed neighbourhood (node + all direct connections)
+  // so the viewer sees the node in context, not just a lone circle.
+  const neighbourhood = n.closedNeighborhood();
+  cy.animate({
+    fit: { eles: neighbourhood, padding: 80 },
+    duration: 500,
+    easing: 'ease-in-out-cubic',
+  });
+  // Flash the node border briefly to draw the eye
+  n.addClass('bani-match');
+  setTimeout(() => n.removeClass('bani-match'), 1400);
 }
 
 // ── rec-filter event listener — bracket-aware (ADR-018) ──────────────────────

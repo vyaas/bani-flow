@@ -165,7 +165,11 @@
   /* ── node header (collapsed single-line) ── */
   #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   #node-header { display: flex; align-items: center; gap: 5px; }
-  #node-name { font-size: 0.85rem; color: var(--accent); font-weight: bold; }
+  #node-name {
+    font-size: 0.85rem; color: var(--accent); font-weight: bold;
+    cursor: pointer;
+  }
+  #node-name:hover { text-decoration: underline; }
   #node-lifespan { font-size: 0.70rem; color: var(--fg-muted); margin-left: 4px; }
   .node-wiki-link {
     margin-left: auto; flex-shrink: 0;
@@ -341,16 +345,91 @@
 
   /* title bar / drag handle */
   .mp-bar {
-    display: flex; align-items: center; gap: 8px;
-    padding: 7px 10px;
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 8px;
     background: var(--bg-input); border-radius: 4px 4px 0 0;
     cursor: grab; border-bottom: 1px solid var(--border-strong);
+    flex-wrap: nowrap; overflow: hidden;
   }
   .mp-bar:active { cursor: grabbing; }
+
+  /* plain concert/track title — fills remaining space */
   .mp-title {
-    flex: 1; font-size: 0.78rem; font-weight: bold; color: var(--accent);
+    flex: 1; font-size: 0.74rem; color: var(--fg-sub);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-width: 0;
   }
+
+  /* em-dash separator between artist chip and title */
+  .mp-bar-sep {
+    flex-shrink: 0; font-size: 0.74rem; color: var(--fg-muted);
+  }
+
+  /* right-side group: tracklist toggle + close */
+  .mp-bar-right {
+    display: flex; align-items: center; gap: 2px;
+    flex-shrink: 0; margin-left: auto;
+  }
+
+  /* ── Artist chip in player bar ── */
+  .mp-artist-chip {
+    display: inline-flex; align-items: center;
+    padding: 1px 7px;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    color: var(--accent);
+    font-size: 0.74rem; font-weight: bold;
+    cursor: pointer; user-select: none;
+    background: transparent; flex-shrink: 0;
+    white-space: nowrap;
+    transition: background 0.12s, color 0.12s;
+  }
+  .mp-artist-chip:hover {
+    background: rgba(211,134,155,0.12);
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
+
+  /* ── Raga chip in player bar — mirrors .raga-chip style ── */
+  .mp-raga-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 1px 7px;
+    border: 1px solid var(--accent-match);
+    border-radius: 10px;
+    color: var(--accent-match);
+    font-size: 0.70rem; font-weight: bold;
+    cursor: pointer; user-select: none;
+    background: transparent; flex-shrink: 0;
+    white-space: nowrap;
+    transition: background 0.12s, color 0.12s;
+  }
+  .mp-raga-chip::before { content: '◈'; font-size: 0.60rem; opacity: 0.8; }
+  .mp-raga-chip:hover {
+    background: rgba(131,165,152,0.12);
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
+
+  /* ── Composition chip in player bar ── */
+  .mp-comp-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 1px 7px;
+    border: 1px solid var(--accent-sub);
+    border-radius: 10px;
+    color: var(--accent-sub);
+    font-size: 0.70rem; font-weight: bold;
+    cursor: pointer; user-select: none;
+    background: transparent; flex-shrink: 0;
+    white-space: nowrap;
+    transition: background 0.12s, color 0.12s;
+  }
+  .mp-comp-chip::before { content: '♩'; font-size: 0.60rem; opacity: 0.8; }
+  .mp-comp-chip:hover {
+    background: rgba(131,165,152,0.08);
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
+
   .mp-close {
     background: none; border: none; color: var(--fg-muted);
     font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
@@ -365,6 +444,14 @@
   .mp-iframe {
     position: absolute; top: 0; left: 0;
     width: 100%; height: 100%; border: none;
+  }
+
+  /* ── footer strip: raga + composition navigation chips ── */
+  .mp-footer {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    padding: 5px 10px;
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border-strong);
   }
 
   /* resize grip at bottom */

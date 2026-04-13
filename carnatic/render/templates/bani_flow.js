@@ -709,10 +709,27 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
         row.artistLabel,
         row.track.offset_seconds || undefined,
         concertTitle,
-        playerTracks
+        playerTracks,
+        {
+          nodeId:        row.nodeId || null,
+          ragaId:        row.track.raga_id || null,
+          compositionId: row.track.composition_id || null,
+        }
       );
     } else {
-      openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel, undefined);
+      openOrFocusPlayer(
+        row.track.vid,
+        row.track.label,
+        row.artistLabel,
+        undefined,
+        undefined,
+        undefined,
+        {
+          nodeId:        row.nodeId || null,
+          ragaId:        row.track.raga_id || null,
+          compositionId: row.track.composition_id || null,
+        }
+      );
     }
   });
   row2Div.appendChild(trailPlayBtn);
