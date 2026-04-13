@@ -45282,6 +45282,34 @@ function svgEl(tag, attrs) {
   return el;
 }
 
+// Append a text label with a semi-transparent dark background pill to `layer`.
+// cx, cy: centre of the label. extraAttrs: additional SVG text attributes (e.g. class).
+// Returns the <text> element (background rect is inserted just before it).
+function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs) {
+  const PAD_X = 3, PAD_Y = 1.5;
+  // Estimate text width from character count (monospace approximation)
+  const charW = fontSize * 0.55;
+  const tw = text.length * charW + PAD_X * 2;
+  const th = fontSize + PAD_Y * 2;
+  const bg = svgEl('rect', {
+    x: cx - tw / 2, y: cy - th / 2,
+    width: tw, height: th, rx: 2, ry: 2,
+    fill: '#1d2021', opacity: 0.72, 'pointer-events': 'none'
+  });
+  // Carry over the FULL class so _collapseAll querySelectorAll('.sat-label') removes both rect and text
+  if (extraAttrs && extraAttrs.class) bg.setAttribute('class', extraAttrs.class);
+  if (extraAttrs && extraAttrs['data-janya-id']) bg.setAttribute('data-janya-id', extraAttrs['data-janya-id']);
+  layer.appendChild(bg);
+  const t = svgEl('text', Object.assign({
+    x: cx, y: cy,
+    'text-anchor': 'middle', 'dominant-baseline': 'middle',
+    'pointer-events': 'none'
+  }, extraAttrs || {}));
+  t.textContent = text;
+  layer.appendChild(t);
+  return t;
+}
+
 function polar(cx, cy, r, angleDeg) {
   const rad = (angleDeg - 90) * Math.PI / 180;
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
@@ -45396,9 +45424,9 @@ window.drawRagaWheel = function() {
   const R_COMP  = minDim * 0.72;
   const R_MUSC  = minDim * 0.88;
   const NR_MELA  = Math.max(4,  minDim * 0.013);
-  const NR_JANYA = Math.max(4,  minDim * 0.014);
-  const NR_COMP  = Math.max(4,  minDim * 0.013);
-  const NR_MUSC  = Math.max(4,  minDim * 0.013);
+  const NR_JANYA = Math.max(3,  minDim * 0.008);
+  const NR_COMP  = Math.max(3,  minDim * 0.008);
+  const NR_MUSC  = Math.max(3,  minDim * 0.008);
 
   // Build lookups
   const melaByNum = {};
@@ -45771,15 +45799,11 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
       });
       // Janya label goes into _labelLayer so it is always on top
       if (_labelLayer) {
-        const jLbl = svgEl('text', {
-          x: jPos.x, y: jPos.y + NR_JANYA + Math.max(3, minDim * 0.01),
-          'text-anchor': 'middle', 'dominant-baseline': 'hanging',
-          fill: '#d5c4a1', 'font-size': Math.max(7, minDim * 0.011) + 'px',
-          'pointer-events': 'none', class: 'sat-label sat-label-janya',
-          'data-janya-id': janya.id
+        const jFontSize = Math.max(7, minDim * 0.011);
+        _labelWithBg(_labelLayer, janya.name, jPos.x, jPos.y, jFontSize, {
+          fill: '#d5c4a1', 'font-size': jFontSize + 'px',
+          class: 'sat-label sat-label-janya', 'data-janya-id': janya.id
         });
-        jLbl.textContent = janya.name;
-        _labelLayer.appendChild(jLbl);
       }
       g.appendChild(jg);
     });
@@ -45843,14 +45867,11 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     cg.appendChild(cCircle);
     // Label goes into _labelLayer so it is always rendered on top of all circles
     if (_labelLayer) {
-      const cLbl = svgEl('text', {
-        x: cPos.x, y: cPos.y + NR_COMP + Math.max(2, minDim * 0.008),
-        'text-anchor': 'middle', 'dominant-baseline': 'hanging',
-        fill: '#d5c4a1', 'font-size': Math.max(6, minDim * 0.010) + 'px',
-        'pointer-events': 'none', class: 'sat-label'
+      const cFontSize = Math.max(6, minDim * 0.010);
+      _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
+        fill: '#d5c4a1', 'font-size': cFontSize + 'px',
+        class: 'sat-label'
       });
-      cLbl.textContent = item.title || '';
-      _labelLayer.appendChild(cLbl);
     }
 
     cg.addEventListener('mouseenter', () => {
@@ -46025,14 +46046,11 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     mg.appendChild(mCircle);
     // Label goes into _labelLayer so it is always rendered on top of all circles
     if (_labelLayer) {
-      const mLbl = svgEl('text', {
-        x: mPos.x, y: mPos.y + NR_MUSC + Math.max(2, minDim * 0.008),
-        'text-anchor': 'middle', 'dominant-baseline': 'hanging',
-        fill: '#d5c4a1', 'font-size': Math.max(6, minDim * 0.010) + 'px',
-        'pointer-events': 'none', class: 'sat-label sat-label-musc'
+      const mFontSize = Math.max(6, minDim * 0.010);
+      _labelWithBg(_labelLayer, mName, mPos.x, mPos.y, mFontSize, {
+        fill: '#d5c4a1', 'font-size': mFontSize + 'px',
+        class: 'sat-label sat-label-musc'
       });
-      mLbl.textContent = mName;
-      _labelLayer.appendChild(mLbl);
     }
 
     mg.addEventListener('mouseenter', () => {
