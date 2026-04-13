@@ -45764,9 +45764,10 @@ window.drawRagaWheel = function() {
   window.addEventListener('mousemove', _wheelMouseMove);
   window.addEventListener('mouseup',   _wheelMouseUp);
 
-  // Double-click to reset pan/zoom
+  // Double-click on empty canvas → reset pan/zoom (guard: not a pan-end, not a node dblclick)
   svg.addEventListener('dblclick', (e) => {
     e.stopPropagation();
+    if (_dragMoved) { _dragMoved = false; return; }
     _vx = 0; _vy = 0; _vscale = 1;
     _applyTransform();
   });
@@ -45851,6 +45852,11 @@ window.drawRagaWheel = function() {
           _expandedMela = raga.id;
           triggerBaniSearch('raga', raga.id);  // sync bani flow to this mela
         }
+      });
+      g.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        if (_dragMoved) return;
+        if (typeof openMetaInspector === 'function') openMetaInspector('mela', raga);
       });
     }
     vp.appendChild(g);
@@ -45977,6 +45983,11 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
           compsByRaga, rtpByRaga, melaColor, minDim);
         triggerBaniSearch('raga', janya.id);
       });
+      jg.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        if (_dragMoved) return;
+        if (typeof openMetaInspector === 'function') openMetaInspector('janya', janya);
+      });
       // Janya label goes into _labelLayer so it is always on top
       if (_labelLayer) {
         const jFontSize = Math.max(7, minDim * 0.011);
@@ -46080,6 +46091,11 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       showWheelTooltip(svg, cPos.x, cPos.y, lines);
     });
     cg.addEventListener('mouseleave', hideWheelTooltip);
+    cg.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      if (_dragMoved) return;
+      if (typeof openMetaInspector === 'function') openMetaInspector('composition', item);
+    });
     cg.addEventListener('click', (e) => {
       e.stopPropagation();
       vp.querySelectorAll('.musc-group').forEach(el => el.remove());
