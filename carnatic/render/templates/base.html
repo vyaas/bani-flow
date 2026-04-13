@@ -697,6 +697,47 @@
   .mp-track-item.mp-track-active .mp-track-meta {
     color: var(--teal);
   }
+
+  /* ── ADR-027: reflective metadata inspector ── */
+  #meta-inspector {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px; max-height: 70vh;
+    background: var(--bg1);
+    border: 1px solid var(--yellow);
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+    display: flex; flex-direction: column;
+    z-index: 1000;
+    font-family: 'Courier New', monospace;
+  }
+  #mi-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px;
+    background: var(--bg2); border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid var(--bg3);
+    flex-shrink: 0;
+  }
+  #mi-title {
+    flex: 1; font-size: 0.78rem; color: var(--yellow);
+    font-weight: bold; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  #mi-copy, #mi-close {
+    background: none; border: none; color: var(--gray);
+    font-size: 1rem; cursor: pointer; padding: 0 3px; line-height: 1;
+  }
+  #mi-copy:hover { color: var(--aqua); }
+  #mi-close:hover { color: var(--red); }
+  #mi-pre {
+    flex: 1; overflow-y: auto;
+    padding: 12px 14px;
+    font-size: 0.72rem; color: var(--fg2);
+    line-height: 1.5; white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+  }
 </style>
 </head>
 <body>
@@ -830,6 +871,16 @@
     </div>
   </div>
 </div>
+<!-- ADR-027: reflective metadata inspector overlay -->
+<div id="meta-inspector" style="display:none">
+  <div id="mi-bar">
+    <span id="mi-title"></span>
+    <button id="mi-copy" title="Copy JSON to clipboard">&#10697;</button>
+    <button id="mi-close" title="Close">&#10005;</button>
+  </div>
+  <pre id="mi-pre"></pre>
+</div>
+
 <!-- INJECT_SCRIPTS -->
 </body>
 </html>

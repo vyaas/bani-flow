@@ -457,8 +457,39 @@ cy.on('tap', 'node', evt => {
 });
 
 cy.on('dbltap', 'node', evt => {
-  const url = evt.target.data('url');
-  if (url) window.open(url, '_blank');
+  openMetaInspector('node', evt.target.data());
+});
+
+cy.on('dbltap', 'edge', evt => {
+  openMetaInspector('edge', evt.target.data());
+});
+
+// ── ADR-027: reflective metadata inspector ────────────────────────────────────
+function openMetaInspector(type, dataObj) {
+  const inspector = document.getElementById('meta-inspector');
+  document.getElementById('mi-title').textContent =
+    type + ' · ' + (dataObj.id || '');
+  document.getElementById('mi-pre').textContent =
+    JSON.stringify(dataObj, null, 2);
+  inspector.style.display = 'flex';
+}
+
+document.getElementById('mi-close').addEventListener('click', () => {
+  document.getElementById('meta-inspector').style.display = 'none';
+});
+
+document.getElementById('mi-copy').addEventListener('click', () => {
+  const text = document.getElementById('mi-pre').textContent;
+  navigator.clipboard.writeText(text).catch(() => {
+    // fallback for environments without clipboard API
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
 });
 
 // ── edge tap ──────────────────────────────────────────────────────────────────
