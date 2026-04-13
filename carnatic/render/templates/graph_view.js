@@ -203,7 +203,7 @@ function applyChipFilters() {
 
   if (!anyActive) {
     cy.elements().removeClass('chip-faded');
-    document.getElementById('filter-clear-all').style.display = 'none';
+    document.getElementById('filter-clear-all').style.visibility = 'hidden';
     setScopeLabels(false);
     return;
   }
@@ -230,7 +230,7 @@ function applyChipFilters() {
     }
   });
 
-  document.getElementById('filter-clear-all').style.display = 'inline';
+  document.getElementById('filter-clear-all').style.visibility = 'visible';
   setScopeLabels(true);
 }
 
@@ -239,7 +239,7 @@ function clearAllChipFilters() {
   activeFilters.instrument.clear();
   document.querySelectorAll('.filter-chip.active').forEach(c => c.classList.remove('active'));
   cy.elements().removeClass('chip-faded');
-  document.getElementById('filter-clear-all').style.display = 'none';
+  document.getElementById('filter-clear-all').style.visibility = 'hidden';
   setScopeLabels(false);
 }
 
