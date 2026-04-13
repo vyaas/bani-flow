@@ -46495,7 +46495,8 @@ let _labelLayer = null;  // top-most <g> in vp — all text labels go here
 let _wheelMouseMove = null;
 let _wheelMouseUp   = null;
 
-// Pan/zoom state — module-level so it survives drawRagaWheel redraws
+// Pan/zoom state — inside the IIFE but exposed on window so orientRagaWheel
+// (defined outside the IIFE) can read/write them for the pan animation.
 let _vx = 0, _vy = 0, _vscale = 1;
 let _dragging = false, _dragStartX = 0, _dragStartY = 0, _dragVX = 0, _dragVY = 0;
 let _dragMoved = false;
@@ -46506,6 +46507,16 @@ function _applyTransform() {
   const vp = document.getElementById('wheel-viewport');
   if (vp) vp.setAttribute('transform', `translate(${_vx},${_vy}) scale(${_vscale})`);
 }
+
+// Expose pan/zoom state and transform function on window so orientRagaWheel
+// (outside this IIFE) can drive the pan animation.
+window._wheelGetVx      = () => _vx;
+window._wheelGetVy      = () => _vy;
+window._wheelGetVscale  = () => _vscale;
+window._wheelSetVx      = (v) => { _vx = v; };
+window._wheelSetVy      = (v) => { _vy = v; };
+window._wheelSetVscale  = (v) => { _vscale = v; };
+window._wheelApplyTransform = () => _applyTransform();
 
 // Re-append _labelLayer so it is always the last (topmost) child of vp
 function _bringLabelsToFront(vp) {
@@ -46775,7 +46786,9 @@ window.drawRagaWheel = function() {
           circle.setAttribute('stroke', THEME.accentSelect);
           circle.setAttribute('stroke-width', 2.5);
           _expandedMela = raga.id;
-          triggerBaniSearch('raga', raga.id);  // sync bani flow to this mela
+          // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
+          // re-entering orientRagaWheel and resetting the wheel mid-animation.
+          if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', raga.id);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -46905,7 +46918,9 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
           R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
           compsByRaga, rtpByRaga, melaColor, minDim);
-        triggerBaniSearch('raga', janya.id);
+        // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
+        // re-entering orientRagaWheel and resetting the wheel mid-animation.
+        if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
       });
       jg.addEventListener('dblclick', (e) => {
         e.stopPropagation();
@@ -47273,6 +47288,87 @@ function syncRagaWheelToFilter(type, id) {
   drawRagaWheel();
   const targetCompId = (type === 'comp') ? id : null;
   window._triggerMelaExpand(melaRaga.melakarta, raga.is_melakarta ? null : ragaId, targetCompId);
+}
+
+/**
+ * orientRagaWheel(type, id)
+ *
+ * Only acts when the raga wheel is the active view.  Does NOT switch views.
+ * Waits for syncRagaWheelToFilter (called by applyBaniFilter just before this)
+ * to finish its expand sequence, then animates the viewport to centre on the
+ * mela that contains the raga (or the raga of the composition) at zoom 1.8.
+ *
+ * @param {'raga'|'comp'} type
+ * @param {string}        id    — raga id or composition id
+ */
+function orientRagaWheel(type, id) {
+  // Only act when the raga wheel is visible
+  if (currentView !== 'raga') return;
+
+  // Resolve composition → raga_id
+  let ragaId = id;
+  if (type === 'comp') {
+    const comp = compositions.find(c => c.id === id);
+    if (!comp || !comp.raga_id) return;
+    ragaId = comp.raga_id;
+  }
+
+  const raga = ragas.find(r => r.id === ragaId);
+  if (!raga) return;
+
+  const melaId = raga.is_melakarta ? raga.id : raga.parent_raga;
+  if (!melaId) return;
+  const melaRaga = ragas.find(r => r.id === melaId);
+  if (!melaRaga || !melaRaga.melakarta) return;
+
+  // syncRagaWheelToFilter (called by applyBaniFilter just before us) has already
+  // called drawRagaWheel() + _triggerMelaExpand, which sets _wheelSyncInProgress=true
+  // and clears it after ~50ms.  We poll until it clears, then pan/zoom.
+  function waitAndPan() {
+    if (window._wheelSyncInProgress) {
+      setTimeout(waitAndPan, 20);
+      return;
+    }
+
+    const svg = document.getElementById('raga-wheel');
+    if (!svg) return;
+    const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
+    const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
+    const minDim = Math.min(W, H);
+    const R_MELA = minDim * 0.38;
+    const melaAngle = (melaRaga.melakarta - 1) * 5;
+    const rad = (melaAngle - 90) * Math.PI / 180;
+    const melaX = W / 2 + R_MELA * Math.cos(rad);
+    const melaY = H / 2 + R_MELA * Math.sin(rad);
+
+    // Target: centre the mela node in the SVG viewport at zoom 1.8
+    const TARGET_SCALE = 1.8;
+    const targetVX = W / 2 - TARGET_SCALE * melaX;
+    const targetVY = H / 2 - TARGET_SCALE * melaY;
+
+    const startVX = window._wheelGetVx(), startVY = window._wheelGetVy(),
+          startScale = window._wheelGetVscale();
+    const DURATION = 500;
+    const startTime = performance.now();
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function step(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / DURATION);
+      const e = easeInOutCubic(t);
+      window._wheelSetVx(startVX    + (targetVX    - startVX)    * e);
+      window._wheelSetVy(startVY    + (targetVY    - startVY)    * e);
+      window._wheelSetVscale(startScale + (TARGET_SCALE - startScale) * e);
+      window._wheelApplyTransform();
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  waitAndPan();
 }
 
 
@@ -48119,6 +48215,13 @@ function triggerBaniSearch(type, id) {
     }
   }
   applyBaniFilter(type, id);
+
+  // When a raga or composition is selected, orient the raga wheel —
+  // expand the mela and animate the viewport to centre on it (only if
+  // the raga wheel is the active view).
+  if ((type === 'raga' || type === 'comp') && typeof orientRagaWheel === 'function') {
+    orientRagaWheel(type, id);
+  }
 }
 
 

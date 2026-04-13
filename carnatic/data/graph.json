@@ -2583,6 +2583,30 @@
         "instrument": "mridangam",
         "bani": "palani",
         "youtube": []
+      },
+      {
+        "id": "t_v_sankaranarayanan",
+        "label": "T. V. Sankaranarayanan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+            "label": "T. V. Sankaranarayanan - Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1945,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "Madurai Mani Iyer",
+        "youtube": [
+          {
+            "url": "https://youtu.be/XHAZjTEzKsg",
+            "label": "jAlandhara supIThastitE · Valaji · Rupaka - T. V. Sankaranarayanan",
+            "composition_id": "jalandhara_supithasite",
+            "raga_id": "valaji"
+          }
+        ]
       }
     ],
     "edges": [
@@ -2910,6 +2934,13 @@
         "confidence": 0.97,
         "source_url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
         "note": "son and disciple; accompanied his father in double-mridangam concerts; carried the Palghat school forward"
+      },
+      {
+        "source": "madurai_mani_iyer",
+        "target": "t_v_sankaranarayanan",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+        "note": "principal guru and maternal uncle"
       }
     ]
   },
@@ -4568,6 +4599,21 @@
         ],
         "notes": "Janya of Kharaharapriya (mela 22). Pentatonic (audava-audava) raga; uses S R2 M1 P N2. One of the most popular ragas in Carnatic music, frequently used for mangalam and tillanas.",
         "is_melakarta": false
+      },
+      {
+        "id": "valaji",
+        "name": "Valaji",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "chakravakam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Valaji",
+            "label": "Valaji - Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya of Chakravakam (mela 16). Arohanam: S G3 P D2 N2 S; Avarohanam: S N2 D2 P G3 S. Pentatonic (audava-audava), omits rishabham and madhyamam."
       }
     ],
     "composers": [
@@ -5254,6 +5300,20 @@
           {
             "url": "https://en.wikipedia.org/wiki/Tevaram",
             "label": "Tevaram - Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "muthiah_bhagavatar",
+        "name": "Harikesanallur Muthiah Bhagavatar",
+        "musician_node_id": null,
+        "born": 1877,
+        "died": 1945,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+            "label": "Muthiah Bhagavatar - Wikipedia",
             "type": "wikipedia"
           }
         ]
@@ -7867,6 +7927,21 @@
           }
         ],
         "notes": "Tyagaraja kriti in Shankarabharanam."
+      },
+      {
+        "id": "jalandhara_supithasite",
+        "title": "jAlandhara supIThastitE",
+        "composer_id": "muthiah_bhagavatar",
+        "raga_id": "valaji",
+        "tala": "Rupaka",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c6069.shtml",
+            "label": "jAlandhara supIThastitE - karnatik.com",
+            "type": "article"
+          }
+        ],
+        "notes": "Kriti by Harikesanallur Muthiah Bhagavatar in Valaji raga, Rupaka tala. Pallavi: jAlandhara supIThasitE japA kusuma bhAsurE."
       }
     ]
   },

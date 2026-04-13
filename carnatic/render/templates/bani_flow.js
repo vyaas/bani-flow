@@ -841,5 +841,12 @@ function triggerBaniSearch(type, id) {
     }
   }
   applyBaniFilter(type, id);
+
+  // When a raga or composition is selected, orient the raga wheel —
+  // expand the mela and animate the viewport to centre on it (only if
+  // the raga wheel is the active view).
+  if ((type === 'raga' || type === 'comp') && typeof orientRagaWheel === 'function') {
+    orientRagaWheel(type, id);
+  }
 }
 
