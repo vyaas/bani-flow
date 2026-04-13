@@ -516,16 +516,18 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
       const jAngle = melaAngle + offset;
       const jPos = polar(cx, cy, R_JANYA, jAngle);
 
-      g.appendChild(svgEl('line', {
+      const janyaConnLine = svgEl('line', {
         x1: melaPos.x, y1: melaPos.y, x2: jPos.x, y2: jPos.y,
         stroke: melaColor, 'stroke-width': 1, opacity: 0.5, 'pointer-events': 'none'
-      }));
+      });
+      g.appendChild(janyaConnLine);
 
       const jCircle = svgEl('circle', {
         cx: jPos.x, cy: jPos.y, r: NR_JANYA,
         fill: melaColor, opacity: 0.75, stroke: '#ebdbb2', 'stroke-width': 1, cursor: 'pointer'
       });
       const jg = svgEl('g', { class: 'janya-node', 'data-id': janya.id });
+      jg._connLine = janyaConnLine;  // stash for retrieval by comp click handler
       jg.appendChild(jCircle);
 
       jg.addEventListener('mouseenter', () => {
@@ -537,7 +539,8 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
       jg.addEventListener('click', (e) => {
         e.stopPropagation();
         vp.querySelectorAll('.comp-group, .musc-group').forEach(el => el.remove());
-        if (_labelLayer) _labelLayer.querySelectorAll('.sat-label').forEach(el => el.remove());
+        // Remove comp and musician labels only — preserve janya labels (.sat-label-janya)
+        if (_labelLayer) _labelLayer.querySelectorAll('.sat-label:not(.sat-label-janya)').forEach(el => el.remove());
         vp.querySelectorAll('.janya-node circle').forEach(c => {
           c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
           c.setAttribute('opacity', '0.35');   // dim all janyas first
@@ -564,7 +567,8 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
           x: jPos.x, y: jPos.y + NR_JANYA + Math.max(3, minDim * 0.01),
           'text-anchor': 'middle', 'dominant-baseline': 'hanging',
           fill: '#d5c4a1', 'font-size': Math.max(7, minDim * 0.011) + 'px',
-          'pointer-events': 'none', class: 'sat-label sat-label-janya'
+          'pointer-events': 'none', class: 'sat-label sat-label-janya',
+          'data-janya-id': janya.id
         });
         jLbl.textContent = janya.name;
         _labelLayer.appendChild(jLbl);
@@ -614,10 +618,11 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     const cAngle = jAngle + offset;
     const cPos = polar(cx, cy, R_COMP, cAngle);
 
-    g.appendChild(svgEl('line', {
+    const connLine = svgEl('line', {
       x1: jPos.x, y1: jPos.y, x2: cPos.x, y2: cPos.y,
       stroke: parentColor, 'stroke-width': 1, opacity: 0.4, 'pointer-events': 'none'
-    }));
+    });
+    g.appendChild(connLine);
 
     // RTP nodes are diamond-shaped (rotated square) in a distinct colour
     const isRtp = item._isRtp;
@@ -674,6 +679,10 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
         c.setAttribute('opacity', '0.35');   // dim all comp nodes first
       });
+      // Dim all connector lines (mela→janya and janya→comp)
+      vp.querySelectorAll('.janya-group line, .comp-group line').forEach(l => {
+        l.setAttribute('opacity', '0.08');
+      });
       if (_expandedComp === item.id) {
         // un-dim all on collapse
         vp.querySelectorAll('.comp-node circle').forEach(c => c.setAttribute('opacity', '0.85'));
@@ -686,6 +695,9 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
           c.setAttribute('opacity', '0.75');
         });
         if (_labelLayer) _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => el.style.removeProperty('display'));
+        // Restore connector lines
+        vp.querySelectorAll('.janya-group line').forEach(l => l.setAttribute('opacity', '0.5'));
+        vp.querySelectorAll('.comp-group line').forEach(l => l.setAttribute('opacity', '0.4'));
         _expandedComp = null;
         return;
       }
@@ -696,21 +708,28 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       });
       // Hide all janya nodes except the parent of this comp (janya.id).
       // For mela-direct comps, janya IS the mela — hide all janya nodes.
+      let parentJanyaConnLine = null;
       vp.querySelectorAll('.janya-node').forEach(jn => {
         const jid = jn.getAttribute('data-id');
-        jn.style.display = (jid === janya.id) ? '' : 'none';
+        if (jid === janya.id) {
+          jn.style.display = '';
+          parentJanyaConnLine = jn._connLine || null;
+        } else {
+          jn.style.display = 'none';
+        }
       });
-      // Hide janya labels for all but the parent janya
+      // Show only the parent janya's label; hide all others
       if (_labelLayer) {
-        // sat-label-janya elements don't carry a data-id; they are ordered the same
-        // as the janya nodes. Use positional matching via the janya-node data-id.
-        // Simpler: hide all janya labels when a comp is selected — the selected
-        // janya node itself is still visible as a circle.
-        _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => { el.style.display = 'none'; });
+        _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
+          el.style.display = el.getAttribute('data-janya-id') === janya.id ? '' : 'none';
+        });
       }
+      // Restore the mela→janya connector line for the parent janya
+      if (parentJanyaConnLine) parentJanyaConnLine.setAttribute('opacity', '0.5');
       cCircle.setAttribute('stroke', '#fabd2f');
       cCircle.setAttribute('stroke-width', 2.5);
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
+      connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
       _expandedComp = item.id;
       // Sync bani flow — guard _wheelSyncInProgress so syncRagaWheelToFilter
       // does not trigger a full drawRagaWheel() redraw that would undo the dimming.
