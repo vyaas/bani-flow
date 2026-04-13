@@ -35,7 +35,7 @@ if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 from carnatic.render.sync import sync_graph_json
-from carnatic.render.data_loaders import load_compositions, load_recordings
+from carnatic.render.data_loaders import load_compositions, load_recordings, load_tanpura
 from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups
 from carnatic.render.graph_builder import build_elements
 from carnatic.render.html_generator import render_html
@@ -77,6 +77,10 @@ def main() -> None:
     # Step 3: build Cytoscape elements
     elements = build_elements(graph)
 
+    # Step 3b: load tanpura drone data (ADR-029)
+    tanpura_data = load_tanpura(ROOT / "data")
+    print(f"[LOAD] tanpura.json  ({len(tanpura_data)} entries)")
+
     # Step 4: render HTML
     html = render_html(
         elements, graph, comp_data,
@@ -86,6 +90,7 @@ def main() -> None:
         composition_to_performances,
         raga_to_performances,
         perf_to_performances,
+        tanpura_data=tanpura_data,
     )
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")

@@ -544,3 +544,96 @@ function buildRecordingsList(nodeId, nodeData) {
   recFilter.style.display = hasContent ? 'block' : 'none';
 }
 
+// ── Named-player API (ADR-029: Sruti Bar) ─────────────────────────────────────
+// A secondary registry keyed by a string playerId (e.g. 'sruti').
+// Allows sruti_bar.js to open/close a singleton drone player without
+// interfering with the vid-keyed concert player registry.
+const namedPlayerRegistry = new Map();
+
+/**
+ * openPlayer(videoId, title, playerId)
+ *
+ * Opens a floating YouTube player for the given videoId.
+ * - If playerId is provided, the player is tracked in namedPlayerRegistry
+ *   under that key. A pre-existing player with the same playerId is closed
+ *   first (singleton behaviour). The player spawns at a fixed top-right
+ *   position rather than the default stacked offset.
+ * - If playerId is omitted, falls through to openOrFocusPlayer() (legacy
+ *   concert player behaviour, keyed by vid).
+ */
+function openPlayer(videoId, title, playerId) {
+  if (!playerId) {
+    // Legacy path: delegate to existing concert player logic
+    openOrFocusPlayer(videoId, title, '', undefined, undefined, []);
+    return;
+  }
+
+  // Close any existing player with this playerId
+  closePlayer(playerId);
+
+  const el = document.createElement('div');
+  el.className = 'media-player';
+
+  // Fixed position: top-right of the canvas, below the sruti bar + header
+  const main = document.getElementById('main');
+  const mainRect = main ? main.getBoundingClientRect() : { width: window.innerWidth };
+  const playerWidth = 340;
+  const rightMargin = 18;
+  const topMargin   = 18;
+  el.style.cssText = `top:${topMargin}px; right:${rightMargin}px; left:auto; z-index:${++topZ};`;
+  // Override absolute positioning to use right-anchored placement
+  el.style.position = 'absolute';
+  el.style.right    = rightMargin + 'px';
+  el.style.top      = topMargin + 'px';
+  el.style.left     = 'auto';
+  el.style.width    = playerWidth + 'px';
+
+  el.innerHTML = `
+    <div class="mp-bar">
+      <span class="mp-title">${title}</span>
+      <button class="mp-close" title="Close">\u2715</button>
+    </div>
+    <div class="mp-video-wrap">
+      <iframe class="mp-iframe"
+        src="${ytEmbedUrl(videoId)}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+        allowfullscreen></iframe>
+    </div>
+    <div class="mp-resize" title="Drag to resize"></div>
+  `;
+
+  const instance = {
+    el,
+    iframe:  el.querySelector('.mp-iframe'),
+    titleEl: el.querySelector('.mp-title'),
+    vid:     videoId,
+    playerId,
+  };
+
+  el.querySelector('.mp-close').addEventListener('click', () => {
+    closePlayer(playerId);
+  });
+
+  wireDrag(el, el.querySelector('.mp-bar'));
+  wireResize(el, el.querySelector('.mp-resize'));
+  el.addEventListener('mousedown', () => bringToFront(instance));
+
+  if (main) main.appendChild(el);
+  bringToFront(instance);
+  namedPlayerRegistry.set(playerId, instance);
+}
+
+/**
+ * closePlayer(playerId)
+ *
+ * Closes and removes the named player. Stops the iframe src to halt audio.
+ * No-op if no player with that playerId exists.
+ */
+function closePlayer(playerId) {
+  if (!namedPlayerRegistry.has(playerId)) return;
+  const instance = namedPlayerRegistry.get(playerId);
+  instance.iframe.src = '';   // stop audio immediately
+  instance.el.remove();
+  namedPlayerRegistry.delete(playerId);
+}
+

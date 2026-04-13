@@ -693,6 +693,66 @@
     color: var(--accent-match);
   }
 
+  /* ── Sruti Bar — inline in header (ADR-029) ── */
+  #sruti-strip {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;                  /* fills space between title and controls */
+    justify-content: center;
+    min-width: 0;
+  }
+  /* Power indicator ● */
+  .sruti-power {
+    font-size: 0.70rem;
+    color: var(--fg-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-right: 8px;
+    transition: color 0.15s;
+    user-select: none;
+    line-height: 1;
+  }
+  .sruti-power.sruti-on  { color: var(--accent-sub); }
+  .sruti-power:hover     { color: var(--accent-danger); }
+  #sruti-buttons {
+    display: flex;
+    gap: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .sruti-btn {
+    flex: 1;                  /* equispaced: each button takes equal share */
+    padding: 3px 2px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    border-right: none;       /* collapse borders between adjacent buttons */
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+    font-family: var(--font-ui);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+    white-space: nowrap;
+    user-select: none;
+    border-radius: 0;
+  }
+  .sruti-btn:first-child { border-radius: 2px 0 0 2px; }
+  .sruti-btn:last-child  { border-right: 1px solid var(--border-strong); border-radius: 0 2px 2px 0; }
+  .sruti-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg-input);
+    z-index: 1; position: relative;
+  }
+  .sruti-btn.sruti-active {
+    border-color: var(--accent-sub);
+    color: var(--accent-sub);
+    background: var(--bg-input);
+    z-index: 1; position: relative;
+  }
+  .sruti-btn.sharp { font-size: 0.62rem; }
+
   /* ── ADR-027: reflective metadata inspector — monospace retained for JSON data ── */
   #meta-inspector {
     position: fixed;
@@ -739,7 +799,11 @@
 
 <header>
   <h1>Carnatic · Guru-Shishya Parampara</h1>
-  <span class="stats">{node_count} musicians · {edge_count} lineage edges</span>
+  <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
+  <div id="sruti-strip">
+    <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
+    <div id="sruti-buttons"></div>
+  </div>
   <div class="controls">
     <button id="btn-fit" onclick="cy.fit()">Fit</button>
     <button id="btn-reset" onclick="cy.reset()">Reset</button>

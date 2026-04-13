@@ -56,3 +56,11 @@ def load_recordings(recordings_dir: Path, recordings_file: Path) -> dict:
     if recordings_file.exists():
         return json.loads(recordings_file.read_text(encoding="utf-8"))
     return {"recordings": []}
+
+
+def load_tanpura(data_dir: Path) -> list:
+    """Load carnatic/data/tanpura.json; return empty list if absent."""
+    path = data_dir / "tanpura.json"
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    return []

@@ -31,6 +31,7 @@ def render_html(
     composition_to_performances: dict,
     raga_to_performances: dict,
     perf_to_performances: dict,
+    tanpura_data: list | None = None,
 ) -> str:
     node_count = len(graph["nodes"])
     edge_count = len(graph["edges"])
@@ -49,6 +50,7 @@ def render_html(
     composition_to_perf_json = json.dumps(composition_to_performances, indent=2, ensure_ascii=False)
     raga_to_perf_json        = json.dumps(raga_to_performances, indent=2, ensure_ascii=False)
     perf_to_perf_json        = json.dumps(perf_to_performances, indent=2, ensure_ascii=False)
+    tanpura_json             = json.dumps(tanpura_data or [], indent=2, ensure_ascii=False)
 
     data_js = (
         f"const elements = {elements_json};\n"
@@ -68,6 +70,9 @@ def render_html(
         f"// perfToPerf: {{\"recording_id::performance_index\": [PerformanceRef]}}\n"
         f"// Enables single-performance filtering from the raga wheel.\n"
         f"const perfToPerf             = {perf_to_perf_json};\n"
+        f"\n"
+        f"// ── Tanpura drone data (ADR-029) ─────────────────────────────────────────────\n"
+        f"const tanpuraData = {tanpura_json};\n"
     )
 
     # ── Load templates ────────────────────────────────────────────────────────
@@ -75,6 +80,7 @@ def render_html(
     theme_js     = _load("theme.js")
     graph_view   = _load("graph_view.js")
     media_player = _load("media_player.js")
+    sruti_bar    = _load("sruti_bar.js")
     timeline     = _load("timeline_view.js")
     raga_wheel   = _load("raga_wheel.js")
     bani_flow    = _load("bani_flow.js")
@@ -89,12 +95,14 @@ def render_html(
 
     # ── Assemble <script> block ───────────────────────────────────────────────
     # theme.js MUST be first — it defines the THEME global used by all other scripts.
+    # sruti_bar.js MUST come after media_player.js (needs openPlayer/closePlayer).
     script_block = "\n".join([
         "<script>",
         theme_js,      # ← FIRST: defines THEME global
         data_js,
         graph_view,
         media_player,
+        sruti_bar,     # ← after media_player: needs openPlayer/closePlayer
         timeline,
         raga_wheel,
         bani_flow,

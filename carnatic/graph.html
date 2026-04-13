@@ -715,6 +715,66 @@
     color: var(--accent-match);
   }
 
+  /* ── Sruti Bar — inline in header (ADR-029) ── */
+  #sruti-strip {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;                  /* fills space between title and controls */
+    justify-content: center;
+    min-width: 0;
+  }
+  /* Power indicator ● */
+  .sruti-power {
+    font-size: 0.70rem;
+    color: var(--fg-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-right: 8px;
+    transition: color 0.15s;
+    user-select: none;
+    line-height: 1;
+  }
+  .sruti-power.sruti-on  { color: var(--accent-sub); }
+  .sruti-power:hover     { color: var(--accent-danger); }
+  #sruti-buttons {
+    display: flex;
+    gap: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .sruti-btn {
+    flex: 1;                  /* equispaced: each button takes equal share */
+    padding: 3px 2px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    border-right: none;       /* collapse borders between adjacent buttons */
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+    font-family: var(--font-ui);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+    white-space: nowrap;
+    user-select: none;
+    border-radius: 0;
+  }
+  .sruti-btn:first-child { border-radius: 2px 0 0 2px; }
+  .sruti-btn:last-child  { border-right: 1px solid var(--border-strong); border-radius: 0 2px 2px 0; }
+  .sruti-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg-input);
+    z-index: 1; position: relative;
+  }
+  .sruti-btn.sruti-active {
+    border-color: var(--accent-sub);
+    color: var(--accent-sub);
+    background: var(--bg-input);
+    z-index: 1; position: relative;
+  }
+  .sruti-btn.sharp { font-size: 0.62rem; }
+
   /* ── ADR-027: reflective metadata inspector — monospace retained for JSON data ── */
   #meta-inspector {
     position: fixed;
@@ -761,7 +821,11 @@
 
 <header>
   <h1>Carnatic · Guru-Shishya Parampara</h1>
-  <span class="stats">68 musicians · 49 lineage edges</span>
+  <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
+  <div id="sruti-strip">
+    <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
+    <div id="sruti-buttons"></div>
+  </div>
   <div class="controls">
     <button id="btn-fit" onclick="cy.fit()">Fit</button>
     <button id="btn-reset" onclick="cy.reset()">Reset</button>
@@ -44344,6 +44408,130 @@ const perfToPerf             = {
   ]
 };
 
+// ── Tanpura drone data (ADR-029) ─────────────────────────────────────────────
+const tanpuraData = [
+  {
+    "index": 1,
+    "id": "ETswzWXqjMs",
+    "url": "https://www.youtube.com/watch?v=ETswzWXqjMs",
+    "title": "Tanpura | C Scale Tanpura | Best For Meditation",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20220915",
+    "note": "C"
+  },
+  {
+    "index": 2,
+    "id": "0pN34eu7PwA",
+    "url": "https://www.youtube.com/watch?v=0pN34eu7PwA",
+    "title": "Tanpura | C Sharp Tanpura | C# Tanpura | Best For Meditation | Best For Male Singing",
+    "uploader": "The Flute Guruji",
+    "duration": 3583,
+    "upload_date": "20221006",
+    "note": "C#"
+  },
+  {
+    "index": 3,
+    "id": "S67swN0Sbps",
+    "url": "https://www.youtube.com/watch?v=S67swN0Sbps",
+    "title": "Tanpura | D Tanpura | D Scale Tanpura | Best For D Scale Flute and Singing",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20220926",
+    "note": "D"
+  },
+  {
+    "index": 4,
+    "id": "UIcIjGocZiQ",
+    "url": "https://www.youtube.com/watch?v=UIcIjGocZiQ",
+    "title": "D Sharp Scale Tanpura | D# Tanpura | Best for Meditation Yoga | Best for Singing and Relaxation",
+    "uploader": "The Flute Guruji",
+    "duration": 4536,
+    "upload_date": "20221021",
+    "note": "D#"
+  },
+  {
+    "index": 5,
+    "id": "YRb6gM4xkag",
+    "url": "https://www.youtube.com/watch?v=YRb6gM4xkag",
+    "title": "Tanpura E | E Scale Tanpura | Best for E Base Flute | Best For Meditation",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20220917",
+    "note": "E"
+  },
+  {
+    "index": 6,
+    "id": "3v5q5SAJRwU",
+    "url": "https://www.youtube.com/watch?v=3v5q5SAJRwU",
+    "title": "Tanpura | F Scale Tanpura | F Scale Tambura - 4 kattai | Best For Singing",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20221011",
+    "note": "F"
+  },
+  {
+    "index": 7,
+    "id": "HV6tvp6pA9A",
+    "url": "https://www.youtube.com/watch?v=HV6tvp6pA9A",
+    "title": "Tanpura | F Sharp Scale Tanpura | F# Scale Tanpura | Tambura 4.5 kattai",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20220919",
+    "note": "F#"
+  },
+  {
+    "index": 8,
+    "id": "yZS_58Ks05M",
+    "url": "https://www.youtube.com/watch?v=yZS_58Ks05M",
+    "title": "G Scale Tanpura - 5 kattai",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20220921",
+    "note": "G"
+  },
+  {
+    "index": 9,
+    "id": "fLrfAptmRnA",
+    "url": "https://www.youtube.com/watch?v=fLrfAptmRnA",
+    "title": "G Sharp Tanpura | G# Tanpura | Tanpura Background Music for Flute | Tanpura For Flute Practice",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20220916",
+    "note": "G#"
+  },
+  {
+    "index": 10,
+    "id": "GDqvRpQ6Rpw",
+    "url": "https://www.youtube.com/watch?v=GDqvRpQ6Rpw",
+    "title": "Tanpura | A Tanpura | A Scale Tanpura for Riyaz | Original Sound",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20221004",
+    "note": "A"
+  },
+  {
+    "index": 11,
+    "id": "OY1MlCV4QZI",
+    "url": "https://www.youtube.com/watch?v=OY1MlCV4QZI",
+    "title": "Tanpura | A Sharp Tanpura | A# Tanpura for Riyaz",
+    "uploader": "The Flute Guruji",
+    "duration": 4219,
+    "upload_date": "20220923",
+    "note": "A#"
+  },
+  {
+    "index": 12,
+    "id": "3FtaesIeSmY",
+    "url": "https://www.youtube.com/watch?v=3FtaesIeSmY",
+    "title": "Tanpura | B Scale Tanpura | Tanpura B Scale | Pa Sa Sa Sa",
+    "uploader": "The Flute Guruji",
+    "duration": 3783,
+    "upload_date": "20221018",
+    "note": "B"
+  }
+];
+
 // ── Static lookup tables ──────────────────────────────────────────────────────
 const CAKRA_NAMES = {
   1: 'Indu', 2: 'Netra', 3: 'Agni', 4: 'Veda',
@@ -45437,6 +45625,144 @@ function buildRecordingsList(nodeId, nodeData) {
   recFilter.style.display = hasContent ? 'block' : 'none';
 }
 
+// ── Named-player API (ADR-029: Sruti Bar) ─────────────────────────────────────
+// A secondary registry keyed by a string playerId (e.g. 'sruti').
+// Allows sruti_bar.js to open/close a singleton drone player without
+// interfering with the vid-keyed concert player registry.
+const namedPlayerRegistry = new Map();
+
+/**
+ * openPlayer(videoId, title, playerId)
+ *
+ * Opens a floating YouTube player for the given videoId.
+ * - If playerId is provided, the player is tracked in namedPlayerRegistry
+ *   under that key. A pre-existing player with the same playerId is closed
+ *   first (singleton behaviour). The player spawns at a fixed top-right
+ *   position rather than the default stacked offset.
+ * - If playerId is omitted, falls through to openOrFocusPlayer() (legacy
+ *   concert player behaviour, keyed by vid).
+ */
+function openPlayer(videoId, title, playerId) {
+  if (!playerId) {
+    // Legacy path: delegate to existing concert player logic
+    openOrFocusPlayer(videoId, title, '', undefined, undefined, []);
+    return;
+  }
+
+  // Close any existing player with this playerId
+  closePlayer(playerId);
+
+  const el = document.createElement('div');
+  el.className = 'media-player';
+
+  // Fixed position: top-right of the canvas, below the sruti bar + header
+  const main = document.getElementById('main');
+  const mainRect = main ? main.getBoundingClientRect() : { width: window.innerWidth };
+  const playerWidth = 340;
+  const rightMargin = 18;
+  const topMargin   = 18;
+  el.style.cssText = `top:${topMargin}px; right:${rightMargin}px; left:auto; z-index:${++topZ};`;
+  // Override absolute positioning to use right-anchored placement
+  el.style.position = 'absolute';
+  el.style.right    = rightMargin + 'px';
+  el.style.top      = topMargin + 'px';
+  el.style.left     = 'auto';
+  el.style.width    = playerWidth + 'px';
+
+  el.innerHTML = `
+    <div class="mp-bar">
+      <span class="mp-title">${title}</span>
+      <button class="mp-close" title="Close">\u2715</button>
+    </div>
+    <div class="mp-video-wrap">
+      <iframe class="mp-iframe"
+        src="${ytEmbedUrl(videoId)}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+        allowfullscreen></iframe>
+    </div>
+    <div class="mp-resize" title="Drag to resize"></div>
+  `;
+
+  const instance = {
+    el,
+    iframe:  el.querySelector('.mp-iframe'),
+    titleEl: el.querySelector('.mp-title'),
+    vid:     videoId,
+    playerId,
+  };
+
+  el.querySelector('.mp-close').addEventListener('click', () => {
+    closePlayer(playerId);
+  });
+
+  wireDrag(el, el.querySelector('.mp-bar'));
+  wireResize(el, el.querySelector('.mp-resize'));
+  el.addEventListener('mousedown', () => bringToFront(instance));
+
+  if (main) main.appendChild(el);
+  bringToFront(instance);
+  namedPlayerRegistry.set(playerId, instance);
+}
+
+/**
+ * closePlayer(playerId)
+ *
+ * Closes and removes the named player. Stops the iframe src to halt audio.
+ * No-op if no player with that playerId exists.
+ */
+function closePlayer(playerId) {
+  if (!namedPlayerRegistry.has(playerId)) return;
+  const instance = namedPlayerRegistry.get(playerId);
+  instance.iframe.src = '';   // stop audio immediately
+  instance.el.remove();
+  namedPlayerRegistry.delete(playerId);
+}
+
+
+// sruti_bar.js — Sruti Bar (ADR-029)
+// Singleton tanpura drone. One pitch at a time.
+// Power indicator (●) shows on/off state.
+// Depends on: tanpuraData (injected by render pipeline), openPlayer/closePlayer (media_player.js).
+
+(function () {
+  const container = document.getElementById('sruti-buttons');
+  const indicator = document.getElementById('sruti-power');
+  if (!container || typeof tanpuraData === 'undefined' || tanpuraData.length === 0) return;
+
+  let activeBtn = null;   // currently lit button
+
+  function deactivate() {
+    if (activeBtn) { activeBtn.classList.remove('sruti-active'); activeBtn = null; }
+    if (indicator) indicator.classList.remove('sruti-on');
+    closePlayer('sruti');  // defined in media_player.js
+  }
+
+  // Power indicator click = toggle off
+  if (indicator) indicator.addEventListener('click', deactivate);
+
+  tanpuraData.forEach(function (entry) {
+    const btn = document.createElement('button');
+    btn.className = 'sruti-btn' + (entry.note.includes('#') ? ' sharp' : '');
+    btn.textContent = entry.note;
+    btn.title = entry.note + ' tanpura';
+
+    btn.addEventListener('click', function () {
+      // Clicking the active pitch = toggle off
+      if (activeBtn === btn) { deactivate(); return; }
+
+      // Switch to new pitch: close old player, open new one
+      deactivate();
+      btn.classList.add('sruti-active');
+      activeBtn = btn;
+      if (indicator) indicator.classList.add('sruti-on');
+
+      // openPlayer(videoId, title, playerId) — singleton 'sruti' player
+      openPlayer(entry.id, entry.note + ' tanpura', 'sruti');
+    });
+
+    container.appendChild(btn);
+  });
+})();
 
 // ── timeline layout ───────────────────────────────────────────────────────────
 const TIMELINE_X_MIN  = 1750;
