@@ -2,7 +2,7 @@
 """
 _main.py — Orchestrator: renders graph.html from Carnatic knowledge graph data.
 
-Entry point for the `gstree-render` CLI command (pyproject.toml).
+Entry point for the `bani-render` CLI command (pyproject.toml).
 Can also be run directly: python3 carnatic/render/_main.py
 
 Delegates to carnatic/render/ package modules:
@@ -28,7 +28,7 @@ RECORDINGS_FILE   = ROOT / "data" / "recordings.json"
 OUT_FILE          = ROOT / "graph.html"
 
 # Support both `python3 carnatic/render/_main.py` (direct) and
-# `gstree-render` (installed entry point via pyproject.toml).
+# `bani-render` (installed entry point via pyproject.toml).
 # When run directly, the project root is not on sys.path, so relative
 # imports fail.  Inject it here before any package import.
 if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:

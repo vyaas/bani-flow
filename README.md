@@ -15,7 +15,7 @@
 git clone https://github.com/vyaas/bani_flow.git
 cd bani_flow
 pip install -e .
-gstree-render && gstree-serve   # opens http://localhost:8765/graph.html
+bani-render && bani-serve   # opens http://localhost:8765/graph.html
 ```
 
 YouTube embeds require a real origin — always open via the local server, not `file://`.

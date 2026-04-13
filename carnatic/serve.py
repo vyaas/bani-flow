@@ -9,7 +9,7 @@ identical to how TiddlyWiki's local server works.
 Usage:
     python3 serve.py          # serves on port 8765
     python3 serve.py 9000     # custom port
-    gstree-serve              # installed entry-point (same as above)
+    bani-serve              # installed entry-point (same as above)
 """
 
 import http.server

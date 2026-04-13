@@ -30,7 +30,7 @@ primary collaborator for data ingestion:
 2. Open a new AI session; drop `carnatic/README.md` + `carnatic/data/READYOU.md` as context
 3. Drop Wikipedia links, YouTube links, or verbal corrections into the chat
 4. The agent fetches, parses, patches `musicians.json`, and regenerates `graph.html`
-5. Run `gstree-serve` — opens `http://localhost:8765/graph.html` automatically
+5. Run `bani-serve` — opens `http://localhost:8765/graph.html` automatically
 
 The AI does the Wikipedia parsing because it requires judgment, not keyword matching:
 disambiguating name variants, distinguishing first guru from principal guru, identifying
@@ -77,21 +77,21 @@ carnatic/
 pip install -e .
 
 # regenerate graph.html from current data files (no network needed)
-gstree-render
+bani-render
 
 # crawl Wikipedia for all nodes (uses disk cache after first run)
-gstree-crawl
+bani-crawl
 
 # force re-fetch all Wikipedia pages (e.g. upstream edits)
-gstree-crawl --force
+bani-crawl --force
 ```
 
 **Always open via the local server** — YouTube embeds are blocked when opened
 as a `file://` URL (browsers send a `null` origin which YouTube rejects).
 
 ```bash
-gstree-serve          # opens http://localhost:8765/graph.html automatically
-gstree-serve 9000     # custom port if 8765 is taken
+bani-serve          # opens http://localhost:8765/graph.html automatically
+bani-serve 9000     # custom port if 8765 is taken
 ```
 
 `serve.py` is a zero-dependency Python wrapper around `http.server`.

@@ -40,9 +40,9 @@ dev = [
 ]
 
 [project.scripts]
-gstree-render  = "carnatic.render:main"
-gstree-crawl   = "carnatic.crawl:main"
-gstree-serve   = "carnatic.serve:main"
+bani-render  = "carnatic.render:main"
+bani-crawl   = "carnatic.crawl:main"
+bani-serve   = "carnatic.serve:main"
 
 [project.urls]
 Homepage       = "https://github.com/vyaas/bani_flow"

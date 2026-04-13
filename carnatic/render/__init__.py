@@ -1,7 +1,7 @@
 """
 carnatic/render/__init__.py — Public API for the render package.
 
-The `main` symbol is the entry point for the `gstree-render` CLI command
+The `main` symbol is the entry point for the `bani-render` CLI command
 (see pyproject.toml [project.scripts]).  It is imported lazily from _main
 to avoid circular imports: _main uses absolute imports of sibling modules,
 which would re-trigger __init__ if they were relative.
