@@ -57,7 +57,7 @@ def main() -> None:
 
     # Step 2: build lookup tables
     composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data, recordings_data)
-    musician_to_performances, composition_to_performances, raga_to_performances = \
+    musician_to_performances, composition_to_performances, raga_to_performances, perf_to_performances = \
         build_recording_lookups(recordings_data, comp_data)
 
     # Step 3: build Cytoscape elements
@@ -71,6 +71,7 @@ def main() -> None:
         musician_to_performances,
         composition_to_performances,
         raga_to_performances,
+        perf_to_performances,
     )
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")

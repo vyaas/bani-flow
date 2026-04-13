@@ -3,14 +3,16 @@ carnatic/render/data_transforms.py — Denormalisation and lookup-table builders
 """
 from collections import defaultdict
 
-def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dict, dict, dict]:
+def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dict, dict, dict, dict]:
     """
-    Build three denormalised lookup dicts from recordings.json:
+    Build four denormalised lookup dicts from recordings.json:
       musician_to_performances:     {musician_id: [PerformanceRef, ...]}
       composition_to_performances:  {composition_id: [PerformanceRef, ...]}
       raga_to_performances:         {raga_id: [PerformanceRef, ...]}
+      perf_to_performances:         {"recording_id::performance_index": [PerformanceRef]}
 
     Each PerformanceRef is a flat dict carrying everything the UI needs.
+    perf_to_performances enables single-performance filtering from the raga wheel.
     """
     comp_raga: dict[str, str] = {
         c["id"]: c["raga_id"] for c in comp_data.get("compositions", [])
@@ -19,6 +21,7 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
     musician_to_performances:    dict[str, list[dict]] = defaultdict(list)
     composition_to_performances: dict[str, list[dict]] = defaultdict(list)
     raga_to_performances:        dict[str, list[dict]] = defaultdict(list)
+    perf_to_performances:        dict[str, list[dict]] = defaultdict(list)
 
     for rec in recordings_data.get("recordings", []):
         rec_id   = rec["id"]
@@ -70,10 +73,15 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
                 if raga_id:
                     raga_to_performances[raga_id].append(ref)
 
+                # Index by single performance key (recording_id::performance_index)
+                perf_key = f"{rec_id}::{perf['performance_index']}"
+                perf_to_performances[perf_key].append(ref)
+
     return (
         dict(musician_to_performances),
         dict(composition_to_performances),
         dict(raga_to_performances),
+        dict(perf_to_performances),
     )
 
 def build_composition_lookups(

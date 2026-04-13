@@ -229,14 +229,16 @@ window.drawRagaWheel = function() {
       const isRtp = (perf.type === 'rtp' || perf.type === 'alapana' || perf.type === 'tanam' ||
                      (perf.display_title && /ragam.tanam|alapana|rtp/i.test(perf.display_title)));
       compsByRaga[ragaId].push({
-        id:          syntheticId,
-        title:       perf.display_title || perf.title || ragaId,
-        raga_id:     ragaId,
-        _isPerf:     true,
-        _isRtp:      isRtp,
-        concert:     perf.short_title || perf.title || '',
-        date:        perf.date || '',
-        performers:  perf.performers || [],
+        id:            syntheticId,
+        title:         perf.display_title || perf.title || ragaId,
+        raga_id:       ragaId,
+        _isPerf:       true,
+        _isRtp:        isRtp,
+        _recording_id: perf.recording_id || null,
+        _perf_index:   perf.performance_index != null ? perf.performance_index : null,
+        concert:       perf.short_title || perf.title || '',
+        date:          perf.date || '',
+        performers:    perf.performers || [],
       });
     });
   });
@@ -714,8 +716,16 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       // does not trigger a full drawRagaWheel() redraw that would undo the dimming.
       window._wheelSyncInProgress = true;
       if (!item._isPerf) {
+        // Canonical composition from compositions.json
         triggerBaniSearch('comp', item.id);
+      } else if (item._recording_id && item._perf_index != null) {
+        // Structured recording performance — filter to this single track
+        triggerBaniSearch('perf', item._recording_id + '::' + item._perf_index);
+      } else if (item._ytVid) {
+        // YouTube-only entry — filter to this specific video + raga combination
+        triggerBaniSearch('yt', item._ytVid + '::' + (item.raga_id || janya.id));
       } else {
+        // Fallback: raga-level filter
         triggerBaniSearch('raga', item.raga_id || janya.id);
       }
       window._wheelSyncInProgress = false;

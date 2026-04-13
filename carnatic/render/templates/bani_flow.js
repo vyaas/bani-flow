@@ -4,13 +4,38 @@
 const nodeBorn = {};
 cy.nodes().forEach(n => { nodeBorn[n.id()] = n.data('born'); });
 
-let activeBaniFilter = null; // { type: 'comp'|'raga', id: string }
+let activeBaniFilter = null; // { type: 'comp'|'raga'|'perf'|'yt', id: string }
 
 function applyBaniFilter(type, id) {
   activeBaniFilter = { type, id };
-  const matchedNodeIds = type === 'comp'
-    ? (compositionToNodes[id] || [])
-    : (ragaToNodes[id] || []);
+
+  let matchedNodeIds;
+  if (type === 'comp') {
+    matchedNodeIds = compositionToNodes[id] || [];
+  } else if (type === 'raga') {
+    matchedNodeIds = ragaToNodes[id] || [];
+  } else if (type === 'perf') {
+    // Single structured performance: collect musician node IDs from its performers[]
+    const perfRefs = perfToPerf[id] || [];
+    const nodeSet = new Set();
+    perfRefs.forEach(ref => {
+      (ref.performers || []).forEach(pf => {
+        if (pf.musician_id) nodeSet.add(pf.musician_id);
+      });
+    });
+    matchedNodeIds = [...nodeSet];
+  } else if (type === 'yt') {
+    // YouTube-only entry: id = "vid::ragaId" — find nodes that have this vid in tracks[]
+    const [ytVid] = id.split('::');
+    const nodeSet = new Set();
+    cy.nodes().forEach(n => {
+      const tracks = n.data('tracks') || [];
+      if (tracks.some(t => t.vid === ytVid)) nodeSet.add(n.id());
+    });
+    matchedNodeIds = [...nodeSet];
+  } else {
+    matchedNodeIds = [];
+  }
 
   // Dim/highlight nodes
   cy.elements().addClass('faded');
@@ -127,6 +152,115 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     parts.forEach((part, i) => {
       subjectSub.appendChild(part);
       if (i < parts.length - 1) {
+        const sep = document.createElement('span');
+        sep.textContent = ' \u00b7 ';
+        sep.style.color = 'var(--gray)';
+        subjectSub.appendChild(sep);
+      }
+    });
+
+  } else if (type === 'perf') {
+    // ── Single structured performance (from raga wheel click) ──────────────────
+    // id = "recording_id::performance_index"
+    const perfRefs = perfToPerf[id] || [];
+    const ref = perfRefs[0] || null;
+
+    // Row 1: performance display title
+    subjectName.textContent = ref ? (ref.display_title || ref.title || id) : id;
+    subjectName.title = '';
+    // Link to YouTube at the offset timestamp
+    if (ref && ref.video_id) {
+      const offsetSecs = ref.offset_seconds || 0;
+      subjectLink.href = `https://www.youtube.com/watch?v=${ref.video_id}` +
+        (offsetSecs > 0 ? `&t=${offsetSecs}s` : '');
+      subjectLink.style.display = 'inline';
+    }
+
+    // Row 2: raga (linked) · tala · concert
+    const perfParts = [];
+    if (ref && ref.raga_id) {
+      const perfRaga = ragas.find(r => r.id === ref.raga_id);
+      if (perfRaga) {
+        const ragaBtn = document.createElement('span');
+        ragaBtn.className = 'bani-sub-link';
+        ragaBtn.style.cursor = 'pointer';
+        ragaBtn.textContent = perfRaga.name;
+        ragaBtn.title = 'Explore ' + perfRaga.name + ' in Bani Flow';
+        ragaBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          triggerBaniSearch('raga', perfRaga.id);
+        });
+        perfParts.push(ragaBtn);
+      }
+    }
+    if (ref && ref.tala) {
+      const talaSpan = document.createElement('span');
+      talaSpan.textContent = ref.tala.charAt(0).toUpperCase() + ref.tala.slice(1);
+      perfParts.push(talaSpan);
+    }
+    if (ref && ref.short_title) {
+      const concertSpan = document.createElement('span');
+      concertSpan.textContent = ref.short_title;
+      concertSpan.style.color = 'var(--fg3)';
+      perfParts.push(concertSpan);
+    }
+    perfParts.forEach((part, i) => {
+      subjectSub.appendChild(part);
+      if (i < perfParts.length - 1) {
+        const sep = document.createElement('span');
+        sep.textContent = ' \u00b7 ';
+        sep.style.color = 'var(--gray)';
+        subjectSub.appendChild(sep);
+      }
+    });
+
+  } else if (type === 'yt') {
+    // ── YouTube-only entry (from raga wheel click) ─────────────────────────────
+    // id = "vid::ragaId"
+    const [ytVid, ytRagaId] = id.split('::');
+    // Find the track label from any node that has this vid
+    let ytLabel = '', ytRagaName = '';
+    cy.nodes().forEach(n => {
+      if (ytLabel) return;
+      const tracks = n.data('tracks') || [];
+      const t = tracks.find(tr => tr.vid === ytVid);
+      if (t) ytLabel = t.label || '';
+    });
+    const ytRaga = ytRagaId ? ragas.find(r => r.id === ytRagaId) : null;
+    ytRagaName = ytRaga ? ytRaga.name : (ytRagaId || '');
+
+    // Row 1: short track title (strip raga/artist suffix after ' · ' or ' - ')
+    const ytShort = ytLabel
+      ? (ytLabel.indexOf(' \u00b7 ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' \u00b7 ')).trim()
+        : ytLabel.indexOf(' - ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' - ')).trim()
+        : ytLabel)
+      : id;
+    subjectName.textContent = ytShort;
+    subjectName.title = ytLabel;  // full label as tooltip
+    subjectLink.href = `https://www.youtube.com/watch?v=${ytVid}`;
+    subjectLink.style.display = 'inline';
+
+    // Row 2: raga (linked) · YouTube recording
+    const ytParts = [];
+    if (ytRaga) {
+      const ytRagaBtn = document.createElement('span');
+      ytRagaBtn.className = 'bani-sub-link';
+      ytRagaBtn.style.cursor = 'pointer';
+      ytRagaBtn.textContent = ytRaga.name;
+      ytRagaBtn.title = 'Explore ' + ytRaga.name + ' in Bani Flow';
+      ytRagaBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        triggerBaniSearch('raga', ytRaga.id);
+      });
+      ytParts.push(ytRagaBtn);
+    }
+    const ytBadge = document.createElement('span');
+    ytBadge.textContent = 'YouTube recording';
+    ytBadge.style.color = 'var(--fg3)';
+    ytParts.push(ytBadge);
+    ytParts.forEach((part, i) => {
+      subjectSub.appendChild(part);
+      if (i < ytParts.length - 1) {
         const sep = document.createElement('span');
         sep.textContent = ' \u00b7 ';
         sep.style.color = 'var(--gray)';
@@ -262,37 +396,55 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   // ── 1. Collect raw rows ────────────────────────────────────────────────────
 
-  // Legacy youtube[] entries from matched musician nodes
+  // Legacy youtube[] entries from matched musician nodes.
+  // Skipped for 'perf' type (structured recordings only).
+  // For 'yt' type: id = "vid::ragaId" — match only the specific vid.
   const rawRows = [];
-  matchedNodeIds.forEach(nid => {
-    const n = cy.getElementById(nid);
-    if (!n) return;
-    const d = n.data();
-    d.tracks.forEach(t => {
-      const matches = type === 'comp'
-        ? t.composition_id === id
-        : (t.raga_id === id || (t.composition_id && (() => {
+  if (type !== 'perf') {
+    const ytVidFilter = type === 'yt' ? id.split('::')[0] : null;
+    matchedNodeIds.forEach(nid => {
+      const n = cy.getElementById(nid);
+      if (!n) return;
+      const d = n.data();
+      d.tracks.forEach(t => {
+        let matches;
+        if (type === 'comp') {
+          matches = t.composition_id === id;
+        } else if (type === 'yt') {
+          // Match only the specific YouTube video id
+          matches = t.vid === ytVidFilter;
+        } else {
+          // 'raga': match by raga_id directly or via composition
+          matches = t.raga_id === id || (t.composition_id && (() => {
             const c = compositions.find(x => x.id === t.composition_id);
             return c && c.raga_id === id;
-          })())) ;
-      if (matches) {
-        const vid = t.vid || '';
-        const offset = t.offset_seconds || 0;
-        rawRows.push({
-          nodeId: nid, artistLabel: d.label, born: d.born,
-          lifespan: d.lifespan, color: d.color, shape: d.shape,
-          track: t, isStructured: false,
-          perfKey: `${vid}::${offset}`,
-          allPerformers: null,
-        });
-      }
+          })());
+        }
+        if (matches) {
+          const vid = t.vid || '';
+          const offset = t.offset_seconds || 0;
+          rawRows.push({
+            nodeId: nid, artistLabel: d.label, born: d.born,
+            lifespan: d.lifespan, color: d.color, shape: d.shape,
+            track: t, isStructured: false,
+            perfKey: `${vid}::${offset}`,
+            allPerformers: null,
+          });
+        }
+      });
     });
-  });
+  }
 
-  // Structured recordings
+  // Structured recordings.
+  // 'perf': use perfToPerf[id] — exactly the one PerformanceRef for this track.
+  // 'yt':   no structured perfs — youtube-only entries have no session data.
   const structuredPerfs = type === 'comp'
     ? (compositionToPerf[id] || [])
-    : (ragaToPerf[id] || []);
+    : type === 'perf'
+      ? (perfToPerf[id] || [])
+      : type === 'yt'
+        ? []
+        : (ragaToPerf[id] || []);
 
   structuredPerfs.forEach(p => {
     const primaryPerformer = p.performers.find(pf => pf.role === 'vocal') || p.performers[0];
@@ -570,23 +722,50 @@ function clearBaniFilter() {
 }
 
 /**
- * Programmatically trigger a Bani Flow search for a raga or composition.
+ * Programmatically trigger a Bani Flow search for a raga, composition,
+ * single structured performance, or YouTube-only recording.
  * Equivalent to the user selecting an item from the bani-search-dropdown.
- * @param {'raga'|'comp'} type
- * @param {string} id  — raga id or composition id
+ * @param {'raga'|'comp'|'perf'|'yt'} type
+ * @param {string} id
+ *   - 'raga': raga id
+ *   - 'comp': composition id
+ *   - 'perf': "recording_id::performance_index"
+ *   - 'yt':   "vid::ragaId"
  */
 function triggerBaniSearch(type, id) {
-  const matchedNodeIds = type === 'comp'
-    ? (compositionToNodes[id] || [])
-    : (ragaToNodes[id] || []);
-  const entity = type === 'raga'
-    ? ragas.find(r => r.id === id)
-    : compositions.find(c => c.id === id);
   const searchInput = document.getElementById('bani-search-input');
-  if (searchInput && entity) {
-    const label = entity.name || entity.title || id;
-    const prefix = type === 'raga' ? '\u25c8 ' : '\u266a ';
-    searchInput.value = prefix + label;
+  if (type === 'perf') {
+    // Single structured performance — label from perfToPerf lookup
+    const perfRefs = perfToPerf[id] || [];
+    const ref = perfRefs[0] || null;
+    if (searchInput && ref) {
+      searchInput.value = '\u25b6 ' + (ref.display_title || ref.title || id);
+    }
+  } else if (type === 'yt') {
+    // YouTube-only entry — derive short title from track label
+    const ytVid = id.split('::')[0];
+    let ytLabel = '';
+    cy.nodes().forEach(n => {
+      if (ytLabel) return;
+      const tracks = n.data('tracks') || [];
+      const t = tracks.find(tr => tr.vid === ytVid);
+      if (t) ytLabel = t.label || '';
+    });
+    const ytShort = ytLabel
+      ? (ytLabel.indexOf(' \u00b7 ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' \u00b7 ')).trim()
+        : ytLabel.indexOf(' - ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' - ')).trim()
+        : ytLabel)
+      : id;
+    if (searchInput) searchInput.value = '\u25b6 ' + ytShort;
+  } else {
+    const entity = type === 'raga'
+      ? ragas.find(r => r.id === id)
+      : compositions.find(c => c.id === id);
+    if (searchInput && entity) {
+      const label = entity.name || entity.title || id;
+      const prefix = type === 'raga' ? '\u25c8 ' : '\u266a ';
+      searchInput.value = prefix + label;
+    }
   }
   applyBaniFilter(type, id);
 }

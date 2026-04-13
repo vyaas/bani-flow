@@ -26,6 +26,7 @@ def render_html(
     musician_to_performances: dict,
     composition_to_performances: dict,
     raga_to_performances: dict,
+    perf_to_performances: dict,
 ) -> str:
     node_count = len(graph["nodes"])
     edge_count = len(graph["edges"])
@@ -43,6 +44,7 @@ def render_html(
     musician_to_perf_json    = json.dumps(musician_to_performances, indent=2, ensure_ascii=False)
     composition_to_perf_json = json.dumps(composition_to_performances, indent=2, ensure_ascii=False)
     raga_to_perf_json        = json.dumps(raga_to_performances, indent=2, ensure_ascii=False)
+    perf_to_perf_json        = json.dumps(perf_to_performances, indent=2, ensure_ascii=False)
 
     data_js = (
         f"const elements = {elements_json};\n"
@@ -59,6 +61,9 @@ def render_html(
         f"const musicianToPerformances = {musician_to_perf_json};\n"
         f"const compositionToPerf      = {composition_to_perf_json};\n"
         f"const ragaToPerf             = {raga_to_perf_json};\n"
+        f"// perfToPerf: {{\"recording_id::performance_index\": [PerformanceRef]}}\n"
+        f"// Enables single-performance filtering from the raga wheel.\n"
+        f"const perfToPerf             = {perf_to_perf_json};\n"
     )
 
     # ── Load templates ────────────────────────────────────────────────────────
