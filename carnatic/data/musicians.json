@@ -2581,6 +2581,30 @@
       "instrument": "mridangam",
       "bani": "palani",
       "youtube": []
+    },
+    {
+      "id": "t_v_sankaranarayanan",
+      "label": "T. V. Sankaranarayanan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+          "label": "T. V. Sankaranarayanan - Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1945,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "Madurai Mani Iyer",
+      "youtube": [
+        {
+          "url": "https://youtu.be/XHAZjTEzKsg",
+          "label": "jAlandhara supIThastitE · Valaji · Rupaka - T. V. Sankaranarayanan",
+          "composition_id": "jalandhara_supithasite",
+          "raga_id": "valaji"
+        }
+      ]
     }
   ],
   "edges": [
@@ -2908,6 +2932,13 @@
       "confidence": 0.97,
       "source_url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
       "note": "son and disciple; accompanied his father in double-mridangam concerts; carried the Palghat school forward"
+    },
+    {
+      "source": "madurai_mani_iyer",
+      "target": "t_v_sankaranarayanan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+      "note": "principal guru and maternal uncle"
     }
   ]
 }

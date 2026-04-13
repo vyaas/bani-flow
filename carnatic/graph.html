@@ -703,7 +703,7 @@
 
 <header>
   <h1>Carnatic · Guru-Shishya Parampara</h1>
-  <span class="stats">67 musicians · 48 lineage edges</span>
+  <span class="stats">68 musicians · 49 lineage edges</span>
   <div class="controls">
     <button id="btn-fit" onclick="cy.fit()">Fit</button>
     <button id="btn-reset" onclick="cy.reset()">Reset</button>
@@ -798,7 +798,7 @@
                autocomplete="off" spellcheck="false">
         <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
         <div class="search-scope-label" id="musician-scope-label" style="display:none">
-          searching all 67 musicians
+          searching all 68 musicians
         </div>
       </div>
     </div>
@@ -1076,10 +1076,10 @@ const elements = [
       "born": 1912,
       "color": "#458588",
       "shape": "ellipse",
-      "size": 62,
-      "degree": 1,
+      "size": 66,
+      "degree": 2,
       "label_tier": 1,
-      "font_size": 15,
+      "font_size": 16,
       "font_weight": "normal",
       "tracks": [
         {
@@ -4565,6 +4565,43 @@ const elements = [
   },
   {
     "data": {
+      "id": "t_v_sankaranarayanan",
+      "label": "T. V. Sankaranarayanan",
+      "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+          "label": "T. V. Sankaranarayanan - Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "era": "golden_age",
+      "era_label": "Golden Age",
+      "instrument": "vocal",
+      "bani": "Madurai Mani Iyer",
+      "lifespan": "b. 1945",
+      "born": 1945,
+      "color": "#458588",
+      "shape": "ellipse",
+      "size": 62,
+      "degree": 1,
+      "label_tier": 1,
+      "font_size": 15,
+      "font_weight": "normal",
+      "tracks": [
+        {
+          "vid": "XHAZjTEzKsg",
+          "label": "jAlandhara supIThastitE · Valaji · Rupaka - T. V. Sankaranarayanan",
+          "composition_id": "jalandhara_supithasite",
+          "raga_id": "valaji",
+          "year": null,
+          "version": null
+        }
+      ]
+    }
+  },
+  {
+    "data": {
       "id": "tyagaraja→patnam_subramanya_iyer",
       "source": "tyagaraja",
       "target": "patnam_subramanya_iyer",
@@ -5088,6 +5125,17 @@ const elements = [
       "confidence": 0.97,
       "source_url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
       "note": "son and disciple; accompanied his father in double-mridangam concerts; carried the Palghat school forward",
+      "width": 3.395
+    }
+  },
+  {
+    "data": {
+      "id": "madurai_mani_iyer→t_v_sankaranarayanan",
+      "source": "madurai_mani_iyer",
+      "target": "t_v_sankaranarayanan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+      "note": "principal guru and maternal uncle",
       "width": 3.395
     }
   }
@@ -6748,6 +6796,21 @@ const ragas        = [
     ],
     "notes": "Janya of Kharaharapriya (mela 22). Pentatonic (audava-audava) raga; uses S R2 M1 P N2. One of the most popular ragas in Carnatic music, frequently used for mangalam and tillanas.",
     "is_melakarta": false
+  },
+  {
+    "id": "valaji",
+    "name": "Valaji",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": "chakravakam",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Valaji",
+        "label": "Valaji - Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "Janya of Chakravakam (mela 16). Arohanam: S G3 P D2 N2 S; Avarohanam: S N2 D2 P G3 S. Pentatonic (audava-audava), omits rishabham and madhyamam."
   }
 ];
 const composers    = [
@@ -7434,6 +7497,20 @@ const composers    = [
       {
         "url": "https://en.wikipedia.org/wiki/Tevaram",
         "label": "Tevaram - Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "muthiah_bhagavatar",
+    "name": "Harikesanallur Muthiah Bhagavatar",
+    "musician_node_id": null,
+    "born": 1877,
+    "died": 1945,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+        "label": "Muthiah Bhagavatar - Wikipedia",
         "type": "wikipedia"
       }
     ]
@@ -10047,6 +10124,21 @@ const compositions = [
       }
     ],
     "notes": "Tyagaraja kriti in Shankarabharanam."
+  },
+  {
+    "id": "jalandhara_supithasite",
+    "title": "jAlandhara supIThastitE",
+    "composer_id": "muthiah_bhagavatar",
+    "raga_id": "valaji",
+    "tala": "Rupaka",
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/c6069.shtml",
+        "label": "jAlandhara supIThastitE - karnatik.com",
+        "type": "article"
+      }
+    ],
+    "notes": "Kriti by Harikesanallur Muthiah Bhagavatar in Valaji raga, Rupaka tala. Pallavi: jAlandhara supIThasitE japA kusuma bhAsurE."
   }
 ];
 const compositionToNodes = {
@@ -10356,6 +10448,9 @@ const compositionToNodes = {
   ],
   "ento_prematonu": [
     "bombay_jayashri"
+  ],
+  "jalandhara_supithasite": [
+    "t_v_sankaranarayanan"
   ],
   "ee_vasudha_sahana": [
     "gnb",
@@ -11168,6 +11263,9 @@ const ragaToNodes        = {
   ],
   "natabhairavi": [
     "abhishek_raghuram"
+  ],
+  "valaji": [
+    "t_v_sankaranarayanan"
   ],
   "poorvikalyani": [
     "gnb",
