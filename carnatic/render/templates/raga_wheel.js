@@ -562,7 +562,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
           x: jPos.x, y: jPos.y + NR_JANYA + Math.max(3, minDim * 0.01),
           'text-anchor': 'middle', 'dominant-baseline': 'hanging',
           fill: '#d5c4a1', 'font-size': Math.max(7, minDim * 0.011) + 'px',
-          'pointer-events': 'none', class: 'sat-label'
+          'pointer-events': 'none', class: 'sat-label sat-label-janya'
         });
         jLbl.textContent = janya.name;
         _labelLayer.appendChild(jLbl);
@@ -578,15 +578,16 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
   if (melaDirect > 0) {
     _expandComps(vp, svg, raga, melaAngle, melaPos, cx, cy,
       R_COMP, R_MUSC, NR_MELA, NR_COMP, NR_MUSC,
-      compsByRaga, rtpByRaga, melaColor, minDim);
+      compsByRaga, rtpByRaga, melaColor, minDim, /*isMelaDirect=*/true);
   }
 }
 
 // _expandComps: show all music tagged to this raga — compositions, structured
 // recording performances, and youtube-only entries (Sources 1–3 from compsByRaga).
+// isMelaDirect: true when called for a mela's own compositions (no janya intermediary).
 function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
-    compsByRaga, rtpByRaga, parentColor, minDim) {
+    compsByRaga, rtpByRaga, parentColor, minDim, isMelaDirect) {
   // compsByRaga already contains all three sources; rtpByRaga is kept for
   // the tooltip badge only — no need to merge again here.
   const items = compsByRaga[janya.id] || [];
@@ -674,22 +675,52 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       if (_expandedComp === item.id) {
         // un-dim all on collapse
         vp.querySelectorAll('.comp-node circle').forEach(c => c.setAttribute('opacity', '0.85'));
+        // Restore mela nodes to full opacity
+        vp.querySelectorAll('.mela-node circle').forEach(c => c.setAttribute('opacity', '1'));
+        // Restore all janya nodes and their labels
+        vp.querySelectorAll('.janya-node').forEach(jn => jn.style.removeProperty('display'));
+        vp.querySelectorAll('.janya-node circle').forEach(c => {
+          c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
+          c.setAttribute('opacity', '0.75');
+        });
+        if (_labelLayer) _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => el.style.removeProperty('display'));
         _expandedComp = null;
         return;
+      }
+      // Dim all mela nodes except the currently expanded one so the path lights up
+      vp.querySelectorAll('.mela-node circle').forEach(c => {
+        const melaId = c.closest('.mela-node') && c.closest('.mela-node').getAttribute('data-id');
+        c.setAttribute('opacity', melaId === _expandedMela ? '1' : '0.2');
+      });
+      // Hide all janya nodes except the parent of this comp (janya.id).
+      // For mela-direct comps, janya IS the mela — hide all janya nodes.
+      vp.querySelectorAll('.janya-node').forEach(jn => {
+        const jid = jn.getAttribute('data-id');
+        jn.style.display = (jid === janya.id) ? '' : 'none';
+      });
+      // Hide janya labels for all but the parent janya
+      if (_labelLayer) {
+        // sat-label-janya elements don't carry a data-id; they are ordered the same
+        // as the janya nodes. Use positional matching via the janya-node data-id.
+        // Simpler: hide all janya labels when a comp is selected — the selected
+        // janya node itself is still visible as a circle.
+        _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => { el.style.display = 'none'; });
       }
       cCircle.setAttribute('stroke', '#fabd2f');
       cCircle.setAttribute('stroke-width', 2.5);
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       _expandedComp = item.id;
-      // For canonical compositions, sync bani flow by comp id.
-      // For synthetic perf/youtube items, sync by raga id (no comp node exists).
+      // Sync bani flow — guard _wheelSyncInProgress so syncRagaWheelToFilter
+      // does not trigger a full drawRagaWheel() redraw that would undo the dimming.
+      window._wheelSyncInProgress = true;
       if (!item._isPerf) {
         triggerBaniSearch('comp', item.id);
       } else {
         triggerBaniSearch('raga', item.raga_id || janya.id);
       }
-      _expandMusicians(vp, svg, item, cAngle, cPos, cx, cy,
-        R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim, janya.id);
+      window._wheelSyncInProgress = false;
+      // Do not expand musicians in the raga wheel — the wheel is a navigation
+      // aid only. Musician detail lives in the graph view (triggered via bani sync).
     });
     g.appendChild(cg);
   });
@@ -697,7 +728,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
   _bringLabelsToFront(vp);
 }
 
-function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
+function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim, fallbackRagaId) {
   // For canonical compositions: look up by composition id.
   // For synthetic perf/youtube items (_isPerf): look up by raga id via ragaToNodes,
@@ -723,7 +754,7 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
   const g = svgEl('g', { class: 'musc-group', 'data-parent': comp.id });
 
   if (muscIds.length === 0) {
-    const lp = polar(cx, cy, R_MUSC, cAngle);
+    const lp = polar(cx, cyCY, R_MUSC, cAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
       fill: '#665c54', 'font-size': '11px', 'pointer-events': 'none'
@@ -738,7 +769,7 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cy,
   muscIds.forEach((mid, i) => {
     const offset = muscIds.length === 1 ? 0 : -SPREAD / 2 + (SPREAD / (muscIds.length - 1)) * i;
     const mAngle = cAngle + offset;
-    const mPos = polar(cx, cy, R_MUSC, mAngle);
+    const mPos = polar(cx, cyCY, R_MUSC, mAngle);
     const node = cy.getElementById(mid);
     const mData = node && node.length ? node.data() : {};
     const mName = mData.label || mid;
