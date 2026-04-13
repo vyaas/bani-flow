@@ -1,6 +1,6 @@
-# Contributing to GSTree
+# Contributing to Bani Flow
 
-Thank you for your interest in GSTree! Contributions of all kinds are welcome:
+Thank you for your interest in Bani Flow! Contributions of all kinds are welcome:
 data corrections, new lineage edges, new tradition instances, code improvements,
 and documentation fixes.
 
@@ -23,7 +23,7 @@ If you are comfortable with JSON, submit a pull request directly.
    [`carnatic/README.md`](carnatic/README.md) — Sangeetha Kalanidhi recipient,
    or a necessary topological link between two significant nodes.
 2. Add the node to `nodes[]` and any edges to `edges[]` in `musicians.json`.
-3. Run `python3 carnatic/render.py` and verify the graph looks correct.
+3. Run `bani-render` and verify the graph looks correct.
 4. Submit a pull request with the updated `musicians.json` and regenerated `graph.html`.
 
 **To add YouTube recordings:**
@@ -34,13 +34,13 @@ a recording from its URL alone). See the YouTube recording format in
 
 ### 2. New tradition instances
 
-GSTree is designed to generalise. To add a new tradition (e.g. Hindustani,
+Bani Flow is designed to generalise. To add a new tradition (e.g. Hindustani,
 jazz, ballet, martial arts):
 
 1. Create a new top-level directory: `hindustani/`, `jazz/`, etc.
 2. Copy the data model from `carnatic/data/musicians.json` — adapt node fields
    and era/instrument vocabularies to your tradition.
-3. Copy and adapt `render.py` (colours, shapes, label tiers).
+3. Copy and adapt the render package (colours, shapes, label tiers).
 4. Add a `README.md` in the new directory explaining the tradition and its
    significance criteria.
 5. Open a pull request. Include at least 10 nodes and 8 edges so the graph
@@ -48,7 +48,7 @@ jazz, ballet, martial arts):
 
 ### 3. Code improvements
 
-- `render.py` — HTML/CSS/JS improvements, new layout options, accessibility
+- `carnatic/render/` — HTML/CSS/JS improvements, new layout options, accessibility
 - `crawl.py` — better Wikipedia extraction, support for non-English Wikipedias
 - `serve.py` — any improvements to the local server
 - New tooling: tests, CI, linting
@@ -83,14 +83,14 @@ pytest
 ## Pull request guidelines
 
 - **One concern per PR.** Data changes and code changes should be separate PRs.
-- **Regenerate `graph.html`** after any change to `musicians.json` or `render.py`.
-  Include the regenerated file in the PR.
+- **Regenerate `graph.html`** after any change to `musicians.json` or the render package.
+  Include the regenerated file in the PR. Run `bani-render` to regenerate.
 - **Cite your sources.** Every new edge needs a `source_url` pointing to a
   Wikipedia page or other verifiable source.
 - **Follow the confidence scale** defined in [`carnatic/README.md`](carnatic/README.md).
   Speculative edges (confidence < 0.70) must carry a `note` explaining the uncertainty.
 - **Do not hand-edit `graph.html`.** It is a derived artefact — always regenerate
-  via `python3 carnatic/render.py`.
+  via `bani-render`.
 
 ---
 

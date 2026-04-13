@@ -5,7 +5,7 @@
 carnatic/
   data/musicians.json     ← canonical source of truth (nodes + edges + recordings)
   data/compositions.json  ← ragas[], composers[], compositions[] — bani flow seed data
-  render/                 ← render package; entry point: `gstree-render` (or `.venv/bin/gstree-render`)
+  render/                 ← render package; entry point: `bani-render` (or `.venv/bin/bani-render`)
   crawl.py                ← Wikipedia scraper (uses disk cache in data/cache/)
   serve.py                ← zero-dep local server, opens http://localhost:8765/graph.html
   graph.html              ← derived artefact — NEVER hand-edit
@@ -18,11 +18,11 @@ All commands in this project must run inside the project `.venv`:
 ```bash
 source .venv/bin/activate   # once per shell session
 # then:
-gstree-render               # rebuild graph.html
-gstree-serve                # local dev server
+bani-render               # rebuild graph.html
+bani-serve                # local dev server
 python3 carnatic/cli.py stats
 ```
-If `.venv` is not activated, `gstree-render` will not be found on PATH.
+If `.venv` is not activated, `bani-render` will not be found on PATH.
 Never use the system `python3` or a global `pip` for this project.
 
 ## Agent domain boundaries — HARD RULES
@@ -36,7 +36,7 @@ Never use the system `python3` or a global `pip` for this project.
 **The Carnatic Coder must never directly edit or create any `.json` file.** If a JSON file needs changing, the Coder writes a script; the Librarian reviews and applies it.
 
 ## Session startup
-0. **Activate the project venv first:** `source .venv/bin/activate` — all `gstree-*` commands and `python3 carnatic/` scripts must run inside this venv.
+0. **Activate the project venv first:** `source .venv/bin/activate` — all `bani-*` commands and `python3 carnatic/` scripts must run inside this venv.
 1. Run `python3 carnatic/cli.py stats` to orient — replaces reading `musicians.json` and `compositions.json` in full.
 2. Use targeted CLI queries (see **CLI Tools** section below) before any `read_file` call.
 3. Read the **Open questions** section below — it is the living memory of this project.
@@ -75,7 +75,7 @@ python3 carnatic/cli.py validate
 **Use these commands for all standard write operations.** They are atomic, validate
 referential integrity before writing, and are idempotent (safe to run twice).
 `write_cli.py` writes only to `musicians.json` and `compositions.json` — never to
-`graph.json` (a derived artefact). After any write session, run `gstree-render`.
+`graph.json` (a derived artefact). After any write session, run `bani-render`.
 
 ```bash
 # Musician graph writes
@@ -135,22 +135,22 @@ python3 carnatic/write_cli.py add-composition  --id <id> --title <title> \
 Before adding any YouTube link:
 1. `python3 carnatic/cli.py url-exists <url>` — if FOUND, report and stop.
 2. `python3 carnatic/cli.py musician-exists "<artist name>"` — note exact id if FOUND; flag if NOT FOUND.
-3. `python3 carnatic/cli.py raga-exists "<raga name>"` — note exact id if FOUND; add raga first (`add-raga`) if NOT FOUND, then `gstree-render`.
-4. `python3 carnatic/cli.py composition-exists "<composition name>"` — note exact id if FOUND; add composition first (`add-composition`) if NOT FOUND, then `gstree-render`.
+3. `python3 carnatic/cli.py raga-exists "<raga name>"` — note exact id if FOUND; add raga first (`add-raga`) if NOT FOUND, then `bani-render`.
+4. `python3 carnatic/cli.py composition-exists "<composition name>"` — note exact id if FOUND; add composition first (`add-composition`) if NOT FOUND, then `bani-render`.
 5. `python3 carnatic/write_cli.py add-youtube --musician-id <id> --url <url> --label <label> [--raga-id <id>] [--composition-id <id>] [--year <year>]`
 
 ### Playlist ingestion (Workflow H — batch from playlist_meta.py output)
 ```
-Step 0: gstree-render  (ensure graph.json is current)
+Step 0: bani-render  (ensure graph.json is current)
 Step 1: For each playlist entry — run pre-checks 1–4 above, then add-youtube.
-Step 2: gstree-render && python3 carnatic/cli.py validate
+Step 2: bani-render && python3 carnatic/cli.py validate
 ```
 
 ## Core workflow
 1. User drops a Wikipedia URL, YouTube link+title, or verbal correction
 2. **Use `write_cli.py` commands** for standard mutations; fall back to `apply_diff` only for operations not covered
 3. When tagging recordings: also add `composition_id`, `raga_id`, `year` to youtube entries where identifiable
-4. Run `gstree-render` — confirm node/edge counts change as expected
+4. Run `bani-render` — confirm node/edge counts change as expected
 5. Run `python3 carnatic/serve.py` to visualise (or remind user to refresh if already running)
 6. **End of session**: update Open questions below, then **commit and push** — include a plain-prose summary of what changed in the commit body.
 
@@ -208,7 +208,7 @@ for node in data['nodes']:
 - New composers: add to `compositions.json` `composers[]` — set `musician_node_id` if they are also a lineage node
 - New compositions: add to `compositions.json` `compositions[]` — require verified `composer_id` and `raga_id`
 - IDs are snake_case and permanent once set — never rename
-- After any change to `compositions.json`, re-run `gstree-render` to rebuild lookup tables
+- After any change to `compositions.json`, re-run `bani-render` to rebuild lookup tables
 
 ## Data model quick reference
 **Node:** `id` (snake_case, never rename), `label`, `wikipedia`, `born`, `died`, `era`, `instrument`, `bani`, `youtube[]`
@@ -241,7 +241,7 @@ their own work at the end of every session in which files changed.**
 
 ### Pre-commit checklist
 - [ ] `git diff --stat` reviewed — no unintended files staged
-- [ ] `gstree-render` run if `musicians.json` or `compositions.json` changed (graph.html must be current)
+- [ ] `bani-render` run if `musicians.json` or `compositions.json` changed (graph.html must be current)
 - [ ] No debug output left in scripts
 - [ ] `carnatic/.clinerules` Open questions section updated
 - [ ] Commit message follows format below
@@ -362,7 +362,7 @@ Entries are terse — this is a log, not an essay.
 
 - 2026-04-12: When ingesting a playlist JSON, always run composition-exists with multiple spelling variants before declaring a composition missing — titles like "Rama Ni Samanamevaru", "Kaligiyunte", and "Siva Siva Siva Ena Radha" exist under canonical spellings that differ from the playlist title; the CLI fuzzy-matches on prefix so try shortened forms too.
 
-- 2026-04-13: The render CLI entry point was renamed from gstree-render to bani-render; use .venv/bin/bani-render directly when source .venv/bin/activate is unavailable in the shell context.
+- 2026-04-13: The render CLI entry point was renamed from bani-render to bani-render; use .venv/bin/bani-render directly when source .venv/bin/activate is unavailable in the shell context.
 
 - 2026-04-12: Raga integrity audit pattern: (1) run a duplicate-name/alias collision scan before any merge; (2) grep all musicians.json youtube raga_id refs AND all recordings/*.json raga_id/composition_id refs before removing any raga or composition node — the recording files use a flat list of performance objects, not a nested 'performances' key, so iterate top-level list items; (3) a single Python patch script is safer than multiple apply_diff blocks for multi-node merges — it is atomic, logged, and idempotent; (4) after collapsing two raga nodes, also check that the surviving node's aliases[] does not contain the removed node's primary name as a collision; (5) string-encoded alias arrays (e.g. '["Narayana Gowla"]' stored as a single string element) are a silent data corruption — always write aliases as a proper JSON array of strings.
 
@@ -400,7 +400,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-13: _expandMusicians had a parameter name collision: the cy parameter (center-Y number) shadowed the outer const cy (Cytoscape instance), causing cy.getElementById to throw TypeError; renamed to cyCY to restore lexical access to the Cytoscape global.
 - 2026-04-13: Raga wheel musician ring is unwanted — the wheel is a navigation aid only; removed the _expandMusicians call from the comp click handler entirely; musician detail is surfaced via the bani sync to the graph view.
 - 2026-04-13: isMelaDirect flag pattern: when _expandComps is called for a mela's own items (no janya intermediary), pass isMelaDirect=true so the comp click handler can hide the janya-group <g> and sat-label-janya labels; the janya-path call passes nothing (falsy); added sat-label-janya CSS class to janya labels to distinguish them from comp labels which share sat-label.
-- 2026-04-13: _main.py now supports both direct invocation (python3 carnatic/render/_main.py) and the gstree-render CLI entry point by injecting the project root into sys.path at startup and using absolute imports; __init__.py exposes a thin shim so pyproject.toml entry point carnatic.render:main resolves without circular imports; .clinerules updated to enforce source .venv/bin/activate before any gstree-* command and gstree-render as the canonical render invocation.
+- 2026-04-13: _main.py now supports both direct invocation (python3 carnatic/render/_main.py) and the bani-render CLI entry point by injecting the project root into sys.path at startup and using absolute imports; __init__.py exposes a thin shim so pyproject.toml entry point carnatic.render:main resolves without circular imports; .clinerules updated to enforce source .venv/bin/activate before any bani-* command and bani-render as the canonical render invocation.
 
 ### 🏛️ Graph Architect
 
@@ -411,5 +411,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-12: The PerformanceRef shape already carries recording_id, session_index, performers[], short_title, and date — the UI was discarding them by flattening; concert bracketing is always a rendering fix, never a schema change.
 - 2026-04-12: Every new UI grouping (concert brackets, session sub-brackets) implies new CLI commands — concerts-for, co-performers-of, concerts-with must mirror what the browser shows so scholars and agents can query without opening the graph.
 
+
+- 2026-04-13: ADR-027 proposes a reflective metadata popover (double-click any node/edge to inspect its full JSON data object in-browser); overhead is rendering-layer only — ~15 lines HTML, ~40 lines CSS, ~30 lines JS — because all data is already injected as JS globals by the render pipeline; the only breaking change is reassigning dbltap from Wikipedia-open to the inspector (Wikipedia remains accessible via the ↗ sidebar link).
 ### 🪃 Orchestrator
 
