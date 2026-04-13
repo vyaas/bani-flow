@@ -366,6 +366,8 @@ Entries are terse — this is a log, not an essay.
 
 - 2026-04-12: Raga parentage audit: sriranjini is a janya of Kharaharapriya (mela 22), not Kalyani; purvi (Carnatic) is a janya of Mayamalavagowla (mela 15), not Kalyani; yamuna_kalyani and yaman_kalyan are the same raga — fused under yamuna_kalyani with aliases ['Yamunakalyani', 'Yaman Kalyani', 'Yaman Kalyan']; always verify parent mela against svara structure before accepting any parentage claim.
 
+- 2026-04-13: When a musician has multiple recordings of the same composition, add a `version` field (free text, ADR-010) to each youtube[] entry in musicians.json and each performance object in recordings/*.json — e.g. "standalone clip", "Jamshedpur 1961", "younger", "older"; without it the UI falls back to ordinal labels (v1, v2, …) which are unambiguous but carry no context; the version field is optional and its absence is valid when only one recording exists.
+
 ### 🎵 Carnatic Coder
 
 - 2026-04-11: When adding a cross-cutting capability to all agents, write a transform script that reads the target file, applies the change idempotently, and writes back — never patch JSON by hand.
