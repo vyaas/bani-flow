@@ -1,8 +1,50 @@
 // ── Three-view selector (ADR-023) ─────────────────────────────────────────────
 let currentView = 'graph'; // 'graph' | 'timeline' | 'raga'
 
+// Snapshot of graph-view node positions — saved whenever the user leaves the
+// graph view so that returning to it restores the exact layout they had.
+// Keyed by node id, value is {x, y} in Cytoscape graph-space.
+// null means no snapshot yet (first load uses the cose layout).
+let _savedGraphPositions = null;
+
+// Save the current Cytoscape node positions into _savedGraphPositions.
+// Called just before leaving the graph view (to timeline or raga).
+function _saveGraphPositions() {
+  _savedGraphPositions = {};
+  cy.nodes().forEach(n => {
+    const p = n.position();
+    _savedGraphPositions[n.id()] = { x: p.x, y: p.y };
+  });
+}
+
+// Restore node positions from _savedGraphPositions using a preset layout.
+// Falls back to relayout() if no snapshot exists (first load).
+function _restoreGraphPositions() {
+  if (!_savedGraphPositions) {
+    relayout();
+    return;
+  }
+  const snap = _savedGraphPositions;
+  cy.layout({
+    name: 'preset',
+    positions: node => snap[node.id()] || node.position(),
+    animate: true,
+    animationDuration: 400,
+    fit: false,   // do NOT re-fit — preserve the user's zoom/pan
+    padding: 0,
+  }).run();
+}
+
 function switchView(name) {
   if (name === currentView) return;
+
+  // ── Save positions before leaving graph view ──────────────────────────────
+  // We save whenever we are currently on the graph view (not timeline, which
+  // has deterministic positions) so that returning always restores the layout.
+  if (currentView === 'graph') {
+    _saveGraphPositions();
+  }
+
   currentView = name;
 
   // Update segmented control button states
@@ -22,7 +64,7 @@ function switchView(name) {
     hideRagaWheel();
     document.getElementById('cy').style.display = '';
     currentLayout = 'graph';
-    relayout();
+    _restoreGraphPositions();
   } else if (name === 'timeline') {
     hideRagaWheel();
     document.getElementById('cy').style.display = '';
