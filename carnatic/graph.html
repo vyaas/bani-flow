@@ -26,6 +26,7 @@
   --accent-warn: #d65d0e;
   --accent-danger: #cc241d;
   --accent-select: #fabd2f;
+  --accent-match: #83a598;
   --font-ui: 'Inter', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'Courier New', monospace;
 }
@@ -412,27 +413,23 @@
     border-color: var(--fg-sub);
   }
 
-  /* ── Raga chip in player bar — mirrors .raga-chip style ── */
+  /* ── Raga chip in player bar — plain link style, mirrors .raga-chip ── */
   .mp-raga-chip {
-    display: inline-flex; align-items: center; gap: 3px;
-    padding: 1px 7px;
-    border: 1px solid var(--accent-match);
-    border-radius: 10px;
-    color: var(--accent-match);
-    font-size: 0.70rem; font-weight: bold;
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    color: var(--accent);
+    font-size: 0.70rem; font-weight: normal;
     cursor: pointer; user-select: none;
     background: transparent; flex-shrink: 0;
     white-space: nowrap;
-    transition: background 0.12s, color 0.12s;
+    transition: color 0.12s;
   }
-  .mp-raga-chip::before { content: '◈'; font-size: 0.60rem; opacity: 0.8; }
-  .mp-raga-chip:hover {
-    background: rgba(131,165,152,0.12);
-    color: var(--fg);
-    border-color: var(--fg-sub);
-  }
+  .mp-raga-chip::before { content: '◈'; font-size: 0.58rem; opacity: 0.7; color: var(--accent-match); }
+  .mp-raga-chip:hover { color: var(--fg); text-decoration: underline; }
 
-  /* ── Composition chip in player bar ── */
+  /* ── Composition chip in player bar — same visual as .comp-chip ── */
   .mp-comp-chip {
     display: inline-flex; align-items: center; gap: 3px;
     padding: 1px 7px;
@@ -447,7 +444,7 @@
   }
   .mp-comp-chip::before { content: '♩'; font-size: 0.60rem; opacity: 0.8; }
   .mp-comp-chip:hover {
-    background: rgba(131,165,152,0.08);
+    background: rgba(104,157,106,0.08);
     color: var(--fg);
     border-color: var(--fg-sub);
   }
@@ -553,6 +550,26 @@
     font-size: 0.85rem; color: var(--accent); font-weight: bold;
     flex: 1; min-width: 0;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  /* When subject name is rendered as a chip, let the chip control its own sizing
+     and colour — override the ID-level accent/bold defaults */
+  #bani-subject-name.comp-chip {
+    flex: 0 1 auto;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 0.80rem;
+    color: var(--accent-sub);
+    border-color: var(--accent-sub);
+    font-weight: bold;
+  }
+  #bani-subject-name.raga-chip {
+    flex: 0 1 auto;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: bold;
+    border: none;
   }
   .bani-subject-link {
     margin-left: auto; flex-shrink: 0;
@@ -771,16 +788,46 @@
   }
   .rec-raga-link:hover { text-decoration: underline; }
 
-  /* ── Raga chip: first-class raga badge used wherever a raga is navigable ──
-     Uniform across: composition subject header, trail rows, raga wheel.
-     Teal border + teal text signals "this is a raga — click to explore". */
+  /* ── Raga chip: navigable raga label — plain link style, no border box ──
+     Uniform across: composition subject header, trail rows, right sidebar.
+     ◈ prefix signals "raga"; accent colour signals navigability.
+     No border/pill — keeps the sidebar uncluttered. */
   .raga-chip {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: normal;
+    cursor: pointer;
+    user-select: none;
+    background: transparent;
+    transition: color 0.12s;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .raga-chip::before {
+    content: '◈';
+    font-size: 0.60rem;
+    opacity: 0.7;
+    color: var(--accent-match);
+  }
+  .raga-chip:hover {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+
+  /* ── Composition chip: sidebar trail badge for navigable compositions ──
+     Mirrors .mp-comp-chip but sized for the sidebar (0.70rem).
+     Amber/sub-accent border signals "this is a composition — click to explore". */
+  .comp-chip {
     display: inline-flex; align-items: center; gap: 3px;
     padding: 1px 7px;
-    border: 1px solid var(--accent-match);
+    border: 1px solid var(--accent-sub);
     border-radius: 10px;
-    color: var(--accent-match);
-    font-size: 0.74rem;
+    color: var(--accent-sub);
+    font-size: 0.70rem;
     font-weight: bold;
     cursor: pointer;
     user-select: none;
@@ -789,13 +836,13 @@
     white-space: nowrap;
     vertical-align: middle;
   }
-  .raga-chip::before {
-    content: '◈';
-    font-size: 0.65rem;
+  .comp-chip::before {
+    content: '♩';
+    font-size: 0.60rem;
     opacity: 0.8;
   }
-  .raga-chip:hover {
-    background: rgba(131, 165, 152, 0.12);  /* --accent-match at low opacity */
+  .comp-chip:hover {
+    background: rgba(131, 165, 152, 0.08);
     color: var(--fg);
     border-color: var(--fg-sub);
   }
@@ -1316,6 +1363,7 @@ const THEME = (() => {
         '--accent-warn':   tokens.accentWarn,
         '--accent-danger': tokens.accentDanger,
         '--accent-select': tokens.accentSelect,
+        '--accent-match':  tokens.accentMatch,
         '--font-ui':       tokens.fontUi,
         '--font-mono':     tokens.fontMono,
       };
@@ -45119,10 +45167,12 @@ document.getElementById('rec-filter').addEventListener('input', function() {
         bracketHasMatch = true;
         return;
       }
-      const titleText = (li.querySelector('.rec-title') || {}).textContent || '';
-      const metaText  = (li.querySelector('.rec-meta')  || {}).textContent || '';
-      const matches   = titleText.toLowerCase().includes(q) ||
-                        metaText.toLowerCase().includes(q);
+      const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
+      const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
+      const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
+      const metaText     = (li.querySelector('.rec-meta')   || {}).textContent || '';
+      const matches   = [titleText, compChipText, ragaChipText, metaText]
+                        .some(t => t.toLowerCase().includes(q));
       li.style.display = matches ? 'flex' : 'none';
       if (matches) bracketHasMatch = true;
     });
@@ -45146,10 +45196,12 @@ document.getElementById('rec-filter').addEventListener('input', function() {
   // ── legacy flat items ─────────────────────────────────────────────────────
   recList.querySelectorAll('li.rec-legacy').forEach(li => {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    const titleText = (li.querySelector('.rec-title') || {}).textContent || '';
-    const metaText  = (li.querySelector('.rec-meta')  || {}).textContent || '';
-    const matches   = titleText.toLowerCase().includes(q) ||
-                      metaText.toLowerCase().includes(q);
+    const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
+    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
+    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
+    const metaText     = (li.querySelector('.rec-meta')   || {}).textContent || '';
+    const matches   = [titleText, compChipText, ragaChipText, metaText]
+                      .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
   });
@@ -45184,9 +45236,11 @@ document.getElementById('trail-filter').addEventListener('input', function() {
     // Match co-performer names (ADR-019)
     const coTexts = [...li.querySelectorAll('.trail-artist-co')]
       .map(el => el.textContent).join(' ');
-    // Match composition title
-    const labelText  = (li.querySelector('.trail-label')  || {}).textContent || '';
-    const matches    = [primaryText, coTexts, labelText]
+    // Match composition chip, raga chip, or fallback label
+    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
+    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
+    const labelText    = (li.querySelector('.trail-label') || {}).textContent || '';
+    const matches    = [primaryText, coTexts, compChipText, ragaChipText, labelText]
       .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
@@ -45753,19 +45807,27 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         else if (p.raga_id)   triggerBaniSearch('raga', p.raga_id);
       });
 
-      // Row 1: composition title
+      // Row 1: composition chip (navigable) or plain title for non-composition entries
       const row1 = document.createElement('div');
       row1.className = 'rec-row1';
-      const titleEl = document.createElement('span');
-      titleEl.className = 'rec-title';
       if (p.composition_id) {
         const comp = compositions.find(c => c.id === p.composition_id);
-        titleEl.textContent = comp ? comp.title : (p.display_title || '');
+        const compChip = document.createElement('span');
+        compChip.className = 'comp-chip';
+        compChip.textContent = comp ? comp.title : (p.display_title || '');
+        compChip.title = 'Explore in Bani Flow';
+        compChip.addEventListener('click', e => {
+          e.stopPropagation();
+          triggerBaniSearch('comp', p.composition_id);
+        });
+        row1.appendChild(compChip);
       } else {
+        const titleEl = document.createElement('span');
+        titleEl.className = 'rec-title';
         const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[p.type] || '';
         titleEl.textContent = typeIcon + (p.display_title || '');
+        row1.appendChild(titleEl);
       }
-      row1.appendChild(titleEl);
 
       // ▶ button → play only
       const playBtn = document.createElement('button');
@@ -45807,29 +45869,32 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       });
       row1.appendChild(playBtn);
 
-      // Row 2: raga · tala + timestamp link
+      // Row 2: raga chip + tala + timestamp link
       const row2 = document.createElement('div');
       row2.className = 'rec-row2';
       const metaSpan = document.createElement('span');
       metaSpan.className = 'rec-meta';
       const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
-      const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
       const talaPart = p.tala || '';
-      if (ragaObj && p.raga_id) {
-        const ragaLink = document.createElement('span');
-        ragaLink.className = 'rec-raga-link';
-        ragaLink.textContent = ragaObj.name;
-        ragaLink.title = 'Explore raga in Bani Flow';
-        ragaLink.addEventListener('click', e => {
+      if (ragaObj) {
+        const ragaChip = document.createElement('span');
+        ragaChip.className = 'raga-chip';
+        ragaChip.textContent = ragaObj.name;
+        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+        ragaChip.addEventListener('click', e => {
           e.stopPropagation();
           triggerBaniSearch('raga', p.raga_id);
         });
-        metaSpan.appendChild(ragaLink);
+        metaSpan.appendChild(ragaChip);
         if (talaPart) {
-          metaSpan.appendChild(document.createTextNode(' · ' + talaPart));
+          const talaSpan = document.createElement('span');
+          talaSpan.textContent = talaPart;
+          talaSpan.style.color = 'var(--fg-muted)';
+          talaSpan.style.fontSize = '0.68rem';
+          metaSpan.appendChild(talaSpan);
         }
-      } else {
-        metaSpan.textContent = [ragaName, talaPart].filter(Boolean).join(' · ');
+      } else if (p.raga_id || talaPart) {
+        metaSpan.textContent = [p.raga_id, talaPart].filter(Boolean).join(' · ');
       }
 
       const linkA = document.createElement('a');
@@ -45929,14 +45994,27 @@ function buildRecordingsList(nodeId, nodeData) {
 
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
-    const titleSpan = document.createElement('span');
-    titleSpan.className = 'rec-title';
-    const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[t.type] || '';
-    titleSpan.textContent = typeIcon + (t.label || '');
+    if (t.composition_id) {
+      const comp = compositions.find(c => c.id === t.composition_id);
+      const compChip = document.createElement('span');
+      compChip.className = 'comp-chip';
+      compChip.textContent = comp ? comp.title : (t.label || '');
+      compChip.title = 'Explore in Bani Flow';
+      compChip.addEventListener('click', e => {
+        e.stopPropagation();
+        triggerBaniSearch('comp', t.composition_id);
+      });
+      row1.appendChild(compChip);
+    } else {
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'rec-title';
+      const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[t.type] || '';
+      titleSpan.textContent = typeIcon + (t.label || '');
+      row1.appendChild(titleSpan);
+    }
     const yearSpan = document.createElement('span');
     yearSpan.className = 'rec-year';
     yearSpan.textContent = t.year ? String(t.year) : '';
-    row1.appendChild(titleSpan);
     row1.appendChild(yearSpan);
 
     // ▶ button → play only
@@ -45958,15 +46036,15 @@ function buildRecordingsList(nodeId, nodeData) {
     if (t.raga_id) {
       const ragaObj = ragas.find(r => r.id === t.raga_id);
       if (ragaObj) {
-        const ragaLink = document.createElement('span');
-        ragaLink.className = 'rec-raga-link';
-        ragaLink.textContent = ragaObj.name;
-        ragaLink.title = 'Explore raga in Bani Flow';
-        ragaLink.addEventListener('click', e => {
+        const ragaChip = document.createElement('span');
+        ragaChip.className = 'raga-chip';
+        ragaChip.textContent = ragaObj.name;
+        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+        ragaChip.addEventListener('click', e => {
           e.stopPropagation();
           triggerBaniSearch('raga', t.raga_id);
         });
-        metaSpan.appendChild(ragaLink);
+        metaSpan.appendChild(ragaChip);
       } else {
         metaSpan.textContent = t.raga_id;
       }
@@ -47451,6 +47529,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   const subjectName   = document.getElementById('bani-subject-name');
   const subjectLink   = document.getElementById('bani-subject-link');
   const subjectSub    = document.getElementById('bani-subject-sub');
+  const subjectIcon   = document.getElementById('bani-subject-icon');
 
   subjectSub.innerHTML = '';
   subjectLink.style.display = 'none';
@@ -47462,12 +47541,18 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   document.getElementById('bani-janyas-list').innerHTML = '';
   document.getElementById('bani-janyas-filter').value = '';
 
+  // Reset subject name chip styling from previous call
+  subjectName.className = '';
+  subjectIcon.style.display = '';
+
   if (type === 'comp') {
     const comp     = compositions.find(c => c.id === id);
     const raga     = comp ? ragas.find(r => r.id === comp.raga_id) : null;
     const composer = comp ? composers.find(c => c.id === comp.composer_id) : null;
 
-    // Row 1: composition title + source link
+    // Row 1: composition title styled as a .comp-chip — visually matches trail + right sidebar
+    subjectName.className = 'comp-chip';
+    subjectIcon.style.display = 'none';  // chip ::before provides the icon
     subjectName.textContent = comp ? comp.title : id;
     const compSrc = comp && comp.sources && comp.sources[0];
     if (compSrc) {
@@ -47642,7 +47727,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     // ── Raga search (ADR-022) ───────────────────────────────────────────────────
     const raga = ragas.find(r => r.id === id);
 
-    // Row 1: raga name + Wikipedia link + notes tooltip
+    // Row 1: raga name styled as a .raga-chip — visually matches trail + right sidebar
+    subjectName.className = 'raga-chip';
+    subjectIcon.style.display = 'none';  // chip ::before provides the ◈ icon
     subjectName.textContent = raga ? raga.name : id;
     if (raga && raga.notes) {
       subjectName.title = raga.notes;          // hover tooltip
@@ -47997,16 +48084,66 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     });
   }
 
-  // ── Row 2: composition title + timestamp link ──────────────────────────────
-  let compTitle = row.track.label;
-  if (!row.isStructured && row.track.composition_id) {
-    const comp = compositions.find(c => c.id === row.track.composition_id);
-    if (comp) compTitle = comp.title;
+  // ── Row 2: chips (raga + composition) + timestamp link ────────────────────
+  // Resolve composition and raga for this trail entry.
+  const trailComp = row.track.composition_id
+    ? compositions.find(c => c.id === row.track.composition_id) || null
+    : null;
+  const trailRagaId = row.track.raga_id
+    || (trailComp ? trailComp.raga_id : null)
+    || null;
+  const trailRaga = trailRagaId ? ragas.find(r => r.id === trailRagaId) || null : null;
+
+  const row2Div = document.createElement('div');
+  row2Div.className = 'trail-row2';
+
+  // Chip suppression rules — avoid redundancy and overflow:
+  // • comp filter: subject header already names the composition + its raga →
+  //   suppress both chips (every row is that comp; raga is in the header)
+  // • raga filter: subject header names the raga →
+  //   suppress raga chip; show comp chip for navigation
+  // • perf / yt filter: show both chips (full context useful)
+  const showCompChip = trailComp && type !== 'comp';
+  const showRagaChip = trailRaga && type !== 'comp' && !(type === 'raga' && trailRagaId === id);
+
+  // Composition chip — navigates to composition filter
+  if (showCompChip) {
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = trailComp.title;
+    compChip.title = 'Explore ' + trailComp.title + ' in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      triggerBaniSearch('comp', trailComp.id);
+    });
+    row2Div.appendChild(compChip);
   }
 
-  const labelSpan = document.createElement('span');
-  labelSpan.className = 'trail-label';
-  labelSpan.textContent = compTitle;
+  // Raga chip — navigates to raga filter
+  if (showRagaChip) {
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.textContent = trailRaga.name;
+    ragaChip.title = 'Explore ' + trailRaga.name + ' in Bani Flow';
+    ragaChip.addEventListener('click', e => {
+      e.stopPropagation();
+      triggerBaniSearch('raga', trailRagaId);
+    });
+    row2Div.appendChild(ragaChip);
+  }
+
+  // Fallback label — shown only when no chip is shown
+  if (!showCompChip && !showRagaChip) {
+    let fallbackLabel = row.track.label;
+    if (!row.isStructured && row.track.composition_id) {
+      const comp = compositions.find(c => c.id === row.track.composition_id);
+      if (comp) fallbackLabel = comp.title;
+    }
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'trail-label';
+    labelSpan.textContent = fallbackLabel;
+    row2Div.appendChild(labelSpan);
+  }
 
   const offsetSecs = row.isStructured ? row.track.offset_seconds : 0;
   const linkA = document.createElement('a');
@@ -48018,10 +48155,6 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     : `00:00 \u2197`;
   linkA.title = offsetSecs > 0 ? 'Open in YouTube at this timestamp' : 'Open in YouTube';
   linkA.addEventListener('click', e => e.stopPropagation());
-
-  const row2Div = document.createElement('div');
-  row2Div.className = 'trail-row2';
-  row2Div.appendChild(labelSpan);
 
   // Version badge — shown only when this nodeId::composition_id has multiple entries.
   // _versionLabel is pre-computed in buildListeningTrail: explicit version string or v1/v2/…

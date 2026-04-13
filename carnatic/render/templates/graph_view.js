@@ -402,10 +402,12 @@ document.getElementById('rec-filter').addEventListener('input', function() {
         bracketHasMatch = true;
         return;
       }
-      const titleText = (li.querySelector('.rec-title') || {}).textContent || '';
-      const metaText  = (li.querySelector('.rec-meta')  || {}).textContent || '';
-      const matches   = titleText.toLowerCase().includes(q) ||
-                        metaText.toLowerCase().includes(q);
+      const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
+      const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
+      const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
+      const metaText     = (li.querySelector('.rec-meta')   || {}).textContent || '';
+      const matches   = [titleText, compChipText, ragaChipText, metaText]
+                        .some(t => t.toLowerCase().includes(q));
       li.style.display = matches ? 'flex' : 'none';
       if (matches) bracketHasMatch = true;
     });
@@ -429,10 +431,12 @@ document.getElementById('rec-filter').addEventListener('input', function() {
   // ── legacy flat items ─────────────────────────────────────────────────────
   recList.querySelectorAll('li.rec-legacy').forEach(li => {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    const titleText = (li.querySelector('.rec-title') || {}).textContent || '';
-    const metaText  = (li.querySelector('.rec-meta')  || {}).textContent || '';
-    const matches   = titleText.toLowerCase().includes(q) ||
-                      metaText.toLowerCase().includes(q);
+    const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
+    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
+    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
+    const metaText     = (li.querySelector('.rec-meta')   || {}).textContent || '';
+    const matches   = [titleText, compChipText, ragaChipText, metaText]
+                      .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
   });
@@ -467,9 +471,11 @@ document.getElementById('trail-filter').addEventListener('input', function() {
     // Match co-performer names (ADR-019)
     const coTexts = [...li.querySelectorAll('.trail-artist-co')]
       .map(el => el.textContent).join(' ');
-    // Match composition title
-    const labelText  = (li.querySelector('.trail-label')  || {}).textContent || '';
-    const matches    = [primaryText, coTexts, labelText]
+    // Match composition chip, raga chip, or fallback label
+    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
+    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
+    const labelText    = (li.querySelector('.trail-label') || {}).textContent || '';
+    const matches    = [primaryText, coTexts, compChipText, ragaChipText, labelText]
       .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;

@@ -444,19 +444,27 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         else if (p.raga_id)   triggerBaniSearch('raga', p.raga_id);
       });
 
-      // Row 1: composition title
+      // Row 1: composition chip (navigable) or plain title for non-composition entries
       const row1 = document.createElement('div');
       row1.className = 'rec-row1';
-      const titleEl = document.createElement('span');
-      titleEl.className = 'rec-title';
       if (p.composition_id) {
         const comp = compositions.find(c => c.id === p.composition_id);
-        titleEl.textContent = comp ? comp.title : (p.display_title || '');
+        const compChip = document.createElement('span');
+        compChip.className = 'comp-chip';
+        compChip.textContent = comp ? comp.title : (p.display_title || '');
+        compChip.title = 'Explore in Bani Flow';
+        compChip.addEventListener('click', e => {
+          e.stopPropagation();
+          triggerBaniSearch('comp', p.composition_id);
+        });
+        row1.appendChild(compChip);
       } else {
+        const titleEl = document.createElement('span');
+        titleEl.className = 'rec-title';
         const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[p.type] || '';
         titleEl.textContent = typeIcon + (p.display_title || '');
+        row1.appendChild(titleEl);
       }
-      row1.appendChild(titleEl);
 
       // ▶ button → play only
       const playBtn = document.createElement('button');
@@ -498,29 +506,32 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       });
       row1.appendChild(playBtn);
 
-      // Row 2: raga · tala + timestamp link
+      // Row 2: raga chip + tala + timestamp link
       const row2 = document.createElement('div');
       row2.className = 'rec-row2';
       const metaSpan = document.createElement('span');
       metaSpan.className = 'rec-meta';
       const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
-      const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
       const talaPart = p.tala || '';
-      if (ragaObj && p.raga_id) {
-        const ragaLink = document.createElement('span');
-        ragaLink.className = 'rec-raga-link';
-        ragaLink.textContent = ragaObj.name;
-        ragaLink.title = 'Explore raga in Bani Flow';
-        ragaLink.addEventListener('click', e => {
+      if (ragaObj) {
+        const ragaChip = document.createElement('span');
+        ragaChip.className = 'raga-chip';
+        ragaChip.textContent = ragaObj.name;
+        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+        ragaChip.addEventListener('click', e => {
           e.stopPropagation();
           triggerBaniSearch('raga', p.raga_id);
         });
-        metaSpan.appendChild(ragaLink);
+        metaSpan.appendChild(ragaChip);
         if (talaPart) {
-          metaSpan.appendChild(document.createTextNode(' · ' + talaPart));
+          const talaSpan = document.createElement('span');
+          talaSpan.textContent = talaPart;
+          talaSpan.style.color = 'var(--fg-muted)';
+          talaSpan.style.fontSize = '0.68rem';
+          metaSpan.appendChild(talaSpan);
         }
-      } else {
-        metaSpan.textContent = [ragaName, talaPart].filter(Boolean).join(' · ');
+      } else if (p.raga_id || talaPart) {
+        metaSpan.textContent = [p.raga_id, talaPart].filter(Boolean).join(' · ');
       }
 
       const linkA = document.createElement('a');
@@ -620,14 +631,27 @@ function buildRecordingsList(nodeId, nodeData) {
 
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
-    const titleSpan = document.createElement('span');
-    titleSpan.className = 'rec-title';
-    const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[t.type] || '';
-    titleSpan.textContent = typeIcon + (t.label || '');
+    if (t.composition_id) {
+      const comp = compositions.find(c => c.id === t.composition_id);
+      const compChip = document.createElement('span');
+      compChip.className = 'comp-chip';
+      compChip.textContent = comp ? comp.title : (t.label || '');
+      compChip.title = 'Explore in Bani Flow';
+      compChip.addEventListener('click', e => {
+        e.stopPropagation();
+        triggerBaniSearch('comp', t.composition_id);
+      });
+      row1.appendChild(compChip);
+    } else {
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'rec-title';
+      const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[t.type] || '';
+      titleSpan.textContent = typeIcon + (t.label || '');
+      row1.appendChild(titleSpan);
+    }
     const yearSpan = document.createElement('span');
     yearSpan.className = 'rec-year';
     yearSpan.textContent = t.year ? String(t.year) : '';
-    row1.appendChild(titleSpan);
     row1.appendChild(yearSpan);
 
     // ▶ button → play only
@@ -649,15 +673,15 @@ function buildRecordingsList(nodeId, nodeData) {
     if (t.raga_id) {
       const ragaObj = ragas.find(r => r.id === t.raga_id);
       if (ragaObj) {
-        const ragaLink = document.createElement('span');
-        ragaLink.className = 'rec-raga-link';
-        ragaLink.textContent = ragaObj.name;
-        ragaLink.title = 'Explore raga in Bani Flow';
-        ragaLink.addEventListener('click', e => {
+        const ragaChip = document.createElement('span');
+        ragaChip.className = 'raga-chip';
+        ragaChip.textContent = ragaObj.name;
+        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+        ragaChip.addEventListener('click', e => {
           e.stopPropagation();
           triggerBaniSearch('raga', t.raga_id);
         });
-        metaSpan.appendChild(ragaLink);
+        metaSpan.appendChild(ragaChip);
       } else {
         metaSpan.textContent = t.raga_id;
       }

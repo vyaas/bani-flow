@@ -168,6 +168,7 @@ const THEME = (() => {
         '--accent-warn':   tokens.accentWarn,
         '--accent-danger': tokens.accentDanger,
         '--accent-select': tokens.accentSelect,
+        '--accent-match':  tokens.accentMatch,
         '--font-ui':       tokens.fontUi,
         '--font-mono':     tokens.fontMono,
       };

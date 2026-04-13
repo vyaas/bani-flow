@@ -77,6 +77,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   const subjectName   = document.getElementById('bani-subject-name');
   const subjectLink   = document.getElementById('bani-subject-link');
   const subjectSub    = document.getElementById('bani-subject-sub');
+  const subjectIcon   = document.getElementById('bani-subject-icon');
 
   subjectSub.innerHTML = '';
   subjectLink.style.display = 'none';
@@ -88,12 +89,18 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   document.getElementById('bani-janyas-list').innerHTML = '';
   document.getElementById('bani-janyas-filter').value = '';
 
+  // Reset subject name chip styling from previous call
+  subjectName.className = '';
+  subjectIcon.style.display = '';
+
   if (type === 'comp') {
     const comp     = compositions.find(c => c.id === id);
     const raga     = comp ? ragas.find(r => r.id === comp.raga_id) : null;
     const composer = comp ? composers.find(c => c.id === comp.composer_id) : null;
 
-    // Row 1: composition title + source link
+    // Row 1: composition title styled as a .comp-chip — visually matches trail + right sidebar
+    subjectName.className = 'comp-chip';
+    subjectIcon.style.display = 'none';  // chip ::before provides the icon
     subjectName.textContent = comp ? comp.title : id;
     const compSrc = comp && comp.sources && comp.sources[0];
     if (compSrc) {
@@ -268,7 +275,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     // ── Raga search (ADR-022) ───────────────────────────────────────────────────
     const raga = ragas.find(r => r.id === id);
 
-    // Row 1: raga name + Wikipedia link + notes tooltip
+    // Row 1: raga name styled as a .raga-chip — visually matches trail + right sidebar
+    subjectName.className = 'raga-chip';
+    subjectIcon.style.display = 'none';  // chip ::before provides the ◈ icon
     subjectName.textContent = raga ? raga.name : id;
     if (raga && raga.notes) {
       subjectName.title = raga.notes;          // hover tooltip
@@ -623,16 +632,66 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     });
   }
 
-  // ── Row 2: composition title + timestamp link ──────────────────────────────
-  let compTitle = row.track.label;
-  if (!row.isStructured && row.track.composition_id) {
-    const comp = compositions.find(c => c.id === row.track.composition_id);
-    if (comp) compTitle = comp.title;
+  // ── Row 2: chips (raga + composition) + timestamp link ────────────────────
+  // Resolve composition and raga for this trail entry.
+  const trailComp = row.track.composition_id
+    ? compositions.find(c => c.id === row.track.composition_id) || null
+    : null;
+  const trailRagaId = row.track.raga_id
+    || (trailComp ? trailComp.raga_id : null)
+    || null;
+  const trailRaga = trailRagaId ? ragas.find(r => r.id === trailRagaId) || null : null;
+
+  const row2Div = document.createElement('div');
+  row2Div.className = 'trail-row2';
+
+  // Chip suppression rules — avoid redundancy and overflow:
+  // • comp filter: subject header already names the composition + its raga →
+  //   suppress both chips (every row is that comp; raga is in the header)
+  // • raga filter: subject header names the raga →
+  //   suppress raga chip; show comp chip for navigation
+  // • perf / yt filter: show both chips (full context useful)
+  const showCompChip = trailComp && type !== 'comp';
+  const showRagaChip = trailRaga && type !== 'comp' && !(type === 'raga' && trailRagaId === id);
+
+  // Composition chip — navigates to composition filter
+  if (showCompChip) {
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = trailComp.title;
+    compChip.title = 'Explore ' + trailComp.title + ' in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      triggerBaniSearch('comp', trailComp.id);
+    });
+    row2Div.appendChild(compChip);
   }
 
-  const labelSpan = document.createElement('span');
-  labelSpan.className = 'trail-label';
-  labelSpan.textContent = compTitle;
+  // Raga chip — navigates to raga filter
+  if (showRagaChip) {
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.textContent = trailRaga.name;
+    ragaChip.title = 'Explore ' + trailRaga.name + ' in Bani Flow';
+    ragaChip.addEventListener('click', e => {
+      e.stopPropagation();
+      triggerBaniSearch('raga', trailRagaId);
+    });
+    row2Div.appendChild(ragaChip);
+  }
+
+  // Fallback label — shown only when no chip is shown
+  if (!showCompChip && !showRagaChip) {
+    let fallbackLabel = row.track.label;
+    if (!row.isStructured && row.track.composition_id) {
+      const comp = compositions.find(c => c.id === row.track.composition_id);
+      if (comp) fallbackLabel = comp.title;
+    }
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'trail-label';
+    labelSpan.textContent = fallbackLabel;
+    row2Div.appendChild(labelSpan);
+  }
 
   const offsetSecs = row.isStructured ? row.track.offset_seconds : 0;
   const linkA = document.createElement('a');
@@ -644,10 +703,6 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     : `00:00 \u2197`;
   linkA.title = offsetSecs > 0 ? 'Open in YouTube at this timestamp' : 'Open in YouTube';
   linkA.addEventListener('click', e => e.stopPropagation());
-
-  const row2Div = document.createElement('div');
-  row2Div.className = 'trail-row2';
-  row2Div.appendChild(labelSpan);
 
   // Version badge — shown only when this nodeId::composition_id has multiple entries.
   // _versionLabel is pre-computed in buildListeningTrail: explicit version string or v1/v2/…

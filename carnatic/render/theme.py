@@ -196,6 +196,7 @@ def css_vars() -> str:
         "--accent-warn":    TOKENS["accentWarn"],
         "--accent-danger":  TOKENS["accentDanger"],
         "--accent-select":  TOKENS["accentSelect"],
+        "--accent-match":   TOKENS["accentMatch"],   # raga chip / bani-match colour
         "--font-ui":        TOKENS["fontUi"],
         "--font-mono":      TOKENS["fontMono"],
     }

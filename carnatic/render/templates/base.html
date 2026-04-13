@@ -390,27 +390,23 @@
     border-color: var(--fg-sub);
   }
 
-  /* ── Raga chip in player bar — mirrors .raga-chip style ── */
+  /* ── Raga chip in player bar — plain link style, mirrors .raga-chip ── */
   .mp-raga-chip {
-    display: inline-flex; align-items: center; gap: 3px;
-    padding: 1px 7px;
-    border: 1px solid var(--accent-match);
-    border-radius: 10px;
-    color: var(--accent-match);
-    font-size: 0.70rem; font-weight: bold;
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    color: var(--accent);
+    font-size: 0.70rem; font-weight: normal;
     cursor: pointer; user-select: none;
     background: transparent; flex-shrink: 0;
     white-space: nowrap;
-    transition: background 0.12s, color 0.12s;
+    transition: color 0.12s;
   }
-  .mp-raga-chip::before { content: '◈'; font-size: 0.60rem; opacity: 0.8; }
-  .mp-raga-chip:hover {
-    background: rgba(131,165,152,0.12);
-    color: var(--fg);
-    border-color: var(--fg-sub);
-  }
+  .mp-raga-chip::before { content: '◈'; font-size: 0.58rem; opacity: 0.7; color: var(--accent-match); }
+  .mp-raga-chip:hover { color: var(--fg); text-decoration: underline; }
 
-  /* ── Composition chip in player bar ── */
+  /* ── Composition chip in player bar — same visual as .comp-chip ── */
   .mp-comp-chip {
     display: inline-flex; align-items: center; gap: 3px;
     padding: 1px 7px;
@@ -425,7 +421,7 @@
   }
   .mp-comp-chip::before { content: '♩'; font-size: 0.60rem; opacity: 0.8; }
   .mp-comp-chip:hover {
-    background: rgba(131,165,152,0.08);
+    background: rgba(104,157,106,0.08);
     color: var(--fg);
     border-color: var(--fg-sub);
   }
@@ -531,6 +527,26 @@
     font-size: 0.85rem; color: var(--accent); font-weight: bold;
     flex: 1; min-width: 0;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  /* When subject name is rendered as a chip, let the chip control its own sizing
+     and colour — override the ID-level accent/bold defaults */
+  #bani-subject-name.comp-chip {
+    flex: 0 1 auto;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 0.80rem;
+    color: var(--accent-sub);
+    border-color: var(--accent-sub);
+    font-weight: bold;
+  }
+  #bani-subject-name.raga-chip {
+    flex: 0 1 auto;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: bold;
+    border: none;
   }
   .bani-subject-link {
     margin-left: auto; flex-shrink: 0;
@@ -749,16 +765,46 @@
   }
   .rec-raga-link:hover { text-decoration: underline; }
 
-  /* ── Raga chip: first-class raga badge used wherever a raga is navigable ──
-     Uniform across: composition subject header, trail rows, raga wheel.
-     Teal border + teal text signals "this is a raga — click to explore". */
+  /* ── Raga chip: navigable raga label — plain link style, no border box ──
+     Uniform across: composition subject header, trail rows, right sidebar.
+     ◈ prefix signals "raga"; accent colour signals navigability.
+     No border/pill — keeps the sidebar uncluttered. */
   .raga-chip {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: normal;
+    cursor: pointer;
+    user-select: none;
+    background: transparent;
+    transition: color 0.12s;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .raga-chip::before {
+    content: '◈';
+    font-size: 0.60rem;
+    opacity: 0.7;
+    color: var(--accent-match);
+  }
+  .raga-chip:hover {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+
+  /* ── Composition chip: sidebar trail badge for navigable compositions ──
+     Mirrors .mp-comp-chip but sized for the sidebar (0.70rem).
+     Amber/sub-accent border signals "this is a composition — click to explore". */
+  .comp-chip {
     display: inline-flex; align-items: center; gap: 3px;
     padding: 1px 7px;
-    border: 1px solid var(--accent-match);
+    border: 1px solid var(--accent-sub);
     border-radius: 10px;
-    color: var(--accent-match);
-    font-size: 0.74rem;
+    color: var(--accent-sub);
+    font-size: 0.70rem;
     font-weight: bold;
     cursor: pointer;
     user-select: none;
@@ -767,13 +813,13 @@
     white-space: nowrap;
     vertical-align: middle;
   }
-  .raga-chip::before {
-    content: '◈';
-    font-size: 0.65rem;
+  .comp-chip::before {
+    content: '♩';
+    font-size: 0.60rem;
     opacity: 0.8;
   }
-  .raga-chip:hover {
-    background: rgba(131, 165, 152, 0.12);  /* --accent-match at low opacity */
+  .comp-chip:hover {
+    background: rgba(131, 165, 152, 0.08);
     color: var(--fg);
     border-color: var(--fg-sub);
   }
