@@ -363,7 +363,10 @@ function selectNode(node) {
   node.connectedEdges().connectedNodes().removeClass('faded');
 }
 
-// ── orientToNode — pan + zoom to a node by id, show node + neighbourhood ─────
+// ── orientToNode — pan + zoom to a node, populate right sidebar ──────────────
+// Fits the closed neighbourhood (node + direct connections) into view,
+// flashes the node border, and populates the Musician panel — symmetric
+// with raga/composition chips which populate the Bani Flow panel.
 function orientToNode(nodeId) {
   const n = cy.getElementById(nodeId);
   if (!n || !n.length) return;
@@ -375,6 +378,8 @@ function orientToNode(nodeId) {
     duration: 500,
     easing: 'ease-in-out-cubic',
   });
+  // Populate the Musician panel (right sidebar) — same as clicking the node
+  selectNode(n);
   // Flash the node border briefly to draw the eye
   n.addClass('bani-match');
   setTimeout(() => n.removeClass('bani-match'), 1400);
