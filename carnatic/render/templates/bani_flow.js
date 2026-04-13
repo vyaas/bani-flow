@@ -630,9 +630,18 @@ function buildTrailItem(row, type, id) {
   trailPlayBtn.addEventListener('click', e => {
     e.stopPropagation();
     if (row.isStructured && row.track.recording_id) {
-      // Assemble full concert track list from musicianToPerformances
+      // Assemble full concert track list from musicianToPerformances.
+      // Deduplicate by session_index::performance_index — each ref is stored
+      // once per performer, so flattening all musician lists multiplies entries
+      // by the number of performers with a musician_id in that concert.
       const allPerfs = Object.values(musicianToPerformances).flat();
-      const concertPerfs = allPerfs.filter(sp => sp.recording_id === row.track.recording_id);
+      const concertPerfsMap = new Map();
+      allPerfs.forEach(sp => {
+        if (sp.recording_id !== row.track.recording_id) return;
+        const key = `${sp.session_index}::${sp.performance_index}`;
+        if (!concertPerfsMap.has(key)) concertPerfsMap.set(key, sp);
+      });
+      const concertPerfs = [...concertPerfsMap.values()];
       const playerTracks = concertPerfs
         .slice()
         .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0))
