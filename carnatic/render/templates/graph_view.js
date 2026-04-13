@@ -18,67 +18,67 @@ const cy = cytoscape({
         'width':              'data(size)',
         'height':             'data(size)',
         'label':              'data(label)',
-        'font-family':            'Courier New, monospace',
+        'font-family':            THEME.fontMono,
         'font-size':              'data(font_size)',
         'font-weight':            'data(font_weight)',
-        'color':                  '#ebdbb2',
+        'color':                  THEME.labelColor,
         'text-valign':            'bottom',
         'text-halign':            'center',
         'text-margin-y':          '8px',
         'text-wrap':              'wrap',
         'text-max-width':         '100px',
-        'text-outline-color':     '#1d2021',
+        'text-outline-color':     THEME.labelOutline,
         'text-outline-width':     '2px',
         'min-zoomed-font-size':   8,
-        'text-background-color':  '#1d2021',
-        'text-background-opacity': 0.65,
+        'text-background-color':  THEME.labelOutline,
+        'text-background-opacity': THEME.labelBgOpacity,
         'text-background-padding': '3px',
         'text-background-shape':  'roundrectangle',
         'border-width':       '2px',
-        'border-color':       '#665c54',
+        'border-color':       THEME.nodeDefault,
       }
     },
     {
       selector: 'node.has-tracks',
-      style: { 'border-color': '#689d6a', 'border-width': '2.5px' }
+      style: { 'border-color': THEME.nodeHasTracks, 'border-width': '2.5px' }
     },
     {
       selector: 'node.hovered',
-      style: { 'border-color': '#d79921', 'border-width': '3px' }
+      style: { 'border-color': THEME.nodeHovered, 'border-width': '3px' }
     },
     {
       selector: 'node:selected',
       style: {
-        'border-color': '#ebdbb2', 'border-width': '3px',
+        'border-color': THEME.nodeSelected, 'border-width': '3px',
         'label': 'data(label)',
       }
     },
     {
       selector: 'node.bani-match',
-      style: { 'border-color': '#83a598', 'border-width': '3.5px' }
+      style: { 'border-color': THEME.nodeBaniMatch, 'border-width': '3.5px' }
     },
     {
       selector: 'edge',
       style: {
         'curve-style':         'bezier',
         'target-arrow-shape':  'triangle',
-        'target-arrow-color':  '#665c54',
-        'line-color':          '#504945',
+        'target-arrow-color':  THEME.edgeArrow,
+        'line-color':          THEME.edgeLine,
         'width':               'data(width)',
         'arrow-scale':         0.8,
-        'opacity':             0.75,
+        'opacity':             THEME.opacityEdge,
       }
     },
     {
       selector: 'edge.highlighted',
       style: {
-        'line-color':         '#d79921',
-        'target-arrow-color': '#d79921',
+        'line-color':         THEME.edgeHighlight,
+        'target-arrow-color': THEME.edgeHighlight,
         'opacity':            1.0,
       }
     },
-    { selector: '.faded',      style: { 'opacity': 0.12 } },
-    { selector: '.chip-faded', style: { 'opacity': 0.12 } },
+    { selector: '.faded',      style: { 'opacity': THEME.opacityFaded } },
+    { selector: '.chip-faded', style: { 'opacity': THEME.opacityFaded } },
   ],
   layout: {
     name: 'cose', animate: true, animationDuration: 800,
@@ -99,14 +99,8 @@ cy.ready(() => {
 });
 
 // ── ERA_COLOURS and INSTRUMENT_SHAPES mirrors (for chip injection) ─────────────
-const ERA_COLOURS = {
-  trinity:        '#d79921',
-  bridge:         '#d65d0e',
-  golden_age:     '#458588',
-  disseminator:   '#689d6a',
-  living_pillars: '#b16286',
-  contemporary:   '#98971a',
-};
+// ERA_COLOURS now sourced from THEME.era (ADR-028: single source of truth)
+const ERA_COLOURS = THEME.era;
 const INSTRUMENT_SHAPES = {
   vocal:         'ellipse',
   veena:         'diamond',

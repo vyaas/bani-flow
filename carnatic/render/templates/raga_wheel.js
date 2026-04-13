@@ -61,12 +61,8 @@ function hideRagaWheel() {
 // ── Raga Wheel — SVG rendering (ADR-023) ──────────────────────────────────────
 (function() {
 
-// Cakra colour palette (warm→cool, 12 sectors, Gruvbox-inspired)
-const CAKRA_COLORS = {
-  1:  '#d79921', 2:  '#98971a', 3:  '#689d6a', 4:  '#458588',
-  5:  '#076678', 6:  '#427b58', 7:  '#79740e', 8:  '#b57614',
-  9:  '#af3a03', 10: '#9d0006', 11: '#8f3f71', 12: '#b16286',
-};
+// Cakra colour palette — sourced from THEME.cakra (ADR-028: single source of truth)
+const CAKRA_COLORS = THEME.cakra;
 
 function svgEl(tag, attrs) {
   const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -86,7 +82,7 @@ function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs) {
   const bg = svgEl('rect', {
     x: cx - tw / 2, y: cy - th / 2,
     width: tw, height: th, rx: 2, ry: 2,
-    fill: '#1d2021', opacity: 0.72, 'pointer-events': 'none'
+    fill: THEME.labelOutline, opacity: 0.72, 'pointer-events': 'none'
   });
   // Carry over the FULL class so _collapseAll querySelectorAll('.sat-label') removes both rect and text
   if (extraAttrs && extraAttrs.class) bg.setAttribute('class', extraAttrs.class);
@@ -159,12 +155,12 @@ function showWheelTooltip(svg, x, y, lines) {
   const g = svgEl('g', { id: 'raga-wheel-tooltip' });
   g.appendChild(svgEl('rect', {
     x: tx, y: ty, width: tw, height: th, rx: 4, ry: 4,
-    fill: '#1d2021', stroke: '#504945', 'stroke-width': 1, opacity: 0.95
+    fill: THEME.labelOutline, stroke: THEME.edgeLine, 'stroke-width': 1, opacity: 0.95
   }));
   lines.forEach((line, i) => {
     const t = svgEl('text', {
       x: tx + PAD, y: ty + PAD + LINE_H * i + LINE_H * 0.75,
-      fill: i === 0 ? '#ebdbb2' : '#a89984',
+      fill: i === 0 ? THEME.fg : THEME.fgMuted,
       'font-size': i === 0 ? '12px' : '11px', 'font-family': 'inherit',
     });
     t.textContent = line;
@@ -387,10 +383,10 @@ window.drawRagaWheel = function() {
   // Cakra sectors — appended to viewport group (vp) for pan/zoom
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
-    const color = CAKRA_COLORS[cakra] || '#665c54';
+    const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
     vp.appendChild(svgEl('path', {
       d: sectorPath(cx, cy, R_INNER, R_CAKRA, startDeg, endDeg),
-      fill: color, opacity: 0.35, stroke: '#1d2021', 'stroke-width': 1
+      fill: color, opacity: 0.35, stroke: THEME.labelOutline, 'stroke-width': 1
     }));
     // Fix 6: cakra name only, rotated to follow the arc — flip on left half so text is never upside-down
     const midDeg = startDeg + 15;
@@ -399,7 +395,7 @@ window.drawRagaWheel = function() {
     const cakraRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
     const nameLbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: '#ebdbb2', 'font-size': Math.max(8, minDim * 0.015) + 'px',
+      fill: THEME.fg, 'font-size': Math.max(8, minDim * 0.015) + 'px',
       'font-weight': 'bold', 'pointer-events': 'none',
       transform: `rotate(${cakraRotDeg}, ${lp.x}, ${lp.y})`
     });
@@ -408,7 +404,7 @@ window.drawRagaWheel = function() {
   }
 
   vp.appendChild(svgEl('circle', {
-    cx, cy, r: R_CAKRA, fill: 'none', stroke: '#504945', 'stroke-width': 1
+    cx, cy, r: R_CAKRA, fill: 'none', stroke: THEME.edgeLine, 'stroke-width': 1
   }));
 
   // Fix 7: two-pass rendering — all circles first, then all labels on top
@@ -419,13 +415,13 @@ window.drawRagaWheel = function() {
     const pos = polar(cx, cy, R_MELA, angleDeg);
     const raga = melaByNum[n];
     const cakra = Math.ceil(n / 6);
-    const color = CAKRA_COLORS[cakra] || '#665c54';
+    const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
 
     const g = svgEl('g', { class: 'mela-node', 'data-mela': n, 'data-id': raga ? raga.id : '' });
     const circle = svgEl('circle', {
       cx: pos.x, cy: pos.y, r: NR_MELA,
-      fill: raga ? color : '#3c3836',
-      stroke: raga ? '#ebdbb2' : '#504945',
+      fill: raga ? color : THEME.bgPanel,
+      stroke: raga ? THEME.fg : THEME.edgeLine,
       'stroke-width': raga ? 1.5 : 1,
       opacity: raga ? 1 : 0.5,
       cursor: raga ? 'pointer' : 'default',
@@ -459,7 +455,7 @@ window.drawRagaWheel = function() {
             R_MELA, R_JANYA, R_COMP, R_MUSC,
             NR_MELA, NR_JANYA, NR_COMP, NR_MUSC,
             janyasByMela, compsByRaga, rtpByRaga, color, minDim);
-          circle.setAttribute('stroke', '#fabd2f');
+          circle.setAttribute('stroke', THEME.accentSelect);
           circle.setAttribute('stroke-width', 2.5);
           _expandedMela = raga.id;
           triggerBaniSearch('raga', raga.id);  // sync bani flow to this mela
@@ -488,7 +484,7 @@ window.drawRagaWheel = function() {
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const lbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': anchor, 'dominant-baseline': 'middle',
-      fill: raga ? '#ebdbb2' : '#665c54',
+      fill: raga ? THEME.fg : THEME.borderStrong,
       'font-size': Math.max(7, minDim * 0.012) + 'px',
       transform: `rotate(${melaRotDeg}, ${lp.x}, ${lp.y})`
     });
@@ -507,9 +503,8 @@ function _collapseAll(vp, melaByNum) {
   }
   vp.querySelectorAll('.mela-node circle').forEach(c => {
     const n = parseInt(c.getAttribute('data-mela'));
-    const cakra = Math.ceil(n / 6);
     const raga = melaByNum[n];
-    c.setAttribute('stroke', raga ? '#ebdbb2' : '#504945');
+    c.setAttribute('stroke', raga ? THEME.fg : THEME.edgeLine);
     c.setAttribute('stroke-width', raga ? 1.5 : 1);
   });
   vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
@@ -534,7 +529,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
     const lp = polar(cx, cy, R_JANYA, melaAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: '#665c54', 'font-size': '11px', 'pointer-events': 'none'
+      fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
     });
     t.textContent = 'no janyas or compositions';
     g.appendChild(t);
@@ -558,7 +553,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
       const jCircle = svgEl('circle', {
         cx: jPos.x, cy: jPos.y, r: NR_JANYA,
-        fill: melaColor, opacity: 0.75, stroke: '#ebdbb2', 'stroke-width': 1, cursor: 'pointer'
+        fill: melaColor, opacity: 0.75, stroke: THEME.fg, 'stroke-width': 1, cursor: 'pointer'
       });
       const jg = svgEl('g', { class: 'janya-node', 'data-id': janya.id });
       jg._connLine = janyaConnLine;  // stash for retrieval by comp click handler
@@ -576,16 +571,16 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         // Remove comp and musician labels only — preserve janya labels (.sat-label-janya)
         if (_labelLayer) _labelLayer.querySelectorAll('.sat-label:not(.sat-label-janya)').forEach(el => el.remove());
         vp.querySelectorAll('.janya-node circle').forEach(c => {
-          c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
+          c.setAttribute('stroke', THEME.fg); c.setAttribute('stroke-width', 1);
           c.setAttribute('opacity', '0.35');   // dim all janyas first
         });
         if (_expandedJanya === janya.id) {
           // un-dim all on collapse
-          vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
+          vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));  // restore
           _expandedJanya = null;
           return;
         }
-        jCircle.setAttribute('stroke', '#fabd2f');
+        jCircle.setAttribute('stroke', THEME.accentSelect);
         jCircle.setAttribute('stroke-width', 2.5);
         jCircle.setAttribute('opacity', '0.75');   // restore selected janya to full opacity
         _expandedJanya = janya.id;
@@ -604,7 +599,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
       if (_labelLayer) {
         const jFontSize = Math.max(7, minDim * 0.011);
         _labelWithBg(_labelLayer, janya.name, jPos.x, jPos.y, jFontSize, {
-          fill: '#d5c4a1', 'font-size': jFontSize + 'px',
+          fill: THEME.fgSub, 'font-size': jFontSize + 'px',
           class: 'sat-label sat-label-janya', 'data-janya-id': janya.id
         });
       }
@@ -639,7 +634,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     const lp = polar(cx, cy, R_COMP, jAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: '#665c54', 'font-size': '11px', 'pointer-events': 'none'
+      fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
     });
     t.textContent = 'no compositions';
     g.appendChild(t);
@@ -663,8 +658,8 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     const isRtp = item._isRtp;
     const cCircle = svgEl('circle', {
       cx: cPos.x, cy: cPos.y, r: NR_COMP,
-      fill: isRtp ? '#689d6a' : '#d79921',
-      opacity: 0.85, stroke: '#ebdbb2', 'stroke-width': 1, cursor: 'pointer'
+      fill: isRtp ? THEME.nodeHasTracks : THEME.accent,
+      opacity: 0.85, stroke: THEME.fg, 'stroke-width': 1, cursor: 'pointer'
     });
     const cg = svgEl('g', { class: 'comp-node', 'data-id': item.id || '' });
     cg.appendChild(cCircle);
@@ -672,7 +667,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     if (_labelLayer) {
       const cFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
-        fill: '#d5c4a1', 'font-size': cFontSize + 'px',
+        fill: THEME.fgSub, 'font-size': cFontSize + 'px',
         class: 'sat-label'
       });
     }
@@ -713,7 +708,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       vp.querySelectorAll('.musc-group').forEach(el => el.remove());
       if (_labelLayer) _labelLayer.querySelectorAll('.sat-label-musc').forEach(el => el.remove());
       vp.querySelectorAll('.comp-node circle').forEach(c => {
-        c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
+        c.setAttribute('stroke', THEME.fg); c.setAttribute('stroke-width', 1);
         c.setAttribute('opacity', '0.35');   // dim all comp nodes first
       });
       // Dim all connector lines (mela→janya and janya→comp)
@@ -728,7 +723,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         // Restore all janya nodes and their labels
         vp.querySelectorAll('.janya-node').forEach(jn => jn.style.removeProperty('display'));
         vp.querySelectorAll('.janya-node circle').forEach(c => {
-          c.setAttribute('stroke', '#ebdbb2'); c.setAttribute('stroke-width', 1);
+          c.setAttribute('stroke', THEME.fg); c.setAttribute('stroke-width', 1);
           c.setAttribute('opacity', '0.75');
         });
         if (_labelLayer) _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => el.style.removeProperty('display'));
@@ -763,7 +758,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       }
       // Restore the mela→janya connector line for the parent janya
       if (parentJanyaConnLine) parentJanyaConnLine.setAttribute('opacity', '0.5');
-      cCircle.setAttribute('stroke', '#fabd2f');
+      cCircle.setAttribute('stroke', THEME.accentSelect);
       cCircle.setAttribute('stroke-width', 2.5);
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
@@ -823,7 +818,7 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     const lp = polar(cx, cyCY, R_MUSC, cAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: '#665c54', 'font-size': '11px', 'pointer-events': 'none'
+      fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
     });
     t.textContent = 'no musicians';
     g.appendChild(t);
@@ -847,8 +842,8 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
 
     const mCircle = svgEl('circle', {
       cx: mPos.x, cy: mPos.y, r: NR_MUSC,
-      fill: mData.color || '#83a598', opacity: 0.85,
-      stroke: '#ebdbb2', 'stroke-width': 1, cursor: 'pointer'
+      fill: mData.color || THEME.accentMatch, opacity: 0.85,
+      stroke: THEME.fg, 'stroke-width': 1, cursor: 'pointer'
     });
     const mg = svgEl('g', { class: 'musc-node', 'data-id': mid });
     mg.appendChild(mCircle);
@@ -856,7 +851,7 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     if (_labelLayer) {
       const mFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, mName, mPos.x, mPos.y, mFontSize, {
-        fill: '#d5c4a1', 'font-size': mFontSize + 'px',
+        fill: THEME.fgSub, 'font-size': mFontSize + 'px',
         class: 'sat-label sat-label-musc'
       });
     }

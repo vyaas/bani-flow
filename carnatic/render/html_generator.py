@@ -4,10 +4,14 @@ carnatic/render/html_generator.py — Assembles final graph.html from templates.
 render_html() loads template files from carnatic/render/templates/ and injects
 Python-generated JS data (elements, compositions, recordings, lookups).
 Phase 2 of the render-refactor plan.
+
+Implements ADR-028: theme.js is injected first (defines THEME global);
+:root {} CSS vars are generated from theme.py css_vars().
 """
 import json
 from pathlib import Path
-from .graph_builder import ERA_COLORS, INSTRUMENT_SHAPES
+from .graph_builder import INSTRUMENT_SHAPES
+from .theme import css_vars
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
@@ -68,6 +72,7 @@ def render_html(
 
     # ── Load templates ────────────────────────────────────────────────────────
     base         = _load("base.html")
+    theme_js     = _load("theme.js")
     graph_view   = _load("graph_view.js")
     media_player = _load("media_player.js")
     timeline     = _load("timeline_view.js")
@@ -79,9 +84,14 @@ def render_html(
     base = base.replace("{node_count}", str(node_count))
     base = base.replace("{edge_count}", str(edge_count))
 
+    # ── Inject :root {} CSS vars from theme.py (single source of truth) ───────
+    base = base.replace("/* INJECT_CSS_VARS */", css_vars())
+
     # ── Assemble <script> block ───────────────────────────────────────────────
+    # theme.js MUST be first — it defines the THEME global used by all other scripts.
     script_block = "\n".join([
         "<script>",
+        theme_js,      # ← FIRST: defines THEME global
         data_js,
         graph_view,
         media_player,

@@ -1,6 +1,6 @@
 # ADR-028: Design Token Single Source of Truth
 
-**Status:** Proposed  
+**Status:** Accepted
 **Date:** 2026-04-13
 
 ---

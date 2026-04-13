@@ -1,60 +1,13 @@
 """
 carnatic/render/graph_builder.py — Cytoscape element construction.
 
-Constants (ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES, NODE_SIZES,
-ERA_FONT_SIZES) live here alongside build_elements().
+Visual constants (ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES, NODE_SIZES,
+ERA_FONT_SIZES) are imported from theme.py — the single source of truth.
+Implements ADR-028: Design Token Single Source of Truth.
 """
 from collections import defaultdict
 from .data_loaders import yt_video_id
-
-# ── visual mappings ────────────────────────────────────────────────────────────
-
-ERA_COLORS = {
-    "trinity":        "#d79921",
-    "bridge":         "#d65d0e",
-    "golden_age":     "#458588",
-    "disseminator":   "#689d6a",
-    "living_pillars": "#b16286",
-    "contemporary":   "#98971a",
-}
-
-ERA_LABELS = {
-    "trinity":        "The Trinity",
-    "bridge":         "The Bridge",
-    "golden_age":     "Golden Age",
-    "disseminator":   "Disseminators",
-    "living_pillars": "Living Pillars",
-    "contemporary":   "Contemporary",
-}
-
-INSTRUMENT_SHAPES = {
-    "vocal":     "ellipse",
-    "veena":     "diamond",
-    "violin":    "rectangle",
-    "flute":     "triangle",
-    "mridangam": "hexagon",
-}
-
-NODE_SIZES = {
-    "trinity":        80,
-    "bridge":         65,
-    "golden_age":     58,
-    "disseminator":   52,
-    "living_pillars": 48,
-    "contemporary":   44,
-}
-
-# Font sizes mirror cartographic label hierarchy (graph-space px).
-# Cytoscape's min-zoomed-font-size handles hiding when zoomed out too far.
-# Range kept modest so labels never overwhelm nodes.
-ERA_FONT_SIZES = {
-    "trinity":        20,
-    "bridge":         17,
-    "golden_age":     15,
-    "disseminator":   13,
-    "living_pillars": 12,
-    "contemporary":   11,
-}
+from .theme import ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES, NODE_SIZES, ERA_FONT_SIZES, TOKENS
 
 def build_elements(graph: dict) -> list[dict]:
     degree: dict[str, int] = defaultdict(int)
@@ -68,7 +21,7 @@ def build_elements(graph: dict) -> list[dict]:
     for node in graph["nodes"]:
         era      = node.get("era", "contemporary")
         instr    = node.get("instrument", "vocal")
-        color    = ERA_COLORS.get(era, "#a89984")
+        color    = ERA_COLORS.get(era, TOKENS["fgMuted"])
         shape    = INSTRUMENT_SHAPES.get(instr, "ellipse")
         base     = NODE_SIZES.get(era, 44)
         deg      = degree.get(node["id"], 0)
