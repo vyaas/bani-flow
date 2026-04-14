@@ -3,123 +3,509 @@
   "musicians": {
     "nodes": [
       {
-        "id": "tyagaraja",
-        "label": "Tyagaraja",
+        "id": "a_kanyakumari",
+        "label": "A. Kanyakumari",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+            "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1767,
-        "died": 1847,
-        "era": "trinity",
-        "instrument": "vocal",
-        "bani": "tyagaraja",
-        "youtube": []
-      },
-      {
-        "id": "muthuswami_dikshitar",
-        "label": "Muthuswami Dikshitar",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1775,
-        "died": 1835,
-        "era": "trinity",
-        "instrument": "vocal",
-        "bani": "dikshitar",
-        "youtube": []
-      },
-      {
-        "id": "shyama_shastri",
-        "label": "Shyama Shastri",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1762,
-        "died": 1827,
-        "era": "trinity",
-        "instrument": "vocal",
-        "bani": "shyama_shastri",
-        "youtube": []
-      },
-      {
-        "id": "vina_dhanammal",
-        "label": "Vina Dhanammal",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1867,
-        "died": 1938,
-        "era": "bridge",
-        "instrument": "veena",
-        "bani": "dhanammal",
-        "youtube": []
-      },
-      {
-        "id": "patnam_subramanya_iyer",
-        "label": "Patnam Subramanya Iyer",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1845,
-        "died": 1902,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "tyagaraja",
-        "youtube": []
-      },
-      {
-        "id": "maha_vaidyanatha_sivan",
-        "label": "Maha Vaidyanatha Sivan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1844,
-        "died": 1893,
-        "era": "bridge",
-        "instrument": "vocal",
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "violin",
         "bani": "mixed",
         "youtube": []
       },
       {
-        "id": "t_brinda",
-        "label": "T. Brinda",
+        "id": "abhishek_raghuram",
+        "label": "Abhishek Raghuram",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/T._Brinda",
+            "url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1912,
-        "died": 1996,
+        "born": 1984,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": [
+          {
+            "url": "https://youtu.be/lNSJJMWLtfc",
+            "label": "Natabhairavi · Adi",
+            "raga_id": "natabhairavi"
+          }
+        ]
+      },
+      {
+        "id": "akkarai_subbulakshmi",
+        "label": "Akkarai Subbulakshmi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Akkarai_Subhalakshmi",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": [
+          {
+            "url": "https://www.youtube.com/watch?v=AEbAgJK30Z8",
+            "label": "Emaanadicchevo · Sahana · Adi - TM Krishna, Karnatic Modern Mumbai 2016",
+            "composition_id": "emaanadicchevo",
+            "raga_id": "sahana",
+            "year": 2016
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=zGrDSEDeCI0",
+            "label": "Dikshitar kriti · Mayamalavagowla - TM Krishna & Akkarai Subbulakshmi, Karnatic Modern Mumbai 2017",
+            "raga_id": "mayamalavagowla",
+            "year": 2017
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=nuzjW5a--AU",
+            "label": "Kshetrayya padam · Mukhari - TM Krishna & Akkarai Subbulakshmi, Karnatic Modern Mumbai 2017",
+            "raga_id": "mukhari",
+            "year": 2017
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=5yZEsJDJ9yc",
+            "label": "Manavinaalakincha Raadate · Nalinakanthi - TM Krishna, Karnatic Modern Mumbai 2016",
+            "composition_id": "manavinaalakincha_raadate",
+            "raga_id": "nalinakanthi",
+            "year": 2016
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=x1pbtvX89Bk",
+            "label": "Gajavadhana · Thodi - TM Krishna, Essential TM Krishna Mumbai 2018",
+            "composition_id": "gajavadhana",
+            "raga_id": "thodi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=5eAPDJmmKOs",
+            "label": "Perumal Murugan composition · Hamir Kalyani - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
+            "raga_id": "hamir_kalyani",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=AjESfMHTgjg",
+            "label": "Ragamalika (Suruti-Shankarabharanam-Kapi-Ananda Bhairavi) - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=o55TExI7Dbc",
+            "label": "Composition · Khamas - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
+            "raga_id": "khamas",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=gPLyGjXcSkU",
+            "label": "Shri Viswanathan Bhajeham · Chaturdasa Ragamalika - TM Krishna, Essential TM Krishna Mumbai 2017",
+            "year": 2017
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=vpoMFE5hrsc",
+            "label": "DV Gundappa composition · Behag - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
+            "raga_id": "behag",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=zpFZwR27_m4",
+            "label": "Aaguner Parashmoni Chhoao Praane · Bhairavi - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
+            "composition_id": "aaguner_parashmoni",
+            "raga_id": "bhairavi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=PdIy9531_fM",
+            "label": "Manodharma II: Alapana (Lec-Dem Part 1) - TM Krishna & Akkarai Subbulakshmi 2018",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=79ScPj4sE3Y",
+            "label": "Manodharma II: Pallavi (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi 2018",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=iDaanIHX30I",
+            "label": "Manodharma II: Accompanists (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi 2018",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=ErpI843IiG4",
+            "label": "Manodharma II: Kalpana Swara & Thani (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi 2018",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=VJkrZf-jtZw",
+            "label": "Nee Matumme · Kapi - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "raga_id": "kapi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=f_zYXorgEPQ",
+            "label": "Sogasu Chooda · Kannada Gowla - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "sogasu_chooda",
+            "raga_id": "kannada_gowla",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=GU--BVt4D0k",
+            "label": "Krishna Nee Begane · Yamuna Kalyani - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "krishna_nee_begane",
+            "raga_id": "yamuna_kalyani",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=iQTs7PSnX3k",
+            "label": "Baro Krishnayya · Maund - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "baro_krishnayya",
+            "raga_id": "maund",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=zQ1qhf1Lr9s",
+            "label": "Tiruvatriyur Thyagarajan · Atana - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "tiruvatriyur_thyagarajan",
+            "raga_id": "atana",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=YFY7I2uyQSM",
+            "label": "Sri Venkata Girisa · Suruti - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "sri_venkata_girisa",
+            "raga_id": "surutti",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=tDaCYam087k",
+            "label": "Nenarunchara · Simhavahini - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "nenarunchara",
+            "raga_id": "simhavahini",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Aa_9UMNlxBk",
+            "label": "Shri Guruna Palitosmi · Padi - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "shri_guruna_palitosmi",
+            "raga_id": "padi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=WknDE3b7Jjo",
+            "label": "Kamakshi · Varali - TM Krishna, Afghan Church Mumbai 2018",
+            "composition_id": "kamakshi_varali",
+            "raga_id": "varali",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=fuH3lZo0JsA",
+            "label": "Nadopasana · Begada - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
+            "composition_id": "nadopasana",
+            "raga_id": "begada",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Fqzy22zwjeY",
+            "label": "Bare Panduranga · Maund - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
+            "composition_id": "bare_panduranga",
+            "raga_id": "maund",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Bs9FiFwxvSQ",
+            "label": "Jagadodharana · Kapi - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
+            "composition_id": "jagadodharana",
+            "raga_id": "kapi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=FauxpOMibu4",
+            "label": "TM Krishna feat. Vikku Vinayakram: Live at Afghan Church, Mumbai  - Raga Behag - Allahvai"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=__UaWGlMbaU",
+            "label": "Dikshitar kriti · Purvi - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Pune 2018",
+            "raga_id": "purvi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=BIEzjDD3pvA",
+            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
+            "composition_id": "maakelara_vicaaramu",
+            "raga_id": "ravichandrika"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=j73jMamBZxU",
+            "label": "Ragamalika - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Pune 2019",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=5MAI223JEVc",
+            "label": "Jagadananda Karaka · Nattai · Adi - TM Krishna",
+            "composition_id": "jagadananda_karaka",
+            "raga_id": "nata"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=T4cEp03lJcM",
+            "label": "Sri Ramachandra Kripalu · Yamuna Kalyani - TM Krishna, Parallel Lines Pune 2019",
+            "composition_id": "sri_ramachandra_kripalu",
+            "raga_id": "yamuna_kalyani",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=KDPPDB0rG70",
+            "label": "Manodharma Lec-Dem Promo - TM Krishna & Akkarai Subbulakshmi 2019",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=ovgWK5aQcpM",
+            "label": "Amba Nilayatakshi · Neelambari - TM Krishna, Kolkata 2019",
+            "composition_id": "amba_nilayatakshi",
+            "raga_id": "neelambari",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Gkzru79jeT4",
+            "label": "Laavanya Rama Kannul Ara · Poorna Shadjam - TM Krishna, Kolkata 2019",
+            "composition_id": "laavanya_rama_kannul_ara",
+            "raga_id": "poornashadjam",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=3ZFVV64Or5g",
+            "label": "Kanaka Shaila Viharini · Punnagavarali - TM Krishna, Kolkata 2019",
+            "composition_id": "kanaka_shaila_viharini",
+            "raga_id": "punnagavarali",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=7A0YSVf-z3c",
+            "label": "Brocevarevarura · Khamas - TM Krishna, Kolkata 2019",
+            "composition_id": "brocevarevarura",
+            "raga_id": "khamas",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=v1g16qHvc74",
+            "label": "Jambu Pathe Mam Pahi · Yamuna Kalyani - TM Krishna, Kolkata 2019",
+            "composition_id": "jambu_pathe_mam_pahi",
+            "raga_id": "yamuna_kalyani",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=2-Hu2GXk6k8",
+            "label": "Saramaina Matalento · Behag - TM Krishna, Kolkata 2019",
+            "composition_id": "saramaina_matalento",
+            "raga_id": "behag",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=qd2XnI2qmGQ",
+            "label": "Dhana Dhanya Pushpa Bhara - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+            "composition_id": "dhana_dhanya_pushpa_bhara",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=KYXuPI4wDHM",
+            "label": "Ni Mattume · Kapi - TM Krishna, Kolkata 2019",
+            "raga_id": "kapi",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=WJh305C0kAc",
+            "label": "Vande Meenakshi Twam · Shankarabharanam - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+            "composition_id": "vande_meenakshi_twam",
+            "raga_id": "shankarabharanam",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=85LcNLhZNMU",
+            "label": "Manodharma III: Alapana (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=qlq9EvFr8Uo",
+            "label": "Manodharma III: Kalpanaswarams (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=RccdN6suHUk",
+            "label": "Manodharma III: Tanam (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=LchtvWC_BpE",
+            "label": "Salatullah Salamullah · Ananda Bhairavi - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2019",
+            "raga_id": "ananda_bhairavi",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=n63RJoxPzj8",
+            "label": "Essa Einay El Heharim (Hebrew Psalm) · Sindhu Bhairavi - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2019",
+            "raga_id": "sindhu_bhairavi",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NocL9bp4vIY",
+            "label": "Teliyaleru Rama · Dhenuka - TM Krishna, Concert for Peace Mumbai 2019",
+            "composition_id": "teliyaleru_rama",
+            "raga_id": "dhenuka",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=vux5-s22v-s",
+            "label": "Aag Bhayi Bandhu · Lalitha - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2020",
+            "raga_id": "lalitha",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=jW4nuLVo7Fk",
+            "label": "Hine Ma Tov Uma Na'im (Hebrew Psalm) - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2020",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NRc9yvEex2Q",
+            "label": "Endaro Mahanubhavulu · Sri - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "endaro_mahanubhavulu",
+            "raga_id": "sriraga",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=8upNeiMEdVc",
+            "label": "Sri Matrubhutam · Kannada - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "sri_matrubhutam",
+            "raga_id": "kaanada",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=F2TXcr1wAd4",
+            "label": "Chakkani Raja Margamu · Kharaharapriya - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "chakkani_raja_margamu",
+            "raga_id": "kharaharapriya",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=1Dp88V6m8Tw",
+            "label": "Jagadodharana · Kapi - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "jagadodharana",
+            "raga_id": "kapi",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=h6S9E2g6OA0",
+            "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: English Note-Ragam Shankarabharanam"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Bbh-_ZM8LzA",
+            "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: Mallari - Ragam Gambhira Nattai"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NfaWuqmljKM",
+            "label": "Muripemu Kalige · Mukhari - TM Krishna, Parallel Lines Bangalore 2020",
+            "composition_id": "muripemu_kalige",
+            "raga_id": "mukhari",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Es04SHxFae4",
+            "label": "Bhajare Re Chitta Balambikam · Kalyani - TM Krishna, Parallel Lines Bangalore 2020",
+            "composition_id": "bhajare_re_chitta_balambikam",
+            "raga_id": "kalyani",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Wt8SfrWwzh4",
+            "label": "2 Thillanas · Khamas - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
+            "raga_id": "khamas",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=j6gRDrvZGWk",
+            "label": "Virutham + Poonguyil Koovum Poonjolayil · Kapi - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
+            "raga_id": "kapi",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=kh3pw3u8If8",
+            "label": "Ragamalika + Jaya Jaya Shankara · Darbari Kanada - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
+            "raga_id": "darbari_kanada",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=7x8-cde89Cg",
+            "label": "Allah Megh De (Bangladeshi folk) - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=0xBXnbsguKg",
+            "label": "Esho Shyamolo Sundoro (Tagore) - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=rspIDApLZlE",
+            "label": "TM Krishna & The Jogappas: Live"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=u2hoAfGGe6g",
+            "label": "Guruleka Etuvanti · Gowrimanohari - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
+            "composition_id": "guruleka_etuvanti",
+            "raga_id": "gowrimanohari",
+            "year": 2025
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NZlB2tgum10",
+            "label": "TM Krishna & Vikku Vinayakram: Ragam Hamirkalyani - Valudum Cherudum"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=sOVYyQL2Df0",
+            "label": "Muddugare Yashoda · Kurinji - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
+            "composition_id": "muddugare_yashoda",
+            "raga_id": "kurinji",
+            "year": 2025
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=B86oyObRYIY",
+            "label": "Sri Ramachandra Kripalu · Yaman Kalyan - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
+            "composition_id": "sri_ramachandra_kripalu",
+            "raga_id": "yamuna_kalyani",
+            "year": 2025
+          }
+        ]
+      },
+      {
+        "id": "alathur_brothers",
+        "label": "Alathur Brothers",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Alathur_Brothers",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1911,
+        "died": 1980,
         "era": "golden_age",
         "instrument": "vocal",
-        "bani": "dhanammal",
-        "youtube": []
+        "bani": "tyagaraja",
+        "youtube": [
+          {
+            "url": "https://youtu.be/mHjkUWyl1qQ",
+            "label": "Jagadananda Karaka · Nattai · Adi - Alathur Brothers",
+            "composition_id": "jagadananda_karaka",
+            "raga_id": "nata"
+          }
+        ]
       },
       {
         "id": "ariyakudi_ramanuja_iyengar",
@@ -136,6 +522,406 @@
         "era": "golden_age",
         "instrument": "vocal",
         "bani": "ariyakudi",
+        "youtube": []
+      },
+      {
+        "id": "aruna_sairam",
+        "label": "Aruna Sairam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Aruna_Sairam",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1952,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "dhanammal",
+        "youtube": []
+      },
+      {
+        "id": "b_rajam_iyer",
+        "label": "B. Rajam Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1922,
+        "died": 2009,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "ariyakudi",
+        "youtube": []
+      },
+      {
+        "id": "balamuralikrishna",
+        "label": "M. Balamuralikrishna",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/M._Balamuralikrishna",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1930,
+        "died": 2016,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": [
+          {
+            "url": "https://youtu.be/D62Ey2Vnlxo",
+            "label": "Jagadananda Karaka · Nattai · Adi - M. Balamuralikrishna",
+            "composition_id": "jagadananda_karaka",
+            "raga_id": "nata"
+          },
+          {
+            "url": "https://youtu.be/x-q9-MQrWhk",
+            "label": "abhimānamenneḍu · Begada · Adi - M. Balamuralikrishna",
+            "composition_id": "abhimanamennedu",
+            "raga_id": "begada"
+          }
+        ]
+      },
+      {
+        "id": "bombay_jayashri",
+        "label": "Bombay Jayashri",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1964,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "lalgudi",
+        "youtube": [
+          {
+            "url": "https://youtu.be/YAbWJYP_BWo",
+            "label": "entō prēmatōnu · Bahudari · Adi - Bombay Jayashri",
+            "composition_id": "ento_prematonu",
+            "raga_id": "bahudari"
+          }
+        ]
+      },
+      {
+        "id": "calcutta_ks_krishnamurthi",
+        "label": "Calcutta KS Krishnamurthi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+            "label": "Wikipedia (via Sanjay Subrahmanyan)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": 1999,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "coimbatore_n_ramaswamy",
+        "label": "Coimbatore N Ramaswamy",
+        "sources": [
+          {
+            "url": "https://brahmanya.wordpress.com/2012/08/13/my-coimbatore-10/",
+            "label": "Brahmanya blog — Famous Musicians from my City",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "mridangam",
+        "bani": "palani",
+        "youtube": []
+      },
+      {
+        "id": "cr_mani_iyer",
+        "label": "CR Mani Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/C._R._Mani_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1930,
+        "died": 2009,
+        "era": "living_pillars",
+        "instrument": "violin",
+        "bani": "lalgudi",
+        "youtube": []
+      },
+      {
+        "id": "cs_sankarasivam",
+        "label": "C.S. Sankarasivam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+            "label": "Wikipedia (via Murugabhoopathy)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "muthiah",
+        "youtube": []
+      },
+      {
+        "id": "dk_pattammal",
+        "label": "DK Pattammal",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1919,
+        "died": 2009,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": [
+          {
+            "url": "https://youtu.be/7FJu261ER0A",
+            "label": "Gitarthamu · Surutti · Adi - DK Pattammal",
+            "composition_id": "gitarthamu",
+            "raga_id": "surutti"
+          }
+        ]
+      },
+      {
+        "id": "gjr_krishnan",
+        "label": "G.J.R. Krishnan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "violin",
+        "bani": "lalgudi",
+        "youtube": []
+      },
+      {
+        "id": "gnb",
+        "label": "GN Balasubramaniam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1910,
+        "died": 1965,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "gnb",
+        "youtube": []
+      },
+      {
+        "id": "hyderabad_brothers",
+        "label": "Hyderabad Brothers",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          },
+          {
+            "url": "https://www.sruti.com/artist/hyderabad-brothers",
+            "label": "Sruti — artist profile",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": [
+          {
+            "url": "https://youtu.be/JUrGrAiQq1A",
+            "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Hyderabad Brothers",
+            "composition_id": "jalajaksha_varnam",
+            "raga_id": "hamsadhwani"
+          },
+          {
+            "url": "https://youtu.be/td1q_Rzrdso",
+            "label": "abhimānamenneḍu · Begada · Adi - Hyderabad Brothers",
+            "composition_id": "abhimanamennedu",
+            "raga_id": "begada"
+          }
+        ]
+      },
+      {
+        "id": "jayammal",
+        "label": "Jayammal",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+            "label": "Wikipedia (via Veenai Dhanammal)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1890,
+        "died": 1967,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "dhanammal",
+        "youtube": []
+      },
+      {
+        "id": "kamakshi_dhanammal",
+        "label": "Kamakshi (daughter of Dhanammal)",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+            "label": "Wikipedia (via Veenai Dhanammal)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "dhanammal",
+        "youtube": []
+      },
+      {
+        "id": "kanchipuram_naina_pillai",
+        "label": "Kanchipuram Naina Pillai",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "kv_narayanaswamy",
+        "label": "KV Narayanaswamy",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1923,
+        "died": 2002,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "ariyakudi",
+        "youtube": [
+          {
+            "url": "https://youtu.be/HxcQv19oo5g",
+            "label": "Gitarthamu · Surutti · Adi - KV Narayanaswamy",
+            "composition_id": "gitarthamu",
+            "raga_id": "surutti"
+          }
+        ]
+      },
+      {
+        "id": "lalgudi_jayaraman",
+        "label": "Lalgudi Jayaraman",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1930,
+        "died": 2013,
+        "era": "disseminator",
+        "instrument": "violin",
+        "bani": "lalgudi",
+        "youtube": [
+          {
+            "url": "https://youtu.be/Ws45axUFbwY",
+            "label": "Śaṅkarī Nīvē · Begada · Rupakam - Lalgudi Jayaraman",
+            "composition_id": "shankari_neeve",
+            "raga_id": "begada"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=AkRGOouMKWQ",
+            "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+            "composition_id": "ammaravamma",
+            "raga_id": "kalyani"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=gujEGzxg0eQ",
+            "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+            "composition_id": "ammaravamma",
+            "raga_id": "kalyani"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=ghKZrPkx6qU",
+            "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+            "composition_id": "ammaravamma",
+            "raga_id": "kalyani"
+          }
+        ]
+      },
+      {
+        "id": "lalgudi_srimathi_brahmananda",
+        "label": "Lalgudi Srimathi Brahmananda",
+        "sources": [
+          {
+            "url": "https://www.sruti.com/artist/interview",
+            "label": "Sruti — Senior Musician award interview",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "disseminator",
+        "instrument": "violin",
+        "bani": "lalgudi",
+        "youtube": []
+      },
+      {
+        "id": "lalgudi_vijayalakshmi",
+        "label": "Lalgudi Vijayalakshmi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "violin",
+        "bani": "lalgudi",
         "youtube": []
       },
       {
@@ -171,78 +957,108 @@
         ]
       },
       {
-        "id": "gnb",
-        "label": "GN Balasubramaniam",
+        "id": "maha_vaidyanatha_sivan",
+        "label": "Maha Vaidyanatha Sivan",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+            "url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1910,
-        "died": 1965,
-        "era": "golden_age",
+        "born": 1844,
+        "died": 1893,
+        "era": "bridge",
         "instrument": "vocal",
-        "bani": "gnb",
+        "bani": "mixed",
         "youtube": []
       },
       {
-        "id": "semmangudi_srinivasa_iyer",
-        "label": "Semmangudi Srinivasa Iyer",
+        "id": "maharajapuram_santanam",
+        "label": "Maharajapuram Santanam",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+            "url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1908,
-        "died": 2003,
-        "era": "golden_age",
+        "born": 1928,
+        "died": 1992,
+        "era": "living_pillars",
         "instrument": "vocal",
-        "bani": "semmangudi",
+        "bani": "tyagaraja",
         "youtube": [
           {
-            "url": "https://youtu.be/x5ExBQpVy2k",
-            "label": "Mylapore Fine Arts Club · 26 Nov 1967",
-            "year": 1967
-          },
+            "url": "https://youtu.be/aS39XUjoAM4",
+            "label": "Jagadananda Karaka · Nattai · Adi - Maharajapuram Santanam",
+            "composition_id": "jagadananda_karaka",
+            "raga_id": "nata"
+          }
+        ]
+      },
+      {
+        "id": "malladi_brothers",
+        "label": "Malladi Brothers",
+        "sources": [
           {
-            "url": "https://youtu.be/HzT9NZEF1wo",
-            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Semmangudi Srinivasa Iyer",
-            "composition_id": "maakelara_vicaaramu",
-            "raga_id": "ravichandrika"
-          },
+            "url": "https://en.wikipedia.org/wiki/Malladi_Brothers",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1962,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "musiri",
+        "youtube": []
+      },
+      {
+        "id": "md_ramanathan",
+        "label": "MD Ramanathan",
+        "sources": [
           {
-            "url": "https://youtu.be/ii0dLAbW9hA",
-            "label": "entō prēmatō · Surutti · Adi - Semmangudi Srinivasa Iyer",
-            "composition_id": "ento_premato",
+            "url": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1923,
+        "died": 1984,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": "tiger_varadachariar",
+        "youtube": [
+          {
+            "url": "https://youtu.be/M4J_HtniTQA",
+            "label": "Gitarthamu · Surutti · Adi - MD Ramanathan",
+            "composition_id": "gitarthamu",
             "raga_id": "surutti"
           }
         ]
       },
       {
-        "id": "musiri_subramania_iyer",
-        "label": "Musiri Subramania Iyer",
+        "id": "ml_vasanthakumari",
+        "label": "ML Vasanthakumari",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+            "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1899,
-        "died": 1975,
-        "era": "golden_age",
+        "born": 1928,
+        "died": 1990,
+        "era": "disseminator",
         "instrument": "vocal",
-        "bani": "tyagaraja",
+        "bani": "gnb",
         "youtube": [
           {
-            "url": "https://youtu.be/mBSh-ti602Y",
-            "label": "abhimānamenneḍu · Begada · Adi - Musiri Subramania Iyer",
-            "composition_id": "abhimanamennedu",
-            "raga_id": "begada"
+            "url": "https://youtu.be/zoYJH-SqwCI",
+            "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - ML Vasanthakumari",
+            "composition_id": "jalajaksha_varnam",
+            "raga_id": "hamsadhwani"
           }
         ]
       },
@@ -281,6 +1097,214 @@
             "raga_id": "surutti"
           }
         ]
+      },
+      {
+        "id": "musiri_subramania_iyer",
+        "label": "Musiri Subramania Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1899,
+        "died": 1975,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": [
+          {
+            "url": "https://youtu.be/mBSh-ti602Y",
+            "label": "abhimānamenneḍu · Begada · Adi - Musiri Subramania Iyer",
+            "composition_id": "abhimanamennedu",
+            "raga_id": "begada"
+          }
+        ]
+      },
+      {
+        "id": "muthiah_bhagavatar",
+        "label": "Muthiah Bhagavatar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1877,
+        "died": 1945,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "muthiah",
+        "youtube": []
+      },
+      {
+        "id": "muthuswami_dikshitar",
+        "label": "Muthuswami Dikshitar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1775,
+        "died": 1835,
+        "era": "trinity",
+        "instrument": "vocal",
+        "bani": "dikshitar",
+        "youtube": []
+      },
+      {
+        "id": "n_ramani",
+        "label": "N. Ramani",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/N._Ramani",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1934,
+        "died": 2019,
+        "era": "living_pillars",
+        "instrument": "flute",
+        "bani": "mali",
+        "youtube": []
+      },
+      {
+        "id": "nityashree_mahadevan",
+        "label": "Nityashree Mahadevan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1973,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": [
+          {
+            "url": "https://youtu.be/2aD_rWZnayo",
+            "label": "Jagadananda Karaka · Nattai · Adi - Nityashree Mahadevan",
+            "composition_id": "jagadananda_karaka",
+            "raga_id": "nata"
+          }
+        ]
+      },
+      {
+        "id": "palghat_mani_iyer",
+        "label": "Palghat Mani Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1912,
+        "died": 1981,
+        "era": "living_pillars",
+        "instrument": "mridangam",
+        "bani": "palghat",
+        "youtube": []
+      },
+      {
+        "id": "palghat_raghu",
+        "label": "Palghat Raghu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palghat_Raghu",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1928,
+        "died": 2009,
+        "era": "living_pillars",
+        "instrument": "mridangam",
+        "bani": "palghat",
+        "youtube": []
+      },
+      {
+        "id": "palghat_rajamani",
+        "label": "Palghat Rajamani",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+            "label": "Wikipedia (via Palghat Mani Iyer)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1949,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "mridangam",
+        "bani": "palghat",
+        "youtube": []
+      },
+      {
+        "id": "patnam_subramanya_iyer",
+        "label": "Patnam Subramanya Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1845,
+        "died": 1902,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
+        "id": "r_vedavalli",
+        "label": "R. Vedavalli",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Vedavalli",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1935,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": [
+          {
+            "url": "https://youtu.be/Vwpj8TSdljg",
+            "label": "entō prēmatō · Surutti · Adi - R. Vedavalli",
+            "composition_id": "ento_premato",
+            "raga_id": "surutti"
+          }
+        ]
+      },
+      {
+        "id": "radha_viswanathan",
+        "label": "Radha Viswanathan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Radha_Viswanathan",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1934,
+        "died": 2018,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": "dhanammal",
+        "youtube": []
       },
       {
         "id": "ramnad_krishnan",
@@ -500,116 +1524,321 @@
         ]
       },
       {
-        "id": "ml_vasanthakumari",
-        "label": "ML Vasanthakumari",
+        "id": "ramnad_raghavan",
+        "label": "Ramnad Raghavan",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+            "url": "https://en.wikipedia.org/wiki/Ramnad_Raghavan",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1928,
-        "died": 1990,
+        "born": 1927,
+        "died": 2009,
         "era": "disseminator",
+        "instrument": "mridangam",
+        "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "ranjani_gayatri",
+        "label": "Ranjani-Gayatri",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ranjani%E2%80%93Gayatri",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1973,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": [
+          {
+            "url": "https://youtu.be/43IgYHie488",
+            "label": "entō prēmatō · Surutti · Adi - Ranjani-Gayatri",
+            "composition_id": "ento_premato",
+            "raga_id": "surutti"
+          }
+        ]
+      },
+      {
+        "id": "s_ramanathan",
+        "label": "S. Ramanathan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1917,
+        "died": 1988,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "s_sowmya",
+        "label": "S. Sowmya",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/S._Sowmya",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          },
+          {
+            "url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
+            "label": "Vaak magazine — profile",
+            "type": "article"
+          }
+        ],
+        "born": 1969,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": [
+          {
+            "url": "https://youtu.be/O9xRrQ0Cb00",
+            "label": "Gitarthamu · Surutti · Adi - S. Sowmya",
+            "composition_id": "gitarthamu",
+            "raga_id": "surutti"
+          }
+        ]
+      },
+      {
+        "id": "sanjay_subrahmanyan",
+        "label": "Sanjay Subrahmanyan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1968,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "semmangudi",
+        "youtube": [
+          {
+            "url": "https://youtu.be/Mb5cl_eWyWo",
+            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Sanjay Subrahmanyan",
+            "composition_id": "maakelara_vicaaramu",
+            "raga_id": "ravichandrika"
+          },
+          {
+            "url": "https://youtu.be/pIjpXnKVN00",
+            "label": "entō prēmatō · Surutti · Adi - Sanjay Subrahmanyan",
+            "composition_id": "ento_premato",
+            "raga_id": "surutti"
+          }
+        ]
+      },
+      {
+        "id": "semmangudi_srinivasa_iyer",
+        "label": "Semmangudi Srinivasa Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1908,
+        "died": 2003,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "semmangudi",
+        "youtube": [
+          {
+            "url": "https://youtu.be/x5ExBQpVy2k",
+            "label": "Mylapore Fine Arts Club · 26 Nov 1967",
+            "year": 1967
+          },
+          {
+            "url": "https://youtu.be/HzT9NZEF1wo",
+            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Semmangudi Srinivasa Iyer",
+            "composition_id": "maakelara_vicaaramu",
+            "raga_id": "ravichandrika"
+          },
+          {
+            "url": "https://youtu.be/ii0dLAbW9hA",
+            "label": "entō prēmatō · Surutti · Adi - Semmangudi Srinivasa Iyer",
+            "composition_id": "ento_premato",
+            "raga_id": "surutti"
+          }
+        ]
+      },
+      {
+        "id": "shyama_shastri",
+        "label": "Shyama Shastri",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1762,
+        "died": 1827,
+        "era": "trinity",
+        "instrument": "vocal",
+        "bani": "shyama_shastri",
+        "youtube": []
+      },
+      {
+        "id": "sripada_pinakapani",
+        "label": "Sripada Pinakapani",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sripada_Pinakapani",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1913,
+        "died": 2013,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "subbaraya_sastri",
+        "label": "Subbaraya Sastri",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1803,
+        "died": 1876,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "shyama_shastri",
+        "youtube": []
+      },
+      {
+        "id": "sudha_ragunathan",
+        "label": "Sudha Ragunathan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1956,
+        "died": null,
+        "era": "living_pillars",
         "instrument": "vocal",
         "bani": "gnb",
         "youtube": [
           {
-            "url": "https://youtu.be/zoYJH-SqwCI",
-            "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - ML Vasanthakumari",
+            "url": "https://youtu.be/8JPpSPRbql4",
+            "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Sudha Ragunathan",
             "composition_id": "jalajaksha_varnam",
             "raga_id": "hamsadhwani"
           }
         ]
       },
       {
-        "id": "dk_pattammal",
-        "label": "DK Pattammal",
+        "id": "swaminatha_pillai",
+        "label": "Tiruppamparam Swaminatha Pillai",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+            "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+            "label": "Wikipedia (via T. Viswanathan)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "flute",
+        "bani": "swaminatha_pillai",
+        "youtube": []
+      },
+      {
+        "id": "t_balasaraswati",
+        "label": "T. Balasaraswati",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1919,
-        "died": 2009,
+        "born": 1918,
+        "died": 1984,
         "era": "disseminator",
+        "instrument": "bharatanatyam",
+        "bani": "dhanammal",
+        "youtube": []
+      },
+      {
+        "id": "t_brinda",
+        "label": "T. Brinda",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/T._Brinda",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1912,
+        "died": 1996,
+        "era": "golden_age",
         "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": [
-          {
-            "url": "https://youtu.be/7FJu261ER0A",
-            "label": "Gitarthamu · Surutti · Adi - DK Pattammal",
-            "composition_id": "gitarthamu",
-            "raga_id": "surutti"
-          }
-        ]
+        "bani": "dhanammal",
+        "youtube": []
       },
       {
-        "id": "lalgudi_jayaraman",
-        "label": "Lalgudi Jayaraman",
+        "id": "t_muktha",
+        "label": "T. Muktha",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+            "url": "https://en.wikipedia.org/wiki/T._Muktha",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1930,
-        "died": 2013,
-        "era": "disseminator",
-        "instrument": "violin",
-        "bani": "lalgudi",
-        "youtube": [
-          {
-            "url": "https://youtu.be/Ws45axUFbwY",
-            "label": "Śaṅkarī Nīvē · Begada · Rupakam - Lalgudi Jayaraman",
-            "composition_id": "shankari_neeve",
-            "raga_id": "begada"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=AkRGOouMKWQ",
-            "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
-            "composition_id": "ammaravamma",
-            "raga_id": "kalyani"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=gujEGzxg0eQ",
-            "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
-            "composition_id": "ammaravamma",
-            "raga_id": "kalyani"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=ghKZrPkx6qU",
-            "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
-            "composition_id": "ammaravamma",
-            "raga_id": "kalyani"
-          }
-        ]
+        "born": 1914,
+        "died": 2007,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "dhanammal",
+        "youtube": []
       },
       {
-        "id": "tn_krishnan",
-        "label": "TN Krishnan",
+        "id": "t_v_sankaranarayanan",
+        "label": "T. V. Sankaranarayanan",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/T._N._Krishnan",
-            "label": "Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+            "label": "T. V. Sankaranarayanan - Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1928,
-        "died": 2023,
-        "era": "living_pillars",
-        "instrument": "violin",
-        "bani": "semmangudi",
+        "born": 1945,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "Madurai Mani Iyer",
         "youtube": [
           {
-            "url": "https://youtu.be/WFFHDuNDSpA",
-            "label": "Gitarthamu · Surutti · Adi - TN Krishnan",
-            "composition_id": "gitarthamu",
-            "raga_id": "surutti"
+            "url": "https://youtu.be/XHAZjTEzKsg",
+            "label": "jAlandhara supIThastitE · Valaji · Rupaka - T. V. Sankaranarayanan",
+            "composition_id": "jalandhara_supithasite",
+            "raga_id": "valaji"
           }
         ]
       },
@@ -636,40 +1865,6 @@
             "raga_id": "keeravani"
           }
         ]
-      },
-      {
-        "id": "palghat_mani_iyer",
-        "label": "Palghat Mani Iyer",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1912,
-        "died": 1981,
-        "era": "living_pillars",
-        "instrument": "mridangam",
-        "bani": "palghat",
-        "youtube": []
-      },
-      {
-        "id": "umayalpuram_sivaraman",
-        "label": "Umayalpuram Sivaraman",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1935,
-        "died": null,
-        "era": "living_pillars",
-        "instrument": "mridangam",
-        "bani": "palghat",
-        "youtube": []
       },
       {
         "id": "tm_krishna",
@@ -1254,146 +2449,28 @@
         ]
       },
       {
-        "id": "sanjay_subrahmanyan",
-        "label": "Sanjay Subrahmanyan",
+        "id": "tn_krishnan",
+        "label": "TN Krishnan",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+            "url": "https://en.wikipedia.org/wiki/T._N._Krishnan",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1968,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
+        "born": 1928,
+        "died": 2023,
+        "era": "living_pillars",
+        "instrument": "violin",
         "bani": "semmangudi",
         "youtube": [
           {
-            "url": "https://youtu.be/Mb5cl_eWyWo",
-            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Sanjay Subrahmanyan",
-            "composition_id": "maakelara_vicaaramu",
-            "raga_id": "ravichandrika"
-          },
-          {
-            "url": "https://youtu.be/pIjpXnKVN00",
-            "label": "entō prēmatō · Surutti · Adi - Sanjay Subrahmanyan",
-            "composition_id": "ento_premato",
-            "raga_id": "surutti"
-          }
-        ]
-      },
-      {
-        "id": "bombay_jayashri",
-        "label": "Bombay Jayashri",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1964,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
-        "bani": "lalgudi",
-        "youtube": [
-          {
-            "url": "https://youtu.be/YAbWJYP_BWo",
-            "label": "entō prēmatōnu · Bahudari · Adi - Bombay Jayashri",
-            "composition_id": "ento_prematonu",
-            "raga_id": "bahudari"
-          }
-        ]
-      },
-      {
-        "id": "abhishek_raghuram",
-        "label": "Abhishek Raghuram",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1984,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": [
-          {
-            "url": "https://youtu.be/lNSJJMWLtfc",
-            "label": "Natabhairavi · Adi",
-            "raga_id": "natabhairavi"
-          }
-        ]
-      },
-      {
-        "id": "md_ramanathan",
-        "label": "MD Ramanathan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1923,
-        "died": 1984,
-        "era": "disseminator",
-        "instrument": "vocal",
-        "bani": "tiger_varadachariar",
-        "youtube": [
-          {
-            "url": "https://youtu.be/M4J_HtniTQA",
-            "label": "Gitarthamu · Surutti · Adi - MD Ramanathan",
+            "url": "https://youtu.be/WFFHDuNDSpA",
+            "label": "Gitarthamu · Surutti · Adi - TN Krishnan",
             "composition_id": "gitarthamu",
             "raga_id": "surutti"
           }
         ]
-      },
-      {
-        "id": "kv_narayanaswamy",
-        "label": "KV Narayanaswamy",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1923,
-        "died": 2002,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "ariyakudi",
-        "youtube": [
-          {
-            "url": "https://youtu.be/HxcQv19oo5g",
-            "label": "Gitarthamu · Surutti · Adi - KV Narayanaswamy",
-            "composition_id": "gitarthamu",
-            "raga_id": "surutti"
-          }
-        ]
-      },
-      {
-        "id": "muthiah_bhagavatar",
-        "label": "Muthiah Bhagavatar",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1877,
-        "died": 1945,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "muthiah",
-        "youtube": []
       },
       {
         "id": "tn_seshagopalan",
@@ -1430,383 +2507,38 @@
         "youtube": []
       },
       {
-        "id": "n_ramani",
-        "label": "N. Ramani",
+        "id": "tyagaraja",
+        "label": "Tyagaraja",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/N._Ramani",
+            "url": "https://en.wikipedia.org/wiki/Tyagaraja",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1934,
-        "died": 2019,
-        "era": "living_pillars",
-        "instrument": "flute",
-        "bani": "mali",
-        "youtube": []
-      },
-      {
-        "id": "calcutta_ks_krishnamurthi",
-        "label": "Calcutta KS Krishnamurthi",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
-            "label": "Wikipedia (via Sanjay Subrahmanyan)",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": 1999,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": []
-      },
-      {
-        "id": "t_muktha",
-        "label": "T. Muktha",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/T._Muktha",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1914,
-        "died": 2007,
-        "era": "golden_age",
-        "instrument": "vocal",
-        "bani": "dhanammal",
-        "youtube": []
-      },
-      {
-        "id": "s_ramanathan",
-        "label": "S. Ramanathan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1917,
-        "died": 1988,
-        "era": "disseminator",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": []
-      },
-      {
-        "id": "s_sowmya",
-        "label": "S. Sowmya",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/S._Sowmya",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          },
-          {
-            "url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
-            "label": "Vaak magazine — profile",
-            "type": "article"
-          }
-        ],
-        "born": 1969,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": [
-          {
-            "url": "https://youtu.be/O9xRrQ0Cb00",
-            "label": "Gitarthamu · Surutti · Adi - S. Sowmya",
-            "composition_id": "gitarthamu",
-            "raga_id": "surutti"
-          }
-        ]
-      },
-      {
-        "id": "b_rajam_iyer",
-        "label": "B. Rajam Iyer",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1922,
-        "died": 2009,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "ariyakudi",
-        "youtube": []
-      },
-      {
-        "id": "cs_sankarasivam",
-        "label": "C.S. Sankarasivam",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
-            "label": "Wikipedia (via Murugabhoopathy)",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "muthiah",
-        "youtube": []
-      },
-      {
-        "id": "aruna_sairam",
-        "label": "Aruna Sairam",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Aruna_Sairam",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1952,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
-        "bani": "dhanammal",
-        "youtube": []
-      },
-      {
-        "id": "subbaraya_sastri",
-        "label": "Subbaraya Sastri",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1803,
-        "died": 1876,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "shyama_shastri",
-        "youtube": []
-      },
-      {
-        "id": "jayammal",
-        "label": "Jayammal",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
-            "label": "Wikipedia (via Veenai Dhanammal)",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1890,
-        "died": 1967,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "dhanammal",
-        "youtube": []
-      },
-      {
-        "id": "kamakshi_dhanammal",
-        "label": "Kamakshi (daughter of Dhanammal)",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
-            "label": "Wikipedia (via Veenai Dhanammal)",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "dhanammal",
-        "youtube": []
-      },
-      {
-        "id": "kanchipuram_naina_pillai",
-        "label": "Kanchipuram Naina Pillai",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": []
-      },
-      {
-        "id": "swaminatha_pillai",
-        "label": "Tiruppamparam Swaminatha Pillai",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
-            "label": "Wikipedia (via T. Viswanathan)",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "bridge",
-        "instrument": "flute",
-        "bani": "swaminatha_pillai",
-        "youtube": []
-      },
-      {
-        "id": "t_balasaraswati",
-        "label": "T. Balasaraswati",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1918,
-        "died": 1984,
-        "era": "disseminator",
-        "instrument": "bharatanatyam",
-        "bani": "dhanammal",
-        "youtube": []
-      },
-      {
-        "id": "gjr_krishnan",
-        "label": "G.J.R. Krishnan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "violin",
-        "bani": "lalgudi",
-        "youtube": []
-      },
-      {
-        "id": "lalgudi_vijayalakshmi",
-        "label": "Lalgudi Vijayalakshmi",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "violin",
-        "bani": "lalgudi",
-        "youtube": []
-      },
-      {
-        "id": "a_kanyakumari",
-        "label": "A. Kanyakumari",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "violin",
-        "bani": "mixed",
-        "youtube": []
-      },
-      {
-        "id": "alathur_brothers",
-        "label": "Alathur Brothers",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Alathur_Brothers",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1911,
-        "died": 1980,
-        "era": "golden_age",
+        "born": 1767,
+        "died": 1847,
+        "era": "trinity",
         "instrument": "vocal",
         "bani": "tyagaraja",
-        "youtube": [
-          {
-            "url": "https://youtu.be/mHjkUWyl1qQ",
-            "label": "Jagadananda Karaka · Nattai · Adi - Alathur Brothers",
-            "composition_id": "jagadananda_karaka",
-            "raga_id": "nata"
-          }
-        ]
+        "youtube": []
       },
       {
-        "id": "maharajapuram_santanam",
-        "label": "Maharajapuram Santanam",
+        "id": "umayalpuram_sivaraman",
+        "label": "Umayalpuram Sivaraman",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam",
+            "url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1928,
-        "died": 1992,
+        "born": 1935,
+        "died": null,
         "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "tyagaraja",
-        "youtube": [
-          {
-            "url": "https://youtu.be/aS39XUjoAM4",
-            "label": "Jagadananda Karaka · Nattai · Adi - Maharajapuram Santanam",
-            "composition_id": "jagadananda_karaka",
-            "raga_id": "nata"
-          }
-        ]
-      },
-      {
-        "id": "balamuralikrishna",
-        "label": "M. Balamuralikrishna",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/M._Balamuralikrishna",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1930,
-        "died": 2016,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": [
-          {
-            "url": "https://youtu.be/D62Ey2Vnlxo",
-            "label": "Jagadananda Karaka · Nattai · Adi - M. Balamuralikrishna",
-            "composition_id": "jagadananda_karaka",
-            "raga_id": "nata"
-          },
-          {
-            "url": "https://youtu.be/x-q9-MQrWhk",
-            "label": "abhimānamenneḍu · Begada · Adi - M. Balamuralikrishna",
-            "composition_id": "abhimanamennedu",
-            "raga_id": "begada"
-          }
-        ]
+        "instrument": "mridangam",
+        "bani": "palghat",
+        "youtube": []
       },
       {
         "id": "vellore_ramabhadran",
@@ -1826,137 +2558,20 @@
         "youtube": []
       },
       {
-        "id": "ramnad_raghavan",
-        "label": "Ramnad Raghavan",
+        "id": "vina_dhanammal",
+        "label": "Vina Dhanammal",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Ramnad_Raghavan",
+            "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "born": 1927,
-        "died": 2009,
-        "era": "disseminator",
-        "instrument": "mridangam",
-        "bani": "mixed",
-        "youtube": []
-      },
-      {
-        "id": "radha_viswanathan",
-        "label": "Radha Viswanathan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Radha_Viswanathan",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1934,
-        "died": 2018,
-        "era": "disseminator",
-        "instrument": "vocal",
+        "born": 1867,
+        "died": 1938,
+        "era": "bridge",
+        "instrument": "veena",
         "bani": "dhanammal",
-        "youtube": []
-      },
-      {
-        "id": "nityashree_mahadevan",
-        "label": "Nityashree Mahadevan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1973,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": [
-          {
-            "url": "https://youtu.be/2aD_rWZnayo",
-            "label": "Jagadananda Karaka · Nattai · Adi - Nityashree Mahadevan",
-            "composition_id": "jagadananda_karaka",
-            "raga_id": "nata"
-          }
-        ]
-      },
-      {
-        "id": "hyderabad_brothers",
-        "label": "Hyderabad Brothers",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          },
-          {
-            "url": "https://www.sruti.com/artist/hyderabad-brothers",
-            "label": "Sruti — artist profile",
-            "type": "article"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "tyagaraja",
-        "youtube": [
-          {
-            "url": "https://youtu.be/JUrGrAiQq1A",
-            "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Hyderabad Brothers",
-            "composition_id": "jalajaksha_varnam",
-            "raga_id": "hamsadhwani"
-          },
-          {
-            "url": "https://youtu.be/td1q_Rzrdso",
-            "label": "abhimānamenneḍu · Begada · Adi - Hyderabad Brothers",
-            "composition_id": "abhimanamennedu",
-            "raga_id": "begada"
-          }
-        ]
-      },
-      {
-        "id": "sudha_ragunathan",
-        "label": "Sudha Ragunathan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1956,
-        "died": null,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "gnb",
-        "youtube": [
-          {
-            "url": "https://youtu.be/8JPpSPRbql4",
-            "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Sudha Ragunathan",
-            "composition_id": "jalajaksha_varnam",
-            "raga_id": "hamsadhwani"
-          }
-        ]
-      },
-      {
-        "id": "sripada_pinakapani",
-        "label": "Sripada Pinakapani",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Sripada_Pinakapani",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1913,
-        "died": 2013,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "mixed",
         "youtube": []
       },
       {
@@ -1985,621 +2600,6 @@
             "label": "abhimānamenneḍu · Begada · Adi - Voleti Venkateshwarlu",
             "composition_id": "abhimanamennedu",
             "raga_id": "begada"
-          }
-        ]
-      },
-      {
-        "id": "malladi_brothers",
-        "label": "Malladi Brothers",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Malladi_Brothers",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1962,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
-        "bani": "musiri",
-        "youtube": []
-      },
-      {
-        "id": "ranjani_gayatri",
-        "label": "Ranjani-Gayatri",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Ranjani%E2%80%93Gayatri",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1973,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": [
-          {
-            "url": "https://youtu.be/43IgYHie488",
-            "label": "entō prēmatō · Surutti · Adi - Ranjani-Gayatri",
-            "composition_id": "ento_premato",
-            "raga_id": "surutti"
-          }
-        ]
-      },
-      {
-        "id": "r_vedavalli",
-        "label": "R. Vedavalli",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Vedavalli",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1935,
-        "died": null,
-        "era": "living_pillars",
-        "instrument": "vocal",
-        "bani": "mixed",
-        "youtube": [
-          {
-            "url": "https://youtu.be/Vwpj8TSdljg",
-            "label": "entō prēmatō · Surutti · Adi - R. Vedavalli",
-            "composition_id": "ento_premato",
-            "raga_id": "surutti"
-          }
-        ]
-      },
-      {
-        "id": "palghat_raghu",
-        "label": "Palghat Raghu",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Palghat_Raghu",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1928,
-        "died": 2009,
-        "era": "living_pillars",
-        "instrument": "mridangam",
-        "bani": "palghat",
-        "youtube": []
-      },
-      {
-        "id": "cr_mani_iyer",
-        "label": "CR Mani Iyer",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/C._R._Mani_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1930,
-        "died": 2009,
-        "era": "living_pillars",
-        "instrument": "violin",
-        "bani": "lalgudi",
-        "youtube": []
-      },
-      {
-        "id": "palghat_rajamani",
-        "label": "Palghat Rajamani",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
-            "label": "Wikipedia (via Palghat Mani Iyer)",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1949,
-        "died": null,
-        "era": "living_pillars",
-        "instrument": "mridangam",
-        "bani": "palghat",
-        "youtube": []
-      },
-      {
-        "id": "lalgudi_srimathi_brahmananda",
-        "label": "Lalgudi Srimathi Brahmananda",
-        "sources": [
-          {
-            "url": "https://www.sruti.com/artist/interview",
-            "label": "Sruti — Senior Musician award interview",
-            "type": "article"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "disseminator",
-        "instrument": "violin",
-        "bani": "lalgudi",
-        "youtube": []
-      },
-      {
-        "id": "akkarai_subbulakshmi",
-        "label": "Akkarai Subbulakshmi",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/Akkarai_Subhalakshmi",
-            "label": "Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "contemporary",
-        "instrument": "violin",
-        "bani": null,
-        "youtube": [
-          {
-            "url": "https://www.youtube.com/watch?v=AEbAgJK30Z8",
-            "label": "Emaanadicchevo · Sahana · Adi - TM Krishna, Karnatic Modern Mumbai 2016",
-            "composition_id": "emaanadicchevo",
-            "raga_id": "sahana",
-            "year": 2016
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=zGrDSEDeCI0",
-            "label": "Dikshitar kriti · Mayamalavagowla - TM Krishna & Akkarai Subbulakshmi, Karnatic Modern Mumbai 2017",
-            "raga_id": "mayamalavagowla",
-            "year": 2017
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=nuzjW5a--AU",
-            "label": "Kshetrayya padam · Mukhari - TM Krishna & Akkarai Subbulakshmi, Karnatic Modern Mumbai 2017",
-            "raga_id": "mukhari",
-            "year": 2017
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=5yZEsJDJ9yc",
-            "label": "Manavinaalakincha Raadate · Nalinakanthi - TM Krishna, Karnatic Modern Mumbai 2016",
-            "composition_id": "manavinaalakincha_raadate",
-            "raga_id": "nalinakanthi",
-            "year": 2016
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=x1pbtvX89Bk",
-            "label": "Gajavadhana · Thodi - TM Krishna, Essential TM Krishna Mumbai 2018",
-            "composition_id": "gajavadhana",
-            "raga_id": "thodi",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=5eAPDJmmKOs",
-            "label": "Perumal Murugan composition · Hamir Kalyani - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-            "raga_id": "hamir_kalyani",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=AjESfMHTgjg",
-            "label": "Ragamalika (Suruti-Shankarabharanam-Kapi-Ananda Bhairavi) - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=o55TExI7Dbc",
-            "label": "Composition · Khamas - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-            "raga_id": "khamas",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=gPLyGjXcSkU",
-            "label": "Shri Viswanathan Bhajeham · Chaturdasa Ragamalika - TM Krishna, Essential TM Krishna Mumbai 2017",
-            "year": 2017
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=vpoMFE5hrsc",
-            "label": "DV Gundappa composition · Behag - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-            "raga_id": "behag",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=zpFZwR27_m4",
-            "label": "Aaguner Parashmoni Chhoao Praane · Bhairavi - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-            "composition_id": "aaguner_parashmoni",
-            "raga_id": "bhairavi",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=PdIy9531_fM",
-            "label": "Manodharma II: Alapana (Lec-Dem Part 1) - TM Krishna & Akkarai Subbulakshmi 2018",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=79ScPj4sE3Y",
-            "label": "Manodharma II: Pallavi (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi 2018",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=iDaanIHX30I",
-            "label": "Manodharma II: Accompanists (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi 2018",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=ErpI843IiG4",
-            "label": "Manodharma II: Kalpana Swara & Thani (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi 2018",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=VJkrZf-jtZw",
-            "label": "Nee Matumme · Kapi - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "raga_id": "kapi",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=f_zYXorgEPQ",
-            "label": "Sogasu Chooda · Kannada Gowla - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "composition_id": "sogasu_chooda",
-            "raga_id": "kannada_gowla",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=GU--BVt4D0k",
-            "label": "Krishna Nee Begane · Yamuna Kalyani - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "composition_id": "krishna_nee_begane",
-            "raga_id": "yamuna_kalyani",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=iQTs7PSnX3k",
-            "label": "Baro Krishnayya · Maund - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "composition_id": "baro_krishnayya",
-            "raga_id": "maund",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=zQ1qhf1Lr9s",
-            "label": "Tiruvatriyur Thyagarajan · Atana - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "composition_id": "tiruvatriyur_thyagarajan",
-            "raga_id": "atana",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=YFY7I2uyQSM",
-            "label": "Sri Venkata Girisa · Suruti - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "composition_id": "sri_venkata_girisa",
-            "raga_id": "surutti",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=tDaCYam087k",
-            "label": "Nenarunchara · Simhavahini - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "composition_id": "nenarunchara",
-            "raga_id": "simhavahini",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=Aa_9UMNlxBk",
-            "label": "Shri Guruna Palitosmi · Padi - TM Krishna, Karnatic Modern II Mumbai 2018",
-            "composition_id": "shri_guruna_palitosmi",
-            "raga_id": "padi",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=WknDE3b7Jjo",
-            "label": "Kamakshi · Varali - TM Krishna, Afghan Church Mumbai 2018",
-            "composition_id": "kamakshi_varali",
-            "raga_id": "varali",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=fuH3lZo0JsA",
-            "label": "Nadopasana · Begada - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
-            "composition_id": "nadopasana",
-            "raga_id": "begada",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=Fqzy22zwjeY",
-            "label": "Bare Panduranga · Maund - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
-            "composition_id": "bare_panduranga",
-            "raga_id": "maund",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=Bs9FiFwxvSQ",
-            "label": "Jagadodharana · Kapi - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
-            "composition_id": "jagadodharana",
-            "raga_id": "kapi",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=FauxpOMibu4",
-            "label": "TM Krishna feat. Vikku Vinayakram: Live at Afghan Church, Mumbai  - Raga Behag - Allahvai"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=__UaWGlMbaU",
-            "label": "Dikshitar kriti · Purvi - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Pune 2018",
-            "raga_id": "purvi",
-            "year": 2018
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=BIEzjDD3pvA",
-            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
-            "composition_id": "maakelara_vicaaramu",
-            "raga_id": "ravichandrika"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=j73jMamBZxU",
-            "label": "Ragamalika - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Pune 2019",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=5MAI223JEVc",
-            "label": "Jagadananda Karaka · Nattai · Adi - TM Krishna",
-            "composition_id": "jagadananda_karaka",
-            "raga_id": "nata"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=T4cEp03lJcM",
-            "label": "Sri Ramachandra Kripalu · Yamuna Kalyani - TM Krishna, Parallel Lines Pune 2019",
-            "composition_id": "sri_ramachandra_kripalu",
-            "raga_id": "yamuna_kalyani",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=KDPPDB0rG70",
-            "label": "Manodharma Lec-Dem Promo - TM Krishna & Akkarai Subbulakshmi 2019",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=ovgWK5aQcpM",
-            "label": "Amba Nilayatakshi · Neelambari - TM Krishna, Kolkata 2019",
-            "composition_id": "amba_nilayatakshi",
-            "raga_id": "neelambari",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=Gkzru79jeT4",
-            "label": "Laavanya Rama Kannul Ara · Poorna Shadjam - TM Krishna, Kolkata 2019",
-            "composition_id": "laavanya_rama_kannul_ara",
-            "raga_id": "poornashadjam",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=3ZFVV64Or5g",
-            "label": "Kanaka Shaila Viharini · Punnagavarali - TM Krishna, Kolkata 2019",
-            "composition_id": "kanaka_shaila_viharini",
-            "raga_id": "punnagavarali",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=7A0YSVf-z3c",
-            "label": "Brocevarevarura · Khamas - TM Krishna, Kolkata 2019",
-            "composition_id": "brocevarevarura",
-            "raga_id": "khamas",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=v1g16qHvc74",
-            "label": "Jambu Pathe Mam Pahi · Yamuna Kalyani - TM Krishna, Kolkata 2019",
-            "composition_id": "jambu_pathe_mam_pahi",
-            "raga_id": "yamuna_kalyani",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=2-Hu2GXk6k8",
-            "label": "Saramaina Matalento · Behag - TM Krishna, Kolkata 2019",
-            "composition_id": "saramaina_matalento",
-            "raga_id": "behag",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=qd2XnI2qmGQ",
-            "label": "Dhana Dhanya Pushpa Bhara - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-            "composition_id": "dhana_dhanya_pushpa_bhara",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=KYXuPI4wDHM",
-            "label": "Ni Mattume · Kapi - TM Krishna, Kolkata 2019",
-            "raga_id": "kapi",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=WJh305C0kAc",
-            "label": "Vande Meenakshi Twam · Shankarabharanam - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-            "composition_id": "vande_meenakshi_twam",
-            "raga_id": "shankarabharanam",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=85LcNLhZNMU",
-            "label": "Manodharma III: Alapana (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=qlq9EvFr8Uo",
-            "label": "Manodharma III: Kalpanaswarams (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=RccdN6suHUk",
-            "label": "Manodharma III: Tanam (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=LchtvWC_BpE",
-            "label": "Salatullah Salamullah · Ananda Bhairavi - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2019",
-            "raga_id": "ananda_bhairavi",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=n63RJoxPzj8",
-            "label": "Essa Einay El Heharim (Hebrew Psalm) · Sindhu Bhairavi - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2019",
-            "raga_id": "sindhu_bhairavi",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=NocL9bp4vIY",
-            "label": "Teliyaleru Rama · Dhenuka - TM Krishna, Concert for Peace Mumbai 2019",
-            "composition_id": "teliyaleru_rama",
-            "raga_id": "dhenuka",
-            "year": 2019
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=vux5-s22v-s",
-            "label": "Aag Bhayi Bandhu · Lalitha - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2020",
-            "raga_id": "lalitha",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=jW4nuLVo7Fk",
-            "label": "Hine Ma Tov Uma Na'im (Hebrew Psalm) - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2020",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=NRc9yvEex2Q",
-            "label": "Endaro Mahanubhavulu · Sri - TM Krishna, Aikya Mumbai 2020",
-            "composition_id": "endaro_mahanubhavulu",
-            "raga_id": "sriraga",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=8upNeiMEdVc",
-            "label": "Sri Matrubhutam · Kannada - TM Krishna, Aikya Mumbai 2020",
-            "composition_id": "sri_matrubhutam",
-            "raga_id": "kaanada",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=F2TXcr1wAd4",
-            "label": "Chakkani Raja Margamu · Kharaharapriya - TM Krishna, Aikya Mumbai 2020",
-            "composition_id": "chakkani_raja_margamu",
-            "raga_id": "kharaharapriya",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=1Dp88V6m8Tw",
-            "label": "Jagadodharana · Kapi - TM Krishna, Aikya Mumbai 2020",
-            "composition_id": "jagadodharana",
-            "raga_id": "kapi",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=h6S9E2g6OA0",
-            "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: English Note-Ragam Shankarabharanam"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=Bbh-_ZM8LzA",
-            "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: Mallari - Ragam Gambhira Nattai"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=NfaWuqmljKM",
-            "label": "Muripemu Kalige · Mukhari - TM Krishna, Parallel Lines Bangalore 2020",
-            "composition_id": "muripemu_kalige",
-            "raga_id": "mukhari",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=Es04SHxFae4",
-            "label": "Bhajare Re Chitta Balambikam · Kalyani - TM Krishna, Parallel Lines Bangalore 2020",
-            "composition_id": "bhajare_re_chitta_balambikam",
-            "raga_id": "kalyani",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=Wt8SfrWwzh4",
-            "label": "2 Thillanas · Khamas - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-            "raga_id": "khamas",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=j6gRDrvZGWk",
-            "label": "Virutham + Poonguyil Koovum Poonjolayil · Kapi - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-            "raga_id": "kapi",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=kh3pw3u8If8",
-            "label": "Ragamalika + Jaya Jaya Shankara · Darbari Kanada - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-            "raga_id": "darbari_kanada",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=7x8-cde89Cg",
-            "label": "Allah Megh De (Bangladeshi folk) - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=0xBXnbsguKg",
-            "label": "Esho Shyamolo Sundoro (Tagore) - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-            "year": 2020
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=rspIDApLZlE",
-            "label": "TM Krishna & The Jogappas: Live"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=u2hoAfGGe6g",
-            "label": "Guruleka Etuvanti · Gowrimanohari - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
-            "composition_id": "guruleka_etuvanti",
-            "raga_id": "gowrimanohari",
-            "year": 2025
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=NZlB2tgum10",
-            "label": "TM Krishna & Vikku Vinayakram: Ragam Hamirkalyani - Valudum Cherudum"
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=sOVYyQL2Df0",
-            "label": "Muddugare Yashoda · Kurinji - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
-            "composition_id": "muddugare_yashoda",
-            "raga_id": "kurinji",
-            "year": 2025
-          },
-          {
-            "url": "https://www.youtube.com/watch?v=B86oyObRYIY",
-            "label": "Sri Ramachandra Kripalu · Yaman Kalyan - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
-            "composition_id": "sri_ramachandra_kripalu",
-            "raga_id": "yamuna_kalyani",
-            "year": 2025
-          }
-        ]
-      },
-      {
-        "id": "coimbatore_n_ramaswamy",
-        "label": "Coimbatore N Ramaswamy",
-        "sources": [
-          {
-            "url": "https://brahmanya.wordpress.com/2012/08/13/my-coimbatore-10/",
-            "label": "Brahmanya blog — Famous Musicians from my City",
-            "type": "article"
-          }
-        ],
-        "born": null,
-        "died": null,
-        "era": "golden_age",
-        "instrument": "mridangam",
-        "bani": "palani",
-        "youtube": []
-      },
-      {
-        "id": "t_v_sankaranarayanan",
-        "label": "T. V. Sankaranarayanan",
-        "sources": [
-          {
-            "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
-            "label": "T. V. Sankaranarayanan - Wikipedia",
-            "type": "wikipedia"
-          }
-        ],
-        "born": 1945,
-        "died": null,
-        "era": "golden_age",
-        "instrument": "vocal",
-        "bani": "Madurai Mani Iyer",
-        "youtube": [
-          {
-            "url": "https://youtu.be/XHAZjTEzKsg",
-            "label": "jAlandhara supIThastitE · Valaji · Rupaka - T. V. Sankaranarayanan",
-            "composition_id": "jalandhara_supithasite",
-            "raga_id": "valaji"
           }
         ]
       }

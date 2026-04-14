@@ -1,0 +1,35 @@
+{
+  "id": "semmangudi_srinivasa_iyer",
+  "label": "Semmangudi Srinivasa Iyer",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1908,
+  "died": 2003,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": "semmangudi",
+  "youtube": [
+    {
+      "url": "https://youtu.be/x5ExBQpVy2k",
+      "label": "Mylapore Fine Arts Club · 26 Nov 1967",
+      "year": 1967
+    },
+    {
+      "url": "https://youtu.be/HzT9NZEF1wo",
+      "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Semmangudi Srinivasa Iyer",
+      "composition_id": "maakelara_vicaaramu",
+      "raga_id": "ravichandrika"
+    },
+    {
+      "url": "https://youtu.be/ii0dLAbW9hA",
+      "label": "entō prēmatō · Surutti · Adi - Semmangudi Srinivasa Iyer",
+      "composition_id": "ento_premato",
+      "raga_id": "surutti"
+    }
+  ]
+}

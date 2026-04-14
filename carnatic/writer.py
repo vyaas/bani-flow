@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-writer.py — Atomic write operations for musicians.json and compositions.json (ADR-015).
+writer.py — Atomic write operations for musicians/ and compositions.json (ADR-015).
 
 CarnaticWriter provides stateless write methods. Each method:
-  1. Reads the source file.
+  1. Reads the source file(s).
   2. Validates inputs against current state (reading source files directly —
      never graph.json, which is a derived artefact; see ADR-016).
   3. Applies the transformation.
@@ -13,13 +13,20 @@ CarnaticWriter provides stateless write methods. Each method:
 No method mutates instance state. All methods are safe to call sequentially;
 each call holds the file for the duration of its read-transform-write cycle only.
 
+Musicians storage — two modes (auto-detected by musicians_path argument):
+  • Directory mode (preferred): musicians_path is carnatic/data/musicians/
+      - Each node lives in musicians/{id}.json (bare object, no wrapper)
+      - Edges live in musicians/_edges.json (bare array)
+  • Legacy mode (fallback): musicians_path is carnatic/data/musicians.json
+      - Single monolithic file with {"nodes": [...], "edges": [...]}
+
 Usage (as a library):
     from pathlib import Path
     from carnatic.writer import CarnaticWriter
 
     w = CarnaticWriter()
     result = w.add_musician(
-        Path("carnatic/data/musicians.json"),
+        Path("carnatic/data/musicians"),   # directory mode
         id="abhishek_raghuram",
         label="Abhishek Raghuram",
         era="contemporary",
@@ -126,9 +133,110 @@ def _yt_video_id(url: str) -> str | None:
     return m.group(1) if m else None
 
 
+# ── musicians storage helpers ──────────────────────────────────────────────────
+
+def _is_dir_mode(musicians_path: Path) -> bool:
+    """Return True if musicians_path is a directory (split-file mode)."""
+    return musicians_path.is_dir()
+
+
+def _node_file(musicians_dir: Path, node_id: str) -> Path:
+    """Return the path for a single musician node file."""
+    return musicians_dir / f"{node_id}.json"
+
+
+def _edges_file(musicians_dir: Path) -> Path:
+    """Return the path for the edges file."""
+    return musicians_dir / "_edges.json"
+
+
+def _load_all_nodes(musicians_path: Path) -> list[dict]:
+    """
+    Load all musician nodes from either directory mode or legacy monolithic file.
+    Returns a flat list of node dicts.
+    """
+    if _is_dir_mode(musicians_path):
+        nodes = []
+        for f in sorted(musicians_path.glob("*.json")):
+            if not f.name.startswith("_"):
+                nodes.append(json.loads(f.read_text(encoding="utf-8")))
+        return nodes
+    data = json.loads(musicians_path.read_text(encoding="utf-8"))
+    return data.get("nodes", [])
+
+
+def _load_edges(musicians_path: Path) -> list[dict]:
+    """
+    Load all edges from either directory mode or legacy monolithic file.
+    Returns a flat list of edge dicts.
+    """
+    if _is_dir_mode(musicians_path):
+        ef = _edges_file(musicians_path)
+        if ef.exists():
+            return json.loads(ef.read_text(encoding="utf-8"))
+        return []
+    data = json.loads(musicians_path.read_text(encoding="utf-8"))
+    return data.get("edges", [])
+
+
+def _write_node(musicians_path: Path, node: dict) -> None:
+    """
+    Write a single musician node.
+    Directory mode: writes musicians/{id}.json.
+    Legacy mode: rewrites the entire monolithic file.
+    """
+    if _is_dir_mode(musicians_path):
+        _atomic_write(_node_file(musicians_path, node["id"]), node)
+    else:
+        data = json.loads(musicians_path.read_text(encoding="utf-8"))
+        nodes: list[dict] = data.get("nodes", [])
+        for i, n in enumerate(nodes):
+            if n["id"] == node["id"]:
+                nodes[i] = node
+                break
+        else:
+            nodes.append(node)
+        data["nodes"] = nodes
+        _atomic_write(musicians_path, data)
+
+
+def _append_node(musicians_path: Path, node: dict) -> None:
+    """
+    Append a new musician node.
+    Directory mode: writes musicians/{id}.json (new file).
+    Legacy mode: rewrites the entire monolithic file.
+    """
+    if _is_dir_mode(musicians_path):
+        _atomic_write(_node_file(musicians_path, node["id"]), node)
+    else:
+        data = json.loads(musicians_path.read_text(encoding="utf-8"))
+        nodes: list[dict] = data.get("nodes", [])
+        nodes.append(node)
+        data["nodes"] = nodes
+        _atomic_write(musicians_path, data)
+
+
+def _write_edges(musicians_path: Path, edges: list[dict]) -> None:
+    """
+    Write the full edges list.
+    Directory mode: writes musicians/_edges.json.
+    Legacy mode: rewrites the entire monolithic file.
+    """
+    if _is_dir_mode(musicians_path):
+        _atomic_write(_edges_file(musicians_path), edges)
+    else:
+        data = json.loads(musicians_path.read_text(encoding="utf-8"))
+        data["edges"] = edges
+        _atomic_write(musicians_path, data)
+
+
 # ── default paths ──────────────────────────────────────────────────────────────
 
 def _default_musicians_path() -> Path:
+    """Return the preferred musicians directory, falling back to monolithic file."""
+    d = Path(__file__).parent / "data" / "musicians"
+    if d.is_dir():
+        return d
     return Path(__file__).parent / "data" / "musicians.json"
 
 
@@ -144,12 +252,12 @@ def _default_graph_path() -> Path:
 
 class CarnaticWriter:
     """
-    Stateless writer for musicians.json and compositions.json.
+    Stateless writer for musicians/ (or musicians.json) and compositions.json.
 
     Each method:
-      1. Reads the source file.
+      1. Reads the source file(s).
       2. Validates inputs against current state by reading source files
-         directly (musicians.json / compositions.json). graph.json is a
+         directly (musicians/ / compositions.json). graph.json is a
          derived artefact and is never read here — see ADR-016.
       3. Applies the transformation.
       4. Writes atomically (temp file + rename).
@@ -158,6 +266,10 @@ class CarnaticWriter:
     No method mutates instance state. All methods are safe to call
     sequentially (each call holds the file for the duration of its
     read-transform-write cycle only).
+
+    musicians_path may be:
+      • A directory (carnatic/data/musicians/) — preferred split-file mode.
+      • A .json file (carnatic/data/musicians.json) — legacy monolithic mode.
     """
 
     # ── Group 1: Musician graph writes ────────────────────────────────────────
@@ -178,7 +290,7 @@ class CarnaticWriter:
         bani: str | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Add a new musician node to musicians.json."""
+        """Add a new musician node."""
         # Validate era
         if era not in VALID_ERAS:
             return _err(
@@ -192,8 +304,7 @@ class CarnaticWriter:
                 f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
             )
 
-        data = json.loads(musicians_path.read_text(encoding="utf-8"))
-        nodes: list[dict] = data.get("nodes", [])
+        nodes = _load_all_nodes(musicians_path)
 
         # Duplicate check
         existing_ids = {n["id"] for n in nodes}
@@ -211,9 +322,7 @@ class CarnaticWriter:
             "bani":       bani,
             "youtube":    [],
         }
-        nodes.append(node)
-        data["nodes"] = nodes
-        _atomic_write(musicians_path, data)
+        _append_node(musicians_path, node)
 
         born_str = str(born) if born is not None else "null"
         return _ok("[NODE+]", f"added: {id} — {label} (born {born_str}, {era}, {instrument})")
@@ -229,7 +338,7 @@ class CarnaticWriter:
         note: str | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Add a guru-shishya edge to musicians.json."""
+        """Add a guru-shishya edge."""
         # Self-loop check
         if source == target:
             return _err(f"source and target must be different (got \"{source}\" for both)")
@@ -244,9 +353,8 @@ class CarnaticWriter:
                 f"--note is required when --confidence < 0.70 (got {confidence})"
             )
 
-        data = json.loads(musicians_path.read_text(encoding="utf-8"))
-        nodes: list[dict] = data.get("nodes", [])
-        edges: list[dict] = data.get("edges", [])
+        nodes = _load_all_nodes(musicians_path)
+        edges = _load_edges(musicians_path)
 
         known_ids = {n["id"] for n in nodes}
 
@@ -270,8 +378,7 @@ class CarnaticWriter:
             edge["note"] = note
 
         edges.append(edge)
-        data["edges"] = edges
-        _atomic_write(musicians_path, data)
+        _write_edges(musicians_path, edges)
 
         return _ok("[EDGE+]", f"added: {source} → {target} (confidence {confidence})")
 
@@ -293,11 +400,10 @@ class CarnaticWriter:
         if not video_id:
             return _err(f"could not extract 11-char video ID from URL: {url}")
 
-        # Read musicians.json once — used for both validation and write (ADR-016)
-        data = json.loads(musicians_path.read_text(encoding="utf-8"))
-        nodes: list[dict] = data.get("nodes", [])
+        # Load all nodes for validation; in dir mode we'll write only the one file
+        nodes = _load_all_nodes(musicians_path)
 
-        # Validate musician_id directly from the file being written
+        # Validate musician_id
         known_musician_ids = {n["id"] for n in nodes}
         if musician_id not in known_musician_ids:
             return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
@@ -321,10 +427,10 @@ class CarnaticWriter:
                         f"       Run add-raga before referencing it here."
                     )
 
-        # Find the node (already loaded above)
+        # Find the node
         node = next((n for n in nodes if n["id"] == musician_id), None)
         if node is None:
-            return _err(f"musician_id \"{musician_id}\" not found in musicians.json")
+            return _err(f"musician_id \"{musician_id}\" not found in musicians")
 
         # Duplicate detection: check video_id across this node's youtube[]
         for yt in node.get("youtube", []):
@@ -346,7 +452,8 @@ class CarnaticWriter:
             node["youtube"] = []
         node["youtube"].append(entry)
 
-        _atomic_write(musicians_path, data)
+        # Write only the affected node file (dir mode) or the whole file (legacy)
+        _write_node(musicians_path, node)
 
         detail_parts = [f"video_id: {video_id}"]
         if raga_id:
@@ -377,8 +484,7 @@ class CarnaticWriter:
                 f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
             )
 
-        data = json.loads(musicians_path.read_text(encoding="utf-8"))
-        nodes: list[dict] = data.get("nodes", [])
+        nodes = _load_all_nodes(musicians_path)
 
         node = next((n for n in nodes if n["id"] == musician_id), None)
         if node is None:
@@ -393,7 +499,7 @@ class CarnaticWriter:
             node["sources"] = []
         node["sources"].append({"url": url, "label": label, "type": type})
 
-        _atomic_write(musicians_path, data)
+        _write_node(musicians_path, node)
         return _ok("[SOURCE+]", f"{musician_id} — \"{label}\" ({type})")
 
     def remove_edge(
@@ -404,16 +510,14 @@ class CarnaticWriter:
         target: str,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Remove a guru-shishya edge from musicians.json."""
-        data = json.loads(musicians_path.read_text(encoding="utf-8"))
-        edges: list[dict] = data.get("edges", [])
+        """Remove a guru-shishya edge."""
+        edges = _load_edges(musicians_path)
 
         new_edges = [e for e in edges if not (e["source"] == source and e["target"] == target)]
         if len(new_edges) == len(edges):
             return _err(f"edge {source} → {target} does not exist in edges[]")
 
-        data["edges"] = new_edges
-        _atomic_write(musicians_path, data)
+        _write_edges(musicians_path, new_edges)
         return _ok("[EDGE-]", f"removed: {source} → {target}")
 
     def patch_musician(
@@ -451,8 +555,7 @@ class CarnaticWriter:
                 except (ValueError, TypeError):
                     return _err(f"field \"{field}\" must be an integer or \"null\", got \"{value}\"")
 
-        data = json.loads(musicians_path.read_text(encoding="utf-8"))
-        nodes: list[dict] = data.get("nodes", [])
+        nodes = _load_all_nodes(musicians_path)
 
         node = next((n for n in nodes if n["id"] == musician_id), None)
         if node is None:
@@ -461,7 +564,7 @@ class CarnaticWriter:
         old_value = node.get(field)
         node[field] = coerced
 
-        _atomic_write(musicians_path, data)
+        _write_node(musicians_path, node)
         return _ok("[NODE~]", f"patched: {musician_id}  {field}: {old_value!r} → {coerced!r}")
 
     def patch_edge(
@@ -490,8 +593,7 @@ class CarnaticWriter:
             if not (0.0 <= coerced <= 1.0):
                 return _err(f"confidence {coerced} is out of range [0.0, 1.0]")
 
-        data = json.loads(musicians_path.read_text(encoding="utf-8"))
-        edges: list[dict] = data.get("edges", [])
+        edges = _load_edges(musicians_path)
 
         edge = next((e for e in edges if e["source"] == source and e["target"] == target), None)
         if edge is None:
@@ -500,7 +602,7 @@ class CarnaticWriter:
         old_value = edge.get(field)
         edge[field] = coerced
 
-        _atomic_write(musicians_path, data)
+        _write_edges(musicians_path, edges)
         return _ok("[EDGE~]", f"patched: {source} → {target}  {field}: {old_value!r} → {coerced!r}")
 
     # ── Group 2: Composition data writes ──────────────────────────────────────
@@ -581,14 +683,13 @@ class CarnaticWriter:
                 f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
             )
 
-        # Validate musician_node_id directly from musicians.json (ADR-016)
+        # Validate musician_node_id directly from musicians/ (ADR-016)
         if musician_node_id is not None:
             m_path = musicians_path or _default_musicians_path()
-            m_data = json.loads(m_path.read_text(encoding="utf-8"))
-            known_ids = {n["id"] for n in m_data.get("nodes", [])}
+            known_ids = {n["id"] for n in _load_all_nodes(m_path)}
             if musician_node_id not in known_ids:
                 return _err(
-                    f"--musician-node-id \"{musician_node_id}\" does not exist in musicians.json"
+                    f"--musician-node-id \"{musician_node_id}\" does not exist in musicians"
                 )
 
         data = json.loads(compositions_path.read_text(encoding="utf-8"))

@@ -1,0 +1,29 @@
+{
+  "id": "voleti_venkateshwarlu",
+  "label": "Voleti Venkateshwarlu",
+  "sources": [
+    {
+      "url": "https://www.carnaticheritage.in/singers/profile/3",
+      "label": "Carnatic Heritage — singer profile",
+      "type": "article"
+    },
+    {
+      "url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/",
+      "label": "eAmbalam — Legends Series no. 3 (compiled by Sashi Kulkarni & T.V. Ramprasadh)",
+      "type": "article"
+    }
+  ],
+  "born": 1928,
+  "died": 1989,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "pinakapani",
+  "youtube": [
+    {
+      "url": "https://youtu.be/nsa5v9s8o8E",
+      "label": "abhimānamenneḍu · Begada · Adi - Voleti Venkateshwarlu",
+      "composition_id": "abhimanamennedu",
+      "raga_id": "begada"
+    }
+  ]
+}

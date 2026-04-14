@@ -1,0 +1,17 @@
+{
+  "id": "calcutta_ks_krishnamurthi",
+  "label": "Calcutta KS Krishnamurthi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "label": "Wikipedia (via Sanjay Subrahmanyan)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": 1999,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "mixed",
+  "youtube": []
+}

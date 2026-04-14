@@ -1,0 +1,17 @@
+{
+  "id": "muthuswami_dikshitar",
+  "label": "Muthuswami Dikshitar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1775,
+  "died": 1835,
+  "era": "trinity",
+  "instrument": "vocal",
+  "bani": "dikshitar",
+  "youtube": []
+}

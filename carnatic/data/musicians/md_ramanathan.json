@@ -1,0 +1,24 @@
+{
+  "id": "md_ramanathan",
+  "label": "MD Ramanathan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1923,
+  "died": 1984,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "bani": "tiger_varadachariar",
+  "youtube": [
+    {
+      "url": "https://youtu.be/M4J_HtniTQA",
+      "label": "Gitarthamu · Surutti · Adi - MD Ramanathan",
+      "composition_id": "gitarthamu",
+      "raga_id": "surutti"
+    }
+  ]
+}

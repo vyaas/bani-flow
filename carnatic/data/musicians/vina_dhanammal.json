@@ -1,0 +1,17 @@
+{
+  "id": "vina_dhanammal",
+  "label": "Vina Dhanammal",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1867,
+  "died": 1938,
+  "era": "bridge",
+  "instrument": "veena",
+  "bani": "dhanammal",
+  "youtube": []
+}

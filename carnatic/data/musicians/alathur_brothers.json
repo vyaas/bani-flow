@@ -1,0 +1,24 @@
+{
+  "id": "alathur_brothers",
+  "label": "Alathur Brothers",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Alathur_Brothers",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1911,
+  "died": 1980,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": "tyagaraja",
+  "youtube": [
+    {
+      "url": "https://youtu.be/mHjkUWyl1qQ",
+      "label": "Jagadananda Karaka · Nattai · Adi - Alathur Brothers",
+      "composition_id": "jagadananda_karaka",
+      "raga_id": "nata"
+    }
+  ]
+}

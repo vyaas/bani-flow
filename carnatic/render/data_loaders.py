@@ -25,6 +25,40 @@ def timestamp_to_seconds(ts: str) -> int:
     raise ValueError(f"Unrecognised timestamp format: {ts!r}")
 
 
+def load_musicians(musicians_dir: Path, musicians_file: Path) -> dict:
+    """
+    Load musicians from a musicians/ directory (one .json per musician node)
+    plus a _edges.json file for all guru-shishya edges.
+
+    Node files are sorted alphabetically by name for a deterministic compile
+    order.  Files whose names start with '_' (e.g. _edges.json) are skipped
+    during the node glob — _edges.json is loaded explicitly.
+
+    Falls back to the legacy monolithic musicians_file if the directory does
+    not exist (backward-compatible during migration).
+    """
+    if musicians_dir.is_dir():
+        node_files = sorted(
+            f for f in musicians_dir.glob("*.json")
+            if not f.name.startswith("_")
+        )
+        nodes = [
+            json.loads(f.read_text(encoding="utf-8"))
+            for f in node_files
+        ]
+        edges_file = musicians_dir / "_edges.json"
+        edges = (
+            json.loads(edges_file.read_text(encoding="utf-8"))
+            if edges_file.exists()
+            else []
+        )
+        return {"nodes": nodes, "edges": edges}
+    # legacy fallback: monolithic musicians.json
+    if musicians_file.exists():
+        return json.loads(musicians_file.read_text(encoding="utf-8"))
+    return {"nodes": [], "edges": []}
+
+
 def load_compositions(compositions_file: Path) -> dict:
     """Load compositions.json; return empty structure if absent."""
     if compositions_file.exists():

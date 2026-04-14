@@ -1,0 +1,17 @@
+{
+  "id": "jayammal",
+  "label": "Jayammal",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "label": "Wikipedia (via Veenai Dhanammal)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1890,
+  "died": 1967,
+  "era": "bridge",
+  "instrument": "vocal",
+  "bani": "dhanammal",
+  "youtube": []
+}

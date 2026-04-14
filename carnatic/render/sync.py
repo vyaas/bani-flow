@@ -1,7 +1,7 @@
 """
 carnatic/render/sync.py — graph.json sync logic (ADR-016).
 
-sync_graph_json() keeps graph.json current from musicians.json,
+sync_graph_json() keeps graph.json current from musicians/ (or musicians.json),
 compositions.json, and the recordings/ directory before each render.
 Atomic write via temp file + os.replace.
 """
@@ -9,6 +9,9 @@ import json
 import os
 import tempfile
 from pathlib import Path
+
+from carnatic.render.data_loaders import load_musicians
+
 
 def sync_graph_json(
     graph_file: Path,
@@ -19,9 +22,11 @@ def sync_graph_json(
     Sync graph.json["musicians"], graph.json["compositions"], and
     graph.json["recording_refs"] from the canonical source files before rendering.
 
-    recording_refs is rebuilt from the recordings/ directory on every render,
-    so adding a new recordings/*.json file is automatically picked up without
-    any manual graph.json edit.
+    Musicians are loaded from the musicians/ directory (one .json per node +
+    _edges.json) when it exists, falling back to the legacy monolithic
+    musicians.json.  recording_refs is rebuilt from the recordings/ directory
+    on every render, so adding a new recordings/*.json file is automatically
+    picked up without any manual graph.json edit.
 
     This is the single sync point that keeps graph.json current for traversal
     and rendering (ADR-016). Idempotent: safe to call on every render.py
@@ -30,12 +35,13 @@ def sync_graph_json(
 
     graph = json.loads(graph_file.read_text(encoding="utf-8"))
 
-    if musicians_file.exists():
-        m = json.loads(musicians_file.read_text(encoding="utf-8"))
-        graph["musicians"] = {
-            "nodes": m.get("nodes", []),
-            "edges": m.get("edges", []),
-        }
+    # ── musicians: prefer musicians/ directory, fall back to musicians.json ──
+    musicians_dir = musicians_file.parent / "musicians"
+    m = load_musicians(musicians_dir, musicians_file)
+    graph["musicians"] = {
+        "nodes": m.get("nodes", []),
+        "edges": m.get("edges", []),
+    }
 
     if compositions_file.exists():
         c = json.loads(compositions_file.read_text(encoding="utf-8"))
@@ -50,7 +56,6 @@ def sync_graph_json(
     #   id, path, title, short_title, date, venue, primary_musician_ids
     recordings_dir = graph_file.parent / "recordings"
     if recordings_dir.is_dir():
-        existing_refs = {r["id"]: r for r in graph.get("recording_refs", [])}
         new_refs = []
         for f in sorted(recordings_dir.glob("*.json")):
             if f.name.startswith("_"):
@@ -89,5 +94,6 @@ def sync_graph_json(
         f.write(text)
         tmp = Path(f.name)
     os.replace(tmp, graph_file)
-    print(f"[SYNC] graph.json ← musicians.json + compositions.json + recordings/")
+    source_label = "musicians/" if musicians_dir.is_dir() else "musicians.json"
+    print(f"[SYNC] graph.json ← {source_label} + compositions.json + recordings/")
 

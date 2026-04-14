@@ -1,0 +1,24 @@
+{
+  "id": "ml_vasanthakumari",
+  "label": "ML Vasanthakumari",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1928,
+  "died": 1990,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "bani": "gnb",
+  "youtube": [
+    {
+      "url": "https://youtu.be/zoYJH-SqwCI",
+      "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - ML Vasanthakumari",
+      "composition_id": "jalajaksha_varnam",
+      "raga_id": "hamsadhwani"
+    }
+  ]
+}

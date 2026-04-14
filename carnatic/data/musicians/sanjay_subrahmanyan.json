@@ -1,0 +1,30 @@
+{
+  "id": "sanjay_subrahmanyan",
+  "label": "Sanjay Subrahmanyan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1968,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "bani": "semmangudi",
+  "youtube": [
+    {
+      "url": "https://youtu.be/Mb5cl_eWyWo",
+      "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Sanjay Subrahmanyan",
+      "composition_id": "maakelara_vicaaramu",
+      "raga_id": "ravichandrika"
+    },
+    {
+      "url": "https://youtu.be/pIjpXnKVN00",
+      "label": "entō prēmatō · Surutti · Adi - Sanjay Subrahmanyan",
+      "composition_id": "ento_premato",
+      "raga_id": "surutti"
+    }
+  ]
+}

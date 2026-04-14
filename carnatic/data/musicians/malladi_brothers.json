@@ -1,0 +1,17 @@
+{
+  "id": "malladi_brothers",
+  "label": "Malladi Brothers",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Malladi_Brothers",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1962,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "bani": "musiri",
+  "youtube": []
+}

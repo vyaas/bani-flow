@@ -1,0 +1,17 @@
+{
+  "id": "gnb",
+  "label": "GN Balasubramaniam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1910,
+  "died": 1965,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": "gnb",
+  "youtube": []
+}

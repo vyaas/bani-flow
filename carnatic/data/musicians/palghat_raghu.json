@@ -1,0 +1,17 @@
+{
+  "id": "palghat_raghu",
+  "label": "Palghat Raghu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Palghat_Raghu",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1928,
+  "died": 2009,
+  "era": "living_pillars",
+  "instrument": "mridangam",
+  "bani": "palghat",
+  "youtube": []
+}

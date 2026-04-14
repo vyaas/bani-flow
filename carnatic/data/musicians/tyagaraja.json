@@ -1,0 +1,17 @@
+{
+  "id": "tyagaraja",
+  "label": "Tyagaraja",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1767,
+  "died": 1847,
+  "era": "trinity",
+  "instrument": "vocal",
+  "bani": "tyagaraja",
+  "youtube": []
+}

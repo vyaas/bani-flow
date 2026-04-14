@@ -79,6 +79,10 @@ from carnatic.writer import CarnaticWriter, WriteResult  # noqa: E402
 # ── default paths ──────────────────────────────────────────────────────────────
 
 def _musicians_path() -> Path:
+    """Return the musicians directory if it exists, else the legacy monolithic file."""
+    d = Path(__file__).parent / "data" / "musicians"
+    if d.is_dir():
+        return d
     return Path(__file__).parent / "data" / "musicians.json"
 
 

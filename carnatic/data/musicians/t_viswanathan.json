@@ -1,0 +1,24 @@
+{
+  "id": "t_viswanathan",
+  "label": "T. Viswanathan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1927,
+  "died": 2002,
+  "era": "living_pillars",
+  "instrument": "flute",
+  "bani": "dhanammal",
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=49plQGtYu60",
+      "label": "Kaligiyunte Gada · Keeravani · Tyagaraja — Ramnad Krishnan, T. Viswanathan",
+      "composition_id": "kaligiyunte",
+      "raga_id": "keeravani"
+    }
+  ]
+}

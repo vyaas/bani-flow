@@ -1,0 +1,24 @@
+{
+  "id": "bombay_jayashri",
+  "label": "Bombay Jayashri",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1964,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "bani": "lalgudi",
+  "youtube": [
+    {
+      "url": "https://youtu.be/YAbWJYP_BWo",
+      "label": "entō prēmatōnu · Bahudari · Adi - Bombay Jayashri",
+      "composition_id": "ento_prematonu",
+      "raga_id": "bahudari"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "kv_narayanaswamy",
+  "label": "KV Narayanaswamy",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1923,
+  "died": 2002,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "ariyakudi",
+  "youtube": [
+    {
+      "url": "https://youtu.be/HxcQv19oo5g",
+      "label": "Gitarthamu · Surutti · Adi - KV Narayanaswamy",
+      "composition_id": "gitarthamu",
+      "raga_id": "surutti"
+    }
+  ]
+}

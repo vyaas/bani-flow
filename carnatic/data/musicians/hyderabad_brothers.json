@@ -1,0 +1,35 @@
+{
+  "id": "hyderabad_brothers",
+  "label": "Hyderabad Brothers",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    },
+    {
+      "url": "https://www.sruti.com/artist/hyderabad-brothers",
+      "label": "Sruti — artist profile",
+      "type": "article"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "tyagaraja",
+  "youtube": [
+    {
+      "url": "https://youtu.be/JUrGrAiQq1A",
+      "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Hyderabad Brothers",
+      "composition_id": "jalajaksha_varnam",
+      "raga_id": "hamsadhwani"
+    },
+    {
+      "url": "https://youtu.be/td1q_Rzrdso",
+      "label": "abhimānamenneḍu · Begada · Adi - Hyderabad Brothers",
+      "composition_id": "abhimanamennedu",
+      "raga_id": "begada"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "dk_pattammal",
+  "label": "DK Pattammal",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1919,
+  "died": 2009,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "bani": "mixed",
+  "youtube": [
+    {
+      "url": "https://youtu.be/7FJu261ER0A",
+      "label": "Gitarthamu · Surutti · Adi - DK Pattammal",
+      "composition_id": "gitarthamu",
+      "raga_id": "surutti"
+    }
+  ]
+}

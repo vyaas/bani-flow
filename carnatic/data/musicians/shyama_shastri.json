@@ -1,0 +1,17 @@
+{
+  "id": "shyama_shastri",
+  "label": "Shyama Shastri",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1762,
+  "died": 1827,
+  "era": "trinity",
+  "instrument": "vocal",
+  "bani": "shyama_shastri",
+  "youtube": []
+}

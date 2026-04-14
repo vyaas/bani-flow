@@ -1,0 +1,24 @@
+{
+  "id": "t_v_sankaranarayanan",
+  "label": "T. V. Sankaranarayanan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+      "label": "T. V. Sankaranarayanan - Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1945,
+  "died": null,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": "Madurai Mani Iyer",
+  "youtube": [
+    {
+      "url": "https://youtu.be/XHAZjTEzKsg",
+      "label": "jAlandhara supIThastitE · Valaji · Rupaka - T. V. Sankaranarayanan",
+      "composition_id": "jalandhara_supithasite",
+      "raga_id": "valaji"
+    }
+  ]
+}

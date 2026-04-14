@@ -1,0 +1,24 @@
+{
+  "id": "musiri_subramania_iyer",
+  "label": "Musiri Subramania Iyer",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1899,
+  "died": 1975,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": "tyagaraja",
+  "youtube": [
+    {
+      "url": "https://youtu.be/mBSh-ti602Y",
+      "label": "abhimānamenneḍu · Begada · Adi - Musiri Subramania Iyer",
+      "composition_id": "abhimanamennedu",
+      "raga_id": "begada"
+    }
+  ]
+}

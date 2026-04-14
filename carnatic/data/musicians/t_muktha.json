@@ -1,0 +1,17 @@
+{
+  "id": "t_muktha",
+  "label": "T. Muktha",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1914,
+  "died": 2007,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": "dhanammal",
+  "youtube": []
+}

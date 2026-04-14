@@ -1,0 +1,23 @@
+{
+  "id": "abhishek_raghuram",
+  "label": "Abhishek Raghuram",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1984,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "bani": "mixed",
+  "youtube": [
+    {
+      "url": "https://youtu.be/lNSJJMWLtfc",
+      "label": "Natabhairavi · Adi",
+      "raga_id": "natabhairavi"
+    }
+  ]
+}

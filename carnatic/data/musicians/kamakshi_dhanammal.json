@@ -1,0 +1,17 @@
+{
+  "id": "kamakshi_dhanammal",
+  "label": "Kamakshi (daughter of Dhanammal)",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "label": "Wikipedia (via Veenai Dhanammal)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "bridge",
+  "instrument": "vocal",
+  "bani": "dhanammal",
+  "youtube": []
+}

@@ -1,0 +1,42 @@
+{
+  "id": "lalgudi_jayaraman",
+  "label": "Lalgudi Jayaraman",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1930,
+  "died": 2013,
+  "era": "disseminator",
+  "instrument": "violin",
+  "bani": "lalgudi",
+  "youtube": [
+    {
+      "url": "https://youtu.be/Ws45axUFbwY",
+      "label": "Śaṅkarī Nīvē · Begada · Rupakam - Lalgudi Jayaraman",
+      "composition_id": "shankari_neeve",
+      "raga_id": "begada"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=AkRGOouMKWQ",
+      "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+      "composition_id": "ammaravamma",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=gujEGzxg0eQ",
+      "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+      "composition_id": "ammaravamma",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=ghKZrPkx6qU",
+      "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+      "composition_id": "ammaravamma",
+      "raga_id": "kalyani"
+    }
+  ]
+}

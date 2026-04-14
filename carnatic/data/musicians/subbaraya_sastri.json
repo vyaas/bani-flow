@@ -1,0 +1,17 @@
+{
+  "id": "subbaraya_sastri",
+  "label": "Subbaraya Sastri",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1803,
+  "died": 1876,
+  "era": "bridge",
+  "instrument": "vocal",
+  "bani": "shyama_shastri",
+  "youtube": []
+}

@@ -1,0 +1,30 @@
+{
+  "id": "balamuralikrishna",
+  "label": "M. Balamuralikrishna",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/M._Balamuralikrishna",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1930,
+  "died": 2016,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "mixed",
+  "youtube": [
+    {
+      "url": "https://youtu.be/D62Ey2Vnlxo",
+      "label": "Jagadananda Karaka · Nattai · Adi - M. Balamuralikrishna",
+      "composition_id": "jagadananda_karaka",
+      "raga_id": "nata"
+    },
+    {
+      "url": "https://youtu.be/x-q9-MQrWhk",
+      "label": "abhimānamenneḍu · Begada · Adi - M. Balamuralikrishna",
+      "composition_id": "abhimanamennedu",
+      "raga_id": "begada"
+    }
+  ]
+}

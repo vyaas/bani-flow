@@ -1,0 +1,217 @@
+{
+  "id": "ramnad_krishnan",
+  "label": "Ramnad Krishnan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    },
+    {
+      "url": "https://dhvaniohio.org/wp-content/uploads/2012/06/Ramnad_Krishnan.pdf",
+      "label": "Dhvani Ohio — biography",
+      "type": "pdf"
+    }
+  ],
+  "born": 1918,
+  "died": 1973,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "bani": "semmangudi",
+  "youtube": [
+    {
+      "url": "https://youtu.be/r5iWpW_m3Rk",
+      "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Ramnad Krishnan",
+      "composition_id": "maakelara_vicaaramu",
+      "raga_id": "ravichandrika"
+    },
+    {
+      "url": "https://youtu.be/r5d0uArTotk",
+      "label": "Parulanna Matta · Kapi · Rupakam - Ramnad Krishnan",
+      "composition_id": "parulanna_matta",
+      "raga_id": "kapi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=CVRk68OCGgA",
+      "label": "Ni Verakula · Begada · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "ni_verakula",
+      "raga_id": "begada"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=sLd-4KotLsE",
+      "label": "Kadalagi · Bhairavi · Tevaram — Ramnad Krishnan",
+      "composition_id": "kadalagi",
+      "raga_id": "bhairavi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Sec_Do-ppV4",
+      "label": "Dasukova · Todi · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "dasukova",
+      "raga_id": "thodi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=49plQGtYu60",
+      "label": "Kaligiyunte Gada · Keeravani · Tyagaraja — Ramnad Krishnan, T. Viswanathan",
+      "composition_id": "kaligiyunte",
+      "raga_id": "keeravani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=AkRGOouMKWQ",
+      "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+      "composition_id": "ammaravamma",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=rH7tAZMzgV4",
+      "label": "Rama Nee Samanamevaru · Kharaharapriya · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "rama_nee_samanamevaru",
+      "raga_id": "kharaharapriya"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=DNOXA2m3r7s",
+      "label": "Ramakatha · Madhyamavati · Tyagaraja — Ramnad Krishnan, MS Gopalakrishnan, Trichy Sankaran, Music Academy 1969",
+      "composition_id": "ramakatha",
+      "raga_id": "madhyamavati",
+      "year": 1969
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=rHDxG5tUyZo",
+      "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
+      "raga_id": "thodi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=BMzVphOxKFs",
+      "label": "Ni Padamule · Bhairavi · Patnam Subramanya Iyer — Ramnad Krishnan",
+      "composition_id": "ni_padamule",
+      "raga_id": "bhairavi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=dSRTBpwmQmw",
+      "label": "Kamalambam Bhaja Re · Kalyani · Muthuswami Dikshitar — Ramnad Krishnan",
+      "composition_id": "kamalambam_bhaja_re",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=UIw75iHSNnk",
+      "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
+      "raga_id": "thodi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=97sIjZjJJAY",
+      "label": "Nidhi Chala Sukhama · Kalyani · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "nidhi_chala_sukhama",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=zPwYCAH5DfE",
+      "label": "Dasukova · Todi · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "dasukova",
+      "raga_id": "thodi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=0hYtkW5RgLA",
+      "label": "Manasu Swadheenamaina · Shankarabharanam · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "manasu_swadheenamaina",
+      "raga_id": "shankarabharanam"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=soBeoEjvJDw",
+      "label": "Biranabrova Ide · Kalyani · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "biranabrova_ide",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=4JD4MFDk-Ds",
+      "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "ammaravamma",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Egbxa8RXdjc",
+      "label": "Marakatamanivarna · Varali · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "marakatamanivarna",
+      "raga_id": "varali"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=pKbvlcq-aP0",
+      "label": "Ramarama Bhairavi Padam · Bhairavi · Kshetrayya — Ramnad Krishnan",
+      "composition_id": "ramarama_bhairavi_padam",
+      "raga_id": "bhairavi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=NdYI2Ll7fL4",
+      "label": "Tanayunibrova · Bhairavi · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "tanayunibrova",
+      "raga_id": "bhairavi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=pP4uy5RjdPE",
+      "label": "Ragam Tanam Pallavi · Bhairavi — Ramnad Krishnan",
+      "raga_id": "bhairavi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=gujEGzxg0eQ",
+      "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+      "composition_id": "ammaravamma",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Pl7_0mdUD9U",
+      "label": "Rama Nee Samanamevaru · Kharaharapriya · Tyagaraja · Rupakam — Ramnad Krishnan",
+      "composition_id": "rama_nee_samanamevaru",
+      "raga_id": "kharaharapriya"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=ghKZrPkx6qU",
+      "label": "Ammaravamma · Kalyani · Tyagaraja — Ramnad Krishnan, Lalgudi Jayaraman, Karaikudi Mani",
+      "composition_id": "ammaravamma",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=LKKM415B0H8",
+      "label": "Manasu Swadheenamaina · Shankarabharanam · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "manasu_swadheenamaina",
+      "raga_id": "shankarabharanam"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=P96H_12Bhf8",
+      "label": "Ragam Tanam Pallavi · Bhairavi — Ramnad Krishnan",
+      "raga_id": "bhairavi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=vAvYZiaDkrk",
+      "label": "Rama Nee Samanamevaru · Kharaharapriya · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "rama_nee_samanamevaru",
+      "raga_id": "kharaharapriya"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=M-7aVBZkcEU",
+      "label": "Biranabrova Ide · Kalyani · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "biranabrova_ide",
+      "raga_id": "kalyani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=r1XdtcCBkdw",
+      "label": "Ragam Tanam Pallavi · Todi — Ramnad Krishnan",
+      "raga_id": "thodi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=zmQ3i3JxkLQ",
+      "label": "Akshaya Linga Vibho · Shankarabharanam · Muthuswami Dikshitar — Ramnad Krishnan",
+      "composition_id": "akshaya_linga_vibho",
+      "raga_id": "shankarabharanam"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=LMZ2lGJNqps",
+      "label": "Siva Siva Siva Ena Radha · Pantuvarali · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "siva_siva_siva_ena_radha",
+      "raga_id": "pantuvarali"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=r9hWPHAcaRs",
+      "label": "Buddhi Radu · Shankarabharanam · Tyagaraja — Ramnad Krishnan",
+      "composition_id": "buddhi_radu",
+      "raga_id": "shankarabharanam"
+    }
+  ]
+}

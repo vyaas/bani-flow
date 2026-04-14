@@ -1,0 +1,29 @@
+{
+  "id": "s_sowmya",
+  "label": "S. Sowmya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/S._Sowmya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    },
+    {
+      "url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
+      "label": "Vaak magazine — profile",
+      "type": "article"
+    }
+  ],
+  "born": 1969,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "bani": "mixed",
+  "youtube": [
+    {
+      "url": "https://youtu.be/O9xRrQ0Cb00",
+      "label": "Gitarthamu · Surutti · Adi - S. Sowmya",
+      "composition_id": "gitarthamu",
+      "raga_id": "surutti"
+    }
+  ]
+}

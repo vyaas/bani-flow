@@ -1,0 +1,17 @@
+{
+  "id": "aruna_sairam",
+  "label": "Aruna Sairam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Aruna_Sairam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1952,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "bani": "dhanammal",
+  "youtube": []
+}

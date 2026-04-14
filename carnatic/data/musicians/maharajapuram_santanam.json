@@ -1,0 +1,24 @@
+{
+  "id": "maharajapuram_santanam",
+  "label": "Maharajapuram Santanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1928,
+  "died": 1992,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "tyagaraja",
+  "youtube": [
+    {
+      "url": "https://youtu.be/aS39XUjoAM4",
+      "label": "Jagadananda Karaka · Nattai · Adi - Maharajapuram Santanam",
+      "composition_id": "jagadananda_karaka",
+      "raga_id": "nata"
+    }
+  ]
+}

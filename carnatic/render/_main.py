@@ -22,7 +22,8 @@ _PROJECT_ROOT = _CARNATIC_DIR.parent
 
 ROOT              = _CARNATIC_DIR
 GRAPH_FILE        = ROOT / "data" / "graph.json"
-DATA_FILE         = ROOT / "data" / "musicians.json"
+DATA_FILE         = ROOT / "data" / "musicians.json"       # legacy monolithic fallback
+MUSICIANS_DIR     = ROOT / "data" / "musicians"            # preferred: per-musician files
 COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"
 RECORDINGS_FILE   = ROOT / "data" / "recordings.json"
 OUT_FILE          = ROOT / "graph.html"
@@ -35,7 +36,7 @@ if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 from carnatic.render.sync import sync_graph_json
-from carnatic.render.data_loaders import load_compositions, load_recordings, load_tanpura
+from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura
 from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups
 from carnatic.render.graph_builder import build_elements
 from carnatic.render.html_generator import render_html
@@ -43,7 +44,7 @@ from carnatic.render.html_generator import render_html
 
 def main() -> None:
     # Step 0: sync graph.json from source files (ADR-016)
-    if GRAPH_FILE.exists() and DATA_FILE.exists():
+    if GRAPH_FILE.exists() and (MUSICIANS_DIR.is_dir() or DATA_FILE.exists()):
         sync_graph_json(GRAPH_FILE, DATA_FILE, COMPOSITIONS_FILE)
 
     # Step 1: load data (ADR-013: graph.json preferred, legacy fallback)
@@ -63,11 +64,11 @@ def main() -> None:
         print(f"[LOAD] graph.json  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges, "
               f"{len(recordings_data['recordings'])} recordings)")
     else:
-        import json
-        graph           = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+        graph           = load_musicians(MUSICIANS_DIR, DATA_FILE)
         comp_data       = load_compositions(COMPOSITIONS_FILE)
         recordings_data = load_recordings(ROOT / "data" / "recordings", RECORDINGS_FILE)
-        print(f"[LOAD] musicians.json (legacy)  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
+        source_label    = "musicians/" if MUSICIANS_DIR.is_dir() else "musicians.json (legacy)"
+        print(f"[LOAD] {source_label}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
 
     # Step 2: build lookup tables
     composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data, recordings_data)

@@ -20,9 +20,10 @@ import requests
 from bs4 import BeautifulSoup
 
 # ── paths ──────────────────────────────────────────────────────────────────────
-ROOT        = Path(__file__).parent
-DATA_FILE   = ROOT / "data" / "musicians.json"
-CACHE_DIR   = ROOT / "data" / "cache"
+ROOT           = Path(__file__).parent
+DATA_FILE      = ROOT / "data" / "musicians.json"   # legacy monolithic fallback
+MUSICIANS_DIR  = ROOT / "data" / "musicians"        # preferred: split-file mode
+CACHE_DIR      = ROOT / "data" / "cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 HEADERS = {"User-Agent": "CarnaticLineageBot/1.0 (research; contact via github)"}
@@ -171,12 +172,49 @@ def extract_prose_relations(soup: BeautifulSoup, page_url: str) -> list[Edge]:
     return edges
 
 # ── graph merge ────────────────────────────────────────────────────────────────
+
+def _atomic_write_json(path: Path, data: dict | list) -> None:
+    """Write JSON atomically via temp file + os.replace."""
+    import os, tempfile
+    text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", dir=path.parent, suffix=".tmp", delete=False
+    ) as f:
+        f.write(text)
+        tmp = Path(f.name)
+    os.replace(tmp, path)
+
+
 def load_graph() -> dict:
+    """
+    Load musicians as {"nodes": [...], "edges": [...]}.
+    Prefers the musicians/ directory; falls back to musicians.json.
+    """
+    if MUSICIANS_DIR.is_dir():
+        nodes = []
+        for f in sorted(MUSICIANS_DIR.glob("*.json")):
+            if not f.name.startswith("_"):
+                nodes.append(json.loads(f.read_text(encoding="utf-8")))
+        edges_file = MUSICIANS_DIR / "_edges.json"
+        edges = json.loads(edges_file.read_text(encoding="utf-8")) if edges_file.exists() else []
+        return {"nodes": nodes, "edges": edges}
     return json.loads(DATA_FILE.read_text(encoding="utf-8"))
 
+
 def save_graph(graph: dict) -> None:
-    DATA_FILE.write_text(json.dumps(graph, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"  [SAVED] {DATA_FILE}")
+    """
+    Save musicians back to storage.
+    Directory mode: writes each node to its own file + _edges.json.
+    Legacy mode: rewrites the monolithic musicians.json.
+    """
+    if MUSICIANS_DIR.is_dir():
+        for node in graph.get("nodes", []):
+            _atomic_write_json(MUSICIANS_DIR / f"{node['id']}.json", node)
+        _atomic_write_json(MUSICIANS_DIR / "_edges.json", graph.get("edges", []))
+        print(f"  [SAVED] {MUSICIANS_DIR}/ ({len(graph.get('nodes', []))} nodes, {len(graph.get('edges', []))} edges)")
+    else:
+        _atomic_write_json(DATA_FILE, graph)
+        print(f"  [SAVED] {DATA_FILE}")
 
 def node_ids(graph: dict) -> set[str]:
     return {n["id"] for n in graph["nodes"]}

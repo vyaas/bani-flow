@@ -1,0 +1,24 @@
+{
+  "id": "tn_krishnan",
+  "label": "TN Krishnan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/T._N._Krishnan",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1928,
+  "died": 2023,
+  "era": "living_pillars",
+  "instrument": "violin",
+  "bani": "semmangudi",
+  "youtube": [
+    {
+      "url": "https://youtu.be/WFFHDuNDSpA",
+      "label": "Gitarthamu · Surutti · Adi - TN Krishnan",
+      "composition_id": "gitarthamu",
+      "raga_id": "surutti"
+    }
+  ]
+}

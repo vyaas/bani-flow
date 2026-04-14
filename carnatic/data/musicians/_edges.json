@@ -1,0 +1,334 @@
+[
+  {
+    "source": "tyagaraja",
+    "target": "patnam_subramanya_iyer",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Patnam_Subramanya_Iyer"
+  },
+  {
+    "source": "patnam_subramanya_iyer",
+    "target": "ariyakudi_ramanuja_iyengar",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar"
+  },
+  {
+    "source": "patnam_subramanya_iyer",
+    "target": "musiri_subramania_iyer",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer"
+  },
+  {
+    "source": "vina_dhanammal",
+    "target": "t_brinda",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/T._Brinda"
+  },
+  {
+    "source": "vina_dhanammal",
+    "target": "ms_subbulakshmi",
+    "confidence": 0.85,
+    "source_url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi"
+  },
+  {
+    "source": "vina_dhanammal",
+    "target": "t_viswanathan",
+    "confidence": 0.85,
+    "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+    "note": "grandson via Jayammal; inherited Dhanammal bani; formal guru was Tiruppamparam Swaminatha Pillai"
+  },
+  {
+    "source": "semmangudi_srinivasa_iyer",
+    "target": "ms_subbulakshmi",
+    "confidence": 0.85,
+    "source_url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+    "note": "second guru"
+  },
+  {
+    "source": "semmangudi_srinivasa_iyer",
+    "target": "tn_krishnan",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/T._N._Krishnan"
+  },
+  {
+    "source": "semmangudi_srinivasa_iyer",
+    "target": "tm_krishna",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/T._M._Krishna"
+  },
+  {
+    "source": "gnb",
+    "target": "ml_vasanthakumari",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari"
+  },
+  {
+    "source": "lalgudi_jayaraman",
+    "target": "bombay_jayashri",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Bombay_Jayashri"
+  },
+  {
+    "source": "palghat_mani_iyer",
+    "target": "umayalpuram_sivaraman",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman"
+  },
+  {
+    "source": "muthiah_bhagavatar",
+    "target": "madurai_mani_iyer",
+    "confidence": 0.98,
+    "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+    "note": "most famous disciple per Wikipedia"
+  },
+  {
+    "source": "muthiah_bhagavatar",
+    "target": "ms_subbulakshmi",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+    "note": "first guru"
+  },
+  {
+    "source": "tr_mahalingam",
+    "target": "n_ramani",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+    "note": "sister's son and primary disciple; carried Mali style forward"
+  },
+  {
+    "source": "calcutta_ks_krishnamurthi",
+    "target": "sanjay_subrahmanyan",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+    "note": "principal guru 1989–1999; shaped Sanjay's mature style"
+  },
+  {
+    "source": "vina_dhanammal",
+    "target": "t_muktha",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+    "note": "granddaughter via Kamakshi; Dhanammal bani custodian alongside T. Brinda"
+  },
+  {
+    "source": "t_muktha",
+    "target": "s_sowmya",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/S._Sowmya"
+  },
+  {
+    "source": "s_ramanathan",
+    "target": "s_sowmya",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/S._Sowmya",
+    "note": "co-teacher with T. Muktha"
+  },
+  {
+    "source": "ariyakudi_ramanuja_iyengar",
+    "target": "b_rajam_iyer",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+    "note": "gurukula training, ~10 years; leading disciple"
+  },
+  {
+    "source": "muthiah_bhagavatar",
+    "target": "cs_sankarasivam",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+    "note": "disciple of Muthiah Bhagavatar"
+  },
+  {
+    "source": "cs_sankarasivam",
+    "target": "ramnad_krishnan",
+    "confidence": 0.98,
+    "source_url": "https://dhvaniohio.org/wp-content/uploads/2012/06/Ramnad_Krishnan.pdf",
+    "note": "first guru; Muthiah Bhagavatar lineage stream"
+  },
+  {
+    "source": "t_brinda",
+    "target": "ramnad_krishnan",
+    "confidence": 0.98,
+    "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+    "note": "principal guru; Dhanammal bani stream — padams, javalis, gamaka vocabulary"
+  },
+  {
+    "source": "cs_sankarasivam",
+    "target": "tn_seshagopalan",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+    "note": "via Ramanathapuram C.S. Sankarasivan"
+  },
+  {
+    "source": "t_brinda",
+    "target": "semmangudi_srinivasa_iyer",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+    "note": "Semmangudi learnt from Brinda — Dhanammal stream feeding into his style"
+  },
+  {
+    "source": "t_brinda",
+    "target": "aruna_sairam",
+    "confidence": 0.92,
+    "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+    "note": "full-time student"
+  },
+  {
+    "source": "ramnad_krishnan",
+    "target": "aruna_sairam",
+    "confidence": 0.8,
+    "source_url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
+    "note": "also studied under Ramnad Krishnan"
+  },
+  {
+    "source": "shyama_shastri",
+    "target": "subbaraya_sastri",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+    "note": "son and primary disciple of Shyama Shastri"
+  },
+  {
+    "source": "subbaraya_sastri",
+    "target": "vina_dhanammal",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+    "note": "Dhanammal's mother trained under Subbaraya Sastri; Trinity lineage enters Dhanammal bani"
+  },
+  {
+    "source": "vina_dhanammal",
+    "target": "jayammal",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+    "note": "daughter; singer; mother of Balasaraswati, T. Ranganathan, T. Viswanathan"
+  },
+  {
+    "source": "vina_dhanammal",
+    "target": "kamakshi_dhanammal",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+    "note": "daughter; mother of T. Brinda, T. Muktha, Abhiramasundari"
+  },
+  {
+    "source": "kamakshi_dhanammal",
+    "target": "t_brinda",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+    "note": "mother; initial training in Dhanammal style"
+  },
+  {
+    "source": "kamakshi_dhanammal",
+    "target": "t_muktha",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+    "note": "mother; initial training in Dhanammal style"
+  },
+  {
+    "source": "kanchipuram_naina_pillai",
+    "target": "t_brinda",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+    "note": "substantial training; agility and robustness in laya"
+  },
+  {
+    "source": "kanchipuram_naina_pillai",
+    "target": "t_muktha",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+    "note": "substantial training alongside Brinda"
+  },
+  {
+    "source": "jayammal",
+    "target": "t_balasaraswati",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+    "note": "mother and accompanist; musical training from infancy"
+  },
+  {
+    "source": "jayammal",
+    "target": "t_viswanathan",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+    "note": "mother; Dhanammal bani transmitted through family"
+  },
+  {
+    "source": "swaminatha_pillai",
+    "target": "t_viswanathan",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+    "note": "principal guru; ~20 years of study; innovator of 7-hole bamboo flute"
+  },
+  {
+    "source": "maha_vaidyanatha_sivan",
+    "target": "musiri_subramania_iyer",
+    "confidence": 0.8,
+    "source_url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+    "note": "via T.S. Sabhesha Iyer (2-hop); Wikipedia prose: Sabhesh Iyer disciple of Maha Vaidyanatha Iyer, Musiri disciple of Sabhesh Iyer"
+  },
+  {
+    "source": "lalgudi_jayaraman",
+    "target": "gjr_krishnan",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+    "note": "son and disciple; primary carrier of Lalgudi bani; Sangita Kalanidhi 2022"
+  },
+  {
+    "source": "lalgudi_jayaraman",
+    "target": "lalgudi_vijayalakshmi",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+    "note": "daughter and disciple; trained under father after initial training from grandfather Lalgudi Gopala Iyer; Sangita Kalanidhi 2022"
+  },
+  {
+    "source": "ml_vasanthakumari",
+    "target": "sudha_ragunathan",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
+    "note": "principal guru; Sudha Ragunathan trained under MLV from an early age; carries the GNB bani forward"
+  },
+  {
+    "source": "sripada_pinakapani",
+    "target": "voleti_venkateshwarlu",
+    "confidence": 0.9,
+    "source_url": "https://www.carnaticheritage.in/singers/profile/3",
+    "note": "polishing guru; Pinakapani called Voleti a genius; sourced from carnaticheritage.in and eambalam.com Legends Series; no Wikipedia page for Voleti — editorial override applied"
+  },
+  {
+    "source": "sripada_pinakapani",
+    "target": "malladi_brothers",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Malladi_Brothers",
+    "note": "principal guru; Wikipedia infobox lists Sripada Pinakapani as teacher of the Malladi Brothers"
+  },
+  {
+    "source": "voleti_venkateshwarlu",
+    "target": "malladi_brothers",
+    "confidence": 0.8,
+    "source_url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/",
+    "note": "Malladi Suri Babu associated with Voleti at AIR Vijayawada for a long time and imbibed his style; stylistic transmission rather than formal gurukula"
+  },
+  {
+    "source": "t_muktha",
+    "target": "r_vedavalli",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Vedavalli",
+    "note": "Central Government scholarship; Vedavalli received specialised training in padams and javalis under T. Muktha"
+  },
+  {
+    "source": "palghat_mani_iyer",
+    "target": "palghat_raghu",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/Palghat_Raghu",
+    "note": "son and primary disciple; inherited the Palghat mridangam school; Sangeetha Kalanidhi 1981"
+  },
+  {
+    "source": "palghat_mani_iyer",
+    "target": "palghat_rajamani",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+    "note": "son and disciple; accompanied his father in double-mridangam concerts; carried the Palghat school forward"
+  },
+  {
+    "source": "madurai_mani_iyer",
+    "target": "t_v_sankaranarayanan",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+    "note": "principal guru and maternal uncle"
+  }
+]
