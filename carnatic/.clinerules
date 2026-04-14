@@ -373,6 +373,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-14: cli.py reads graph.json (the derived artefact), NOT musicians.json directly. If musicians.json is edited without re-running the render pipeline, cli.py will silently serve stale data. There is no staleness guard. Always run `python3 -m carnatic.render._main` after any write to musicians.json or compositions.json before trusting CLI output.
 
 - 2026-04-14: To remove a bare youtube[] entry that has been superseded by a structured recording file, use `python3 carnatic/remove_youtube_entry.py --musician-id <id> --video-id <11-char-id> [--dry-run]`. The script reads musicians.json directly, removes the matching entry atomically, and prints a [YOUTUBE-] change-log line. Always follow with validate + render + commit.
+- 2026-04-14: When ingesting a playlist .md file with hint blocks, the composition_id hints may contain typos (e.g. 'deva_deva_kalayamidelyani' for 'deva_deva_kalayamide') — always run composition-exists with the hinted id first, then cross-check against the canonical id; the CLI fuzzy-match will surface the correct entry. Also: a playlist's composer attribution for a kriti (e.g. Birana Brova attributed to Tarangampadi Panchanada Iyer) must be accepted as given when no contradicting source is available — record the composer_id and note the tala qualifier.
 
 ### 🎵 Carnatic Coder
 
