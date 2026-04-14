@@ -1,0 +1,15 @@
+{
+  "id": "muttavadura",
+  "title": "Muttavadura",
+  "composer_id": "kshetrayya",
+  "raga_id": "saveri",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2765.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Javali in Saveri"
+}

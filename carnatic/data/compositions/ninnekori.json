@@ -1,0 +1,16 @@
+{
+  "id": "ninnekori",
+  "title": "Ninnekori",
+  "composer_id": "tyagaraja",
+  "raga_id": "kaanada",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2765.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Varnam in Kanada"
+}

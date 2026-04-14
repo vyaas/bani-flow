@@ -1,0 +1,15 @@
+{
+  "id": "dhanyasi",
+  "name": "Dhanyasi",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "thodi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dhanyasi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Hanumatodi (mela 8). Pentatonic raga (audava-audava); known for its serene, devotional character."
+}

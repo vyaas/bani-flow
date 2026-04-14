@@ -1,0 +1,15 @@
+{
+  "id": "saranga",
+  "name": "Saranga",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "kalyani",
+  "sources": [
+    {
+      "url": "https://sujamusic.wordpress.com/saranga/",
+      "label": "Suja Music — Saranga raga description",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Mechakalyani (mela 65). Pentatonic raga with a distinctive vakra prayoga."
+}

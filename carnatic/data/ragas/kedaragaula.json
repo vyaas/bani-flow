@@ -1,0 +1,15 @@
+{
+  "id": "kedaragaula",
+  "name": "Kedaragaula",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kedaragaula",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (mela 28). Hexatonic raga; used in both classical compositions and devotional music."
+}

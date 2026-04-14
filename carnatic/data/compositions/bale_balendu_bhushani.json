@@ -1,15 +1,21 @@
 {
   "id": "bale_balendu_bhushani",
   "title": "Bālē Bālēndu Bhūṣaṇi",
+  "aliases": ["Baale Baalendubhushani", "Bale Balendu Bhushani"],
   "composer_id": "tyagaraja",
   "raga_id": "reetigowla",
   "tala": "adi",
-  "language": "sanskrit",
+  "language": "Telugu",
   "sources": [
     {
       "url": "https://www.anupallavi.com/song/bale-balendu/",
       "label": "Anupallavi.com — notation and meaning",
       "type": "archive"
+    },
+    {
+      "url": "https://www.karnatik.com/c2765.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
     }
   ],
   "notes": "Tyagaraja kriti in Reetigowla; addressed to the Mother at Tiruvaiyaru; pallavi uses the epithet 'bālē' (O Mother)"

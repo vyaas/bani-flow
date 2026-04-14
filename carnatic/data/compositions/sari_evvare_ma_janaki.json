@@ -1,0 +1,15 @@
+{
+  "id": "sari_evvare_ma_janaki",
+  "title": "Sari Evvare Ma Janaki",
+  "composer_id": "tyagaraja",
+  "raga_id": "sahana",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2765.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Distinct from Sari Evvare (sari_evvare); different pallavi text"
+}
