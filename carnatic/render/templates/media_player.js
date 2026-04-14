@@ -554,6 +554,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           talaSpan.textContent = talaPart;
           talaSpan.style.color = 'var(--fg-muted)';
           talaSpan.style.fontSize = '0.68rem';
+          talaSpan.style.marginLeft = '6px';
           metaSpan.appendChild(talaSpan);
         }
       } else if (p.raga_id || talaPart) {

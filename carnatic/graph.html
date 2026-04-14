@@ -778,6 +778,7 @@
   /* ── ADR-025: explicit play button ── */
   .rec-play-btn {
     flex-shrink: 0;
+    margin-left: auto;   /* always right-justified in rec-row1 */
     background: none;
     border: 1px solid var(--border-strong);
     color: var(--accent-sub);
@@ -45930,6 +45931,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           talaSpan.textContent = talaPart;
           talaSpan.style.color = 'var(--fg-muted)';
           talaSpan.style.fontSize = '0.68rem';
+          talaSpan.style.marginLeft = '6px';
           metaSpan.appendChild(talaSpan);
         }
       } else if (p.raga_id || talaPart) {
