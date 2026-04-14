@@ -410,6 +410,17 @@ window.drawRagaWheel = function() {
     });
   });
 
+  // ── melasWithMusic: set of mela IDs whose subtree has at least one composition/recording ──
+  // A mela is "live" if compsByRaga has entries for the mela itself OR for any of its janyas.
+  const melasWithMusic = new Set();
+  Object.keys(melaByNum).forEach(n => {
+    const mela = melaByNum[n];
+    if (!mela) return;
+    if ((compsByRaga[mela.id] || []).length > 0) { melasWithMusic.add(mela.id); return; }
+    const janyas = janyasByMela[mela.id] || [];
+    if (janyas.some(j => (compsByRaga[j.id] || []).length > 0)) melasWithMusic.add(mela.id);
+  });
+
   // ── rtpByRaga: structured recordings only (nested sessions/performances schema)
   // Kept as a separate lookup for the tooltip "Ragam-Tanam-Pallavi" badge.
   const rtpByRaga = {};
@@ -540,19 +551,20 @@ window.drawRagaWheel = function() {
     const cakra = Math.ceil(n / 6);
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
 
+    const isLive = raga && melasWithMusic.has(raga.id);
     const g = svgEl('g', { class: 'mela-node', 'data-mela': n, 'data-id': raga ? raga.id : '' });
     const circle = svgEl('circle', {
       cx: pos.x, cy: pos.y, r: NR_MELA,
       fill: raga ? color : THEME.bgPanel,
       stroke: raga ? THEME.fg : THEME.edgeLine,
       'stroke-width': raga ? 1.5 : 1,
-      opacity: raga ? 1 : 0.5,
-      cursor: raga ? 'pointer' : 'default',
+      opacity: isLive ? 1 : (raga ? 0.28 : 0.5),
+      cursor: isLive ? 'pointer' : 'default',
       'data-mela': n
     });
     g.appendChild(circle);
 
-    if (raga) {
+    if (isLive) {
       g.style.cursor = 'pointer';
       g.addEventListener('mouseenter', () => {
         const lines = [raga.name,
@@ -607,10 +619,12 @@ window.drawRagaWheel = function() {
     else if (normAngle === 180) { melaRotDeg = 0;             anchor = 'middle'; }
     else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
+    const isLiveLbl = raga && melasWithMusic.has(raga.id);
     const lbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': anchor, 'dominant-baseline': 'middle',
-      fill: raga ? THEME.fg : THEME.borderStrong,
+      fill: isLiveLbl ? THEME.fg : (raga ? THEME.borderStrong : THEME.borderStrong),
       'font-size': Math.max(7, minDim * 0.012) + 'px',
+      opacity: isLiveLbl ? 1 : (raga ? 0.35 : 1),
       transform: `rotate(${melaRotDeg}, ${lp.x}, ${lp.y})`
     });
     lbl.textContent = raga ? raga.name : String(n);
