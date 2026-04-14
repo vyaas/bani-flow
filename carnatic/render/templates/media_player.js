@@ -59,14 +59,40 @@ function wireDrag(el, bar) {
 }
 
 function wireResize(el, handle) {
-  let resizing = false, startY = 0, startH = 0;
+  // Corner resize: width on the container (rightward drag), video height on
+  // the iframe wrapper (downward drag).
+  //
+  // We deliberately do NOT set a fixed height on the outer .media-player
+  // container — it must remain height:auto so that the tracklist, footer, and
+  // resize grip can expand freely when the track list is toggled open.
+  // Instead we resize the .mp-video-wrap by overriding its padding-top (the
+  // intrinsic-ratio trick) with an explicit pixel height on the iframe itself.
+  //
+  // Min width 320px: YouTube controls stay reachable.
+  // Min video height 160px: iframe stays visible.
+  let resizing = false, startX = 0, startY = 0, startW = 0, startVideoH = 0;
   handle.addEventListener('mousedown', e => {
-    resizing = true; startY = e.clientY; startH = el.offsetHeight;
+    resizing = true;
+    startX = e.clientX; startY = e.clientY;
+    startW = el.offsetWidth;
+    // Current rendered video height = container width × 9/16
+    const videoWrap = el.querySelector('.mp-video-wrap');
+    startVideoH = videoWrap ? videoWrap.offsetHeight : Math.round(el.offsetWidth * 9 / 16);
     e.preventDefault();
   });
   document.addEventListener('mousemove', e => {
     if (!resizing) return;
-    el.style.height = Math.max(180, startH + e.clientY - startY) + 'px';
+    // Width: resize the whole player
+    const newW = Math.max(320, startW + e.clientX - startX);
+    el.style.width = newW + 'px';
+    // Height: resize only the video wrap, not the container
+    const newVideoH = Math.max(160, startVideoH + e.clientY - startY);
+    const videoWrap = el.querySelector('.mp-video-wrap');
+    if (videoWrap) {
+      // Switch from padding-top ratio trick to explicit pixel height
+      videoWrap.style.paddingTop = '0';
+      videoWrap.style.height = newVideoH + 'px';
+    }
   });
   document.addEventListener('mouseup', () => { resizing = false; });
 }
@@ -244,7 +270,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
   const pos = nextSpawnPosition();
   const el = document.createElement('div');
   el.className = 'media-player';
-  el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${++topZ};`;
+  el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${++topZ}; width:480px;`;
 
   const bar = buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta || {});
   el.appendChild(bar);
@@ -740,7 +766,7 @@ function openPlayer(videoId, title, playerId) {
   // Fixed position: top-right of the canvas, below the sruti bar + header
   const main = document.getElementById('main');
   const mainRect = main ? main.getBoundingClientRect() : { width: window.innerWidth };
-  const playerWidth = 340;
+  const playerWidth = 480;
   const rightMargin = 18;
   const topMargin   = 18;
   el.style.cssText = `top:${topMargin}px; right:${rightMargin}px; left:auto; z-index:${++topZ};`;

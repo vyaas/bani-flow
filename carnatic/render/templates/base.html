@@ -331,9 +331,14 @@
   #hp-sub  { font-size: 0.75rem; color: var(--fg-dim); margin-top: 3px; line-height: 1.5; }
 
   /* ── floating media player (multi-window, class-based) ── */
+  /* Default width 480px: wide enough that YouTube's volume slider stays
+     reachable from the volume icon without the hover collapsing mid-drag.
+     min-width 320px: hard floor so the player can never be shrunk to a
+     size where the controls become inaccessible. */
   .media-player {
     position: absolute;
-    width: 340px;
+    width: 480px;
+    min-width: 320px;
     background: var(--bg-panel);
     border: 1px solid var(--border-strong);
     border-radius: 4px;
@@ -450,13 +455,21 @@
     border-top: 1px solid var(--border-strong);
   }
 
-  /* resize grip at bottom */
+  /* resize grip at bottom-right corner — nwse-resize signals both axes */
   .mp-resize {
-    height: 7px; cursor: ns-resize;
+    height: 7px; cursor: nwse-resize;
     background: var(--bg-input); border-top: 1px solid var(--border-strong);
     border-radius: 0 0 4px 4px; opacity: 0.6;
+    /* Diagonal grip lines hint at corner-resize affordance */
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.08) 2px,
+      rgba(255,255,255,0.08) 3px
+    );
   }
-  .mp-resize:hover { opacity: 1; background: var(--bg-active); }
+  .mp-resize:hover { opacity: 1; background-color: var(--bg-active); }
 
   /* ── timeline ruler — monospace font retained for data-dense ruler ── */
   #timeline-ruler .tick-line {
