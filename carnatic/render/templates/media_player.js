@@ -478,7 +478,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         const compChip = document.createElement('span');
         compChip.className = 'comp-chip';
         compChip.textContent = comp ? comp.title : (p.display_title || '');
-        compChip.title = 'Explore in Bani Flow';
+        compChip.title = (comp ? comp.title : (p.display_title || '')) + ' — Explore in Bani Flow';
         compChip.addEventListener('click', e => {
           e.stopPropagation();
           triggerBaniSearch('comp', p.composition_id);
@@ -663,7 +663,7 @@ function buildRecordingsList(nodeId, nodeData) {
       const compChip = document.createElement('span');
       compChip.className = 'comp-chip';
       compChip.textContent = comp ? comp.title : (t.label || '');
-      compChip.title = 'Explore in Bani Flow';
+      compChip.title = (comp ? comp.title : (t.label || '')) + ' — Explore in Bani Flow';
       compChip.addEventListener('click', e => {
         e.stopPropagation();
         triggerBaniSearch('comp', t.composition_id);

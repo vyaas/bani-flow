@@ -296,6 +296,27 @@
   }
   .rec-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
   .rec-row3 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+
+  /* ── Chip truncation in row contexts — play button must always be visible ──
+     .comp-chip and .raga-chip are white-space:nowrap by default (good for
+     standalone use). Inside rec-row1 / trail-row2 they must truncate so the
+     ▶ play button is never pushed out of view.
+     max-width is a soft cap; the chip shrinks further if the row is narrow.
+     The full name is always available via the title="" tooltip on hover.     */
+  .rec-row1 .comp-chip,
+  .rec-row1 .raga-chip {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+  }
+  .trail-row2 .comp-chip,
+  .trail-row2 .raga-chip {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+  }
   .rec-meta {
     color: var(--fg-dim); font-size: 0.70rem;
     flex: 1; min-width: 0;
