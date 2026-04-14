@@ -1081,6 +1081,59 @@
     word-break: break-word;
     margin: 0;
   }
+
+  /* ── Scrollbars — Gruvbox Hard Dark ──────────────────────────────────────
+     Targets all scrollable regions: sidebars, tracklist, janyas list,
+     search dropdown, meta inspector.
+     Firefox: scrollbar-color / scrollbar-width.
+     WebKit: ::-webkit-scrollbar-* pseudo-elements.              */
+  #bani-scroll,
+  #right-scroll,
+  .bani-janyas-list,
+  .mp-tracklist,
+  .search-dropdown,
+  #mi-pre {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-active) var(--bg-panel);
+  }
+
+  #bani-scroll::-webkit-scrollbar,
+  #right-scroll::-webkit-scrollbar,
+  .bani-janyas-list::-webkit-scrollbar,
+  .mp-tracklist::-webkit-scrollbar,
+  .search-dropdown::-webkit-scrollbar,
+  #mi-pre::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  #bani-scroll::-webkit-scrollbar-track,
+  #right-scroll::-webkit-scrollbar-track,
+  .bani-janyas-list::-webkit-scrollbar-track,
+  .mp-tracklist::-webkit-scrollbar-track,
+  .search-dropdown::-webkit-scrollbar-track,
+  #mi-pre::-webkit-scrollbar-track {
+    background: var(--bg-panel);
+  }
+
+  #bani-scroll::-webkit-scrollbar-thumb,
+  #right-scroll::-webkit-scrollbar-thumb,
+  .bani-janyas-list::-webkit-scrollbar-thumb,
+  .mp-tracklist::-webkit-scrollbar-thumb,
+  .search-dropdown::-webkit-scrollbar-thumb,
+  #mi-pre::-webkit-scrollbar-thumb {
+    background: var(--bg-active);   /* #665c54 — gruvbox bg3 */
+    border-radius: 3px;
+    border: 1px solid var(--bg-panel);
+  }
+
+  #bani-scroll::-webkit-scrollbar-thumb:hover,
+  #right-scroll::-webkit-scrollbar-thumb:hover,
+  .bani-janyas-list::-webkit-scrollbar-thumb:hover,
+  .mp-tracklist::-webkit-scrollbar-thumb:hover,
+  .search-dropdown::-webkit-scrollbar-thumb:hover,
+  #mi-pre::-webkit-scrollbar-thumb:hover {
+    background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
+  }
 </style>
 </head>
 <body>
