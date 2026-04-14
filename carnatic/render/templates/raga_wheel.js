@@ -385,16 +385,27 @@ window.drawRagaWheel = function() {
   svg.appendChild(vp);
   _applyTransform();  // restore saved pan/zoom after SVG rebuild
 
-  // Wheel zoom (mouse wheel)
+  // Wheel zoom (mouse wheel) — clamped to sane limits so the user cannot
+  // accidentally scroll the wheel completely out of view or into a pixel.
+  // ZOOM_MIN/MAX define the hard floor/ceiling.  The per-event factor is kept
+  // small (≤5% per tick) so trackpad momentum scrolling feels gradual rather
+  // than snapping straight to a limit.
+  const ZOOM_MIN = 0.5, ZOOM_MAX = 4.0;
   svg.addEventListener('wheel', (e) => {
     e.preventDefault();
-    const factor = e.deltaY < 0 ? 1.1 : 0.91;
+    // Normalise deltaY: trackpads send pixel-mode values (deltaMode=0) that
+    // can be large; clamp the effective delta to ±1 "notch" worth of zoom.
+    const delta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 50);
+    const factor = Math.pow(1.05, -delta / 50);   // ≤5% per 50-pixel notch
+    const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, _vscale * factor));
+    if (Math.abs(newScale - _vscale) < 1e-6) return;   // already at limit
+    const actualFactor = newScale / _vscale;
     // Zoom toward cursor position
     const rect = svg.getBoundingClientRect();
     const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    _vx = mx - factor * (mx - _vx);
-    _vy = my - factor * (my - _vy);
-    _vscale *= factor;
+    _vx = mx - actualFactor * (mx - _vx);
+    _vy = my - actualFactor * (my - _vy);
+    _vscale = newScale;
     _applyTransform();
   }, { passive: false });
 
@@ -820,9 +831,14 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
       _expandedComp = item.id;
-      // Sync bani flow — guard _wheelSyncInProgress so syncRagaWheelToFilter
-      // does not trigger a full drawRagaWheel() redraw that would undo the dimming.
-      window._wheelSyncInProgress = true;
+      // Sync bani flow.
+      // _wheelSyncInProgress: prevents syncRagaWheelToFilter from triggering a
+      //   full drawRagaWheel() redraw that would undo the dimming we just applied.
+      // _wheelOriginatedTrigger: signals to triggerBaniSearch that this call
+      //   came from inside the wheel — orientRagaWheel must NOT fire (the wheel
+      //   already knows where it is; re-entering would reset the expansion).
+      window._wheelSyncInProgress    = true;
+      window._wheelOriginatedTrigger = true;
       if (!item._isPerf) {
         // Canonical composition from compositions.json
         triggerBaniSearch('comp', item.id);
@@ -836,7 +852,8 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         // Fallback: raga-level filter
         triggerBaniSearch('raga', item.raga_id || janya.id);
       }
-      window._wheelSyncInProgress = false;
+      window._wheelSyncInProgress    = false;
+      window._wheelOriginatedTrigger = false;
       // Do not expand musicians in the raga wheel — the wheel is a navigation
       // aid only. Musician detail lives in the graph view (triggered via bani sync).
     });
@@ -1032,10 +1049,12 @@ function orientRagaWheel(type, id) {
 
   // Resolve composition → raga_id
   let ragaId = id;
+  let compId = null;
   if (type === 'comp') {
     const comp = compositions.find(c => c.id === id);
     if (!comp || !comp.raga_id) return;
     ragaId = comp.raga_id;
+    compId = id;
   }
 
   const raga = ragas.find(r => r.id === ragaId);
@@ -1060,16 +1079,39 @@ function orientRagaWheel(type, id) {
     const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
     const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
     const minDim = Math.min(W, H);
-    const R_MELA = minDim * 0.38;
     const melaAngle = (melaRaga.melakarta - 1) * 5;
     const rad = (melaAngle - 90) * Math.PI / 180;
-    const melaX = W / 2 + R_MELA * Math.cos(rad);
-    const melaY = H / 2 + R_MELA * Math.sin(rad);
 
-    // Target: centre the mela node in the SVG viewport at zoom 1.8
-    const TARGET_SCALE = 1.8;
-    const targetVX = W / 2 - TARGET_SCALE * melaX;
-    const targetVY = H / 2 - TARGET_SCALE * melaY;
+    // For a composition: pan to the composition node (at R_COMP radius) so it
+    // is centred in view.  For a raga: pan to the mela node (at R_MELA).
+    let targetX, targetY, TARGET_SCALE;
+    if (compId) {
+      // Try to find the rendered comp node and use its actual SVG position.
+      // The comp node is at R_COMP along the mela angle (spread may shift it
+      // slightly, but the mela angle is a good approximation for centering).
+      const R_COMP = minDim * 0.72;
+      targetX = W / 2 + R_COMP * Math.cos(rad);
+      targetY = H / 2 + R_COMP * Math.sin(rad);
+      TARGET_SCALE = 2.2;   // zoom in a bit more so the comp node is clearly visible
+
+      // Prefer the actual rendered position of the selected comp node if available
+      const compEl = document.querySelector(
+        `#wheel-viewport .comp-node[data-id="${CSS.escape(compId)}"] circle`
+      );
+      if (compEl) {
+        const cx = parseFloat(compEl.getAttribute('cx'));
+        const cy = parseFloat(compEl.getAttribute('cy'));
+        if (!isNaN(cx) && !isNaN(cy)) { targetX = cx; targetY = cy; }
+      }
+    } else {
+      const R_MELA = minDim * 0.38;
+      targetX = W / 2 + R_MELA * Math.cos(rad);
+      targetY = H / 2 + R_MELA * Math.sin(rad);
+      TARGET_SCALE = 1.8;
+    }
+
+    const targetVX = W / 2 - TARGET_SCALE * targetX;
+    const targetVY = H / 2 - TARGET_SCALE * targetY;
 
     const startVX = window._wheelGetVx(), startVY = window._wheelGetVy(),
           startScale = window._wheelGetVscale();
