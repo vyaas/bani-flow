@@ -87,20 +87,16 @@
   .filter-chip.active {
     border-color: var(--accent); color: var(--accent); background: var(--bg-input);
   }
+  /* Era chip dots: filled circle — colour is the signal */
   .filter-chip .chip-dot {
     width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
   }
-  .filter-chip .chip-dot.diamond   { transform: rotate(45deg); border-radius: 1px; }
-  .filter-chip .chip-dot.rectangle { border-radius: 1px; }
-  .filter-chip .chip-dot.triangle  {
-    width: 0; height: 0; background: none !important;
-    border-left: 6px solid transparent; border-right: 6px solid transparent;
-    border-bottom: 11px solid var(--fg-muted);
+  /* Instrument chip icons: inline SVG rendered by JS — no CSS shape tricks needed */
+  .filter-chip .chip-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: 13px; height: 13px;
   }
-  .filter-chip.active .chip-dot.triangle { border-bottom-color: #8ec07c; }
-  .filter-chip .chip-dot.hexagon {
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
+  .filter-chip .chip-icon svg { display: block; }
 
   /* ── clear-all button ── */
   /* Always occupies space (visibility toggled, not display) so it never
@@ -200,23 +196,12 @@
   }
   .node-wiki-link:hover { text-decoration: underline; }
 
-  /* Single coloured shape — shape = instrument, colour = era */
+  /* Instrument shape icon in node header — outline only, rendered as inline SVG by JS */
   .node-shape-icon {
-    width: 10px; height: 10px; display: inline-block;
-    flex-shrink: 0;
-    /* background-color set dynamically via JS: d.color */
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 12px; height: 12px; flex-shrink: 0;
   }
-  .node-shape-icon.ellipse   { border-radius: 50%; }
-  .node-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
-  .node-shape-icon.rectangle { border-radius: 1px; }
-  .node-shape-icon.triangle  {
-    width: 0; height: 0; background: none !important;
-    border-left: 5px solid transparent; border-right: 5px solid transparent;
-    border-bottom: 10px solid var(--fg-muted); /* overridden by JS for triangle */
-  }
-  .node-shape-icon.hexagon {
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
+  .node-shape-icon svg { display: block; }
 
   /* ── recording filter input + trail filter input ── */
   #rec-filter,
@@ -725,21 +710,13 @@
   .trail-artist:hover { text-decoration: underline; }
   .trail-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
   .trail-label { color: var(--fg-dim); font-size: 0.72rem; flex: 1; min-width: 0; }
+  /* Instrument shape icon in trail rows — outline only, rendered as inline SVG by JS */
   .trail-shape-icon {
-    width: 8px; height: 8px; display: inline-block;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 10px; height: 10px;
     margin-right: 6px; vertical-align: middle; flex-shrink: 0;
   }
-  .trail-shape-icon.ellipse   { border-radius: 50%; }
-  .trail-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
-  .trail-shape-icon.rectangle { border-radius: 1px; }
-  .trail-shape-icon.triangle  {
-    width: 0; height: 0; background: none;
-    border-left: 4px solid transparent; border-right: 4px solid transparent;
-    border-bottom: 8px solid var(--fg-muted);
-  }
-  .trail-shape-icon.hexagon {
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
+  .trail-shape-icon svg { display: block; }
   .trail-link {
     flex-shrink: 0; color: var(--accent-link); font-size: 0.70rem;
     text-decoration: none; white-space: nowrap; margin-left: auto;
@@ -61490,6 +61467,63 @@ const INSTRUMENT_SHAPES = {
   bharatanatyam: 'ellipse',
 };
 
+// ── Outline-only SVG shape icons ──────────────────────────────────────────────
+// Instruments are encoded by shape, not colour. We render unfilled SVG outlines
+// so the shape reads clearly without competing with era fill colours.
+// stroke colour is drawn from the theme's muted foreground.
+const SHAPE_STROKE = 'var(--fg-muted)';
+const SHAPE_STROKE_W = 1.5;
+
+function makeShapeSVG(shape, size) {
+  const s = size || 12;
+  const sw = SHAPE_STROKE_W;
+  const h = s / 2;          // half-size
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width',  s);
+  svg.setAttribute('height', s);
+  svg.setAttribute('viewBox', `0 0 ${s} ${s}`);
+  svg.style.overflow = 'visible';
+
+  let el;
+  if (shape === 'ellipse') {
+    el = document.createElementNS(ns, 'ellipse');
+    el.setAttribute('cx', h); el.setAttribute('cy', h);
+    el.setAttribute('rx', h - sw / 2); el.setAttribute('ry', h - sw / 2);
+  } else if (shape === 'rectangle') {
+    el = document.createElementNS(ns, 'rect');
+    el.setAttribute('x', sw / 2); el.setAttribute('y', sw / 2);
+    el.setAttribute('width',  s - sw); el.setAttribute('height', s - sw);
+  } else if (shape === 'diamond') {
+    el = document.createElementNS(ns, 'polygon');
+    el.setAttribute('points', `${h},${sw/2} ${s - sw/2},${h} ${h},${s - sw/2} ${sw/2},${h}`);
+  } else if (shape === 'triangle') {
+    el = document.createElementNS(ns, 'polygon');
+    el.setAttribute('points', `${h},${sw/2} ${s - sw/2},${s - sw/2} ${sw/2},${s - sw/2}`);
+  } else if (shape === 'hexagon') {
+    // flat-top hexagon
+    const r = h - sw / 2;
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI / 180 * (60 * i - 30);
+      pts.push(`${(h + r * Math.cos(a)).toFixed(2)},${(h + r * Math.sin(a)).toFixed(2)}`);
+    }
+    el = document.createElementNS(ns, 'polygon');
+    el.setAttribute('points', pts.join(' '));
+  } else {
+    // fallback: circle
+    el = document.createElementNS(ns, 'ellipse');
+    el.setAttribute('cx', h); el.setAttribute('cy', h);
+    el.setAttribute('rx', h - sw / 2); el.setAttribute('ry', h - sw / 2);
+  }
+
+  el.setAttribute('fill',         'none');
+  el.setAttribute('stroke',       SHAPE_STROKE);
+  el.setAttribute('stroke-width', sw);
+  svg.appendChild(el);
+  return svg;
+}
+
 // ── chip filter state ─────────────────────────────────────────────────────────
 const activeFilters = { era: new Set(), instrument: new Set() };
 
@@ -61535,33 +61569,21 @@ function buildFilterChips() {
     flute:     'Flute',
     mridangam: 'Mridangam',
   };
-  const INSTRUMENT_COLOURS = {
-    vocal:     '#d3869b',
-    veena:     '#83a598',
-    violin:    '#fabd2f',
-    flute:     '#8ec07c',
-    mridangam: '#d65d0e',
-  };
   instrOrder.forEach(instr => {
     const chip = document.createElement('span');
     chip.className   = 'filter-chip';
     chip.dataset.key = instr;
     chip.dataset.group = 'instrument';
 
-    const dot = document.createElement('span');
-    const shapeClass = INSTRUMENT_SHAPES[instr] || 'ellipse';
-    dot.className = `chip-dot ${shapeClass}`;
-    const instrColour = INSTRUMENT_COLOURS[instr] || 'var(--gray)';
-    if (shapeClass === 'triangle') {
-      dot.style.borderBottomColor = instrColour;
-    } else {
-      dot.style.background = instrColour;
-    }
+    // Outline-only SVG icon — shape is the signal, no fill colour
+    const iconWrap = document.createElement('span');
+    iconWrap.className = 'chip-icon';
+    iconWrap.appendChild(makeShapeSVG(INSTRUMENT_SHAPES[instr] || 'ellipse', 12));
 
     const label = document.createElement('span');
     label.textContent = instrLabels[instr] || instr;
 
-    chip.appendChild(dot);
+    chip.appendChild(iconWrap);
     chip.appendChild(label);
     chip.addEventListener('click', () => toggleFilterChip(chip));
     instrGroup.appendChild(chip);
@@ -61699,14 +61721,9 @@ function selectNode(node) {
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
   const shapeIcon = document.getElementById('node-shape-icon');
-  shapeIcon.className = 'node-shape-icon ' + (d.shape || 'ellipse');
-  if (d.shape === 'triangle') {
-    shapeIcon.style.borderBottomColor = d.color || 'var(--gray)';
-    shapeIcon.style.background = '';
-  } else {
-    shapeIcon.style.background = d.color || 'var(--gray)';
-    shapeIcon.style.borderBottomColor = '';
-  }
+  shapeIcon.className = 'node-shape-icon';
+  shapeIcon.innerHTML = '';
+  shapeIcon.appendChild(makeShapeSVG(d.shape || 'ellipse', 12));
 
   const wikiLink   = document.getElementById('node-wiki-link');
   const primarySrc = d.sources && d.sources.length > 0 ? d.sources[0] : null;
@@ -65009,14 +65026,10 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
     ? 'trail-artist trail-artist-primary'
     : 'trail-artist trail-artist-co';
 
-  if (artistRow.color || artistRow.shape) {
+  if (artistRow.shape) {
     const icon = document.createElement('span');
-    icon.className = `trail-shape-icon ${artistRow.shape || 'ellipse'}`;
-    if ((artistRow.shape || 'ellipse') === 'triangle') {
-      icon.style.borderBottomColor = artistRow.color || 'var(--gray)';
-    } else {
-      icon.style.background = artistRow.color || 'var(--gray)';
-    }
+    icon.className = 'trail-shape-icon';
+    icon.appendChild(makeShapeSVG(artistRow.shape || 'ellipse', 10));
     span.appendChild(icon);
   }
 

@@ -127,6 +127,63 @@ const INSTRUMENT_SHAPES = {
   bharatanatyam: 'ellipse',
 };
 
+// ── Outline-only SVG shape icons ──────────────────────────────────────────────
+// Instruments are encoded by shape, not colour. We render unfilled SVG outlines
+// so the shape reads clearly without competing with era fill colours.
+// stroke colour is drawn from the theme's muted foreground.
+const SHAPE_STROKE = 'var(--fg-muted)';
+const SHAPE_STROKE_W = 1.5;
+
+function makeShapeSVG(shape, size) {
+  const s = size || 12;
+  const sw = SHAPE_STROKE_W;
+  const h = s / 2;          // half-size
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width',  s);
+  svg.setAttribute('height', s);
+  svg.setAttribute('viewBox', `0 0 ${s} ${s}`);
+  svg.style.overflow = 'visible';
+
+  let el;
+  if (shape === 'ellipse') {
+    el = document.createElementNS(ns, 'ellipse');
+    el.setAttribute('cx', h); el.setAttribute('cy', h);
+    el.setAttribute('rx', h - sw / 2); el.setAttribute('ry', h - sw / 2);
+  } else if (shape === 'rectangle') {
+    el = document.createElementNS(ns, 'rect');
+    el.setAttribute('x', sw / 2); el.setAttribute('y', sw / 2);
+    el.setAttribute('width',  s - sw); el.setAttribute('height', s - sw);
+  } else if (shape === 'diamond') {
+    el = document.createElementNS(ns, 'polygon');
+    el.setAttribute('points', `${h},${sw/2} ${s - sw/2},${h} ${h},${s - sw/2} ${sw/2},${h}`);
+  } else if (shape === 'triangle') {
+    el = document.createElementNS(ns, 'polygon');
+    el.setAttribute('points', `${h},${sw/2} ${s - sw/2},${s - sw/2} ${sw/2},${s - sw/2}`);
+  } else if (shape === 'hexagon') {
+    // flat-top hexagon
+    const r = h - sw / 2;
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI / 180 * (60 * i - 30);
+      pts.push(`${(h + r * Math.cos(a)).toFixed(2)},${(h + r * Math.sin(a)).toFixed(2)}`);
+    }
+    el = document.createElementNS(ns, 'polygon');
+    el.setAttribute('points', pts.join(' '));
+  } else {
+    // fallback: circle
+    el = document.createElementNS(ns, 'ellipse');
+    el.setAttribute('cx', h); el.setAttribute('cy', h);
+    el.setAttribute('rx', h - sw / 2); el.setAttribute('ry', h - sw / 2);
+  }
+
+  el.setAttribute('fill',         'none');
+  el.setAttribute('stroke',       SHAPE_STROKE);
+  el.setAttribute('stroke-width', sw);
+  svg.appendChild(el);
+  return svg;
+}
+
 // ── chip filter state ─────────────────────────────────────────────────────────
 const activeFilters = { era: new Set(), instrument: new Set() };
 
@@ -172,33 +229,21 @@ function buildFilterChips() {
     flute:     'Flute',
     mridangam: 'Mridangam',
   };
-  const INSTRUMENT_COLOURS = {
-    vocal:     '#d3869b',
-    veena:     '#83a598',
-    violin:    '#fabd2f',
-    flute:     '#8ec07c',
-    mridangam: '#d65d0e',
-  };
   instrOrder.forEach(instr => {
     const chip = document.createElement('span');
     chip.className   = 'filter-chip';
     chip.dataset.key = instr;
     chip.dataset.group = 'instrument';
 
-    const dot = document.createElement('span');
-    const shapeClass = INSTRUMENT_SHAPES[instr] || 'ellipse';
-    dot.className = `chip-dot ${shapeClass}`;
-    const instrColour = INSTRUMENT_COLOURS[instr] || 'var(--gray)';
-    if (shapeClass === 'triangle') {
-      dot.style.borderBottomColor = instrColour;
-    } else {
-      dot.style.background = instrColour;
-    }
+    // Outline-only SVG icon — shape is the signal, no fill colour
+    const iconWrap = document.createElement('span');
+    iconWrap.className = 'chip-icon';
+    iconWrap.appendChild(makeShapeSVG(INSTRUMENT_SHAPES[instr] || 'ellipse', 12));
 
     const label = document.createElement('span');
     label.textContent = instrLabels[instr] || instr;
 
-    chip.appendChild(dot);
+    chip.appendChild(iconWrap);
     chip.appendChild(label);
     chip.addEventListener('click', () => toggleFilterChip(chip));
     instrGroup.appendChild(chip);
@@ -336,14 +381,9 @@ function selectNode(node) {
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
   const shapeIcon = document.getElementById('node-shape-icon');
-  shapeIcon.className = 'node-shape-icon ' + (d.shape || 'ellipse');
-  if (d.shape === 'triangle') {
-    shapeIcon.style.borderBottomColor = d.color || 'var(--gray)';
-    shapeIcon.style.background = '';
-  } else {
-    shapeIcon.style.background = d.color || 'var(--gray)';
-    shapeIcon.style.borderBottomColor = '';
-  }
+  shapeIcon.className = 'node-shape-icon';
+  shapeIcon.innerHTML = '';
+  shapeIcon.appendChild(makeShapeSVG(d.shape || 'ellipse', 12));
 
   const wikiLink   = document.getElementById('node-wiki-link');
   const primarySrc = d.sources && d.sources.length > 0 ? d.sources[0] : null;

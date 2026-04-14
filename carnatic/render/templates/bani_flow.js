@@ -802,14 +802,10 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
     ? 'trail-artist trail-artist-primary'
     : 'trail-artist trail-artist-co';
 
-  if (artistRow.color || artistRow.shape) {
+  if (artistRow.shape) {
     const icon = document.createElement('span');
-    icon.className = `trail-shape-icon ${artistRow.shape || 'ellipse'}`;
-    if ((artistRow.shape || 'ellipse') === 'triangle') {
-      icon.style.borderBottomColor = artistRow.color || 'var(--gray)';
-    } else {
-      icon.style.background = artistRow.color || 'var(--gray)';
-    }
+    icon.className = 'trail-shape-icon';
+    icon.appendChild(makeShapeSVG(artistRow.shape || 'ellipse', 10));
     span.appendChild(icon);
   }
 

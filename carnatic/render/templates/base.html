@@ -64,20 +64,16 @@
   .filter-chip.active {
     border-color: var(--accent); color: var(--accent); background: var(--bg-input);
   }
+  /* Era chip dots: filled circle — colour is the signal */
   .filter-chip .chip-dot {
     width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
   }
-  .filter-chip .chip-dot.diamond   { transform: rotate(45deg); border-radius: 1px; }
-  .filter-chip .chip-dot.rectangle { border-radius: 1px; }
-  .filter-chip .chip-dot.triangle  {
-    width: 0; height: 0; background: none !important;
-    border-left: 6px solid transparent; border-right: 6px solid transparent;
-    border-bottom: 11px solid var(--fg-muted);
+  /* Instrument chip icons: inline SVG rendered by JS — no CSS shape tricks needed */
+  .filter-chip .chip-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: 13px; height: 13px;
   }
-  .filter-chip.active .chip-dot.triangle { border-bottom-color: #8ec07c; }
-  .filter-chip .chip-dot.hexagon {
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
+  .filter-chip .chip-icon svg { display: block; }
 
   /* ── clear-all button ── */
   /* Always occupies space (visibility toggled, not display) so it never
@@ -177,23 +173,12 @@
   }
   .node-wiki-link:hover { text-decoration: underline; }
 
-  /* Single coloured shape — shape = instrument, colour = era */
+  /* Instrument shape icon in node header — outline only, rendered as inline SVG by JS */
   .node-shape-icon {
-    width: 10px; height: 10px; display: inline-block;
-    flex-shrink: 0;
-    /* background-color set dynamically via JS: d.color */
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 12px; height: 12px; flex-shrink: 0;
   }
-  .node-shape-icon.ellipse   { border-radius: 50%; }
-  .node-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
-  .node-shape-icon.rectangle { border-radius: 1px; }
-  .node-shape-icon.triangle  {
-    width: 0; height: 0; background: none !important;
-    border-left: 5px solid transparent; border-right: 5px solid transparent;
-    border-bottom: 10px solid var(--fg-muted); /* overridden by JS for triangle */
-  }
-  .node-shape-icon.hexagon {
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
+  .node-shape-icon svg { display: block; }
 
   /* ── recording filter input + trail filter input ── */
   #rec-filter,
@@ -702,21 +687,13 @@
   .trail-artist:hover { text-decoration: underline; }
   .trail-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
   .trail-label { color: var(--fg-dim); font-size: 0.72rem; flex: 1; min-width: 0; }
+  /* Instrument shape icon in trail rows — outline only, rendered as inline SVG by JS */
   .trail-shape-icon {
-    width: 8px; height: 8px; display: inline-block;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 10px; height: 10px;
     margin-right: 6px; vertical-align: middle; flex-shrink: 0;
   }
-  .trail-shape-icon.ellipse   { border-radius: 50%; }
-  .trail-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
-  .trail-shape-icon.rectangle { border-radius: 1px; }
-  .trail-shape-icon.triangle  {
-    width: 0; height: 0; background: none;
-    border-left: 4px solid transparent; border-right: 4px solid transparent;
-    border-bottom: 8px solid var(--fg-muted);
-  }
-  .trail-shape-icon.hexagon {
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
+  .trail-shape-icon svg { display: block; }
   .trail-link {
     flex-shrink: 0; color: var(--accent-link); font-size: 0.70rem;
     text-decoration: none; white-space: nowrap; margin-left: auto;
