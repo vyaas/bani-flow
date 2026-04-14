@@ -76,10 +76,12 @@ function switchView(name) {
 
   _updateViewportToolbar(name, currentLayout);
 
+  const filterBar = document.getElementById('filter-bar');
   if (name === 'graph') {
     hideTimelineRuler();
     hideRagaWheel();
     document.getElementById('cy').style.display = '';
+    if (filterBar) filterBar.style.display = 'flex';
     // Restore the sub-layout that was active when the user left
     if (currentLayout === 'timeline') {
       applyTimelineLayout();
@@ -90,6 +92,7 @@ function switchView(name) {
   } else if (name === 'raga') {
     hideTimelineRuler();
     document.getElementById('cy').style.display = 'none';
+    if (filterBar) filterBar.style.display = 'none';
     showRagaWheel();
     // Re-apply the current Bani filter to the wheel (ADR-025 sync gap)
     if (typeof activeBaniFilter !== 'undefined' && activeBaniFilter &&

@@ -172,6 +172,13 @@ function buildFilterChips() {
     flute:     'Flute',
     mridangam: 'Mridangam',
   };
+  const INSTRUMENT_COLOURS = {
+    vocal:     '#d3869b',
+    veena:     '#83a598',
+    violin:    '#fabd2f',
+    flute:     '#8ec07c',
+    mridangam: '#d65d0e',
+  };
   instrOrder.forEach(instr => {
     const chip = document.createElement('span');
     chip.className   = 'filter-chip';
@@ -181,8 +188,11 @@ function buildFilterChips() {
     const dot = document.createElement('span');
     const shapeClass = INSTRUMENT_SHAPES[instr] || 'ellipse';
     dot.className = `chip-dot ${shapeClass}`;
-    if (shapeClass !== 'triangle') {
-      dot.style.background = 'var(--gray)';
+    const instrColour = INSTRUMENT_COLOURS[instr] || 'var(--gray)';
+    if (shapeClass === 'triangle') {
+      dot.style.borderBottomColor = instrColour;
+    } else {
+      dot.style.background = instrColour;
     }
 
     const label = document.createElement('span');

@@ -53,7 +53,7 @@
   /* ── individual chips ── */
   .filter-chip {
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 8px; border-radius: 2px;
+    padding: 3px 8px; border-radius: 10px;
     border: 1px solid var(--border-strong); background: var(--bg-panel);
     color: var(--fg-dim); font-size: 0.72rem;
     cursor: pointer; user-select: none;
@@ -74,7 +74,7 @@
     border-left: 6px solid transparent; border-right: 6px solid transparent;
     border-bottom: 11px solid var(--fg-muted);
   }
-  .filter-chip.active .chip-dot.triangle { border-bottom-color: var(--accent); }
+  .filter-chip.active .chip-dot.triangle { border-bottom-color: #8ec07c; }
   .filter-chip .chip-dot.hexagon {
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   }
@@ -99,7 +99,7 @@
   button {
     background: var(--bg-input); color: var(--fg-sub); border: 1px solid var(--border-strong);
     padding: 5px 11px; font-family: inherit; font-size: 0.78rem;
-    cursor: pointer; border-radius: 2px;
+    cursor: pointer; border-radius: 6px;
   }
   button:hover { background: var(--bg-active); color: var(--fg); }
 
@@ -539,7 +539,7 @@
     font-weight: bold;
   }
 
-  /* ── Viewport toolbar — compact overlay, top-right of canvas pane (ADR-030) ── */
+  /* ── Viewport toolbar — compact overlay, top-right of graph canvas (ADR-030) ── */
   #viewport-toolbar {
     position: absolute;
     top: 8px;
@@ -557,7 +557,7 @@
     font-family: inherit;
     font-size: 0.68rem;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 6px;
     opacity: 0.75;
     transition: opacity 0.15s, color 0.15s, background 0.15s;
     white-space: nowrap;
@@ -817,7 +817,7 @@
     color: var(--accent-sub);
     font-size: 0.65rem;
     padding: 1px 5px;
-    border-radius: 2px;
+    border-radius: 6px;
     cursor: pointer;
     line-height: 1;
   }
@@ -1006,12 +1006,12 @@
     transition: color 0.1s, background 0.1s, box-shadow 0.05s, transform 0.05s;
     white-space: nowrap;
     user-select: none;
-    border-radius: 2px;
+    border-radius: 8px;
     position: relative;
     box-shadow: 1px 1px 0 #111, inset 0 1px 0 rgba(255,255,255,0.07);
   }
-  .sruti-btn:first-child { border-radius: 3px 2px 2px 3px; }
-  .sruti-btn:last-child  { border-radius: 2px 3px 3px 2px; margin-right: 0; }
+  .sruti-btn:first-child { border-radius: 8px 4px 4px 8px; }
+  .sruti-btn:last-child  { border-radius: 4px 8px 8px 4px; margin-right: 0; }
   .sruti-btn:hover {
     color: var(--accent);
     background: var(--bg-active);
@@ -1162,17 +1162,17 @@
       <button class="filter-clear" id="filter-clear-all"
               style="visibility:hidden" title="Clear all filters" onclick="clearAllChipFilters()">&#10005; Show all</button>
     </div>
-    <!-- ── Viewport toolbar (ADR-030): compact overlay, top-right of canvas pane ── -->
-    <div id="viewport-toolbar">
-      <button id="btn-fit"      class="vp-btn" title="Fit all nodes into view"      onclick="vpFit()">Fit</button>
-      <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()">Relayout</button>
-      <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()">Timeline</button>
-    </div>
     <div id="cy-wrap">
       <div id="cy"></div>
       <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
       <!-- Raga wheel (ADR-023) -->
       <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);"></svg>
+      <!-- ── Viewport toolbar (ADR-030): compact overlay, bottom-right of canvas pane ── -->
+      <div id="viewport-toolbar">
+        <button id="btn-fit"      class="vp-btn" title="Fit all nodes into view"      onclick="vpFit()">Fit</button>
+        <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()">Relayout</button>
+        <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()">Timeline</button>
+      </div>
     </div>
   </div>
 
