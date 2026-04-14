@@ -492,7 +492,7 @@
     fill: var(--border-strong); font-family: var(--font-mono);
     font-size: 10px; dominant-baseline: middle;
   }
-  /* ── Three-view selector (ADR-023) ── */
+  /* ── Two-view selector (ADR-030) ── */
   .view-selector {
     display: inline-flex;
     border: 1px solid var(--border-strong);
@@ -515,6 +515,41 @@
   .view-btn.active {
     background: var(--bg-active);
     color: var(--accent);
+    font-weight: bold;
+  }
+
+  /* ── Viewport toolbar — compact overlay, top-right of canvas pane (ADR-030) ── */
+  #viewport-toolbar {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    z-index: 70;
+    display: flex;
+    gap: 4px;
+    pointer-events: auto;
+  }
+  .vp-btn {
+    background: var(--bg-panel);
+    color: var(--fg-muted);
+    border: 1px solid var(--border-strong);
+    padding: 3px 8px;
+    font-family: inherit;
+    font-size: 0.68rem;
+    cursor: pointer;
+    border-radius: 2px;
+    opacity: 0.75;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+    white-space: nowrap;
+  }
+  .vp-btn:hover {
+    opacity: 1;
+    color: var(--accent);
+    background: var(--bg-input);
+  }
+  .vp-btn.active {
+    opacity: 1;
+    color: var(--accent);
+    background: var(--bg-active);
     font-weight: bold;
   }
 
@@ -1037,17 +1072,11 @@
     <div id="sruti-buttons"></div>
   </div>
   <div class="controls">
-    <button id="btn-fit" onclick="cy.fit()">Fit</button>
-    <button id="btn-reset" onclick="cy.reset()">Reset</button>
-    <button id="btn-relayout" onclick="relayout()">Relayout</button>
-    <button id="btn-labels" onclick="toggleLabels()">Labels</button>
     <div class="view-selector" id="view-selector">
       <button class="view-btn active" id="view-btn-graph"
-              onclick="switchView('graph')" title="Guru-shishya lineage graph">Graph</button>
-      <button class="view-btn" id="view-btn-timeline"
-              onclick="switchView('timeline')" title="Chronological timeline">Timeline</button>
+              onclick="switchView('graph')" title="Guru-shishya parampara">Guru-Shishya</button>
       <button class="view-btn" id="view-btn-raga"
-              onclick="switchView('raga')" title="Melakarta raga wheel">Ragas</button>
+              onclick="switchView('raga')" title="Melakarta–janya raga system">Mela-Janya</button>
     </div>
   </div>
 </header>
@@ -1111,6 +1140,12 @@
       <div class="filter-group" id="instr-filter-group" data-group="instrument"></div>
       <button class="filter-clear" id="filter-clear-all"
               style="visibility:hidden" title="Clear all filters" onclick="clearAllChipFilters()">&#10005; Show all</button>
+    </div>
+    <!-- ── Viewport toolbar (ADR-030): compact overlay, top-right of canvas pane ── -->
+    <div id="viewport-toolbar">
+      <button id="btn-fit"      class="vp-btn" title="Fit all nodes into view"      onclick="vpFit()">Fit</button>
+      <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()">Relayout</button>
+      <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()">Timeline</button>
     </div>
     <div id="cy-wrap">
       <div id="cy"></div>

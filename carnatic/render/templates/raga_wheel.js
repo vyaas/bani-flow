@@ -1,5 +1,8 @@
-// ── Three-view selector (ADR-023) ─────────────────────────────────────────────
-let currentView = 'graph'; // 'graph' | 'timeline' | 'raga'
+// ── Two-view selector (ADR-030) ───────────────────────────────────────────────
+// currentView: primary view — 'graph' (Guru-Shishya) | 'raga' (Mela-Janya)
+// currentLayout: sub-mode within graph view — 'graph' | 'timeline'
+//   declared in timeline_view.js (loaded before this file); do not re-declare here.
+let currentView = 'graph'; // 'graph' | 'raga'
 
 // Snapshot of graph-view node positions — saved whenever the user leaves the
 // graph view so that returning to it restores the exact layout they had.
@@ -8,7 +11,7 @@ let currentView = 'graph'; // 'graph' | 'timeline' | 'raga'
 let _savedGraphPositions = null;
 
 // Save the current Cytoscape node positions into _savedGraphPositions.
-// Called just before leaving the graph view (to timeline or raga).
+// Called just before leaving the graph view (to raga).
 function _saveGraphPositions() {
   _savedGraphPositions = {};
   cy.nodes().forEach(n => {
@@ -35,41 +38,55 @@ function _restoreGraphPositions() {
   }).run();
 }
 
+// ── _updateViewportToolbar: show/hide toolbar buttons based on view/layout ────
+// | Button      | graph (graph) | graph (timeline) | raga                  |
+// | btn-fit     | visible       | visible          | visible → wheelFit()  |
+// | btn-relayout| visible       | visible          | hidden                |
+// | btn-timeline| visible, off  | visible, active  | hidden                |
+function _updateViewportToolbar(view, layout) {
+  const btnRelayout = document.getElementById('btn-relayout');
+  const btnTimeline = document.getElementById('btn-timeline');
+  if (view === 'raga') {
+    if (btnRelayout) btnRelayout.style.display = 'none';
+    if (btnTimeline) btnTimeline.style.display = 'none';
+  } else {
+    if (btnRelayout) btnRelayout.style.display = '';
+    if (btnTimeline) {
+      btnTimeline.style.display = '';
+      btnTimeline.classList.toggle('active', layout === 'timeline');
+    }
+  }
+}
+
 function switchView(name) {
   if (name === currentView) return;
 
   // ── Save positions before leaving graph view ──────────────────────────────
-  // We save whenever we are currently on the graph view (not timeline, which
-  // has deterministic positions) so that returning always restores the layout.
   if (currentView === 'graph') {
     _saveGraphPositions();
   }
 
   currentView = name;
 
-  // Update segmented control button states
-  ['graph', 'timeline', 'raga'].forEach(v => {
-    document.getElementById('view-btn-' + v)
-      .classList.toggle('active', v === name);
+  // Update primary view button states (only 'graph' and 'raga' buttons exist)
+  ['graph', 'raga'].forEach(v => {
+    const btn = document.getElementById('view-btn-' + v);
+    if (btn) btn.classList.toggle('active', v === name);
   });
 
-  // Show/hide Cytoscape-specific controls
-  const cyControls = ['btn-fit', 'btn-reset', 'btn-relayout', 'btn-labels'];
-  cyControls.forEach(id => {
-    document.getElementById(id).style.display = (name === 'raga') ? 'none' : '';
-  });
+  _updateViewportToolbar(name, currentLayout);
 
   if (name === 'graph') {
     hideTimelineRuler();
     hideRagaWheel();
     document.getElementById('cy').style.display = '';
-    currentLayout = 'graph';
-    _restoreGraphPositions();
-  } else if (name === 'timeline') {
-    hideRagaWheel();
-    document.getElementById('cy').style.display = '';
-    currentLayout = 'timeline';
-    applyTimelineLayout();
+    // Restore the sub-layout that was active when the user left
+    if (currentLayout === 'timeline') {
+      applyTimelineLayout();
+    } else {
+      currentLayout = 'graph';
+      _restoreGraphPositions();
+    }
   } else if (name === 'raga') {
     hideTimelineRuler();
     document.getElementById('cy').style.display = 'none';
@@ -82,9 +99,51 @@ function switchView(name) {
   }
 }
 
-// Backward-compatible wrapper
+// ── vpToggleTimeline: toggle timeline sub-layout within Guru-Shishya view ─────
+function vpToggleTimeline() {
+  if (currentView !== 'graph') return;
+  if (currentLayout === 'timeline') {
+    // Switch back to force-directed graph layout
+    currentLayout = 'graph';
+    hideTimelineRuler();
+    _restoreGraphPositions();
+  } else {
+    // Switch to timeline layout
+    currentLayout = 'timeline';
+    applyTimelineLayout();
+  }
+  _updateViewportToolbar(currentView, currentLayout);
+}
+
+// ── Viewport dispatcher functions (ADR-030) ───────────────────────────────────
+// These are called by the #viewport-toolbar buttons and dispatch to the
+// appropriate implementation depending on the active view.
+
+function vpFit() {
+  if (currentView === 'raga') {
+    wheelFit();
+  } else {
+    cy.fit();
+  }
+}
+
+function vpRelayout() {
+  if (currentView !== 'graph') return;
+  relayout();
+}
+
+// ── Wheel viewport stub (ADR-030) ─────────────────────────────────────────────
+// wheelFit: reset pan/zoom so the full wheel is centred and fits the SVG canvas.
+function wheelFit() {
+  window._wheelSetVx(0);
+  window._wheelSetVy(0);
+  window._wheelSetVscale(1);
+  window._wheelApplyTransform();
+}
+
+// Backward-compatible wrapper (used by bani_flow.js and other callers)
 function toggleLayout() {
-  switchView(currentView === 'graph' ? 'timeline' : 'graph');
+  vpToggleTimeline();
 }
 
 // ── Raga Wheel — show / hide ───────────────────────────────────────────────────

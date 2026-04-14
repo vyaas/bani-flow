@@ -270,9 +270,7 @@ function setScopeLabels(visible) {
 // Font sizes are graph-space values — Cytoscape's viewport zoom scales them
 // naturally. min-zoomed-font-size (set in style) hides labels that become
 // too small on screen. We only control tier-based visibility here.
-let labelsOverride = false;
 function applyZoomLabels() {
-  if (labelsOverride) return;
   const z = cy.zoom();
   cy.nodes().forEach(n => {
     if (n.selected()) return;
@@ -580,12 +578,6 @@ cy.on('tap', evt => {
 });
 
 // ── controls ──────────────────────────────────────────────────────────────────
-function toggleLabels() {
-  labelsOverride = !labelsOverride;
-  if (labelsOverride) cy.nodes().forEach(n => n.style('label', n.data('label')));
-  else applyZoomLabels();
-}
-
 function relayout() {
   if (currentLayout === 'timeline') { applyTimelineLayout(); return; }
   cy.layout({
