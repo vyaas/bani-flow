@@ -63338,6 +63338,12 @@ window.drawRagaWheel = function() {
   compositions.forEach(c => { if (c.id) _seenPerfIds.add(c.id); });
   Object.entries(ragaToPerf || {}).forEach(([ragaId, perfs]) => {
     perfs.forEach(perf => {
+      // Skip non-composition performance types — only valid compositions appear in the wheel.
+      // Alapanas, RTPs, tanam, and any display_title that looks like an improvisation are excluded.
+      const isRtp = (perf.type === 'rtp' || perf.type === 'alapana' || perf.type === 'tanam' ||
+                     (perf.display_title && /ragam.tanam|alapana|rtp/i.test(perf.display_title)));
+      if (isRtp) return;
+
       // Skip if this performance's composition is already in compsByRaga from Source 1
       if (perf.composition_id && _seenPerfIds.has(perf.composition_id)) return;
       const syntheticId = perf.composition_id ||
@@ -63345,14 +63351,12 @@ window.drawRagaWheel = function() {
       if (_seenPerfIds.has(syntheticId)) return;
       _seenPerfIds.add(syntheticId);
       if (!compsByRaga[ragaId]) compsByRaga[ragaId] = [];
-      const isRtp = (perf.type === 'rtp' || perf.type === 'alapana' || perf.type === 'tanam' ||
-                     (perf.display_title && /ragam.tanam|alapana|rtp/i.test(perf.display_title)));
       compsByRaga[ragaId].push({
         id:            syntheticId,
         title:         perf.display_title || perf.title || ragaId,
         raga_id:       ragaId,
         _isPerf:       true,
-        _isRtp:        isRtp,
+        _isRtp:        false,
         _recording_id: perf.recording_id || null,
         _perf_index:   perf.performance_index != null ? perf.performance_index : null,
         concert:       perf.short_title || perf.title || '',
@@ -63373,8 +63377,14 @@ window.drawRagaWheel = function() {
     (el.data.tracks || []).forEach(tr => {
       const ragaId = tr.raga_id;
       if (!ragaId) return;
-      // If it also has a composition_id already in Source 1, skip
-      if (tr.composition_id && _seenPerfIds.has(tr.composition_id)) return;
+      // Only include tracks that are tied to a canonical composition.
+      // Tracks without a composition_id are raga-level improvisations
+      // (alapanas, RTPs, tanam) — exclude them from the wheel.
+      if (!tr.composition_id) return;
+      // Belt-and-suspenders: also exclude by label pattern
+      if (tr.label && /ragam.tanam|alapana|\brtp\b/i.test(tr.label)) return;
+      // If the composition is already in Source 1, skip
+      if (_seenPerfIds.has(tr.composition_id)) return;
       const syntheticId = 'yt__' + (tr.vid || '') + '__' + ragaId;
       if (_seenPerfIds.has(syntheticId)) return;
       _seenPerfIds.add(syntheticId);
