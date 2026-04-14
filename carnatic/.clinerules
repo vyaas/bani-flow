@@ -299,6 +299,10 @@ Nodes whose `wikipedia` field has no own article — flagged for community atten
 | `subbaraya_sastri` | disambig page | `Subbaraya_Sastri` resolves but is a disambiguation — verify correct target |
 | `kanchipuram_naina_pillai` | disambig page | `Kanchipuram_Naina_Pillai` resolves but is a disambiguation — verify correct target |
 
+#### Unmatched performers — Shanmukhananda 1963
+- **B Rajam Iyer** (vocal support, 1963) — not in graph; assess significance and Wikipedia availability before adding.
+- **Madurai N Krishnan** (vocal support, 1963) — not in graph; distinct from Madurai Mani Iyer; assess significance.
+
 #### Lineage / data gaps
 - **Akkarai Subbulakshmi** (violin, contemporary) — node added 2026-04-12. Primary guru is
   her father Akkarai Swaminathan (no Wikipedia page); also trained under V Janakiraman (no
@@ -374,6 +378,9 @@ Entries are terse — this is a log, not an essay.
 
 - 2026-04-14: To remove a bare youtube[] entry that has been superseded by a structured recording file, use `python3 carnatic/remove_youtube_entry.py --musician-id <id> --video-id <11-char-id> [--dry-run]`. The script reads musicians.json directly, removes the matching entry atomically, and prints a [YOUTUBE-] change-log line. Always follow with validate + render + commit.
 - 2026-04-14: When ingesting a playlist .md file with hint blocks, the composition_id hints may contain typos (e.g. 'deva_deva_kalayamidelyani' for 'deva_deva_kalayamide') — always run composition-exists with the hinted id first, then cross-check against the canonical id; the CLI fuzzy-match will surface the correct entry. Also: a playlist's composer attribution for a kriti (e.g. Birana Brova attributed to Tarangampadi Panchanada Iyer) must be accepted as given when no contradicting source is available — record the composer_id and note the tala qualifier.
+- 2026-04-14: _fuzzy_match_raga and _fuzzy_match_composition in cli.py used substring containment (q in name.lower()) which produced systematic false positives for short raga names: 'Sri' matched 'Dhanashree', 'Bhairavi' matched 'Ananda Bhairavi', 'Kalyani' matched 'Hamir Kalyani', 'Kanada' matched 'Darbari Kanada', 'Varali' matched 'Jhalavarali'. Fixed to exact case-insensitive match first, then alias exact match, then prefix fallback for compositions only. Musician matching retains substring as final fallback (name variants are common). Always run regression tests after any CLI matching change.
+- 2026-04-14: apply_diff on _composers.json silently failed when the SEARCH block did not exactly match the file content at the target line (the file had nested arrays at that position). The correct pattern for appending to a JSON array sidecar file is a dedicated Python script (add_missing_composers.py) that reads, deduplicates, appends, and writes atomically — not apply_diff. This is now the canonical pattern for _composers.json mutations.
+- 2026-04-14: Shanmukhananda Sabha 1963 concert (PT1tN4fCQ9I): B Rajam Iyer and Madurai N Krishnan (vocal support) are not in the graph — flagged as unmatched_name in the recording file. The Chatur Ragamalika RTP (Shankarabharanam–Thodi–Kalyani–Darbar) is modelled as three sequential performance entries (alapana, tanam, pallavi) with raga_id: null and notes recording the four ragas, consistent with the ragamalika modelling pattern established 2026-04-12.
 
 ### 🎵 Carnatic Coder
 
