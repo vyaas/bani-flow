@@ -1,0 +1,19 @@
+{
+  "id": "darbari_kanada",
+  "name": "Darbari Kanada",
+  "aliases": [
+    "Darbari",
+    "Darbari Kannada"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Darbari_Kanada",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Corresponds to Hindustani Darbari Kanada. Janya of Natabhairavi (20th melakarta). Deep, serious, late-night raga. Used in Carnatic music for devotional and Shiva-related compositions.",
+  "is_melakarta": false
+}

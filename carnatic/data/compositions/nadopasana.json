@@ -1,0 +1,16 @@
+{
+  "id": "nadopasana",
+  "title": "Nadopasana",
+  "composer_id": "tyagaraja",
+  "raga_id": "begada",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nadopasana",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Begada raga. Devotional composition on the worship of music."
+}

@@ -87,7 +87,16 @@ def _musicians_path() -> Path:
 
 
 def _compositions_path() -> Path:
+    """Return the compositions directory if it exists, else the legacy monolithic file."""
+    d = Path(__file__).parent / "data" / "compositions"
+    if d.is_dir():
+        return d
     return Path(__file__).parent / "data" / "compositions.json"
+
+
+def _ragas_path() -> Path:
+    """Return the ragas directory (top-level data/ragas/)."""
+    return Path(__file__).parent / "data" / "ragas"
 
 
 def _graph_path() -> Path:
@@ -204,6 +213,7 @@ def cmd_add_raga(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         melakarta=melakarta,
         parent_raga=args.parent_raga,
         notes=args.notes,
+        ragas_path=_ragas_path(),
         graph_path=_graph_path(),
     )
 
@@ -214,6 +224,7 @@ def cmd_patch_raga(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         raga_id=args.id,
         field=args.field,
         value=args.value,
+        ragas_path=_ragas_path(),
         graph_path=_graph_path(),
     )
 
@@ -248,6 +259,7 @@ def cmd_add_composition(w: CarnaticWriter, args: argparse.Namespace) -> WriteRes
         source_label=args.source_label,
         source_type=args.source_type,
         notes=args.notes,
+        ragas_path=_ragas_path(),
         graph_path=_graph_path(),
     )
 

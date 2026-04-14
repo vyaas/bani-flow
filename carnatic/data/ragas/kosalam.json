@@ -1,0 +1,17 @@
+{
+  "id": "kosalam",
+  "name": "Kōsalam",
+  "aliases": [],
+  "melakarta": 71,
+  "is_melakarta": true,
+  "cakra": 12,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "71th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₂ N₃ Ṡ"
+}

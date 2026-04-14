@@ -1,0 +1,15 @@
+{
+  "id": "ramakatha",
+  "title": "Ramakatha",
+  "composer_id": "tyagaraja",
+  "raga_id": "madhyamavati",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2530.shtml",
+      "label": "Ramakatha - karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Madhyamavati."
+}

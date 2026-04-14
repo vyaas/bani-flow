@@ -1,0 +1,17 @@
+{
+  "id": "jalarnavam",
+  "name": "Jalārnavam",
+  "aliases": [],
+  "melakarta": 38,
+  "is_melakarta": true,
+  "cakra": 7,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "38th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₁ N₂ Ṡ"
+}

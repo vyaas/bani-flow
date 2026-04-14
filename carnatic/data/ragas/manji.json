@@ -1,0 +1,18 @@
+{
+  "id": "manji",
+  "name": "Manji",
+  "aliases": [
+    "Maanji"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Manji_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 P D2 N2 P M1 G2 R2 S; evokes pathos and longing; associated with Shyama Shastri's compositions, particularly 'Brovavamma Tamasame'",
+  "is_melakarta": false
+}

@@ -1,0 +1,17 @@
+{
+  "id": "naganandini",
+  "name": "Nāganandini",
+  "aliases": [],
+  "melakarta": 30,
+  "is_melakarta": true,
+  "cakra": 5,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "30th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₃ N₃ Ṡ"
+}

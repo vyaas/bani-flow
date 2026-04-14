@@ -1,0 +1,18 @@
+{
+  "id": "sama",
+  "name": "Sama",
+  "aliases": [
+    "Saama"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sama_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya raga of Harikambhoji (28th melakarta); arohana S R2 M1 P N2 S, avarohana S N2 D2 P M1 G3 R2 S (vakra); a gentle, devotional raga; Patnam Subramanya Iyer composed Maravakave O Manasa in this raga",
+  "is_melakarta": false
+}

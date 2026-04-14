@@ -1,0 +1,17 @@
+{
+  "id": "ramapriya",
+  "name": "Rāmapriyā",
+  "aliases": [],
+  "melakarta": 52,
+  "is_melakarta": true,
+  "cakra": 9,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "52th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₂ N₂ Ṡ"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "vakulabharanam",
+  "name": "Vakulabharanam",
+  "aliases": [
+    "Vakula Bharanam"
+  ],
+  "melakarta": 14,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Vakulabharanam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "14th melakarta; ārohana S R1 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R1 S; evokes pathos and devotion; a rare melakarta raga; best known for the composition 'Konniyada Tharama' attributed to Garbhapurivasa",
+  "is_melakarta": true,
+  "cakra": 3
+}

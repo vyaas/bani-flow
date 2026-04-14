@@ -1,0 +1,16 @@
+{
+  "id": "paraloka_sadhaname",
+  "title": "Paraloka Sadhaname",
+  "composer_id": "tyagaraja",
+  "raga_id": "poorvikalyani",
+  "tala": "Deshadi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1830.shtml",
+      "label": "Karnatik.com — Paraloka Sadhaname",
+      "type": "other"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Poorvikalyani raga, Deshadi tala."
+}

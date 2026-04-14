@@ -1,0 +1,18 @@
+{
+  "id": "ishamanohari",
+  "name": "Ishamanohari",
+  "aliases": [
+    "Isha Manohari"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ishamanohara",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Natabhairavi (20th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 S; evokes devotion and serenity; best known for Tyagaraja's 'Manasa Sri Ramachandruni'",
+  "is_melakarta": false
+}

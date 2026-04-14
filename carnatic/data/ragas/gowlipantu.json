@@ -1,0 +1,20 @@
+{
+  "id": "gowlipantu",
+  "name": "Gowlipantu",
+  "aliases": [
+    "Gaulipantu",
+    "Goulipantu",
+    "gauLipantu"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragasg.shtml#gauLipantu",
+      "label": "Karnatik.com — raga index",
+      "type": "archive"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); audava-vakra raga (5 notes ascending, vakra descending); ārohana S R₁ M₁ P N₃ S, avarohana S N₃ D₁ P M₁ D₁ M₁ G₃ R₁ S; associated with padams and javalis of the Kshetrayya tradition",
+  "is_melakarta": false
+}

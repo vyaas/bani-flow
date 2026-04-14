@@ -1,0 +1,18 @@
+{
+  "id": "bhairavi",
+  "name": "Bhairavi",
+  "aliases": [
+    "Carnatic Bhairavi"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Bhairavi_(Carnatic_raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Natabhairavi (20th melakarta); distinct from Sindhu Bhairavi; evokes pathos and devotion; traditionally used to close concerts",
+  "is_melakarta": false
+}

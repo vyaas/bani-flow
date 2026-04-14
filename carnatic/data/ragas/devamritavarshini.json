@@ -1,0 +1,19 @@
+{
+  "id": "devamritavarshini",
+  "name": "Devamritavarshini",
+  "aliases": [
+    "Deva Amrita Varshini",
+    "dEvaamrutavarshani"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1505.shtml",
+      "label": "Karnatik.com — evarani nirNayincirirA notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 G2 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; distinct from Amritavarshini (which is a Dikshitar creation, janya of Chitrambari); associated with the Tyagaraja school",
+  "is_melakarta": false
+}

@@ -1,0 +1,17 @@
+{
+  "id": "shadvidamargini",
+  "name": "Shaḍvidamārgini",
+  "aliases": [],
+  "melakarta": 46,
+  "is_melakarta": true,
+  "cakra": 8,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "46th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₂ Ṡ"
+}

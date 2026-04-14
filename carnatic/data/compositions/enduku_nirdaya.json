@@ -1,0 +1,16 @@
+{
+  "id": "enduku_nirdaya",
+  "title": "Enduku Nirdaya",
+  "composer_id": "tyagaraja",
+  "raga_id": "harikambhoji",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Harikambhoji; Adi tala"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "sri_narada",
+  "title": "Sri Narada",
+  "composer_id": "tyagaraja",
+  "raga_id": "kaanada",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "label": "Wikipedia — Tyagaraja",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Tyagaraja in Kaanada; Rupakam tala; a salutation to the sage Narada"
+}

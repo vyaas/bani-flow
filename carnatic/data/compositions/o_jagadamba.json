@@ -1,0 +1,16 @@
+{
+  "id": "o_jagadamba",
+  "title": "O Jagadamba",
+  "composer_id": "shyama_shastri",
+  "raga_id": "ananda_bhairavi",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/O_Jagadamba",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Shyama Shastri kriti in Ananda Bhairavi raga. One of the Trinity's most celebrated compositions."
+}

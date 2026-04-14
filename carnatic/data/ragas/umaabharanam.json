@@ -1,0 +1,19 @@
+{
+  "id": "umaabharanam",
+  "name": "Umaabharanam",
+  "aliases": [
+    "Uma Bharanam",
+    "Umabharanam"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Umaabharanam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-audava raga (6 notes ascending, 5 descending); ārohana S R1 G3 M1 P D1 S, avarohana S N3 P M1 G3 R1 S; evokes devotion and grandeur; associated with Tyagaraja's 'Nijamarmamulanu'",
+  "is_melakarta": false
+}

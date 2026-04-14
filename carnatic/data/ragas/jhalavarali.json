@@ -1,0 +1,20 @@
+{
+  "id": "jhalavarali",
+  "name": "Jhalavarali",
+  "aliases": [
+    "Jalavarali",
+    "Jhālavarāḷi"
+  ],
+  "melakarta": 39,
+  "parent_raga": null,
+  "is_melakarta": true,
+  "cakra": 7,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Jhalavarali",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "39th melakarta raga, 3rd raga of the 7th cakra (Rishi). Parent mela of Varali."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "sri_ramachandra_kripalu",
+  "title": "Sri Ramachandra Kripalu",
+  "composer_id": "tulsidas",
+  "raga_id": "yamuna_kalyani",
+  "tala": "Adi",
+  "language": "Hindi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sri_Ramachandra_Kripalu",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tulsidas bhajan in Yamuna Kalyani raga. A popular devotional composition on Rama."
+}

@@ -1,0 +1,18 @@
+{
+  "id": "neelambari",
+  "name": "Neelambari",
+  "aliases": [
+    "Nilambari"
+  ],
+  "melakarta": null,
+  "parent_raga": "pantuvarali",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Neelambari",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Shankarabharanam (29th melakarta). Associated with lullabies and the divine. Dikshitar composed several kritis here.",
+  "is_melakarta": false
+}

@@ -1,0 +1,16 @@
+{
+  "id": "karnataka_kapi",
+  "name": "Karnataka Kapi",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Karnataka_Kapi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya raga distinct from Kapi. Used in padams and varnams. Swati Tirunal's Sumasaayaka is a well-known composition.",
+  "is_melakarta": false
+}

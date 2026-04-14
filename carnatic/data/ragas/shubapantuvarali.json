@@ -1,0 +1,19 @@
+{
+  "id": "shubapantuvarali",
+  "name": "Shubapantuvarali",
+  "aliases": [
+    "Shubha Pantuvarali",
+    "Cybele"
+  ],
+  "melakarta": null,
+  "parent_raga": "pantuvarali",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shubhapantuvarali",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kamavardhini (51st melakarta); vakra raga; ārohana S R1 G3 M2 P M2 G3 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes grandeur and devotion; best known for Muthuswami Dikshitar's 'Sri Satyanarayanam'; associated with the Dikshitar school",
+  "is_melakarta": false
+}

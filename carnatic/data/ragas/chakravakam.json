@@ -1,0 +1,20 @@
+{
+  "id": "chakravakam",
+  "name": "Chakravakam",
+  "aliases": [
+    "Chakravaham",
+    "Chakravaka"
+  ],
+  "melakarta": 16,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Chakravakam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "16th melakarta raga; arohana S R1 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R1 S; evokes pathos and devotion; a favourite of Tyagaraja who composed several kritis in this raga",
+  "is_melakarta": true,
+  "cakra": 3
+}

@@ -1,0 +1,19 @@
+{
+  "id": "dwijavanthi",
+  "name": "Dwijavanthi",
+  "aliases": [
+    "Dvijāvanti",
+    "Dwijawanthi"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dwijavanthi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes devotion and grandeur; best known for Muthuswami Dikshitar's 'Chetasri Balakrishnam'; a favourite raga of the Dikshitar school",
+  "is_melakarta": false
+}

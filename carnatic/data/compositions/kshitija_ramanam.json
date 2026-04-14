@@ -1,0 +1,16 @@
+{
+  "id": "kshitija_ramanam",
+  "title": "Kshitija Ramanam",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "devagandhari",
+  "tala": "Adi",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kshitija_Ramanam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Muthuswami Dikshitar kriti in Devagandhari raga."
+}

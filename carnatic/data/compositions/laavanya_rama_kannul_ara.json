@@ -1,0 +1,16 @@
+{
+  "id": "laavanya_rama_kannul_ara",
+  "title": "Laavanya Rama Kannul Ara",
+  "composer_id": "tyagaraja",
+  "raga_id": "poornashadjam",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Laavanya_Rama_Kannul_Ara",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Poorna Shadjam raga."
+}

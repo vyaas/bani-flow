@@ -1,0 +1,18 @@
+{
+  "id": "abheri",
+  "name": "Abheri",
+  "aliases": [
+    "Aberi"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Abheri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Natabhairavi (20th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S G2 M1 P N2 S, avarohana S N2 D1 P M1 G2 S; evokes pathos and longing; best known for Tyagaraja's 'Nagumomu Ganaleni'; a favourite raga for the main piece in a concert",
+  "is_melakarta": false
+}

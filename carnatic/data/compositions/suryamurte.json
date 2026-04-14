@@ -1,0 +1,16 @@
+{
+  "id": "suryamurte",
+  "title": "Suryamurte",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "sowrashtram",
+  "tala": "dhruva",
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1191.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Kriti by Muthuswami Dikshitar in Sowrashtram; Dhruva tala; addressed to the Sun deity; part of the Navagraha Kritis cycle"
+}

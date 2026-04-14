@@ -1,0 +1,16 @@
+{
+  "id": "alarsara_paritapam",
+  "title": "Alarśara Paritāpam",
+  "composer_id": "swati_tirunal",
+  "raga_id": "surutti",
+  "tala": "misra_capu",
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Swati_Tirunal",
+      "label": "Wikipedia — Swati Tirunal",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Swati Tirunal in Surutti; misra capu tala"
+}

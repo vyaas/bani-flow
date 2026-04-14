@@ -1,0 +1,18 @@
+{
+  "id": "hamir_kalyani",
+  "name": "Hamir Kalyani",
+  "aliases": [
+    "Hameer Kalyani"
+  ],
+  "melakarta": null,
+  "parent_raga": "kalyani",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Hamir_Kalyani",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kalyani (65th melakarta). Corresponds to Hindustani Hamir. Bright expansive character.",
+  "is_melakarta": false
+}

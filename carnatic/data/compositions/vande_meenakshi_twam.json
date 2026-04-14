@@ -1,0 +1,16 @@
+{
+  "id": "vande_meenakshi_twam",
+  "title": "Vande Meenakshi Twam",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "shankarabharanam",
+  "tala": "Adi",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nottuswara_sahitya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Muthuswami Dikshitar nottuswara in Shankarabharanam raga. Part of the Nottuswara Sahitya series composed to Western tunes. Dedicated to Meenakshi of Madurai."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "sirsirakkumeni",
+  "title": "Sirsirakkumeni (Thirupugazh)",
+  "composer_id": "arunagirinathar",
+  "raga_id": null,
+  "tala": "khanda_triputa",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://karnatik.com/c15445.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Thirupugazh by Arunagirinathar; Khanda Triputa tala; performed as a ragamalika (raga_id null as no single raga applies); a devotional hymn to Murugan"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "saveri",
+  "name": "Saveri",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Saveri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Dheerashankarabharanam (29th melakarta); evokes pathos and longing; associated with morning hours",
+  "is_melakarta": false
+}

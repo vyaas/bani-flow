@@ -1,0 +1,15 @@
+{
+  "id": "kadalagi",
+  "title": "Kadalagi",
+  "composer_id": "tevaram",
+  "raga_id": "bhairavi",
+  "language": "Tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tevaram",
+      "label": "Tevaram corpus - Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tevaram hymn in Bhairavi. Specific author within the Tevaram corpus (Appar, Sundarar, or Thirugnana Sambandar) not identified in this recording."
+}

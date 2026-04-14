@@ -1,0 +1,16 @@
+{
+  "id": "baro_krishnayya",
+  "title": "Baro Krishnayya",
+  "composer_id": "kanaka_dasa",
+  "raga_id": "maund",
+  "tala": "Adi",
+  "language": "Kannada",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Baro_Krishnayya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kanaka Dasa composition in Maund raga. Popular devotional song on Krishna."
+}

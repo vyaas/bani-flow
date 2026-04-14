@@ -1,0 +1,18 @@
+{
+  "id": "nattakurinji",
+  "name": "Nattakurinji",
+  "aliases": [
+    "Nata Kurinji"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nattakurinji",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); vakra raga; ārohana S R2 G3 M1 N2 D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; evokes romance and longing; a favourite raga for the main piece in a concert; best known for Tyagaraja's 'Manasu Vishaya'",
+  "is_melakarta": false
+}

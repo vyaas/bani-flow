@@ -2,7 +2,8 @@
 carnatic/render/sync.py — graph.json sync logic (ADR-016).
 
 sync_graph_json() keeps graph.json current from musicians/ (or musicians.json),
-compositions.json, and the recordings/ directory before each render.
+ragas/ + compositions/ (or legacy compositions.json), and the recordings/
+directory before each render.
 Atomic write via temp file + os.replace.
 """
 import json
@@ -10,7 +11,7 @@ import os
 import tempfile
 from pathlib import Path
 
-from carnatic.render.data_loaders import load_musicians
+from carnatic.render.data_loaders import load_musicians, load_compositions
 
 
 def sync_graph_json(
@@ -24,9 +25,16 @@ def sync_graph_json(
 
     Musicians are loaded from the musicians/ directory (one .json per node +
     _edges.json) when it exists, falling back to the legacy monolithic
-    musicians.json.  recording_refs is rebuilt from the recordings/ directory
-    on every render, so adding a new recordings/*.json file is automatically
-    picked up without any manual graph.json edit.
+    musicians.json.
+
+    Compositions are loaded from:
+      - ragas/          (one .json per raga, top-level sibling of musicians/)
+      - compositions/   (one .json per composition + _composers.json sidecar)
+    falling back to the legacy monolithic compositions.json.
+
+    recording_refs is rebuilt from the recordings/ directory on every render,
+    so adding a new recordings/*.json file is automatically picked up without
+    any manual graph.json edit.
 
     This is the single sync point that keeps graph.json current for traversal
     and rendering (ADR-016). Idempotent: safe to call on every render.py
@@ -43,13 +51,17 @@ def sync_graph_json(
         "edges": m.get("edges", []),
     }
 
-    if compositions_file.exists():
-        c = json.loads(compositions_file.read_text(encoding="utf-8"))
-        graph["compositions"] = {
-            "ragas":        c.get("ragas", []),
-            "composers":    c.get("composers", []),
-            "compositions": c.get("compositions", []),
-        }
+    # ── compositions: prefer ragas/ + compositions/ dirs, fall back to .json ──
+    data_dir         = compositions_file.parent
+    ragas_dir        = data_dir / "ragas"
+    compositions_dir = data_dir / "compositions"
+
+    c = load_compositions(compositions_dir, compositions_file, ragas_dir)
+    graph["compositions"] = {
+        "ragas":        c.get("ragas", []),
+        "composers":    c.get("composers", []),
+        "compositions": c.get("compositions", []),
+    }
 
     # Rebuild recording_refs from recordings/ directory.
     # Each ref carries the fields CarnaticGraph needs for lazy loading:
@@ -94,6 +106,11 @@ def sync_graph_json(
         f.write(text)
         tmp = Path(f.name)
     os.replace(tmp, graph_file)
-    source_label = "musicians/" if musicians_dir.is_dir() else "musicians.json"
-    print(f"[SYNC] graph.json ← {source_label} + compositions.json + recordings/")
+
+    musicians_label = "musicians/" if musicians_dir.is_dir() else "musicians.json"
+    if ragas_dir.is_dir() or compositions_dir.is_dir():
+        comp_label = "ragas/ + compositions/"
+    else:
+        comp_label = "compositions.json"
+    print(f"[SYNC] graph.json ← {musicians_label} + {comp_label} + recordings/")
 

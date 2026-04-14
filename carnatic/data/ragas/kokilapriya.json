@@ -1,0 +1,17 @@
+{
+  "id": "kokilapriya",
+  "name": "Kokilapriyā",
+  "aliases": [],
+  "melakarta": 11,
+  "is_melakarta": true,
+  "cakra": 2,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "11th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₂ N₃ Ṡ"
+}

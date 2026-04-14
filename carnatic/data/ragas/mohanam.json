@@ -1,0 +1,19 @@
+{
+  "id": "mohanam",
+  "name": "Mohanam",
+  "aliases": [
+    "Mohana",
+    "Bhupali (Hindustani equivalent)"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Mohanam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); audava raga (5 notes ascending and descending, no M or N); ārohana S R2 G3 P D2 S, avarohana S D2 P G3 R2 S; evokes joy, beauty, and devotion; one of the most popular pentatonic ragas in the Carnatic canon",
+  "is_melakarta": false
+}

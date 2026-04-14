@@ -1,0 +1,17 @@
+{
+  "id": "jhankaradhvani",
+  "name": "Jhankāradhvani",
+  "aliases": [],
+  "melakarta": 19,
+  "is_melakarta": true,
+  "cakra": 4,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "19th melakarta; Cakra 4 (Veda); arohana: S R₂ G₂ M₁ P D₁ N₁ Ṡ"
+}

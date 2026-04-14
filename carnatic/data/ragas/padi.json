@@ -1,0 +1,16 @@
+{
+  "id": "padi",
+  "name": "Padi",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Padi_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta). Rare raga used by Dikshitar. Shri Guruna Palitosmi is a well-known kriti.",
+  "is_melakarta": false
+}

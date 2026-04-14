@@ -1,0 +1,17 @@
+{
+  "id": "latangi",
+  "name": "Latāngi",
+  "aliases": [],
+  "melakarta": 63,
+  "is_melakarta": true,
+  "cakra": 11,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "63th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₁ N₃ Ṡ"
+}

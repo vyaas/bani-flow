@@ -1,0 +1,17 @@
+{
+  "id": "dhavalambari",
+  "name": "Dhavaḻāmbari",
+  "aliases": [],
+  "melakarta": 49,
+  "is_melakarta": true,
+  "cakra": 9,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "49th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₁ N₁ Ṡ"
+}

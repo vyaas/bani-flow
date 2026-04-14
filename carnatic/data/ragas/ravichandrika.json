@@ -1,0 +1,18 @@
+{
+  "id": "ravichandrika",
+  "name": "Ravichandrika",
+  "aliases": [
+    "Ravi Chandrika"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://sujamusic.wordpress.com/ravichandrika/",
+      "label": "Suja Music — Ravichandrika scale and kritis",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada",
+  "is_melakarta": false
+}

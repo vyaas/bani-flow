@@ -1,0 +1,18 @@
+{
+  "id": "devagandhari",
+  "name": "Devagandhari",
+  "aliases": [
+    "Deva Gandhari"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Devagandhari",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); evokes devotion and grandeur; associated with compositions of Tyagaraja",
+  "is_melakarta": false
+}

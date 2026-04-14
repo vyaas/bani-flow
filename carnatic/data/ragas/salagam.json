@@ -1,0 +1,17 @@
+{
+  "id": "salagam",
+  "name": "Sālagam",
+  "aliases": [],
+  "melakarta": 37,
+  "is_melakarta": true,
+  "cakra": 7,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "37th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₁ N₁ Ṡ"
+}

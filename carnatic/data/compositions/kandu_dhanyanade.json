@@ -1,0 +1,16 @@
+{
+  "id": "kandu_dhanyanade",
+  "title": "Kandu Dhanyanade",
+  "composer_id": "kamalesha_vittala_dasa",
+  "raga_id": "behag",
+  "tala": "adi",
+  "language": "kannada",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Haridasa",
+      "label": "Wikipedia — Haridasa tradition",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kannada devaranama by Kamalesha Vittala Dasa in Behag; Adi tala; part of the Haridasa devotional repertoire"
+}

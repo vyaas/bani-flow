@@ -1,0 +1,19 @@
+{
+  "id": "gowrimanohari",
+  "name": "Gowrimanohari",
+  "aliases": [
+    "Gauri Manohari"
+  ],
+  "melakarta": 23,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Gowrimanohari",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "23rd melakarta (Kanakangi group). Sampurna raga, serene majestic character.",
+  "is_melakarta": true,
+  "cakra": 4
+}

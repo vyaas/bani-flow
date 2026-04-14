@@ -1,0 +1,20 @@
+{
+  "id": "mayamalavagowla",
+  "name": "Mayamalavagowla",
+  "aliases": [
+    "Maya Malava Gowla",
+    "Mayamalavagaula"
+  ],
+  "melakarta": 15,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Mayamalavagowla",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "15th melakarta; one of the first ragas taught to beginners; evokes pathos and devotion; parent of Nadanamakriya and Gowlipantu among others",
+  "is_melakarta": true,
+  "cakra": 3
+}

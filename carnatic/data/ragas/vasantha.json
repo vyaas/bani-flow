@@ -1,0 +1,19 @@
+{
+  "id": "vasantha",
+  "name": "Vasantha",
+  "aliases": [
+    "Vasanta",
+    "Basanta"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Vasanta_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya raga of Mechakalyani (65th melakarta); arohana S G3 R2 G3 M2 D2 N3 S, avarohana S N3 D2 M2 G3 R2 S (vakra); evokes spring and devotion; Sri Kamakshi Katakshi attributed to Subbaraya Sastri is set in this raga",
+  "is_melakarta": false
+}

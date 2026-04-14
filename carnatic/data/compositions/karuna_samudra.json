@@ -1,0 +1,16 @@
+{
+  "id": "karuna_samudra",
+  "title": "Karuṇā Samudrā",
+  "composer_id": "tyagaraja",
+  "raga_id": "devagandhari",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Devagandhari"
+}

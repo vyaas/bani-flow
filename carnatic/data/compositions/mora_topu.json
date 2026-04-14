@@ -1,0 +1,16 @@
+{
+  "id": "mora_topu",
+  "title": "Mora Topu",
+  "composer_id": "kshetrayya",
+  "raga_id": "sahana",
+  "tala": "tisra_triputa",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+      "label": "Wikipedia — Kshetrayya",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Kshetrayya in Sahana; Tisra Triputa tala; part of the Kshetrayya padam tradition"
+}

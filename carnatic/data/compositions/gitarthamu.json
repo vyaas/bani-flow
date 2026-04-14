@@ -1,0 +1,21 @@
+{
+  "id": "gitarthamu",
+  "title": "Gitarthamu",
+  "composer_id": "tyagaraja",
+  "raga_id": "surutti",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2341.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    },
+    {
+      "url": "http://www.shivkumar.org/music/gitarthamu.ram",
+      "label": "Shivkumar.org — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Surutti; a meditation on the meaning of the Gita"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "gowla",
+  "name": "Gowla",
+  "aliases": [
+    "Gaula"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Gowla",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); one of the five Ghana ragas; evokes pathos and devotion",
+  "is_melakarta": false
+}

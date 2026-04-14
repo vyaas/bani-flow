@@ -1,0 +1,17 @@
+{
+  "id": "suvarnangi",
+  "name": "Suvarnāngi",
+  "aliases": [],
+  "melakarta": 47,
+  "is_melakarta": true,
+  "cakra": 8,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "47th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₃ Ṡ"
+}

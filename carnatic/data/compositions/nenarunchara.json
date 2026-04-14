@@ -1,0 +1,16 @@
+{
+  "id": "nenarunchara",
+  "title": "Nenarunchara",
+  "composer_id": "tyagaraja",
+  "raga_id": "simhavahini",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nenarunchara",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Simhavahini raga. Rare raga composition."
+}

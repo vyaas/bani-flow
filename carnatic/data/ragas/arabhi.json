@@ -1,0 +1,18 @@
+{
+  "id": "arabhi",
+  "name": "Arabhi",
+  "aliases": [
+    "Arabi"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Arabhi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Dheerashankarabharanam (29th melakarta); one of the five Ghana ragas; majestic and expansive character",
+  "is_melakarta": false
+}

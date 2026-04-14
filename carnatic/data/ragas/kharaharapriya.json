@@ -1,0 +1,19 @@
+{
+  "id": "kharaharapriya",
+  "name": "Kharaharapriya",
+  "aliases": [
+    "Kara Harapriya"
+  ],
+  "melakarta": 22,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kharaharapriya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "22nd melakarta; equivalent to the Dorian mode; parent of many important janya ragas including Reetigowla, Sriraga, Devamritavarshini, Manirangu, and Devagandhari; associated with devotion and grandeur",
+  "is_melakarta": true,
+  "cakra": 4
+}

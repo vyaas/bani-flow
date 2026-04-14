@@ -1,0 +1,21 @@
+{
+  "id": "viraja_turaga",
+  "title": "Viraja Turaga",
+  "composer_id": "tyagaraja",
+  "raga_id": "balahamsa",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.gaanapriya.in/vgovindan/Tyagaraja%20Kritis/English/V/virAja%20turaga-balahaMsa.html",
+      "label": "Gaanapriya.in — notation",
+      "type": "archive"
+    },
+    {
+      "url": "https://www.karnatik.com/c31490.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Balahamsa; Adi tala; the principal composition defining this rare raga in the concert repertoire"
+}

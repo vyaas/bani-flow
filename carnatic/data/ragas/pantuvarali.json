@@ -1,0 +1,20 @@
+{
+  "id": "pantuvarali",
+  "name": "Pantuvarali",
+  "aliases": [
+    "Purvi Kalyani",
+    "Kamavardani"
+  ],
+  "melakarta": 51,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kamavardhini",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "51st melakarta (Kamavardhini); ārohana S R1 G3 M2 P D1 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes pathos and grandeur; associated with Tyagaraja's 'Aparama Bhakthi' and Dikshitar's 'Sri Satyanarayanam'; one of the most expansive melakartas for alapana",
+  "is_melakarta": true,
+  "cakra": 9
+}

@@ -1,0 +1,17 @@
+{
+  "id": "visvambari",
+  "name": "Viśvambari",
+  "aliases": [],
+  "melakarta": 54,
+  "is_melakarta": true,
+  "cakra": 9,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "54th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₃ N₃ Ṡ"
+}

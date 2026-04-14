@@ -1,0 +1,16 @@
+{
+  "id": "bhajana_parulakela",
+  "title": "Bhajana Parulakēla",
+  "composer_id": "tyagaraja",
+  "raga_id": "surutti",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Surutti; set to Rupakam tala"
+}

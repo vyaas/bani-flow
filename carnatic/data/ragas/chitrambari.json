@@ -1,0 +1,17 @@
+{
+  "id": "chitrambari",
+  "name": "Chitrāmbari",
+  "aliases": [],
+  "melakarta": 66,
+  "is_melakarta": true,
+  "cakra": 11,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "66th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₃ N₃ Ṡ"
+}

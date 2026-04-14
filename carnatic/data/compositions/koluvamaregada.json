@@ -1,0 +1,16 @@
+{
+  "id": "koluvamaregada",
+  "title": "Koluvamaregadā",
+  "composer_id": "tyagaraja",
+  "raga_id": "thodi",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Todi; a devotional composition asking whether the Lord is pleased"
+}

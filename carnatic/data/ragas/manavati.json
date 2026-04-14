@@ -1,0 +1,17 @@
+{
+  "id": "manavati",
+  "name": "Mānavati",
+  "aliases": [],
+  "melakarta": 5,
+  "is_melakarta": true,
+  "cakra": 1,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "5th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₂ N₃ Ṡ"
+}

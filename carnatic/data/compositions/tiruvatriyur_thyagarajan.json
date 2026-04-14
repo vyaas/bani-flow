@@ -1,0 +1,16 @@
+{
+  "id": "tiruvatriyur_thyagarajan",
+  "title": "Tiruvatriyur Thyagarajan",
+  "composer_id": "ghanam_krishna_iyer",
+  "raga_id": "atana",
+  "tala": "Adi",
+  "language": "Tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ghanam_Krishna_Iyer",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Ghanam Krishna Iyer composition in Atana raga."
+}

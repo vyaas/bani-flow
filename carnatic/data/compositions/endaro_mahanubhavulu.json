@@ -1,0 +1,16 @@
+{
+  "id": "endaro_mahanubhavulu",
+  "title": "Endaro Mahanubhavulu",
+  "composer_id": "tyagaraja",
+  "raga_id": "sriraga",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Fifth of Tyagaraja's Pancharatna Kritis. Sri raga, Adi tala. Tribute to great souls."
+}

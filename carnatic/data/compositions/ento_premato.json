@@ -1,0 +1,21 @@
+{
+  "id": "ento_premato",
+  "title": "entō prēmatō",
+  "composer_id": "veenai_kuppayyar",
+  "raga_id": "surutti",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2997.shtml",
+      "label": "Karnatik.com — notation and lyrics",
+      "type": "archive"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Veenai_Kuppayyar",
+      "label": "Wikipedia — Veenai Kuppayyar",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Ata-tala varnam by Veenai Kuppayyar in Surutti; Adi tala; one of the most frequently performed varnams in the Carnatic concert repertoire; pallavi 'entō prēmatō'; a standard varnam taught across all schools"
+}

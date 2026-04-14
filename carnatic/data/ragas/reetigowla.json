@@ -1,0 +1,20 @@
+{
+  "id": "reetigowla",
+  "name": "Reetigowla",
+  "aliases": [
+    "Ritigaula",
+    "Reethigowla",
+    "Reethi Gowla"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Reetigowla",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); vakra shadava-sampoorna raga (6 notes ascending, 7 descending); evokes bhakti mixed with joy; a favourite of the Tyagaraja school",
+  "is_melakarta": false
+}

@@ -1,0 +1,16 @@
+{
+  "id": "intha_chalamu",
+  "title": "Intha Chalamu",
+  "composer_id": "veenai_kuppayyar",
+  "raga_id": "begada",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Veenai_Kuppayyar",
+      "label": "Wikipedia — Veenai Kuppayyar",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Varnam by Veenai Kuppayyar in Begada; Adi tala; part of the standard veena varnam repertoire"
+}

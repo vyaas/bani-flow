@@ -1,0 +1,19 @@
+{
+  "id": "simhendramadhyamam",
+  "name": "Simhendramadhyamam",
+  "aliases": [
+    "Simhendra Madhyamam"
+  ],
+  "melakarta": 57,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Simhendramadhyamam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "57th melakarta; ārohana S R1 G1 M2 P D1 N3 S, avarohana S N3 D1 P M2 G1 R1 S; evokes pathos and devotion; a favourite raga of Papanasam Sivan; best known for his composition 'En Manam'",
+  "is_melakarta": true,
+  "cakra": 10
+}

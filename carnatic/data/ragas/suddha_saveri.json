@@ -1,0 +1,19 @@
+{
+  "id": "suddha_saveri",
+  "name": "Suddha Saveri",
+  "aliases": [
+    "Sudha Saveri",
+    "Shuddha Saveri"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Suddha_Saveri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava raga (5 notes ascending and descending, no Gandhara or Nishada); ārohana S R2 M1 P D2 S, avarohana S D2 P M1 R2 S; evokes serenity and devotion; associated with compositions of Periyasami Tooran and the Tamil devotional repertoire",
+  "is_melakarta": false
+}

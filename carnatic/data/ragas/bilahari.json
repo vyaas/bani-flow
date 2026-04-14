@@ -1,0 +1,16 @@
+{
+  "id": "bilahari",
+  "name": "Bilahari",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Bilahari",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Dheerashankarabharanam (29th melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 G3 P D2 S, avarohana S N3 D2 P M1 G3 R2 S; evokes joy and auspiciousness; a favourite raga for thillanas; associated with Ariyakudi Ramanuja Iyengar's thillana",
+  "is_melakarta": false
+}

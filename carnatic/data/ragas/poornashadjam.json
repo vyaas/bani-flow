@@ -1,0 +1,20 @@
+{
+  "id": "poornashadjam",
+  "name": "Poorna Shadjam",
+  "aliases": [
+    "Purna Shadja",
+    "Purnashadjam",
+    "Poornashadjam"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://www.drmradhakrishnan.com/post/rare-raga-series-poornashadjam-janya-of-mela-20-ragam-natabhairavi",
+      "label": "Dr. M. Radhakrishnan — Rare Raga Series: Poornashadjam",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Natabhairavi (20th melakarta); oudava-shadava raga (5 notes ascending, 6 descending); ārohana S R2 G2 M1 N2 N2 S, avarohana S N2 P M1 G2 R2 S; rare raga popularised by the Tyagaraja school; principal compositions are Tyagaraja's 'Śrī māninī manōhara' and 'Lavanya Rāma'",
+  "is_melakarta": false
+}

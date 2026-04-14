@@ -24,7 +24,9 @@ ROOT              = _CARNATIC_DIR
 GRAPH_FILE        = ROOT / "data" / "graph.json"
 DATA_FILE         = ROOT / "data" / "musicians.json"       # legacy monolithic fallback
 MUSICIANS_DIR     = ROOT / "data" / "musicians"            # preferred: per-musician files
-COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"
+RAGAS_DIR         = ROOT / "data" / "ragas"                # preferred: per-raga files
+COMPOSITIONS_DIR  = ROOT / "data" / "compositions"         # preferred: per-composition files
+COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"    # legacy monolithic fallback
 RECORDINGS_FILE   = ROOT / "data" / "recordings.json"
 OUT_FILE          = ROOT / "graph.html"
 
@@ -65,7 +67,7 @@ def main() -> None:
               f"{len(recordings_data['recordings'])} recordings)")
     else:
         graph           = load_musicians(MUSICIANS_DIR, DATA_FILE)
-        comp_data       = load_compositions(COMPOSITIONS_FILE)
+        comp_data       = load_compositions(COMPOSITIONS_DIR, COMPOSITIONS_FILE, RAGAS_DIR)
         recordings_data = load_recordings(ROOT / "data" / "recordings", RECORDINGS_FILE)
         source_label    = "musicians/" if MUSICIANS_DIR.is_dir() else "musicians.json (legacy)"
         print(f"[LOAD] {source_label}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")

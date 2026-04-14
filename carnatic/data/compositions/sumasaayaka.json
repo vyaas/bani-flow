@@ -1,0 +1,16 @@
+{
+  "id": "sumasaayaka",
+  "title": "Sumasaayaka",
+  "composer_id": "swati_tirunal",
+  "raga_id": "karnataka_kapi",
+  "tala": "Adi",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sumasaayaka",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Swati Tirunal varnam in Karnataka Kapi raga."
+}

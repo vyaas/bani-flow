@@ -1,0 +1,19 @@
+{
+  "id": "tanarupi",
+  "name": "Tanarupi",
+  "aliases": [
+    "Tanaarupi"
+  ],
+  "melakarta": 6,
+  "parent_raga": null,
+  "is_melakarta": true,
+  "cakra": 1,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tanarupi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "6th melakarta raga, 6th raga of the 1st cakra (Indu). Parent mela of Punnaga Varali (parentage contested — some sources cite Natabhairavi as bhashanga parent)."
+}

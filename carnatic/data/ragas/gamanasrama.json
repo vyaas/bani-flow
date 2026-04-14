@@ -1,0 +1,17 @@
+{
+  "id": "gamanasrama",
+  "name": "Gamanāśrama",
+  "aliases": [],
+  "melakarta": 53,
+  "is_melakarta": true,
+  "cakra": 9,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "53th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₂ N₃ Ṡ"
+}

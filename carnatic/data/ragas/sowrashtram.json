@@ -1,0 +1,19 @@
+{
+  "id": "sowrashtram",
+  "name": "Sowrashtram",
+  "aliases": [
+    "Saurashtra",
+    "Saurashtram"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sowrashtram",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R1 G3 M1 P N3 S, avarohana S N3 D1 P M1 G3 R1 S; evokes devotion and auspiciousness; traditionally used for mangalam compositions; associated with Tyagaraja's 'Ni Nama Roopamulaku'",
+  "is_melakarta": false
+}

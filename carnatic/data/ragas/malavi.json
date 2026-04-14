@@ -1,0 +1,18 @@
+{
+  "id": "malavi",
+  "name": "Malavi",
+  "aliases": [
+    "Malavī"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Malavi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P N3 S, avarohana S N3 P M1 R1 S; evokes pathos and longing; associated with Tyagaraja's 'Nenarunchinanu'",
+  "is_melakarta": false
+}

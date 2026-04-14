@@ -1,0 +1,16 @@
+{
+  "id": "pattakura",
+  "title": "Pattakura",
+  "composer_id": "sarangapani",
+  "raga_id": "ananda_bhairavi",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sarangapani_(poet)",
+      "label": "Wikipedia — Sarangapani",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Sarangapani in Ananda Bhairavi; Rupakam tala; part of the Sarangapani padam tradition"
+}

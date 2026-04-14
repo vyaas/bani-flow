@@ -1,0 +1,19 @@
+{
+  "id": "sriranjini",
+  "name": "Sriranjini",
+  "aliases": [
+    "Shree Ranjani",
+    "Sreeranjani"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shree_ranjani",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana: S R2 G2 M1 D2 S, avarohana: S N2 D2 P M1 G2 R2 S; evokes romance and longing; a favourite raga for padams and javalis; best known for Tyagaraja's 'Brochevarevare'",
+  "is_melakarta": false
+}

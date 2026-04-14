@@ -1,0 +1,16 @@
+{
+  "id": "krishna_nee_begane",
+  "title": "Krishna Nee Begane",
+  "composer_id": "vyasatirtha",
+  "raga_id": "yamuna_kalyani",
+  "tala": "Adi",
+  "language": "Kannada",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Krishna_Nee_Begane_Baro",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Vyasatirtha composition in Yamuna Kalyani raga. One of the most popular Carnatic devotional songs."
+}

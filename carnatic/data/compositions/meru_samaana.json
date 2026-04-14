@@ -1,0 +1,16 @@
+{
+  "id": "meru_samaana",
+  "title": "Meru Samaana",
+  "composer_id": "tyagaraja",
+  "raga_id": "mayamalavagowla",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Meru_Samaana",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Mayamalavagowla raga."
+}

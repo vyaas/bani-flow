@@ -1,0 +1,19 @@
+{
+  "id": "nata",
+  "name": "Nattai",
+  "aliases": [
+    "Nata",
+    "Ghana Nata"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nata_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Dheerashankarabharanam (29th melakarta); one of the five Ghana ragas; associated with grandeur and heroism; 'Nata' and 'Nattai' are used interchangeably in the tradition",
+  "is_melakarta": false
+}

@@ -1,0 +1,16 @@
+{
+  "id": "sarojadala_netri",
+  "title": "Sarojadala Netri",
+  "composer_id": "shyama_shastri",
+  "raga_id": "shankarabharanam",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sarojadala_Netri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Shyama Shastri kriti in Shankarabharanam raga."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "viriboni",
+  "title": "Viriboni",
+  "composer_id": "pacchimiriyam_adiapayya",
+  "raga_id": "bhairavi",
+  "tala": "ata",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Viriboni",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Ata-tala varnam by Pacchimiriyam Adiapayya in Bhairavi; one of the most celebrated varnams in the Carnatic repertoire; traditionally placed at the opening of a concert; pallavi 'viriboni bhāvamulanu'"
+}

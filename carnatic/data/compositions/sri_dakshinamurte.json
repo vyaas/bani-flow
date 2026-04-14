@@ -1,0 +1,16 @@
+{
+  "id": "sri_dakshinamurte",
+  "title": "Sri Dakshinamurte",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "shankarabharanam",
+  "tala": "Adi",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sri_Dakshinamurte",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Muthuswami Dikshitar kriti in Shankarabharanam raga."
+}

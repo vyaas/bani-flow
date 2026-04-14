@@ -1,0 +1,15 @@
+{
+  "id": "buddhi_radu",
+  "title": "Buddhi Radu",
+  "composer_id": "tyagaraja",
+  "raga_id": "shankarabharanam",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1020.shtml",
+      "label": "Buddhi Radu - karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Shankarabharanam."
+}

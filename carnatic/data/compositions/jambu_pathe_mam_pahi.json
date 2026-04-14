@@ -1,0 +1,16 @@
+{
+  "id": "jambu_pathe_mam_pahi",
+  "title": "Jambu Pathe Mam Pahi",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "yamuna_kalyani",
+  "tala": "Adi",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Jambu_Pathe_Mam_Pahi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Muthuswami Dikshitar kriti in Yamuna Kalyani raga. Pancha Bhuta Stalas series (water element)."
+}

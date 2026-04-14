@@ -1,0 +1,16 @@
+{
+  "id": "rama_nee_samanamevaru",
+  "title": "Rama Nee Samanamevaru",
+  "composer_id": "tyagaraja",
+  "raga_id": "kharaharapriya",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "label": "Wikipedia — Tyagaraja",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Tyagaraja in Kharaharapriya; Rupakam tala; a declaration that none equals Rama"
+}

@@ -230,6 +230,157 @@ def _write_edges(musicians_path: Path, edges: list[dict]) -> None:
         _atomic_write(musicians_path, data)
 
 
+# ── compositions storage helpers ──────────────────────────────────────────────
+
+def _is_compositions_dir_mode(compositions_path: Path) -> bool:
+    """Return True if compositions_path is a directory (split-file mode)."""
+    return compositions_path.is_dir()
+
+
+def _is_ragas_dir_mode(ragas_path: Path) -> bool:
+    """Return True if ragas_path is a directory (split-file mode)."""
+    return ragas_path.is_dir()
+
+
+def _raga_file(ragas_dir: Path, raga_id: str) -> Path:
+    return ragas_dir / f"{raga_id}.json"
+
+
+def _composition_file(compositions_dir: Path, comp_id: str) -> Path:
+    return compositions_dir / f"{comp_id}.json"
+
+
+def _composers_file(compositions_dir: Path) -> Path:
+    return compositions_dir / "_composers.json"
+
+
+def _load_all_ragas(compositions_path: Path, ragas_path: Path | None = None) -> list[dict]:
+    """
+    Load all ragas from either:
+      - ragas_path directory (one .json per raga), or
+      - compositions_path directory (legacy: ragas were in compositions.json), or
+      - monolithic compositions.json file.
+    """
+    # Prefer explicit ragas_path if it's a directory
+    _rp = ragas_path or (compositions_path.parent / "ragas")
+    if _rp.is_dir():
+        ragas = []
+        for f in sorted(_rp.glob("*.json")):
+            if not f.name.startswith("_"):
+                ragas.append(json.loads(f.read_text(encoding="utf-8")))
+        return ragas
+    # Legacy: monolithic compositions.json
+    if compositions_path.is_file() and compositions_path.exists():
+        data = json.loads(compositions_path.read_text(encoding="utf-8"))
+        return data.get("ragas", [])
+    return []
+
+
+def _load_all_composers(compositions_path: Path) -> list[dict]:
+    """
+    Load all composers from either:
+      - compositions_path/_composers.json (sidecar array), or
+      - monolithic compositions.json file.
+    """
+    if _is_compositions_dir_mode(compositions_path):
+        cf = _composers_file(compositions_path)
+        if cf.exists():
+            return json.loads(cf.read_text(encoding="utf-8"))
+        return []
+    if compositions_path.exists():
+        data = json.loads(compositions_path.read_text(encoding="utf-8"))
+        return data.get("composers", [])
+    return []
+
+
+def _load_all_compositions(compositions_path: Path) -> list[dict]:
+    """
+    Load all compositions from either:
+      - compositions_path directory (one .json per composition), or
+      - monolithic compositions.json file.
+    """
+    if _is_compositions_dir_mode(compositions_path):
+        comps = []
+        for f in sorted(compositions_path.glob("*.json")):
+            if not f.name.startswith("_"):
+                comps.append(json.loads(f.read_text(encoding="utf-8")))
+        return comps
+    if compositions_path.exists():
+        data = json.loads(compositions_path.read_text(encoding="utf-8"))
+        return data.get("compositions", [])
+    return []
+
+
+def _write_raga(compositions_path: Path, raga: dict, ragas_path: Path | None = None) -> None:
+    """
+    Write a single raga.
+    Dir mode: writes ragas/{id}.json.
+    Legacy mode: rewrites the entire monolithic compositions.json.
+    """
+    _rp = ragas_path or (compositions_path.parent / "ragas")
+    if _rp.is_dir():
+        _atomic_write(_raga_file(_rp, raga["id"]), raga)
+        return
+    # Legacy: rewrite monolithic file
+    data = json.loads(compositions_path.read_text(encoding="utf-8"))
+    ragas: list[dict] = data.get("ragas", [])
+    for i, r in enumerate(ragas):
+        if r["id"] == raga["id"]:
+            ragas[i] = raga
+            break
+    else:
+        ragas.append(raga)
+    data["ragas"] = ragas
+    _atomic_write(compositions_path, data)
+
+
+def _append_raga(compositions_path: Path, raga: dict, ragas_path: Path | None = None) -> None:
+    """
+    Append a new raga.
+    Dir mode: writes ragas/{id}.json (new file).
+    Legacy mode: rewrites the entire monolithic compositions.json.
+    """
+    _rp = ragas_path or (compositions_path.parent / "ragas")
+    if _rp.is_dir():
+        _atomic_write(_raga_file(_rp, raga["id"]), raga)
+        return
+    data = json.loads(compositions_path.read_text(encoding="utf-8"))
+    ragas: list[dict] = data.get("ragas", [])
+    ragas.append(raga)
+    data["ragas"] = ragas
+    _atomic_write(compositions_path, data)
+
+
+def _write_composers(compositions_path: Path, composers: list[dict]) -> None:
+    """
+    Write the full composers list.
+    Dir mode: writes compositions/_composers.json.
+    Legacy mode: rewrites the entire monolithic compositions.json.
+    """
+    if _is_compositions_dir_mode(compositions_path):
+        _atomic_write(_composers_file(compositions_path), composers)
+        return
+    data = json.loads(compositions_path.read_text(encoding="utf-8"))
+    data["composers"] = composers
+    _atomic_write(compositions_path, data)
+
+
+def _append_composition(compositions_path: Path, comp: dict) -> None:
+    """
+    Append a new composition.
+    Dir mode: writes compositions/{id}.json (new file).
+    Legacy mode: rewrites the entire monolithic compositions.json.
+    """
+    if _is_compositions_dir_mode(compositions_path):
+        _atomic_write(_composition_file(compositions_path, comp["id"]), comp)
+        return
+    data = json.loads(compositions_path.read_text(encoding="utf-8"))
+    comps: list[dict] = data.get("compositions", [])
+    comps.append(comp)
+    data["compositions"] = comps
+    _atomic_write(compositions_path, data)
+
+
 # ── default paths ──────────────────────────────────────────────────────────────
 
 def _default_musicians_path() -> Path:
@@ -241,7 +392,16 @@ def _default_musicians_path() -> Path:
 
 
 def _default_compositions_path() -> Path:
+    """Return the preferred compositions directory, falling back to monolithic file."""
+    d = Path(__file__).parent / "data" / "compositions"
+    if d.is_dir():
+        return d
     return Path(__file__).parent / "data" / "compositions.json"
+
+
+def _default_ragas_path() -> Path:
+    """Return the ragas directory path (may or may not exist yet)."""
+    return Path(__file__).parent / "data" / "ragas"
 
 
 def _default_graph_path() -> Path:
@@ -252,13 +412,14 @@ def _default_graph_path() -> Path:
 
 class CarnaticWriter:
     """
-    Stateless writer for musicians/ (or musicians.json) and compositions.json.
+    Stateless writer for musicians/ (or musicians.json), ragas/, and
+    compositions/ (or legacy compositions.json).
 
     Each method:
       1. Reads the source file(s).
       2. Validates inputs against current state by reading source files
-         directly (musicians/ / compositions.json). graph.json is a
-         derived artefact and is never read here — see ADR-016.
+         directly. graph.json is a derived artefact and is never read
+         here — see ADR-016.
       3. Applies the transformation.
       4. Writes atomically (temp file + rename).
       5. Returns a WriteResult(ok, skipped, message, log_prefix).
@@ -270,6 +431,15 @@ class CarnaticWriter:
     musicians_path may be:
       • A directory (carnatic/data/musicians/) — preferred split-file mode.
       • A .json file (carnatic/data/musicians.json) — legacy monolithic mode.
+
+    compositions_path may be:
+      • A directory (carnatic/data/compositions/) — preferred split-file mode.
+        Composers live in _composers.json sidecar; compositions are one file each.
+      • A .json file (carnatic/data/compositions.json) — legacy monolithic mode.
+
+    ragas_path (optional, only for raga writes):
+      • A directory (carnatic/data/ragas/) — preferred split-file mode.
+      • When omitted, defaults to compositions_path.parent / "ragas".
     """
 
     # ── Group 1: Musician graph writes ────────────────────────────────────────
@@ -408,22 +578,21 @@ class CarnaticWriter:
         if musician_id not in known_musician_ids:
             return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
 
-        # Validate composition_id / raga_id directly from compositions.json (ADR-016)
+        # Validate composition_id / raga_id directly from source files (ADR-016)
         if composition_id is not None or raga_id is not None:
             comp_path = compositions_path or _default_compositions_path()
-            comp_data = json.loads(comp_path.read_text(encoding="utf-8"))
             if composition_id is not None:
-                known_comp_ids = {c["id"] for c in comp_data.get("compositions", [])}
+                known_comp_ids = {c["id"] for c in _load_all_compositions(comp_path)}
                 if composition_id not in known_comp_ids:
                     return _err(
-                        f"--composition-id \"{composition_id}\" does not exist in compositions.json\n"
+                        f"--composition-id \"{composition_id}\" does not exist in compositions\n"
                         f"       Run add-composition before referencing it here."
                     )
             if raga_id is not None:
-                known_raga_ids = {r["id"] for r in comp_data.get("ragas", [])}
+                known_raga_ids = {r["id"] for r in _load_all_ragas(comp_path)}
                 if raga_id not in known_raga_ids:
                     return _err(
-                        f"--raga-id \"{raga_id}\" does not exist in compositions.json\n"
+                        f"--raga-id \"{raga_id}\" does not exist in ragas\n"
                         f"       Run add-raga before referencing it here."
                     )
 
@@ -620,9 +789,15 @@ class CarnaticWriter:
         melakarta: int | None = None,
         parent_raga: str | None = None,
         notes: str | None = None,
+        ragas_path: Path | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Add a new raga to compositions.json."""
+        """
+        Add a new raga.
+
+        Dir mode:    writes ragas/{id}.json (ragas_path or compositions_path.parent/ragas).
+        Legacy mode: rewrites the monolithic compositions.json.
+        """
         if source_type not in VALID_SOURCE_TYPES:
             return _err(
                 f"--source-type \"{source_type}\" is not a valid source type\n"
@@ -631,10 +806,9 @@ class CarnaticWriter:
         if melakarta is not None and not (1 <= melakarta <= 72):
             return _err(f"--melakarta {melakarta} is out of range [1, 72]")
 
-        data = json.loads(compositions_path.read_text(encoding="utf-8"))
-        ragas: list[dict] = data.get("ragas", [])
-
+        ragas = _load_all_ragas(compositions_path, ragas_path)
         existing_ids = {r["id"] for r in ragas}
+
         if id in existing_ids:
             return _skip(f"{id} already exists in ragas[]")
 
@@ -653,9 +827,7 @@ class CarnaticWriter:
         if notes is not None:
             raga["notes"] = notes
 
-        ragas.append(raga)
-        data["ragas"] = ragas
-        _atomic_write(compositions_path, data)
+        _append_raga(compositions_path, raga, ragas_path)
 
         return _ok(
             "[RAGA+]",
@@ -676,7 +848,12 @@ class CarnaticWriter:
         died: int | None = None,
         musicians_path: Path | None = None,
     ) -> WriteResult:
-        """Add a new composer to compositions.json."""
+        """
+        Add a new composer.
+
+        Dir mode:    appends to compositions/_composers.json sidecar.
+        Legacy mode: rewrites the monolithic compositions.json.
+        """
         if source_type not in VALID_SOURCE_TYPES:
             return _err(
                 f"--source-type \"{source_type}\" is not a valid source type\n"
@@ -692,10 +869,9 @@ class CarnaticWriter:
                     f"--musician-node-id \"{musician_node_id}\" does not exist in musicians"
                 )
 
-        data = json.loads(compositions_path.read_text(encoding="utf-8"))
-        composers: list[dict] = data.get("composers", [])
-
+        composers = _load_all_composers(compositions_path)
         existing_ids = {c["id"] for c in composers}
+
         if id in existing_ids:
             return _skip(f"{id} already exists in composers[]")
 
@@ -709,8 +885,7 @@ class CarnaticWriter:
         }
 
         composers.append(composer)
-        data["composers"] = composers
-        _atomic_write(compositions_path, data)
+        _write_composers(compositions_path, composers)
 
         return _ok("[COMPOSER+]", f"added: {id} — \"{name}\"  musician_node_id: {musician_node_id}")
 
@@ -728,29 +903,31 @@ class CarnaticWriter:
         source_label: str | None = None,
         source_type: str | None = None,
         notes: str | None = None,
+        ragas_path: Path | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Add a new composition to compositions.json."""
+        """
+        Add a new composition.
+
+        Dir mode:    writes compositions/{id}.json; validates against ragas/ and
+                     compositions/_composers.json.
+        Legacy mode: rewrites the monolithic compositions.json.
+        """
         if source_type is not None and source_type not in VALID_SOURCE_TYPES:
             return _err(
                 f"--source-type \"{source_type}\" is not a valid source type\n"
                 f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
             )
 
-        data = json.loads(compositions_path.read_text(encoding="utf-8"))
-        compositions: list[dict] = data.get("compositions", [])
-        composers: list[dict] = data.get("composers", [])
-        ragas: list[dict] = data.get("ragas", [])
-
-        existing_ids = {c["id"] for c in compositions}
-        if id in existing_ids:
+        existing_comp_ids = {c["id"] for c in _load_all_compositions(compositions_path)}
+        if id in existing_comp_ids:
             return _skip(f"{id} already exists in compositions[]")
 
-        known_composer_ids = {c["id"] for c in composers}
+        known_composer_ids = {c["id"] for c in _load_all_composers(compositions_path)}
         if composer_id not in known_composer_ids:
             return _err(f"--composer-id \"{composer_id}\" does not exist in composers[]")
 
-        known_raga_ids = {r["id"] for r in ragas}
+        known_raga_ids = {r["id"] for r in _load_all_ragas(compositions_path, ragas_path)}
         if raga_id not in known_raga_ids:
             return _err(f"--raga-id \"{raga_id}\" does not exist in ragas[]")
 
@@ -774,9 +951,7 @@ class CarnaticWriter:
         if notes is not None:
             composition["notes"] = notes
 
-        compositions.append(composition)
-        data["compositions"] = compositions
-        _atomic_write(compositions_path, data)
+        _append_composition(compositions_path, composition)
 
         return _ok(
             "[COMP+]",
@@ -790,20 +965,17 @@ class CarnaticWriter:
         raga_id: str,
         field: str,
         value: Any,
+        ragas_path: Path | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
         """
-        Update a single field on an existing raga object in compositions.json.
+        Update a single field on an existing raga.
+
+        Dir mode:    reads/writes ragas/{raga_id}.json.
+        Legacy mode: reads/writes the monolithic compositions.json.
 
         Permitted fields: name, parent_raga, melakarta, is_melakarta, cakra, notes
         id and sources are immutable via this command.
-
-        Validations:
-          - raga_id must exist in ragas[]
-          - field must be in PATCHABLE_RAGA_FIELDS
-          - if field == parent_raga: value must be an existing raga id or "null"
-          - if field == is_melakarta: value must be "true" or "false"
-          - if field == cakra or melakarta: value must be an integer string (or "null")
         """
         if field == "id":
             return _err("id is immutable — cannot be patched")
@@ -815,8 +987,7 @@ class CarnaticWriter:
                 f"       Permitted fields: {', '.join(sorted(PATCHABLE_RAGA_FIELDS))}"
             )
 
-        data = json.loads(compositions_path.read_text(encoding="utf-8"))
-        ragas: list[dict] = data.get("ragas", [])
+        ragas = _load_all_ragas(compositions_path, ragas_path)
         existing_ids = {r["id"] for r in ragas}
 
         if raga_id not in existing_ids:
@@ -867,12 +1038,12 @@ class CarnaticWriter:
                 if not (1 <= coerced <= 72):
                     return _err(f"melakarta {coerced} is out of range [1, 72]")
 
-        # Apply patch
+        # Apply patch — find the raga object and mutate it
         raga = next(r for r in ragas if r["id"] == raga_id)
         old_value = raga.get(field)
         raga[field] = coerced
 
-        data["ragas"] = ragas
-        _atomic_write(compositions_path, data)
+        # Write back: dir mode writes only the one raga file; legacy rewrites all
+        _write_raga(compositions_path, raga, ragas_path)
 
         return _ok("[RAGA~]", f"patched: {raga_id}  {field}: {old_value!r} → {coerced!r}")

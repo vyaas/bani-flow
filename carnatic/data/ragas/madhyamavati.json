@@ -1,0 +1,16 @@
+{
+  "id": "madhyamavati",
+  "name": "Madhyamavati",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Madhyamavati",
+      "label": "Madhyamavati - Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (mela 22). Pentatonic (audava-audava) raga; uses S R2 M1 P N2. One of the most popular ragas in Carnatic music, frequently used for mangalam and tillanas.",
+  "is_melakarta": false
+}

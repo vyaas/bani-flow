@@ -1,0 +1,21 @@
+{
+  "id": "ninnu_kori",
+  "title": "Ninnu Kori",
+  "composer_id": "ramnad_sreenivasa_iyengar",
+  "raga_id": "mohanam",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/varnams/ninnukori.htm",
+      "label": "Shivkumar.org — notation and meaning",
+      "type": "archive"
+    },
+    {
+      "url": "https://www.karnatik.com/c1388.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Varnam by Ramnad Sreenivasa Iyengar in Mohanam; Adi tala; pallavi 'ninnu kori yunna nura nikila loka nayaka'; mudra 'Sreenivasa'; one of the standard Mohanam varnams in the concert repertoire; note: the tracklist of the Jamshedpur 1961 concert attributes this to 'Poochi Srinivasa Iyengar' — the shivkumar.org notation source explicitly names Ramnad Sreenivasa Iyengar as composer"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "jalaja_bandhu",
+  "title": "Jalaja Bandhu",
+  "composer_id": "swati_tirunal",
+  "raga_id": "surutti",
+  "tala": "misra_capu",
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Swati_Tirunal",
+      "label": "Wikipedia — Swati Tirunal",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Swati Tirunal in Surutti; Misra Chapu tala; distinct from 'Alarśara Paritāpam' though both are Swati Tirunal padams in Surutti; frequently paired with 'Alasara Parithapam' in concert performance"
+}

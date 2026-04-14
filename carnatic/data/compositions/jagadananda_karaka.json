@@ -1,0 +1,16 @@
+{
+  "id": "jagadananda_karaka",
+  "title": "Jagadananda Karaka",
+  "composer_id": "tyagaraja",
+  "raga_id": "nata",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Jagadananda_Karaka",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Pancharatna kriti; opens the Pancharatna set; a paean to Rama in the majestic Ghana raga Nata"
+}

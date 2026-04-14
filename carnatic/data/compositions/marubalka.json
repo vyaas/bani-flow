@@ -1,0 +1,16 @@
+{
+  "id": "marubalka",
+  "title": "Marubalka",
+  "composer_id": "tyagaraja",
+  "raga_id": "sriranjini",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1388.shtml",
+      "label": "Karnatik.com — Marubalka",
+      "type": "other"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Sriranjini raga, Adi tala; one of the most celebrated kritis in this raga"
+}

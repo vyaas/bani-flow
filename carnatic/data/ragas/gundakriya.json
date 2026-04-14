@@ -1,0 +1,18 @@
+{
+  "id": "gundakriya",
+  "name": "Gundakriya",
+  "aliases": [
+    "Gundakri"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Gundakriya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 G3 M1 N3 S, avarohana S N3 M1 G3 R1 S; evokes pathos and devotion; a rare raga used primarily in the early segments of a concert; best known for Tyagaraja's 'Intanuchu Varimpa'",
+  "is_melakarta": false
+}

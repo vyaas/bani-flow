@@ -1,0 +1,16 @@
+{
+  "id": "solla_vallayo",
+  "title": "Solla Vallayo",
+  "composer_id": "subramanya_bharathi",
+  "raga_id": null,
+  "tala": "Rupakam",
+  "language": "Tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Subramania_Bharati",
+      "label": "Wikipedia — Subramania Bharati",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Subramanya Bharathi Tamil song; performed as a ragamalika in concert; raga_id null as no single raga is assigned"
+}

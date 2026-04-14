@@ -1,0 +1,16 @@
+{
+  "id": "muddugare_yashoda",
+  "title": "Muddugare Yashoda",
+  "composer_id": "annamacharya",
+  "raga_id": "kurinji",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Muddugare_Yashoda",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Annamacharya composition in Kurinji raga. A popular devotional song on Krishna and Yashoda."
+}

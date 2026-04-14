@@ -1,0 +1,16 @@
+{
+  "id": "himadri_sute",
+  "title": "Himadri Sute",
+  "composer_id": "shyama_shastri",
+  "raga_id": "kalyani",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+      "label": "Wikipedia — Shyama Shastri",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Shyama Shastri in Kalyani; Rupakam tala; addressed to the goddess Kamakshi"
+}

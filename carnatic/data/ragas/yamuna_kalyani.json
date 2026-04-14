@@ -1,0 +1,20 @@
+{
+  "id": "yamuna_kalyani",
+  "name": "Yamuna Kalyani",
+  "aliases": [
+    "Yamunakalyani",
+    "Yaman Kalyani",
+    "Yaman Kalyan"
+  ],
+  "melakarta": null,
+  "parent_raga": "kalyani",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Yamuna_Kalyani",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kalyani (65th melakarta). Pentatonic, bright devotional character. Dikshitar's Jambu Pathe Mam Pahi is in this raga.",
+  "is_melakarta": false
+}

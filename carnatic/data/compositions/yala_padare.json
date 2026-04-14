@@ -1,0 +1,16 @@
+{
+  "id": "yala_padare",
+  "title": "Yala Padare",
+  "composer_id": "kshetrayya",
+  "raga_id": "begada",
+  "tala": "tisra_triputa",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+      "label": "Wikipedia — Kshetrayya",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Kshetrayya in Begada; Tisra Triputa tala; part of the Kshetrayya padam tradition"
+}

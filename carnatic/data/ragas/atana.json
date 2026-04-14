@@ -1,0 +1,18 @@
+{
+  "id": "atana",
+  "name": "Atana",
+  "aliases": [
+    "Adana"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Atana",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta). Bold heroic character. Frequently used for Tyagaraja kritis.",
+  "is_melakarta": false
+}

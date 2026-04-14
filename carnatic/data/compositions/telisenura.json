@@ -1,0 +1,16 @@
+{
+  "id": "telisenura",
+  "title": "Telisenura",
+  "composer_id": "chinnaiah_pillai",
+  "raga_id": "saveri",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+      "label": "Wikipedia — Tanjore Quartet",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Chinnaiah Pillai of the Tanjore Quartet in Saveri; Rupakam tala; part of the devadasi padam repertoire"
+}

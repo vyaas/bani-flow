@@ -1,0 +1,18 @@
+{
+  "id": "nadanamakriya",
+  "name": "Nadanamakriya",
+  "aliases": [
+    "Nada Namakriya"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://sujamusic.wordpress.com/nadanamakriya/",
+      "label": "Suja Music — Nadanamakriya scale and notes",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); nishandantya raga (highest note is Nishada); ārohana S R1 G3 M1 P D1 N3, avarohana N3 D1 P M1 G3 R1 S N3; evokes a questioning, yearning, contemplative mood; associated with slow-tempo padams and meditative compositions",
+  "is_melakarta": false
+}

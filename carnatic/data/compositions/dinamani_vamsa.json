@@ -1,0 +1,16 @@
+{
+  "id": "dinamani_vamsa",
+  "title": "Dinamani Vamsa",
+  "composer_id": "tyagaraja",
+  "raga_id": "harikambhoji",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c0437.shtml",
+      "label": "Karnatik.com — Dinamani Vamsa",
+      "type": "other"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Harikambhoji raga, Adi tala"
+}

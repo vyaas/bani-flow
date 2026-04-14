@@ -1,0 +1,16 @@
+{
+  "id": "gajavadhana",
+  "title": "Gajavadhana",
+  "composer_id": "kumara_ettendra",
+  "raga_id": "thodi",
+  "tala": "Adi",
+  "language": "Kannada",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kumara_Ettendra",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kumara Ettendra composition in Thodi raga. A devotional composition on Ganesha."
+}

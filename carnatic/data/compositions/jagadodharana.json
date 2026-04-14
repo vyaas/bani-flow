@@ -1,0 +1,16 @@
+{
+  "id": "jagadodharana",
+  "title": "Jagadodharana",
+  "composer_id": "purandara_dasa",
+  "raga_id": "kapi",
+  "tala": "Adi",
+  "language": "Kannada",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Jagadodharana",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Purandara Dasa composition in Kapi raga. Popular devotional song on Krishna."
+}

@@ -1,0 +1,17 @@
+{
+  "id": "dhenuka",
+  "name": "Dhenuka",
+  "aliases": [],
+  "melakarta": 9,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dhenuka_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta). Pentatonic, gentle devotional character.",
+  "is_melakarta": true,
+  "cakra": 2
+}

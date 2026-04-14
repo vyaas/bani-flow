@@ -1,0 +1,18 @@
+{
+  "id": "ananda_bhairavi",
+  "name": "Ananda Bhairavi",
+  "aliases": [
+    "Anandabhairavi"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ananda_Bhairavi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Natabhairavi (20th melakarta); bhashanga vakra raga; ārohana S G2 R2 G2 M1 P D2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes srngara and karuna; a favourite for padams and javalis; associated with Sarangapani's compositions",
+  "is_melakarta": false
+}

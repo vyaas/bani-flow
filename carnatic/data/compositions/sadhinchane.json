@@ -1,0 +1,16 @@
+{
+  "id": "sadhinchane",
+  "title": "Sadhinchane",
+  "composer_id": "tyagaraja",
+  "raga_id": "arabhi",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sadhinchane",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Pancharatna kriti; a devotional composition in the majestic Ghana raga Arabhi"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "maund",
+  "name": "Maund",
+  "aliases": [
+    "Mand"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Mand_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta). Corresponds to Hindustani Mand. Gentle folk-like character, popular for bhajans.",
+  "is_melakarta": false
+}

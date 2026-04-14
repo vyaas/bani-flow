@@ -1,0 +1,16 @@
+{
+  "id": "thaye_tripura",
+  "title": "Thaye Tripura",
+  "composer_id": "periyasami_tooran",
+  "raga_id": "suddha_saveri",
+  "tala": "khanda_chapu",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Periyasami_Tooran",
+      "label": "Wikipedia — Periyasami Tooran",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tamil kriti by Periyasami Tooran in Suddha Saveri; Khanda Chapu tala; addressed to the goddess Tripurasundari"
+}

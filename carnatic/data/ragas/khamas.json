@@ -1,0 +1,19 @@
+{
+  "id": "khamas",
+  "name": "Khamas",
+  "aliases": [
+    "Kamas",
+    "Kamaas"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Khamas",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga; evokes romance and longing; widely used in javalis and padams",
+  "is_melakarta": false
+}

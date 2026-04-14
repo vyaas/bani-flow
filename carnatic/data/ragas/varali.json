@@ -1,0 +1,16 @@
+{
+  "id": "varali",
+  "name": "Varali",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "jhalavarali",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Varali",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Jhalavarali (39th melakarta); one of the five Ghana ragas; considered auspicious yet difficult; associated with Ganesha. Source: Wikipedia.",
+  "is_melakarta": false
+}

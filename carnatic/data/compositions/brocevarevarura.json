@@ -1,0 +1,16 @@
+{
+  "id": "brocevarevarura",
+  "title": "Brocevarevarura Ninnu Vina Raghuvara",
+  "composer_id": "mysore_vasudevacharya",
+  "raga_id": "khamas",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Brocevarevarura",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Mysore Vasudevacharya kriti in Khamas raga. A popular concert piece."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "brova_bharama",
+  "title": "Brova Bharama",
+  "composer_id": "tyagaraja",
+  "raga_id": "bahudari",
+  "tala": "deshadi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "label": "Wikipedia — Tyagaraja",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Tyagaraja in Bahudari; Deshadi tala; Tyagaraja asks whether it is a burden to protect him; one of the principal compositions defining raga Bahudari"
+}

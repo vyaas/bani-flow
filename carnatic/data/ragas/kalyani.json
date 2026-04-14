@@ -1,0 +1,19 @@
+{
+  "id": "kalyani",
+  "name": "Kalyani",
+  "aliases": [
+    "Yaman (Hindustani equivalent)"
+  ],
+  "melakarta": 65,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kalyani_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "65th melakarta (Mechakalyani); all sharp notes except natural Sa and Pa; associated with brightness, auspiciousness, and devotion",
+  "is_melakarta": true,
+  "cakra": 11
+}

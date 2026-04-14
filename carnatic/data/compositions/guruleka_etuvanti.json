@@ -1,0 +1,16 @@
+{
+  "id": "guruleka_etuvanti",
+  "title": "Guruleka Etuvanti",
+  "composer_id": "tyagaraja",
+  "raga_id": "gowrimanohari",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Guruleka_Etuvanti",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Gowrimanohari raga. On the importance of a guru."
+}

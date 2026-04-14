@@ -1,0 +1,17 @@
+{
+  "id": "navanitam",
+  "name": "Navanītam",
+  "aliases": [],
+  "melakarta": 40,
+  "is_melakarta": true,
+  "cakra": 7,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "40th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₂ N₂ Ṡ"
+}

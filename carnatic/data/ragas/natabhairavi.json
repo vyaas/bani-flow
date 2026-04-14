@@ -1,0 +1,17 @@
+{
+  "id": "natabhairavi",
+  "name": "Natabhairavi",
+  "aliases": [],
+  "melakarta": 20,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Natabhairavi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours",
+  "is_melakarta": true,
+  "cakra": 4
+}

@@ -1,0 +1,18 @@
+{
+  "id": "nalinakanthi",
+  "name": "Nalinakanthi",
+  "aliases": [
+    "Nalinakanti"
+  ],
+  "melakarta": null,
+  "parent_raga": "sarasangi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nalinakanthi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Shankarabharanam (29th melakarta). Pentatonic, bright cheerful character.",
+  "is_melakarta": false
+}

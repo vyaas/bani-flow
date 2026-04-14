@@ -1,0 +1,17 @@
+{
+  "id": "suryakantam",
+  "name": "Sūryakāntam",
+  "aliases": [],
+  "melakarta": 17,
+  "is_melakarta": true,
+  "cakra": 3,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "17th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₂ N₃ Ṡ"
+}

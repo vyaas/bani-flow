@@ -1,0 +1,16 @@
+{
+  "id": "callare_ramacandruniki",
+  "title": "Callarē Rāmacandruni",
+  "composer_id": "tyagaraja",
+  "raga_id": "ahiri",
+  "tala": "misra_capu",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Ahiri; misra capu tala"
+}

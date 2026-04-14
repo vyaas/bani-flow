@@ -1,0 +1,16 @@
+{
+  "id": "nannu_brovu",
+  "title": "Nannu Brovu",
+  "composer_id": "shyama_shastri",
+  "raga_id": "lalitha",
+  "tala": "misra_capu",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+      "label": "Wikipedia — Shyama Shastri",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Shyama Shastri in Lalitha; Mishra Chapu tala; a supplication to the goddess Kamakshi; one of the principal compositions defining raga Lalitha"
+}

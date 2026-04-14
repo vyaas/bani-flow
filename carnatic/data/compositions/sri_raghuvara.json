@@ -1,0 +1,16 @@
+{
+  "id": "sri_raghuvara",
+  "title": "Sri Raghuvara",
+  "composer_id": "tyagaraja",
+  "raga_id": "bhairavi",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+      "label": "Wikipedia — Tyagaraja",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Tyagaraja in Bhairavi; Adi tala; a devotional composition addressed to Rama"
+}

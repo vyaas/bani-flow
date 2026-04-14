@@ -1,0 +1,16 @@
+{
+  "id": "adiyokka_yugamu",
+  "title": "Adiyokka Yugamu",
+  "composer_id": "kshetrayya",
+  "raga_id": "kambhoji",
+  "tala": "tisra_triputa",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+      "label": "Wikipedia — Kshetrayya",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Kshetrayya in Kambhoji; Tisra Triputa tala; part of the Kshetrayya padam tradition addressed to Muvvagopala"
+}

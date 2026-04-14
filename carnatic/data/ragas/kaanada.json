@@ -1,0 +1,20 @@
+{
+  "id": "kaanada",
+  "name": "Kaanada",
+  "aliases": [
+    "Kanada",
+    "Kānada",
+    "Kannada"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kanada_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga with characteristic zigzag phrases; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 N2 P M1 G2 R2 S; evokes grandeur and devotion; associated with Tyagaraja's 'Sri Narada'",
+  "is_melakarta": false
+}

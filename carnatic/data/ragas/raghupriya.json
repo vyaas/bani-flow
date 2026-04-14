@@ -1,0 +1,17 @@
+{
+  "id": "raghupriya",
+  "name": "Raghupriyā",
+  "aliases": [],
+  "melakarta": 42,
+  "is_melakarta": true,
+  "cakra": 7,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "42th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₃ N₃ Ṡ"
+}

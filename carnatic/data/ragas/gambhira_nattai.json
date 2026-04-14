@@ -1,0 +1,18 @@
+{
+  "id": "gambhira_nattai",
+  "name": "Gambhira Nattai",
+  "aliases": [
+    "Gambhiranattai"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Gambhira_Nattai",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta). Rare raga used in Mallaris and temple music. Majestic, ceremonial character.",
+  "is_melakarta": false
+}

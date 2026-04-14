@@ -1,0 +1,16 @@
+{
+  "id": "eti_janmamidi",
+  "title": "Ēṭi Janmamidi",
+  "composer_id": "tyagaraja",
+  "raga_id": "varali",
+  "tala": "misra_capu",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Varali; misra capu tala"
+}

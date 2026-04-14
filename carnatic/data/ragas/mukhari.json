@@ -1,0 +1,18 @@
+{
+  "id": "mukhari",
+  "name": "Mukhari",
+  "aliases": [
+    "Moukhari"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Mukhari_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Natabhairavi (20th melakarta); sampurna raga with vakra phrases; ārohana S R2 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R2 G2 S; evokes pathos and devotion; one of the most expansive ragas for alapana; best known for Tyagaraja's 'Sarasiruhanana'",
+  "is_melakarta": false
+}

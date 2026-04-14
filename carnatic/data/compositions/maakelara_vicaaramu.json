@@ -1,0 +1,16 @@
+{
+  "id": "maakelara_vicaaramu",
+  "title": "maakElaraa vicaaramu",
+  "composer_id": "tyagaraja",
+  "raga_id": "ravichandrika",
+  "tala": "deshadi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "http://www.shivkumar.org/music/maakelara.ram",
+      "label": "Shivkumar.org — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire"
+}

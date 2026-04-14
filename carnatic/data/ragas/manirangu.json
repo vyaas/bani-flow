@@ -1,0 +1,18 @@
+{
+  "id": "manirangu",
+  "name": "Manirangu",
+  "aliases": [
+    "maNirangu"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragasm.shtml#maNirangu",
+      "label": "Karnatik.com — raga index",
+      "type": "archive"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; associated with Muttusvāmi Dīkṣita compositions",
+  "is_melakarta": false
+}

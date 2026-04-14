@@ -1,0 +1,16 @@
+{
+  "id": "aparama_bhakthi",
+  "title": "Aparama Bhakthi",
+  "composer_id": "tyagaraja",
+  "raga_id": "pantuvarali",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1388.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Pantuvarali (Kamavardhini); Rupakam tala; one of the principal compositions defining this raga in the concert repertoire"
+}

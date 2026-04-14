@@ -1,0 +1,18 @@
+{
+  "id": "surutti",
+  "name": "Surutti",
+  "aliases": [
+    "Suruti"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Surutti",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); bhāshāṅga vakra raga (Subbarama Dikshitar classification); ārohana S R₂ M₁ P N₂ D₂ N₂ Ṡ, avarohana Ṡ N₂ D₂ P M₁ G₃ P M₁ R₂ S; equivalent to Mixolydian mode; evokes devotion and pathos; a favourite raga of the Tyagaraja school",
+  "is_melakarta": false
+}

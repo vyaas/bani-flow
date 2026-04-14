@@ -1,0 +1,19 @@
+{
+  "id": "poorvikalyani",
+  "name": "Poorvikalyani",
+  "aliases": [
+    "Purvikalyani",
+    "Poorvi Kalyani"
+  ],
+  "melakarta": null,
+  "parent_raga": "kalyani",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Poorvikalyani",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kalyani (65th melakarta); pentatonic (audava-audava) raga; arohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes devotion and serenity; frequently used in Tyagaraja kritis",
+  "is_melakarta": false
+}

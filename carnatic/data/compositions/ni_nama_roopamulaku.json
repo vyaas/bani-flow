@@ -1,0 +1,16 @@
+{
+  "id": "ni_nama_roopamulaku",
+  "title": "Ni Nama Roopamulaku",
+  "composer_id": "tyagaraja",
+  "raga_id": "sowrashtram",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Mangalam by Tyagaraja in Sowrashtram; Adi tala; traditionally sung to close a concert"
+}

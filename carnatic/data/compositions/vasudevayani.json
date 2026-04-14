@@ -1,0 +1,16 @@
+{
+  "id": "vasudevayani",
+  "title": "Vasudevayani",
+  "composer_id": "tyagaraja",
+  "raga_id": "kalyani",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1287.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Kalyani; Adi tala; a devotional composition addressed to Vasudeva (Krishna); one of the standard Kalyani kritis in the concert repertoire"
+}

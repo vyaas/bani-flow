@@ -1,0 +1,16 @@
+{
+  "id": "kuvalayakshiro",
+  "title": "Kuvalayākṣirō",
+  "composer_id": "kshetrayya",
+  "raga_id": "gowlipantu",
+  "tala": "misra_capu",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+      "label": "Wikipedia — Kshetrayya",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Kshetrayya in Gowlipantu; misra capu tala; part of the Kshetrayya padam tradition"
+}

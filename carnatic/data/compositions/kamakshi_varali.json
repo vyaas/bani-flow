@@ -1,0 +1,16 @@
+{
+  "id": "kamakshi_varali",
+  "title": "Kamakshi",
+  "composer_id": "shyama_shastri",
+  "raga_id": "varali",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kamakshi_(Shyama_Shastri)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Shyama Shastri kriti in Varali raga. A popular concert piece."
+}

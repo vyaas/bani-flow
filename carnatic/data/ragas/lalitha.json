@@ -1,0 +1,18 @@
+{
+  "id": "lalitha",
+  "name": "Lalitha",
+  "aliases": [
+    "Lalita"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Lalitha_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); audava-shadava raga (5 notes ascending, 6 descending); ārohana S R1 G3 M1 P S, avarohana S N3 P M1 G3 R1 S; evokes tenderness and devotion; associated with Shyama Shastri's compositions, particularly 'Nannu Brovu'",
+  "is_melakarta": false
+}

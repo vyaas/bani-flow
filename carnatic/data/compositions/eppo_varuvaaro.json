@@ -1,0 +1,16 @@
+{
+  "id": "eppo_varuvaaro",
+  "title": "Eppo Varuvaaro",
+  "composer_id": "gopalakrishna_bharathi",
+  "raga_id": "jonepuri",
+  "tala": "Adi",
+  "language": "Tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Gopalakrishna_Bharathi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Gopalakrishna Bharathi composition in Jonepuri raga. A popular Tamil devotional song."
+}

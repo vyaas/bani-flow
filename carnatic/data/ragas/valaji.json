@@ -1,0 +1,15 @@
+{
+  "id": "valaji",
+  "name": "Valaji",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "chakravakam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Valaji",
+      "label": "Valaji - Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Chakravakam (mela 16). Arohanam: S G3 P D2 N2 S; Avarohanam: S N2 D2 P G3 S. Pentatonic (audava-audava), omits rishabham and madhyamam."
+}

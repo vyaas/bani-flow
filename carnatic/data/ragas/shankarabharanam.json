@@ -1,0 +1,19 @@
+{
+  "id": "shankarabharanam",
+  "name": "Shankarabharanam",
+  "aliases": [
+    "Dheerashankarabharanam"
+  ],
+  "melakarta": 29,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shankarabharanam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "29th melakarta; equivalent to the Western major scale; considered the most complete and balanced raga; parent of Nata and Arabhi",
+  "is_melakarta": true,
+  "cakra": 5
+}

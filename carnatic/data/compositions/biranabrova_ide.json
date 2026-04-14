@@ -1,0 +1,15 @@
+{
+  "id": "biranabrova_ide",
+  "title": "Biranabrova Ide",
+  "composer_id": "tyagaraja",
+  "raga_id": "kalyani",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://karnatik.com/c33043.shtml",
+      "label": "Biranabrova Ide - karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Kalyani. Confirmed via karnatik.com/c33043."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "pusadaramu",
+  "title": "Pusadaramu",
+  "composer_id": "govindasvamy_ayya",
+  "raga_id": "thodi",
+  "tala": "tisra_triputa",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Govindasami_Ayya",
+      "label": "Wikipedia — Govindasami Ayya",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Javali by Govindasvamy Ayya in Todi; Tisra Triputa tala"
+}

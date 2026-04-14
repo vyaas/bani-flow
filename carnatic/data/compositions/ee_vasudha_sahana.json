@@ -1,0 +1,16 @@
+{
+  "id": "ee_vasudha_sahana",
+  "title": "Ee Vasudha",
+  "composer_id": "tyagaraja",
+  "raga_id": "sahana",
+  "tala": "Adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2369.shtml",
+      "label": "Karnatik.com — Ee Vasudha (Sahana)",
+      "type": "other"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Sahana raga. Distinct from 'Yee Vasudha' (id: yee_vasudha) which is set in Kanada. Both share the same opening words; the Sahana version is confirmed at karnatik.com c2369."
+}

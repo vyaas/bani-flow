@@ -1,0 +1,16 @@
+{
+  "id": "parulanna_matta",
+  "title": "Parulanna Matta",
+  "composer_id": "dharmapuri_subbaraya_iyer",
+  "raga_id": "kapi",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer",
+      "label": "Wikipedia — Dharmapuri Subbaraya Iyer",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Javali by Dharmapuri Subbaraya Iyer in Kapi; Rupakam tala; part of the javali repertoire of the devadasi tradition"
+}

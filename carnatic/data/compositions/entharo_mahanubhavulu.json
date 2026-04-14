@@ -1,0 +1,16 @@
+{
+  "id": "entharo_mahanubhavulu",
+  "title": "Entharo Mahanubhavulu",
+  "composer_id": "tyagaraja",
+  "raga_id": "sriraga",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Pancharatna kriti; considered the crown jewel of the Tyagaraja corpus; a salutation to all great souls; traditionally sung last in the Pancharatna set"
+}

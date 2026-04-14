@@ -1,0 +1,16 @@
+{
+  "id": "vadiga_gopaluni",
+  "title": "Vadiga Gopaluni",
+  "composer_id": "kshetrayya",
+  "raga_id": "mohanam",
+  "tala": "misra_capu",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+      "label": "Wikipedia — Kshetrayya",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Kshetrayya in Mohanam; Misra Chapu tala; part of the Kshetrayya padam tradition addressed to Muvvagopala"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "jayantasena",
+  "name": "Jayantasena",
+  "aliases": [
+    "jayantasEna"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/vinatasuta.htm",
+      "label": "Shivkumar.org — Vinata Suta Vahana notation (scale explicitly stated)",
+      "type": "archive"
+    },
+    {
+      "url": "https://www.karnatik.com/ragasj.shtml#jayantasEna",
+      "label": "Karnatik.com — raga index (jayantasEna entry)",
+      "type": "archive"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); shadava raga (6 notes ascending and descending, no Rishabha); ārohana S G2 M1 P D2 S, avarohana S N2 D2 P M1 G2 S; a rare raga; best known for Tyagaraja's 'Vinatā Suta Vāhana'",
+  "is_melakarta": false
+}

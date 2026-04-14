@@ -1,0 +1,18 @@
+{
+  "id": "behag",
+  "name": "Behag",
+  "aliases": [
+    "Bilahari Behag"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Behag_(Carnatic_raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); bhashanga vakra raga admitting both M1 and M2; ārohana S G3 M1 P N2 S, avarohana S N2 D2 P M1 G3 M1 R2 S; evokes romance and longing; a favourite raga for javalis and padams; associated with Patnam Subramanya Iyer's 'Samayamide Rara'",
+  "is_melakarta": false
+}

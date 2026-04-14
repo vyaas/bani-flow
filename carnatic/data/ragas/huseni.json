@@ -1,0 +1,19 @@
+{
+  "id": "huseni",
+  "name": "Huseni",
+  "aliases": [
+    "Hussaini",
+    "Husaini"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Huseni",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga vakra raga; ārohana S R2 G2 M1 P N2 S, avarohana S N2 D2 P M1 G2 R2 S; evokes pathos and longing; associated with padams and swarajathis; best known for Swati Tirunal's swarajathi 'Pahimam Brhannayike'",
+  "is_melakarta": false
+}

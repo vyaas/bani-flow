@@ -1,0 +1,17 @@
+{
+  "id": "yagapriya",
+  "name": "Yāgapriyā",
+  "aliases": [],
+  "melakarta": 31,
+  "is_melakarta": true,
+  "cakra": 6,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "31th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₁ N₁ Ṡ"
+}

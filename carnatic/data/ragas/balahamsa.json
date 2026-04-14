@@ -1,0 +1,18 @@
+{
+  "id": "balahamsa",
+  "name": "Balahamsa",
+  "aliases": [
+    "Bala Hamsa"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c31490.shtml",
+      "label": "Karnatik.com — Viraja Turaga notation (raga confirmed)",
+      "type": "archive"
+    }
+  ],
+  "notes": "Janya of Natabhairavi (20th melakarta); rare raga; best known for Tyagaraja's 'Viraja Turaga'; no standalone Wikipedia article confirmed",
+  "is_melakarta": false
+}

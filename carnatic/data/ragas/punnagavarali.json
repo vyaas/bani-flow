@@ -1,0 +1,18 @@
+{
+  "id": "punnagavarali",
+  "name": "Punnaga Varali",
+  "aliases": [
+    "Punnagavarali"
+  ],
+  "melakarta": null,
+  "parent_raga": "tanarupi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Punnagavarali",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Tanarupi (6th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P D1 S, avarohana S D1 P M1 R1 S; evokes deep pathos and longing; a favourite for padams and javalis; associated with the Kshetrayya tradition",
+  "is_melakarta": false
+}

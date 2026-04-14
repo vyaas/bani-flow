@@ -1,0 +1,16 @@
+{
+  "id": "ahiri",
+  "name": "Ahiri",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ahiri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Vakulabharanam (14th melakarta); also associated with Hanumatodi (8th melakarta); sampurna raga with vakra swaras in ascending scale; evokes karuna rasa (compassion); considered an early-morning raga; ancient raga mentioned in Sangita Makarandha",
+  "is_melakarta": false
+}

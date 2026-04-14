@@ -1,0 +1,17 @@
+{
+  "id": "bhavapriya",
+  "name": "Bhavapriyā",
+  "aliases": [],
+  "melakarta": 44,
+  "is_melakarta": true,
+  "cakra": 8,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "44th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₁ N₂ Ṡ"
+}

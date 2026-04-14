@@ -1,0 +1,17 @@
+{
+  "id": "chalanata",
+  "name": "Chalanāṭa",
+  "aliases": [],
+  "melakarta": 36,
+  "is_melakarta": true,
+  "cakra": 6,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "36th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₃ N₃ Ṡ"
+}

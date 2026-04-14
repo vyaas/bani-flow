@@ -1,0 +1,21 @@
+{
+  "id": "sriraga",
+  "name": "Sriraga",
+  "aliases": [
+    "Shree",
+    "Sri",
+    "Sreeraga",
+    "Shri"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shree_%28Carnatic_raga%29",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Asampurna melakarta equivalent of Kharaharapriya (22nd melakarta); audava-vakra-sampurna raga (5 notes ascending, zig-zag descending); no gandharam or dhaivatam in ascending scale; ancient raga; not related to the Hindustani raga Shree",
+  "is_melakarta": false
+}

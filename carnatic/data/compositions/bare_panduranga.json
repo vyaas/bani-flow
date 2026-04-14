@@ -1,0 +1,16 @@
+{
+  "id": "bare_panduranga",
+  "title": "Bare Panduranga",
+  "composer_id": "tukaram",
+  "raga_id": "maund",
+  "tala": "Adi",
+  "language": "Marathi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tukaram",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tukaram abhang in Maund raga. Popular Varkari devotional composition."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "kaligiyunte",
+  "title": "Kaligiyunte",
+  "composer_id": "tyagaraja",
+  "raga_id": "keeravani",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Keeravani; Adi tala; one of the principal compositions defining this raga"
+}

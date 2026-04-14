@@ -1,0 +1,18 @@
+{
+  "id": "purvi",
+  "name": "Purvi",
+  "aliases": [
+    "Poorvi"
+  ],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Purvi_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mayamalavagowla (15th melakarta); ārohana: S R1 G3 M1 D1 N3 S, avarohana: S N3 D1 P M1 G3 R1 S; corresponds to Hindustani Purvi; serious evening raga, contemplative character; used by Dikshitar",
+  "is_melakarta": false
+}

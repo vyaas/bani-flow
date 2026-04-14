@@ -1,0 +1,18 @@
+{
+  "id": "hamsadhwani",
+  "name": "Hamsadhwani",
+  "aliases": [
+    "Hansadhwani"
+  ],
+  "melakarta": null,
+  "parent_raga": "kalyani",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Hamsadhwani",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes, no Madhyama or Dhaivata); ārohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes brightness, auspiciousness, and joy; a favourite opening raga for concerts; best known for Dikshitar's 'Vatapi Ganapatim' and the jalajAksha varnam of Maanambuchaavadi Venkatasubbaiyer",
+  "is_melakarta": false
+}

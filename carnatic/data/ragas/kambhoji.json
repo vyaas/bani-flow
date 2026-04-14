@@ -1,0 +1,18 @@
+{
+  "id": "kambhoji",
+  "name": "Kambhoji",
+  "aliases": [
+    "Kambodhi"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kambhoji",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); one of the most popular ragas; associated with bhakti and grandeur; a staple of the concert repertoire",
+  "is_melakarta": false
+}

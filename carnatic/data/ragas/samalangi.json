@@ -1,0 +1,17 @@
+{
+  "id": "samalangi",
+  "name": "Śāmaḻāngi",
+  "aliases": [],
+  "melakarta": 55,
+  "is_melakarta": true,
+  "cakra": 10,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "55th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₁ N₁ Ṡ"
+}

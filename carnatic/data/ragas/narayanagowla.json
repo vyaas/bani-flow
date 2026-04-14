@@ -1,0 +1,18 @@
+{
+  "id": "narayanagowla",
+  "name": "Narayanagowla",
+  "aliases": [
+    "Narayana Gowla"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Narayanagaula",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya raga derived from Kharaharapriya (22nd melakarta); arohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; a serious, contemplative raga used by Muthuswami Dikshitar and Tyagaraja",
+  "is_melakarta": false
+}

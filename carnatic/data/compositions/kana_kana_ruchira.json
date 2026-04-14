@@ -1,0 +1,16 @@
+{
+  "id": "kana_kana_ruchira",
+  "title": "Kana Kana Ruchira",
+  "composer_id": "tyagaraja",
+  "raga_id": "varali",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kana_Kana_Ruchira",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Pancharatna kriti; set in the auspicious and technically demanding Ghana raga Varali"
+}

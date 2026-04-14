@@ -1,0 +1,16 @@
+{
+  "id": "en_manam",
+  "title": "En Manam",
+  "composer_id": "papanasam_sivan",
+  "raga_id": "simhendramadhyamam",
+  "tala": "adi",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Papanasam_Sivan",
+      "label": "Wikipedia — Papanasam Sivan",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tamil kriti by Papanasam Sivan in Simhendramadhyamam; Adi tala; one of the principal compositions defining this raga in the Tamil devotional repertoire"
+}

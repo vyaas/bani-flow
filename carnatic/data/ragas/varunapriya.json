@@ -1,0 +1,17 @@
+{
+  "id": "varunapriya",
+  "name": "Varuṇapriyā",
+  "aliases": [],
+  "melakarta": 24,
+  "is_melakarta": true,
+  "cakra": 4,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "24th melakarta; Cakra 4 (Veda); arohana: S R₂ G₂ M₁ P D₃ N₃ Ṡ"
+}

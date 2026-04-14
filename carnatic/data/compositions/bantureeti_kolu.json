@@ -1,0 +1,16 @@
+{
+  "id": "bantureeti_kolu",
+  "title": "Bantureeti Kolu",
+  "composer_id": "tyagaraja",
+  "raga_id": "hamsanadam",
+  "tala": "deshadi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Hamsanadam; Deshadi tala; one of the principal compositions defining this raga"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "dudukugala",
+  "title": "Dudukugala",
+  "composer_id": "tyagaraja",
+  "raga_id": "gowla",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dudukugala",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Pancharatna kriti; a self-critical composition in the pathos-laden Ghana raga Gowla"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "ninnu_juchi",
+  "title": "Ninnu Juchi",
+  "composer_id": "kshetrayya",
+  "raga_id": "punnagavarali",
+  "tala": "tisra_triputa",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+      "label": "Wikipedia — Kshetrayya",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Kshetrayya in Punnaga Varali; Tisra Triputa tala; part of the Kshetrayya padam tradition"
+}

@@ -1,0 +1,703 @@
+[
+  {
+    "id": "maanambuchaavadi_venkatasubbaiyer",
+    "name": "Maanambuchaavadi Venkatasubbaiyer",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Maanambuchaavadi_Venkatasubba_Iyer",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      },
+      {
+        "url": "https://www.karnatik.com/co1090.shtml",
+        "label": "Karnatik.com — composer profile",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "chinnaiah_pillai",
+    "name": "Chinnaiah Pillai",
+    "musician_node_id": null,
+    "born": 1802,
+    "died": 1856,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+        "label": "Wikipedia — Tanjore Quartet",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "dharmapuri_subbaraya_iyer",
+    "name": "Dharmapuri Subbaraya Iyer",
+    "musician_node_id": null,
+    "born": null,
+    "died": 1908,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "govindasvamy_ayya",
+    "name": "Govindasvamy Ayya",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Govindasami_Ayya",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "patnam_subramanya_iyer",
+    "name": "Patnam Subramanya Iyer",
+    "musician_node_id": "patnam_subramanya_iyer",
+    "born": 1845,
+    "died": 1902,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "muthuswami_dikshitar",
+    "name": "Muthuswami Dikshitar",
+    "musician_node_id": "muthuswami_dikshitar",
+    "born": 1775,
+    "died": 1835,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "swati_tirunal",
+    "name": "Swati Tirunal",
+    "musician_node_id": null,
+    "born": 1813,
+    "died": 1846,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Swati_Tirunal",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "jayachamarajendra_wadiyar",
+    "name": "Jayachamarajendra Wadiyar",
+    "musician_node_id": null,
+    "born": 1919,
+    "died": 1974,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Jayachamarajendra_Wadiyar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "kshetrayya",
+    "name": "Kshetrayya",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "pattabhiramayya",
+    "name": "Tiruppaṇandāḷ Paṭṭābhirāmaiyyā",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "http://www.carnatica.net/composer/pattabhiramayya.htm",
+        "label": "Carnatica.net — composer profile",
+        "type": "article"
+      }
+    ]
+  },
+  {
+    "id": "annasami_shastri",
+    "name": "Annasami Shastri",
+    "musician_node_id": null,
+    "born": 1899,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/co1124.shtml",
+        "label": "Karnatik.com — composer profile",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "samuel_vedanayagam_pillai",
+    "name": "Samuel Vedanayagam Pillai",
+    "musician_node_id": null,
+    "born": 1826,
+    "died": 1889,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Samuel_Vedanayagam_Pillai",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "tyagaraja",
+    "name": "Tyagaraja",
+    "musician_node_id": "tyagaraja",
+    "born": 1767,
+    "died": 1847,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "shyama_shastri",
+    "name": "Shyama Shastri",
+    "musician_node_id": "shyama_shastri",
+    "born": 1762,
+    "died": 1827,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "veenai_kuppayyar",
+    "name": "Veenai Kuppayyar",
+    "musician_node_id": null,
+    "born": 1798,
+    "died": 1860,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Veenai_Kuppayyar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "sarangapani",
+    "name": "Sarangapani",
+    "musician_node_id": null,
+    "born": null,
+    "died": 1724,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Sarangapani_(poet)",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "lalgudi_jayaraman",
+    "name": "Lalgudi Jayaraman",
+    "musician_node_id": "lalgudi_jayaraman",
+    "born": 1930,
+    "died": 2013,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "subbaraya_sastri",
+    "name": "Subbaraya Sastri",
+    "musician_node_id": "subbaraya_sastri",
+    "born": 1803,
+    "died": 1876,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "pacchimiriyam_adiapayya",
+    "name": "Pacchimiriyam Adiapayya",
+    "musician_node_id": null,
+    "born": null,
+    "died": 1821,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Pacchimiriyam_Adiyappayya",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "papanasam_sivan",
+    "name": "Papanasam Sivan",
+    "musician_node_id": null,
+    "born": 1890,
+    "died": 1973,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Papanasam_Sivan",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "periyasami_tooran",
+    "name": "Periyasami Tooran",
+    "musician_node_id": null,
+    "born": 1908,
+    "died": 1975,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Periyasami_Tooran",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "kamalesha_vittala_dasa",
+    "name": "Kamalesha Vittala Dasa",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Haridasa",
+        "label": "Wikipedia — Haridasa tradition",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "ariyakudi_ramanuja_iyengar",
+    "name": "Ariyakudi Ramanuja Iyengar",
+    "musician_node_id": "ariyakudi_ramanuja_iyengar",
+    "born": 1890,
+    "died": 1967,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "ramnad_sreenivasa_iyengar",
+    "name": "Ramnad Sreenivasa Iyengar",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Poochi_Srinivasa_Iyengar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      },
+      {
+        "url": "https://www.shivkumar.org/music/varnams/ninnukori.htm",
+        "label": "Shivkumar.org — Ninnu Kori notation (composer explicitly stated)",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "oothukadu_venkata_kavi",
+    "name": "Oothukadu Venkata Kavi",
+    "musician_node_id": null,
+    "born": 1700,
+    "died": 1765,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Oothukkadu_Venkata_Kavi",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "karur_devudu_iyer",
+    "name": "Karur Devudu Iyer",
+    "musician_node_id": null,
+    "born": 1861,
+    "died": 1901,
+    "sources": [
+      {
+        "url": "https://www.oxfordreference.com/display/10.1093/oi/authority.20110803095714787",
+        "label": "Oxford Reference — Karur Brothers entry",
+        "type": "article"
+      },
+      {
+        "url": "https://patantara.com/notations/w5jCpEjCkM",
+        "label": "Patantara — Sami Ninne Kori notation (composer confirmed)",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "garbhapurivasa",
+    "name": "Garbhapuri Srinivasa",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/co1023.shtml",
+        "label": "Karnatik.com — composer profile (ankita: Garbhapurivasa)",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "arunagirinathar",
+    "name": "Arunagirinathar",
+    "musician_node_id": null,
+    "born": null,
+    "died": 1500,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Arunagirinathar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "annamacharya",
+    "name": "Annamacharya",
+    "musician_node_id": null,
+    "born": 1408,
+    "died": 1503,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Annamacharya",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "basava",
+    "name": "Basava",
+    "musician_node_id": null,
+    "born": 1131,
+    "died": 1167,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Basava",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "chandrasekharendra_saraswati",
+    "name": "Chandrasekharendra Saraswati",
+    "musician_node_id": null,
+    "born": 1894,
+    "died": 1994,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Chandrasekharendra_Saraswati",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "dv_gundappa",
+    "name": "DV Gundappa",
+    "musician_node_id": null,
+    "born": 1887,
+    "died": 1975,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/D._V._Gundappa",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "ghanam_krishna_iyer",
+    "name": "Ghanam Krishna Iyer",
+    "musician_node_id": null,
+    "born": 1781,
+    "died": 1856,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Ghanam_Krishna_Iyer",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "gopalakrishna_bharathi",
+    "name": "Gopalakrishna Bharathi",
+    "musician_node_id": null,
+    "born": 1811,
+    "died": 1896,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Gopalakrishna_Bharathi",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "kanaka_dasa",
+    "name": "Kanaka Dasa",
+    "musician_node_id": null,
+    "born": 1509,
+    "died": 1609,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Kanaka_Dasa",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "kumara_ettendra",
+    "name": "Kumara Ettendra",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Kumara_Ettendra",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "muthiah_bhagavathar",
+    "name": "Muthiah Bhagavathar",
+    "musician_node_id": null,
+    "born": 1877,
+    "died": 1945,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Harikesanallur_Muthiah_Bhagavathar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "mysore_vasudevacharya",
+    "name": "Mysore Vasudevacharya",
+    "musician_node_id": null,
+    "born": 1865,
+    "died": 1961,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Mysore_Vasudevacharya",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "perumal_murugan",
+    "name": "Perumal Murugan",
+    "musician_node_id": null,
+    "born": 1966,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Perumal_Murugan",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "purandara_dasa",
+    "name": "Purandara Dasa",
+    "musician_node_id": null,
+    "born": 1484,
+    "died": 1564,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Purandaradasa",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "rabindranath_tagore",
+    "name": "Rabindranath Tagore",
+    "musician_node_id": null,
+    "born": 1861,
+    "died": 1941,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Rabindranath_Tagore",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "subbarama_iyer",
+    "name": "Subbarama Iyer",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Subbarama_Iyer",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "tukaram",
+    "name": "Tukaram",
+    "musician_node_id": null,
+    "born": 1598,
+    "died": 1650,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tukaram",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "tulsidas",
+    "name": "Tulsidas",
+    "musician_node_id": null,
+    "born": 1532,
+    "died": 1623,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tulsidas",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "vyasatirtha",
+    "name": "Vyasatirtha",
+    "musician_node_id": null,
+    "born": 1460,
+    "died": 1539,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Vyasatirtha",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "dwijendralal_roy",
+    "name": "Dwijendralal Roy",
+    "musician_node_id": null,
+    "born": 1863,
+    "died": 1913,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Dwijendralal_Roy",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "subramanya_bharathi",
+    "name": "Subramanya Bharathi",
+    "musician_node_id": null,
+    "born": 1882,
+    "died": 1921,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Subramania_Bharati",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "tevaram",
+    "name": "Tevaram",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tevaram",
+        "label": "Tevaram - Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "muthiah_bhagavatar",
+    "name": "Harikesanallur Muthiah Bhagavatar",
+    "musician_node_id": null,
+    "born": 1877,
+    "died": 1945,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+        "label": "Muthiah Bhagavatar - Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  }
+]

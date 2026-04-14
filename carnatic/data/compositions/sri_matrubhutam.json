@@ -1,0 +1,16 @@
+{
+  "id": "sri_matrubhutam",
+  "title": "Sri Matrubhutam",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "kaanada",
+  "tala": "Adi",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sri_Matrubhutam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Muthuswami Dikshitar kriti in Kannada raga."
+}

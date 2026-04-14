@@ -1,0 +1,17 @@
+{
+  "id": "subhapantuvarali",
+  "name": "Śubhapantuvarāḷi",
+  "aliases": [],
+  "melakarta": 45,
+  "is_melakarta": true,
+  "cakra": 8,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "45th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₁ N₃ Ṡ"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "kedaram",
+  "name": "Kedaram",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kedaram",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); associated with devotion and grandeur; a favourite for kritis in the Tyagaraja corpus",
+  "is_melakarta": false
+}

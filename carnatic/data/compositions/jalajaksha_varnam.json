@@ -1,0 +1,21 @@
+{
+  "id": "jalajaksha_varnam",
+  "title": "jalajākṣi ninnēḍabāsi",
+  "composer_id": "maanambuchaavadi_venkatasubbaiyer",
+  "raga_id": "hamsadhwani",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/varnams/jalajakshi.htm",
+      "label": "Shivkumar.org — notation and meaning",
+      "type": "archive"
+    },
+    {
+      "url": "https://www.karnatik.com/co1090.shtml",
+      "label": "Karnatik.com — composer profile (lists this varnam)",
+      "type": "archive"
+    }
+  ],
+  "notes": "Ata-tala varnam by Maanambuchaavadi Venkatasubbaiyer in Hamsadhwani; Adi tala; pallavi 'jalajakshi ninnedabasi chala marulu konnadira'; mudra 'Venkatesa'; one of the most frequently performed varnams in the concert repertoire; the karnatik.com source notes the composer took varnamettu-s left by Tyagaraja and fitted his own words"
+}

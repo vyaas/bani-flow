@@ -1,0 +1,16 @@
+{
+  "id": "apadooruku",
+  "title": "Apadooruku",
+  "composer_id": "pattabhiramayya",
+  "raga_id": "khamas",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c26046.shtml",
+      "label": "Karnatik.com — notation",
+      "type": "archive"
+    }
+  ],
+  "notes": "Javali by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā in Khamas; Adi tala; distinct from 'Marubari Talalenu' by the same composer"
+}

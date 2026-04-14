@@ -1,0 +1,18 @@
+{
+  "id": "simhavahini",
+  "name": "Simhavahini",
+  "aliases": [
+    "Simhavahana"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Simhavahini",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Shankarabharanam (29th melakarta). Rare raga. Tyagaraja's Nenarunchara is a well-known kriti.",
+  "is_melakarta": false
+}

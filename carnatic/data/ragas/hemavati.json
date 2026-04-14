@@ -1,0 +1,17 @@
+{
+  "id": "hemavati",
+  "name": "Hemavati",
+  "aliases": [],
+  "melakarta": 58,
+  "is_melakarta": true,
+  "cakra": 10,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Melakarta",
+      "label": "Wikipedia — Melakarta",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "58th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₂ N₂ Ṡ"
+}

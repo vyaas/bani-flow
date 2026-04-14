@@ -59,8 +59,60 @@ def load_musicians(musicians_dir: Path, musicians_file: Path) -> dict:
     return {"nodes": [], "edges": []}
 
 
-def load_compositions(compositions_file: Path) -> dict:
-    """Load compositions.json; return empty structure if absent."""
+def load_compositions(
+    compositions_dir: Path,
+    compositions_file: Path,
+    ragas_dir: Path | None = None,
+) -> dict:
+    """
+    Load compositions data from split directories or the legacy monolithic file.
+
+    Directory mode (preferred):
+      - ragas_dir/          → one .json per raga (bare objects); skips '_'-prefixed files
+      - compositions_dir/   → one .json per composition (bare objects); skips '_'-prefixed files
+      - compositions_dir/_composers.json → bare array of all composers
+
+    Falls back to the legacy monolithic compositions_file if neither directory exists.
+
+    ragas_dir defaults to compositions_dir.parent / "ragas" when not supplied.
+    """
+    _ragas_dir = ragas_dir if ragas_dir is not None else compositions_dir.parent / "ragas"
+
+    ragas_from_dir   = _ragas_dir.is_dir()
+    comps_from_dir   = compositions_dir.is_dir()
+
+    if ragas_from_dir or comps_from_dir:
+        # ── ragas ──────────────────────────────────────────────────────────
+        if ragas_from_dir:
+            raga_files = sorted(
+                f for f in _ragas_dir.glob("*.json")
+                if not f.name.startswith("_")
+            )
+            ragas = [json.loads(f.read_text(encoding="utf-8")) for f in raga_files]
+        else:
+            ragas = []
+
+        # ── composers sidecar ──────────────────────────────────────────────
+        if comps_from_dir:
+            composers_file = compositions_dir / "_composers.json"
+            composers = (
+                json.loads(composers_file.read_text(encoding="utf-8"))
+                if composers_file.exists()
+                else []
+            )
+            # ── compositions ───────────────────────────────────────────────
+            comp_files = sorted(
+                f for f in compositions_dir.glob("*.json")
+                if not f.name.startswith("_")
+            )
+            compositions = [json.loads(f.read_text(encoding="utf-8")) for f in comp_files]
+        else:
+            composers    = []
+            compositions = []
+
+        return {"ragas": ragas, "composers": composers, "compositions": compositions}
+
+    # legacy fallback: monolithic compositions.json
     if compositions_file.exists():
         return json.loads(compositions_file.read_text(encoding="utf-8"))
     return {"ragas": [], "composers": [], "compositions": []}

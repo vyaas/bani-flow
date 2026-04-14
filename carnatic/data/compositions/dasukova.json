@@ -1,0 +1,15 @@
+{
+  "id": "dasukova",
+  "title": "Dasukova",
+  "composer_id": "tyagaraja",
+  "raga_id": "thodi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1040.shtml",
+      "label": "Dasukova - karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Todi."
+}
