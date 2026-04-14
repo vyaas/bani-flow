@@ -1,0 +1,16 @@
+{
+  "id": "harihara_putram",
+  "title": "Harihara Putram",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "vasantha",
+  "tala": "khanda_ekam",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/hariharaputram.htm",
+      "label": "Shivkumar.org — Dikshitar kriti text",
+      "type": "article"
+    }
+  ],
+  "notes": "Muthuswami Dikshitar kriti in Vasantha, Khanda Ekam tala; authorship disputed in some sources"
+}

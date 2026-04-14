@@ -1657,11 +1657,6 @@
         "bani": "semmangudi",
         "youtube": [
           {
-            "url": "https://youtu.be/x5ExBQpVy2k",
-            "label": "Mylapore Fine Arts Club · 26 Nov 1967",
-            "year": 1967
-          },
-          {
             "url": "https://youtu.be/HzT9NZEF1wo",
             "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Semmangudi Srinivasa Iyer",
             "composition_id": "maakelara_vicaaramu",
@@ -3298,6 +3293,24 @@
         "is_melakarta": false
       },
       {
+        "id": "dhanashree",
+        "name": "Dhanashree",
+        "aliases": [
+          "Dhanasri",
+          "Dhanyasi"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Dhanashri",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya raga of Natabhairavi (mela 20); a pentatonic raga (audava-audava) with a serene, devotional character; frequently used for thillanas and light compositions; not to be confused with the Hindustani Dhanashri"
+      },
+      {
         "id": "dharmavati",
         "name": "Dharmavati",
         "aliases": [],
@@ -3998,6 +4011,23 @@
         ],
         "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga admitting both G2 and G3; evokes srngara and karuna; a favourite raga for padams and javalis; associated with the devadasi repertoire",
         "is_melakarta": false
+      },
+      {
+        "id": "karnataka_behag",
+        "name": "Karnataka Behag",
+        "aliases": [
+          "Behag"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Karnataka_Behag",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya raga of Harikambhoji (mela 28); a Carnatic equivalent of the Hindustani Behag; characterised by the use of both Madhyamas (suddha and prati) in descent; popular in light classical and devotional contexts"
       },
       {
         "id": "karnataka_kapi",
@@ -6264,6 +6294,48 @@
             "type": "wikipedia"
           }
         ]
+      },
+      {
+        "id": "bhadrachala_ramadas",
+        "name": "Bhadrachala Ramadas",
+        "musician_node_id": null,
+        "born": 1620,
+        "died": 1688,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Bhadrachala_Ramadasu",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "ambujam_krishna",
+        "name": "Ambujam Krishna",
+        "musician_node_id": null,
+        "born": 1917,
+        "died": 2004,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ambujam_Krishna",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "tarangampadi_panchanada_iyer",
+        "name": "Tarangampadi Panchanada Iyer",
+        "musician_node_id": null,
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Tarangambadi_Panchanada_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       }
     ],
     "compositions": [
@@ -6409,6 +6481,22 @@
           }
         ],
         "notes": "Tyagaraja kriti in Pantuvarali (Kamavardhini); Rupakam tala; one of the principal compositions defining this raga in the concert repertoire"
+      },
+      {
+        "id": "aravinda_padamalar",
+        "title": "Aravinda Padamalar",
+        "composer_id": "ambujam_krishna",
+        "raga_id": "kapi",
+        "tala": "adi",
+        "language": "Tamil",
+        "sources": [
+          {
+            "url": "https://karnatik.com/c0007.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "notes": "Ambujam Krishna composition in Kapi, Adi tala; Tamil devotional song"
       },
       {
         "id": "azhagu_vadivai_vandhu",
@@ -7058,6 +7146,22 @@
         "notes": "Tyagaraja kriti in Gowrimanohari raga. On the importance of a guru."
       },
       {
+        "id": "harihara_putram",
+        "title": "Harihara Putram",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "vasantha",
+        "tala": "khanda_ekam",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://www.shivkumar.org/music/hariharaputram.htm",
+            "label": "Shivkumar.org — Dikshitar kriti text",
+            "type": "article"
+          }
+        ],
+        "notes": "Muthuswami Dikshitar kriti in Vasantha, Khanda Ekam tala; authorship disputed in some sources"
+      },
+      {
         "id": "hecharikaga",
         "title": "Hecharikaga",
         "composer_id": "tyagaraja",
@@ -7426,6 +7530,22 @@
           }
         ],
         "notes": "Vyasatirtha composition in Yamuna Kalyani raga. One of the most popular Carnatic devotional songs."
+      },
+      {
+        "id": "ksheenamai_tiruga",
+        "title": "Ksheenamai Tiruga",
+        "composer_id": "tyagaraja",
+        "raga_id": "mukhari",
+        "tala": "adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2411.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Mukhari, Adi tala"
       },
       {
         "id": "kshira_sagara_shayana",
@@ -7874,6 +7994,22 @@
         "notes": "Kriti by Tyagaraja in Malavi; Deshadi tala; a meditation on the Lord's grace"
       },
       {
+        "id": "nenendu_vedukudura",
+        "title": "Nenendu Vedukudura",
+        "composer_id": "tyagaraja",
+        "raga_id": "karnataka_behag",
+        "tala": "adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://saidvk.blogspot.com/2013/06/selected-ragam-karnataka-behag.html",
+            "label": "Saidvk blog — Karnataka Behag compositions",
+            "type": "article"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Karnataka Behag, Adi tala; one of the few canonical kritis in this raga"
+      },
+      {
         "id": "ni_nama_roopamulaku",
         "title": "Ni Nama Roopamulaku",
         "composer_id": "tyagaraja",
@@ -8098,6 +8234,22 @@
           }
         ],
         "notes": "Javali by Govindasvamy Ayya in Todi; Tisra Triputa tala"
+      },
+      {
+        "id": "rama_jogi",
+        "title": "Rama Jogi",
+        "composer_id": "bhadrachala_ramadas",
+        "raga_id": "khamas",
+        "tala": "adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c15974.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "notes": "Bhadrachala Ramadas kriti in Khamas, Adi tala"
       },
       {
         "id": "rama_nee_samanamevaru",
@@ -8694,6 +8846,22 @@
         "notes": "Thillana by Ariyakudi Ramanuja Iyengar in Bilahari; Adi tala; one of the most celebrated thillanas in the concert repertoire; a signature composition of the Ariyakudi school"
       },
       {
+        "id": "thillana_dhanashree_swati_tirunal",
+        "title": "Thillana in Dhanashree",
+        "composer_id": "swati_tirunal",
+        "raga_id": "dhanashree",
+        "tala": "adi",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Swati_Tirunal",
+            "label": "Wikipedia — Swati Tirunal",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Thillana by Swati Tirunal in Dhanashree, Adi tala; tuned by Lalgudi G. Jayaraman"
+      },
+      {
         "id": "tiruvatriyur_thyagarajan",
         "title": "Tiruvatriyur Thyagarajan",
         "composer_id": "ghanam_krishna_iyer",
@@ -8980,6 +9148,19 @@
         "kv_narayanaswamy",
         "cr_mani_iyer",
         "palghat_raghu"
+      ]
+    },
+    {
+      "id": "mylapore_fine_arts_1967",
+      "path": "recordings/mylapore_fine_arts_1967.json",
+      "title": "Semmangudi R Srinivasa Iyer — Mylapore Fine Arts Club, 26 November 1967",
+      "short_title": "Mylapore Fine Arts 1967",
+      "date": "1967-11-26",
+      "venue": "Mylapore Fine Arts Club, Madras",
+      "primary_musician_ids": [
+        "semmangudi_srinivasa_iyer",
+        "lalgudi_jayaraman",
+        "vellore_ramabhadran"
       ]
     },
     {

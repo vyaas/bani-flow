@@ -1,0 +1,18 @@
+{
+  "id": "dhanashree",
+  "name": "Dhanashree",
+  "aliases": [
+    "Dhanasri",
+    "Dhanyasi"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dhanashri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya raga of Natabhairavi (mela 20); a pentatonic raga (audava-audava) with a serene, devotional character; frequently used for thillanas and light compositions; not to be confused with the Hindustani Dhanashri"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "rama_jogi",
+  "title": "Rama Jogi",
+  "composer_id": "bhadrachala_ramadas",
+  "raga_id": "khamas",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c15974.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Bhadrachala Ramadas kriti in Khamas, Adi tala"
+}

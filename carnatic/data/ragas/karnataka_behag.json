@@ -1,0 +1,17 @@
+{
+  "id": "karnataka_behag",
+  "name": "Karnataka Behag",
+  "aliases": [
+    "Behag"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Karnataka_Behag",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya raga of Harikambhoji (mela 28); a Carnatic equivalent of the Hindustani Behag; characterised by the use of both Madhyamas (suddha and prati) in descent; popular in light classical and devotional contexts"
+}

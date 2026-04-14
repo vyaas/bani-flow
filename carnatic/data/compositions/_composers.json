@@ -699,5 +699,47 @@
         "type": "wikipedia"
       }
     ]
+  },
+  {
+    "id": "bhadrachala_ramadas",
+    "name": "Bhadrachala Ramadas",
+    "musician_node_id": null,
+    "born": 1620,
+    "died": 1688,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Bhadrachala_Ramadasu",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "ambujam_krishna",
+    "name": "Ambujam Krishna",
+    "musician_node_id": null,
+    "born": 1917,
+    "died": 2004,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Ambujam_Krishna",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "tarangampadi_panchanada_iyer",
+    "name": "Tarangampadi Panchanada Iyer",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tarangambadi_Panchanada_Iyer",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
   }
 ]

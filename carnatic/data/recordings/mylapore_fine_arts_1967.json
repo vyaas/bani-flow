@@ -1,0 +1,310 @@
+{
+  "id": "mylapore_fine_arts_1967",
+  "video_id": "x5ExBQpVy2k",
+  "url": "https://youtu.be/x5ExBQpVy2k",
+  "title": "Semmangudi R Srinivasa Iyer — Mylapore Fine Arts Club, 26 November 1967",
+  "short_title": "Mylapore Fine Arts 1967",
+  "date": "1967-11-26",
+  "venue": "Mylapore Fine Arts Club, Madras",
+  "occasion": "Mylapore Fine Arts Club concert season; digitised from archive by Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://youtu.be/x5ExBQpVy2k",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "vocal_support",
+          "unmatched_name": "VR Krishnan"
+        },
+        {
+          "musician_id": null,
+          "role": "vocal_support",
+          "unmatched_name": "PS Narayanaswamy"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "sadhinchane",
+          "raga_id": "arabhi",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Sadinchane O Manasa",
+          "notes": "Tyagaraja kriti in Arabhi, Adi tala; concert opener"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:07:23",
+          "offset_seconds": 443,
+          "composition_id": "deva_deva_kalayamide",
+          "raga_id": "mayamalavagowla",
+          "tala": "rupakam",
+          "composer_id": "swati_tirunal",
+          "display_title": "Deva Deva Kalayamide",
+          "notes": "Swati Tirunal kriti in Mayamalavagowla, Rupakam tala"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:20:09",
+          "offset_seconds": 1209,
+          "composition_id": "nenendu_vedukudura",
+          "raga_id": "karnataka_behag",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nenendu Vedukudura",
+          "notes": "Tyagaraja kriti in Karnataka Behag, Adi tala"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:25:39",
+          "offset_seconds": 1539,
+          "composition_id": null,
+          "raga_id": "kalyani",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kalyani — Alapana",
+          "notes": "Ragam (alapana) in Kalyani; prelude to Birana Brova",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:34:56",
+          "offset_seconds": 2096,
+          "composition_id": "biranabrova_ide",
+          "raga_id": "kalyani",
+          "tala": "adi",
+          "composer_id": "tarangampadi_panchanada_iyer",
+          "display_title": "Birana Brova",
+          "notes": "Tarangampadi Panchanada Iyer kriti in Kalyani, Adi tala (Tisra Nadai)"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:46:08",
+          "offset_seconds": 2768,
+          "composition_id": null,
+          "raga_id": "surutti",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Surutti — Alapana",
+          "notes": "Ragam (alapana) in Surutti; prelude to Sri Venkatagirisham",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:52:41",
+          "offset_seconds": 3161,
+          "composition_id": "sri_venkata_girisa",
+          "raga_id": "surutti",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Sri Venkatagirisham",
+          "notes": "Muthuswami Dikshitar kriti in Surutti, Adi tala"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:01:49",
+          "offset_seconds": 3709,
+          "composition_id": "ksheenamai_tiruga",
+          "raga_id": "mukhari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ksheenamai",
+          "notes": "Tyagaraja kriti in Mukhari, Adi tala"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:08:47",
+          "offset_seconds": 4127,
+          "composition_id": null,
+          "raga_id": "vasantha",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Vasantha — Alapana",
+          "notes": "Ragam (alapana) in Vasantha; prelude to Harihara Putram",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:15:07",
+          "offset_seconds": 4507,
+          "composition_id": "harihara_putram",
+          "raga_id": "vasantha",
+          "tala": "khanda_ekam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Harihara Putram",
+          "notes": "Attributed to Muthuswami Dikshitar in Vasantha, Khanda Ekam tala; authorship disputed in some sources"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:25:56",
+          "offset_seconds": 5156,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "khanda_ekam",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": "Percussion solo (Tani Avarthanam) in Khanda Ekam tala; Vellore G. Ramabhadran (mridangam)",
+          "type": "tani"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:30:57",
+          "offset_seconds": 5457,
+          "composition_id": null,
+          "raga_id": "kharaharapriya",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kharaharapriya — Alapana",
+          "notes": "Ragam (alapana) in Kharaharapriya; prelude to the main RTP",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:40:44",
+          "offset_seconds": 6044,
+          "composition_id": "rama_nee_samanamevaru",
+          "raga_id": "kharaharapriya",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Rama Ni Samanamevaru",
+          "notes": "Tyagaraja kriti in Kharaharapriya, Rupakam tala"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "01:57:44",
+          "offset_seconds": 7064,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi — Ragam",
+          "notes": "Ragam (alapana) in Thodi; opening of the main RTP",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:21:25",
+          "offset_seconds": 8485,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi — Thanam",
+          "notes": "Tanam in Thodi",
+          "type": "tanam"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:28:38",
+          "offset_seconds": 8918,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": "tisra_triputa",
+          "composer_id": null,
+          "display_title": "Thodi — Pallavi: Bramhaivaham Kila Sadguru Kripaya",
+          "notes": "Pallavi in Thodi, Tisra Triputa tala (2 Kalai); pallavi line: Bramhaivaham Kila Sadguru Kripaya",
+          "type": "pallavi"
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:49:36",
+          "offset_seconds": 10176,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": "Percussion solo (Tani Avarthanam) following the Thodi RTP; Vellore G. Ramabhadran (mridangam)",
+          "type": "tani"
+        },
+        {
+          "performance_index": 18,
+          "timestamp": "02:50:38",
+          "offset_seconds": 10238,
+          "composition_id": "rama_jogi",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "composer_id": "bhadrachala_ramadas",
+          "display_title": "Rama Jogi",
+          "notes": "Bhadrachala Ramadas kriti in Khamas, Adi tala"
+        },
+        {
+          "performance_index": 19,
+          "timestamp": "02:56:13",
+          "offset_seconds": 10573,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ragamalika — Sloka",
+          "notes": "Sloka performed as a ragamalika traversing Nadanamakriya, Dhanyasi, Yamuna Kalyani, Saveri, Hamsanandhi and Kapi; raga_id null as no single raga is assigned"
+        },
+        {
+          "performance_index": 20,
+          "timestamp": "03:26:50",
+          "offset_seconds": 12410,
+          "composition_id": "aravinda_padamalar",
+          "raga_id": "kapi",
+          "tala": "adi",
+          "composer_id": "ambujam_krishna",
+          "display_title": "Aravinda Padamalar",
+          "notes": "Ambujam Krishna composition in Kapi, Adi tala"
+        },
+        {
+          "performance_index": 21,
+          "timestamp": "03:30:22",
+          "offset_seconds": 12622,
+          "composition_id": "thillana_dhanashree_swati_tirunal",
+          "raga_id": "dhanashree",
+          "tala": "adi",
+          "composer_id": "swati_tirunal",
+          "display_title": "Thillana in Dhanashree",
+          "notes": "Swati Tirunal thillana in Dhanashree, Adi tala; tuned by Lalgudi G. Jayaraman"
+        },
+        {
+          "performance_index": 22,
+          "timestamp": "03:33:56",
+          "offset_seconds": 12836,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku (Mangalam)",
+          "notes": "Tyagaraja mangalam in Sowrashtram, Adi tala"
+        },
+        {
+          "performance_index": 23,
+          "timestamp": "03:34:22",
+          "offset_seconds": 12862,
+          "composition_id": null,
+          "raga_id": "madhyamavati",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Mangalam Kosalendraya (Sloka)",
+          "notes": "Closing mangalam sloka in Madhyamavati; source: shlokam.org/shloka/mangalam-kosalendraya.htm"
+        }
+      ]
+    }
+  ]
+}
