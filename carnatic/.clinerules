@@ -370,6 +370,10 @@ Entries are terse — this is a log, not an essay.
 
 - 2026-04-13: When a musician has multiple recordings of the same composition, add a `version` field (free text, ADR-010) to each youtube[] entry in musicians.json and each performance object in recordings/*.json — e.g. "standalone clip", "Jamshedpur 1961", "younger", "older"; without it the UI falls back to ordinal labels (v1, v2, …) which are unambiguous but carry no context; the version field is optional and its absence is valid when only one recording exists.
 
+- 2026-04-14: cli.py reads graph.json (the derived artefact), NOT musicians.json directly. If musicians.json is edited without re-running the render pipeline, cli.py will silently serve stale data. There is no staleness guard. Always run `python3 -m carnatic.render._main` after any write to musicians.json or compositions.json before trusting CLI output.
+
+- 2026-04-14: To remove a bare youtube[] entry that has been superseded by a structured recording file, use `python3 carnatic/remove_youtube_entry.py --musician-id <id> --video-id <11-char-id> [--dry-run]`. The script reads musicians.json directly, removes the matching entry atomically, and prints a [YOUTUBE-] change-log line. Always follow with validate + render + commit.
+
 ### 🎵 Carnatic Coder
 
 - 2026-04-11: When adding a cross-cutting capability to all agents, write a transform script that reads the target file, applies the change idempotently, and writes back — never patch JSON by hand.
