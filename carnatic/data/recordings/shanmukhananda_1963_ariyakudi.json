@@ -1,0 +1,395 @@
+{
+  "id": "shanmukhananda_1963_ariyakudi",
+  "video_id": "PT1tN4fCQ9I",
+  "url": "https://youtu.be/PT1tN4fCQ9I",
+  "title": "Shanmukhananda Sabha Inauguration Concert, Bombay 1963 — Ariyakudi Ramanuja Iyengar",
+  "date": "1963-08-22",
+  "venue": "Shanmukhananda Sabha, Matunga, Bombay",
+  "occasion": "Inauguration of the new auditorium by Governor of Maharashtra Dr Vijayalakshmi Pandit on 22 August 1963. The recording opens with speeches by Palghat Mani Iyer (00:00:44), TN Krishnan (00:06:12), Ariyakudi Ramanuja Iyengar (00:08:50), and institution-builder TV Ramanujam (00:13:07). The concert is the debut classical performance in the new hall. Chembai Vaidyanatha Bhagavatar performed the same evening; MS Subbulakshmi performed the following day.",
+  "sources": [
+    {
+      "url": "https://youtu.be/PT1tN4fCQ9I",
+      "label": "YouTube — Vaak Foundation archival upload",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "ariyakudi_ramanuja_iyengar", "role": "vocal" },
+        { "musician_id": null, "role": "vocal_support", "unmatched_name": "B Rajam Iyer" },
+        { "musician_id": null, "role": "vocal_support", "unmatched_name": "Madurai N Krishnan" },
+        { "musician_id": "tn_krishnan", "role": "violin" },
+        { "musician_id": "palghat_mani_iyer", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:15:26",
+          "offset_seconds": 926,
+          "composition_id": "intha_chalamu",
+          "raga_id": "begada",
+          "tala": "adi",
+          "composer_id": "veenai_kuppayyar",
+          "display_title": "Intha Chalamu (Varnam)",
+          "notes": "varnam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:21:07",
+          "offset_seconds": 1267,
+          "composition_id": "endaro_mahanubhavulu",
+          "raga_id": "sriraga",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Endaro Mahanubhavulu",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:31:07",
+          "offset_seconds": 1867,
+          "composition_id": null,
+          "raga_id": "pantuvarali",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Pantuvarali — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:34:22",
+          "offset_seconds": 2062,
+          "composition_id": "aparama_bhakthi",
+          "raga_id": "pantuvarali",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Aparama Bhakti",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:44:48",
+          "offset_seconds": 2688,
+          "composition_id": "evarani_nirnayancirera",
+          "raga_id": "devamritavarshini",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Evarani",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:49:13",
+          "offset_seconds": 2953,
+          "composition_id": null,
+          "raga_id": "ananda_bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Anandabhairavi — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:54:07",
+          "offset_seconds": 3247,
+          "composition_id": "marivere_gathi",
+          "raga_id": "ananda_bhairavi",
+          "tala": "misra_capu",
+          "composer_id": "shyama_shastri",
+          "display_title": "Marivere Gathi",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:02:53",
+          "offset_seconds": 3773,
+          "composition_id": null,
+          "raga_id": "kaanada",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kanada — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:07:48",
+          "offset_seconds": 4068,
+          "composition_id": "sri_narada",
+          "raga_id": "kaanada",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Sri Narada",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:13:37",
+          "offset_seconds": 4417,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:21:46",
+          "offset_seconds": 4906,
+          "composition_id": "kalitheera_vandarul",
+          "raga_id": "thodi",
+          "tala": "misra_capu",
+          "composer_id": "koteeswara_iyer",
+          "display_title": "Kalitheera Vandarul",
+          "notes": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:35:22",
+          "offset_seconds": 5722,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "misra_capu",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "type": "tani",
+          "notes": "Misra Chapu tala; Palghat Mani Iyer"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:44:09",
+          "offset_seconds": 6249,
+          "composition_id": null,
+          "raga_id": "sriranjini",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Sriranjini — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "01:47:14",
+          "offset_seconds": 6434,
+          "composition_id": "marubalka",
+          "raga_id": "sriranjini",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Marubalka",
+          "notes": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "01:56:18",
+          "offset_seconds": 6978,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Bhairavi — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:04:30",
+          "offset_seconds": 7470,
+          "composition_id": "koluvaiyunnade",
+          "raga_id": "bhairavi",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Koluvaiyunnade",
+          "notes": null
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:13:41",
+          "offset_seconds": 8021,
+          "composition_id": null,
+          "raga_id": "kalyani",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kalyani — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 18,
+          "timestamp": "02:20:45",
+          "offset_seconds": 8445,
+          "composition_id": "nidhi_chala_sukhama",
+          "raga_id": "kalyani",
+          "tala": "misra_capu",
+          "composer_id": "tyagaraja",
+          "display_title": "Nidhi Chala Sukhama",
+          "notes": null
+        },
+        {
+          "performance_index": 19,
+          "timestamp": "02:34:41",
+          "offset_seconds": 9281,
+          "composition_id": null,
+          "raga_id": "sowrashtram",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Sowrashtram — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 20,
+          "timestamp": "02:37:38",
+          "offset_seconds": 9458,
+          "composition_id": "sharanam_sharanam_endrane",
+          "raga_id": "sowrashtram",
+          "tala": "misra_capu",
+          "composer_id": "arunachala_kavi",
+          "display_title": "Sharanam Sharanam Endrane (Ramanatakam)",
+          "notes": "Musical setting by Ariyakudi Ramanuja Iyengar"
+        },
+        {
+          "performance_index": 21,
+          "timestamp": "02:41:08",
+          "offset_seconds": 9668,
+          "composition_id": null,
+          "raga_id": "varali",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Varali — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 22,
+          "timestamp": "02:44:24",
+          "offset_seconds": 9864,
+          "composition_id": "azhi_mazhai_kanna",
+          "raga_id": "varali",
+          "tala": "adi",
+          "composer_id": "andal",
+          "display_title": "Azhi Mazhai Kanna (Thiruppavai)",
+          "notes": "Musical setting by Ariyakudi Ramanuja Iyengar"
+        },
+        {
+          "performance_index": 23,
+          "timestamp": "02:49:37",
+          "offset_seconds": 10177,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Chatur Ragamalika — Alapana",
+          "notes": "alapana; ragamalika alapana covering Shankarabharanam, Thodi, Kalyani, Darbar"
+        },
+        {
+          "performance_index": 24,
+          "timestamp": "03:05:40",
+          "offset_seconds": 11140,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Chatur Ragamalika — Tanam",
+          "notes": "tanam; ragamalika covering Shankarabharanam, Thodi, Kalyani, Darbar"
+        },
+        {
+          "performance_index": 25,
+          "timestamp": "03:14:00",
+          "offset_seconds": 11640,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Chatur Ragamalika — Pallavi: Shankarabharananai Azhaithodi Vadi Kalyani Darbarukku",
+          "notes": "pallavi; Adi tala 2 kalai; ragamalika pallavi in Shankarabharanam, Thodi, Kalyani, Darbar"
+        },
+        {
+          "performance_index": 26,
+          "timestamp": "03:22:21",
+          "offset_seconds": 12141,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "type": "tani",
+          "notes": "Adi tala 2 kalai; Palghat Mani Iyer"
+        },
+        {
+          "performance_index": 27,
+          "timestamp": "03:27:23",
+          "offset_seconds": 12443,
+          "composition_id": null,
+          "raga_id": "khamas",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Khamas — Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 28,
+          "timestamp": "03:29:21",
+          "offset_seconds": 12561,
+          "composition_id": "kommaro_vaniki",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Kommaro Vaniki (Javali)",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 29,
+          "timestamp": "03:32:02",
+          "offset_seconds": 12722,
+          "composition_id": "ayi_murali_mukunda",
+          "raga_id": "senchurutti",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ayi Murali Mukunda (Slokam)",
+          "notes": "slokam; free rhythm"
+        },
+        {
+          "performance_index": 30,
+          "timestamp": "03:35:44",
+          "offset_seconds": 12944,
+          "composition_id": "kaliyugadalli",
+          "raga_id": "senchurutti",
+          "tala": "adi",
+          "composer_id": "purandara_dasa",
+          "display_title": "Kaliyugadalli",
+          "notes": null
+        },
+        {
+          "performance_index": 31,
+          "timestamp": "03:38:30",
+          "offset_seconds": 13110,
+          "composition_id": "ongi_ulagalanda",
+          "raga_id": "sindhu_bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ongi Ulagalanda (Slokam)",
+          "notes": "slokam; Alvar verse; free rhythm"
+        },
+        {
+          "performance_index": 32,
+          "timestamp": "03:43:59",
+          "offset_seconds": 13439,
+          "composition_id": "haribhajan_komana",
+          "raga_id": "sindhu_bhairavi",
+          "tala": "misra_capu",
+          "composer_id": null,
+          "display_title": "Haribhajan Komana",
+          "notes": null
+        },
+        {
+          "performance_index": 33,
+          "timestamp": "03:46:39",
+          "offset_seconds": 13599,
+          "composition_id": null,
+          "raga_id": "madhyamavati",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Sloka (Mangalam)",
+          "notes": "mangalam; slokam in Madhyamavati"
+        }
+      ]
+    }
+  ]
+}

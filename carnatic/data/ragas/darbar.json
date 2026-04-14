@@ -1,0 +1,16 @@
+{
+  "id": "darbar",
+  "name": "Darbar",
+  "aliases": ["Darbaru", "Darbar (Carnatic)"],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Darbar_(raga)",
+      "label": "Wikipedia — Darbar (raga)",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S (vakra); a raga of dignified, majestic character; distinct from Darbari Kanada (Hindustani) though related in mood; widely used in the Tyagaraja school and in ragamalikas",
+  "is_melakarta": false
+}

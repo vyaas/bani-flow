@@ -1,0 +1,16 @@
+{
+  "id": "kaliyugadalli",
+  "title": "Kaliyugadalli",
+  "composer_id": "purandara_dasa",
+  "raga_id": "senchurutti",
+  "tala": "adi",
+  "language": "kannada",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Purandaradasa",
+      "label": "Wikipedia — Purandaradasa",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kannada devotional composition by Purandara Dasa in Senchurutti raga; Adi tala; part of the vast Purandara Dasa corpus of Haridasa compositions; frequently performed as a light concluding piece"
+}

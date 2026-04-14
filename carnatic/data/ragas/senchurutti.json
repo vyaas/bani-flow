@@ -1,0 +1,16 @@
+{
+  "id": "senchurutti",
+  "name": "Senchurutti",
+  "aliases": ["Senjurutti", "Senjurutu"],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://sujamusic.wordpress.com/senjurutti/",
+      "label": "Suja Music — Senjurutti raga notes",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); a gentle, devotional raga used primarily for slokams and light compositions; distinct from Surutti despite superficial similarity in name; frequently employed for mangalam and devotional pieces in the Tyagaraja school",
+  "is_melakarta": false
+}

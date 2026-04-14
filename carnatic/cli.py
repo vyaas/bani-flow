@@ -68,13 +68,18 @@ def _dump(obj: object) -> None:
 
 
 def _fuzzy_match_musician(g: CarnaticGraph, query: str) -> dict | None:
-    """Match query against musician id (exact) or label (case-insensitive substring)."""
-    # Exact id match first
+    """Match query against musician id (exact), then label (exact case-insensitive,
+    then substring fallback for partial names like 'TN Krishnan')."""
+    # 1. Exact id match
     node = g.get_musician(query)
     if node:
         return node
-    # Case-insensitive label substring
     q = query.lower()
+    # 2. Exact label match (case-insensitive)
+    for n in g.get_all_musicians():
+        if q == n.get("label", "").lower():
+            return n
+    # 3. Substring fallback (musician names have many spelling variants)
     for n in g.get_all_musicians():
         if q in n.get("label", "").lower():
             return n
@@ -82,28 +87,41 @@ def _fuzzy_match_musician(g: CarnaticGraph, query: str) -> dict | None:
 
 
 def _fuzzy_match_raga(g: CarnaticGraph, query: str) -> dict | None:
-    """Match query against raga id (exact), name, or aliases (case-insensitive)."""
+    """Match query against raga id (exact), then name or aliases (exact case-insensitive).
+    No substring fallback — substring matching produces false positives for short raga
+    names like 'Sri', 'Bhairavi', 'Kalyani', 'Kanada', 'Varali'."""
+    # 1. Exact id match
     raga = g.get_raga(query)
     if raga:
         return raga
     q = query.lower()
+    # 2. Exact name match (case-insensitive)
     for r in g.get_all_ragas():
-        if q in r.get("name", "").lower():
+        if q == r.get("name", "").lower():
             return r
+    # 3. Exact alias match (case-insensitive)
+    for r in g.get_all_ragas():
         for alias in r.get("aliases", []):
-            if q in alias.lower():
+            if q == alias.lower():
                 return r
     return None
 
 
 def _fuzzy_match_composition(g: CarnaticGraph, query: str) -> dict | None:
-    """Match query against composition id (exact) or title (case-insensitive substring)."""
+    """Match query against composition id (exact), then title (exact case-insensitive,
+    then prefix fallback). No arbitrary substring — 'Sri' must not match 'Sri Narada'."""
+    # 1. Exact id match
     comp = g.get_composition(query)
     if comp:
         return comp
     q = query.lower()
+    # 2. Exact title match (case-insensitive)
     for c in g.get_all_compositions():
-        if q in c.get("title", "").lower():
+        if q == c.get("title", "").lower():
+            return c
+    # 3. Prefix match (query is a leading substring of the title)
+    for c in g.get_all_compositions():
+        if c.get("title", "").lower().startswith(q):
             return c
     return None
 

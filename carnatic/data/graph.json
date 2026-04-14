@@ -3219,6 +3219,25 @@
         "notes": "66th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₃ N₃ Ṡ"
       },
       {
+        "id": "darbar",
+        "name": "Darbar",
+        "aliases": [
+          "Darbaru",
+          "Darbar (Carnatic)"
+        ],
+        "melakarta": null,
+        "parent_raga": "kharaharapriya",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Darbar_(raga)",
+            "label": "Wikipedia — Darbar (raga)",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S (vakra); a raga of dignified, majestic character; distinct from Darbari Kanada (Hindustani) though related in mood; widely used in the Tyagaraja school and in ragamalikas",
+        "is_melakarta": false
+      },
+      {
         "id": "darbari_kanada",
         "name": "Darbari Kanada",
         "aliases": [
@@ -3278,7 +3297,8 @@
         "name": "Devamritavarshini",
         "aliases": [
           "Deva Amrita Varshini",
-          "dEvaamrutavarshani"
+          "dEvaamrutavarshani",
+          "Devamruthavarshini"
         ],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -4208,7 +4228,9 @@
       {
         "id": "madhyamavati",
         "name": "Madhyamavati",
-        "aliases": [],
+        "aliases": [
+          "Madhyamavathi"
+        ],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
         "sources": [
@@ -5035,6 +5057,25 @@
         "notes": "7th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₁ N₁ Ṡ"
       },
       {
+        "id": "senchurutti",
+        "name": "Senchurutti",
+        "aliases": [
+          "Senjurutti",
+          "Senjurutu"
+        ],
+        "melakarta": null,
+        "parent_raga": "harikambhoji",
+        "sources": [
+          {
+            "url": "https://sujamusic.wordpress.com/senjurutti/",
+            "label": "Suja Music — Senjurutti raga notes",
+            "type": "article"
+          }
+        ],
+        "notes": "Janya of Harikambhoji (28th melakarta); a gentle, devotional raga used primarily for slokams and light compositions; distinct from Surutti despite superficial similarity in name; frequently employed for mangalam and devotional pieces in the Tyagaraja school",
+        "is_melakarta": false
+      },
+      {
         "id": "shadvidamargini",
         "name": "Shaḍvidamārgini",
         "aliases": [],
@@ -5129,7 +5170,9 @@
       {
         "id": "sindhu_bhairavi",
         "name": "Sindhu Bhairavi",
-        "aliases": [],
+        "aliases": [
+          "Sindhubhairavi"
+        ],
         "melakarta": null,
         "parent_raga": "natabhairavi",
         "sources": [
@@ -6320,6 +6363,48 @@
             "url": "https://en.wikipedia.org/wiki/Ambujam_Krishna",
             "label": "Wikipedia",
             "type": "wikipedia"
+          },
+          {
+            "id": "koteeswara_iyer",
+            "name": "Harikesanallur Koteeswara Iyer",
+            "musician_node_id": null,
+            "born": 1870,
+            "died": 1936,
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/Harikesanallur_Koteeswara_Iyer",
+                "label": "Wikipedia",
+                "type": "wikipedia"
+              }
+            ]
+          },
+          {
+            "id": "andal",
+            "name": "Andal",
+            "musician_node_id": null,
+            "born": null,
+            "died": null,
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/Andal",
+                "label": "Wikipedia",
+                "type": "wikipedia"
+              }
+            ]
+          },
+          {
+            "id": "arunachala_kavi",
+            "name": "Arunachala Kavi",
+            "musician_node_id": null,
+            "born": null,
+            "died": null,
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/Arunachala_Kavi",
+                "label": "Wikipedia",
+                "type": "wikipedia"
+              }
+            ]
           }
         ]
       },
@@ -6332,6 +6417,48 @@
         "sources": [
           {
             "url": "https://en.wikipedia.org/wiki/Tarangambadi_Panchanada_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "koteeswara_iyer",
+        "name": "Harikesanallur Koteeswara Iyer",
+        "musician_node_id": null,
+        "born": 1870,
+        "died": 1936,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Harikesanallur_Koteeswara_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "andal",
+        "name": "Andal",
+        "musician_node_id": null,
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Andal",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "arunachala_kavi",
+        "name": "Arunachala Kavi",
+        "musician_node_id": null,
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Arunachala_Kavi",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -6499,6 +6626,22 @@
         "notes": "Ambujam Krishna composition in Kapi, Adi tala; Tamil devotional song"
       },
       {
+        "id": "ayi_murali_mukunda",
+        "title": "Ayi Murali Mukunda",
+        "composer_id": null,
+        "raga_id": "senchurutti",
+        "tala": null,
+        "language": "sanskrit",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Senchurutti",
+            "label": "Wikipedia — Senchurutti (raga context)",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Sanskrit slokam performed in Senchurutti raga; no tala (free rhythm); composer not established; performed as a devotional invocation in the Ariyakudi school concert format"
+      },
+      {
         "id": "azhagu_vadivai_vandhu",
         "title": "Azhagu Vadivai Vandhu",
         "composer_id": null,
@@ -6513,6 +6656,22 @@
           }
         ],
         "notes": "Tamil virutham (free-verse devotional poem) sung as a ragamalika; no single raga or tala; composer not definitively established in standard references; frequently sung in the Tamil devotional concert tradition"
+      },
+      {
+        "id": "azhi_mazhai_kanna",
+        "title": "Azhi Mazhai Kanna",
+        "composer_id": "andal",
+        "raga_id": "varali",
+        "tala": "adi",
+        "language": "tamil",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Andal",
+            "label": "Wikipedia — Andal",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Verse from the Thiruppavai of Andal (Āṇṭāḷ); set to Varali raga and Adi tala by Ariyakudi Ramanuja Iyengar; the Thiruppavai is a collection of 30 Tamil verses addressed to Vishnu; this musical setting is Ariyakudi's own composition"
       },
       {
         "id": "bale_balendu_bhushani",
@@ -7146,6 +7305,22 @@
         "notes": "Tyagaraja kriti in Gowrimanohari raga. On the importance of a guru."
       },
       {
+        "id": "haribhajan_komana",
+        "title": "Haribhajan Komana",
+        "composer_id": null,
+        "raga_id": "sindhu_bhairavi",
+        "tala": "misra_capu",
+        "language": "kannada",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sindhu_Bhairavi",
+            "label": "Wikipedia — Sindhu Bhairavi",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Kannada devotional bhajan in Sindhubhairavi; Misra Chapu tala; composer not definitively established — attributed variously to the Haridasa tradition; performed as a light devotional piece in the Ariyakudi school"
+      },
+      {
         "id": "harihara_putram",
         "title": "Harihara Putram",
         "composer_id": "muthuswami_dikshitar",
@@ -7373,6 +7548,38 @@
         "notes": "Tyagaraja kriti in Keeravani; Adi tala; one of the principal compositions defining this raga"
       },
       {
+        "id": "kalitheera_vandarul",
+        "title": "Kalitheera Vandarul",
+        "composer_id": "koteeswara_iyer",
+        "raga_id": "thodi",
+        "tala": "misra_capu",
+        "language": "tamil",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Harikesanallur_Koteeswara_Iyer",
+            "label": "Wikipedia — Harikesanallur Koteeswara Iyer",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Tamil composition by Harikesanallur Koteeswara Iyer in Thodi raga; Misra Chapu tala; a celebrated piece in the Tamil devotional repertoire; frequently performed as a major item in concerts"
+      },
+      {
+        "id": "kaliyugadalli",
+        "title": "Kaliyugadalli",
+        "composer_id": "purandara_dasa",
+        "raga_id": "senchurutti",
+        "tala": "adi",
+        "language": "kannada",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Purandaradasa",
+            "label": "Wikipedia — Purandaradasa",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Kannada devotional composition by Purandara Dasa in Senchurutti raga; Adi tala; part of the vast Purandara Dasa corpus of Haridasa compositions; frequently performed as a light concluding piece"
+      },
+      {
         "id": "kamakshi_varali",
         "title": "Kamakshi",
         "composer_id": "shyama_shastri",
@@ -7484,6 +7691,22 @@
         "notes": "Tyagaraja kriti in Devagandhari"
       },
       {
+        "id": "koluvaiyunnade",
+        "title": "Koluvaiyunnade",
+        "composer_id": "tyagaraja",
+        "raga_id": "bhairavi",
+        "tala": "adi",
+        "language": "telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1060.shtml",
+            "label": "Karnatik.com — Koluvaiyunnade notation",
+            "type": "archive"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Bhairavi; Adi tala; one of the principal compositions defining Bhairavi in the concert repertoire; deeply expressive of devotion and surrender"
+      },
+      {
         "id": "koluvamaregada",
         "title": "Koluvamaregadā",
         "composer_id": "tyagaraja",
@@ -7498,6 +7721,22 @@
           }
         ],
         "notes": "Tyagaraja kriti in Todi; a devotional composition asking whether the Lord is pleased"
+      },
+      {
+        "id": "kommaro_vaniki",
+        "title": "Kommaro Vaniki",
+        "composer_id": "dharmapuri_subbaraya_iyer",
+        "raga_id": "khamas",
+        "tala": "adi",
+        "language": "telugu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer",
+            "label": "Wikipedia — Dharmapuri Subbaraya Iyer",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Javali by Dharmapuri Subbaraya Iyer in Khamas raga; Adi tala; a popular javali in the concert repertoire; the genre is characterised by romantic or erotic sentiment (shringara rasa)"
       },
       {
         "id": "konniyada_tharama",
@@ -7768,6 +8007,22 @@
           }
         ],
         "notes": "Patnam Subramanya Iyer kriti in Sama raga, Rupakam tala"
+      },
+      {
+        "id": "marivere_gathi",
+        "title": "Marivere Gathi",
+        "composer_id": "shyama_shastri",
+        "raga_id": "ananda_bhairavi",
+        "tala": "misra_capu",
+        "language": "telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1218.shtml",
+            "label": "Karnatik.com — Marivere Gathi notation",
+            "type": "archive"
+          }
+        ],
+        "notes": "Shyama Shastri kriti in Ananda Bhairavi; Misra Chapu tala; one of the principal compositions of Shyama Shastri in this raga; deeply devotional in character, addressed to Goddess Kamakshi"
       },
       {
         "id": "marubalka",
@@ -8140,6 +8395,22 @@
         "notes": "Shyama Shastri kriti in Ananda Bhairavi raga. One of the Trinity's most celebrated compositions."
       },
       {
+        "id": "ongi_ulagalanda",
+        "title": "Ongi Ulagalanda",
+        "composer_id": null,
+        "raga_id": "sindhu_bhairavi",
+        "tala": null,
+        "language": "tamil",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Nammalvar",
+            "label": "Wikipedia — Nammalvar (Alvar tradition)",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Tamil verse from the Divya Prabandham of the Alvar tradition; attributed to Nammalvar; performed as a slokam in Sindhubhairavi raga; no tala (free rhythm); sung as a devotional invocation before the Sindhubhairavi composition in the Ariyakudi school"
+      },
+      {
         "id": "pahimam_brhannayike",
         "title": "Pahimam Brhannayike",
         "composer_id": "swati_tirunal",
@@ -8408,6 +8679,22 @@
           }
         ],
         "notes": "Kriti by Subbaraya Sastri in Begada; Rupakam tala; pallavi 'śaṅkarī nīvē (amba) śaṅkarī nīvani ninnu santatamu kōri vacciti'; addressed to the goddess Kamakshi of Kanchipuram; one of the principal compositions of the Shyama Shastri lineage in Begada"
+      },
+      {
+        "id": "sharanam_sharanam_endrane",
+        "title": "Sharanam Sharanam Endrane",
+        "composer_id": "arunachala_kavi",
+        "raga_id": "sowrashtram",
+        "tala": "misra_capu",
+        "language": "tamil",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Arunachala_Kavi",
+            "label": "Wikipedia — Arunachala Kavi",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Tamil composition from the Ramanatakam (Tamil opera) by Arunachala Kavi; Sowrashtram raga; Misra Chapu tala; the musical setting in this performance is attributed to Ariyakudi Ramanuja Iyengar who popularised this piece in the concert format"
       },
       {
         "id": "shri_guruna_palitosmi",
@@ -9184,6 +9471,19 @@
         "ms_subbulakshmi",
         "ramnad_raghavan",
         "radha_viswanathan"
+      ]
+    },
+    {
+      "id": "shanmukhananda_1963_ariyakudi",
+      "path": "recordings/shanmukhananda_1963_ariyakudi.json",
+      "title": "Shanmukhananda Sabha Inauguration Concert, Bombay 1963 — Ariyakudi Ramanuja Iyengar",
+      "short_title": "",
+      "date": "1963-08-22",
+      "venue": "Shanmukhananda Sabha, Matunga, Bombay",
+      "primary_musician_ids": [
+        "ariyakudi_ramanuja_iyengar",
+        "tn_krishnan",
+        "palghat_mani_iyer"
       ]
     },
     {

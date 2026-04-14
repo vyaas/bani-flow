@@ -1,0 +1,16 @@
+{
+  "id": "sharanam_sharanam_endrane",
+  "title": "Sharanam Sharanam Endrane",
+  "composer_id": "arunachala_kavi",
+  "raga_id": "sowrashtram",
+  "tala": "misra_capu",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Arunachala_Kavi",
+      "label": "Wikipedia — Arunachala Kavi",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tamil composition from the Ramanatakam (Tamil opera) by Arunachala Kavi; Sowrashtram raga; Misra Chapu tala; the musical setting in this performance is attributed to Ariyakudi Ramanuja Iyengar who popularised this piece in the concert format"
+}

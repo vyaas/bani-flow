@@ -1,0 +1,16 @@
+{
+  "id": "kommaro_vaniki",
+  "title": "Kommaro Vaniki",
+  "composer_id": "dharmapuri_subbaraya_iyer",
+  "raga_id": "khamas",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer",
+      "label": "Wikipedia — Dharmapuri Subbaraya Iyer",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Javali by Dharmapuri Subbaraya Iyer in Khamas raga; Adi tala; a popular javali in the concert repertoire; the genre is characterised by romantic or erotic sentiment (shringara rasa)"
+}

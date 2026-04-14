@@ -1,0 +1,16 @@
+{
+  "id": "ongi_ulagalanda",
+  "title": "Ongi Ulagalanda",
+  "composer_id": null,
+  "raga_id": "sindhu_bhairavi",
+  "tala": null,
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nammalvar",
+      "label": "Wikipedia — Nammalvar (Alvar tradition)",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Tamil verse from the Divya Prabandham of the Alvar tradition; attributed to Nammalvar; performed as a slokam in Sindhubhairavi raga; no tala (free rhythm); sung as a devotional invocation before the Sindhubhairavi composition in the Ariyakudi school"
+}
