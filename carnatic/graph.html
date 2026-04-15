@@ -63048,8 +63048,11 @@ cy.on('pan zoom', () => {
 });
 
 
-// ── Three-view selector (ADR-023) ─────────────────────────────────────────────
-let currentView = 'graph'; // 'graph' | 'timeline' | 'raga'
+// ── Two-view selector (ADR-030) ───────────────────────────────────────────────
+// currentView: primary view — 'graph' (Guru-Shishya) | 'raga' (Mela-Janya)
+// currentLayout: sub-mode within graph view — 'graph' | 'timeline'
+//   declared in timeline_view.js (loaded before this file); do not re-declare here.
+let currentView = 'graph'; // 'graph' | 'raga'
 
 // Snapshot of graph-view node positions — saved whenever the user leaves the
 // graph view so that returning to it restores the exact layout they had.
@@ -63058,7 +63061,7 @@ let currentView = 'graph'; // 'graph' | 'timeline' | 'raga'
 let _savedGraphPositions = null;
 
 // Save the current Cytoscape node positions into _savedGraphPositions.
-// Called just before leaving the graph view (to timeline or raga).
+// Called just before leaving the graph view (to raga).
 function _saveGraphPositions() {
   _savedGraphPositions = {};
   cy.nodes().forEach(n => {
@@ -63085,44 +63088,61 @@ function _restoreGraphPositions() {
   }).run();
 }
 
+// ── _updateViewportToolbar: show/hide toolbar buttons based on view/layout ────
+// | Button      | graph (graph) | graph (timeline) | raga                  |
+// | btn-fit     | visible       | visible          | visible → wheelFit()  |
+// | btn-relayout| visible       | visible          | hidden                |
+// | btn-timeline| visible, off  | visible, active  | hidden                |
+function _updateViewportToolbar(view, layout) {
+  const btnRelayout = document.getElementById('btn-relayout');
+  const btnTimeline = document.getElementById('btn-timeline');
+  if (view === 'raga') {
+    if (btnRelayout) btnRelayout.style.display = 'none';
+    if (btnTimeline) btnTimeline.style.display = 'none';
+  } else {
+    if (btnRelayout) btnRelayout.style.display = '';
+    if (btnTimeline) {
+      btnTimeline.style.display = '';
+      btnTimeline.classList.toggle('active', layout === 'timeline');
+    }
+  }
+}
+
 function switchView(name) {
   if (name === currentView) return;
 
   // ── Save positions before leaving graph view ──────────────────────────────
-  // We save whenever we are currently on the graph view (not timeline, which
-  // has deterministic positions) so that returning always restores the layout.
   if (currentView === 'graph') {
     _saveGraphPositions();
   }
 
   currentView = name;
 
-  // Update segmented control button states
-  ['graph', 'timeline', 'raga'].forEach(v => {
-    document.getElementById('view-btn-' + v)
-      .classList.toggle('active', v === name);
+  // Update primary view button states (only 'graph' and 'raga' buttons exist)
+  ['graph', 'raga'].forEach(v => {
+    const btn = document.getElementById('view-btn-' + v);
+    if (btn) btn.classList.toggle('active', v === name);
   });
 
-  // Show/hide Cytoscape-specific controls
-  const cyControls = ['btn-fit', 'btn-reset', 'btn-relayout', 'btn-labels'];
-  cyControls.forEach(id => {
-    document.getElementById(id).style.display = (name === 'raga') ? 'none' : '';
-  });
+  _updateViewportToolbar(name, currentLayout);
 
+  const filterBar = document.getElementById('filter-bar');
   if (name === 'graph') {
     hideTimelineRuler();
     hideRagaWheel();
     document.getElementById('cy').style.display = '';
-    currentLayout = 'graph';
-    _restoreGraphPositions();
-  } else if (name === 'timeline') {
-    hideRagaWheel();
-    document.getElementById('cy').style.display = '';
-    currentLayout = 'timeline';
-    applyTimelineLayout();
+    if (filterBar) filterBar.style.display = 'flex';
+    // Restore the sub-layout that was active when the user left
+    if (currentLayout === 'timeline') {
+      applyTimelineLayout();
+    } else {
+      currentLayout = 'graph';
+      _restoreGraphPositions();
+    }
   } else if (name === 'raga') {
     hideTimelineRuler();
     document.getElementById('cy').style.display = 'none';
+    if (filterBar) filterBar.style.display = 'none';
     showRagaWheel();
     // Re-apply the current Bani filter to the wheel (ADR-025 sync gap)
     if (typeof activeBaniFilter !== 'undefined' && activeBaniFilter &&
@@ -63132,9 +63152,51 @@ function switchView(name) {
   }
 }
 
-// Backward-compatible wrapper
+// ── vpToggleTimeline: toggle timeline sub-layout within Guru-Shishya view ─────
+function vpToggleTimeline() {
+  if (currentView !== 'graph') return;
+  if (currentLayout === 'timeline') {
+    // Switch back to force-directed graph layout
+    currentLayout = 'graph';
+    hideTimelineRuler();
+    _restoreGraphPositions();
+  } else {
+    // Switch to timeline layout
+    currentLayout = 'timeline';
+    applyTimelineLayout();
+  }
+  _updateViewportToolbar(currentView, currentLayout);
+}
+
+// ── Viewport dispatcher functions (ADR-030) ───────────────────────────────────
+// These are called by the #viewport-toolbar buttons and dispatch to the
+// appropriate implementation depending on the active view.
+
+function vpFit() {
+  if (currentView === 'raga') {
+    wheelFit();
+  } else {
+    cy.fit();
+  }
+}
+
+function vpRelayout() {
+  if (currentView !== 'graph') return;
+  relayout();
+}
+
+// ── Wheel viewport stub (ADR-030) ─────────────────────────────────────────────
+// wheelFit: reset pan/zoom so the full wheel is centred and fits the SVG canvas.
+function wheelFit() {
+  window._wheelSetVx(0);
+  window._wheelSetVy(0);
+  window._wheelSetVscale(1);
+  window._wheelApplyTransform();
+}
+
+// Backward-compatible wrapper (used by bani_flow.js and other callers)
 function toggleLayout() {
-  switchView(currentView === 'graph' ? 'timeline' : 'graph');
+  vpToggleTimeline();
 }
 
 // ── Raga Wheel — show / hide ───────────────────────────────────────────────────
@@ -63346,6 +63408,12 @@ window.drawRagaWheel = function() {
   compositions.forEach(c => { if (c.id) _seenPerfIds.add(c.id); });
   Object.entries(ragaToPerf || {}).forEach(([ragaId, perfs]) => {
     perfs.forEach(perf => {
+      // Skip non-composition performance types — only valid compositions appear in the wheel.
+      // Alapanas, RTPs, tanam, and any display_title that looks like an improvisation are excluded.
+      const isRtp = (perf.type === 'rtp' || perf.type === 'alapana' || perf.type === 'tanam' ||
+                     (perf.display_title && /ragam.tanam|alapana|rtp/i.test(perf.display_title)));
+      if (isRtp) return;
+
       // Skip if this performance's composition is already in compsByRaga from Source 1
       if (perf.composition_id && _seenPerfIds.has(perf.composition_id)) return;
       const syntheticId = perf.composition_id ||
@@ -63353,14 +63421,12 @@ window.drawRagaWheel = function() {
       if (_seenPerfIds.has(syntheticId)) return;
       _seenPerfIds.add(syntheticId);
       if (!compsByRaga[ragaId]) compsByRaga[ragaId] = [];
-      const isRtp = (perf.type === 'rtp' || perf.type === 'alapana' || perf.type === 'tanam' ||
-                     (perf.display_title && /ragam.tanam|alapana|rtp/i.test(perf.display_title)));
       compsByRaga[ragaId].push({
         id:            syntheticId,
         title:         perf.display_title || perf.title || ragaId,
         raga_id:       ragaId,
         _isPerf:       true,
-        _isRtp:        isRtp,
+        _isRtp:        false,
         _recording_id: perf.recording_id || null,
         _perf_index:   perf.performance_index != null ? perf.performance_index : null,
         concert:       perf.short_title || perf.title || '',
@@ -63381,8 +63447,14 @@ window.drawRagaWheel = function() {
     (el.data.tracks || []).forEach(tr => {
       const ragaId = tr.raga_id;
       if (!ragaId) return;
-      // If it also has a composition_id already in Source 1, skip
-      if (tr.composition_id && _seenPerfIds.has(tr.composition_id)) return;
+      // Only include tracks that are tied to a canonical composition.
+      // Tracks without a composition_id are raga-level improvisations
+      // (alapanas, RTPs, tanam) — exclude them from the wheel.
+      if (!tr.composition_id) return;
+      // Belt-and-suspenders: also exclude by label pattern
+      if (tr.label && /ragam.tanam|alapana|\brtp\b/i.test(tr.label)) return;
+      // If the composition is already in Source 1, skip
+      if (_seenPerfIds.has(tr.composition_id)) return;
       const syntheticId = 'yt__' + (tr.vid || '') + '__' + ragaId;
       if (_seenPerfIds.has(syntheticId)) return;
       _seenPerfIds.add(syntheticId);
@@ -63399,6 +63471,17 @@ window.drawRagaWheel = function() {
         year:       tr.year || null,
       });
     });
+  });
+
+  // ── melasWithMusic: set of mela IDs whose subtree has at least one composition/recording ──
+  // A mela is "live" if compsByRaga has entries for the mela itself OR for any of its janyas.
+  const melasWithMusic = new Set();
+  Object.keys(melaByNum).forEach(n => {
+    const mela = melaByNum[n];
+    if (!mela) return;
+    if ((compsByRaga[mela.id] || []).length > 0) { melasWithMusic.add(mela.id); return; }
+    const janyas = janyasByMela[mela.id] || [];
+    if (janyas.some(j => (compsByRaga[j.id] || []).length > 0)) melasWithMusic.add(mela.id);
   });
 
   // ── rtpByRaga: structured recordings only (nested sessions/performances schema)
@@ -63435,16 +63518,27 @@ window.drawRagaWheel = function() {
   svg.appendChild(vp);
   _applyTransform();  // restore saved pan/zoom after SVG rebuild
 
-  // Wheel zoom (mouse wheel)
+  // Wheel zoom (mouse wheel) — clamped to sane limits so the user cannot
+  // accidentally scroll the wheel completely out of view or into a pixel.
+  // ZOOM_MIN/MAX define the hard floor/ceiling.  The per-event factor is kept
+  // small (≤5% per tick) so trackpad momentum scrolling feels gradual rather
+  // than snapping straight to a limit.
+  const ZOOM_MIN = 0.5, ZOOM_MAX = 4.0;
   svg.addEventListener('wheel', (e) => {
     e.preventDefault();
-    const factor = e.deltaY < 0 ? 1.1 : 0.91;
+    // Normalise deltaY: trackpads send pixel-mode values (deltaMode=0) that
+    // can be large; clamp the effective delta to ±1 "notch" worth of zoom.
+    const delta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 50);
+    const factor = Math.pow(1.05, -delta / 50);   // ≤5% per 50-pixel notch
+    const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, _vscale * factor));
+    if (Math.abs(newScale - _vscale) < 1e-6) return;   // already at limit
+    const actualFactor = newScale / _vscale;
     // Zoom toward cursor position
     const rect = svg.getBoundingClientRect();
     const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    _vx = mx - factor * (mx - _vx);
-    _vy = my - factor * (my - _vy);
-    _vscale *= factor;
+    _vx = mx - actualFactor * (mx - _vx);
+    _vy = my - actualFactor * (my - _vy);
+    _vscale = newScale;
     _applyTransform();
   }, { passive: false });
 
@@ -63520,19 +63614,20 @@ window.drawRagaWheel = function() {
     const cakra = Math.ceil(n / 6);
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
 
+    const isLive = raga && melasWithMusic.has(raga.id);
     const g = svgEl('g', { class: 'mela-node', 'data-mela': n, 'data-id': raga ? raga.id : '' });
     const circle = svgEl('circle', {
       cx: pos.x, cy: pos.y, r: NR_MELA,
       fill: raga ? color : THEME.bgPanel,
       stroke: raga ? THEME.fg : THEME.edgeLine,
       'stroke-width': raga ? 1.5 : 1,
-      opacity: raga ? 1 : 0.5,
-      cursor: raga ? 'pointer' : 'default',
+      opacity: isLive ? 1 : (raga ? 0.28 : 0.5),
+      cursor: isLive ? 'pointer' : 'default',
       'data-mela': n
     });
     g.appendChild(circle);
 
-    if (raga) {
+    if (isLive) {
       g.style.cursor = 'pointer';
       g.addEventListener('mouseenter', () => {
         const lines = [raga.name,
@@ -63587,10 +63682,12 @@ window.drawRagaWheel = function() {
     else if (normAngle === 180) { melaRotDeg = 0;             anchor = 'middle'; }
     else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
+    const isLiveLbl = raga && melasWithMusic.has(raga.id);
     const lbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': anchor, 'dominant-baseline': 'middle',
-      fill: raga ? THEME.fg : THEME.borderStrong,
+      fill: isLiveLbl ? THEME.fg : (raga ? THEME.borderStrong : THEME.borderStrong),
       'font-size': Math.max(7, minDim * 0.012) + 'px',
+      opacity: isLiveLbl ? 1 : (raga ? 0.35 : 1),
       transform: `rotate(${melaRotDeg}, ${lp.x}, ${lp.y})`
     });
     lbl.textContent = raga ? raga.name : String(n);
@@ -63870,9 +63967,14 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
       _expandedComp = item.id;
-      // Sync bani flow — guard _wheelSyncInProgress so syncRagaWheelToFilter
-      // does not trigger a full drawRagaWheel() redraw that would undo the dimming.
-      window._wheelSyncInProgress = true;
+      // Sync bani flow.
+      // _wheelSyncInProgress: prevents syncRagaWheelToFilter from triggering a
+      //   full drawRagaWheel() redraw that would undo the dimming we just applied.
+      // _wheelOriginatedTrigger: signals to triggerBaniSearch that this call
+      //   came from inside the wheel — orientRagaWheel must NOT fire (the wheel
+      //   already knows where it is; re-entering would reset the expansion).
+      window._wheelSyncInProgress    = true;
+      window._wheelOriginatedTrigger = true;
       if (!item._isPerf) {
         // Canonical composition from compositions.json
         triggerBaniSearch('comp', item.id);
@@ -63886,7 +63988,8 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         // Fallback: raga-level filter
         triggerBaniSearch('raga', item.raga_id || janya.id);
       }
-      window._wheelSyncInProgress = false;
+      window._wheelSyncInProgress    = false;
+      window._wheelOriginatedTrigger = false;
       // Do not expand musicians in the raga wheel — the wheel is a navigation
       // aid only. Musician detail lives in the graph view (triggered via bani sync).
     });
@@ -64082,10 +64185,12 @@ function orientRagaWheel(type, id) {
 
   // Resolve composition → raga_id
   let ragaId = id;
+  let compId = null;
   if (type === 'comp') {
     const comp = compositions.find(c => c.id === id);
     if (!comp || !comp.raga_id) return;
     ragaId = comp.raga_id;
+    compId = id;
   }
 
   const raga = ragas.find(r => r.id === ragaId);
@@ -64110,33 +64215,32 @@ function orientRagaWheel(type, id) {
     const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
     const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
     const minDim = Math.min(W, H);
+    const melaAngle = (melaRaga.melakarta - 1) * 5;
+    const rad = (melaAngle - 90) * Math.PI / 180;
 
-    // Resolve the target point in vp-space (unscaled wheel coordinates).
-    // For a composition click: zoom to the comp node itself (further out, tighter zoom).
-    // For a raga/mela click: zoom to the mela node as before.
+    // For a composition: pan to the composition node (at R_COMP radius) so it
+    // is centred in view.  For a raga: pan to the mela node (at R_MELA).
     let targetX, targetY, TARGET_SCALE;
+    if (compId) {
+      // Try to find the rendered comp node and use its actual SVG position.
+      // The comp node is at R_COMP along the mela angle (spread may shift it
+      // slightly, but the mela angle is a good approximation for centering).
+      const R_COMP = minDim * 0.72;
+      targetX = W / 2 + R_COMP * Math.cos(rad);
+      targetY = H / 2 + R_COMP * Math.sin(rad);
+      TARGET_SCALE = 2.2;   // zoom in a bit more so the comp node is clearly visible
 
-    if (type === 'comp') {
-      // The comp node circle has cx/cy set in vp-space — read them directly.
-      const compCircle = document.querySelector(
-        `#wheel-viewport .comp-node[data-id="${id}"] circle`
+      // Prefer the actual rendered position of the selected comp node if available
+      const compEl = document.querySelector(
+        `#wheel-viewport .comp-node[data-id="${CSS.escape(compId)}"] circle`
       );
-      if (compCircle) {
-        targetX = parseFloat(compCircle.getAttribute('cx'));
-        targetY = parseFloat(compCircle.getAttribute('cy'));
-      } else {
-        // Comp node not yet in DOM (e.g. mela-direct with no janya) — fall back to mela
-        const R_MELA = minDim * 0.38;
-        const melaAngle = (melaRaga.melakarta - 1) * 5;
-        const rad = (melaAngle - 90) * Math.PI / 180;
-        targetX = W / 2 + R_MELA * Math.cos(rad);
-        targetY = H / 2 + R_MELA * Math.sin(rad);
+      if (compEl) {
+        const cx = parseFloat(compEl.getAttribute('cx'));
+        const cy = parseFloat(compEl.getAttribute('cy'));
+        if (!isNaN(cx) && !isNaN(cy)) { targetX = cx; targetY = cy; }
       }
-      TARGET_SCALE = 2.8;   // compositions are at R_COMP ≈ 0.72·minDim — zoom in more
     } else {
       const R_MELA = minDim * 0.38;
-      const melaAngle = (melaRaga.melakarta - 1) * 5;
-      const rad = (melaAngle - 90) * Math.PI / 180;
       targetX = W / 2 + R_MELA * Math.cos(rad);
       targetY = H / 2 + R_MELA * Math.sin(rad);
       TARGET_SCALE = 1.8;
