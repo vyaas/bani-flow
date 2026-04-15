@@ -9,9 +9,15 @@
     }
   ],
   "born": 1912,
-  "died": 1996,
+  "died": null,
   "era": "golden_age",
   "instrument": "vocal",
   "bani": "dhanammal",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/9SY1OLZh-oM",
+      "label": "Begada Alapana",
+      "raga_id": "begada"
+    }
+  ]
 }

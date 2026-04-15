@@ -1,0 +1,16 @@
+{
+  "id": "neevaada_ne_gaana",
+  "title": "neevaaDa nE gaana",
+  "composer_id": "tyagaraja",
+  "raga_id": "saranga",
+  "tala": "khanda_capu",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2671.shtml",
+      "label": "karnatik",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}

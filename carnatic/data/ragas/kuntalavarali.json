@@ -1,0 +1,17 @@
+{
+  "id": "kuntalavarali",
+  "name": "Kuntalavarali",
+  "aliases": [],
+  "melakarta": null,
+  "is_melakarta": false,
+  "cakra": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://raganidhi.com/carnatic-ragas/kuntalavarali",
+      "label": "karnatik",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}

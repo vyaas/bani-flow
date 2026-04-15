@@ -257,6 +257,20 @@
     ]
   },
   {
+    "id": "subbarama_dikshitar",
+    "name": "Subbarama Dikshitar",
+    "musician_node_id": "subbarama_dikshitar",
+    "born": 1839,
+    "died": 1906,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
     "id": "pacchimiriyam_adiapayya",
     "name": "Pacchimiriyam Adiapayya",
     "musician_node_id": null,

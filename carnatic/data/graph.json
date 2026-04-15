@@ -39,6 +39,12 @@
             "url": "https://youtu.be/lNSJJMWLtfc",
             "label": "Natabhairavi · Adi",
             "raga_id": "natabhairavi"
+          },
+          {
+            "url": "https://youtu.be/rHRBDs4MAHg",
+            "label": "Brochevaravarura - Khamas - Adi",
+            "composition_id": "brocevarevarura",
+            "raga_id": "khamas"
           }
         ]
       },
@@ -2142,11 +2148,17 @@
           }
         ],
         "born": 1912,
-        "died": 1996,
+        "died": null,
         "era": "golden_age",
         "instrument": "vocal",
         "bani": "dhanammal",
-        "youtube": []
+        "youtube": [
+          {
+            "url": "https://youtu.be/9SY1OLZh-oM",
+            "label": "Begada Alapana",
+            "raga_id": "begada"
+          }
+        ]
       },
       {
         "id": "t_muktha",
@@ -4160,6 +4172,23 @@
         "notes": "38th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₁ N₂ Ṡ"
       },
       {
+        "id": "janaranjani",
+        "name": "Janaranjani",
+        "aliases": [],
+        "melakarta": null,
+        "is_melakarta": false,
+        "cakra": null,
+        "parent_raga": "shankarabharanam",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/ragasj.shtml#janaranjani",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
+      },
+      {
         "id": "jayamanohari",
         "name": "Jayamanohari",
         "aliases": [
@@ -4552,6 +4581,23 @@
           }
         ],
         "notes": "71th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₂ N₃ Ṡ"
+      },
+      {
+        "id": "kuntalavarali",
+        "name": "Kuntalavarali",
+        "aliases": [],
+        "melakarta": null,
+        "is_melakarta": false,
+        "cakra": null,
+        "parent_raga": "harikambhoji",
+        "sources": [
+          {
+            "url": "https://raganidhi.com/carnatic-ragas/kuntalavarali",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
       },
       {
         "id": "kurinji",
@@ -5589,7 +5635,7 @@
           "Saurashtram"
         ],
         "melakarta": null,
-        "parent_raga": "mayamalavagowla",
+        "parent_raga": "suryakantam",
         "sources": [
           {
             "url": "https://en.wikipedia.org/wiki/Sowrashtram",
@@ -6291,6 +6337,20 @@
         ]
       },
       {
+        "id": "subbarama_dikshitar",
+        "name": "Subbarama Dikshitar",
+        "musician_node_id": "subbarama_dikshitar",
+        "born": 1839,
+        "died": 1906,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
         "id": "pacchimiriyam_adiapayya",
         "name": "Pacchimiriyam Adiapayya",
         "musician_node_id": null,
@@ -6863,6 +6923,22 @@
     ],
     "compositions": [
       {
+        "id": "aa_daya_shree",
+        "title": "aa daya shree",
+        "composer_id": "tyagaraja",
+        "raga_id": "ahiri",
+        "tala": "adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1373.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
+      },
+      {
         "id": "aaguner_parashmoni",
         "title": "Aaguner Parashmoni Chhoao Praane",
         "composer_id": "rabindranath_tagore",
@@ -7201,6 +7277,22 @@
           }
         ],
         "notes": "Muthuswami Dikshitar kriti in Kalyani raga."
+      },
+      {
+        "id": "bhogeendra_shaayinaam",
+        "title": "bhOgeenDra shaayinaam",
+        "composer_id": "swati_tirunal",
+        "raga_id": "kuntalavarali",
+        "tala": "khanda_capu",
+        "language": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1108.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
       },
       {
         "id": "biranabrova_ide",
@@ -7624,6 +7716,22 @@
             "type": "article"
           }
         ]
+      },
+      {
+        "id": "entani_ne_delupudura",
+        "title": "Entani ne delupudura",
+        "composer_id": "subbarama_dikshitar",
+        "raga_id": "khamas",
+        "tala": "rupakam",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c0537.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
       },
       {
         "id": "entharo_mahanubhavulu",
@@ -8785,6 +8893,22 @@
         "notes": "Javali in Saveri"
       },
       {
+        "id": "naadaadina_maata",
+        "title": "naaDaaDina maaTa",
+        "composer_id": "tyagaraja",
+        "raga_id": "janaranjani",
+        "tala": "misra_capu",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2575.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
+      },
+      {
         "id": "nadopasana",
         "title": "Nadopasana",
         "composer_id": "tyagaraja",
@@ -8905,6 +9029,22 @@
             "type": "article"
           }
         ]
+      },
+      {
+        "id": "neevaada_ne_gaana",
+        "title": "neevaaDa nE gaana",
+        "composer_id": "tyagaraja",
+        "raga_id": "saranga",
+        "tala": "khanda_capu",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2671.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
       },
       {
         "id": "nenarunchara",
@@ -9113,6 +9253,22 @@
           }
         ],
         "notes": "Shyama Shastri kriti in Ananda Bhairavi raga. One of the Trinity's most celebrated compositions."
+      },
+      {
+        "id": "o_rangasayi",
+        "title": "O Rangasayi",
+        "composer_id": "tyagaraja",
+        "raga_id": "kambhoji",
+        "tala": "adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2685.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
       },
       {
         "id": "ongi_ulagalanda",
@@ -9379,6 +9535,22 @@
           }
         ],
         "notes": "Swati Tirunal kriti in Behag raga."
+      },
+      {
+        "id": "sarasaksa_paripalaya",
+        "title": "sArasAkSa paripAlaya",
+        "composer_id": "swati_tirunal",
+        "raga_id": "pantuvarali",
+        "tala": "adi",
+        "language": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c6936.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
       },
       {
         "id": "sarasiruhanana",
@@ -10013,6 +10185,22 @@
         ]
       },
       {
+        "id": "un_padam_maravenamma",
+        "title": "un padam maravEnammA",
+        "composer_id": "ambujam_krishna",
+        "raga_id": "kalyani",
+        "tala": "adi",
+        "language": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c24596.shtml",
+            "label": "karnatik",
+            "type": "other"
+          }
+        ],
+        "notes": null
+      },
+      {
         "id": "vadanyeshwaram_bhajeham",
         "title": "Vadanyeshwaram Bhajeham",
         "composer_id": "muthuswami_dikshitar",
@@ -10311,6 +10499,18 @@
         "kv_narayanaswamy",
         "cr_mani_iyer",
         "palghat_raghu"
+      ]
+    },
+    {
+      "id": "musiri_music_academy_1962",
+      "path": "recordings/musiri_music_academy_1962.json",
+      "title": "Musiri Subramania Iyer at The Music Academy, Madras, 31.12.1962",
+      "short_title": "Music Academy 1962",
+      "date": "1962",
+      "venue": "Music Academy, Madras",
+      "primary_musician_ids": [
+        "musiri_subramania_iyer",
+        "umayalpuram_sivaraman"
       ]
     },
     {

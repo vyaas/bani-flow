@@ -1,0 +1,16 @@
+{
+  "id": "o_rangasayi",
+  "title": "O Rangasayi",
+  "composer_id": "tyagaraja",
+  "raga_id": "kambhoji",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2685.shtml",
+      "label": "karnatik",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}

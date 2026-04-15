@@ -1,0 +1,17 @@
+{
+  "id": "janaranjani",
+  "name": "Janaranjani",
+  "aliases": [],
+  "melakarta": null,
+  "is_melakarta": false,
+  "cakra": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragasj.shtml#janaranjani",
+      "label": "karnatik",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}

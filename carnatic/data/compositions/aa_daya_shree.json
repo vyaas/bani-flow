@@ -1,0 +1,16 @@
+{
+  "id": "aa_daya_shree",
+  "title": "aa daya shree",
+  "composer_id": "tyagaraja",
+  "raga_id": "ahiri",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1373.shtml",
+      "label": "karnatik",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}

@@ -1,0 +1,16 @@
+{
+  "id": "naadaadina_maata",
+  "title": "naaDaaDina maaTa",
+  "composer_id": "tyagaraja",
+  "raga_id": "janaranjani",
+  "tala": "misra_capu",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2575.shtml",
+      "label": "karnatik",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}
