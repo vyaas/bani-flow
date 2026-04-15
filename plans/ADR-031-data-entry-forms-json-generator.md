@@ -1,6 +1,6 @@
 # ADR-031: Data Entry Forms — In-Browser JSON Generator Interface
 
-**Status:** Proposed  
+**Status:** Accepted
 **Date:** 2026-04-15
 
 ---
