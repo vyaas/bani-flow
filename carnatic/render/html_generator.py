@@ -77,10 +77,16 @@ def render_html(
         f"\n"
         f"// ── graphData: unified object for entry forms (ADR-031) ──────────────────────\n"
         f"const graphData = {{\n"
-        f"  nodes:        elements.filter(e => e.group === 'nodes').map(e => ({{\n"
-        f"                  id:      e.data.id,\n"
-        f"                  label:   e.data.label,\n"
-        f"                  youtube: e.data.tracks || []\n"
+        f"  nodes:        elements.filter(e => !e.data.source).map(e => ({{\n"
+        f"                  id:         e.data.id,\n"
+        f"                  label:      e.data.label,\n"
+        f"                  sources:    e.data.sources    || [],\n"
+        f"                  born:       e.data.born       || null,\n"
+        f"                  died:       e.data.died       || null,\n"
+        f"                  era:        e.data.era        || '',\n"
+        f"                  instrument: e.data.instrument || '',\n"
+        f"                  bani:       e.data.bani       || null,\n"
+        f"                  youtube:    e.data.tracks     || []\n"
         f"                }})),\n"
         f"  edges:        {edges_json},\n"
         f"  ragas:        ragas,\n"
@@ -100,6 +106,7 @@ def render_html(
     raga_wheel   = _load("raga_wheel.js")
     bani_flow    = _load("bani_flow.js")
     search       = _load("search.js")
+    entry_forms  = _load("entry_forms.js")
 
     # ── Substitute placeholders in base.html ──────────────────────────────────
     base = base.replace("{node_count}", str(node_count))
@@ -111,6 +118,8 @@ def render_html(
     # ── Assemble <script> block ───────────────────────────────────────────────
     # theme.js MUST be first — it defines the THEME global used by all other scripts.
     # sruti_bar.js MUST come after media_player.js (needs openPlayer/closePlayer).
+    # entry_forms.js MUST come after media_player.js (needs wireDrag/nextSpawnPosition/topZ)
+    # and after data_js (needs graphData global).
     script_block = "\n".join([
         "<script>",
         theme_js,      # ← FIRST: defines THEME global
@@ -122,6 +131,7 @@ def render_html(
         raga_wheel,
         bani_flow,
         search,
+        entry_forms,   # ← LAST: needs graphData + wireDrag/nextSpawnPosition/topZ
         "</script>",
     ])
 
