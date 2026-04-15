@@ -1069,7 +1069,8 @@
   .bani-janyas-list,
   .mp-tracklist,
   .search-dropdown,
-  #mi-pre {
+  #mi-pre,
+  .ew-body {
     scrollbar-width: thin;
     scrollbar-color: var(--bg-active) var(--bg-panel);
   }
@@ -1079,7 +1080,8 @@
   .bani-janyas-list::-webkit-scrollbar,
   .mp-tracklist::-webkit-scrollbar,
   .search-dropdown::-webkit-scrollbar,
-  #mi-pre::-webkit-scrollbar {
+  #mi-pre::-webkit-scrollbar,
+  .ew-body::-webkit-scrollbar {
     width: 6px;
   }
 
@@ -1088,7 +1090,8 @@
   .bani-janyas-list::-webkit-scrollbar-track,
   .mp-tracklist::-webkit-scrollbar-track,
   .search-dropdown::-webkit-scrollbar-track,
-  #mi-pre::-webkit-scrollbar-track {
+  #mi-pre::-webkit-scrollbar-track,
+  .ew-body::-webkit-scrollbar-track {
     background: var(--bg-panel);
   }
 
@@ -1097,7 +1100,8 @@
   .bani-janyas-list::-webkit-scrollbar-thumb,
   .mp-tracklist::-webkit-scrollbar-thumb,
   .search-dropdown::-webkit-scrollbar-thumb,
-  #mi-pre::-webkit-scrollbar-thumb {
+  #mi-pre::-webkit-scrollbar-thumb,
+  .ew-body::-webkit-scrollbar-thumb {
     background: var(--bg-active);   /* #665c54 — gruvbox bg3 */
     border-radius: 3px;
     border: 1px solid var(--bg-panel);
@@ -1108,9 +1112,193 @@
   .bani-janyas-list::-webkit-scrollbar-thumb:hover,
   .mp-tracklist::-webkit-scrollbar-thumb:hover,
   .search-dropdown::-webkit-scrollbar-thumb:hover,
-  #mi-pre::-webkit-scrollbar-thumb:hover {
+  #mi-pre::-webkit-scrollbar-thumb:hover,
+  .ew-body::-webkit-scrollbar-thumb:hover {
     background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
   }
+
+  /* ── ADR-031: footer bar — data entry entry point ── */
+  #footer-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    height: 36px;
+    background: var(--bg-panel);
+    border-top: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .entry-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 10px;
+    border: 1px solid var(--accent); background: var(--bg-panel);
+    color: var(--accent); font-size: 0.72rem;
+    cursor: pointer; user-select: none;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .entry-btn:hover { background: var(--bg-input); color: var(--fg); border-color: var(--fg-sub); }
+
+  /* ── ADR-031: floating entry form window ── */
+  .entry-window {
+    position: absolute;
+    min-width: 380px;
+    max-width: 560px;
+    width: 460px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    z-index: 900;
+    user-select: none;
+    max-height: 85vh;
+  }
+  .ew-bar {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 10px;
+    background: var(--bg-input); border-radius: 6px 6px 0 0;
+    cursor: grab; border-bottom: 1px solid var(--border-strong);
+    flex-shrink: 0;
+  }
+  .ew-bar:active { cursor: grabbing; }
+  .ew-title {
+    flex: 1; font-size: 0.80rem; color: var(--accent);
+    font-weight: bold; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .ew-close {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
+    flex-shrink: 0;
+  }
+  .ew-close:hover { color: var(--accent-danger); }
+  .ew-body {
+    flex: 1; overflow-y: auto; padding: 12px 14px;
+    min-height: 0;
+  }
+  .ew-footer {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border-top: 1px solid var(--border-strong);
+    background: var(--bg-panel);
+    border-radius: 0 0 6px 6px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  /* ── form field rows ── */
+  .ef-row {
+    display: flex; flex-direction: column; gap: 3px;
+    margin-bottom: 10px;
+  }
+  .ef-label {
+    font-size: 0.68rem; color: var(--fg-sub);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .ef-label .ef-required { color: var(--accent-danger); margin-left: 2px; }
+  .ef-label .ef-hint {
+    font-size: 0.62rem; color: var(--fg-muted);
+    text-transform: none; letter-spacing: 0; margin-left: 4px;
+    font-style: italic;
+  }
+  .ef-input, .ef-select {
+    background: var(--bg-input); color: var(--fg);
+    border: 1px solid var(--border-strong);
+    padding: 5px 8px; font-family: inherit; font-size: 0.78rem;
+    border-radius: 3px; width: 100%; box-sizing: border-box;
+  }
+  .ef-input:focus, .ef-select:focus { outline: none; border-color: var(--accent); }
+  .ef-input::placeholder { color: var(--fg-muted); font-style: italic; }
+  .ef-input.ef-error { border-color: var(--accent-danger); }
+  .ef-input.ef-readonly { color: var(--fg-dim); cursor: default; }
+  .ef-id-row {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .ef-id-row .ef-input { flex: 1; }
+  .ef-id-edit-btn {
+    background: none; border: 1px solid var(--border-strong);
+    color: var(--fg-muted); font-size: 0.68rem; padding: 3px 7px;
+    border-radius: 3px; cursor: pointer; white-space: nowrap;
+    font-family: inherit; flex-shrink: 0;
+  }
+  .ef-id-edit-btn:hover { color: var(--accent); border-color: var(--accent); }
+  /* section headers inside forms */
+  .ef-section {
+    font-size: 0.70rem; color: var(--fg-sub);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px; margin: 14px 0 10px;
+  }
+  /* repeating sub-blocks (edges, sessions, performers, performances) */
+  .ef-repeat-block {
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 10px 12px; margin-bottom: 8px;
+    position: relative; background: var(--bg-deep);
+  }
+  .ef-repeat-remove {
+    position: absolute; top: 6px; right: 8px;
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.85rem; cursor: pointer; line-height: 1; padding: 0;
+    font-family: inherit;
+  }
+  .ef-repeat-remove:hover { color: var(--accent-danger); }
+  .ef-add-btn {
+    background: none; border: 1px dashed var(--border-strong);
+    color: var(--fg-dim); font-size: 0.72rem; padding: 4px 10px;
+    border-radius: 4px; cursor: pointer; width: 100%;
+    font-family: inherit; margin-bottom: 8px;
+    transition: border-color 0.1s, color 0.1s;
+  }
+  .ef-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+  /* download / preview buttons */
+  .ef-download-btn {
+    background: var(--bg-input); color: var(--accent);
+    border: 1px solid var(--accent); padding: 5px 14px;
+    font-family: inherit; font-size: 0.78rem;
+    cursor: pointer; border-radius: 6px;
+    transition: background 0.1s;
+  }
+  .ef-download-btn:hover { background: var(--bg-active); }
+  .ef-download-btn:disabled {
+    opacity: 0.4; cursor: not-allowed;
+    border-color: var(--border-strong); color: var(--fg-muted);
+  }
+  .ef-preview-btn {
+    background: none; border: 1px solid var(--border-strong);
+    color: var(--fg-dim); font-size: 0.72rem; padding: 4px 10px;
+    border-radius: 6px; cursor: pointer; font-family: inherit;
+  }
+  .ef-preview-btn:hover { color: var(--fg); border-color: var(--fg-sub); }
+  .ef-preview-pre {
+    background: var(--bg-deep); border: 1px solid var(--border);
+    border-radius: 3px; padding: 10px; margin-top: 8px;
+    font-family: var(--font-mono); font-size: 0.68rem;
+    color: var(--fg-dim); white-space: pre-wrap; word-break: break-word;
+    max-height: 220px; overflow-y: auto; display: none;
+  }
+  .ef-warn {
+    font-size: 0.70rem; color: var(--accent-warn);
+    background: var(--bg-deep); border: 1px solid var(--accent-warn);
+    border-radius: 3px; padding: 6px 10px; margin-top: 6px;
+    line-height: 1.5;
+  }
+  .ef-success {
+    font-size: 0.78rem; color: var(--accent-sub);
+    line-height: 1.6;
+  }
+  .ef-success ol { padding-left: 18px; margin-top: 6px; }
+  .ef-success li { margin-bottom: 4px; }
+  .ef-success code {
+    font-family: var(--font-mono); font-size: 0.70rem;
+    background: var(--bg-deep); padding: 1px 4px; border-radius: 2px;
+    color: var(--fg);
+  }
+  /* conditional field hiding */
+  .ef-row[data-show-if] { display: none; }
+  .ef-row[data-show-if].ef-visible { display: flex; }
 </style>
 </head>
 <body>
@@ -1267,6 +1455,15 @@
     <button id="mi-close" title="Close">&#10005;</button>
   </div>
   <pre id="mi-pre"></pre>
+</div>
+
+<!-- ADR-031: footer bar — data entry buttons -->
+<div id="footer-bar">
+  <span style="font-size:0.65rem;color:var(--fg-muted);margin-right:4px;letter-spacing:0.08em;text-transform:uppercase;">Add:</span>
+  <button class="entry-btn" onclick="openEntryForm('musician')">+ Musician</button>
+  <button class="entry-btn" onclick="openEntryForm('raga')">+ Raga</button>
+  <button class="entry-btn" onclick="openEntryForm('composition')">+ Composition</button>
+  <button class="entry-btn" onclick="openEntryForm('recording')">+ Recording</button>
 </div>
 
 <!-- INJECT_SCRIPTS -->

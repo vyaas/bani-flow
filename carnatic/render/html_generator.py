@@ -51,6 +51,7 @@ def render_html(
     raga_to_perf_json        = json.dumps(raga_to_performances, indent=2, ensure_ascii=False)
     perf_to_perf_json        = json.dumps(perf_to_performances, indent=2, ensure_ascii=False)
     tanpura_json             = json.dumps(tanpura_data or [], indent=2, ensure_ascii=False)
+    edges_json               = json.dumps(graph["edges"], indent=2, ensure_ascii=False)
 
     data_js = (
         f"const elements = {elements_json};\n"
@@ -73,6 +74,20 @@ def render_html(
         f"\n"
         f"// ── Tanpura drone data (ADR-029) ─────────────────────────────────────────────\n"
         f"const tanpuraData = {tanpura_json};\n"
+        f"\n"
+        f"// ── graphData: unified object for entry forms (ADR-031) ──────────────────────\n"
+        f"const graphData = {{\n"
+        f"  nodes:        elements.filter(e => e.group === 'nodes').map(e => ({{\n"
+        f"                  id:      e.data.id,\n"
+        f"                  label:   e.data.label,\n"
+        f"                  youtube: e.data.tracks || []\n"
+        f"                }})),\n"
+        f"  edges:        {edges_json},\n"
+        f"  ragas:        ragas,\n"
+        f"  composers:    composers,\n"
+        f"  compositions: compositions,\n"
+        f"  recordings:   recordings,\n"
+        f"}};\n"
     )
 
     # ── Load templates ────────────────────────────────────────────────────────
