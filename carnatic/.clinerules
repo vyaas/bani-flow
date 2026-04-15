@@ -429,5 +429,17 @@ Entries are terse — this is a log, not an essay.
 
 - 2026-04-13: ADR-027 proposes a reflective metadata popover (double-click any node/edge to inspect its full JSON data object in-browser); overhead is rendering-layer only — ~15 lines HTML, ~40 lines CSS, ~30 lines JS — because all data is already injected as JS globals by the render pipeline; the only breaking change is reassigning dbltap from Wikipedia-open to the inspector (Wikipedia remains accessible via the ↗ sidebar link).
 - 2026-04-14: ADR-030 proposes view-selector restructure: (1) two primary views only — Guru-Shishya (parampara) and Mela-Janya (raga system) — replacing the three-way Graph/Timeline/Ragas selector; (2) Timeline demoted to a toggle within the Guru-Shishya view, changing currentView to a binary 'graph'|'raga' and using currentLayout for the graph/timeline sub-mode; (3) Fit/Reset/Relayout moved from the header into a compact #viewport-toolbar overlay at top-right of #canvas-wrap, with .vp-btn styling at 0.68rem/opacity:0.75; (4) Labels button and toggleLabels()/labelsOverride removed entirely — the zoom-tiered applyZoomLabels() is the correct and only label behaviour; (5) Mela-Janya view gains Fit/Reset parity via wheelFit()/wheelReset() stubs; pattern resolution: Levels of Scale + Strong Centres + Boundaries.
+### 🎵 Carnatic Coder
+
+- 2026-04-15: ADR-031 (entry_forms.js): The Cytoscape `elements` array does NOT use `{group: 'nodes', data: {...}}` format — elements are flat `{data: {...}}` objects; distinguish nodes from edges by `!e.data.source` (edges have `data.source`/`data.target`). The `e.group === 'nodes'` filter silently returns an empty array.
+
+- 2026-04-15: ADR-031 (entry_forms.js): The render pipeline converts musician `youtube[].url` → `vid` (11-char YouTube ID) when building Cytoscape elements (`e.data.tracks`). The "Add YouTube to Existing Musician" form must normalise `{vid}` back to `{url: "https://youtu.be/{vid}"}` before writing the output JSON, or the downloaded file will have inconsistent field names.
+
+- 2026-04-15: ADR-031 (entry_forms.js): `wireCompRagaAutofill(compSel, ragaSel, composerSel, formWin)` is the correct pattern for composition→raga/composer auto-fill. Pass `null` for `composerSel` in YouTube blocks (no composer field there).
+
+- 2026-04-15: ADR-031 (entry_forms.js): `write_to_file` truncates at the tool content limit — always use `apply_diff` to append the remainder. Large JS files (>600 lines) should be written in two passes.
+
+- 2026-04-15: ADR-031 (graphData): `graphData.nodes` must carry full musician fields (sources, born, died, era, instrument, bani) — the "Add YouTube to Existing Musician" form needs them to reconstruct the complete musician JSON.
+
 ### 🪃 Orchestrator
 
