@@ -4822,10 +4822,10 @@
           "Moukhari"
         ],
         "melakarta": null,
-        "parent_raga": "natabhairavi",
+        "parent_raga": "kharaharapriya",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Mukhari_(raga)",
+            "url": "https://en.wikipedia.org/wiki/Mukhari",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -9287,6 +9287,22 @@
         "notes": "Tamil verse from the Divya Prabandham of the Alvar tradition; attributed to Nammalvar; performed as a slokam in Sindhubhairavi raga; no tala (free rhythm); sung as a devotional invocation before the Sindhubhairavi composition in the Ariyakudi school"
       },
       {
+        "id": "pahi_mam_ratnacala",
+        "title": "pAhi mAM ratnAcala nAyaka",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "mukhari",
+        "tala": "adi",
+        "language": null,
+        "sources": [
+          {
+            "url": "https://guru-guha.blogspot.com/2008/02/dikshitar-kriti-paahi-mam-rathnachala.html",
+            "label": "Blog",
+            "type": "other"
+          }
+        ],
+        "notes": null
+      },
+      {
         "id": "pahimam_brhannayike",
         "title": "Pahimam Brhannayike",
         "composer_id": "swati_tirunal",
@@ -10462,6 +10478,18 @@
       ]
     },
     {
+      "id": "musiri_music_academy_1962",
+      "path": "recordings/music_academy_1962_musiri.json",
+      "title": "Musiri Subramania Iyer at The Music Academy, Madras, 31.12.1962",
+      "short_title": "Music Academy 1962",
+      "date": "1962",
+      "venue": "Music Academy, Madras",
+      "primary_musician_ids": [
+        "musiri_subramania_iyer",
+        "umayalpuram_sivaraman"
+      ]
+    },
+    {
       "id": "music_academy_1965_lalgudi",
       "path": "recordings/music_academy_1965_lalgudi.json",
       "title": "Lalgudi G Jayaraman & Srimathi Brahmananda — Music Academy December Season 1965",
@@ -10499,18 +10527,6 @@
         "kv_narayanaswamy",
         "cr_mani_iyer",
         "palghat_raghu"
-      ]
-    },
-    {
-      "id": "musiri_music_academy_1962",
-      "path": "recordings/musiri_music_academy_1962.json",
-      "title": "Musiri Subramania Iyer at The Music Academy, Madras, 31.12.1962",
-      "short_title": "Music Academy 1962",
-      "date": "1962",
-      "venue": "Music Academy, Madras",
-      "primary_musician_ids": [
-        "musiri_subramania_iyer",
-        "umayalpuram_sivaraman"
       ]
     },
     {
