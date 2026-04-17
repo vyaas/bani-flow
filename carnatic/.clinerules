@@ -1,5 +1,9 @@
 # Carnatic Guru-Shishya Knowledge Graph — Roo Session Rules
 
+**[2026-04-16] MIGRATION NOTE**: Agent personas and workflows are now defined in `CLAUDE.md` (at project root).
+This file (`.clinerules`) contains workflows, CLI tools, data model reference, and learning logs — the operating manual.
+See CLAUDE.md for agent boundaries and system overview.
+
 ## Project layout
 ```
 carnatic/
@@ -37,10 +41,11 @@ Never use the system `python3` or a global `pip` for this project.
 
 ## Session startup
 0. **Activate the project venv first:** `source .venv/bin/activate` — all `bani-*` commands and `python3 carnatic/` scripts must run inside this venv.
-1. Run `python3 carnatic/cli.py stats` to orient — replaces reading `musicians.json` and `compositions.json` in full.
-2. Use targeted CLI queries (see **CLI Tools** section below) before any `read_file` call.
-3. Read the **Open questions** section below — it is the living memory of this project.
-4. At the end of every session: update the Open questions section, then **commit and push your work** (see Git protocol below).
+1. **Read CLAUDE.md** at the project root — it defines the 4-agent system (Librarian, Coder, Architect, Orchestrator) and agent boundaries.
+2. Run `python3 carnatic/cli.py stats` to orient — replaces reading `musicians.json` and `compositions.json` in full.
+3. Use targeted CLI queries (see **CLI Tools** section below) before any `read_file` call.
+4. Read the **Open questions** section below — it is the living memory of this project.
+5. At the end of every session: update the Open questions section, append your learning log entry (see **Agent learning logs** section below), then **commit and push your work** (see Git protocol below).
 
 > **Full file reads** (`read_file: musicians.json`) are reserved for patching sessions where you need to construct an `apply_diff` block. Even then, use `python3 carnatic/cli.py get-musician <id>` to retrieve the exact current value of a field before constructing the diff — not the whole file. For the canonical data schema, see `carnatic/data/READYOU.md`.
 
@@ -337,14 +342,15 @@ Nodes whose `wikipedia` field has no own article — flagged for community atten
 
 ---
 
-## Agent learning logs  ← living memory; append new entries here
+## Agent learning logs  ← living memory; append new entries here after every session
 
 Each agent appends dated entries to their subsection below.
 Format: `- YYYY-MM-DD: <one plain-prose sentence>`.
 Entries are terse — this is a log, not an essay.
 
-> **How to append:** edit only the appropriate subsection of this file.
-> Never write learning log entries into `.roomodes`.
+> **IMPORTANT**: Learning log entries ONLY go in `carnatic/.clinerules`, never in CLAUDE.md.
+> CLAUDE.md is the portable agent setup guide; `.clinerules` is where agents record discoveries from their work.
+> Append entries to the appropriate agent subsection below.
 
 ### 📚 Librarian
 
