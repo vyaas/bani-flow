@@ -17,17 +17,17 @@
 
   /* ── header ── */
   header {
-    padding: 13px 20px; background: var(--bg-panel);
+    padding: 13px 0; background: var(--bg-panel);
     border-bottom: 2px solid var(--border-strong);
-    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    display: grid; grid-template-columns: 260px 1fr 260px; align-items: center; gap: 0;
   }
   header h1 {
     font-size: 1.05rem; color: var(--accent);
     letter-spacing: 0.08em; text-transform: uppercase; font-weight: bold;
-    white-space: nowrap;
+    white-space: nowrap; padding: 0 14px;
   }
   .stats  { font-size: 0.78rem; color: var(--fg-sub); }
-  .controls { display: flex; gap: 8px; margin-left: auto; }
+  .controls { display: flex; gap: 8px; padding: 0 14px; justify-content: flex-end; }
 
   /* ── canvas column (filter bar + graph) ── */
   #canvas-wrap {
@@ -156,6 +156,7 @@
     letter-spacing: 0.12em;
     color: var(--accent);
     margin-bottom: 10px;
+    text-align: center;
   }
 
   /* ── node header (collapsed single-line) ── */
@@ -946,11 +947,13 @@
   }
   /* Power indicator ● */
   .sruti-power {
-    font-size: 0.70rem;
+    font-size: 1.2rem;
     color: var(--fg-muted);
     cursor: pointer;
     flex-shrink: 0;
     margin-right: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
     transition: color 0.15s;
     user-select: none;
     line-height: 1;
@@ -1304,7 +1307,7 @@
 <body>
 
 <header>
-  <h1>Carnatic · Music Explorer</h1>
+  <h1>Carnatic Music Explorer</h1>
   <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
   <div id="sruti-strip">
     <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
@@ -1312,9 +1315,9 @@
   </div>
   <div class="controls">
     <div class="view-selector" id="view-selector">
-      <button class="view-btn active" id="view-btn-graph"
+      <button class="view-btn" id="view-btn-graph"
               onclick="switchView('graph')" title="Guru-shishya parampara">Guru-Shishya</button>
-      <button class="view-btn" id="view-btn-raga"
+      <button class="view-btn active" id="view-btn-raga"
               onclick="switchView('raga')" title="Melakarta–janya raga system">Mela-Janya</button>
     </div>
   </div>

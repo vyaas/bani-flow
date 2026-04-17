@@ -113,6 +113,9 @@ cy.ready(() => {
   });
   applyZoomLabels();
   buildFilterChips();
+  // Default view is Mela-Janya — switch after cy is ready so showRagaWheel()
+  // has valid SVG dimensions to draw into.
+  requestAnimationFrame(() => switchView('raga'));
 });
 
 // ── ERA_COLOURS and INSTRUMENT_SHAPES mirrors (for chip injection) ─────────────
