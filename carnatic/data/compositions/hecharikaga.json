@@ -2,7 +2,7 @@
   "id": "hecharikaga",
   "title": "Hecharikaga",
   "composer_id": "tyagaraja",
-  "raga_id": "yadukulakhamboji",
+  "raga_id": "yadukulakamboji",
   "tala": "Adi",
   "language": "Telugu",
   "sources": [
@@ -12,5 +12,5 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "Tyagaraja kriti in Yadukulakhamboji raga."
+  "notes": "Tyagaraja kriti in Yadukulakamboji raga."
 }

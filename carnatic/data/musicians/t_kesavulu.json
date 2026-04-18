@@ -1,0 +1,17 @@
+{
+  "id": "t_kesavulu",
+  "label": "T Kesavulu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/T_Kesavulu",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "golden_age",
+  "instrument": "violin",
+  "bani": null,
+  "youtube": []
+}

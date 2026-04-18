@@ -13,5 +13,11 @@
   "era": "disseminator",
   "instrument": "flute",
   "bani": "mali",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/EKEzOGq365I",
+      "label": "Yadukula Kambhoji Alapana + Nee Dayache · Thyagaraja",
+      "raga_id": "yadukulakamboji"
+    }
+  ]
 }

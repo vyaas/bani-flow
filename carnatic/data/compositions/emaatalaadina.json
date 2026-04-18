@@ -1,0 +1,15 @@
+{
+  "id": "emaatalaadina",
+  "title": "Emaatalaadina",
+  "composer_id": "kshetrayya",
+  "raga_id": "yadukulakamboji",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Kshetrayya (or Muvalur Sabhapathy Ayya, disputed) in Yadukulakamboji raga"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "divakara_tanujam",
+  "title": "Divakara Tanujam",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "yadukulakamboji",
+  "tala": "Eka",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Muthuswami Dikshitar in Yadukulakamboji raga"
+}

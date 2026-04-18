@@ -1,0 +1,19 @@
+{
+  "id": "yadukulakamboji",
+  "name": "Yadukulakamboji",
+  "aliases": [
+    "Yadukula Kambhoji",
+    "Yadukulakhamboji"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta). Pentatonic, bright devotional character. Tyagaraja's Hecharikaga and Ne Dayache are well-known kritis.",
+  "is_melakarta": false
+}

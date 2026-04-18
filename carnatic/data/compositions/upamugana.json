@@ -1,0 +1,16 @@
+{
+  "id": "upamugana",
+  "title": "Upamugana",
+  "composer_id": "sarangapani",
+  "raga_id": "yadukulakamboji",
+  "tala": "Jhampa",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Padam by Sarangapani in Yadukulakamboji raga"
+}

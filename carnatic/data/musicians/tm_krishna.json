@@ -114,9 +114,9 @@
     },
     {
       "url": "https://www.youtube.com/watch?v=BY7Vs90A0Ac",
-      "label": "Hecharikaga · Yadukulakhamboji - TM Krishna, Karnatic Modern II Mumbai 2018",
+      "label": "Hecharikaga · Yadukulakamboji - TM Krishna, Karnatic Modern II Mumbai 2018",
       "composition_id": "hecharikaga",
-      "raga_id": "yadukulakhamboji",
+      "raga_id": "yadukulakamboji",
       "year": 2018
     },
     {
@@ -577,6 +577,12 @@
       "label": "Ragamalika + Jaya Jaya Shankara · Darbari Kanada - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
       "raga_id": "darbari_kanada",
       "year": 2020
+    },
+    {
+      "url": "https://youtu.be/20e0XytwiRw",
+      "label": "Kamakshi Ni Pada · Yadukula Kambhoji · Svarajathi",
+      "composition_id": "kamakshi_ni_pada",
+      "raga_id": "yadukulakamboji"
     }
   ]
 }
