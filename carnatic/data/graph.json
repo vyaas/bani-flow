@@ -851,6 +851,12 @@
             "label": "Gitarthamu · Surutti · Adi - KV Narayanaswamy",
             "composition_id": "gitarthamu",
             "raga_id": "surutti"
+          },
+          {
+            "url": "https://youtu.be/vf0CZ6VyGj8",
+            "label": "Heccarikaga Rara · Yadukula Kambhoji · Thyagaraja",
+            "composition_id": "hecharikaga",
+            "raga_id": "yadukulakamboji"
           }
         ]
       },
@@ -1313,6 +1319,29 @@
         "youtube": []
       },
       {
+        "id": "ramakrishnan_murthy",
+        "label": "Ramakrishnan Murthy",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ramakrishnan_Murthy",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": [
+          {
+            "url": "https://youtu.be/8-kheimrCqg",
+            "label": "Yadukula Kambhoji Svarajathi · Syama Sastri",
+            "raga_id": "yadukulakamboji"
+          }
+        ]
+      },
+      {
         "id": "ramnad_krishnan",
         "label": "Ramnad Krishnan",
         "sources": [
@@ -1762,9 +1791,9 @@
           },
           {
             "url": "https://www.youtube.com/watch?v=HdXVUo4WdPQ",
-            "label": "Ne Dayache · Yadukulakambhoji · Tyagaraja — Ramnad Krishnan",
+            "label": "Ne Dayache · Yadukulakamboji · Tyagaraja — Ramnad Krishnan",
             "composition_id": "ne_dayache",
-            "raga_id": "yadukulakhamboji"
+            "raga_id": "yadukulakamboji"
           },
           {
             "url": "https://www.youtube.com/watch?v=8RuTWBnWO6M",
@@ -2025,6 +2054,12 @@
             "label": "entō prēmatō · Surutti · Adi - Semmangudi Srinivasa Iyer",
             "composition_id": "ento_premato",
             "raga_id": "surutti"
+          },
+          {
+            "url": "https://youtu.be/-uR6dmvc7pk",
+            "label": "Divakara Tanujam · Yadukula Kambhoji · Muthuswami Dikshitar",
+            "composition_id": "divakara_tanujam",
+            "raga_id": "yadukulakamboji"
           }
         ]
       },
@@ -2157,8 +2192,36 @@
             "url": "https://youtu.be/9SY1OLZh-oM",
             "label": "Begada Alapana",
             "raga_id": "begada"
+          },
+          {
+            "url": "https://youtu.be/2nrNI7U2ZIk",
+            "label": "Yadukula Kambhoji Alapana",
+            "raga_id": "yadukulakamboji"
+          },
+          {
+            "url": "https://youtu.be/NJl2hXGu1iU",
+            "label": "Emaatalaadina · Yadukula Kambhoji · Adi",
+            "composition_id": "emaatalaadina",
+            "raga_id": "yadukulakamboji"
           }
         ]
+      },
+      {
+        "id": "t_kesavulu",
+        "label": "T Kesavulu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/T_Kesavulu",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": []
       },
       {
         "id": "t_muktha",
@@ -2341,9 +2404,9 @@
           },
           {
             "url": "https://www.youtube.com/watch?v=BY7Vs90A0Ac",
-            "label": "Hecharikaga · Yadukulakhamboji - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "label": "Hecharikaga · Yadukulakamboji - TM Krishna, Karnatic Modern II Mumbai 2018",
             "composition_id": "hecharikaga",
-            "raga_id": "yadukulakhamboji",
+            "raga_id": "yadukulakamboji",
             "year": 2018
           },
           {
@@ -2804,6 +2867,12 @@
             "label": "Ragamalika + Jaya Jaya Shankara · Darbari Kanada - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
             "raga_id": "darbari_kanada",
             "year": 2020
+          },
+          {
+            "url": "https://youtu.be/20e0XytwiRw",
+            "label": "Kamakshi Ni Pada · Yadukula Kambhoji · Svarajathi",
+            "composition_id": "kamakshi_ni_pada",
+            "raga_id": "yadukulakamboji"
           }
         ]
       },
@@ -2828,6 +2897,12 @@
             "label": "Gitarthamu · Surutti · Adi - TN Krishnan",
             "composition_id": "gitarthamu",
             "raga_id": "surutti"
+          },
+          {
+            "url": "https://youtu.be/94EEhcOgwn0",
+            "label": "Upamugana · Yadukula Kambhoji · Sarangapani",
+            "composition_id": "upamugana",
+            "raga_id": "yadukulakamboji"
           }
         ]
       },
@@ -2863,7 +2938,13 @@
         "era": "disseminator",
         "instrument": "flute",
         "bani": "mali",
-        "youtube": []
+        "youtube": [
+          {
+            "url": "https://youtu.be/EKEzOGq365I",
+            "label": "Yadukula Kambhoji Alapana + Nee Dayache · Thyagaraja",
+            "raga_id": "yadukulakamboji"
+          }
+        ]
       },
       {
         "id": "tyagaraja",
@@ -6042,21 +6123,22 @@
         "notes": "54th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₃ N₃ Ṡ"
       },
       {
-        "id": "yadukulakhamboji",
-        "name": "Yadukulakhamboji",
+        "id": "yadukulakamboji",
+        "name": "Yadukulakamboji",
         "aliases": [
-          "Yadukula Kambhoji"
+          "Yadukula Kambhoji",
+          "Yadukulakhamboji"
         ],
         "melakarta": null,
         "parent_raga": "harikambhoji",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Yadukulakambhoji",
+            "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
         ],
-        "notes": "Janya of Harikambhoji (28th melakarta). Pentatonic, bright devotional character. Tyagaraja's Hecharikaga is a well-known kriti.",
+        "notes": "Janya of Harikambhoji (28th melakarta). Pentatonic, bright devotional character. Tyagaraja's Hecharikaga and Ne Dayache are well-known kritis.",
         "is_melakarta": false
       },
       {
@@ -6974,20 +7056,6 @@
         "notes": "Rabindranath Tagore composition. Performed by TM Krishna in Bhairavi raga."
       },
       {
-        "id": "abhimana",
-        "title": "Abhimana",
-        "composer_id": "patnam_subramanya_iyer",
-        "raga_id": "begada",
-        "language": "Telugu",
-        "sources": [
-          {
-            "url": "https://www.karnatik.com/c2765.shtml",
-            "label": "Karnatik.com",
-            "type": "article"
-          }
-        ]
-      },
-      {
         "id": "abhimanamennedu",
         "title": "Abhimānamenneḍu",
         "composer_id": "patnam_subramanya_iyer",
@@ -7565,6 +7633,22 @@
         "notes": "Tyagaraja kriti in Harikambhoji raga, Adi tala"
       },
       {
+        "id": "divakara_tanujam",
+        "title": "Divakara Tanujam",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "yadukulakamboji",
+        "tala": "Eka",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Kriti by Muthuswami Dikshitar in Yadukulakamboji raga"
+      },
+      {
         "id": "dudukugala",
         "title": "Dudukugala",
         "composer_id": "tyagaraja",
@@ -7611,6 +7695,21 @@
           }
         ],
         "notes": "Tyagaraja kriti in Sahana raga."
+      },
+      {
+        "id": "emaatalaadina",
+        "title": "Emaatalaadina",
+        "composer_id": "kshetrayya",
+        "raga_id": "yadukulakamboji",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Padam by Kshetrayya (or Muvalur Sabhapathy Ayya, disputed) in Yadukulakamboji raga"
       },
       {
         "id": "emani_ne",
@@ -7956,7 +8055,7 @@
         "id": "hecharikaga",
         "title": "Hecharikaga",
         "composer_id": "tyagaraja",
-        "raga_id": "yadukulakhamboji",
+        "raga_id": "yadukulakamboji",
         "tala": "Adi",
         "language": "Telugu",
         "sources": [
@@ -7966,7 +8065,7 @@
             "type": "wikipedia"
           }
         ],
-        "notes": "Tyagaraja kriti in Yadukulakhamboji raga."
+        "notes": "Tyagaraja kriti in Yadukulakamboji raga."
       },
       {
         "id": "himadri_sute",
@@ -8237,6 +8336,22 @@
           }
         ],
         "notes": "Kannada devotional composition by Purandara Dasa in Senchurutti raga; Adi tala; part of the vast Purandara Dasa corpus of Haridasa compositions; frequently performed as a light concluding piece"
+      },
+      {
+        "id": "kamakshi_ni_pada",
+        "title": "Kamakshi Ni Pada",
+        "composer_id": "shyama_shastri",
+        "raga_id": "yadukulakamboji",
+        "tala": "Adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-kamakshi-ni-pada.html",
+            "label": "Syama Krishna Vaibhavam",
+            "type": "article"
+          }
+        ],
+        "notes": "Svarajathi by Shyama Shastri in Yadukulakamboji raga"
       },
       {
         "id": "kamakshi_varali",
@@ -9039,7 +9154,7 @@
         "id": "ne_dayache",
         "title": "Ne Dayache",
         "composer_id": "tyagaraja",
-        "raga_id": "yadukulakhamboji",
+        "raga_id": "yadukulakamboji",
         "language": "Telugu",
         "sources": [
           {
@@ -10236,6 +10351,22 @@
         "notes": null
       },
       {
+        "id": "upamugana",
+        "title": "Upamugana",
+        "composer_id": "sarangapani",
+        "raga_id": "yadukulakamboji",
+        "tala": "Jhampa",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Yadukulakamboji",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Padam by Sarangapani in Yadukulakamboji raga"
+      },
+      {
         "id": "vadanyeshwaram_bhajeham",
         "title": "Vadanyeshwaram Bhajeham",
         "composer_id": "muthuswami_dikshitar",
@@ -10559,6 +10690,18 @@
         "semmangudi_srinivasa_iyer",
         "lalgudi_jayaraman",
         "vellore_ramabhadran"
+      ]
+    },
+    {
+      "id": "ncpa_2022_tm_krishna",
+      "path": "recordings/ncpa_2022_tm_krishna.json",
+      "title": "TM Krishna — NCPA, Mumbai 2022",
+      "short_title": "NCPA 2022",
+      "date": "2022-01",
+      "venue": "NCPA, Mumbai",
+      "primary_musician_ids": [
+        "tm_krishna",
+        "akkarai_subbulakshmi"
       ]
     },
     {
