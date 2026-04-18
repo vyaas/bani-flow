@@ -1143,6 +1143,13 @@
     font-family: inherit;
   }
   .entry-btn:hover { background: var(--bg-input); color: var(--fg); border-color: var(--fg-sub); }
+  .entry-btn-active {
+    background: var(--accent) !important;
+    color: var(--bg-panel) !important;
+    border-color: var(--accent) !important;
+    font-weight: 600;
+  }
+  .entry-btn-active:hover { opacity: 0.85; }
 
   /* ── ADR-031: floating entry form window ── */
   .entry-window {
@@ -1228,12 +1235,37 @@
     font-family: inherit; flex-shrink: 0;
   }
   .ef-id-edit-btn:hover { color: var(--accent); border-color: var(--accent); }
-  /* section headers inside forms */
+  /* section headers inside forms — chip-style, matching main page visual language */
   .ef-section {
-    font-size: 0.70rem; color: var(--fg-sub);
-    text-transform: uppercase; letter-spacing: 0.1em;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 4px; margin: 14px 0 10px;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    font-size: 0.65rem;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 12px 0 8px;
+    user-select: none;
+    cursor: default;
+  }
+  /* combobox — searchable entity dropdown with inline "Add missing" */
+  .ef-combobox-wrap { position: relative; width: 100%; }
+  .ef-combobox-input { width: 100%; box-sizing: border-box; }
+  /* .ef-combobox-dropdown is portalled to document.body at position:fixed (set inline by JS) */
+  .ef-combobox-dropdown {
+    background: var(--bg-panel); border: 1px solid var(--border-strong);
+    border-radius: 0 0 3px 3px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    max-height: 220px; overflow-y: auto;
+  }
+  .ef-cb-add { color: var(--accent); border-top: 1px solid var(--border) !important; }
+  .ef-combobox-mini-form {
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 8px; margin: 4px 0 10px;
+    background: var(--bg-input);
   }
   /* repeating sub-blocks (edges, sessions, performers, performances) */
   .ef-repeat-block {
@@ -1463,11 +1495,13 @@
 <!-- ADR-031: footer bar — data entry buttons -->
 <div id="footer-bar">
   <span style="font-size:0.65rem;color:var(--fg-muted);margin-right:4px;letter-spacing:0.08em;text-transform:uppercase;">Add:</span>
-  <button class="entry-btn" onclick="openEntryForm('musician')">+ Musician</button>
-  <button class="entry-btn" onclick="openEntryForm('youtube')">+ YouTube</button>
+  <button class="entry-btn" onclick="openEntryForm('musician_recordings')">+ Musician / Recordings</button>
+  <button class="entry-btn" onclick="openEntryForm('composer')">+ Composer</button>
   <button class="entry-btn" onclick="openEntryForm('raga')">+ Raga</button>
   <button class="entry-btn" onclick="openEntryForm('composition')">+ Composition</button>
-  <button class="entry-btn" onclick="openEntryForm('recording')">+ Recording</button>
+  <button class="entry-btn" onclick="openEntryForm('recording')">+ Concert Recording</button>
+  <span style="flex:1"></span>
+  <button class="entry-btn" id="bundle-download-btn" onclick="downloadBundle()" disabled>&#x2B07; Bundle (0 items)</button>
 </div>
 
 <!-- INJECT_SCRIPTS -->
