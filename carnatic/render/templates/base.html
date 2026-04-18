@@ -1373,11 +1373,154 @@
       flex-shrink: 0;
     }
   }
+
+  /* ── ADR-034: new elements — hidden on desktop, activated by mobile query ── */
+  #hamburger-btn {
+    display: none;  /* shown at ≤768px only */
+  }
+  #sheet-handle {
+    display: none;  /* shown at ≤768px only */
+  }
+  #left-drawer-scrim {
+    display: none;  /* shown by mobile.js when drawer is open */
+  }
+
+  /* ── Phase 1: Responsive layout — left drawer + bottom sheet (ADR-034) ── */
+  @media (max-width: 768px) {
+
+    /* ── Header: flex row replacing 3-col grid ── */
+    header {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      gap: 0;
+      grid-template-columns: unset;  /* defeat the desktop grid */
+    }
+    #hamburger-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid var(--border-strong);
+      color: var(--fg-sub);
+      font-size: 1.2rem;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+      margin-right: 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    header h1 {
+      flex: 1;
+      text-align: center;
+      padding: 0 4px;
+    }
+    .stats { display: none; }
+    #sruti-strip { display: none; }
+    .controls { padding: 0; }
+
+    /* ── Main layout: canvas occupies full viewport width ── */
+    #main {
+      position: relative;
+    }
+    #canvas-wrap {
+      width: 100vw;
+      flex: 1;
+    }
+
+    /* ── Left sidebar → fixed left drawer ── */
+    #left-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 200;
+      width: min(85vw, 320px);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      box-shadow: 4px 0 16px rgba(0,0,0,0.3);
+      border-right: 2px solid var(--border-strong);
+      overflow-y: auto;
+    }
+    #left-sidebar.drawer-open {
+      transform: translateX(0);
+    }
+
+    /* ── Scrim behind left drawer ── */
+    #left-drawer-scrim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 199;
+    }
+    #left-drawer-scrim.scrim-visible {
+      display: block;
+    }
+
+    /* ── Right sidebar → bottom sheet ── */
+    #right-sidebar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50vh;
+      min-height: 280px;
+      z-index: 150;
+      border-left: none;
+      border-top: 2px solid var(--border-strong);
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      width: auto;
+    }
+    #right-sidebar.peek    { transform: translateY(calc(100% - 72px)); }
+    #right-sidebar.expanded { transform: translateY(0); }
+
+    /* ── Drag handle pill at top of the sheet ── */
+    #sheet-handle {
+      display: block;
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border-strong);
+      margin: 8px auto 4px;
+      flex-shrink: 0;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    /* ── Media player: centered + lifts above sheet ── */
+    .media-player {
+      position: fixed;
+      width: min(90vw, 400px);
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 8px;
+      top: auto !important;
+    }
+    body.sheet-expanded .media-player { bottom: calc(50vh + 8px); }
+    body.sheet-peek     .media-player { bottom: 80px; }
+
+    /* ── Meta inspector: full-width on mobile ── */
+    #meta-inspector {
+      width: 95vw;
+      max-height: 60vh;
+    }
+
+    /* ── Footer bar: hide on mobile (entry forms not mobile-usable) ── */
+    #footer-bar {
+      display: none;
+    }
+  }
 </style>
 </head>
 <body>
 
 <header>
+  <button id="hamburger-btn" aria-label="Open navigation">&#9776;</button>
   <h1>Carnatic Music Explorer</h1>
   <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
   <div id="sruti-strip">
@@ -1476,6 +1619,8 @@
 
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
+    <!-- Drag handle pill — hidden on desktop, shown as bottom sheet handle on mobile (ADR-034) -->
+    <div id="sheet-handle" aria-hidden="true"></div>
     <!-- ── sticky zone: musician search + node header + rec filter ── -->
     <div id="right-sticky">
       <div class="panel" id="musician-panel">
@@ -1521,6 +1666,9 @@
     </div>
   </div>
 </div>
+<!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
+<div id="left-drawer-scrim" aria-hidden="true"></div>
+
 <!-- ADR-027: reflective metadata inspector overlay -->
 <div id="meta-inspector" style="display:none">
   <div id="mi-bar">

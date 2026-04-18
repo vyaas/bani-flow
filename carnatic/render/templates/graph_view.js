@@ -412,6 +412,9 @@ function selectNode(node) {
   node.removeClass('faded');
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
+
+  // ADR-034: surface bottom sheet on mobile when a node is selected
+  if (typeof peekBottomSheet === 'function') peekBottomSheet();
 }
 
 // ── orientToNode — pan + zoom to a node, populate right sidebar ──────────────
@@ -649,6 +652,8 @@ cy.on('tap', evt => {
   // NEW: clear chip filters on background tap
   clearAllChipFilters();
   applyZoomLabels();
+  // ADR-034: dismiss bottom sheet on mobile when canvas background is tapped
+  if (typeof dismissBottomSheet === 'function') dismissBottomSheet();
 });
 
 // ── controls ──────────────────────────────────────────────────────────────────
