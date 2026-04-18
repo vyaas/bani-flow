@@ -2,7 +2,7 @@
   "id": "ide_bhagyamu",
   "title": "Ide Bhagyamu",
   "composer_id": "tyagaraja",
-  "raga_id": "kaanada",
+  "raga_id": "kannada",
   "tala": "misra_capu",
   "language": "telugu",
   "sources": [
@@ -12,5 +12,5 @@
       "type": "archive"
     }
   ],
-  "notes": "Tyagaraja kriti in Kaanada; Misra Chapu tala; pallavi 'ide bhagyamu'; a meditation on the fortune of devotion to Rama"
+  "notes": "Tyagaraja kriti in Kannada (mela 29, Shankarabharanam janya); Misra Chapu tala; pallavi 'ide bhagyamu'; a meditation on the fortune of devotion to Rama"
 }

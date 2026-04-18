@@ -4308,7 +4308,7 @@
         "aliases": [
           "Kanada",
           "Kānada",
-          "Kannada"
+          "kAnaDA"
         ],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -4319,7 +4319,7 @@
             "type": "wikipedia"
           }
         ],
-        "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga with characteristic zigzag phrases; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 N2 P M1 G2 R2 S; evokes grandeur and devotion; associated with Tyagaraja's 'Sri Narada'",
+        "notes": "Janya of Kharaharapriya (22nd melakarta); shadava-sampurna vakra bhasanga raga; arohana: S R2 G2 M1 D2 N2 S (P absent in ascent), avarohana: S N2 P M1 G2 M1 R2 S; characteristic double-touch G2-M1 in descent; anya svara: N3 (kakali) intrudes as bhasanga element; svakiya N2 belongs to parent mela; distinct from Kannada (mela 29, Shankarabharanam janya) which uses G3 and N3; associated with Tyagaraja kritis Sri Narada and Yee Vasudha",
         "is_melakarta": false
       },
       {
@@ -4375,6 +4375,25 @@
           }
         ],
         "notes": "1th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₁ N₁ Ṡ"
+      },
+      {
+        "id": "kannada",
+        "name": "Kannada",
+        "aliases": [
+          "Kannaḍā",
+          "KaNNaDa"
+        ],
+        "melakarta": null,
+        "parent_raga": "shankarabharanam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Kannada_(raga)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya of Shankarabharanam (29th melakarta, mela 29); upanga vakra-sampurna raga; arohana: S R2 G3 M1 P M1 D2 N3 S, avarohana: S N3 S D2 P M1 G3 M1 G3 M1 R2 S; heavily vakra in both ascent and descent; associated with Bharatanatyam jatisvarams and Dikshitar's Sri Matrubhutam; distinct from kaanada (mela 22) in both Gandhara (G3 here vs G2) and Nishada (N3 here vs N2), and in being upanga (no anya svara)",
+        "is_melakarta": false
       },
       {
         "id": "kannada_gowla",
@@ -7969,7 +7988,7 @@
         "id": "ide_bhagyamu",
         "title": "Ide Bhagyamu",
         "composer_id": "tyagaraja",
-        "raga_id": "kaanada",
+        "raga_id": "kannada",
         "tala": "misra_capu",
         "language": "telugu",
         "sources": [
@@ -7979,7 +7998,7 @@
             "type": "archive"
           }
         ],
-        "notes": "Tyagaraja kriti in Kaanada; Misra Chapu tala; pallavi 'ide bhagyamu'; a meditation on the fortune of devotion to Rama"
+        "notes": "Tyagaraja kriti in Kannada (mela 29, Shankarabharanam janya); Misra Chapu tala; pallavi 'ide bhagyamu'; a meditation on the fortune of devotion to Rama"
       },
       {
         "id": "ilalo_pranatartihara",
@@ -9175,7 +9194,7 @@
         "id": "ninnada",
         "title": "Ninnada",
         "composer_id": "tyagaraja",
-        "raga_id": "kaanada",
+        "raga_id": "kannada",
         "language": "Telugu",
         "sources": [
           {
@@ -9837,7 +9856,7 @@
         "id": "sri_matrubhutam",
         "title": "Sri Matrubhutam",
         "composer_id": "muthuswami_dikshitar",
-        "raga_id": "kaanada",
+        "raga_id": "kannada",
         "tala": "Adi",
         "language": "Sanskrit",
         "sources": [
@@ -9847,7 +9866,7 @@
             "type": "wikipedia"
           }
         ],
-        "notes": "Muthuswami Dikshitar kriti in Kannada raga."
+        "notes": "Muthuswami Dikshitar kriti in Kannada raga (mela 29, Shankarabharanam janya); distinct from Kaanada (mela 22)."
       },
       {
         "id": "sri_narada",

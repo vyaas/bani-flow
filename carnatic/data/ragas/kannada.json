@@ -1,0 +1,19 @@
+{
+  "id": "kannada",
+  "name": "Kannada",
+  "aliases": [
+    "Kannaḍā",
+    "KaNNaDa"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kannada_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Shankarabharanam (29th melakarta, mela 29); upanga vakra-sampurna raga; arohana: S R2 G3 M1 P M1 D2 N3 S, avarohana: S N3 S D2 P M1 G3 M1 G3 M1 R2 S; heavily vakra in both ascent and descent; associated with Bharatanatyam jatisvarams and Dikshitar's Sri Matrubhutam; distinct from kaanada (mela 22) in both Gandhara (G3 here vs G2) and Nishada (N3 here vs N2), and in being upanga (no anya svara)",
+  "is_melakarta": false
+}

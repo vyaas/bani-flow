@@ -2,7 +2,7 @@
   "id": "sri_matrubhutam",
   "title": "Sri Matrubhutam",
   "composer_id": "muthuswami_dikshitar",
-  "raga_id": "kaanada",
+  "raga_id": "kannada",
   "tala": "Adi",
   "language": "Sanskrit",
   "sources": [
@@ -12,5 +12,5 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "Muthuswami Dikshitar kriti in Kannada raga."
+  "notes": "Muthuswami Dikshitar kriti in Kannada raga (mela 29, Shankarabharanam janya); distinct from Kaanada (mela 22)."
 }

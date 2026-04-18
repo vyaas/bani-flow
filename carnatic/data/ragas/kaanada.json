@@ -4,7 +4,7 @@
   "aliases": [
     "Kanada",
     "Kānada",
-    "Kannada"
+    "kAnaDA"
   ],
   "melakarta": null,
   "parent_raga": "kharaharapriya",
@@ -15,6 +15,6 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "Janya of Kharaharapriya (22nd melakarta); vakra raga with characteristic zigzag phrases; ārohana S R2 G2 M1 P D2 N2 S, avarohana S N2 D2 N2 P M1 G2 R2 S; evokes grandeur and devotion; associated with Tyagaraja's 'Sri Narada'",
+  "notes": "Janya of Kharaharapriya (22nd melakarta); shadava-sampurna vakra bhasanga raga; arohana: S R2 G2 M1 D2 N2 S (P absent in ascent), avarohana: S N2 P M1 G2 M1 R2 S; characteristic double-touch G2-M1 in descent; anya svara: N3 (kakali) intrudes as bhasanga element; svakiya N2 belongs to parent mela; distinct from Kannada (mela 29, Shankarabharanam janya) which uses G3 and N3; associated with Tyagaraja kritis Sri Narada and Yee Vasudha",
   "is_melakarta": false
 }
