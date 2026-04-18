@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>Carnatic Music Explorer</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <style>
@@ -1357,6 +1357,45 @@
   /* conditional field hiding */
   .ef-row[data-show-if] { display: none; }
   .ef-row[data-show-if].ef-visible { display: flex; }
+
+  /* ── Phase 0: Mobile baseline (ADR-032) ── */
+  /* Touch targets: all interactive controls ≥ 44px on mobile.
+     Filter chip bar: horizontal scroll instead of wrap.
+     No layout changes here — that belongs in ADR-034 (Phase 1). */
+  @media (max-width: 768px) {
+    button,
+    .filter-clear {
+      min-height: 44px;
+    }
+    .filter-chip {
+      min-height: 44px;
+      padding: 0 12px;
+      font-size: 0.80rem;
+      align-items: center;
+    }
+    .view-btn {
+      min-height: 44px;
+      padding: 0 14px;
+    }
+    .vp-btn {
+      min-height: 44px;
+      padding: 0 12px;
+    }
+    #filter-bar {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;       /* Firefox: hide decorative scrollbar */
+    }
+    #filter-bar::-webkit-scrollbar { display: none; } /* WebKit: hide decorative scrollbar */
+    .filter-group {
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+    }
+    .filter-separator {
+      flex-shrink: 0;
+    }
+  }
 </style>
 </head>
 <body>
@@ -66618,15 +66657,36 @@ cy.on('tap', 'node', evt => {
   selectNode(evt.target);
 });
 
+// ── ADR-033: dbltap branches on input modality ──────────────────────────────
+// Desktop: dbltap → metadata inspector (ADR-027, no regression)
+// Mobile:  dbltap → fit viewport to node (double-tap = zoom, universal pattern)
 cy.on('dbltap', 'node', evt => {
-  openMetaInspector('node', evt.target.data());
+  if (isTouchDevice()) {
+    cy.animate({ fit: { eles: evt.target, padding: 80 }, duration: 300 });
+  } else {
+    openMetaInspector('node', evt.target.data());
+  }
 });
 
 cy.on('dbltap', 'edge', evt => {
   openMetaInspector('edge', evt.target.data());
 });
 
+// ── ADR-033: taphold → metadata inspector (mobile expert gesture) ─────────────
+cy.on('taphold', 'node', evt => {
+  openMetaInspector('node', evt.target.data());
+});
+
+cy.on('taphold', 'edge', evt => {
+  openMetaInspector('edge', evt.target.data());
+});
+
 // ── ADR-027: reflective metadata inspector ────────────────────────────────────
+// ADR-033: isTouchDevice guard — true on phones/tablets (pointer: coarse)
+function isTouchDevice() {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
 function openMetaInspector(type, dataObj) {
   const inspector = document.getElementById('meta-inspector');
   document.getElementById('mi-title').textContent =

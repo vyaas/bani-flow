@@ -552,15 +552,36 @@ cy.on('tap', 'node', evt => {
   selectNode(evt.target);
 });
 
+// ── ADR-033: dbltap branches on input modality ──────────────────────────────
+// Desktop: dbltap → metadata inspector (ADR-027, no regression)
+// Mobile:  dbltap → fit viewport to node (double-tap = zoom, universal pattern)
 cy.on('dbltap', 'node', evt => {
-  openMetaInspector('node', evt.target.data());
+  if (isTouchDevice()) {
+    cy.animate({ fit: { eles: evt.target, padding: 80 }, duration: 300 });
+  } else {
+    openMetaInspector('node', evt.target.data());
+  }
 });
 
 cy.on('dbltap', 'edge', evt => {
   openMetaInspector('edge', evt.target.data());
 });
 
+// ── ADR-033: taphold → metadata inspector (mobile expert gesture) ─────────────
+cy.on('taphold', 'node', evt => {
+  openMetaInspector('node', evt.target.data());
+});
+
+cy.on('taphold', 'edge', evt => {
+  openMetaInspector('edge', evt.target.data());
+});
+
 // ── ADR-027: reflective metadata inspector ────────────────────────────────────
+// ADR-033: isTouchDevice guard — true on phones/tablets (pointer: coarse)
+function isTouchDevice() {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
 function openMetaInspector(type, dataObj) {
   const inspector = document.getElementById('meta-inspector');
   document.getElementById('mi-title').textContent =
