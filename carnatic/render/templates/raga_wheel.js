@@ -288,6 +288,56 @@ let _vx = 0, _vy = 0, _vscale = 1;
 let _dragging = false, _dragStartX = 0, _dragStartY = 0, _dragVX = 0, _dragVY = 0;
 let _dragMoved = false;
 
+// ── Pointer Events state (ADR-035) ────────────────────────────────────────────
+// Multi-touch map: pointerId → {x, y}
+const _activePointers = new Map();
+let _pinchStartDist = null, _pinchStartScale = 1;
+// Taphold (long-press) — fires openMetaInspector after 500ms on stationary touch
+let _tapHoldTimer = null, _tapHoldTarget = null;
+// Double-tap detection — fires wheelFit() when two taps hit SVG background within 300ms
+let _lastTapTime = 0, _lastTapTarget = null;
+
+function _startTapHoldTimer(e) {
+  _tapHoldTarget = e.target;
+  _tapHoldTimer = setTimeout(() => {
+    if (!_tapHoldTarget) return;
+    const el = _tapHoldTarget.closest('[data-id]') || _tapHoldTarget.closest('[data-mela]');
+    if (!el) return;
+    // Determine node type from containing group class
+    const g = el.closest('.mela-node, .janya-node, .comp-node, .musc-node');
+    if (!g) return;
+    let nodeType, nodeId;
+    if (g.classList.contains('mela-node')) {
+      nodeType = 'mela';
+      const n = parseInt(g.getAttribute('data-mela'));
+      const melaId = g.getAttribute('data-id');
+      // Re-use click handler's raga lookup via the DOM data-id attribute
+      nodeId = melaId || null;
+    } else if (g.classList.contains('janya-node')) {
+      nodeType = 'janya'; nodeId = g.getAttribute('data-id');
+    } else if (g.classList.contains('comp-node')) {
+      nodeType = 'composition'; nodeId = g.getAttribute('data-id');
+    } else if (g.classList.contains('musc-node')) {
+      nodeType = null;  // musicians open via click, not inspector
+    }
+    if (nodeType && nodeId && typeof openMetaInspector === 'function') {
+      openMetaInspector(nodeType, { id: nodeId });
+    }
+    _tapHoldTarget = null;
+    _tapHoldTimer = null;
+  }, 500);
+}
+
+function _cancelTapHoldTimer() {
+  if (_tapHoldTimer) { clearTimeout(_tapHoldTimer); _tapHoldTimer = null; }
+  _tapHoldTarget = null;
+}
+
+function _getPinchDistance() {
+  const pts = [..._activePointers.values()];
+  return Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+}
+
 // Apply the current pan/zoom transform to the viewport group.
 // Looks up #wheel-viewport by ID so it works after a full SVG rebuild.
 function _applyTransform() {
@@ -492,34 +542,90 @@ window.drawRagaWheel = function() {
     _applyTransform();
   }, { passive: false });
 
-  // Wheel pan (drag)
-  svg.addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return;
-    _dragging = true;
-    _dragMoved = false;
-    _dragStartX = e.clientX; _dragStartY = e.clientY;
-    _dragVX = _vx; _dragVY = _vy;
-    svg.style.cursor = 'grabbing';
+  // Wheel pan/pinch-zoom — Pointer Events API (ADR-035)
+  // Replaces mousedown/mousemove/mouseup to work on both desktop and touch.
+  // The `wheel` event handler for scroll-zoom is retained for desktop (below).
+  //
+  // Remove any stale pointer handlers from a previous drawRagaWheel call.
+  if (_wheelMouseMove) { window.removeEventListener('mousemove', _wheelMouseMove); _wheelMouseMove = null; }
+  if (_wheelMouseUp)   { window.removeEventListener('mouseup',   _wheelMouseUp);   _wheelMouseUp   = null; }
+
+  svg.addEventListener('pointerdown', (e) => {
+    if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
+    e.preventDefault();
+    svg.setPointerCapture(e.pointerId);
+    _activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (_activePointers.size === 1) {
+      _dragging = true;
+      _dragMoved = false;
+      _dragStartX = e.clientX; _dragStartY = e.clientY;
+      _dragVX = _vx; _dragVY = _vy;
+      if (e.pointerType !== 'mouse') _startTapHoldTimer(e);
+      svg.style.cursor = 'grabbing';
+    } else if (_activePointers.size === 2) {
+      _cancelTapHoldTimer();
+      _dragMoved = true;  // suppress tap action when second finger lands
+      _pinchStartDist = _getPinchDistance();
+      _pinchStartScale = _vscale;
+    }
   });
-  // Remove any stale handlers from a previous drawRagaWheel call
-  if (_wheelMouseMove) window.removeEventListener('mousemove', _wheelMouseMove);
-  if (_wheelMouseUp)   window.removeEventListener('mouseup',   _wheelMouseUp);
 
-  _wheelMouseMove = (e) => {
-    if (!_dragging) return;
-    const dx = e.clientX - _dragStartX, dy = e.clientY - _dragStartY;
-    if (!_dragMoved && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) _dragMoved = true;
-    _vx = _dragVX + dx;
-    _vy = _dragVY + dy;
-    _applyTransform();
-  };
-  _wheelMouseUp = () => {
-    if (_dragging) { _dragging = false; svg.style.cursor = ''; }
-  };
-  window.addEventListener('mousemove', _wheelMouseMove);
-  window.addEventListener('mouseup',   _wheelMouseUp);
+  svg.addEventListener('pointermove', (e) => {
+    if (!_activePointers.has(e.pointerId)) return;
+    _activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-  // Double-click on empty canvas → reset pan/zoom (guard: not a pan-end, not a node dblclick)
+    if (_activePointers.size === 1 && _dragging) {
+      const dx = e.clientX - _dragStartX, dy = e.clientY - _dragStartY;
+      if (!_dragMoved && Math.hypot(dx, dy) > 5) {
+        _dragMoved = true;
+        _cancelTapHoldTimer();
+      }
+      _vx = _dragVX + dx;
+      _vy = _dragVY + dy;
+      _applyTransform();
+    } else if (_activePointers.size === 2 && _pinchStartDist !== null) {
+      const newDist = _getPinchDistance();
+      const factor = newDist / _pinchStartDist;
+      const ZOOM_MIN = 0.5, ZOOM_MAX = 4.0;
+      const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, _pinchStartScale * factor));
+      // Zoom toward midpoint of the two touch points
+      const pts = [..._activePointers.values()];
+      const rect = svg.getBoundingClientRect();
+      const mx = (pts[0].x + pts[1].x) / 2 - rect.left;
+      const my = (pts[0].y + pts[1].y) / 2 - rect.top;
+      const actualFactor = newScale / _vscale;
+      _vx = mx - actualFactor * (mx - _vx);
+      _vy = my - actualFactor * (my - _vy);
+      _vscale = newScale;
+      _applyTransform();
+    }
+  });
+
+  function _onPointerEnd(e) {
+    _activePointers.delete(e.pointerId);
+    _cancelTapHoldTimer();
+    if (_activePointers.size < 2) _pinchStartDist = null;
+    if (_activePointers.size === 0) {
+      _dragging = false;
+      svg.style.cursor = '';
+
+      // Double-tap on SVG background → wheelFit() (mobile supplement to dblclick)
+      if (!_dragMoved && e.target === bg) {
+        const now = Date.now();
+        if (now - _lastTapTime < 300 && _lastTapTarget === bg) {
+          wheelFit();
+          _lastTapTime = 0; _lastTapTarget = null;
+          return;
+        }
+        _lastTapTime = now; _lastTapTarget = bg;
+      }
+    }
+  }
+  svg.addEventListener('pointerup',     _onPointerEnd);
+  svg.addEventListener('pointercancel', _onPointerEnd);
+
+  // Double-click on empty canvas → reset pan/zoom (desktop; guards: not a pan-end, not a node dblclick)
   svg.addEventListener('dblclick', (e) => {
     e.stopPropagation();
     if (_dragMoved) { _dragMoved = false; return; }
@@ -576,6 +682,12 @@ window.drawRagaWheel = function() {
       'data-mela': n
     });
     g.appendChild(circle);
+    // Invisible hit-target circle for touch accuracy (ADR-035 §7)
+    const hitCircleMela = svgEl('circle', {
+      cx: pos.x, cy: pos.y, r: NR_MELA + 8,
+      fill: 'transparent', 'pointer-events': 'all', 'stroke': 'none'
+    });
+    g.appendChild(hitCircleMela);
 
     if (isLive) {
       g.style.cursor = 'pointer';
@@ -710,6 +822,11 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
       const jg = svgEl('g', { class: 'janya-node', 'data-id': janya.id });
       jg._connLine = janyaConnLine;  // stash for retrieval by comp click handler
       jg.appendChild(jCircle);
+      // Invisible hit-target circle for touch accuracy (ADR-035 §7)
+      jg.appendChild(svgEl('circle', {
+        cx: jPos.x, cy: jPos.y, r: NR_JANYA + 8,
+        fill: 'transparent', 'pointer-events': 'all', stroke: 'none'
+      }));
 
       jg.addEventListener('mouseenter', () => {
         const lines = [janya.name, 'Janya of ' + raga.name];
