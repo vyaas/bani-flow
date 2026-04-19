@@ -623,6 +623,19 @@ window.drawRagaWheel = function() {
     _activePointers.delete(e.pointerId);
     _cancelTapHoldTimer();
     if (_activePointers.size < 2) _pinchStartDist = null;
+
+    // ── Pinch→pan handoff: re-anchor drag origin to the remaining finger ──
+    // Without this, the single-finger pan path uses stale _dragStartX/Y and
+    // _dragVX/Y from the original pointerdown (before the pinch changed
+    // _vx/_vy), causing the viewport to jump back to its pre-pinch position.
+    if (_activePointers.size === 1 && _dragging) {
+      const remaining = [..._activePointers.values()][0];
+      _dragStartX = remaining.x;
+      _dragStartY = remaining.y;
+      _dragVX = _vx;
+      _dragVY = _vy;
+    }
+
     if (_activePointers.size === 0) {
       _dragging = false;
       svg.style.cursor = '';
