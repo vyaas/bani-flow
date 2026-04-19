@@ -178,29 +178,59 @@ function svgEl(tag, attrs) {
 
 // Append a text label with a semi-transparent dark background pill to `layer`.
 // cx, cy: centre of the label. extraAttrs: additional SVG text attributes (e.g. class).
-// Returns the <text> element (background rect is inserted just before it).
-function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs) {
+// clickHandler: optional fn(e) — when provided the pill background <rect> becomes a
+//   pointer-events hit target (pointer-events: all) and the handler fires on click.
+//   This makes the entire pill area tappable on mobile, not just the circle node.
+//   class and data-* attrs are hoisted onto the wrapper <g> so querySelectorAll works.
+// Returns the <text> element.
+function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs, clickHandler) {
   const PAD_X = 3, PAD_Y = 1.5;
   // Estimate text width from character count (monospace approximation)
   const charW = fontSize * 0.55;
   const tw = text.length * charW + PAD_X * 2;
   const th = fontSize + PAD_Y * 2;
-  const bg = svgEl('rect', {
+
+  // Wrapper group: carries class/data-* attrs for querySelectorAll selectors.
+  // The group itself is never a hit target (no fill/stroke geometry).
+  const wrapAttrs = { 'pointer-events': 'none' };
+  if (extraAttrs) {
+    if (extraAttrs.class) wrapAttrs.class = extraAttrs.class;
+    for (const [k, v] of Object.entries(extraAttrs)) {
+      if (k.startsWith('data-')) wrapAttrs[k] = v;
+    }
+  }
+  const wrap = svgEl('g', wrapAttrs);
+
+  // The rect is the actual hit target when a clickHandler is provided.
+  // pointer-events: all makes it respond even when fill is semi-transparent.
+  const rectEl = svgEl('rect', {
     x: cx - tw / 2, y: cy - th / 2,
     width: tw, height: th, rx: 2, ry: 2,
-    fill: THEME.labelOutline, opacity: 0.72, 'pointer-events': 'none'
+    fill: THEME.labelOutline, opacity: 0.72,
+    'pointer-events': clickHandler ? 'all' : 'none'
   });
-  // Carry over the FULL class so _collapseAll querySelectorAll('.sat-label') removes both rect and text
-  if (extraAttrs && extraAttrs.class) bg.setAttribute('class', extraAttrs.class);
-  if (extraAttrs && extraAttrs['data-janya-id']) bg.setAttribute('data-janya-id', extraAttrs['data-janya-id']);
-  layer.appendChild(bg);
+  if (clickHandler) {
+    rectEl.style.cursor = 'pointer';
+    rectEl.addEventListener('click', (e) => { e.stopPropagation(); clickHandler(e); });
+  }
+  wrap.appendChild(rectEl);
+
+  // Build text attrs — strip class and data-* (now on the wrapper group)
+  const textAttrs = {};
+  if (extraAttrs) {
+    for (const [k, v] of Object.entries(extraAttrs)) {
+      if (k !== 'class' && !k.startsWith('data-')) textAttrs[k] = v;
+    }
+  }
   const t = svgEl('text', Object.assign({
     x: cx, y: cy,
     'text-anchor': 'middle', 'dominant-baseline': 'middle',
     'pointer-events': 'none'
-  }, extraAttrs || {}));
+  }, textAttrs));
   t.textContent = text;
-  layer.appendChild(t);
+  wrap.appendChild(t);
+
+  layer.appendChild(wrap);
   return t;
 }
 
@@ -823,18 +853,33 @@ window.drawRagaWheel = function() {
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
     const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
-    const lbl = svgEl('text', {
+    // For live mela labels: pointer-events: all on the <text> so glyphs are tappable.
+    // <text> has inherent glyph geometry — pointer-events: all makes the rendered
+    // characters themselves a hit target without needing a wrapper element.
+    // (A <g> with no fill/stroke has no geometry and is never returned by elementFromPoint.)
+    const lblText = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': anchor, 'dominant-baseline': 'middle',
       fill: isLiveLbl ? THEME.fg : (raga ? THEME.borderStrong : THEME.borderStrong),
       'font-size': Math.max(7, minDim * 0.012) + 'px',
+      'pointer-events': isLiveLbl ? 'all' : 'none',
       opacity: melaLblOpacity,
       'data-orig-opacity': melaLblOpacity,
       'data-id': raga ? raga.id : '',
       class: 'mela-label',
       transform: `rotate(${melaRotDeg}, ${lp.x}, ${lp.y})`
     });
-    lbl.textContent = raga ? raga.name : String(n);
-    _labelLayer.appendChild(lbl);
+    lblText.textContent = raga ? raga.name : String(n);
+    if (isLiveLbl) {
+      lblText.style.cursor = 'pointer';
+      lblText.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const melaG = vp.querySelector(`.mela-node[data-id="${CSS.escape(raga.id)}"]`);
+        if (melaG) melaG.dispatchEvent(new MouseEvent('click', {
+          bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
+        }));
+      });
+    }
+    _labelLayer.appendChild(lblText);
   });
   vp.appendChild(_labelLayer);
 };
@@ -1018,12 +1063,17 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         if (_dragMoved) return;
         if (typeof openMetaInspector === 'function') openMetaInspector('janya', janya);
       });
-      // Janya label goes into _labelLayer so it is always on top
+      // Janya label goes into _labelLayer so it is always on top.
+      // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
       if (_labelLayer) {
         const jFontSize = Math.max(7, minDim * 0.011);
         _labelWithBg(_labelLayer, janya.name, jPos.x, jPos.y, jFontSize, {
           fill: THEME.fgSub, 'font-size': jFontSize + 'px',
           class: 'sat-label sat-label-janya', 'data-janya-id': janya.id
+        }, (e) => {
+          jg.dispatchEvent(new MouseEvent('click', {
+            bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
+          }));
         });
       }
       g.appendChild(jg);
@@ -1086,12 +1136,17 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     });
     const cg = svgEl('g', { class: 'comp-node', 'data-id': item.id || '' });
     cg.appendChild(cCircle);
-    // Label goes into _labelLayer so it is always rendered on top of all circles
+    // Label goes into _labelLayer so it is always rendered on top of all circles.
+    // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
     if (_labelLayer) {
       const cFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
         fill: THEME.fgSub, 'font-size': cFontSize + 'px',
         class: 'sat-label sat-label-comp', 'data-comp-id': item.id || ''
+      }, (e) => {
+        cg.dispatchEvent(new MouseEvent('click', {
+          bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
+        }));
       });
     }
 
@@ -1278,12 +1333,17 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     });
     const mg = svgEl('g', { class: 'musc-node', 'data-id': mid });
     mg.appendChild(mCircle);
-    // Label goes into _labelLayer so it is always rendered on top of all circles
+    // Label goes into _labelLayer so it is always rendered on top of all circles.
+    // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
     if (_labelLayer) {
       const mFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, mName, mPos.x, mPos.y, mFontSize, {
         fill: THEME.fgSub, 'font-size': mFontSize + 'px',
         class: 'sat-label sat-label-musc'
+      }, (e) => {
+        mg.dispatchEvent(new MouseEvent('click', {
+          bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
+        }));
       });
     }
 
