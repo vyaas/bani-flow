@@ -68620,7 +68620,7 @@ function switchView(name) {
     hideTimelineRuler();
     document.getElementById('cy').style.display = 'none';
     if (filterBar) filterBar.style.display = 'none';
-    showRagaWheel();
+    showRagaWheel(/* skipDraw when sync will redraw */ !!(typeof activeBaniFilter !== 'undefined' && activeBaniFilter));
     // Re-apply the current Bani filter to the wheel (ADR-025 sync gap)
     if (typeof activeBaniFilter !== 'undefined' && activeBaniFilter &&
         typeof syncRagaWheelToFilter === 'function') {
@@ -68677,16 +68677,18 @@ function toggleLayout() {
 }
 
 // ── Raga Wheel — show / hide ───────────────────────────────────────────────────
-function showRagaWheel() {
+function showRagaWheel(skipDraw) {
   const wheel = document.getElementById('raga-wheel');
   wheel.style.display = '';
-  drawRagaWheel();
+  if (!skipDraw) drawRagaWheel();
 }
 
 function hideRagaWheel() {
   const wheel = document.getElementById('raga-wheel');
   wheel.style.display = 'none';
   wheel.innerHTML = '';
+  // Abort SVG-level listeners so hidden wheel doesn't process stale events
+  if (typeof _svgAbortFromOutside === 'function') _svgAbortFromOutside();
 }
 
 // ── Raga Wheel — SVG rendering (ADR-023) ──────────────────────────────────────
@@ -68809,6 +68811,11 @@ let _labelLayer = null;  // top-most <g> in vp — all text labels go here
 let _wheelMouseMove = null;
 let _wheelMouseUp   = null;
 
+// AbortController for SVG-level event listeners — aborted and re-created on
+// each drawRagaWheel() call so stale handlers from previous draws don't
+// accumulate on the persistent <svg> element.
+let _svgListenerController = null;
+
 // Pan/zoom state — inside the IIFE but exposed on window so orientRagaWheel
 // (defined outside the IIFE) can read/write them for the pan animation.
 let _vx = 0, _vy = 0, _vscale = 1;
@@ -68886,6 +68893,11 @@ window._wheelSetVy      = (v) => { _vy = v; };
 window._wheelSetVscale  = (v) => { _vscale = v; };
 window._wheelApplyTransform = () => _applyTransform();
 
+// Expose abort helper so hideRagaWheel (outside IIFE) can clean up SVG listeners
+window._svgAbortFromOutside = () => {
+  if (_svgListenerController) { _svgListenerController.abort(); _svgListenerController = null; }
+};
+
 // Re-append _labelLayer so it is always the last (topmost) child of vp
 function _bringLabelsToFront(vp) {
   if (_labelLayer && _labelLayer.parentNode === vp) vp.appendChild(_labelLayer);
@@ -68894,6 +68906,10 @@ function _bringLabelsToFront(vp) {
 window.drawRagaWheel = function() {
   const svg = document.getElementById('raga-wheel');
   svg.innerHTML = '';
+  // Abort previous SVG-level listeners so they don't accumulate across redraws
+  if (_svgListenerController) _svgListenerController.abort();
+  _svgListenerController = new AbortController();
+  const _signal = _svgListenerController.signal;
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
 
   const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
@@ -69070,15 +69086,13 @@ window.drawRagaWheel = function() {
     _vy = my - actualFactor * (my - _vy);
     _vscale = newScale;
     _applyTransform();
-  }, { passive: false });
+  }, { passive: false, signal: _signal });
 
   // Wheel pan/pinch-zoom — Pointer Events API (ADR-035)
   // Replaces mousedown/mousemove/mouseup to work on both desktop and touch.
-  // The `wheel` event handler for scroll-zoom is retained for desktop (below).
-  //
-  // Remove any stale pointer handlers from a previous drawRagaWheel call.
-  if (_wheelMouseMove) { window.removeEventListener('mousemove', _wheelMouseMove); _wheelMouseMove = null; }
-  if (_wheelMouseUp)   { window.removeEventListener('mouseup',   _wheelMouseUp);   _wheelMouseUp   = null; }
+  // The `wheel` event handler for scroll-zoom is retained for desktop (above).
+  // Stale handlers are cleaned up via _svgListenerController.abort() at the
+  // top of drawRagaWheel().
 
   svg.addEventListener('pointerdown', (e) => {
     if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
@@ -69099,7 +69113,7 @@ window.drawRagaWheel = function() {
       _pinchStartDist = _getPinchDistance();
       _pinchStartScale = _vscale;
     }
-  });
+  }, { signal: _signal });
 
   svg.addEventListener('pointermove', (e) => {
     if (!_activePointers.has(e.pointerId)) return;
@@ -69130,7 +69144,7 @@ window.drawRagaWheel = function() {
       _vscale = newScale;
       _applyTransform();
     }
-  });
+  }, { signal: _signal });
 
   function _onPointerEnd(e) {
     _activePointers.delete(e.pointerId);
@@ -69168,8 +69182,8 @@ window.drawRagaWheel = function() {
       }
     }
   }
-  svg.addEventListener('pointerup',     _onPointerEnd);
-  svg.addEventListener('pointercancel', _onPointerEnd);
+  svg.addEventListener('pointerup',     _onPointerEnd, { signal: _signal });
+  svg.addEventListener('pointercancel', _onPointerEnd, { signal: _signal });
 
   // Block native click events that some browsers fire despite
   // e.preventDefault() on pointerdown.  Our synthetic clicks
@@ -69178,7 +69192,7 @@ window.drawRagaWheel = function() {
     if (e.isTrusted && Date.now() - _wheelLastSyntheticClick < 300) {
       e.stopImmediatePropagation();
     }
-  }, true);  // capturing phase — runs before any bubble-phase handlers
+  }, { capture: true, signal: _signal });  // capturing phase — runs before any bubble-phase handlers
 
   // Double-click on empty canvas → reset pan/zoom (desktop; guards: not a pan-end, not a node dblclick)
   svg.addEventListener('dblclick', (e) => {
@@ -69186,7 +69200,7 @@ window.drawRagaWheel = function() {
     if (_dragMoved) { _dragMoved = false; return; }
     _vx = 0; _vy = 0; _vscale = 1;
     _applyTransform();
-  });
+  }, { signal: _signal });
 
   // Cakra sectors — appended to viewport group (vp) for pan/zoom
   for (let cakra = 1; cakra <= 12; cakra++) {
