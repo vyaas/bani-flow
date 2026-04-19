@@ -1544,6 +1544,7 @@
       align-items: center;
       padding: 8px 10px;
       gap: 0;
+      position: relative;            /* anchor for absolutely-centred controls */
       grid-template-columns: unset;  /* defeat the desktop grid */
     }
 
@@ -1551,7 +1552,14 @@
     #header-left { flex-shrink: 0; gap: 4px; padding: 0 4px; }
     .stats { display: none; }
     #sruti-strip { display: none; }
-    .controls { flex: 1; justify-content: flex-end; padding: 0 6px; }
+    .controls {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0;
+      pointer-events: none;          /* let clicks pass through gap to header */
+    }
+    .controls > * { pointer-events: auto; }  /* re-enable on actual buttons */
 
     /* ── Main layout: canvas occupies full viewport width ── */
     /* ADR-042: pad bottom so canvas never extends behind the tab bar (56px) */
