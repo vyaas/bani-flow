@@ -296,6 +296,10 @@ let _pinchStartDist = null, _pinchStartScale = 1;
 let _tapHoldTimer = null, _tapHoldTarget = null;
 // Double-tap detection — fires wheelFit() when two taps hit SVG background within 300ms
 let _lastTapTime = 0, _lastTapTarget = null;
+// Guard: timestamp of the last synthetic click dispatched by _onPointerEnd.
+// Used to suppress duplicate native click events that some browsers fire
+// despite e.preventDefault() on pointerdown.
+let _wheelLastSyntheticClick = 0;
 
 function _startTapHoldTimer(e) {
   _tapHoldTarget = e.target;
@@ -630,6 +634,7 @@ window.drawRagaWheel = function() {
 
       // Re-dispatch click on the real element under the pointer (tap, not drag)
       if (!_dragMoved && realTarget) {
+        _wheelLastSyntheticClick = Date.now();
         realTarget.dispatchEvent(new MouseEvent('click', {
           bubbles: true, cancelable: true,
           clientX: e.clientX, clientY: e.clientY
@@ -639,6 +644,15 @@ window.drawRagaWheel = function() {
   }
   svg.addEventListener('pointerup',     _onPointerEnd);
   svg.addEventListener('pointercancel', _onPointerEnd);
+
+  // Block native click events that some browsers fire despite
+  // e.preventDefault() on pointerdown.  Our synthetic clicks
+  // have isTrusted=false; browser-generated ones have isTrusted=true.
+  svg.addEventListener('click', (e) => {
+    if (e.isTrusted && Date.now() - _wheelLastSyntheticClick < 300) {
+      e.stopImmediatePropagation();
+    }
+  }, true);  // capturing phase — runs before any bubble-phase handlers
 
   // Double-click on empty canvas → reset pan/zoom (desktop; guards: not a pan-end, not a node dblclick)
   svg.addEventListener('dblclick', (e) => {
@@ -735,13 +749,13 @@ window.drawRagaWheel = function() {
           circle.setAttribute('stroke', THEME.accentSelect);
           circle.setAttribute('stroke-width', 2.5);
           _expandedMela = raga.id;
-          // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
-          // re-entering orientRagaWheel and resetting the wheel mid-animation.
+          // Silently load bani-flow data (no panel pop-open).
+          // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
+          window._wheelSyncInProgress = true;
           if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', raga.id);
-          // ADR-042: open Bani Flow drawer on mobile after mela click
-          if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
-            window.setPanelState('TRAIL');
-          }
+          window._wheelSyncInProgress = false;
+          // Auto-zoom to bring the expanded mela into focus
+          _animateToTarget(pos.x, pos.y, 1.6);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -798,6 +812,37 @@ function _collapseAll(vp, melaByNum) {
   vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
   hideWheelTooltip();
+}
+
+// Animate the wheel viewport to centre on (targetX, targetY) at the given scale.
+// Used by click handlers to "land" on a node after exploding it.
+function _animateToTarget(targetX, targetY, targetScale) {
+  const svg = document.getElementById('raga-wheel');
+  if (!svg) return;
+  const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
+  const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
+  const targetVX = W / 2 - targetScale * targetX;
+  const targetVY = H / 2 - targetScale * targetY;
+
+  const startVX = _vx, startVY = _vy, startScale = _vscale;
+  const DURATION = 400;
+  const startTime = performance.now();
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(1, elapsed / DURATION);
+    const e = easeInOutCubic(t);
+    _vx = startVX    + (targetVX    - startVX)    * e;
+    _vy = startVY    + (targetVY    - startVY)    * e;
+    _vscale = startScale + (targetScale - startScale) * e;
+    _applyTransform();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 
 function _expandMela(vp, svg, raga, melaAngle, cx, cy,
@@ -881,13 +926,13 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
           R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
           compsByRaga, rtpByRaga, melaColor, minDim);
-        // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
-        // re-entering orientRagaWheel and resetting the wheel mid-animation.
+        // Silently load bani-flow data (no panel pop-open).
+        // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
+        window._wheelSyncInProgress = true;
         if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
-        // ADR-042: open Bani Flow drawer on mobile after janya click
-        if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
-          window.setPanelState('TRAIL');
-        }
+        window._wheelSyncInProgress = false;
+        // Auto-zoom to bring the expanded janya into focus
+        _animateToTarget(jPos.x, jPos.y, 2.0);
       });
       jg.addEventListener('dblclick', (e) => {
         e.stopPropagation();
@@ -1015,24 +1060,20 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         l.setAttribute('opacity', '0.08');
       });
       if (_expandedComp === item.id) {
-        // un-dim all on collapse
-        vp.querySelectorAll('.comp-node circle').forEach(c => c.setAttribute('opacity', '0.85'));
-        // Restore mela nodes to original opacity
-        vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
-          const orig = c.getAttribute('data-orig-opacity');
-          c.setAttribute('opacity', orig || '1');
-        });
-        // Restore all janya nodes and their labels
-        vp.querySelectorAll('.janya-node').forEach(jn => jn.style.removeProperty('display'));
-        vp.querySelectorAll('.janya-node circle').forEach(c => {
-          c.setAttribute('stroke', THEME.fg); c.setAttribute('stroke-width', 1);
-          c.setAttribute('opacity', '0.75');
-        });
-        if (_labelLayer) _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => el.style.removeProperty('display'));
-        // Restore connector lines
-        vp.querySelectorAll('.janya-group line').forEach(l => l.setAttribute('opacity', '0.5'));
-        vp.querySelectorAll('.comp-group line').forEach(l => l.setAttribute('opacity', '0.4'));
-        _expandedComp = null;
+        // Second click on already-selected comp → open the bani-flow panel.
+        window._wheelSyncInProgress    = true;
+        window._wheelOriginatedTrigger = true;
+        if (!item._isPerf) {
+          triggerBaniSearch('comp', item.id);
+        } else if (item._recording_id && item._perf_index != null) {
+          triggerBaniSearch('perf', item._recording_id + '::' + item._perf_index);
+        } else if (item._ytVid) {
+          triggerBaniSearch('yt', item._ytVid + '::' + (item.raga_id || janya.id));
+        } else {
+          triggerBaniSearch('raga', item.raga_id || janya.id);
+        }
+        window._wheelSyncInProgress    = false;
+        window._wheelOriginatedTrigger = false;
         return;
       }
       // Dim all mela nodes except the currently expanded one so the path lights up
@@ -1065,31 +1106,24 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
       _expandedComp = item.id;
-      // Sync bani flow.
-      // _wheelSyncInProgress: prevents syncRagaWheelToFilter from triggering a
-      //   full drawRagaWheel() redraw that would undo the dimming we just applied.
-      // _wheelOriginatedTrigger: signals to triggerBaniSearch that this call
-      //   came from inside the wheel — orientRagaWheel must NOT fire (the wheel
-      //   already knows where it is; re-entering would reset the expansion).
-      window._wheelSyncInProgress    = true;
-      window._wheelOriginatedTrigger = true;
-      if (!item._isPerf) {
-        // Canonical composition from compositions.json
-        triggerBaniSearch('comp', item.id);
-      } else if (item._recording_id && item._perf_index != null) {
-        // Structured recording performance — filter to this single track
-        triggerBaniSearch('perf', item._recording_id + '::' + item._perf_index);
-      } else if (item._ytVid) {
-        // YouTube-only entry — filter to this specific video + raga combination
-        triggerBaniSearch('yt', item._ytVid + '::' + (item.raga_id || janya.id));
-      } else {
-        // Fallback: raga-level filter
-        triggerBaniSearch('raga', item.raga_id || janya.id);
+      // Silently load bani-flow data (no panel pop-open on first click).
+      // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
+      window._wheelSyncInProgress = true;
+      if (typeof applyBaniFilter === 'function') {
+        // Resolve the filter type/id for this comp item
+        if (!item._isPerf) {
+          applyBaniFilter('comp', item.id);
+        } else if (item._recording_id && item._perf_index != null) {
+          applyBaniFilter('perf', item._recording_id + '::' + item._perf_index);
+        } else if (item._ytVid) {
+          applyBaniFilter('yt', item._ytVid + '::' + (item.raga_id || janya.id));
+        } else {
+          applyBaniFilter('raga', item.raga_id || janya.id);
+        }
       }
-      window._wheelSyncInProgress    = false;
-      window._wheelOriginatedTrigger = false;
-      // Do not expand musicians in the raga wheel — the wheel is a navigation
-      // aid only. Musician detail lives in the graph view (triggered via bani sync).
+      window._wheelSyncInProgress = false;
+      // Auto-zoom to bring the selected composition into focus
+      _animateToTarget(cPos.x, cPos.y, 2.5);
     });
     g.appendChild(cg);
   });
