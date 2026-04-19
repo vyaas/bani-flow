@@ -1560,15 +1560,19 @@
       left: 0; right: 0; width: 100%;
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       height: 56px;
-      transform: none;
+      transform: translateY(100%);
+      transition: transform 0.2s ease-out;
       border-radius: 0;
-      z-index: 160;
+      z-index: 205; /* ADR-043: above drawers (200), below tab bar (210) */
       flex-direction: row;
       align-items: center;
       border-top: 1px solid var(--border-strong);
       border-left: none; border-right: none; border-bottom: none;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
       overflow: hidden;
+    }
+    .media-player.mini.player-visible {
+      transform: translateY(0);
     }
     .media-player.mini .mp-mini-strip { display: flex; }
     .media-player.mini .mp-bar,
@@ -1585,7 +1589,7 @@
       height: calc(50vh - 56px);
       transform: none;
       border-radius: 16px 16px 0 0;
-      z-index: 160;
+      z-index: 205; /* ADR-043: above drawers (200), below tab bar (210) */
       overflow: hidden;
       box-shadow: 0 -4px 24px rgba(0,0,0,0.35);
     }
@@ -67979,7 +67983,6 @@ let _mobilePlayer = null;  // singleton instance
 function _createMobilePlayer() {
   const el = document.createElement('div');
   el.className = 'media-player mini';
-  el.style.display = 'none';
 
   // ── Mini strip ──────────────────────────────────────────────────────────
   const strip = document.createElement('div');
@@ -68060,6 +68063,29 @@ function _createMobilePlayer() {
 function _getMobilePlayer() {
   if (!_mobilePlayer) _mobilePlayer = _createMobilePlayer();
   return _mobilePlayer;
+}
+
+// ── ADR-043: Player reveal on play ────────────────────────────────────────────
+// showMiniPlayer() slides the mini-player strip into view and lifts drawers/canvas.
+// hideMiniPlayer() reverses: slides it down and restores normal bottom offset.
+// Both are idempotent — safe to call when already in the target state.
+
+function showMiniPlayer() {
+  const mp = _getMobilePlayer();
+  mp.el.style.display = '';
+  // Force layout so the initial translateY(100%) is computed before animating
+  void mp.el.offsetHeight;
+  mp.el.classList.add('player-visible');
+  document.body.classList.add('mobile-mini-player');
+  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
+}
+
+function hideMiniPlayer() {
+  if (!_mobilePlayer) return;
+  const mp = _mobilePlayer;
+  mp.el.classList.remove('player-visible');
+  document.body.classList.remove('mobile-mini-player');
+  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
 }
 
 function _wireMobilePlayerEvents(mp) {
@@ -68182,10 +68208,8 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   // Show player in mini mode
   mp.el.classList.remove('full-mobile');
   mp.el.classList.add('mini');
-  mp.el.style.display = '';
-  // ADR-042: signal canvas/drawers to lift above the mini strip
-  document.body.classList.add('mobile-mini-player');
-  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
+  // ADR-043: slide mini-player into view + lift drawers/canvas
+  showMiniPlayer();
 
   // Register in playerRegistry (unregister any previous mobile entry first)
   for (const [key, val] of playerRegistry) {
@@ -68223,9 +68247,8 @@ function _collapseMobilePlayer() {
 
   mp.el.classList.remove('full-mobile');
   mp.el.classList.add('mini');
-  // ADR-042: mini strip is back — lift sidebars/canvas again
-  document.body.classList.add('mobile-mini-player');
-  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
+  // ADR-043: restore mini strip visibility + drawer offset
+  showMiniPlayer();
 
   // Restore saved panel state
   if (mp._savedPanelState && typeof window.setPanelState === 'function') {
@@ -68239,11 +68262,11 @@ function _closeMobilePlayer() {
   const mp = _mobilePlayer;
 
   if (mp.iframe) mp.iframe.src = '';
-  mp.el.style.display = 'none';
   mp.vid = null;
-  // ADR-042: player gone — restore normal (tab-bar-only) bottom offset
-  document.body.classList.remove('mobile-mini-player');
-  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
+  // ADR-043: hide player + restore normal bottom offset
+  mp.el.classList.remove('full-mobile');
+  mp.el.style.display = 'none';
+  hideMiniPlayer();
 
   // Unregister from playerRegistry
   for (const [key, val] of playerRegistry) {
