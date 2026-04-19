@@ -251,12 +251,12 @@ function showWheelTooltip(svg, x, y, lines) {
   const maxLen = Math.max(...lines.map(l => l.length));
   const tw = maxLen * 6.5 + PAD * 2;
   const th = lines.length * LINE_H + PAD * 2;
-  const svgW = svg.clientWidth || 800, svgH = svg.clientHeight || 600;
-  let tx = x + 12, ty = y - th / 2;
-  if (tx + tw > svgW - 4) tx = x - tw - 12;
-  if (ty < 4) ty = 4;
-  if (ty + th > svgH - 4) ty = svgH - th - 4;
-  const g = svgEl('g', { id: 'raga-wheel-tooltip' });
+  const svgH = svg.clientHeight || 600;
+  // Always render in the bottom-left corner — far from the wheel centre where
+  // nodes are tapped, so the caption never occludes the target element.
+  const tx = PAD;
+  const ty = svgH - th - PAD;
+  const g = svgEl('g', { id: 'raga-wheel-tooltip', 'pointer-events': 'none' });
   g.appendChild(svgEl('rect', {
     x: tx, y: ty, width: tw, height: th, rx: 4, ry: 4,
     fill: THEME.labelOutline, stroke: THEME.edgeLine, 'stroke-width': 1, opacity: 0.95

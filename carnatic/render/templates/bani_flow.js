@@ -895,8 +895,15 @@ function triggerBaniSearch(type, id) {
   // ADR-042: open the Bani Flow (left) drawer on mobile so the user sees
   // the trail that was just populated.  Mutual exclusion is handled inside
   // setPanelState — the right drawer closes automatically.
+  //
+  // Deferred by 50 ms: on mobile, browsers fire a native (isTrusted) click
+  // event after pointerup even when pointerdown called preventDefault().  If
+  // we open the drawer synchronously the scrim becomes visible before that
+  // native click is dispatched, so the click lands on the scrim and
+  // immediately closes the panel with setPanelState('IDLE').
+  // The 50 ms delay lets the native click resolve against the pre-open DOM.
   if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
-    window.setPanelState('TRAIL');
+    setTimeout(function () { window.setPanelState('TRAIL'); }, 50);
   }
 
   // When a raga or composition is selected from the bani-flow or musician
