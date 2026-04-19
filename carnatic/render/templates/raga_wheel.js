@@ -87,7 +87,7 @@ function switchView(name) {
       applyTimelineLayout();
     } else {
       currentLayout = 'graph';
-      _restoreGraphPositions();
+      relayout();
     }
   } else if (name === 'raga') {
     hideTimelineRuler();
@@ -109,7 +109,7 @@ function vpToggleTimeline() {
     // Switch back to force-directed graph layout
     currentLayout = 'graph';
     hideTimelineRuler();
-    _restoreGraphPositions();
+    relayout();
   } else {
     // Switch to timeline layout
     currentLayout = 'timeline';

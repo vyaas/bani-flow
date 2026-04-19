@@ -1,3 +1,6 @@
+// ── Focus state for two-click node interaction ───────────────────────────────
+let _focusedGraphNode = null;
+
 // ── Static lookup tables ──────────────────────────────────────────────────────
 const CAKRA_NAMES = {
   1: 'Indu', 2: 'Netra', 3: 'Agni', 4: 'Veda',
@@ -552,9 +555,28 @@ document.getElementById('trail-filter').addEventListener('input', function() {
   }
 });
 
-// ── node tap ──────────────────────────────────────────────────────────────────
+// ── node tap (two-click: first = focus, second = open panel) ──────────────────
+function focusNode(node) {
+  _focusedGraphNode = node.id();
+  cy.elements().addClass('faded');
+  node.removeClass('faded');
+  node.connectedEdges().removeClass('faded').addClass('highlighted');
+  node.connectedEdges().connectedNodes().removeClass('faded');
+  // Zoom + centre on the node's closed neighbourhood (mirrors raga wheel)
+  const neighbourhood = node.closedNeighborhood();
+  cy.animate({
+    fit: { eles: neighbourhood, padding: 80 },
+    duration: 500,
+    easing: 'ease-in-out-cubic',
+  });
+}
+
 cy.on('tap', 'node', evt => {
-  selectNode(evt.target);
+  if (_focusedGraphNode === evt.target.id()) {
+    selectNode(evt.target);
+  } else {
+    focusNode(evt.target);
+  }
 });
 
 // ── ADR-033: dbltap branches on input modality ──────────────────────────────
@@ -614,25 +636,9 @@ document.getElementById('mi-copy').addEventListener('click', () => {
   });
 });
 
-// ── edge tap ──────────────────────────────────────────────────────────────────
+// ── edge tap (focus only — metadata via double-click / ADR-027) ───────────────
 cy.on('tap', 'edge', evt => {
-  const d    = evt.target.data();
-  const srcL = cy.getElementById(d.source).data('label') || d.source;
-  const tgtL = cy.getElementById(d.target).data('label') || d.target;
-
-  document.getElementById('edge-guru').textContent    = srcL;
-  document.getElementById('edge-shishya').textContent = tgtL;
-  document.getElementById('edge-note').textContent    = d.note || '';
-  document.getElementById('edge-conf').textContent    =
-    'confidence: ' + (d.confidence * 100).toFixed(0) + '%';
-  const srcA = document.getElementById('edge-src');
-  srcA.href = d.source_url;
-  srcA.style.display = d.source_url ? 'inline-block' : 'none';
-
-  document.getElementById('node-info').style.display        = 'none';
-  document.getElementById('recordings-panel').style.display = 'none';
-  document.getElementById('edge-info').style.display        = 'block';
-
+  _focusedGraphNode = null;
   cy.elements().addClass('faded');
   evt.target.removeClass('faded').addClass('highlighted');
   evt.target.source().removeClass('faded');
@@ -642,6 +648,7 @@ cy.on('tap', 'edge', evt => {
 // ── background tap ────────────────────────────────────────────────────────────
 cy.on('tap', evt => {
   if (evt.target !== cy) return;
+  _focusedGraphNode = null;
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—';
   document.getElementById('node-lifespan').textContent      = '';
@@ -667,4 +674,16 @@ function relayout() {
     gravity: 0.25, numIter: 500,
   }).run();
 }
+
+// ── Auto-relayout on browser resize ───────────────────────────────────────────
+(function () {
+  let _resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+      cy.resize();
+      if (currentView === 'graph') relayout();
+    }, 400);
+  });
+})();
 
