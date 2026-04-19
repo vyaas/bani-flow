@@ -509,12 +509,11 @@ window.drawRagaWheel = function() {
     });
   });
 
-  // Background click → collapse all, but NOT if the click was the end of a pan gesture
+  // Background rect — transparent hit-target for pan/zoom gestures.
+  // Single-click on empty space intentionally does nothing (no collapse)
+  // to prevent accidental resets while exploring.  Double-click still
+  // resets the viewport pan/zoom.
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
-  bg.addEventListener('click', () => {
-    if (_dragMoved) { _dragMoved = false; return; }
-    _collapseAll(vp, melaByNum);
-  });
   svg.appendChild(bg);
 
   // Viewport group — all wheel content goes inside this <g>
