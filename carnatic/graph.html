@@ -69996,7 +69996,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
           e.preventDefault();
           const n = cy.getElementById(composer.musician_node_id);
           if (n && n.length) {
-            cy.elements().removeClass('faded highlighted bani-match');
             selectNode(n);
           }
         });
@@ -70667,14 +70666,11 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
 
   // Always stop propagation so clicking any artist name never opens the player.
   // Only call selectNode when the artist has a graph node.
-  // Bug fix: clear the bani filter (close bani-flow trail) and open the
-  // musician panel — do NOT re-apply the bani filter, which triggers
-  // syncRagaWheelToFilter → _triggerMelaExpand → delayed applyBaniFilter
-  // callbacks that overwrite the selection and cause the panel to flicker.
+  // The bani filter is intentionally NOT cleared here — the user must be
+  // able to switch back to the Bani Flow panel and find it unchanged.
   span.addEventListener('click', e => {
     e.stopPropagation();
     if (artistRow.nodeId) {
-      clearBaniFilter();
       const n = cy.getElementById(artistRow.nodeId);
       if (n && n.length) selectNode(n);
     }
