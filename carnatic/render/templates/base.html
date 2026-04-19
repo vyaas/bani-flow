@@ -1429,8 +1429,10 @@
     .controls { padding: 0; }
 
     /* ── Main layout: canvas occupies full viewport width ── */
+    /* ADR-042: pad bottom so canvas never extends behind the tab bar (56px) */
     #main {
       position: relative;
+      padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
     }
     #canvas-wrap {
       width: 100vw;
@@ -1438,11 +1440,12 @@
     }
 
     /* ── Left sidebar → fixed left drawer ── */
+    /* ADR-042: stop above the tab bar so drawer never goes behind it */
     #left-sidebar {
       position: fixed;
       top: 0;
       left: 0;
-      bottom: 0;
+      bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       z-index: 200;
       width: min(85vw, 320px);
       transform: translateX(-100%);
@@ -1470,11 +1473,12 @@
     /* ADR-041: left drawer close button removed — toggle via tab bar */
 
     /* ── ADR-039: Right sidebar → right drawer (replaces bottom sheet) ── */
+    /* ADR-042: stop above the tab bar so drawer never goes behind it */
     #right-sidebar {
       position: fixed;
       top: 0;
       right: 0;
-      bottom: 0;
+      bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       left: auto;
       width: min(85vw, 320px);
       height: auto;
@@ -1509,6 +1513,16 @@
     }
 
     /* ADR-041: right drawer close button removed — toggle via tab bar */
+
+    /* ── ADR-042: lift sidebars + canvas when mini player is active ── */
+    /* Mini strip is 56px, sits above the 56px tab bar → total 112px from bottom */
+    body.mobile-mini-player #left-sidebar,
+    body.mobile-mini-player #right-sidebar {
+      bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+    }
+    body.mobile-mini-player #main {
+      padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+    }
 
     /* ── ADR-037: Mobile media player — mini strip + full mode ── */
     /* Hide desktop floating players on mobile (they still exist in DOM if

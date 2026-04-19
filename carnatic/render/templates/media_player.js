@@ -1051,6 +1051,9 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   mp.el.classList.remove('full-mobile');
   mp.el.classList.add('mini');
   mp.el.style.display = '';
+  // ADR-042: signal canvas/drawers to lift above the mini strip
+  document.body.classList.add('mobile-mini-player');
+  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
 
   // Register in playerRegistry (unregister any previous mobile entry first)
   for (const [key, val] of playerRegistry) {
@@ -1077,6 +1080,9 @@ function _expandMobilePlayer() {
 
   mp.el.classList.remove('mini');
   mp.el.classList.add('full-mobile');
+  // ADR-042: full player covers lower half; mini strip gone, restore normal offset
+  document.body.classList.remove('mobile-mini-player');
+  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
 }
 
 function _collapseMobilePlayer() {
@@ -1085,6 +1091,9 @@ function _collapseMobilePlayer() {
 
   mp.el.classList.remove('full-mobile');
   mp.el.classList.add('mini');
+  // ADR-042: mini strip is back — lift sidebars/canvas again
+  document.body.classList.add('mobile-mini-player');
+  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
 
   // Restore saved panel state
   if (mp._savedPanelState && typeof window.setPanelState === 'function') {
@@ -1100,6 +1109,9 @@ function _closeMobilePlayer() {
   if (mp.iframe) mp.iframe.src = '';
   mp.el.style.display = 'none';
   mp.vid = null;
+  // ADR-042: player gone — restore normal (tab-bar-only) bottom offset
+  document.body.classList.remove('mobile-mini-player');
+  if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
 
   // Unregister from playerRegistry
   for (const [key, val] of playerRegistry) {
