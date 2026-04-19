@@ -686,15 +686,17 @@ window.drawRagaWheel = function() {
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
 
     const isLive = raga && melasWithMusic.has(raga.id);
+    const origOpacity = isLive ? 1 : (raga ? 0.28 : 0.5);
     const g = svgEl('g', { class: 'mela-node', 'data-mela': n, 'data-id': raga ? raga.id : '' });
     const circle = svgEl('circle', {
       cx: pos.x, cy: pos.y, r: NR_MELA,
       fill: raga ? color : THEME.bgPanel,
       stroke: raga ? THEME.fg : THEME.edgeLine,
       'stroke-width': raga ? 1.5 : 1,
-      opacity: isLive ? 1 : (raga ? 0.28 : 0.5),
+      opacity: origOpacity,
       cursor: isLive ? 'pointer' : 'default',
-      'data-mela': n
+      'data-mela': n,
+      'data-orig-opacity': origOpacity
     });
     g.appendChild(circle);
     // Invisible hit-target circle for touch accuracy (ADR-035 §7)
@@ -784,11 +786,14 @@ function _collapseAll(vp, melaByNum) {
   if (_labelLayer) {
     _labelLayer.querySelectorAll('.sat-label').forEach(el => el.remove());
   }
-  vp.querySelectorAll('.mela-node circle').forEach(c => {
+  vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
     const n = parseInt(c.getAttribute('data-mela'));
     const raga = melaByNum[n];
     c.setAttribute('stroke', raga ? THEME.fg : THEME.edgeLine);
     c.setAttribute('stroke-width', raga ? 1.5 : 1);
+    // Restore original opacity (Bug fix: mela nodes stayed dimmed after comp collapse)
+    const orig = c.getAttribute('data-orig-opacity');
+    if (orig) c.setAttribute('opacity', orig);
   });
   vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
@@ -1012,8 +1017,11 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       if (_expandedComp === item.id) {
         // un-dim all on collapse
         vp.querySelectorAll('.comp-node circle').forEach(c => c.setAttribute('opacity', '0.85'));
-        // Restore mela nodes to full opacity
-        vp.querySelectorAll('.mela-node circle').forEach(c => c.setAttribute('opacity', '1'));
+        // Restore mela nodes to original opacity
+        vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
+          const orig = c.getAttribute('data-orig-opacity');
+          c.setAttribute('opacity', orig || '1');
+        });
         // Restore all janya nodes and their labels
         vp.querySelectorAll('.janya-node').forEach(jn => jn.style.removeProperty('display'));
         vp.querySelectorAll('.janya-node circle').forEach(c => {
@@ -1028,7 +1036,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         return;
       }
       // Dim all mela nodes except the currently expanded one so the path lights up
-      vp.querySelectorAll('.mela-node circle').forEach(c => {
+      vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
         const melaId = c.closest('.mela-node') && c.closest('.mela-node').getAttribute('data-id');
         c.setAttribute('opacity', melaId === _expandedMela ? '1' : '0.2');
       });
