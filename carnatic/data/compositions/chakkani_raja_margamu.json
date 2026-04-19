@@ -1,15 +1,21 @@
 {
   "id": "chakkani_raja_margamu",
   "title": "Chakkani Raja Margamu",
+  "aliases": ["Cakkani Rājamārgamulu", "Cakkani Rajamargamulu"],
   "composer_id": "tyagaraja",
   "raga_id": "kharaharapriya",
-  "tala": "Adi",
+  "tala": "adi",
   "language": "Telugu",
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Chakkani_Raja_Margamu",
       "label": "Wikipedia",
       "type": "wikipedia"
+    },
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
     }
   ],
   "notes": "Tyagaraja kriti in Kharaharapriya raga."
