@@ -7020,6 +7020,20 @@
             "type": "wikipedia"
           }
         ]
+      },
+      {
+        "id": "thayumanavar",
+        "name": "Thayumanavar",
+        "musician_node_id": null,
+        "born": 1705,
+        "died": 1744,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Thayumanavar",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       }
     ],
     "compositions": [
