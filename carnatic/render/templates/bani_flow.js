@@ -818,7 +818,13 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
     e.stopPropagation();
     if (artistRow.nodeId) {
       const n = cy.getElementById(artistRow.nodeId);
-      if (n && n.length) selectNode(n);
+      if (n && n.length) {
+        selectNode(n);
+        // ADR-046: open Musician (right) drawer; left drawer closes via mutual exclusion
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
+        }
+      }
     }
   });
 
@@ -902,7 +908,8 @@ function triggerBaniSearch(type, id) {
   // native click is dispatched, so the click lands on the scrim and
   // immediately closes the panel with setPanelState('IDLE').
   // The 50 ms delay lets the native click resolve against the pre-open DOM.
-  if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+  // ADR-046: open Bani Flow (left) drawer on all screen widths
+  if (typeof window.setPanelState === 'function') {
     setTimeout(function () { window.setPanelState('TRAIL'); }, 50);
   }
 

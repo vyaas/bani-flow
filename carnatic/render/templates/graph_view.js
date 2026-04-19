@@ -416,8 +416,8 @@ function selectNode(node) {
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
 
-  // ADR-039: open right drawer on mobile when a node is selected
-  if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+  // ADR-046: open right drawer on any screen width when a node is selected
+  if (typeof window.setPanelState === 'function') {
     window.setPanelState('MUSICIAN');
   }
 }

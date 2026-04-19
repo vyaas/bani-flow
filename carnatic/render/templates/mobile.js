@@ -1,8 +1,9 @@
-// ── ADR-034 + ADR-036 + ADR-039: Mobile navigation choreography ────────────
+// ── ADR-034 + ADR-036 + ADR-039 + ADR-046: Navigation choreography ──────────
 // Panel state machine with mutual exclusion, dual drawers (left=Trail,
 // right=Musician), collapsible filter bar. All functions are exposed on
 // window so graph_view.js callbacks can call them safely on both desktop
-// and mobile.
+// and mobile. ADR-046: guards removed so desktop participates in the same
+// state machine as mobile.
 (function () {
   'use strict';
 
@@ -18,6 +19,22 @@
   var rightScrim     = document.getElementById('right-drawer-scrim');
   var tabMusician    = document.getElementById('tab-musician');
   var tabTrail       = document.getElementById('tab-trail');
+  var desktopLeftHandle  = document.getElementById('desktop-left-handle');
+  var desktopRightHandle = document.getElementById('desktop-right-handle');
+
+  // ADR-046: Update desktop handle labels to reflect open/close state
+  function _updateDesktopHandles(state) {
+    if (desktopLeftHandle) {
+      desktopLeftHandle.classList.toggle('handle-panel-open', state === 'TRAIL');
+      desktopLeftHandle.setAttribute('aria-label',
+        state === 'TRAIL' ? 'Close Bani Flow panel' : 'Open Bani Flow panel');
+    }
+    if (desktopRightHandle) {
+      desktopRightHandle.classList.toggle('handle-panel-open', state === 'MUSICIAN');
+      desktopRightHandle.setAttribute('aria-label',
+        state === 'MUSICIAN' ? 'Close Musician panel' : 'Open Musician panel');
+    }
+  }
 
   function _openLeftDrawer() {
     if (sidebar)   sidebar.classList.add('drawer-open');
@@ -46,7 +63,7 @@
   }
 
   function setPanelState(newState) {
-    if (window.innerWidth > 768) return;
+    // ADR-046: guard removed — desktop now participates in the drawer state machine
 
     // ADR-039: map legacy PEEK state to MUSICIAN (backward compat for media_player.js save/restore)
     if (newState === 'PEEK') newState = 'MUSICIAN';
@@ -65,6 +82,7 @@
     }
 
     _updateTabs(newState);
+    _updateDesktopHandles(newState);
 
     // Cytoscape caches container dimensions; nudge after transition starts
     if (typeof cy !== 'undefined') {
@@ -83,20 +101,29 @@
     }
   }
 
+  // ADR-046: toggle right drawer (mirrors toggleLeftDrawer)
+  function toggleRightDrawer() {
+    if (panelState === 'MUSICIAN') {
+      setPanelState('IDLE');
+    } else {
+      setPanelState('MUSICIAN');
+    }
+  }
+
   // ADR-039: peekBottomSheet now opens the right drawer (MUSICIAN) instead of PEEK
   function peekBottomSheet() {
-    if (window.innerWidth > 768) return;
+    // ADR-046: guard removed — desktop now participates
     setPanelState('MUSICIAN');
   }
 
   function dismissBottomSheet() {
-    if (window.innerWidth > 768) return;
+    // ADR-046: guard removed — desktop now participates
     setPanelState('IDLE');
   }
 
   // ADR-039: showBottomSheet maps both 'peek' and 'expanded' to MUSICIAN
   function showBottomSheet(state) {
-    if (window.innerWidth > 768) return;
+    // ADR-046: guard removed — desktop now participates
     if (state === 'expanded' || state === 'peek') setPanelState('MUSICIAN');
     else setPanelState('IDLE');
   }
@@ -143,12 +170,21 @@
   // ADR-039: right drawer scrim closes musician panel
   if (rightScrim) rightScrim.addEventListener('click', function () { setPanelState('IDLE'); });
 
+  // ADR-046: desktop handle tabs wire toggle behaviour
+  if (desktopLeftHandle) {
+    desktopLeftHandle.addEventListener('click', function () { toggleLeftDrawer(); });
+  }
+  if (desktopRightHandle) {
+    desktopRightHandle.addEventListener('click', function () { toggleRightDrawer(); });
+  }
+
   // ADR-040: filter toggle removed — chips always visible
 
   _setupTabBar();
 
   // ── Public API ───────────────────────────────────────────────────────────
   window.toggleLeftDrawer   = toggleLeftDrawer;
+  window.toggleRightDrawer  = toggleRightDrawer;
   window.peekBottomSheet    = peekBottomSheet;
   window.dismissBottomSheet = dismissBottomSheet;
   window.showBottomSheet    = showBottomSheet;

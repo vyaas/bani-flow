@@ -109,13 +109,19 @@
   #cy      { flex: 1; background: var(--bg-deep); min-height: 0; }
 
   /* ── left sidebar (global controls: Bani Flow, legends) ── */
+  /* ADR-046: converted to fixed overlay drawer on all breakpoints */
   #left-sidebar {
-    width: 260px; background: var(--bg-panel);
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 280px; background: var(--bg-panel);
     border-right: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow: hidden; font-size: 0.78rem;
-    flex-shrink: 0;
+    overflow-y: auto; font-size: 0.78rem;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.3);
   }
+  #left-sidebar.drawer-open { transform: translateX(0); }
 
   /* Sticky (non-scrolling) zone inside left sidebar */
   #bani-sticky {
@@ -129,13 +135,19 @@
   }
 
   /* ── right sidebar (node-specific: selection, recordings, edge) ── */
+  /* ADR-046: converted to fixed overlay drawer on all breakpoints */
   #right-sidebar {
-    width: 260px; background: var(--bg-panel);
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 280px; background: var(--bg-panel);
     border-left: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow: hidden; font-size: 0.78rem;
-    flex-shrink: 0;
+    overflow-y: auto; font-size: 0.78rem;
+    z-index: 200;
+    transform: translateX(100%);
+    transition: transform 0.22s ease;
+    box-shadow: -4px 0 16px rgba(0,0,0,0.3);
   }
+  #right-sidebar.drawer-open { transform: translateX(0); }
 
   /* Sticky (non-scrolling) zone inside right sidebar */
   #right-sticky {
@@ -1498,6 +1510,70 @@
   /* ── ADR-036: compact view selector — short labels hidden on desktop ── */
   .view-label-short { display: none; }
 
+  /* ── ADR-046: Desktop drawer handle tabs — persistent edge tabs ── */
+  .desktop-drawer-handle { display: none; }  /* hidden by default; shown at ≥769px */
+
+  @media (min-width: 769px) {
+    .desktop-drawer-handle {
+      display: flex;
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 100px;
+      z-index: 201;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-strong);
+      color: var(--fg-sub);
+      font-size: 0.65rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s,
+                  left 0.22s ease, right 0.22s ease;
+      padding: 8px 5px;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.3;
+    }
+    .desktop-drawer-handle:hover {
+      background: var(--bg-active);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .desktop-handle-left {
+      left: 0;
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+    }
+    .desktop-handle-right {
+      right: 0;
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+    }
+    /* Accent highlight when corresponding panel is open */
+    .desktop-drawer-handle.handle-panel-open {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    /* When panel is open: slide handle to sit at the panel's outer edge */
+    .desktop-handle-left.handle-panel-open {
+      left: 280px;
+      border-left: 1px solid var(--accent);
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+    }
+    .desktop-handle-right.handle-panel-open {
+      right: 280px;
+      border-right: 1px solid var(--accent);
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+    }
+  }
+
   /* ── ADR-034: new elements — hidden on desktop, activated by mobile query ── */
   #sheet-handle {
     display: none;  /* shown at ≤768px only */
@@ -1978,6 +2054,12 @@
     </div>
   </div>
 </div>
+<!-- ADR-046: Desktop drawer handles — persistent edge tabs (hidden on mobile via CSS) -->
+<button id="desktop-left-handle" class="desktop-drawer-handle desktop-handle-left"
+        aria-label="Open Bani Flow panel">&#9776;&thinsp;Bani Flow</button>
+<button id="desktop-right-handle" class="desktop-drawer-handle desktop-handle-right"
+        aria-label="Open Musician panel">Musician&thinsp;&#9835;</button>
+
 <!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
 <div id="left-drawer-scrim" aria-hidden="true"></div>
 
