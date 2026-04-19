@@ -1345,45 +1345,67 @@
       min-height: 44px;
     }
     .filter-chip {
-      min-height: 44px;
-      padding: 0 12px;
-      font-size: 0.80rem;
+      min-height: 32px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
       align-items: center;
+      line-height: 1.2;
     }
     .view-btn {
       min-height: 44px;
       padding: 0 14px;
     }
+    /* ADR-036: swap full → short labels on mobile */
+    .view-label-full  { display: none; }
+    .view-label-short { display: inline; }
     .vp-btn {
       min-height: 44px;
       padding: 0 12px;
     }
+    /* ADR-040: always-visible wrapping filter bar */
     #filter-bar {
-      overflow-x: auto;
-      flex-wrap: nowrap;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;       /* Firefox: hide decorative scrollbar */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 8px;
+      padding: 6px 10px 8px;
+      max-height: none;
+      overflow: visible;
+      border-bottom: 1px solid var(--border-strong);
     }
-    #filter-bar::-webkit-scrollbar { display: none; } /* WebKit: hide decorative scrollbar */
+    /* ADR-040: filter toggle button removed on mobile */
+    #filter-toggle-btn {
+      display: none;
+    }
     .filter-group {
-      flex-wrap: nowrap;
-      flex-shrink: 0;
+      flex-wrap: wrap;
+      flex-shrink: 1;
+      gap: 4px 6px;
     }
     .filter-separator {
-      flex-shrink: 0;
+      width: 100%;
+      height: 0;
+      border-top: 1px solid var(--border-strong);
+      margin: 2px 0;
+      background: none;
     }
   }
 
+  /* ── ADR-036: compact view selector — short labels hidden on desktop ── */
+  .view-label-short { display: none; }
+
   /* ── ADR-034: new elements — hidden on desktop, activated by mobile query ── */
-  #hamburger-btn {
-    display: none;  /* shown at ≤768px only */
-  }
   #sheet-handle {
     display: none;  /* shown at ≤768px only */
   }
   #left-drawer-scrim {
     display: none;  /* shown by mobile.js when drawer is open */
   }
+  /* ADR-036/040: mobile-only elements — hidden on desktop */
+  #mobile-tab-bar         { display: none; }
+  #drawer-close-btn       { display: none; }
+  #sheet-peek-label       { display: none; }
+  #right-drawer-close-btn { display: none; }
+  #right-drawer-scrim     { display: none; }
 
   /* ── Phase 1: Responsive layout — left drawer + bottom sheet (ADR-034) ── */
   @media (max-width: 768px) {
@@ -1396,21 +1418,7 @@
       gap: 0;
       grid-template-columns: unset;  /* defeat the desktop grid */
     }
-    #hamburger-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: 1px solid var(--border-strong);
-      color: var(--fg-sub);
-      font-size: 1.2rem;
-      min-width: 44px;
-      min-height: 44px;
-      padding: 0;
-      margin-right: 6px;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
+
     header h1 {
       flex: 1;
       text-align: center;
@@ -1447,62 +1455,228 @@
       transform: translateX(0);
     }
 
-    /* ── Scrim behind left drawer ── */
+    /* ── Scrim behind left drawer (ADR-036: enhanced opacity) ── */
     #left-drawer-scrim {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.55);
       z-index: 199;
     }
     #left-drawer-scrim.scrim-visible {
       display: block;
     }
 
-    /* ── Right sidebar → bottom sheet ── */
+    /* ADR-041: left drawer close button removed — toggle via tab bar */
+
+    /* ── ADR-039: Right sidebar → right drawer (replaces bottom sheet) ── */
     #right-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: auto;
+      width: min(85vw, 320px);
+      height: auto;
+      min-height: unset;
+      z-index: 200;
+      border-left: 2px solid var(--border-strong);
+      border-top: none;
+      border-radius: 0;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.3);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      overflow-y: auto;
+    }
+    #right-sidebar.drawer-open {
+      transform: translateX(0);
+    }
+
+    /* ── ADR-039: hide bottom-sheet elements (handle, peek label) ── */
+    #sheet-handle     { display: none; }
+    #sheet-peek-label { display: none; }
+
+    /* ── ADR-039: scrim behind right drawer ── */
+    #right-drawer-scrim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 199;
+    }
+    #right-drawer-scrim.scrim-visible {
+      display: block;
+    }
+
+    /* ADR-041: right drawer close button removed — toggle via tab bar */
+
+    /* ── ADR-037: Mobile media player — mini strip + full mode ── */
+    /* Hide desktop floating players on mobile (they still exist in DOM if
+       spawned before resize, but the singleton mobile player takes over) */
+    .media-player {
+      position: fixed;
+      top: auto !important;
+    }
+
+    /* ── Mini-player strip: docked above tab bar ── */
+    .media-player.mini {
+      left: 0; right: 0; width: 100%;
+      bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+      height: 56px;
+      transform: none;
+      border-radius: 0;
+      z-index: 160;
+      flex-direction: row;
+      align-items: center;
+      border-top: 1px solid var(--border-strong);
+      border-left: none; border-right: none; border-bottom: none;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .media-player.mini .mp-mini-strip { display: flex; }
+    .media-player.mini .mp-bar,
+    .media-player.mini .mp-video-wrap,
+    .media-player.mini .mp-tracklist,
+    .media-player.mini .mp-footer,
+    .media-player.mini .mp-resize,
+    .media-player.mini .mp-full-handle { display: none; }
+
+    /* ── Full player: bottom sheet with iframe ── */
+    .media-player.full-mobile {
+      left: 0; right: 0; width: 100%;
+      bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+      height: calc(50vh - 56px);
+      transform: none;
+      border-radius: 16px 16px 0 0;
+      z-index: 160;
+      overflow: hidden;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.35);
+    }
+    .media-player.full-mobile .mp-mini-strip { display: none; }
+    .media-player.full-mobile .mp-full-handle { display: flex; }
+    .media-player.full-mobile .mp-tracklist {
+      display: block;
+      flex: 1; overflow-y: auto;
+    }
+    .media-player.full-mobile .mp-resize { display: none; }
+
+    /* ── Mini strip layout ── */
+    .mp-mini-strip {
+      display: none;  /* shown only via .mini parent */
+      width: 100%; height: 100%;
+      align-items: center;
+      gap: 0;
+      position: relative;
+    }
+    .mp-mini-progress {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--border-strong);
+    }
+    .mp-mini-progress-bar {
+      height: 100%; width: 0%;
+      background: var(--accent);
+      transition: width 0.3s linear;
+    }
+    .mp-mini-play {
+      width: 44px; height: 44px;
+      min-width: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none;
+      color: var(--fg); font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .mp-mini-info {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column;
+      padding: 0 4px;
+    }
+    .mp-mini-title {
+      font-size: 0.78rem; color: var(--fg);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mp-mini-dots {
+      display: flex; gap: 3px; margin-top: 2px;
+    }
+    .mp-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--fg-muted);
+    }
+    .mp-dot-active {
+      background: var(--accent);
+    }
+    .mp-mini-close {
+      width: 44px; height: 44px;
+      min-width: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none;
+      color: var(--fg-muted); font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    /* ── Full-mode drag handle ── */
+    .mp-full-handle {
+      display: none;  /* shown only via .full-mobile parent */
+      justify-content: center;
+      padding: 8px 0 4px;
+      cursor: grab;
+      touch-action: none;
+    }
+    .mp-full-handle-pill {
+      width: 36px; height: 4px;
+      border-radius: 2px;
+      background: var(--border-strong);
+    }
+
+    /* ── ADR-036 + ADR-041: mobile bottom tab bar ── */
+    #mobile-tab-bar {
+      display: flex;
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 50vh;
-      min-height: 280px;
-      z-index: 150;
-      border-left: none;
-      border-top: 2px solid var(--border-strong);
-      border-radius: 16px 16px 0 0;
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      width: auto;
+      height: 56px;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border-strong);
+      z-index: 210;   /* ADR-041: above scrim (199) and drawers (200) */
+      align-items: center;
+      justify-content: space-around;
+      pointer-events: auto;   /* ADR-038: explicit touch isolation */
+      touch-action: manipulation;
     }
-    #right-sidebar.peek    { transform: translateY(calc(100% - 72px)); }
-    #right-sidebar.expanded { transform: translateY(0); }
-
-    /* ── Drag handle pill at top of the sheet ── */
-    #sheet-handle {
-      display: block;
-      width: 36px;
-      height: 4px;
-      border-radius: 2px;
-      background: var(--border-strong);
-      margin: 8px auto 4px;
-      flex-shrink: 0;
-      cursor: grab;
-      touch-action: none;
+    .mobile-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      flex: 1;
+      min-height: 44px;
+      background: none;
+      border: none;
+      color: var(--fg-sub);
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 4px 0;
     }
-
-    /* ── Media player: centered + lifts above sheet ── */
-    .media-player {
-      position: fixed;
-      width: min(90vw, 400px);
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 8px;
-      top: auto !important;
+    /* ADR-041: tab-active highlight replaces generic .active */
+    .mobile-tab.tab-active {
+      color: var(--accent-main, var(--accent));
+      border-top: 2px solid var(--accent-main, var(--accent));
     }
-    body.sheet-expanded .media-player { bottom: calc(50vh + 8px); }
-    body.sheet-peek     .media-player { bottom: 80px; }
+    .mobile-tab:not(.tab-active) {
+      color: var(--fg-sub);
+      border-top: 2px solid transparent;
+    }
+    .mobile-tab-icon {
+      font-size: 1.1rem;
+    }
 
     /* ── Meta inspector: full-width on mobile ── */
     #meta-inspector {
@@ -1520,7 +1694,6 @@
 <body>
 
 <header>
-  <button id="hamburger-btn" aria-label="Open navigation">&#9776;</button>
   <h1>Carnatic Music Explorer</h1>
   <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
   <div id="sruti-strip">
@@ -1530,9 +1703,11 @@
   <div class="controls">
     <div class="view-selector" id="view-selector">
       <button class="view-btn" id="view-btn-graph"
-              onclick="switchView('graph')" title="Guru-shishya parampara">Guru-Shishya</button>
+              onclick="switchView('graph')" title="Guru-shishya parampara"
+              aria-label="Guru-Shishya"><span class="view-label-full">Guru-Shishya</span><span class="view-label-short">GS</span></button>
       <button class="view-btn active" id="view-btn-raga"
-              onclick="switchView('raga')" title="Melakarta–janya raga system">Mela-Janya</button>
+              onclick="switchView('raga')" title="Melakarta–janya raga system"
+              aria-label="Mela-Janya"><span class="view-label-full">Mela-Janya</span><span class="view-label-short">MJ</span></button>
     </div>
   </div>
 </header>
@@ -1540,6 +1715,7 @@
 <div id="main">
   <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->
   <div id="left-sidebar">
+    <!-- ADR-041: close button removed — tab bar toggle dismisses drawer -->
     <!-- ── sticky zone: search bar + subject header + trail filter ── -->
     <div id="bani-sticky">
       <div class="panel" id="bani-flow-panel">
@@ -1590,6 +1766,7 @@
 
   <!-- ── canvas column: filter bar + graph ── -->
   <div id="canvas-wrap">
+    <!-- ADR-040: filter toggle button removed (chips always visible, wrapping) -->
     <div id="filter-bar">
       <div class="filter-group" id="era-filter-group" data-group="era"></div>
       <div class="filter-separator"></div>
@@ -1619,8 +1796,11 @@
 
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
-    <!-- Drag handle pill — hidden on desktop, shown as bottom sheet handle on mobile (ADR-034) -->
+    <!-- ADR-041: close button removed — tab bar toggle dismisses drawer -->
+    <!-- Drag handle pill — hidden on desktop, hidden on mobile (ADR-039 removes bottom sheet) -->
     <div id="sheet-handle" aria-hidden="true"></div>
+    <!-- ADR-036: contextual peek label (hidden on mobile per ADR-039) -->
+    <div id="sheet-peek-label">Tap a musician to explore &#8593;</div>
     <!-- ── sticky zone: musician search + node header + rec filter ── -->
     <div id="right-sticky">
       <div class="panel" id="musician-panel">
@@ -1668,6 +1848,21 @@
 </div>
 <!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
 <div id="left-drawer-scrim" aria-hidden="true"></div>
+
+<!-- ADR-039: scrim overlay behind right drawer (display managed by mobile.js) -->
+<div id="right-drawer-scrim" aria-hidden="true"></div>
+
+<!-- ADR-036: mobile bottom tab bar (hidden on desktop) -->
+<nav id="mobile-tab-bar" aria-label="Mobile navigation">
+  <button class="mobile-tab" id="tab-trail" aria-label="Bani Flow panel">
+    <span class="mobile-tab-icon">&#9776;</span>
+    <span class="mobile-tab-label">Bani Flow</span>
+  </button>
+  <button class="mobile-tab" id="tab-musician" aria-label="Musician panel">
+    <span class="mobile-tab-icon">&#9835;</span>
+    <span class="mobile-tab-label">Musician</span>
+  </button>
+</nav>
 
 <!-- ADR-027: reflective metadata inspector overlay -->
 <div id="meta-inspector" style="display:none">

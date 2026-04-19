@@ -610,8 +610,15 @@ window.drawRagaWheel = function() {
       _dragging = false;
       svg.style.cursor = '';
 
+      // ADR-035 fix: e.preventDefault() on pointerdown suppresses native click
+      // events (the spec says no compatibility mouse events shall fire).
+      // setPointerCapture redirects pointerup to the SVG, so e.target is SVG,
+      // not the element under the pointer.  Resolve the real target and
+      // re-dispatch a synthetic click so mela/janya/comp handlers still fire.
+      const realTarget = document.elementFromPoint(e.clientX, e.clientY);
+
       // Double-tap on SVG background → wheelFit() (mobile supplement to dblclick)
-      if (!_dragMoved && e.target === bg) {
+      if (!_dragMoved && realTarget && (realTarget === bg || realTarget === svg)) {
         const now = Date.now();
         if (now - _lastTapTime < 300 && _lastTapTarget === bg) {
           wheelFit();
@@ -619,6 +626,14 @@ window.drawRagaWheel = function() {
           return;
         }
         _lastTapTime = now; _lastTapTarget = bg;
+      }
+
+      // Re-dispatch click on the real element under the pointer (tap, not drag)
+      if (!_dragMoved && realTarget) {
+        realTarget.dispatchEvent(new MouseEvent('click', {
+          bubbles: true, cancelable: true,
+          clientX: e.clientX, clientY: e.clientY
+        }));
       }
     }
   }
@@ -721,6 +736,10 @@ window.drawRagaWheel = function() {
           // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
           // re-entering orientRagaWheel and resetting the wheel mid-animation.
           if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', raga.id);
+          // ADR-042: open Bani Flow drawer on mobile after mela click
+          if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+            window.setPanelState('TRAIL');
+          }
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -860,6 +879,10 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
         // re-entering orientRagaWheel and resetting the wheel mid-animation.
         if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
+        // ADR-042: open Bani Flow drawer on mobile after janya click
+        if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+          window.setPanelState('TRAIL');
+        }
       });
       jg.addEventListener('dblclick', (e) => {
         e.stopPropagation();

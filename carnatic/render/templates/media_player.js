@@ -347,6 +347,11 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
 
 // meta = { nodeId, ragaId, compositionId } — all optional; drives clickable chips in title bar
 function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+  // ADR-037: on mobile, delegate to singleton player
+  if (_isMobilePlayer()) {
+    _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta);
+    return;
+  }
   if (playerRegistry.has(vid)) {
     const existing = playerRegistry.get(vid);
     // Jump to new timestamp; title does NOT change — concert identity is stable
@@ -828,5 +833,343 @@ function closePlayer(playerId) {
   instance.iframe.src = '';   // stop audio immediately
   instance.el.remove();
   namedPlayerRegistry.delete(playerId);
+}
+
+// ── ADR-037: Mobile singleton media player ────────────────────────────────────
+// On screens ≤768px, a single docked player replaces the desktop floating
+// multi-window model. Two modes: mini (56px strip above tab bar) and
+// full (50vh bottom sheet with iframe + tracklist).
+
+const _isMobilePlayer = () => window.matchMedia('(max-width: 768px)').matches;
+
+let _mobilePlayer = null;  // singleton instance
+
+function _createMobilePlayer() {
+  const el = document.createElement('div');
+  el.className = 'media-player mini';
+  el.style.display = 'none';
+
+  // ── Mini strip ──────────────────────────────────────────────────────────
+  const strip = document.createElement('div');
+  strip.className = 'mp-mini-strip';
+
+  const progress = document.createElement('div');
+  progress.className = 'mp-mini-progress';
+  const progressBar = document.createElement('div');
+  progressBar.className = 'mp-mini-progress-bar';
+  progress.appendChild(progressBar);
+  strip.appendChild(progress);
+
+  const playBtn = document.createElement('button');
+  playBtn.className = 'mp-mini-play';
+  playBtn.textContent = '\u25B6';
+  strip.appendChild(playBtn);
+
+  const info = document.createElement('div');
+  info.className = 'mp-mini-info';
+  const titleSpan = document.createElement('span');
+  titleSpan.className = 'mp-mini-title';
+  info.appendChild(titleSpan);
+  strip.appendChild(info);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'mp-mini-close';
+  closeBtn.textContent = '\u2715';
+  strip.appendChild(closeBtn);
+
+  el.appendChild(strip);
+
+  // ── Full-mode handle ────────────────────────────────────────────────────
+  const handle = document.createElement('div');
+  handle.className = 'mp-full-handle';
+  const pill = document.createElement('span');
+  pill.className = 'mp-full-handle-pill';
+  handle.appendChild(pill);
+  el.appendChild(handle);
+
+  // ── Full-mode bar (will be populated per track) ─────────────────────────
+  const bar = document.createElement('div');
+  bar.className = 'mp-bar';
+  el.appendChild(bar);
+
+  // ── Video wrap ──────────────────────────────────────────────────────────
+  const videoWrap = document.createElement('div');
+  videoWrap.className = 'mp-video-wrap';
+  el.appendChild(videoWrap);
+
+  // ── Tracklist ───────────────────────────────────────────────────────────
+  const tracklistDiv = document.createElement('div');
+  tracklistDiv.className = 'mp-tracklist';
+  el.appendChild(tracklistDiv);
+
+  // Append to body (fixed positioning, not inside #main)
+  document.body.appendChild(el);
+
+  const mp = {
+    el, strip, bar, videoWrap, tracklistDiv, handle,
+    miniTitle: titleSpan,
+    miniPlay: playBtn,
+    miniClose: closeBtn,
+    progressBar,
+    iframe: null,
+    vid: null,
+    tracks: [],
+    trackIndex: 0,
+    artistName: '',
+    concertTitle: '',
+    meta: {},
+    _savedPanelState: null,
+  };
+
+  _wireMobilePlayerEvents(mp);
+  return mp;
+}
+
+function _getMobilePlayer() {
+  if (!_mobilePlayer) _mobilePlayer = _createMobilePlayer();
+  return _mobilePlayer;
+}
+
+function _wireMobilePlayerEvents(mp) {
+  // Tap mini strip info area → expand to full
+  mp.strip.addEventListener('click', e => {
+    if (e.target === mp.miniClose || e.target === mp.miniPlay ||
+        mp.miniClose.contains(e.target) || mp.miniPlay.contains(e.target)) return;
+    _expandMobilePlayer();
+  });
+
+  // Mini play button → expand (YouTube iframe API isn't loaded, so user
+  // controls playback in full mode directly)
+  mp.miniPlay.addEventListener('click', e => {
+    e.stopPropagation();
+    _expandMobilePlayer();
+  });
+
+  // Mini close
+  mp.miniClose.addEventListener('click', e => {
+    e.stopPropagation();
+    _closeMobilePlayer();
+  });
+
+  // Full mode handle: swipe down → collapse; tap → collapse
+  let handleTouchY = null;
+  mp.handle.addEventListener('touchstart', e => {
+    handleTouchY = e.touches[0].clientY;
+  }, { passive: true });
+  mp.handle.addEventListener('touchend', e => {
+    if (handleTouchY === null) return;
+    const dy = e.changedTouches[0].clientY - handleTouchY;
+    handleTouchY = null;
+    if (dy > 20) _collapseMobilePlayer();
+  }, { passive: true });
+  mp.handle.addEventListener('click', () => _collapseMobilePlayer());
+
+  // Mini strip: swipe left/right → track switching
+  let stripTouchX = null;
+  mp.strip.addEventListener('touchstart', e => {
+    stripTouchX = e.touches[0].clientX;
+  }, { passive: true });
+  mp.strip.addEventListener('touchend', e => {
+    if (stripTouchX === null) return;
+    const dx = e.changedTouches[0].clientX - stripTouchX;
+    stripTouchX = null;
+    if (Math.abs(dx) < 40) return;
+    _swipeMobileTrack(dx < 0 ? 1 : -1);
+  }, { passive: true });
+}
+
+function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+  const mp = _getMobilePlayer();
+
+  // Stop any previous playback
+  if (mp.iframe) mp.iframe.src = '';
+
+  mp.vid = vid;
+  mp.tracks = (Array.isArray(tracks) && tracks.length > 0) ? tracks : [];
+  mp.trackIndex = 0;
+  mp.artistName = artistName || '';
+  mp.concertTitle = concertTitle || '';
+  mp.meta = meta || {};
+
+  // Find the track index matching startSeconds
+  if (mp.tracks.length > 0 && startSeconds > 0) {
+    const idx = mp.tracks.findIndex(t => t.offset_seconds === startSeconds);
+    if (idx >= 0) mp.trackIndex = idx;
+  }
+
+  // Update mini strip title
+  const currentTrack = mp.tracks[mp.trackIndex];
+  const displayTitle = currentTrack ? currentTrack.display_title : trackLabel;
+  mp.miniTitle.textContent = (artistName ? artistName + ' \u2014 ' : '') +
+                             (displayTitle || concertTitle || '');
+
+  // ── Build full-mode bar ─────────────────────────────────────────────────
+  mp.bar.innerHTML = '';
+  const fullBar = buildPlayerBar(vid, artistName, concertTitle, trackLabel,
+                                 mp.tracks.length > 0, meta || {});
+  while (fullBar.firstChild) mp.bar.appendChild(fullBar.firstChild);
+
+  // Re-wire close button inside full bar
+  const barClose = mp.bar.querySelector('.mp-close');
+  if (barClose) {
+    barClose.addEventListener('click', e => {
+      e.stopPropagation();
+      _closeMobilePlayer();
+    });
+  }
+
+  // ── Build iframe ────────────────────────────────────────────────────────
+  mp.videoWrap.innerHTML = '';
+  mp.videoWrap.style.paddingTop = '56.25%';
+  mp.videoWrap.style.height = '';
+  const iframe = document.createElement('iframe');
+  iframe.className = 'mp-iframe';
+  iframe.src = ytEmbedUrl(vid, startSeconds);
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope';
+  iframe.allowFullscreen = true;
+  mp.videoWrap.appendChild(iframe);
+  mp.iframe = iframe;
+
+  // ── Build tracklist ─────────────────────────────────────────────────────
+  mp.tracklistDiv.innerHTML = '';
+  if (mp.tracks.length > 0) {
+    const pseudoInstance = {
+      el: mp.el, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
+      vid, currentOffset: startSeconds || 0,
+    };
+    const trackUl = buildPlayerTrackList(vid, mp.tracks, pseudoInstance);
+    mp.tracklistDiv.appendChild(trackUl);
+    trackUl.querySelectorAll('.mp-track-item').forEach((li, idx) => {
+      li.classList.toggle('mp-track-active', idx === mp.trackIndex);
+    });
+  }
+
+  // ── Dot indicators ──────────────────────────────────────────────────────
+  _updateMiniDots(mp);
+
+  // Show player in mini mode
+  mp.el.classList.remove('full-mobile');
+  mp.el.classList.add('mini');
+  mp.el.style.display = '';
+
+  // Register in playerRegistry (unregister any previous mobile entry first)
+  for (const [key, val] of playerRegistry) {
+    if (val._isMobileSingleton) { playerRegistry.delete(key); break; }
+  }
+  playerRegistry.set(vid, {
+    el: mp.el, iframe: mp.iframe, titleEl: mp.bar.querySelector('.mp-title'),
+    tracklistEl: mp.tracklistDiv, vid, _isMobileSingleton: true,
+  });
+  refreshPlayingIndicators();
+}
+
+function _expandMobilePlayer() {
+  if (!_mobilePlayer) return;
+  const mp = _mobilePlayer;
+
+  // Save current panel state and dismiss sheet (ADR-036 integration)
+  if (typeof window._currentPanelState !== 'undefined') {
+    mp._savedPanelState = window._currentPanelState;
+  }
+  if (typeof window.setPanelState === 'function') {
+    window.setPanelState('IDLE');
+  }
+
+  mp.el.classList.remove('mini');
+  mp.el.classList.add('full-mobile');
+}
+
+function _collapseMobilePlayer() {
+  if (!_mobilePlayer) return;
+  const mp = _mobilePlayer;
+
+  mp.el.classList.remove('full-mobile');
+  mp.el.classList.add('mini');
+
+  // Restore saved panel state
+  if (mp._savedPanelState && typeof window.setPanelState === 'function') {
+    window.setPanelState(mp._savedPanelState);
+    mp._savedPanelState = null;
+  }
+}
+
+function _closeMobilePlayer() {
+  if (!_mobilePlayer) return;
+  const mp = _mobilePlayer;
+
+  if (mp.iframe) mp.iframe.src = '';
+  mp.el.style.display = 'none';
+  mp.vid = null;
+
+  // Unregister from playerRegistry
+  for (const [key, val] of playerRegistry) {
+    if (val._isMobileSingleton) { playerRegistry.delete(key); break; }
+  }
+  refreshPlayingIndicators();
+
+  // Restore panel state if we were in full mode
+  if (mp._savedPanelState && typeof window.setPanelState === 'function') {
+    window.setPanelState(mp._savedPanelState);
+    mp._savedPanelState = null;
+  }
+}
+
+function _swipeMobileTrack(direction) {
+  if (!_mobilePlayer || !_mobilePlayer.tracks.length) return;
+  const mp = _mobilePlayer;
+  const newIndex = mp.trackIndex + direction;
+  if (newIndex < 0 || newIndex >= mp.tracks.length) return;
+
+  mp.trackIndex = newIndex;
+  const track = mp.tracks[newIndex];
+
+  // Update iframe to new timestamp
+  if (mp.iframe) {
+    mp.iframe.src = ytEmbedUrl(mp.vid,
+      track.offset_seconds > 0 ? track.offset_seconds : undefined);
+  }
+
+  // Update mini title
+  mp.miniTitle.textContent = (mp.artistName ? mp.artistName + ' \u2014 ' : '') +
+                             (track.display_title || '');
+
+  // Update dot indicators
+  _updateMiniDots(mp);
+
+  // Update tracklist active indicator
+  mp.tracklistDiv.querySelectorAll('.mp-track-item').forEach((li, idx) => {
+    li.classList.toggle('mp-track-active', idx === newIndex);
+  });
+
+  // Update footer chips in full mode
+  updatePlayerFooter(
+    { el: mp.el, iframe: mp.iframe },
+    track.raga_id || null,
+    track.composition_id || null
+  );
+}
+
+function _updateMiniDots(mp) {
+  const existing = mp.strip.querySelector('.mp-mini-dots');
+  if (existing) existing.remove();
+
+  if (mp.tracks.length <= 1) return;
+
+  const dots = document.createElement('span');
+  dots.className = 'mp-mini-dots';
+
+  const total = mp.tracks.length;
+  const current = mp.trackIndex;
+  let start = Math.max(0, current - 2);
+  let end = Math.min(total, start + 5);
+  if (end - start < 5) start = Math.max(0, end - 5);
+
+  for (let i = start; i < end; i++) {
+    const dot = document.createElement('span');
+    dot.className = i === current ? 'mp-dot mp-dot-active' : 'mp-dot';
+    dots.appendChild(dot);
+  }
+
+  mp.strip.querySelector('.mp-mini-info').appendChild(dots);
 }
 

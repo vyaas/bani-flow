@@ -893,6 +893,13 @@ function triggerBaniSearch(type, id) {
   }
   applyBaniFilter(type, id);
 
+  // ADR-042: open the Bani Flow (left) drawer on mobile so the user sees
+  // the trail that was just populated.  Mutual exclusion is handled inside
+  // setPanelState — the right drawer closes automatically.
+  if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+    window.setPanelState('TRAIL');
+  }
+
   // When a raga or composition is selected from the bani-flow or musician
   // panels, orient the raga wheel — expand the mela and animate the viewport
   // to centre on it (only if the raga wheel is the active view).

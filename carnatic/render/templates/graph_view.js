@@ -413,8 +413,10 @@ function selectNode(node) {
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
 
-  // ADR-034: surface bottom sheet on mobile when a node is selected
-  if (typeof peekBottomSheet === 'function') peekBottomSheet();
+  // ADR-039: open right drawer on mobile when a node is selected
+  if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+    window.setPanelState('MUSICIAN');
+  }
 }
 
 // ── orientToNode — pan + zoom to a node, populate right sidebar ──────────────

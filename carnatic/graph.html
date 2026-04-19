@@ -1368,45 +1368,67 @@
       min-height: 44px;
     }
     .filter-chip {
-      min-height: 44px;
-      padding: 0 12px;
-      font-size: 0.80rem;
+      min-height: 32px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
       align-items: center;
+      line-height: 1.2;
     }
     .view-btn {
       min-height: 44px;
       padding: 0 14px;
     }
+    /* ADR-036: swap full → short labels on mobile */
+    .view-label-full  { display: none; }
+    .view-label-short { display: inline; }
     .vp-btn {
       min-height: 44px;
       padding: 0 12px;
     }
+    /* ADR-040: always-visible wrapping filter bar */
     #filter-bar {
-      overflow-x: auto;
-      flex-wrap: nowrap;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;       /* Firefox: hide decorative scrollbar */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 8px;
+      padding: 6px 10px 8px;
+      max-height: none;
+      overflow: visible;
+      border-bottom: 1px solid var(--border-strong);
     }
-    #filter-bar::-webkit-scrollbar { display: none; } /* WebKit: hide decorative scrollbar */
+    /* ADR-040: filter toggle button removed on mobile */
+    #filter-toggle-btn {
+      display: none;
+    }
     .filter-group {
-      flex-wrap: nowrap;
-      flex-shrink: 0;
+      flex-wrap: wrap;
+      flex-shrink: 1;
+      gap: 4px 6px;
     }
     .filter-separator {
-      flex-shrink: 0;
+      width: 100%;
+      height: 0;
+      border-top: 1px solid var(--border-strong);
+      margin: 2px 0;
+      background: none;
     }
   }
 
+  /* ── ADR-036: compact view selector — short labels hidden on desktop ── */
+  .view-label-short { display: none; }
+
   /* ── ADR-034: new elements — hidden on desktop, activated by mobile query ── */
-  #hamburger-btn {
-    display: none;  /* shown at ≤768px only */
-  }
   #sheet-handle {
     display: none;  /* shown at ≤768px only */
   }
   #left-drawer-scrim {
     display: none;  /* shown by mobile.js when drawer is open */
   }
+  /* ADR-036/040: mobile-only elements — hidden on desktop */
+  #mobile-tab-bar         { display: none; }
+  #drawer-close-btn       { display: none; }
+  #sheet-peek-label       { display: none; }
+  #right-drawer-close-btn { display: none; }
+  #right-drawer-scrim     { display: none; }
 
   /* ── Phase 1: Responsive layout — left drawer + bottom sheet (ADR-034) ── */
   @media (max-width: 768px) {
@@ -1419,21 +1441,7 @@
       gap: 0;
       grid-template-columns: unset;  /* defeat the desktop grid */
     }
-    #hamburger-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: 1px solid var(--border-strong);
-      color: var(--fg-sub);
-      font-size: 1.2rem;
-      min-width: 44px;
-      min-height: 44px;
-      padding: 0;
-      margin-right: 6px;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
+
     header h1 {
       flex: 1;
       text-align: center;
@@ -1470,62 +1478,228 @@
       transform: translateX(0);
     }
 
-    /* ── Scrim behind left drawer ── */
+    /* ── Scrim behind left drawer (ADR-036: enhanced opacity) ── */
     #left-drawer-scrim {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.55);
       z-index: 199;
     }
     #left-drawer-scrim.scrim-visible {
       display: block;
     }
 
-    /* ── Right sidebar → bottom sheet ── */
+    /* ADR-041: left drawer close button removed — toggle via tab bar */
+
+    /* ── ADR-039: Right sidebar → right drawer (replaces bottom sheet) ── */
     #right-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: auto;
+      width: min(85vw, 320px);
+      height: auto;
+      min-height: unset;
+      z-index: 200;
+      border-left: 2px solid var(--border-strong);
+      border-top: none;
+      border-radius: 0;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.3);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      overflow-y: auto;
+    }
+    #right-sidebar.drawer-open {
+      transform: translateX(0);
+    }
+
+    /* ── ADR-039: hide bottom-sheet elements (handle, peek label) ── */
+    #sheet-handle     { display: none; }
+    #sheet-peek-label { display: none; }
+
+    /* ── ADR-039: scrim behind right drawer ── */
+    #right-drawer-scrim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 199;
+    }
+    #right-drawer-scrim.scrim-visible {
+      display: block;
+    }
+
+    /* ADR-041: right drawer close button removed — toggle via tab bar */
+
+    /* ── ADR-037: Mobile media player — mini strip + full mode ── */
+    /* Hide desktop floating players on mobile (they still exist in DOM if
+       spawned before resize, but the singleton mobile player takes over) */
+    .media-player {
+      position: fixed;
+      top: auto !important;
+    }
+
+    /* ── Mini-player strip: docked above tab bar ── */
+    .media-player.mini {
+      left: 0; right: 0; width: 100%;
+      bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+      height: 56px;
+      transform: none;
+      border-radius: 0;
+      z-index: 160;
+      flex-direction: row;
+      align-items: center;
+      border-top: 1px solid var(--border-strong);
+      border-left: none; border-right: none; border-bottom: none;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .media-player.mini .mp-mini-strip { display: flex; }
+    .media-player.mini .mp-bar,
+    .media-player.mini .mp-video-wrap,
+    .media-player.mini .mp-tracklist,
+    .media-player.mini .mp-footer,
+    .media-player.mini .mp-resize,
+    .media-player.mini .mp-full-handle { display: none; }
+
+    /* ── Full player: bottom sheet with iframe ── */
+    .media-player.full-mobile {
+      left: 0; right: 0; width: 100%;
+      bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+      height: calc(50vh - 56px);
+      transform: none;
+      border-radius: 16px 16px 0 0;
+      z-index: 160;
+      overflow: hidden;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.35);
+    }
+    .media-player.full-mobile .mp-mini-strip { display: none; }
+    .media-player.full-mobile .mp-full-handle { display: flex; }
+    .media-player.full-mobile .mp-tracklist {
+      display: block;
+      flex: 1; overflow-y: auto;
+    }
+    .media-player.full-mobile .mp-resize { display: none; }
+
+    /* ── Mini strip layout ── */
+    .mp-mini-strip {
+      display: none;  /* shown only via .mini parent */
+      width: 100%; height: 100%;
+      align-items: center;
+      gap: 0;
+      position: relative;
+    }
+    .mp-mini-progress {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--border-strong);
+    }
+    .mp-mini-progress-bar {
+      height: 100%; width: 0%;
+      background: var(--accent);
+      transition: width 0.3s linear;
+    }
+    .mp-mini-play {
+      width: 44px; height: 44px;
+      min-width: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none;
+      color: var(--fg); font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .mp-mini-info {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column;
+      padding: 0 4px;
+    }
+    .mp-mini-title {
+      font-size: 0.78rem; color: var(--fg);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mp-mini-dots {
+      display: flex; gap: 3px; margin-top: 2px;
+    }
+    .mp-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--fg-muted);
+    }
+    .mp-dot-active {
+      background: var(--accent);
+    }
+    .mp-mini-close {
+      width: 44px; height: 44px;
+      min-width: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none;
+      color: var(--fg-muted); font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    /* ── Full-mode drag handle ── */
+    .mp-full-handle {
+      display: none;  /* shown only via .full-mobile parent */
+      justify-content: center;
+      padding: 8px 0 4px;
+      cursor: grab;
+      touch-action: none;
+    }
+    .mp-full-handle-pill {
+      width: 36px; height: 4px;
+      border-radius: 2px;
+      background: var(--border-strong);
+    }
+
+    /* ── ADR-036 + ADR-041: mobile bottom tab bar ── */
+    #mobile-tab-bar {
+      display: flex;
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 50vh;
-      min-height: 280px;
-      z-index: 150;
-      border-left: none;
-      border-top: 2px solid var(--border-strong);
-      border-radius: 16px 16px 0 0;
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      width: auto;
+      height: 56px;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border-strong);
+      z-index: 210;   /* ADR-041: above scrim (199) and drawers (200) */
+      align-items: center;
+      justify-content: space-around;
+      pointer-events: auto;   /* ADR-038: explicit touch isolation */
+      touch-action: manipulation;
     }
-    #right-sidebar.peek    { transform: translateY(calc(100% - 72px)); }
-    #right-sidebar.expanded { transform: translateY(0); }
-
-    /* ── Drag handle pill at top of the sheet ── */
-    #sheet-handle {
-      display: block;
-      width: 36px;
-      height: 4px;
-      border-radius: 2px;
-      background: var(--border-strong);
-      margin: 8px auto 4px;
-      flex-shrink: 0;
-      cursor: grab;
-      touch-action: none;
+    .mobile-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      flex: 1;
+      min-height: 44px;
+      background: none;
+      border: none;
+      color: var(--fg-sub);
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 4px 0;
     }
-
-    /* ── Media player: centered + lifts above sheet ── */
-    .media-player {
-      position: fixed;
-      width: min(90vw, 400px);
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 8px;
-      top: auto !important;
+    /* ADR-041: tab-active highlight replaces generic .active */
+    .mobile-tab.tab-active {
+      color: var(--accent-main, var(--accent));
+      border-top: 2px solid var(--accent-main, var(--accent));
     }
-    body.sheet-expanded .media-player { bottom: calc(50vh + 8px); }
-    body.sheet-peek     .media-player { bottom: 80px; }
+    .mobile-tab:not(.tab-active) {
+      color: var(--fg-sub);
+      border-top: 2px solid transparent;
+    }
+    .mobile-tab-icon {
+      font-size: 1.1rem;
+    }
 
     /* ── Meta inspector: full-width on mobile ── */
     #meta-inspector {
@@ -1543,7 +1717,6 @@
 <body>
 
 <header>
-  <button id="hamburger-btn" aria-label="Open navigation">&#9776;</button>
   <h1>Carnatic Music Explorer</h1>
   <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
   <div id="sruti-strip">
@@ -1553,9 +1726,11 @@
   <div class="controls">
     <div class="view-selector" id="view-selector">
       <button class="view-btn" id="view-btn-graph"
-              onclick="switchView('graph')" title="Guru-shishya parampara">Guru-Shishya</button>
+              onclick="switchView('graph')" title="Guru-shishya parampara"
+              aria-label="Guru-Shishya"><span class="view-label-full">Guru-Shishya</span><span class="view-label-short">GS</span></button>
       <button class="view-btn active" id="view-btn-raga"
-              onclick="switchView('raga')" title="Melakarta–janya raga system">Mela-Janya</button>
+              onclick="switchView('raga')" title="Melakarta–janya raga system"
+              aria-label="Mela-Janya"><span class="view-label-full">Mela-Janya</span><span class="view-label-short">MJ</span></button>
     </div>
   </div>
 </header>
@@ -1563,6 +1738,7 @@
 <div id="main">
   <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->
   <div id="left-sidebar">
+    <!-- ADR-041: close button removed — tab bar toggle dismisses drawer -->
     <!-- ── sticky zone: search bar + subject header + trail filter ── -->
     <div id="bani-sticky">
       <div class="panel" id="bani-flow-panel">
@@ -1613,6 +1789,7 @@
 
   <!-- ── canvas column: filter bar + graph ── -->
   <div id="canvas-wrap">
+    <!-- ADR-040: filter toggle button removed (chips always visible, wrapping) -->
     <div id="filter-bar">
       <div class="filter-group" id="era-filter-group" data-group="era"></div>
       <div class="filter-separator"></div>
@@ -1642,8 +1819,11 @@
 
   <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
   <div id="right-sidebar">
-    <!-- Drag handle pill — hidden on desktop, shown as bottom sheet handle on mobile (ADR-034) -->
+    <!-- ADR-041: close button removed — tab bar toggle dismisses drawer -->
+    <!-- Drag handle pill — hidden on desktop, hidden on mobile (ADR-039 removes bottom sheet) -->
     <div id="sheet-handle" aria-hidden="true"></div>
+    <!-- ADR-036: contextual peek label (hidden on mobile per ADR-039) -->
+    <div id="sheet-peek-label">Tap a musician to explore &#8593;</div>
     <!-- ── sticky zone: musician search + node header + rec filter ── -->
     <div id="right-sticky">
       <div class="panel" id="musician-panel">
@@ -1691,6 +1871,21 @@
 </div>
 <!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
 <div id="left-drawer-scrim" aria-hidden="true"></div>
+
+<!-- ADR-039: scrim overlay behind right drawer (display managed by mobile.js) -->
+<div id="right-drawer-scrim" aria-hidden="true"></div>
+
+<!-- ADR-036: mobile bottom tab bar (hidden on desktop) -->
+<nav id="mobile-tab-bar" aria-label="Mobile navigation">
+  <button class="mobile-tab" id="tab-trail" aria-label="Bani Flow panel">
+    <span class="mobile-tab-icon">&#9776;</span>
+    <span class="mobile-tab-label">Bani Flow</span>
+  </button>
+  <button class="mobile-tab" id="tab-musician" aria-label="Musician panel">
+    <span class="mobile-tab-icon">&#9835;</span>
+    <span class="mobile-tab-label">Musician</span>
+  </button>
+</nav>
 
 <!-- ADR-027: reflective metadata inspector overlay -->
 <div id="meta-inspector" style="display:none">
@@ -66666,8 +66861,10 @@ function selectNode(node) {
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
 
-  // ADR-034: surface bottom sheet on mobile when a node is selected
-  if (typeof peekBottomSheet === 'function') peekBottomSheet();
+  // ADR-039: open right drawer on mobile when a node is selected
+  if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+    window.setPanelState('MUSICIAN');
+  }
 }
 
 // ── orientToNode — pan + zoom to a node, populate right sidebar ──────────────
@@ -67269,6 +67466,11 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
 
 // meta = { nodeId, ragaId, compositionId } — all optional; drives clickable chips in title bar
 function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+  // ADR-037: on mobile, delegate to singleton player
+  if (_isMobilePlayer()) {
+    _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta);
+    return;
+  }
   if (playerRegistry.has(vid)) {
     const existing = playerRegistry.get(vid);
     // Jump to new timestamp; title does NOT change — concert identity is stable
@@ -67750,6 +67952,344 @@ function closePlayer(playerId) {
   instance.iframe.src = '';   // stop audio immediately
   instance.el.remove();
   namedPlayerRegistry.delete(playerId);
+}
+
+// ── ADR-037: Mobile singleton media player ────────────────────────────────────
+// On screens ≤768px, a single docked player replaces the desktop floating
+// multi-window model. Two modes: mini (56px strip above tab bar) and
+// full (50vh bottom sheet with iframe + tracklist).
+
+const _isMobilePlayer = () => window.matchMedia('(max-width: 768px)').matches;
+
+let _mobilePlayer = null;  // singleton instance
+
+function _createMobilePlayer() {
+  const el = document.createElement('div');
+  el.className = 'media-player mini';
+  el.style.display = 'none';
+
+  // ── Mini strip ──────────────────────────────────────────────────────────
+  const strip = document.createElement('div');
+  strip.className = 'mp-mini-strip';
+
+  const progress = document.createElement('div');
+  progress.className = 'mp-mini-progress';
+  const progressBar = document.createElement('div');
+  progressBar.className = 'mp-mini-progress-bar';
+  progress.appendChild(progressBar);
+  strip.appendChild(progress);
+
+  const playBtn = document.createElement('button');
+  playBtn.className = 'mp-mini-play';
+  playBtn.textContent = '\u25B6';
+  strip.appendChild(playBtn);
+
+  const info = document.createElement('div');
+  info.className = 'mp-mini-info';
+  const titleSpan = document.createElement('span');
+  titleSpan.className = 'mp-mini-title';
+  info.appendChild(titleSpan);
+  strip.appendChild(info);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'mp-mini-close';
+  closeBtn.textContent = '\u2715';
+  strip.appendChild(closeBtn);
+
+  el.appendChild(strip);
+
+  // ── Full-mode handle ────────────────────────────────────────────────────
+  const handle = document.createElement('div');
+  handle.className = 'mp-full-handle';
+  const pill = document.createElement('span');
+  pill.className = 'mp-full-handle-pill';
+  handle.appendChild(pill);
+  el.appendChild(handle);
+
+  // ── Full-mode bar (will be populated per track) ─────────────────────────
+  const bar = document.createElement('div');
+  bar.className = 'mp-bar';
+  el.appendChild(bar);
+
+  // ── Video wrap ──────────────────────────────────────────────────────────
+  const videoWrap = document.createElement('div');
+  videoWrap.className = 'mp-video-wrap';
+  el.appendChild(videoWrap);
+
+  // ── Tracklist ───────────────────────────────────────────────────────────
+  const tracklistDiv = document.createElement('div');
+  tracklistDiv.className = 'mp-tracklist';
+  el.appendChild(tracklistDiv);
+
+  // Append to body (fixed positioning, not inside #main)
+  document.body.appendChild(el);
+
+  const mp = {
+    el, strip, bar, videoWrap, tracklistDiv, handle,
+    miniTitle: titleSpan,
+    miniPlay: playBtn,
+    miniClose: closeBtn,
+    progressBar,
+    iframe: null,
+    vid: null,
+    tracks: [],
+    trackIndex: 0,
+    artistName: '',
+    concertTitle: '',
+    meta: {},
+    _savedPanelState: null,
+  };
+
+  _wireMobilePlayerEvents(mp);
+  return mp;
+}
+
+function _getMobilePlayer() {
+  if (!_mobilePlayer) _mobilePlayer = _createMobilePlayer();
+  return _mobilePlayer;
+}
+
+function _wireMobilePlayerEvents(mp) {
+  // Tap mini strip info area → expand to full
+  mp.strip.addEventListener('click', e => {
+    if (e.target === mp.miniClose || e.target === mp.miniPlay ||
+        mp.miniClose.contains(e.target) || mp.miniPlay.contains(e.target)) return;
+    _expandMobilePlayer();
+  });
+
+  // Mini play button → expand (YouTube iframe API isn't loaded, so user
+  // controls playback in full mode directly)
+  mp.miniPlay.addEventListener('click', e => {
+    e.stopPropagation();
+    _expandMobilePlayer();
+  });
+
+  // Mini close
+  mp.miniClose.addEventListener('click', e => {
+    e.stopPropagation();
+    _closeMobilePlayer();
+  });
+
+  // Full mode handle: swipe down → collapse; tap → collapse
+  let handleTouchY = null;
+  mp.handle.addEventListener('touchstart', e => {
+    handleTouchY = e.touches[0].clientY;
+  }, { passive: true });
+  mp.handle.addEventListener('touchend', e => {
+    if (handleTouchY === null) return;
+    const dy = e.changedTouches[0].clientY - handleTouchY;
+    handleTouchY = null;
+    if (dy > 20) _collapseMobilePlayer();
+  }, { passive: true });
+  mp.handle.addEventListener('click', () => _collapseMobilePlayer());
+
+  // Mini strip: swipe left/right → track switching
+  let stripTouchX = null;
+  mp.strip.addEventListener('touchstart', e => {
+    stripTouchX = e.touches[0].clientX;
+  }, { passive: true });
+  mp.strip.addEventListener('touchend', e => {
+    if (stripTouchX === null) return;
+    const dx = e.changedTouches[0].clientX - stripTouchX;
+    stripTouchX = null;
+    if (Math.abs(dx) < 40) return;
+    _swipeMobileTrack(dx < 0 ? 1 : -1);
+  }, { passive: true });
+}
+
+function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+  const mp = _getMobilePlayer();
+
+  // Stop any previous playback
+  if (mp.iframe) mp.iframe.src = '';
+
+  mp.vid = vid;
+  mp.tracks = (Array.isArray(tracks) && tracks.length > 0) ? tracks : [];
+  mp.trackIndex = 0;
+  mp.artistName = artistName || '';
+  mp.concertTitle = concertTitle || '';
+  mp.meta = meta || {};
+
+  // Find the track index matching startSeconds
+  if (mp.tracks.length > 0 && startSeconds > 0) {
+    const idx = mp.tracks.findIndex(t => t.offset_seconds === startSeconds);
+    if (idx >= 0) mp.trackIndex = idx;
+  }
+
+  // Update mini strip title
+  const currentTrack = mp.tracks[mp.trackIndex];
+  const displayTitle = currentTrack ? currentTrack.display_title : trackLabel;
+  mp.miniTitle.textContent = (artistName ? artistName + ' \u2014 ' : '') +
+                             (displayTitle || concertTitle || '');
+
+  // ── Build full-mode bar ─────────────────────────────────────────────────
+  mp.bar.innerHTML = '';
+  const fullBar = buildPlayerBar(vid, artistName, concertTitle, trackLabel,
+                                 mp.tracks.length > 0, meta || {});
+  while (fullBar.firstChild) mp.bar.appendChild(fullBar.firstChild);
+
+  // Re-wire close button inside full bar
+  const barClose = mp.bar.querySelector('.mp-close');
+  if (barClose) {
+    barClose.addEventListener('click', e => {
+      e.stopPropagation();
+      _closeMobilePlayer();
+    });
+  }
+
+  // ── Build iframe ────────────────────────────────────────────────────────
+  mp.videoWrap.innerHTML = '';
+  mp.videoWrap.style.paddingTop = '56.25%';
+  mp.videoWrap.style.height = '';
+  const iframe = document.createElement('iframe');
+  iframe.className = 'mp-iframe';
+  iframe.src = ytEmbedUrl(vid, startSeconds);
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope';
+  iframe.allowFullscreen = true;
+  mp.videoWrap.appendChild(iframe);
+  mp.iframe = iframe;
+
+  // ── Build tracklist ─────────────────────────────────────────────────────
+  mp.tracklistDiv.innerHTML = '';
+  if (mp.tracks.length > 0) {
+    const pseudoInstance = {
+      el: mp.el, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
+      vid, currentOffset: startSeconds || 0,
+    };
+    const trackUl = buildPlayerTrackList(vid, mp.tracks, pseudoInstance);
+    mp.tracklistDiv.appendChild(trackUl);
+    trackUl.querySelectorAll('.mp-track-item').forEach((li, idx) => {
+      li.classList.toggle('mp-track-active', idx === mp.trackIndex);
+    });
+  }
+
+  // ── Dot indicators ──────────────────────────────────────────────────────
+  _updateMiniDots(mp);
+
+  // Show player in mini mode
+  mp.el.classList.remove('full-mobile');
+  mp.el.classList.add('mini');
+  mp.el.style.display = '';
+
+  // Register in playerRegistry (unregister any previous mobile entry first)
+  for (const [key, val] of playerRegistry) {
+    if (val._isMobileSingleton) { playerRegistry.delete(key); break; }
+  }
+  playerRegistry.set(vid, {
+    el: mp.el, iframe: mp.iframe, titleEl: mp.bar.querySelector('.mp-title'),
+    tracklistEl: mp.tracklistDiv, vid, _isMobileSingleton: true,
+  });
+  refreshPlayingIndicators();
+}
+
+function _expandMobilePlayer() {
+  if (!_mobilePlayer) return;
+  const mp = _mobilePlayer;
+
+  // Save current panel state and dismiss sheet (ADR-036 integration)
+  if (typeof window._currentPanelState !== 'undefined') {
+    mp._savedPanelState = window._currentPanelState;
+  }
+  if (typeof window.setPanelState === 'function') {
+    window.setPanelState('IDLE');
+  }
+
+  mp.el.classList.remove('mini');
+  mp.el.classList.add('full-mobile');
+}
+
+function _collapseMobilePlayer() {
+  if (!_mobilePlayer) return;
+  const mp = _mobilePlayer;
+
+  mp.el.classList.remove('full-mobile');
+  mp.el.classList.add('mini');
+
+  // Restore saved panel state
+  if (mp._savedPanelState && typeof window.setPanelState === 'function') {
+    window.setPanelState(mp._savedPanelState);
+    mp._savedPanelState = null;
+  }
+}
+
+function _closeMobilePlayer() {
+  if (!_mobilePlayer) return;
+  const mp = _mobilePlayer;
+
+  if (mp.iframe) mp.iframe.src = '';
+  mp.el.style.display = 'none';
+  mp.vid = null;
+
+  // Unregister from playerRegistry
+  for (const [key, val] of playerRegistry) {
+    if (val._isMobileSingleton) { playerRegistry.delete(key); break; }
+  }
+  refreshPlayingIndicators();
+
+  // Restore panel state if we were in full mode
+  if (mp._savedPanelState && typeof window.setPanelState === 'function') {
+    window.setPanelState(mp._savedPanelState);
+    mp._savedPanelState = null;
+  }
+}
+
+function _swipeMobileTrack(direction) {
+  if (!_mobilePlayer || !_mobilePlayer.tracks.length) return;
+  const mp = _mobilePlayer;
+  const newIndex = mp.trackIndex + direction;
+  if (newIndex < 0 || newIndex >= mp.tracks.length) return;
+
+  mp.trackIndex = newIndex;
+  const track = mp.tracks[newIndex];
+
+  // Update iframe to new timestamp
+  if (mp.iframe) {
+    mp.iframe.src = ytEmbedUrl(mp.vid,
+      track.offset_seconds > 0 ? track.offset_seconds : undefined);
+  }
+
+  // Update mini title
+  mp.miniTitle.textContent = (mp.artistName ? mp.artistName + ' \u2014 ' : '') +
+                             (track.display_title || '');
+
+  // Update dot indicators
+  _updateMiniDots(mp);
+
+  // Update tracklist active indicator
+  mp.tracklistDiv.querySelectorAll('.mp-track-item').forEach((li, idx) => {
+    li.classList.toggle('mp-track-active', idx === newIndex);
+  });
+
+  // Update footer chips in full mode
+  updatePlayerFooter(
+    { el: mp.el, iframe: mp.iframe },
+    track.raga_id || null,
+    track.composition_id || null
+  );
+}
+
+function _updateMiniDots(mp) {
+  const existing = mp.strip.querySelector('.mp-mini-dots');
+  if (existing) existing.remove();
+
+  if (mp.tracks.length <= 1) return;
+
+  const dots = document.createElement('span');
+  dots.className = 'mp-mini-dots';
+
+  const total = mp.tracks.length;
+  const current = mp.trackIndex;
+  let start = Math.max(0, current - 2);
+  let end = Math.min(total, start + 5);
+  if (end - start < 5) start = Math.max(0, end - 5);
+
+  for (let i = start; i < end; i++) {
+    const dot = document.createElement('span');
+    dot.className = i === current ? 'mp-dot mp-dot-active' : 'mp-dot';
+    dots.appendChild(dot);
+  }
+
+  mp.strip.querySelector('.mp-mini-info').appendChild(dots);
 }
 
 
@@ -68549,8 +69089,15 @@ window.drawRagaWheel = function() {
       _dragging = false;
       svg.style.cursor = '';
 
+      // ADR-035 fix: e.preventDefault() on pointerdown suppresses native click
+      // events (the spec says no compatibility mouse events shall fire).
+      // setPointerCapture redirects pointerup to the SVG, so e.target is SVG,
+      // not the element under the pointer.  Resolve the real target and
+      // re-dispatch a synthetic click so mela/janya/comp handlers still fire.
+      const realTarget = document.elementFromPoint(e.clientX, e.clientY);
+
       // Double-tap on SVG background → wheelFit() (mobile supplement to dblclick)
-      if (!_dragMoved && e.target === bg) {
+      if (!_dragMoved && realTarget && (realTarget === bg || realTarget === svg)) {
         const now = Date.now();
         if (now - _lastTapTime < 300 && _lastTapTarget === bg) {
           wheelFit();
@@ -68558,6 +69105,14 @@ window.drawRagaWheel = function() {
           return;
         }
         _lastTapTime = now; _lastTapTarget = bg;
+      }
+
+      // Re-dispatch click on the real element under the pointer (tap, not drag)
+      if (!_dragMoved && realTarget) {
+        realTarget.dispatchEvent(new MouseEvent('click', {
+          bubbles: true, cancelable: true,
+          clientX: e.clientX, clientY: e.clientY
+        }));
       }
     }
   }
@@ -68660,6 +69215,10 @@ window.drawRagaWheel = function() {
           // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
           // re-entering orientRagaWheel and resetting the wheel mid-animation.
           if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', raga.id);
+          // ADR-042: open Bani Flow drawer on mobile after mela click
+          if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+            window.setPanelState('TRAIL');
+          }
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -68799,6 +69358,10 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         // Use applyBaniFilter directly (not triggerBaniSearch) to avoid
         // re-entering orientRagaWheel and resetting the wheel mid-animation.
         if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
+        // ADR-042: open Bani Flow drawer on mobile after janya click
+        if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+          window.setPanelState('TRAIL');
+        }
       });
       jg.addEventListener('dblclick', (e) => {
         e.stopPropagation();
@@ -70175,6 +70738,13 @@ function triggerBaniSearch(type, id) {
     }
   }
   applyBaniFilter(type, id);
+
+  // ADR-042: open the Bani Flow (left) drawer on mobile so the user sees
+  // the trail that was just populated.  Mutual exclusion is handled inside
+  // setPanelState — the right drawer closes automatically.
+  if (window.innerWidth <= 768 && typeof window.setPanelState === 'function') {
+    window.setPanelState('TRAIL');
+  }
 
   // When a raga or composition is selected from the bani-flow or musician
   // panels, orient the raga wheel — expand the mela and animate the viewport
@@ -72836,111 +73406,168 @@ function buildAddYoutubeForm() {
 
   return win;
 }
-// ── ADR-034: Responsive layout — left drawer + bottom sheet ─────────────────
-// All functions are exposed on window so graph_view.js callbacks can call them
-// safely on both desktop (no-ops) and mobile.
+// ── ADR-034 + ADR-036 + ADR-039: Mobile navigation choreography ────────────
+// Panel state machine with mutual exclusion, dual drawers (left=Trail,
+// right=Musician), collapsible filter bar. All functions are exposed on
+// window so graph_view.js callbacks can call them safely on both desktop
+// and mobile.
 (function () {
   'use strict';
 
-  var leftDrawerOpen = false;
+  // ── Panel State Machine ──────────────────────────────────────────────────
+  // States: IDLE | MUSICIAN | TRAIL
+  // ADR-039: PEEK state removed — right sidebar is now a drawer, not a sheet.
+  // Mutual exclusion: TRAIL and MUSICIAN are never both active.
+  var panelState = 'IDLE';
 
-  // ── Left Drawer ─────────────────────────────────────────────────────────────
+  var sidebar        = document.getElementById('left-sidebar');
+  var leftScrim      = document.getElementById('left-drawer-scrim');
+  var rightSidebar   = document.getElementById('right-sidebar');
+  var rightScrim     = document.getElementById('right-drawer-scrim');
+  var tabMusician    = document.getElementById('tab-musician');
+  var tabTrail       = document.getElementById('tab-trail');
 
-  function toggleLeftDrawer() {
-    leftDrawerOpen = !leftDrawerOpen;
-    var sidebar = document.getElementById('left-sidebar');
-    var scrim   = document.getElementById('left-drawer-scrim');
-    if (sidebar) sidebar.classList.toggle('drawer-open', leftDrawerOpen);
-    if (scrim)   scrim.classList.toggle('scrim-visible', leftDrawerOpen);
-    // Cytoscape caches container dimensions; resize after the CSS transition starts
+  function _openLeftDrawer() {
+    if (sidebar)   sidebar.classList.add('drawer-open');
+    if (leftScrim) leftScrim.classList.add('scrim-visible');
+  }
+
+  function _closeLeftDrawer() {
+    if (sidebar)   sidebar.classList.remove('drawer-open');
+    if (leftScrim) leftScrim.classList.remove('scrim-visible');
+  }
+
+  function _openRightDrawer() {
+    if (rightSidebar) rightSidebar.classList.add('drawer-open');
+    if (rightScrim)   rightScrim.classList.add('scrim-visible');
+  }
+
+  function _closeRightDrawer() {
+    if (rightSidebar) rightSidebar.classList.remove('drawer-open');
+    if (rightScrim)   rightScrim.classList.remove('scrim-visible');
+  }
+
+  function _updateTabs(state) {
+    // ADR-041: tab-active class replaces generic .active for toggle highlight
+    if (tabMusician) tabMusician.classList.toggle('tab-active', state === 'MUSICIAN');
+    if (tabTrail)    tabTrail.classList.toggle('tab-active', state === 'TRAIL');
+  }
+
+  function setPanelState(newState) {
+    if (window.innerWidth > 768) return;
+
+    // ADR-039: map legacy PEEK state to MUSICIAN (backward compat for media_player.js save/restore)
+    if (newState === 'PEEK') newState = 'MUSICIAN';
+
+    panelState = newState;
+
+    // Close everything first
+    _closeLeftDrawer();
+    _closeRightDrawer();
+
+    // Open the requested panel
+    if (newState === 'TRAIL') {
+      _openLeftDrawer();
+    } else if (newState === 'MUSICIAN') {
+      _openRightDrawer();
+    }
+
+    _updateTabs(newState);
+
+    // Cytoscape caches container dimensions; nudge after transition starts
     if (typeof cy !== 'undefined') {
       setTimeout(function () { cy.resize(); }, 30);
     }
   }
 
-  // ── Bottom Sheet ─────────────────────────────────────────────────────────────
-  // Three states: 'dismissed' | 'peek' | 'expanded'
+  // ── Backward-compatible public API ───────────────────────────────────────
+  // These are called by graph_view.js and other scripts.
 
-  var sheetState = 'dismissed';
-
-  function _applySheetState(state) {
-    sheetState = state;
-    var sheet = document.getElementById('right-sidebar');
-    if (!sheet) return;
-    sheet.classList.remove('peek', 'expanded');
-    document.body.classList.remove('sheet-peek', 'sheet-expanded');
-    if (state === 'peek') {
-      sheet.classList.add('peek');
-      document.body.classList.add('sheet-peek');
-    } else if (state === 'expanded') {
-      sheet.classList.add('expanded');
-      document.body.classList.add('sheet-expanded');
+  function toggleLeftDrawer() {
+    if (panelState === 'TRAIL') {
+      setPanelState('IDLE');
+    } else {
+      setPanelState('TRAIL');
     }
   }
 
+  // ADR-039: peekBottomSheet now opens the right drawer (MUSICIAN) instead of PEEK
   function peekBottomSheet() {
     if (window.innerWidth > 768) return;
-    _applySheetState('peek');
+    setPanelState('MUSICIAN');
   }
 
   function dismissBottomSheet() {
     if (window.innerWidth > 768) return;
-    _applySheetState('dismissed');
+    setPanelState('IDLE');
   }
 
+  // ADR-039: showBottomSheet maps both 'peek' and 'expanded' to MUSICIAN
   function showBottomSheet(state) {
     if (window.innerWidth > 768) return;
-    _applySheetState(state);
+    if (state === 'expanded' || state === 'peek') setPanelState('MUSICIAN');
+    else setPanelState('IDLE');
   }
 
-  // ── Sheet handle touch interactions ─────────────────────────────────────────
-  // Tap on handle: cycles peek → expanded.
-  // Swipe up  (dy < −20): expands.
-  // Swipe down (dy >  20): expanded → peek, peek → dismissed.
-
-  var touchStartY = null;
-
-  function _setupSheetHandle() {
-    var handle = document.getElementById('sheet-handle');
-    if (!handle) return;
-
-    handle.addEventListener('touchstart', function (e) {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    handle.addEventListener('touchend', function (e) {
-      if (touchStartY === null) return;
-      var dy = e.changedTouches[0].clientY - touchStartY;
-      touchStartY = null;
-      if (Math.abs(dy) < 10) {
-        // Tap — cycle states
-        if (sheetState === 'peek')     _applySheetState('expanded');
-        else if (sheetState === 'expanded') _applySheetState('peek');
-      } else if (dy < -20) {
-        _applySheetState('expanded');
-      } else if (dy > 20) {
-        if (sheetState === 'expanded') _applySheetState('peek');
-        else                           _applySheetState('dismissed');
-      }
-    }, { passive: true });
+  // ── Filter badge (ADR-040: toggle removed, chips always visible) ─────────
+  function updateFilterBadge() {
+    var filterBadge = document.getElementById('filter-active-badge');
+    if (!filterBadge) return;
+    var activeCount = document.querySelectorAll('.filter-chip.active').length;
+    filterBadge.textContent = activeCount > 0 ? '(' + activeCount + ' active)' : '';
   }
 
-  // ── Event wiring ─────────────────────────────────────────────────────────────
-  // Scripts run just before </body>; DOM is fully parsed at this point.
+  // ── Bottom tab bar (ADR-036 + ADR-039) ────────────────────────────────────
+  function _setupTabBar() {
+    if (tabMusician) {
+      tabMusician.addEventListener('click', function (e) {
+        e.stopPropagation(); // ADR-038: isolate from canvas
+        if (panelState === 'MUSICIAN') {
+          setPanelState('IDLE');
+        } else {
+          setPanelState('MUSICIAN');
+        }
+      });
+    }
+    if (tabTrail) {
+      tabTrail.addEventListener('click', function (e) {
+        e.stopPropagation(); // ADR-038: isolate from canvas
+        if (panelState === 'TRAIL') {
+          setPanelState('IDLE');
+        } else {
+          setPanelState('TRAIL');
+        }
+      });
+    }
+  }
 
-  var hamburger = document.getElementById('hamburger-btn');
-  if (hamburger) hamburger.addEventListener('click', toggleLeftDrawer);
+  // ADR-041: drawer close buttons removed — tab bar toggle + scrim dismiss
 
-  var scrim = document.getElementById('left-drawer-scrim');
-  if (scrim) scrim.addEventListener('click', toggleLeftDrawer);
+  // ── Event wiring ─────────────────────────────────────────────────────────
+  // ADR-038: hamburger removed — Trail tab is sole mobile entry point
 
-  _setupSheetHandle();
+  if (leftScrim) leftScrim.addEventListener('click', function () { setPanelState('IDLE'); });
 
-  // ── Public API ───────────────────────────────────────────────────────────────
+  // ADR-039: right drawer scrim closes musician panel
+  if (rightScrim) rightScrim.addEventListener('click', function () { setPanelState('IDLE'); });
+
+  // ADR-040: filter toggle removed — chips always visible
+
+  _setupTabBar();
+
+  // ── Public API ───────────────────────────────────────────────────────────
   window.toggleLeftDrawer   = toggleLeftDrawer;
   window.peekBottomSheet    = peekBottomSheet;
   window.dismissBottomSheet = dismissBottomSheet;
   window.showBottomSheet    = showBottomSheet;
+  window.setPanelState      = setPanelState;
+  window.updatePeekLabel    = function () {};  // ADR-039: no-op, peek label removed
+  window.updateFilterBadge  = updateFilterBadge;
+
+  // ADR-037: expose current panel state for media player save/restore
+  Object.defineProperty(window, '_currentPanelState', {
+    get: function () { return panelState; }
+  });
 
 }());
 
