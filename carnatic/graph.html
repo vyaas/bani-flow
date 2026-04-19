@@ -69456,6 +69456,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         fill: melaColor, opacity: 0.75, stroke: THEME.fg, 'stroke-width': 1, cursor: 'pointer'
       });
       const jg = svgEl('g', { class: 'janya-node', 'data-id': janya.id });
+      jg.style.cursor = 'pointer';
       jg._connLine = janyaConnLine;  // stash for retrieval by comp click handler
       jg.appendChild(jCircle);
       // Invisible hit-target circle for touch accuracy (ADR-035 §7)
