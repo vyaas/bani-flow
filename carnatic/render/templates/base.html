@@ -21,10 +21,13 @@
     border-bottom: 2px solid var(--border-strong);
     display: grid; grid-template-columns: 260px 1fr 260px; align-items: center; gap: 0;
   }
+  #header-left {
+    display: flex; align-items: center; gap: 8px; padding: 0 14px;
+  }
   header h1 {
     font-size: 1.05rem; color: var(--accent);
     letter-spacing: 0.08em; text-transform: uppercase; font-weight: bold;
-    white-space: nowrap; padding: 0 14px;
+    white-space: nowrap;
   }
   .stats  { font-size: 0.78rem; color: var(--fg-sub); }
   .controls { display: flex; gap: 8px; padding: 0 14px; justify-content: flex-end; }
@@ -951,7 +954,7 @@
     color: var(--fg-muted);
     cursor: pointer;
     flex-shrink: 0;
-    margin-right: 8px;
+    margin-left: 8px;
     padding: 2px 6px;
     border-radius: 4px;
     transition: color 0.15s;
@@ -1021,22 +1024,12 @@
   }
   .sruti-btn.sharp { font-size: 0.68rem; }
 
-  /* ── ADR-045: E-Tanpura caption ── */
-  .sruti-label {
-    font-size: 0.60rem; color: var(--fg-muted);
-    text-transform: uppercase; letter-spacing: 0.10em;
-    font-variant: small-caps;
-    flex-shrink: 0; margin-right: 10px;
-    user-select: none; pointer-events: none;
-    white-space: nowrap;
-  }
-
   /* ── ADR-045: Help button ── */
   .help-btn {
     background: none;
     border: 1px solid var(--border-strong);
     color: var(--fg-sub);
-    border-radius: 50%;
+    border-radius: 6px;
     width: 26px; height: 26px;
     padding: 0;
     font-size: 0.82rem; font-weight: bold;
@@ -1044,7 +1037,7 @@
     line-height: 1;
     flex-shrink: 0;
     transition: border-color 0.15s, color 0.15s;
-    margin-right: 6px;
+    margin-right: 0;
   }
   .help-btn:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -1531,14 +1524,11 @@
       grid-template-columns: unset;  /* defeat the desktop grid */
     }
 
-    header h1 {
-      flex: 1;
-      text-align: center;
-      padding: 0 4px;
-    }
+    header h1 { display: none; }
+    #header-left { flex-shrink: 0; gap: 4px; padding: 0 4px; }
     .stats { display: none; }
     #sruti-strip { display: none; }
-    .controls { padding: 0; }
+    .controls { flex: 1; justify-content: flex-end; padding: 0 6px; }
 
     /* ── Main layout: canvas occupies full viewport width ── */
     /* ADR-042: pad bottom so canvas never extends behind the tab bar (56px) */
@@ -1824,16 +1814,17 @@
 <body>
 
 <header>
-  <h1>Carnatic Music Explorer</h1>
+  <!-- ADR-045: header-left wraps help button + title -->
+  <div id="header-left">
+    <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
+    <h1>Carnatic Explorer</h1>
+  </div>
   <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
   <div id="sruti-strip">
-    <span id="sruti-label" class="sruti-label">E-Tanpura</span>
-    <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
     <div id="sruti-buttons"></div>
+    <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
   </div>
   <div class="controls">
-    <!-- ADR-045: help/about button -->
-    <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
     <div class="view-selector" id="view-selector">
       <button class="view-btn" id="view-btn-graph"
               onclick="switchView('graph')" title="Guru-shishya parampara"
@@ -2043,40 +2034,7 @@
     <button id="hd-close" title="Close">&#10005;</button>
   </div>
   <div id="hd-body">
-    <p class="hd-p">Bani Flow is a knowledge graph of Carnatic <em>guru-shishya</em> (teacher-student) lineages.
-    It maps how musical tradition — ragas, compositions, performance style — passes between generations of musicians.
-    Explore how different musicians have rendered the same ragas and compositions to hear the living variety within a single lineage.</p>
-
-    <p class="hd-section-title">Guru-Shishya View</p>
-    <p class="hd-p">A graph of musicians as nodes. Directed edges flow from guru &#8594; shishya.
-    Click a node once to preview; click again to open the <strong>Musician</strong> panel.
-    Use the <span class="filter-chip active" style="pointer-events:none;font-size:0.68rem;padding:2px 7px;display:inline-flex;">era</span> and
-    <span class="filter-chip active" style="pointer-events:none;font-size:0.68rem;padding:2px 7px;display:inline-flex;">instrument</span>
-    filter chips at the top to narrow the graph.</p>
-
-    <p class="hd-section-title">Mela-Janya View</p>
-    <p class="hd-p">A wheel of the 72 melakarta ragas with janya ragas branching outward.
-    Click a raga once to preview; click again to open the <strong>Bani Flow</strong> panel, which lists all recordings on that raga.
-    Use <span class="raga-chip" style="pointer-events:none;">raga</span> links to navigate across ragas.</p>
-
-    <p class="hd-section-title">Musician Panel</p>
-    <p class="hd-p">Shows the repertoire of the selected musician — concert recordings grouped by performance,
-    each tagged with a <span class="comp-chip" style="pointer-events:none;">composition</span> and <span class="raga-chip" style="pointer-events:none;">raga</span>.
-    Click any recording&#8217;s &#9654; button to open the YouTube player.</p>
-
-    <p class="hd-section-title">Bani Flow Panel</p>
-    <p class="hd-p">Search for a raga or composition in the left sidebar to see all musicians who have recorded it.
-    Each entry links directly to a recording — this is the core exploration surface.
-    Compare how a guru and their students all render the same <span class="raga-chip" style="pointer-events:none;">Thodi</span> or <span class="raga-chip" style="pointer-events:none;">Bhairavi</span>.</p>
-
-    <p class="hd-section-title">YouTube Player</p>
-    <p class="hd-p">Recordings open in a floating player window (desktop) or a slide-up strip (mobile).
-    Click the <span class="mp-artist-chip" style="pointer-events:none;font-size:0.70rem;">artist</span> chip in the player bar to jump to that musician in the graph.
-    Use the &#9776; tracklist button to switch tracks within a concert without reopening the player.</p>
-
-    <p class="hd-section-title">E-Tanpura</p>
-    <p class="hd-p">The row of note buttons in the header plays a tanpura drone for that <em>sruti</em> (tonic pitch).
-    Use it as a reference pitch while listening. Click the lit button again, or the &#9679; power indicator, to stop.</p>
+    <!-- INJECT_HELP_HTML -->
   </div>
 </div>
 <script>
