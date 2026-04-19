@@ -1044,6 +1044,93 @@
   }
   .sruti-btn.sharp { font-size: 0.68rem; }
 
+  /* ── ADR-045: E-Tanpura caption ── */
+  .sruti-label {
+    font-size: 0.60rem; color: var(--fg-muted);
+    text-transform: uppercase; letter-spacing: 0.10em;
+    font-variant: small-caps;
+    flex-shrink: 0; margin-right: 10px;
+    user-select: none; pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* ── ADR-045: Help button ── */
+  .help-btn {
+    background: none;
+    border: 1px solid var(--border-strong);
+    color: var(--fg-sub);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    padding: 0;
+    font-size: 0.82rem; font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: border-color 0.15s, color 0.15s;
+    margin-right: 6px;
+  }
+  .help-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── ADR-045: Help dialog ── */
+  #help-scrim {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1001;
+  }
+  #help-scrim.scrim-visible { display: block; }
+  #help-dialog {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(600px, 94vw); max-height: 80vh;
+    background: var(--bg-panel);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+    display: flex; flex-direction: column;
+    z-index: 1002;
+    font-family: var(--font-ui);
+  }
+  #hd-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-input); border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid var(--border-strong);
+    flex-shrink: 0;
+  }
+  #hd-title {
+    flex: 1; font-size: 0.82rem; color: var(--accent);
+    font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  #hd-close {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 1rem; cursor: pointer; padding: 0 3px; line-height: 1;
+  }
+  #hd-close:hover { color: var(--accent-danger); }
+  #hd-body {
+    flex: 1; overflow-y: auto;
+    padding: 14px 16px;
+    font-size: 0.78rem; color: var(--fg-dim);
+    line-height: 1.65;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-active) var(--bg-panel);
+  }
+  #hd-body::-webkit-scrollbar { width: 6px; }
+  #hd-body::-webkit-scrollbar-track { background: var(--bg-panel); }
+  #hd-body::-webkit-scrollbar-thumb { background: var(--bg-active); border-radius: 3px; }
+  .hd-section-title {
+    font-size: 0.68rem; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    margin: 14px 0 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--border);
+    font-weight: bold;
+  }
+  .hd-section-title:first-child { margin-top: 0; }
+  .hd-p { margin-bottom: 6px; }
+
   /* ── ADR-027: reflective metadata inspector — monospace retained for JSON data ── */
   /* ADR-044: click-again affordance nudge */
   #click-nudge {
@@ -1403,11 +1490,9 @@
     }
     .view-btn {
       min-height: 44px;
-      padding: 0 14px;
+      padding: 0 9px;   /* ADR-045: full labels fit at tighter padding */
     }
-    /* ADR-036: swap full → short labels on mobile */
-    .view-label-full  { display: none; }
-    .view-label-short { display: inline; }
+    /* ADR-045: full view labels shown on mobile — no label swap */
     .vp-btn {
       min-height: 44px;
       padding: 0 12px;
@@ -1765,10 +1850,13 @@
   <h1>Carnatic Music Explorer</h1>
   <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
   <div id="sruti-strip">
+    <span id="sruti-label" class="sruti-label">E-Tanpura</span>
     <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
     <div id="sruti-buttons"></div>
   </div>
   <div class="controls">
+    <!-- ADR-045: help/about button -->
+    <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
     <div class="view-selector" id="view-selector">
       <button class="view-btn" id="view-btn-graph"
               onclick="switchView('graph')" title="Guru-shishya parampara"
@@ -1967,6 +2055,65 @@
     clearTimeout(_nudgeTimeout);
     el.classList.remove('nudge-visible', 'nudge-hiding');
   };
+}());
+</script>
+
+<!-- ADR-045: help scrim + dialog -->
+<div id="help-scrim" aria-hidden="true"></div>
+<div id="help-dialog" style="display:none" role="dialog" aria-modal="true" aria-labelledby="hd-title">
+  <div id="hd-bar">
+    <span id="hd-title">About Bani Flow</span>
+    <button id="hd-close" title="Close">&#10005;</button>
+  </div>
+  <div id="hd-body">
+    <p class="hd-p">Bani Flow is a knowledge graph of Carnatic <em>guru-shishya</em> (teacher-student) lineages.
+    It maps how musical tradition — ragas, compositions, performance style — passes between generations of musicians.
+    Explore how different musicians have rendered the same ragas and compositions to hear the living variety within a single lineage.</p>
+
+    <p class="hd-section-title">Guru-Shishya View</p>
+    <p class="hd-p">A graph of musicians as nodes. Directed edges flow from guru &#8594; shishya.
+    Click a node once to preview; click again to open the <strong>Musician</strong> panel.
+    Use the <span class="filter-chip active" style="pointer-events:none;font-size:0.68rem;padding:2px 7px;display:inline-flex;">era</span> and
+    <span class="filter-chip active" style="pointer-events:none;font-size:0.68rem;padding:2px 7px;display:inline-flex;">instrument</span>
+    filter chips at the top to narrow the graph.</p>
+
+    <p class="hd-section-title">Mela-Janya View</p>
+    <p class="hd-p">A wheel of the 72 melakarta ragas with janya ragas branching outward.
+    Click a raga once to preview; click again to open the <strong>Bani Flow</strong> panel, which lists all recordings on that raga.
+    Use <span class="raga-chip" style="pointer-events:none;">raga</span> links to navigate across ragas.</p>
+
+    <p class="hd-section-title">Musician Panel</p>
+    <p class="hd-p">Shows the repertoire of the selected musician — concert recordings grouped by performance,
+    each tagged with a <span class="comp-chip" style="pointer-events:none;">composition</span> and <span class="raga-chip" style="pointer-events:none;">raga</span>.
+    Click any recording&#8217;s &#9654; button to open the YouTube player.</p>
+
+    <p class="hd-section-title">Bani Flow Panel</p>
+    <p class="hd-p">Search for a raga or composition in the left sidebar to see all musicians who have recorded it.
+    Each entry links directly to a recording — this is the core exploration surface.
+    Compare how a guru and their students all render the same <span class="raga-chip" style="pointer-events:none;">Thodi</span> or <span class="raga-chip" style="pointer-events:none;">Bhairavi</span>.</p>
+
+    <p class="hd-section-title">YouTube Player</p>
+    <p class="hd-p">Recordings open in a floating player window (desktop) or a slide-up strip (mobile).
+    Click the <span class="mp-artist-chip" style="pointer-events:none;font-size:0.70rem;">artist</span> chip in the player bar to jump to that musician in the graph.
+    Use the &#9776; tracklist button to switch tracks within a concert without reopening the player.</p>
+
+    <p class="hd-section-title">E-Tanpura</p>
+    <p class="hd-p">The row of note buttons in the header plays a tanpura drone for that <em>sruti</em> (tonic pitch).
+    Use it as a reference pitch while listening. Click the lit button again, or the &#9679; power indicator, to stop.</p>
+  </div>
+</div>
+<script>
+(function () {
+  var btn  = document.getElementById('help-btn');
+  var dlg  = document.getElementById('help-dialog');
+  var scrim = document.getElementById('help-scrim');
+  var close = document.getElementById('hd-close');
+  function openHelp()  { dlg.style.display = 'flex'; scrim.classList.add('scrim-visible'); }
+  function closeHelp() { dlg.style.display = 'none'; scrim.classList.remove('scrim-visible'); }
+  if (btn)   btn.addEventListener('click', openHelp);
+  if (close) close.addEventListener('click', closeHelp);
+  if (scrim) scrim.addEventListener('click', closeHelp);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeHelp(); });
 }());
 </script>
 
