@@ -69228,6 +69228,22 @@ window.drawRagaWheel = function() {
           circle.setAttribute('stroke', THEME.accentSelect);
           circle.setAttribute('stroke-width', 2.5);
           _expandedMela = raga.id;
+          // Dim all other mela nodes so the selected one stands out
+          vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
+            const melaG = c.closest('.mela-node');
+            const nodeId = melaG ? melaG.getAttribute('data-id') : '';
+            if (nodeId !== raga.id) {
+              c.setAttribute('opacity', '0.15');
+            }
+          });
+          // Dim all other mela labels
+          if (_labelLayer) {
+            _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
+              if (lbl.getAttribute('data-id') !== raga.id) {
+                lbl.setAttribute('opacity', '0.12');
+              }
+            });
+          }
           // Silently load bani-flow data (no panel pop-open).
           // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
           window._wheelSyncInProgress = true;
@@ -69259,11 +69275,15 @@ window.drawRagaWheel = function() {
     else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
+    const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
     const lbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': anchor, 'dominant-baseline': 'middle',
       fill: isLiveLbl ? THEME.fg : (raga ? THEME.borderStrong : THEME.borderStrong),
       'font-size': Math.max(7, minDim * 0.012) + 'px',
-      opacity: isLiveLbl ? 1 : (raga ? 0.35 : 1),
+      opacity: melaLblOpacity,
+      'data-orig-opacity': melaLblOpacity,
+      'data-id': raga ? raga.id : '',
+      class: 'mela-label',
       transform: `rotate(${melaRotDeg}, ${lp.x}, ${lp.y})`
     });
     lbl.textContent = raga ? raga.name : String(n);
@@ -69288,6 +69308,13 @@ function _collapseAll(vp, melaByNum) {
     const orig = c.getAttribute('data-orig-opacity');
     if (orig) c.setAttribute('opacity', orig);
   });
+  // Restore mela label opacity
+  if (_labelLayer) {
+    _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
+      const orig = lbl.getAttribute('data-orig-opacity');
+      if (orig) lbl.setAttribute('opacity', orig);
+    });
+  }
   vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
   hideWheelTooltip();
@@ -69391,15 +69418,40 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
           c.setAttribute('stroke', THEME.fg); c.setAttribute('stroke-width', 1);
           c.setAttribute('opacity', '0.35');   // dim all janyas first
         });
+        // Dim all janya connector lines
+        vp.querySelectorAll('.janya-group line').forEach(l => {
+          l.setAttribute('opacity', '0.1');
+        });
+        // Dim all janya labels
+        if (_labelLayer) {
+          _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
+            el.setAttribute('opacity', '0.2');
+          });
+        }
         if (_expandedJanya === janya.id) {
           // un-dim all on collapse
-          vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));  // restore
+          vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
+          vp.querySelectorAll('.janya-group line').forEach(l => l.setAttribute('opacity', '0.5'));
+          if (_labelLayer) {
+            _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
+              el.setAttribute('opacity', '1');
+            });
+          }
           _expandedJanya = null;
           return;
         }
         jCircle.setAttribute('stroke', THEME.accentSelect);
         jCircle.setAttribute('stroke-width', 2.5);
         jCircle.setAttribute('opacity', '0.75');   // restore selected janya to full opacity
+        // Restore selected janya's connector line and labels
+        if (jg._connLine) jg._connLine.setAttribute('opacity', '0.5');
+        if (_labelLayer) {
+          _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
+            if (el.getAttribute('data-janya-id') === janya.id) {
+              el.setAttribute('opacity', '1');
+            }
+          });
+        }
         _expandedJanya = janya.id;
         _expandedComp = null;
         _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
@@ -69491,7 +69543,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       const cFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
         fill: THEME.fgSub, 'font-size': cFontSize + 'px',
-        class: 'sat-label'
+        class: 'sat-label sat-label-comp', 'data-comp-id': item.id || ''
       });
     }
 
@@ -69560,26 +69612,36 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         const melaId = c.closest('.mela-node') && c.closest('.mela-node').getAttribute('data-id');
         c.setAttribute('opacity', melaId === _expandedMela ? '1' : '0.2');
       });
-      // Hide all janya nodes except the parent of this comp (janya.id).
-      // For mela-direct comps, janya IS the mela — hide all janya nodes.
+      // Dim all janya nodes except the parent of this comp (janya.id).
+      // For mela-direct comps, janya IS the mela — dim all janya nodes.
       let parentJanyaConnLine = null;
       vp.querySelectorAll('.janya-node').forEach(jn => {
         const jid = jn.getAttribute('data-id');
+        const jCircle = jn.querySelector('circle');
         if (jid === janya.id) {
-          jn.style.display = '';
+          if (jCircle) jCircle.setAttribute('opacity', '0.75');
           parentJanyaConnLine = jn._connLine || null;
         } else {
-          jn.style.display = 'none';
+          if (jCircle) jCircle.setAttribute('opacity', '0.15');
         }
       });
-      // Show only the parent janya's label; hide all others
+      // Dim non-parent janya labels; keep parent janya label visible
       if (_labelLayer) {
         _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
-          el.style.display = el.getAttribute('data-janya-id') === janya.id ? '' : 'none';
+          el.setAttribute('opacity', el.getAttribute('data-janya-id') === janya.id ? '1' : '0.12');
         });
       }
       // Restore the mela→janya connector line for the parent janya
       if (parentJanyaConnLine) parentJanyaConnLine.setAttribute('opacity', '0.5');
+      // Dim all comp labels, then restore the selected one
+      if (_labelLayer) {
+        _labelLayer.querySelectorAll('.sat-label-comp').forEach(el => {
+          el.setAttribute('opacity', '0.15');
+        });
+        _labelLayer.querySelectorAll('.sat-label-comp[data-comp-id="' + CSS.escape(item.id || '') + '"]').forEach(el => {
+          el.setAttribute('opacity', '1');
+        });
+      }
       cCircle.setAttribute('stroke', THEME.accentSelect);
       cCircle.setAttribute('stroke-width', 2.5);
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
