@@ -573,9 +573,11 @@ function focusNode(node) {
 
 cy.on('tap', 'node', evt => {
   if (_focusedGraphNode === evt.target.id()) {
+    if (typeof hideClickNudge === 'function') hideClickNudge();
     selectNode(evt.target);
   } else {
     focusNode(evt.target);
+    if (typeof showClickNudge === 'function') showClickNudge('tap again \u00B7 open musician details');
   }
 });
 

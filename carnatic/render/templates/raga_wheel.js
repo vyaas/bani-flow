@@ -1195,6 +1195,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       });
       if (_expandedComp === item.id) {
         // Second click on already-selected comp → open the bani-flow panel.
+        if (typeof hideClickNudge === 'function') hideClickNudge();
         window._wheelSyncInProgress    = true;
         window._wheelOriginatedTrigger = true;
         if (!item._isPerf) {
@@ -1250,6 +1251,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
       _expandedComp = item.id;
+      if (typeof showClickNudge === 'function') showClickNudge('tap again \u00B7 open bani flow');
       // Silently load bani-flow data (no panel pop-open on first click).
       // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
       window._wheelSyncInProgress = true;

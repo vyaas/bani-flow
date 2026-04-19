@@ -1045,6 +1045,33 @@
   .sruti-btn.sharp { font-size: 0.68rem; }
 
   /* ── ADR-027: reflective metadata inspector — monospace retained for JSON data ── */
+  /* ADR-044: click-again affordance nudge */
+  #click-nudge {
+    position: fixed;
+    bottom: 52px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.72);
+    color: var(--accent);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 9999;
+  }
+  #click-nudge.nudge-visible {
+    opacity: 1;
+  }
+  #click-nudge.nudge-hiding {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
   #meta-inspector {
     position: fixed;
     top: 50%; left: 50%;
@@ -1914,6 +1941,34 @@
   </div>
   <pre id="mi-pre"></pre>
 </div>
+
+<!-- ADR-044: click-again affordance nudge -->
+<div id="click-nudge"></div>
+<script>
+(function() {
+  let _nudgeTimeout = null;
+  window.showClickNudge = function(text) {
+    const el = document.getElementById('click-nudge');
+    if (!el) return;
+    clearTimeout(_nudgeTimeout);
+    el.textContent = text;
+    el.classList.remove('nudge-hiding');
+    el.classList.add('nudge-visible');
+    _nudgeTimeout = setTimeout(function() {
+      el.classList.add('nudge-hiding');
+      el.addEventListener('transitionend', function() {
+        el.classList.remove('nudge-visible', 'nudge-hiding');
+      }, { once: true });
+    }, 2500);
+  };
+  window.hideClickNudge = function() {
+    const el = document.getElementById('click-nudge');
+    if (!el) return;
+    clearTimeout(_nudgeTimeout);
+    el.classList.remove('nudge-visible', 'nudge-hiding');
+  };
+}());
+</script>
 
 <!-- ADR-031: footer bar — data entry buttons -->
 <div id="footer-bar">
@@ -67038,9 +67093,11 @@ function focusNode(node) {
 
 cy.on('tap', 'node', evt => {
   if (_focusedGraphNode === evt.target.id()) {
+    if (typeof hideClickNudge === 'function') hideClickNudge();
     selectNode(evt.target);
   } else {
     focusNode(evt.target);
+    if (typeof showClickNudge === 'function') showClickNudge('tap again \u00B7 open musician details');
   }
 });
 
@@ -69741,6 +69798,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       });
       if (_expandedComp === item.id) {
         // Second click on already-selected comp → open the bani-flow panel.
+        if (typeof hideClickNudge === 'function') hideClickNudge();
         window._wheelSyncInProgress    = true;
         window._wheelOriginatedTrigger = true;
         if (!item._isPerf) {
@@ -69796,6 +69854,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
       _expandedComp = item.id;
+      if (typeof showClickNudge === 'function') showClickNudge('tap again \u00B7 open bani flow');
       // Silently load bani-flow data (no panel pop-open on first click).
       // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
       window._wheelSyncInProgress = true;
