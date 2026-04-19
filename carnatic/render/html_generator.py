@@ -9,9 +9,37 @@ Implements ADR-028: theme.js is injected first (defines THEME global);
 :root {} CSS vars are generated from theme.py css_vars().
 """
 import json
+import re
 from pathlib import Path
 from .graph_builder import INSTRUMENT_SHAPES
 from .theme import css_vars
+
+
+def _render_help_md(md_text: str) -> str:
+    """Convert help.md (simple markdown) to #hd-body HTML.
+
+    Supports:
+      - ## Section Title  →  <p class="hd-section-title">…</p>
+      - Blank-line-separated paragraph blocks  →  <p class="hd-p">…</p>
+      - **bold** and *italic* inline markers
+      - Inline HTML tags are passed through verbatim
+    """
+    blocks = re.split(r'\n{2,}', md_text.strip())
+    parts: list[str] = []
+    for block in blocks:
+        block = block.strip()
+        if not block:
+            continue
+        if block.startswith('## '):
+            title = block[3:].strip()
+            parts.append(f'<p class="hd-section-title">{title}</p>')
+        else:
+            # Join wrapped lines into one paragraph
+            text = ' '.join(line.strip() for line in block.splitlines() if line.strip())
+            text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+            text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
+            parts.append(f'<p class="hd-p">{text}</p>')
+    return '\n    '.join(parts)
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
@@ -98,6 +126,7 @@ def render_html(
 
     # ── Load templates ────────────────────────────────────────────────────────
     base         = _load("base.html")
+    help_html    = _render_help_md(_load("help.md"))
     theme_js     = _load("theme.js")
     graph_view   = _load("graph_view.js")
     media_player = _load("media_player.js")
@@ -112,6 +141,9 @@ def render_html(
     # ── Substitute placeholders in base.html ──────────────────────────────────
     base = base.replace("{node_count}", str(node_count))
     base = base.replace("{edge_count}", str(edge_count))
+
+    # ── Inject help dialog content from help.md ───────────────────────────────
+    base = base.replace("<!-- INJECT_HELP_HTML -->", help_html)
 
     # ── Inject :root {} CSS vars from theme.py (single source of truth) ───────
     base = base.replace("/* INJECT_CSS_VARS */", css_vars())
