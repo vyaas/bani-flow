@@ -486,6 +486,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         compChip.title = (comp ? comp.title : (p.display_title || '')) + ' — Explore in Bani Flow';
         compChip.addEventListener('click', e => {
           e.stopPropagation();
+          compChip.classList.add('chip-tapped');
+          setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('comp', p.composition_id);
         });
         row1.appendChild(compChip);
@@ -551,6 +553,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
         ragaChip.addEventListener('click', e => {
           e.stopPropagation();
+          ragaChip.classList.add('chip-tapped');
+          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('raga', p.raga_id);
         });
         metaSpan.appendChild(ragaChip);
@@ -671,6 +675,8 @@ function buildRecordingsList(nodeId, nodeData) {
       compChip.title = (comp ? comp.title : (t.label || '')) + ' — Explore in Bani Flow';
       compChip.addEventListener('click', e => {
         e.stopPropagation();
+        compChip.classList.add('chip-tapped');
+        setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
         triggerBaniSearch('comp', t.composition_id);
       });
       row1.appendChild(compChip);
@@ -711,6 +717,8 @@ function buildRecordingsList(nodeId, nodeData) {
         ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
         ragaChip.addEventListener('click', e => {
           e.stopPropagation();
+          ragaChip.classList.add('chip-tapped');
+          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('raga', t.raga_id);
         });
         metaSpan.appendChild(ragaChip);

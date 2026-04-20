@@ -1892,6 +1892,26 @@
     #footer-bar {
       display: none;
     }
+
+    /* ── ADR-048: Chip click highlight isolation ── */
+    /* Suppress row-level tap flash — only the tapped chip should light up */
+    .rec-legacy,
+    .concert-perf-item {
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Touch-active feedback: raga chip */
+    .raga-chip:active,
+    .raga-chip.chip-tapped {
+      color: var(--fg);
+      text-decoration: underline;
+    }
+    /* Touch-active feedback: comp chip */
+    .comp-chip:active,
+    .comp-chip.chip-tapped {
+      background: rgba(131, 165, 152, 0.15);
+      color: var(--fg);
+      border-color: var(--fg-sub);
+    }
   }
 </style>
 </head>
