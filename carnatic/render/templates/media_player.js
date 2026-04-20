@@ -1020,6 +1020,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   mp.artistName = artistName || '';
   mp.concertTitle = concertTitle || '';
   mp.meta = meta || {};
+  mp.currentRagaId = (meta && meta.ragaId) || null;  // ADR-049
 
   // Find the track index matching startSeconds
   if (mp.tracks.length > 0 && startSeconds > 0) {
@@ -1082,6 +1083,8 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   mp.el.classList.add('mini');
   // ADR-043: slide mini-player into view + lift drawers/canvas
   showMiniPlayer();
+  // ADR-049: auto-expand to full player; skip the mini strip
+  setTimeout(function () { _expandMobilePlayer(); }, 60);
 
   // Register in playerRegistry (unregister any previous mobile entry first)
   for (const [key, val] of playerRegistry) {
@@ -1104,6 +1107,17 @@ function _expandMobilePlayer() {
   }
   if (typeof window.setPanelState === 'function') {
     window.setPanelState('IDLE');
+  }
+  // ADR-049: expand mela+janya then pan/zoom to the raga if the wheel is the active view.
+  // syncRagaWheelToFilter triggers the mela expand (sets _wheelSyncInProgress=true);
+  // orientRagaWheel polls until clear, then animates the viewport.
+  if (mp.currentRagaId) {
+    if (typeof syncRagaWheelToFilter === 'function') {
+      syncRagaWheelToFilter('raga', mp.currentRagaId);
+    }
+    if (typeof orientRagaWheel === 'function') {
+      orientRagaWheel('raga', mp.currentRagaId);
+    }
   }
 
   mp.el.classList.remove('mini');
