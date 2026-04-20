@@ -453,6 +453,22 @@
     border-color: var(--fg-sub);
   }
 
+  /* ── Musician chip in player footer — navigates to Musician panel (ADR-051) ── */
+  .mp-musician-chip {
+    display: inline-flex; align-items: center; gap: 2px;
+    color: var(--fg-sub);
+    font-size: 0.70rem;
+    cursor: pointer;
+    user-select: none;
+    background: transparent;
+    transition: color 0.12s;
+    white-space: nowrap;
+    padding: 0 4px;
+  }
+  .mp-musician-chip::before { content: '♫'; font-size: 0.58rem; opacity: 0.7; }
+  .mp-musician-chip:hover { color: var(--fg); text-decoration: underline; }
+  .mp-musician-chip:active { color: var(--fg); text-decoration: underline; }
+
   .mp-close {
     background: none; border: none; color: var(--fg-muted);
     font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
@@ -1818,6 +1834,15 @@
       background: none; border: none;
       color: var(--fg-muted); font-size: 1.1rem;
       cursor: pointer;
+    }
+
+    /* ── ADR-051: enforce 44px touch targets for player chips on mobile ── */
+    .mp-raga-chip,
+    .mp-comp-chip,
+    .mp-musician-chip {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
 
     /* ── Full-mode drag handle ── */

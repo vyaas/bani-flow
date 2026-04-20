@@ -128,7 +128,7 @@ function buildPlayerTrackList(vid, tracks, instance) {
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
       li.classList.add('mp-track-active');
       // Update footer chips to reflect the newly selected track
-      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null);
+      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null, player.meta?.nodeId || null);
       refreshPlayingIndicators();
     });
 
@@ -202,16 +202,31 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   return bar;
 }
 
-// ── buildPlayerFooter — raga + composition chips below the video ──────────────
-// Only rendered when at least one of ragaId / compositionId is present.
-// meta = { ragaId, compositionId } — both optional
+// ── buildPlayerFooter — musician + raga + composition chips below the video ────
+// Only rendered when at least one of musicianId / ragaId / compositionId is present.
+// meta = { musicianId, ragaId, compositionId } — all optional
 function buildPlayerFooter(meta) {
   if (!meta) return null;
   const { ragaId, compositionId } = meta;
-  if (!ragaId && !compositionId) return null;
+  const musicianId = meta.musicianId || null;
+  if (!musicianId && !ragaId && !compositionId) return null;
 
   const footer = document.createElement('div');
   footer.className = 'mp-footer';
+
+  if (musicianId) {
+    const musicianNode = (typeof cy !== 'undefined') ? cy.getElementById(musicianId) : null;
+    const musicianLabel = (musicianNode && musicianNode.length) ? musicianNode.data('label') : musicianId;
+    const musicianChip = document.createElement('span');
+    musicianChip.className = 'mp-musician-chip';
+    musicianChip.textContent = musicianLabel;
+    musicianChip.title = 'View ' + musicianLabel;
+    musicianChip.addEventListener('click', e => {
+      e.stopPropagation();
+      if (typeof selectNode === 'function' && musicianNode && musicianNode.length) selectNode(musicianNode);
+    });
+    footer.appendChild(musicianChip);
+  }
 
   if (ragaId) {
     const ragaObj = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
@@ -247,13 +262,13 @@ function buildPlayerFooter(meta) {
 
 // ── updatePlayerFooter — replace the footer in-place when a track is selected ─
 // Called by buildPlayerTrackList on track click to keep chips in sync.
-function updatePlayerFooter(player, ragaId, compositionId) {
+function updatePlayerFooter(player, ragaId, compositionId, musicianId) {
   const el = player.el;
   // Remove existing footer if present
   const existing = el.querySelector('.mp-footer');
   if (existing) existing.remove();
   // Build and insert new footer (before .mp-resize)
-  const newFooter = buildPlayerFooter({ ragaId, compositionId });
+  const newFooter = buildPlayerFooter({ musicianId: musicianId || null, ragaId, compositionId });
   if (newFooter) {
     const resize = el.querySelector('.mp-resize');
     if (resize) {
@@ -306,6 +321,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     tracklistEl:  el.querySelector('.mp-tracklist') || null,
     vid,
     currentOffset: startSeconds || 0,
+    meta:         meta || {},
   };
 
   el.querySelector('.mp-close').addEventListener('click', () => {
@@ -1067,6 +1083,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     const pseudoInstance = {
       el: mp.el, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
       vid, currentOffset: startSeconds || 0,
+      meta: meta || {},
     };
     const trackUl = buildPlayerTrackList(vid, mp.tracks, pseudoInstance);
     mp.tracklistDiv.appendChild(trackUl);
@@ -1077,6 +1094,17 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
 
   // ── Dot indicators ──────────────────────────────────────────────────────
   _updateMiniDots(mp);
+
+  // ── ADR-051: Build footer chips on initial mobile load ───────────────────
+  // Insert raga, composition, and musician chips so they are available from
+  // the first moment the player opens (not just after a track swipe).
+  const _initTrack = mp.tracks[mp.trackIndex] || null;
+  updatePlayerFooter(
+    { el: mp.el, iframe: mp.iframe },
+    _initTrack ? (_initTrack.raga_id || null) : (mp.currentRagaId || null),
+    _initTrack ? (_initTrack.composition_id || null) : null,
+    (meta && meta.nodeId) || null
+  );
 
   // Show player in mini mode
   mp.el.classList.remove('full-mobile');
@@ -1200,7 +1228,8 @@ function _swipeMobileTrack(direction) {
   updatePlayerFooter(
     { el: mp.el, iframe: mp.iframe },
     track.raga_id || null,
-    track.composition_id || null
+    track.composition_id || null,
+    mp.meta?.nodeId || null
   );
 }
 
