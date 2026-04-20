@@ -1771,13 +1771,27 @@
       z-index: 205; /* ADR-043: above drawers (200), below tab bar (210) */
       overflow: hidden;
       box-shadow: 0 -4px 24px rgba(0,0,0,0.35);
+      /* ADR-051: flex column so footer stays visible below the video */
+      display: flex;
+      flex-direction: column;
     }
     .media-player.full-mobile .mp-mini-strip { display: none; }
-    .media-player.full-mobile .mp-full-handle { display: flex; }
+    .media-player.full-mobile .mp-full-handle { display: flex; flex-shrink: 0; }
+    .media-player.full-mobile .mp-bar { flex-shrink: 0; }
+    /* ADR-051: video fills remaining height; override JS-set padding-top */
+    .media-player.full-mobile .mp-video-wrap {
+      flex: 1;
+      min-height: 0;
+      padding-top: 0 !important;
+      position: relative;
+    }
     .media-player.full-mobile .mp-tracklist {
       display: block;
       flex: 1; overflow-y: auto;
     }
+    /* No tracks → tracklist is empty; collapse it so the video fills all space */
+    .media-player.full-mobile .mp-tracklist:empty { display: none; }
+    .media-player.full-mobile .mp-footer { flex-shrink: 0; }
     .media-player.full-mobile .mp-resize { display: none; }
 
     /* ── Mini strip layout ── */
