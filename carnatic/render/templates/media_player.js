@@ -1142,6 +1142,8 @@ function _collapseMobilePlayer() {
     mp._savedPanelState = null;
   }
 }
+// ADR-050: expose for mobile.js setPanelState to call on exploration
+window._collapseMobilePlayer = _collapseMobilePlayer;
 
 function _closeMobilePlayer() {
   if (!_mobilePlayer) return;

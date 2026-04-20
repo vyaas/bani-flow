@@ -68582,6 +68582,8 @@ function _collapseMobilePlayer() {
     mp._savedPanelState = null;
   }
 }
+// ADR-050: expose for mobile.js setPanelState to call on exploration
+window._collapseMobilePlayer = _collapseMobilePlayer;
 
 function _closeMobilePlayer() {
   if (!_mobilePlayer) return;
@@ -74056,6 +74058,13 @@ function buildAddYoutubeForm() {
 
     // ADR-039: map legacy PEEK state to MUSICIAN (backward compat for media_player.js save/restore)
     if (newState === 'PEEK') newState = 'MUSICIAN';
+
+    // ADR-050: collapse full mobile player when user begins exploring a panel,
+    // so the panel has the full viewport. Playback continues in mini strip.
+    if (newState !== 'IDLE' && typeof window._collapseMobilePlayer === 'function') {
+      const mp = document.querySelector('.media-player.full-mobile');
+      if (mp) window._collapseMobilePlayer();
+    }
 
     panelState = newState;
 

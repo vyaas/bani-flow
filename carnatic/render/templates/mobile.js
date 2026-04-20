@@ -68,6 +68,13 @@
     // ADR-039: map legacy PEEK state to MUSICIAN (backward compat for media_player.js save/restore)
     if (newState === 'PEEK') newState = 'MUSICIAN';
 
+    // ADR-050: collapse full mobile player when user begins exploring a panel,
+    // so the panel has the full viewport. Playback continues in mini strip.
+    if (newState !== 'IDLE' && typeof window._collapseMobilePlayer === 'function') {
+      const mp = document.querySelector('.media-player.full-mobile');
+      if (mp) window._collapseMobilePlayer();
+    }
+
     panelState = newState;
 
     // Close everything first
