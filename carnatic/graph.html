@@ -71337,6 +71337,7 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
         onSelect(item);
         inputEl.value = '';
         dropdownEl.style.display = 'none';
+        inputEl.blur();  // dismiss mobile keyboard
       });
       div.addEventListener('mouseover', () => setActive(i));
       dropdownEl.appendChild(div);
