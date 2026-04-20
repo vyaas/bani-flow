@@ -1915,6 +1915,26 @@
     #footer-bar {
       display: none;
     }
+
+    /* ── ADR-048: Chip click highlight isolation ── */
+    /* Suppress row-level tap flash — only the tapped chip should light up */
+    .rec-legacy,
+    .concert-perf-item {
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Touch-active feedback: raga chip */
+    .raga-chip:active,
+    .raga-chip.chip-tapped {
+      color: var(--fg);
+      text-decoration: underline;
+    }
+    /* Touch-active feedback: comp chip */
+    .comp-chip:active,
+    .comp-chip.chip-tapped {
+      background: rgba(131, 165, 152, 0.15);
+      color: var(--fg);
+      border-color: var(--fg-sub);
+    }
   }
 </style>
 </head>
@@ -67906,6 +67926,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         compChip.title = (comp ? comp.title : (p.display_title || '')) + ' — Explore in Bani Flow';
         compChip.addEventListener('click', e => {
           e.stopPropagation();
+          compChip.classList.add('chip-tapped');
+          setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('comp', p.composition_id);
         });
         row1.appendChild(compChip);
@@ -67971,6 +67993,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
         ragaChip.addEventListener('click', e => {
           e.stopPropagation();
+          ragaChip.classList.add('chip-tapped');
+          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('raga', p.raga_id);
         });
         metaSpan.appendChild(ragaChip);
@@ -68091,6 +68115,8 @@ function buildRecordingsList(nodeId, nodeData) {
       compChip.title = (comp ? comp.title : (t.label || '')) + ' — Explore in Bani Flow';
       compChip.addEventListener('click', e => {
         e.stopPropagation();
+        compChip.classList.add('chip-tapped');
+        setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
         triggerBaniSearch('comp', t.composition_id);
       });
       row1.appendChild(compChip);
@@ -68131,6 +68157,8 @@ function buildRecordingsList(nodeId, nodeData) {
         ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
         ragaChip.addEventListener('click', e => {
           e.stopPropagation();
+          ragaChip.classList.add('chip-tapped');
+          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('raga', t.raga_id);
         });
         metaSpan.appendChild(ragaChip);
