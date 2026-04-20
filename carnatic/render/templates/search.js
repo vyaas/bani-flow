@@ -34,7 +34,7 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
         onSelect(item);
         inputEl.value = '';
         dropdownEl.style.display = 'none';
-        inputEl.blur();  // dismiss mobile keyboard
+        setTimeout(() => inputEl.blur(), 0);  // deferred blur — escapes preventDefault scope so mobile keyboard actually dismisses
       });
       div.addEventListener('mouseover', () => setActive(i));
       dropdownEl.appendChild(div);
