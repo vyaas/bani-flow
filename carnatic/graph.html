@@ -920,37 +920,72 @@
     font-size: 0.70rem; color: var(--fg-muted); margin-top: 2px;
   }
 
-  /* ── ADR-025: explicit play button ── */
+  /* ── ADR-065: circular play button (was ADR-025 pill) ── */
   .rec-play-btn {
     flex-shrink: 0;
     margin-left: auto;   /* always right-justified in rec-row1 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    min-width: 44px;     /* WCAG 2.5.5: 44px logical touch target */
+    min-height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
     background: none;
-    border: 1px solid var(--border-strong);
     color: var(--accent-sub);
-    font-size: 0.65rem;
-    padding: 1px 5px;
-    border-radius: 6px;
+    font-size: 0.72rem;
     cursor: pointer;
     line-height: 1;
+    transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .rec-play-btn:hover {
     background: var(--bg-input);
     border-color: var(--accent-sub);
     color: var(--fg);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-sub) 25%, transparent);
   }
-  /* YouTube external-link icon — always next to ▶ */
+  .rec-play-btn:active {
+    background: var(--bg-pressed);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
+    transform: scale(0.93);
+  }
+  /* YouTube external-link icon — circular sibling of ▶ (ADR-065) */
   .yt-ext-link {
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    min-width: 44px;     /* WCAG 2.5.5: 44px logical touch target */
+    min-height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-muted, var(--border-strong));
     color: var(--fg-muted);
-    font-size: 0.62rem;
+    font-size: 0.70rem;
     text-decoration: none;
-    padding: 1px 4px;
-    border-radius: 3px;
-    line-height: 1.6;
     white-space: nowrap;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
   }
-  .yt-ext-link:hover { color: var(--fg); background: var(--bg-active); }
+  .yt-ext-link:hover {
+    color: var(--fg);
+    background: var(--bg-active);
+    border-color: var(--fg-muted);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg-muted) 20%, transparent);
+  }
+  .yt-ext-link:active {
+    background: var(--bg-pressed);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
+    transform: scale(0.93);
+  }
   /* trail-acts: ▶ + ↗ side-by-side on one line */
   .trail-acts {
     flex-shrink: 0;
@@ -1108,18 +1143,19 @@
     font-weight: normal !important;
   }
 
-  /* ── ADR-053: concert-vs-direct play button variants ─────────────────── */
+  /* ── ADR-053/065: concert-vs-direct play button variants (dashed/solid ring) ─ */
   .rec-play-btn.play-btn-concert {
-    border: 1px dashed var(--accent-sub);
+    border: 1.5px dashed var(--accent-sub);
     color: var(--accent-sub);
   }
   .rec-play-btn.play-btn-concert:hover {
     border-color: var(--accent);
     color: var(--accent);
     background: var(--bg-input);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
   }
   .rec-play-btn.play-btn-direct {
-    border: 1px solid var(--border-strong);
+    border: 1.5px solid var(--border-strong);
   }
 
   /* ── ADR-053: pressed-row state for the currently-playing track ──────── */
