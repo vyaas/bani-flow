@@ -718,28 +718,30 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
   }
 
   const recCount = sortedPerfs.length;
-  const toggleBtn = document.createElement('button');
-  toggleBtn.className = 'tree-rec-toggle';
-  toggleBtn.setAttribute('aria-expanded', 'false');
-  toggleBtn.textContent = '\u25B6 ' + recCount + (recCount === 1 ? ' recording' : ' recordings');
-  compHeader.appendChild(toggleBtn);
+  // Toggle button only for n > 1; single recordings are shown directly
+  let toggleBtn = null;
+  if (recCount > 1) {
+    toggleBtn = document.createElement('button');
+    toggleBtn.className = 'tree-rec-toggle';
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    toggleBtn.textContent = '\u25BC ' + recCount + ' recordings';
+    compHeader.appendChild(toggleBtn);
+  }
   li.appendChild(compHeader);
 
-  // ── Composer sub-label — always visible ───────────────────────────────
-  if (composerObj) {
+  // ── Composer — same chip style as concert bracket section ─────────────
+  const composerChip = buildComposerChip(compId);
+  if (composerChip) {
     const metaDiv = document.createElement('div');
     metaDiv.className = 'tree-comp-meta';
-    const composerLabel = document.createElement('span');
-    composerLabel.className = 'composer-label';
-    composerLabel.textContent = composerObj.name;
-    metaDiv.appendChild(composerLabel);
+    metaDiv.appendChild(composerChip);
     li.appendChild(metaDiv);
   }
 
-  // ── Recording rows (hidden by default) ────────────────────────────────
+  // ── Recording rows — start visible (all entries unfolded on load) ─────
   const recUl = document.createElement('ul');
   recUl.className = 'tree-rec-list';
-  recUl.hidden = true;
+  recUl.hidden = false;
 
   sortedPerfs.forEach(p => {
     const recLi = document.createElement('li');
@@ -792,15 +794,16 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
 
   li.appendChild(recUl);
 
-  // Wire toggle
-  toggleBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-    recUl.hidden = isExpanded;
-    toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
-    toggleBtn.textContent = (isExpanded ? '\u25B6 ' : '\u25BC ') +
-      recCount + (recCount === 1 ? ' recording' : ' recordings');
-  });
+  // Wire toggle (only when n > 1)
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      recUl.hidden = isExpanded;
+      toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+      toggleBtn.textContent = (isExpanded ? '\u25B6 ' : '\u25BC ') + recCount + ' recordings';
+    });
+  }
 
   return li;
 }
@@ -864,7 +867,7 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
   } else {
     const unknownSpan = document.createElement('span');
     unknownSpan.className = 'rec-group-label rec-unknown';
-    unknownSpan.textContent = 'Unknown raga';
+    unknownSpan.textContent = 'Misc';
     header.appendChild(unknownSpan);
   }
 
@@ -978,105 +981,29 @@ function buildRecordingsList(nodeId, nodeData) {
     recList.appendChild(bracket);
   });
 
-  // ── 2. Raga tree (ADR-064) — structured perfs re-grouped by raga ─────────
-  if (structuredPerfs.length > 0) {
+  // ── 2. Raga tree — structured perfs + normalized legacy, all grouped by raga ──
+  // Deduplicate: legacy entries whose video_id is already in structured_perfs are skipped.
+  const structuredVideoIds = new Set(structuredPerfs.map(p => p.video_id));
+  const normalizedLegacy = legacyTracks
+    .filter(t => !structuredVideoIds.has(t.vid))
+    .map(t => ({
+      video_id:       t.vid,
+      display_title:  t.label || '',
+      date:           t.year ? String(t.year) : null,
+      short_title:    null,
+      title:          null,
+      raga_id:        t.raga_id || null,
+      composition_id: t.composition_id || null,
+      offset_seconds: 0,
+    }));
+  const allPerfs = [...structuredPerfs, ...normalizedLegacy];
+  if (allPerfs.length > 0) {
     const ragaHeader = document.createElement('div');
     ragaHeader.className = 'rec-section-header';
     ragaHeader.textContent = 'By raga';
     recList.appendChild(ragaHeader);
-    recList.appendChild(buildRagaTree(structuredPerfs, nodeId, artistLabel));
+    recList.appendChild(buildRagaTree(allPerfs, nodeId, artistLabel));
   }
-
-  // ── 3. Legacy tracks as flat items (sorted by year) ───────────────────────
-  const sortedLegacy = legacyTracks.slice().sort((a, b) => {
-    if (a.year == null) return 1;
-    if (b.year == null) return -1;
-    return a.year - b.year;
-  });
-
-  if (sortedLegacy.length > 0) {
-    const legacyHeader = document.createElement('div');
-    legacyHeader.className = 'rec-section-header';
-    legacyHeader.textContent = 'Other recordings';
-    recList.appendChild(legacyHeader);
-  }
-
-  sortedLegacy.forEach(t => {
-    const li = document.createElement('li');
-    li.className = 'rec-legacy' + (playerRegistry.has(t.vid) ? ' playing' : '');
-    li.dataset.vid = t.vid;
-    // ADR-052: container is not a click target; navigation lives in embedded chips.
-
-    const row1 = document.createElement('div');
-    row1.className = 'rec-row1';
-    if (t.composition_id) {
-      const comp = compositions.find(c => c.id === t.composition_id);
-      const compChip = document.createElement('span');
-      compChip.className = 'comp-chip';
-      compChip.textContent = comp ? comp.title : (t.label || '');
-      compChip.title = (comp ? comp.title : (t.label || '')) + ' — Explore in Bani Flow';
-      compChip.addEventListener('click', e => {
-        e.stopPropagation();
-        compChip.classList.add('chip-tapped');
-        setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
-        triggerBaniSearch('comp', t.composition_id);
-      });
-      row1.appendChild(compChip);
-    } else {
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'rec-title';
-      const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[t.type] || '';
-      titleSpan.textContent = typeIcon + (t.label || '');
-      row1.appendChild(titleSpan);
-    }
-    const yearSpan = document.createElement('span');
-    yearSpan.className = 'rec-year';
-    yearSpan.textContent = t.year ? String(t.year) : '';
-    row1.appendChild(yearSpan);
-
-    // ▶ button — ADR-053: legacy (non-concert) entries use solid border
-    const playBtn = document.createElement('button');
-    playBtn.className = 'rec-play-btn play-btn-direct';
-    playBtn.title = 'Play';
-    playBtn.textContent = '▶';
-    playBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined, undefined, undefined,
-        { nodeId, ragaId: t.raga_id || null, compositionId: t.composition_id || null });
-    });
-    row1.appendChild(playBtn);
-    row1.appendChild(buildYtLink(t.vid, 0));
-
-    const row2 = document.createElement('div');
-    row2.className = 'rec-row2';
-    const metaSpan = document.createElement('span');
-    metaSpan.className = 'rec-meta';
-    if (t.raga_id) {
-      const ragaObj = ragas.find(r => r.id === t.raga_id);
-      if (ragaObj) {
-        const ragaChip = document.createElement('span');
-        ragaChip.className = 'raga-chip';
-        ragaChip.textContent = ragaObj.name;
-        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
-        ragaChip.addEventListener('click', e => {
-          e.stopPropagation();
-          ragaChip.classList.add('chip-tapped');
-          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
-          triggerBaniSearch('raga', t.raga_id);
-        });
-        metaSpan.appendChild(ragaChip);
-      } else {
-        metaSpan.textContent = t.raga_id;
-      }
-    }
-    const legacyComposerChip = buildComposerChip(t.composition_id);
-    if (legacyComposerChip) metaSpan.appendChild(legacyComposerChip);
-    row2.appendChild(metaSpan);
-
-    li.appendChild(row1);
-    li.appendChild(row2);
-    recList.appendChild(li);
-  });
 
   // ── 4. Compositions by this musician (ADR-057) ───────────────────────────
   // Find any composer whose musician_node_id matches this nodeId.

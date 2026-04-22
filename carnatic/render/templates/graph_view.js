@@ -529,14 +529,13 @@ document.getElementById('rec-filter').addEventListener('input', function() {
     }
   });
 
-  // ── legacy flat items ─────────────────────────────────────────────────────
+  // ── legacy flat items (ADR-064: now folded into raga tree; kept for safety) ─
   recList.querySelectorAll('li.rec-legacy').forEach(li => {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
     const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
     const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
     const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
-    const metaText     = (li.querySelector('.rec-meta')   || {}).textContent || '';
-    const matches   = [titleText, compChipText, ragaChipText, metaText]
+    const matches   = [titleText, compChipText, ragaChipText]
                       .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
