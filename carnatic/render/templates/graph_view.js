@@ -526,22 +526,77 @@ document.getElementById('rec-filter').addEventListener('input', function() {
 document.getElementById('trail-filter').addEventListener('input', function() {
   const q         = this.value.toLowerCase().trim();
   const trailList = document.getElementById('trail-list');
-  const items     = trailList.querySelectorAll('li:not(.trail-no-match)');
   let anyVisible  = false;
 
-  items.forEach(li => {
+  // ── Tree view (raga / comp): filter leaves, show/collapse parent groups ──
+  const treeGroups = trailList.querySelectorAll('li.tree-group');
+  if (treeGroups.length > 0) {
+    treeGroups.forEach(function(group) {
+      if (!q) {
+        group.style.display = '';
+        anyVisible = true;
+        return;
+      }
+      // Text to match against: the group header chips + all leaf content
+      const headerComp  = (group.querySelector(':scope > .tree-group-header .comp-chip')     || {}).textContent || '';
+      const headerMusc  = (group.querySelector(':scope > .tree-group-header .musician-chip') || {}).textContent || '';
+      const headerLabel = (group.querySelector(':scope > .tree-group-header .trail-label')   || {}).textContent || '';
+      const leaves = group.querySelectorAll('li.tree-leaf');
+      let groupMatches = false;
+
+      leaves.forEach(function(leaf) {
+        const primaryText  = (leaf.querySelector('.musician-chip') || {}).textContent || '';
+        const coTexts      = [...leaf.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
+        const labelText    = (leaf.querySelector('.trail-label')    || {}).textContent || '';
+        const leafMatch = [primaryText, coTexts, headerComp, headerMusc, headerLabel, labelText]
+          .some(function(t) { return t.toLowerCase().includes(q); });
+        leaf.style.display = leafMatch ? '' : 'none';
+        if (leafMatch) groupMatches = true;
+      });
+
+      // Header itself matches (e.g. typed composition title) → show all leaves
+      const headerMatch = [headerComp, headerMusc, headerLabel]
+        .some(function(t) { return t.toLowerCase().includes(q); });
+      if (headerMatch) {
+        leaves.forEach(function(leaf) { leaf.style.display = ''; });
+        groupMatches = true;
+      }
+
+      group.style.display = groupMatches ? '' : 'none';
+      if (groupMatches) {
+        // Auto-expand groups that have matching leaves
+        group.classList.add('tree-group-open');
+        anyVisible = true;
+      }
+    });
+
+    let noMatch = trailList.querySelector('.trail-no-match');
+    if (!anyVisible && q) {
+      if (!noMatch) {
+        noMatch = document.createElement('li');
+        noMatch.className = 'trail-no-match';
+        noMatch.style.cssText = 'color:var(--gray);font-style:italic;cursor:default;padding:5px 0;';
+        noMatch.textContent = 'no match';
+        trailList.appendChild(noMatch);
+      }
+      noMatch.style.display = 'flex';
+    } else if (noMatch) {
+      noMatch.style.display = 'none';
+    }
+    return;
+  }
+
+  // ── Flat list (perf / yt): original logic ────────────────────────────────
+  const items = trailList.querySelectorAll('li:not(.trail-no-match)');
+  items.forEach(function(li) {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    // Match primary artist name
-    const primaryText = (li.querySelector('.trail-artist-primary') || {}).textContent || '';
-    // Match co-performer names (ADR-019)
-    const coTexts = [...li.querySelectorAll('.trail-artist-co')]
-      .map(el => el.textContent).join(' ');
-    // Match composition chip, raga chip, or fallback label
+    const primaryText  = (li.querySelector('.trail-artist-primary') || {}).textContent || '';
+    const coTexts      = [...li.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
     const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
     const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
     const labelText    = (li.querySelector('.trail-label') || {}).textContent || '';
-    const matches    = [primaryText, coTexts, compChipText, ragaChipText, labelText]
-      .some(t => t.toLowerCase().includes(q));
+    const matches      = [primaryText, coTexts, compChipText, ragaChipText, labelText]
+      .some(function(t) { return t.toLowerCase().includes(q); });
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
   });
@@ -681,6 +736,11 @@ cy.on('tap', evt => {
   applyZoomLabels();
   // ADR-034: dismiss bottom sheet on mobile when canvas background is tapped
   if (typeof dismissBottomSheet === 'function') dismissBottomSheet();
+  // Collapse full-mobile player on canvas tap — exploration intent (mirrors sheet behaviour)
+  if (typeof window._collapseMobilePlayer === 'function' &&
+      document.querySelector('.media-player.full-mobile')) {
+    window._collapseMobilePlayer();
+  }
 });
 
 // ── controls ──────────────────────────────────────────────────────────────────

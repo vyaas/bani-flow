@@ -556,10 +556,17 @@ window.drawRagaWheel = function() {
   });
 
   // Background rect — transparent hit-target for pan/zoom gestures.
-  // Single-click on empty space intentionally does nothing (no collapse)
-  // to prevent accidental resets while exploring.  Double-click still
-  // resets the viewport pan/zoom.
+  // Single-click on empty space collapses the full-mobile player (exploration
+  // intent) but otherwise does nothing to prevent accidental resets while
+  // exploring.  Double-click still resets the viewport pan/zoom.
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
+  bg.addEventListener('click', e => {
+    if (e.target !== bg) return;
+    if (typeof window._collapseMobilePlayer === 'function' &&
+        document.querySelector('.media-player.full-mobile')) {
+      window._collapseMobilePlayer();
+    }
+  });
   svg.appendChild(bg);
 
   // Viewport group — all wheel content goes inside this <g>
