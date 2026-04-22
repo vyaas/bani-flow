@@ -127,8 +127,8 @@ function buildPlayerTrackList(vid, tracks, instance) {
       // Update active indicator
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
       li.classList.add('mp-track-active');
-      // Update footer chips to reflect the newly selected track
-      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null);
+      // Update footer chips to reflect the newly selected track (ADR-066: pass displayTitle)
+      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null, t.display_title || null);
       refreshPlayingIndicators();
     });
 
@@ -202,58 +202,111 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   return bar;
 }
 
-// ── buildPlayerFooter — raga + composition chips below the video ──────────────
-// Only rendered when at least one of ragaId / compositionId is present.
-// meta = { ragaId, compositionId } — both optional
+// ── buildPlayerFooter — musician + raga + comp + composer chips below the video ──
+// ADR-066: chips use same classes as panels for visual parity.
+// meta = { ragaId, compositionId, nodeId, artistName, displayTitle } — all optional
 function buildPlayerFooter(meta) {
   if (!meta) return null;
-  const { ragaId, compositionId } = meta;
-  if (!ragaId && !compositionId) return null;
+  const { ragaId, compositionId, nodeId, artistName, displayTitle } = meta;
+  const hasAny = ragaId || compositionId || nodeId || displayTitle;
+  if (!hasAny) return null;
 
   const footer = document.createElement('div');
   footer.className = 'mp-footer';
 
+  // ── Musician chip (era-tinted, navigates to Musician panel) ─────────────
+  if (nodeId) {
+    const eraId = (typeof cy !== 'undefined') ? (cy.getElementById(nodeId).data('era') || null) : null;
+    const tint  = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: 'var(--border-strong)' };
+    const chip  = document.createElement('span');
+    chip.className = 'musician-chip';
+    chip.style.setProperty('--chip-era-bg',     tint.bg);
+    chip.style.setProperty('--chip-era-border', tint.border);
+    chip.textContent = artistName || nodeId;
+    chip.title = (artistName || nodeId) + ' — Open Musician panel';
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      chip.classList.add('chip-tapped');
+      setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+      if (typeof cy !== 'undefined') {
+        const n = cy.getElementById(nodeId);
+        if (n && n.length) {
+          if (typeof selectNode === 'function') selectNode(n);
+          if (typeof window.setPanelState === 'function')
+            setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
+      }
+    });
+    footer.appendChild(chip);
+  }
+
+  // ── Raga chip (same .raga-chip class as panels) ──────────────────────────
   if (ragaId) {
     const ragaObj = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
     const ragaName = ragaObj ? ragaObj.name : ragaId;
     const ragaChip = document.createElement('span');
-    ragaChip.className = 'mp-raga-chip';
+    ragaChip.className = 'raga-chip';
     ragaChip.textContent = ragaName;
     ragaChip.title = 'Explore ' + ragaName + ' in Bani Flow';
     ragaChip.addEventListener('click', e => {
       e.stopPropagation();
+      ragaChip.classList.add('chip-tapped');
+      setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
     });
     footer.appendChild(ragaChip);
   }
 
+  // ── Composition chip (same .comp-chip class as panels) ──────────────────
   if (compositionId) {
     const compObj = (typeof compositions !== 'undefined')
       ? compositions.find(c => c.id === compositionId) : null;
     const compName = compObj ? compObj.title : compositionId;
     const compChip = document.createElement('span');
-    compChip.className = 'mp-comp-chip';
+    compChip.className = 'comp-chip';
     compChip.textContent = compName;
     compChip.title = 'Explore ' + compName + ' in Bani Flow';
     compChip.addEventListener('click', e => {
       e.stopPropagation();
+      compChip.classList.add('chip-tapped');
+      setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compositionId);
     });
     footer.appendChild(compChip);
+
+    // ── Composer chip (reuse existing buildComposerChip) ──────────────────
+    const composerChip = buildComposerChip(compositionId);
+    if (composerChip) footer.appendChild(composerChip);
+
+  } else if (displayTitle) {
+    // ── Non-composition fallback label (small font, like rec-title in panels) ──
+    const lbl = document.createElement('span');
+    lbl.className = 'rec-title';
+    lbl.style.fontSize = '0.68rem';
+    lbl.textContent = displayTitle;
+    footer.appendChild(lbl);
   }
 
   return footer;
 }
 
 // ── updatePlayerFooter — replace the footer in-place when a track is selected ─
-// Called by buildPlayerTrackList on track click to keep chips in sync.
-function updatePlayerFooter(player, ragaId, compositionId) {
+// Called by buildPlayerTrackList on track click and on track swipe to keep chips in sync.
+// ADR-066: displayTitle added; nodeId+artistName pulled from player.meta.
+function updatePlayerFooter(player, ragaId, compositionId, displayTitle) {
   const el = player.el;
+  const baseMeta = (player && player.meta) ? player.meta : {};
   // Remove existing footer if present
   const existing = el.querySelector('.mp-footer');
   if (existing) existing.remove();
-  // Build and insert new footer (before .mp-resize)
-  const newFooter = buildPlayerFooter({ ragaId, compositionId });
+  // Merge base meta (nodeId, artistName) with per-track overrides
+  const newFooter = buildPlayerFooter({
+    ragaId,
+    compositionId,
+    displayTitle: displayTitle || null,
+    nodeId:       baseMeta.nodeId       || null,
+    artistName:   baseMeta.artistName   || null,
+  });
   if (newFooter) {
     const resize = el.querySelector('.mp-resize');
     if (resize) {
@@ -290,8 +343,10 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     allowfullscreen></iframe>`;
   el.appendChild(videoWrap);
 
-  // ── Footer: raga + composition chips (below video, above resize grip) ──────
-  const footer = buildPlayerFooter(meta || {});
+  // ── Footer: musician + raga + comp + composer chips (ADR-066) ────────────
+  // Merge artistName into meta so updatePlayerFooter can access it later.
+  const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
+  const footer = buildPlayerFooter(Object.assign({ displayTitle: trackLabel || null }, fullMeta));
   if (footer) el.appendChild(footer);
 
   const resizeHandle = document.createElement('div');
@@ -306,7 +361,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     tracklistEl:  el.querySelector('.mp-tracklist') || null,
     vid,
     currentOffset: startSeconds || 0,
-    meta:         meta || {},
+    meta:         fullMeta,
   };
 
   el.querySelector('.mp-close').addEventListener('click', () => {
@@ -1369,7 +1424,8 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   mp.trackIndex = 0;
   mp.artistName = artistName || '';
   mp.concertTitle = concertTitle || '';
-  mp.meta = meta || {};
+  // ADR-066: store artistName in meta so updatePlayerFooter can build musician chip
+  mp.meta = Object.assign({ artistName: artistName || null }, meta || {});
   mp.currentRagaId = (meta && meta.ragaId) || null;  // ADR-049
 
   // Find the track index matching startSeconds
@@ -1399,6 +1455,28 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     });
   }
 
+  // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
+  // Tracklist starts hidden (fold-first); hamburger reveals it.
+  mp.tracklistDiv.classList.remove('mp-tracklist-open');
+  const mobileToggleBtn = mp.bar.querySelector('.mp-tracklist-toggle');
+  if (mobileToggleBtn && mp.tracks.length > 0) {
+    // Remove any previous listener by cloning the button node
+    const freshToggle = mobileToggleBtn.cloneNode(true);
+    mobileToggleBtn.parentNode.replaceChild(freshToggle, mobileToggleBtn);
+    freshToggle.classList.remove('mp-tracklist-open');
+    freshToggle.addEventListener('click', e => {
+      e.stopPropagation();
+      const isOpen = mp.tracklistDiv.classList.contains('mp-tracklist-open');
+      mp.tracklistDiv.classList.toggle('mp-tracklist-open', !isOpen);
+      freshToggle.classList.toggle('mp-tracklist-open', !isOpen);
+      if (!isOpen) {
+        mp.tracklistDiv.querySelectorAll('.mp-track-item').forEach((li, idx) => {
+          li.classList.toggle('mp-track-active', idx === mp.trackIndex);
+        });
+      }
+    });
+  }
+
   // ── Build iframe ────────────────────────────────────────────────────────
   mp.videoWrap.innerHTML = '';
   mp.videoWrap.style.paddingTop = '56.25%';
@@ -1417,7 +1495,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     const pseudoInstance = {
       el: mp.el, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
       vid, currentOffset: startSeconds || 0,
-      meta: meta || {},
+      meta: mp.meta,
     };
     const trackUl = buildPlayerTrackList(vid, mp.tracks, pseudoInstance);
     mp.tracklistDiv.appendChild(trackUl);
@@ -1429,14 +1507,14 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   // ── Dot indicators ──────────────────────────────────────────────────────
   _updateMiniDots(mp);
 
-  // ── ADR-051: Build footer chips on initial mobile load ───────────────────
-  // Insert raga and composition chips so they are available from the first
-  // moment the player opens (not just after a track swipe).
+  // ── ADR-066: Build footer chips on initial mobile load ──────────────────
+  // Passes full meta (musician, raga, comp, displayTitle) so all chips show.
   const _initTrack = mp.tracks[mp.trackIndex] || null;
   updatePlayerFooter(
-    { el: mp.el, iframe: mp.iframe },
+    { el: mp.el, meta: mp.meta },
     _initTrack ? (_initTrack.raga_id || null) : (mp.currentRagaId || null),
-    _initTrack ? (_initTrack.composition_id || null) : null
+    _initTrack ? (_initTrack.composition_id || null) : null,
+    _initTrack ? (_initTrack.display_title || null) : (trackLabel || null)
   );
 
   // Show player in mini mode
@@ -1557,11 +1635,12 @@ function _swipeMobileTrack(direction) {
     li.classList.toggle('mp-track-active', idx === newIndex);
   });
 
-  // Update footer chips in full mode
+  // Update footer chips in full mode (ADR-066: include meta + displayTitle)
   updatePlayerFooter(
-    { el: mp.el, iframe: mp.iframe },
+    { el: mp.el, meta: mp.meta },
     track.raga_id || null,
-    track.composition_id || null
+    track.composition_id || null,
+    track.display_title || null
   );
 }
 
