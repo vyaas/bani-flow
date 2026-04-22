@@ -271,6 +271,12 @@
   #recordings-list li.tree-group {
     padding: 0; border-bottom: none; gap: 0; list-style: none;
   }
+  /* Clear visual separator between raga groups in musician panel */
+  #recordings-list li.tree-group + li.tree-group {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border-strong);
+  }
   #recordings-list .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
     padding: 5px 0; border-bottom: 1px solid var(--border);
@@ -784,12 +790,14 @@
     overflow: visible;
     text-overflow: clip;
     font-size: 0.80rem;
+    color: var(--chip-comp-border);
   }
   #bani-subject-name.raga-chip {
     flex: 0 1 auto;
     overflow: visible;
     text-overflow: clip;
     font-size: 0.85rem;
+    color: var(--chip-raga-border);
   }
   .bani-subject-link {
     margin-left: auto; flex-shrink: 0;
@@ -880,6 +888,12 @@
   }
   /* Reset :last-child override so the last group still has no border */
   #trail-list li.tree-group:last-child { border-bottom: none; }
+  /* Clear visual separator between composition groups so each is unambiguous */
+  #trail-list li.tree-group + li.tree-group {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border-strong);
+  }
   /* Group header — flex row: chevron + primary chip + secondary info */
   .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
@@ -936,6 +950,9 @@
   .trail-row2 { display: flex; flex-direction: row; align-items: flex-start; width: 100%; gap: 6px; }
   .trail-chips { display: flex; flex-direction: column; align-items: flex-start; flex: 1; min-width: 0; gap: 3px; }
   .trail-label { color: var(--fg-dim); font-size: 0.72rem; flex: 1; min-width: 0; }
+  .trail-tala { font-size: 0.68rem; color: var(--fg-muted); opacity: 0.75; margin-left: 2px; }
+  /* raga chip + tala on the same flex row inside rec-meta and mp-footer */
+  .rec-raga-tala { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
   /* Instrument shape icon in trail rows — outline only, rendered as inline SVG by JS */
   .trail-shape-icon {
     display: inline-flex; align-items: center; justify-content: center;
