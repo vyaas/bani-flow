@@ -178,11 +178,18 @@
   if (rightScrim) rightScrim.addEventListener('click', function () { setPanelState('IDLE'); });
 
   // ADR-046: desktop handle tabs wire toggle behaviour
+  // ADR-062: handles are display:none on desktop — guard with isDesktop() for safety
+  function isDesktop() { return window.matchMedia('(min-width: 769px)').matches; }
+
   if (desktopLeftHandle) {
-    desktopLeftHandle.addEventListener('click', function () { toggleLeftDrawer(); });
+    desktopLeftHandle.addEventListener('click', function () {
+      if (!isDesktop()) toggleLeftDrawer();
+    });
   }
   if (desktopRightHandle) {
-    desktopRightHandle.addEventListener('click', function () { toggleRightDrawer(); });
+    desktopRightHandle.addEventListener('click', function () {
+      if (!isDesktop()) toggleRightDrawer();
+    });
   }
 
   // ADR-040: filter toggle removed — chips always visible

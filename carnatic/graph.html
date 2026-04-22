@@ -40,6 +40,7 @@
     --chip-era-bg:            transparent;       /* set inline per chip */
     --chip-era-border:        var(--border-strong);
     --bg-pressed:             rgba(0, 0, 0, 0.28);
+    --header-h:               52px;              /* ADR-062: sruti bar height token */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1854,6 +1855,47 @@
     }
   }
 
+  /* ── ADR-062: Desktop persistent grid layout — no handles, no overlap ── */
+  @media (min-width: 769px) {
+
+    /* Three-column CSS grid: panels are in-flow, never fixed overlays */
+    #main {
+      display: grid;
+      grid-template-columns: 280px 1fr 280px;
+      grid-template-rows: 1fr;
+    }
+
+    /* Panels become static grid items — JS translateX is neutralised */
+    #left-sidebar,
+    #right-sidebar {
+      position: static;
+      transform: none !important;  /* override JS drawer open/close state */
+      top: auto; bottom: auto; left: auto; right: auto;
+      z-index: auto;
+      box-shadow: none;
+      height: 100%;
+      overflow-y: auto;
+    }
+    #left-sidebar  { border-right: 2px solid var(--border-strong); }
+    #right-sidebar { border-left:  2px solid var(--border-strong); border-right: none; }
+
+    /* Canvas column must not collapse below a usable width */
+    #canvas-wrap {
+      min-width: 200px;
+    }
+
+    /* Handles are absent on desktop — fully hidden */
+    .desktop-drawer-handle {
+      display: none !important;
+    }
+
+    /* Scrims are absent on desktop — keep hidden */
+    #left-drawer-scrim,
+    #right-drawer-scrim {
+      display: none !important;
+    }
+  }
+
   /* ── ADR-034: new elements — hidden on desktop, activated by mobile query ── */
   #sheet-handle {
     display: none;  /* shown at ≤768px only */
@@ -1909,7 +1951,7 @@
     /* ADR-042: stop above the tab bar so drawer never goes behind it */
     #left-sidebar {
       position: fixed;
-      top: 0;
+      top: var(--header-h, 52px);  /* ADR-062: never cover the header bar */
       left: 0;
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       z-index: 200;
@@ -1942,7 +1984,7 @@
     /* ADR-042: stop above the tab bar so drawer never goes behind it */
     #right-sidebar {
       position: fixed;
-      top: 0;
+      top: var(--header-h, 52px);  /* ADR-062: never cover the header bar */
       right: 0;
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       left: auto;
@@ -75228,11 +75270,18 @@ function buildAddYoutubeForm() {
   if (rightScrim) rightScrim.addEventListener('click', function () { setPanelState('IDLE'); });
 
   // ADR-046: desktop handle tabs wire toggle behaviour
+  // ADR-062: handles are display:none on desktop — guard with isDesktop() for safety
+  function isDesktop() { return window.matchMedia('(min-width: 769px)').matches; }
+
   if (desktopLeftHandle) {
-    desktopLeftHandle.addEventListener('click', function () { toggleLeftDrawer(); });
+    desktopLeftHandle.addEventListener('click', function () {
+      if (!isDesktop()) toggleLeftDrawer();
+    });
   }
   if (desktopRightHandle) {
-    desktopRightHandle.addEventListener('click', function () { toggleRightDrawer(); });
+    desktopRightHandle.addEventListener('click', function () {
+      if (!isDesktop()) toggleRightDrawer();
+    });
   }
 
   // ADR-040: filter toggle removed — chips always visible
