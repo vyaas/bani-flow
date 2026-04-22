@@ -2230,18 +2230,22 @@
 
     /* ── Left sidebar → fixed left drawer ── */
     /* ADR-042: stop above the tab bar so drawer never goes behind it */
+    /* ADR-075: full-height, covers header; rounded top; hard bottom border */
     #left-sidebar {
       position: fixed;
-      top: var(--header-h, 52px);  /* ADR-062: never cover the header bar */
+      top: env(safe-area-inset-top, 0px);  /* ADR-075: cover header, honour notch */
       left: 0;
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-      z-index: 200;
+      z-index: 220;  /* ADR-075: above header (~auto) and scrims (199); tab-bar is 230 */
       width: min(85vw, 320px);
       transform: translateX(-100%);
       transition: transform 0.25s ease;
       box-shadow: 4px 0 16px rgba(0,0,0,0.3);
       border-right: 2px solid var(--border-strong);
+      border-bottom: 2px solid var(--border-strong);  /* ADR-075: hard termination */
+      border-radius: 14px 14px 0 0;  /* ADR-075: rounded top corners */
       overflow-y: auto;
+      scroll-padding-bottom: 8px;  /* ADR-075: keyboard scroll lands above edge */
     }
     #left-sidebar.drawer-open {
       transform: translateX(0);
@@ -2263,23 +2267,26 @@
 
     /* ── ADR-039: Right sidebar → right drawer (replaces bottom sheet) ── */
     /* ADR-042: stop above the tab bar so drawer never goes behind it */
+    /* ADR-075: full-height, covers header; rounded top; hard bottom border */
     #right-sidebar {
       position: fixed;
-      top: var(--header-h, 52px);  /* ADR-062: never cover the header bar */
+      top: env(safe-area-inset-top, 0px);  /* ADR-075: cover header, honour notch */
       right: 0;
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       left: auto;
       width: min(85vw, 320px);
       height: auto;
       min-height: unset;
-      z-index: 200;
+      z-index: 220;  /* ADR-075: above header (~auto) and scrims (199); tab-bar is 230 */
       border-left: 2px solid var(--border-strong);
       border-top: none;
-      border-radius: 0;
+      border-bottom: 2px solid var(--border-strong);  /* ADR-075: hard termination */
+      border-radius: 14px 14px 0 0;  /* ADR-075: rounded top corners */
       box-shadow: -4px 0 16px rgba(0,0,0,0.3);
       transform: translateX(100%);
       transition: transform 0.25s ease;
       overflow-y: auto;
+      scroll-padding-bottom: 8px;  /* ADR-075: keyboard scroll lands above edge */
     }
     #right-sidebar.drawer-open {
       transform: translateX(0);
@@ -2302,6 +2309,12 @@
     }
 
     /* ADR-041: right drawer close button removed — toggle via tab bar */
+
+    /* ADR-075: breathing room before the hard bottom stop */
+    #left-sidebar > *:last-child,
+    #right-sidebar > *:last-child {
+      margin-bottom: 8px;
+    }
 
     /* ── ADR-042: lift sidebars + canvas when mini player is active ── */
     /* Mini strip is 56px, sits above the 56px tab bar → total 112px from bottom */
@@ -2471,7 +2484,7 @@
       padding-bottom: env(safe-area-inset-bottom, 0px);
       background: var(--bg-panel);
       border-top: 1px solid var(--border-strong);
-      z-index: 210;   /* ADR-041: above scrim (199) and drawers (200) */
+      z-index: 230;   /* ADR-041/ADR-075: above scrim (199), drawers (220); always on top */
       align-items: center;
       justify-content: space-around;
       pointer-events: auto;   /* ADR-038: explicit touch isolation */
