@@ -31,6 +31,17 @@
   --font-mono: 'Courier New', monospace;
 }
 
+  /* ── ADR-053/054/056: shared chip + play-button design tokens ─────────── */
+  :root {
+    --chip-size-primary:      0.74rem;
+    --chip-size-secondary:    0.66rem;
+    --chip-padding-primary:   2px 8px;
+    --chip-padding-secondary: 1px 6px;
+    --chip-era-bg:            transparent;       /* set inline per chip */
+    --chip-era-border:        var(--border-strong);
+    --bg-pressed:             rgba(0, 0, 0, 0.28);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg); color: var(--fg);
@@ -284,6 +295,35 @@
     font-size: 0.65rem; color: var(--fg-muted); margin-top: 2px;
   }
   .concert-bracket.expanded .concert-count { display: none; }
+
+  /* ── ADR-057: composer compositions section below recordings ── */
+  .comp-section {
+    border-top: 1px solid var(--border-strong);
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  .comp-section-header {
+    font-size: 0.68rem;
+    color: var(--fg-muted);
+    padding: 4px 8px 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .comp-section-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 4px;
+  }
+  .comp-section-item {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 3px 8px;
+    border-bottom: 1px solid var(--border);
+    cursor: default;
+  }
+  .comp-section-item:last-child { border-bottom: none; }
 
   /* ── composition list inside bracket ── */
   .concert-perf-list {
@@ -873,11 +913,11 @@
      No border/pill — keeps the sidebar uncluttered. */
   .raga-chip {
     display: inline-flex; align-items: center; gap: 2px;
-    padding: 0;
+    padding: var(--chip-padding-primary);
     border: none;
     border-radius: 0;
     color: var(--accent);
-    font-size: 0.72rem;
+    font-size: var(--chip-size-primary);
     font-weight: normal;
     cursor: pointer;
     user-select: none;
@@ -898,15 +938,15 @@
   }
 
   /* ── Composition chip: sidebar trail badge for navigable compositions ──
-     Mirrors .mp-comp-chip but sized for the sidebar (0.70rem).
+     Mirrors .mp-comp-chip but sized for the sidebar.
      Amber/sub-accent border signals "this is a composition — click to explore". */
   .comp-chip {
     display: inline-flex; align-items: center; gap: 3px;
-    padding: 1px 7px;
+    padding: var(--chip-padding-primary);
     border: 1px solid var(--accent-sub);
     border-radius: 10px;
     color: var(--accent-sub);
-    font-size: 0.70rem;
+    font-size: var(--chip-size-primary);
     font-weight: bold;
     cursor: pointer;
     user-select: none;
@@ -925,6 +965,132 @@
     color: var(--fg);
     border-color: var(--fg-sub);
   }
+
+  /* ── ADR-054: Musician chip — era-tinted, mirrors graph node colour ──
+     Translucent era fill + 2px solid era-colour left bar.
+     Inline custom properties --chip-era-bg and --chip-era-border are set at
+     row-build time from theme.eraTintCss(eraId). */
+  .musician-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: var(--chip-padding-primary);
+    border: 1px solid transparent;
+    border-left: 2px solid var(--chip-era-border);
+    background: var(--chip-era-bg);
+    color: var(--fg);
+    font-size: var(--chip-size-primary);
+    font-weight: bold;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: filter 0.12s, background 0.12s;
+  }
+  .musician-chip:hover {
+    color: var(--fg);
+    text-decoration: underline;
+    filter: brightness(1.15);
+  }
+  .musician-chip:active,
+  .musician-chip.chip-tapped {
+    filter: brightness(1.35);
+    text-decoration: underline;
+  }
+
+  /* ── ADR-057: Composer chip — same shape as musician-chip,
+     but uses ♯ glyph to mark "composer (compositions, not recordings)".  */
+  .composer-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: var(--chip-padding-primary);
+    border: 1px dashed var(--chip-era-border);
+    background: var(--chip-era-bg);
+    color: var(--fg);
+    font-size: var(--chip-size-primary);
+    font-weight: bold;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: filter 0.12s;
+  }
+  .composer-chip::before {
+    content: '♯';
+    font-size: 0.60rem;
+    opacity: 0.85;
+    color: var(--chip-era-border);
+  }
+  .composer-chip:hover {
+    color: var(--fg);
+    text-decoration: underline;
+    filter: brightness(1.15);
+  }
+  .composer-chip:active,
+  .composer-chip.chip-tapped {
+    filter: brightness(1.35);
+    text-decoration: underline;
+  }
+
+  /* ── ADR-056: secondary chip modifier — smaller italic for unmatched titles ── */
+  .chip-secondary {
+    font-size: var(--chip-size-secondary) !important;
+    padding: var(--chip-padding-secondary) !important;
+    opacity: 0.72;
+    font-style: italic;
+    font-weight: normal !important;
+  }
+
+  /* ── ADR-053: concert-vs-direct play button variants ─────────────────── */
+  .rec-play-btn.play-btn-concert {
+    border: 1px dashed var(--accent-sub);
+    color: var(--accent-sub);
+  }
+  .rec-play-btn.play-btn-concert:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg-input);
+  }
+  .rec-play-btn.play-btn-direct {
+    border: 1px solid var(--border-strong);
+  }
+
+  /* ── ADR-053: pressed-row state for the currently-playing track ──────── */
+  li.rec-legacy.playing,
+  li.concert-perf-item.playing,
+  #trail-list li.playing {
+    background: var(--bg-pressed);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45),
+                inset 0 0 0 1px var(--accent-sub);
+    border-radius: 4px;
+  }
+  li.rec-legacy.playing .rec-play-btn,
+  li.concert-perf-item.playing .rec-play-btn,
+  #trail-list li.playing .rec-play-btn {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ── ADR-052: extend tap-highlight suppression to all row containers ── */
+  li.rec-legacy,
+  li.concert-perf-item,
+  #trail-list li {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── ADR-052: chip-tapped flash on every chip class ─────────────────── */
+  .raga-chip.chip-tapped,
+  .raga-chip:active {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+  .comp-chip.chip-tapped,
+  .comp-chip:active {
+    background: rgba(131, 165, 152, 0.18);
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
+
+  /* ── ADR-053: bring chip max-width up for the larger primary size ── */
 
   /* ── ADR-026: in-player track list ── */
   .mp-tracklist-toggle {
@@ -2391,6 +2557,28 @@ const THEME = (() => {
     9:  '#af3a03',  10: P.red,      11: P.purple,  12: P.purpleBright,
   };
 
+  // ── ADR-054: era tint helpers ─────────────────────────────────────────────
+  // hexToRgba('#rrggbb', alpha) → 'rgba(r,g,b,alpha)'
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // eraTintCss(eraId) → { bg: '...', border: '...' }
+  // bg  = era colour at 13% opacity (translucent fill)
+  // border = era colour (solid, for left-bar or chip border)
+  // Falls back to neutral tokens for unknown era ids.
+  function eraTintCss(eraId) {
+    const col = S.era[eraId] || S.borderStrong;
+    return {
+      bg:     hexToRgba(col, 0.13),
+      border: col,
+    };
+  }
+
   // ── get / set API ─────────────────────────────────────────────────────────
   const tokens = { ...S, _primitives: P };
 
@@ -2398,6 +2586,8 @@ const THEME = (() => {
     ...tokens,
     get(key)        { return tokens[key]; },
     set(key, value) { tokens[key] = value; },
+    hexToRgba,
+    eraTintCss,
     // Convenience: dump all tokens as CSS custom properties string
     // (used by the render pipeline to inject into :root {})
     toCSSVars() {
@@ -2457,7 +2647,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 11,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -2502,7 +2695,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3083,7 +3279,10 @@ const elements = [
           "year": 2025,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3120,7 +3319,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3148,7 +3350,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 16,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 1,
+      "composer_id": "ariyakudi_ramanuja_iyengar"
     }
   },
   {
@@ -3176,7 +3381,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3204,7 +3412,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3249,7 +3460,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3286,7 +3500,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3314,7 +3531,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3342,7 +3562,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3370,7 +3593,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3398,7 +3624,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 19,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3435,7 +3664,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3463,7 +3695,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 11,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3491,7 +3726,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3541,7 +3779,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3569,7 +3810,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 19,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3597,7 +3841,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 19,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3625,7 +3872,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 18,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3670,7 +3920,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3731,7 +3984,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 1,
+      "composer_id": "lalgudi_jayaraman"
     }
   },
   {
@@ -3759,7 +4015,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 13,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3787,7 +4046,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 11,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3832,7 +4094,10 @@ const elements = [
           "year": 1967,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3860,7 +4125,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 17,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3897,7 +4165,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3925,7 +4196,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3962,7 +4236,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -3999,7 +4276,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4052,7 +4332,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4089,7 +4372,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4117,7 +4403,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 19,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4145,7 +4434,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 20,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 1,
+      "composer_id": "muthuswami_dikshitar"
     }
   },
   {
@@ -4173,7 +4465,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4210,7 +4505,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4238,7 +4536,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 14,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4266,7 +4567,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4294,7 +4598,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4322,7 +4629,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 19,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 1,
+      "composer_id": "patnam_subramanya_iyer"
     }
   },
   {
@@ -4359,7 +4669,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4387,7 +4700,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 13,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -4424,7 +4740,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5194,7 +5513,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5222,7 +5544,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 13,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5259,7 +5584,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5287,7 +5615,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 13,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5329,7 +5660,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5374,7 +5708,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5427,7 +5764,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5455,7 +5795,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 20,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 1,
+      "composer_id": "shyama_shastri"
     }
   },
   {
@@ -5483,7 +5826,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 13,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5511,7 +5857,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 18,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 1,
+      "composer_id": "subbaraya_sastri"
     }
   },
   {
@@ -5548,7 +5897,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5576,7 +5928,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 17,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5604,7 +5959,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 13,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5657,7 +6015,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5685,7 +6046,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5713,7 +6077,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 18,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5750,7 +6117,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -5787,7 +6157,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6528,7 +6901,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6573,7 +6949,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6601,7 +6980,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6638,7 +7020,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6666,7 +7051,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 20,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 1,
+      "composer_id": "tyagaraja"
     }
   },
   {
@@ -6694,7 +7082,10 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6722,7 +7113,10 @@ const elements = [
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6750,7 +7144,10 @@ const elements = [
       "label_tier": 0,
       "font_size": 22,
       "font_weight": "bold",
-      "tracks": []
+      "tracks": [],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -6792,7 +7189,10 @@ const elements = [
           "year": null,
           "version": null
         }
-      ]
+      ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
     }
   },
   {
@@ -7335,6 +7735,9 @@ const elements = [
     }
   }
 ];
+
+// ── ADR-055: set of musician node IDs with playable content (recordings or compositions) ─
+const musiciansListenable = new Set(["abhishek_raghuram", "akkarai_subbulakshmi", "alathur_brothers", "ariyakudi_ramanuja_iyengar", "balamuralikrishna", "bombay_jayashri", "coimbatore_n_ramaswamy", "cr_mani_iyer", "dk_pattammal", "gnb", "hyderabad_brothers", "kv_narayanaswamy", "lalgudi_jayaraman", "lalgudi_srimathi_brahmananda", "madurai_mani_iyer", "maharajapuram_santanam", "md_ramanathan", "ml_vasanthakumari", "ms_subbulakshmi", "musiri_subramania_iyer", "muthuswami_dikshitar", "nityashree_mahadevan", "palghat_mani_iyer", "palghat_raghu", "palghat_rajamani", "patnam_subramanya_iyer", "r_vedavalli", "radha_viswanathan", "ramakrishnan_murthy", "ramnad_krishnan", "ramnad_raghavan", "ranjani_gayatri", "s_sowmya", "sanjay_subrahmanyan", "semmangudi_srinivasa_iyer", "shyama_shastri", "subbarama_dikshitar", "subbaraya_sastri", "sudha_ragunathan", "t_brinda", "t_muktha", "t_v_sankaranarayanan", "t_viswanathan", "tm_krishna", "tn_krishnan", "tr_mahalingam", "tyagaraja", "umayalpuram_sivaraman", "vellore_ramabhadran", "vina_dhanammal", "voleti_venkateshwarlu"]);
 
 // ── Compositions data (injected by render.py) ──────────────────────────────
 const ragas        = [
@@ -66886,6 +67289,12 @@ const cy = cytoscape({
     },
     { selector: '.faded',      style: { 'opacity': THEME.opacityFaded } },
     { selector: '.chip-faded', style: { 'opacity': THEME.opacityFaded } },
+    // ADR-055: dim nodes that have no playable content (recordings or compositions)
+    { selector: 'node[is_listenable = 0]', style: {
+        'opacity': 0.25,
+        'text-opacity': 1.0,
+      }
+    },
   ],
   layout: {
     name: 'cose', animate: true, animationDuration: 800,
@@ -67870,13 +68279,14 @@ function toggleConcert(headerEl) {
 // ── buildConcertBracket — build one concert bracket DOM element ───────────────
 function buildConcertBracket(concert, nodeId, artistLabel) {
   // Collect all performers across all sessions, deduplicated, excluding self
+  // Each entry: { key, label, musicianId } for era-tinted chips (ADR-054)
   const coPerformerMap = new Map();
   let totalPieces = 0;
   concert.sessions.forEach(session => {
     totalPieces += session.perfs.length;
     session.performers.forEach(pf => {
       if (pf.musician_id === nodeId) return;
-      const key   = pf.musician_id || ('_' + (pf.unmatched_name || '?'));
+      const key = pf.musician_id || ('_' + (pf.unmatched_name || '?'));
       if (coPerformerMap.has(key)) return;
       let label;
       if (pf.musician_id) {
@@ -67885,10 +68295,9 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       } else {
         label = pf.unmatched_name || '?';
       }
-      coPerformerMap.set(key, label);
+      coPerformerMap.set(key, { label, musicianId: pf.musician_id || null });
     });
   });
-  const coPerformers = [...coPerformerMap.values()].join(', ');
 
   const bracket = document.createElement('div');
   bracket.className = 'concert-bracket';
@@ -67919,16 +68328,43 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   titleRow.appendChild(titleSpan);
   titleRow.appendChild(dateSpan);
 
+  // ADR-054: render each co-performer as an era-tinted musician chip
   const performersDiv = document.createElement('div');
   performersDiv.className = 'concert-performers';
-  performersDiv.textContent = coPerformers;
+  [...coPerformerMap.values()].forEach((pf, idx) => {
+    if (idx > 0) performersDiv.appendChild(document.createTextNode(' '));
+    const eraId = pf.musicianId
+      ? (cy.getElementById(pf.musicianId).data('era') || null)
+      : null;
+    const tint = THEME.eraTintCss(eraId);
+    const chip = document.createElement('span');
+    chip.className = 'musician-chip chip-secondary';
+    chip.style.setProperty('--chip-era-bg', tint.bg);
+    chip.style.setProperty('--chip-era-border', tint.border);
+    chip.textContent = pf.label;
+    if (pf.musicianId) {
+      chip.addEventListener('click', e => {
+        e.stopPropagation();
+        chip.classList.add('chip-tapped');
+        setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+        const n = cy.getElementById(pf.musicianId);
+        if (n && n.length) {
+          selectNode(n);
+          if (typeof window.setPanelState === 'function') {
+            setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+          }
+        }
+      });
+    }
+    performersDiv.appendChild(chip);
+  });
 
   const countDiv = document.createElement('div');
   countDiv.className = 'concert-count';
   countDiv.textContent = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
 
   headerBody.appendChild(titleRow);
-  if (coPerformers) headerBody.appendChild(performersDiv);
+  if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
   headerBody.appendChild(countDiv);
 
   header.appendChild(chevron);
@@ -67979,10 +68415,10 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         row1.appendChild(titleEl);
       }
 
-      // ▶ button → play only
+      // ▶ button — ADR-053: concert entries use dashed border
       const playBtn = document.createElement('button');
-      playBtn.className = 'rec-play-btn';
-      playBtn.title = 'Play';
+      playBtn.className = 'rec-play-btn play-btn-concert';
+      playBtn.title = concert.short_title || concert.title || 'Concert';
       playBtn.textContent = '▶';
       playBtn.addEventListener('click', e => {
         e.stopPropagation();
@@ -68050,18 +68486,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         metaSpan.textContent = [p.raga_id, talaPart].filter(Boolean).join(' · ');
       }
 
-      const linkA = document.createElement('a');
-      linkA.className = 'rec-link';
-      linkA.href      = ytDirectUrl(p.video_id, p.offset_seconds > 0 ? p.offset_seconds : undefined);
-      linkA.target    = '_blank';
-      linkA.textContent = (p.offset_seconds > 0
-        ? formatTimestamp(p.offset_seconds)
-        : '00:00') + ' \u2197';
-      linkA.title = 'Open in YouTube at this timestamp';
-      linkA.addEventListener('click', e => e.stopPropagation());
-
       row2.appendChild(metaSpan);
-      row2.appendChild(linkA);
 
       li.appendChild(row1);
       li.appendChild(row2);
@@ -68172,9 +68597,9 @@ function buildRecordingsList(nodeId, nodeData) {
     yearSpan.textContent = t.year ? String(t.year) : '';
     row1.appendChild(yearSpan);
 
-    // ▶ button → play only
+    // ▶ button — ADR-053: legacy (non-concert) entries use solid border
     const playBtn = document.createElement('button');
-    playBtn.className = 'rec-play-btn';
+    playBtn.className = 'rec-play-btn play-btn-direct';
     playBtn.title = 'Play';
     playBtn.textContent = '▶';
     playBtn.addEventListener('click', e => {
@@ -68206,23 +68631,81 @@ function buildRecordingsList(nodeId, nodeData) {
         metaSpan.textContent = t.raga_id;
       }
     }
-    const linkA = document.createElement('a');
-    linkA.className = 'rec-link';
-    linkA.href      = ytDirectUrl(t.vid, undefined);
-    linkA.target    = '_blank';
-    linkA.textContent = '00:00 \u2197';
-    linkA.title = 'Open in YouTube';
-    linkA.addEventListener('click', e => e.stopPropagation());
     row2.appendChild(metaSpan);
-    row2.appendChild(linkA);
 
     li.appendChild(row1);
     li.appendChild(row2);
     recList.appendChild(li);
   });
 
-  // ── 3. Show/hide panel ────────────────────────────────────────────────────
-  const hasContent = concerts.length > 0 || legacyTracks.length > 0;
+  // ── 3. Compositions by this musician (ADR-057) ───────────────────────────
+  // Find any composer whose musician_node_id matches this nodeId.
+  // List their compositions grouped under a collapsible header, each with
+  // a comp-chip (navigable) + raga-chip + composer name.
+  const composerForNode = (window.composers || []).find(
+    c => c.musician_node_id === nodeId
+  );
+  const composerComps = composerForNode
+    ? (window.compositions || []).filter(c => c.composer_id === composerForNode.id)
+    : [];
+
+  if (composerComps.length > 0) {
+    const compSection = document.createElement('div');
+    compSection.className = 'comp-section';
+
+    const compHeader = document.createElement('div');
+    compHeader.className = 'comp-section-header';
+    compHeader.textContent = `Compositions (${composerComps.length})`;
+    compSection.appendChild(compHeader);
+
+    const compList = document.createElement('ul');
+    compList.className = 'comp-section-list';
+
+    composerComps
+      .slice()
+      .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+      .forEach(comp => {
+        const li = document.createElement('li');
+        li.className = 'comp-section-item';
+
+        const compChip = document.createElement('span');
+        compChip.className = 'comp-chip';
+        compChip.textContent = comp.title || comp.id;
+        compChip.title = comp.title + ' — Explore in Bani Flow';
+        compChip.addEventListener('click', e => {
+          e.stopPropagation();
+          compChip.classList.add('chip-tapped');
+          setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+          triggerBaniSearch('comp', comp.id);
+        });
+        li.appendChild(compChip);
+
+        if (comp.raga_id) {
+          const ragaObj = (window.ragas || []).find(r => r.id === comp.raga_id);
+          if (ragaObj) {
+            const ragaChip = document.createElement('span');
+            ragaChip.className = 'raga-chip';
+            ragaChip.textContent = ragaObj.name;
+            ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+            ragaChip.addEventListener('click', e => {
+              e.stopPropagation();
+              ragaChip.classList.add('chip-tapped');
+              setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+              triggerBaniSearch('raga', comp.raga_id);
+            });
+            li.appendChild(ragaChip);
+          }
+        }
+
+        compList.appendChild(li);
+      });
+
+    compSection.appendChild(compList);
+    recList.appendChild(compSection);
+  }
+
+  // ── 4. Show/hide panel ────────────────────────────────────────────────────
+  const hasContent = concerts.length > 0 || legacyTracks.length > 0 || composerComps.length > 0;
   recPanel.style.display  = hasContent ? 'block' : 'none';
   recFilter.style.display = hasContent ? 'block' : 'none';
 }
@@ -71158,17 +71641,6 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     row2Div.appendChild(labelSpan);
   }
 
-  const offsetSecs = row.isStructured ? row.track.offset_seconds : 0;
-  const linkA = document.createElement('a');
-  linkA.className = 'trail-link';
-  linkA.href = ytDirectUrl(row.track.vid, offsetSecs || undefined);
-  linkA.target = '_blank';
-  linkA.textContent = (offsetSecs > 0)
-    ? `${formatTimestamp(offsetSecs)} \u2197`
-    : `00:00 \u2197`;
-  linkA.title = offsetSecs > 0 ? 'Open in YouTube at this timestamp' : 'Open in YouTube';
-  linkA.addEventListener('click', e => e.stopPropagation());
-
   // Version badge — shown only when this nodeId::composition_id has multiple entries.
   // _versionLabel is pre-computed in buildListeningTrail: explicit version string or v1/v2/…
   const versionKey = row.nodeId && row.track.composition_id
@@ -71184,14 +71656,12 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     row2Div.appendChild(versionBadge);
   }
 
-  row2Div.appendChild(linkA);
-
-  // ▶ button → play only
+  // ▶ button — ADR-053: dashed border for concert entries, solid for direct
+  const isConcertEntry = !!(row.isStructured && row.track.recording_id);
   const trailPlayBtn = document.createElement('button');
-  trailPlayBtn.className = 'rec-play-btn';
-  trailPlayBtn.title = row.isStructured
-    ? `Play from ${row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}`
-    : 'Play';
+  const concertTitle = row.track.short_title || row.track.concert_title || null;
+  trailPlayBtn.className = isConcertEntry ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
+  trailPlayBtn.title = isConcertEntry && concertTitle ? `Part of: ${concertTitle}` : 'Play';
   trailPlayBtn.textContent = '▶';
   trailPlayBtn.addEventListener('click', e => {
     e.stopPropagation();
@@ -71260,33 +71730,32 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   return li;
 }
 
-// ── buildArtistSpan: render a clickable artist name with shape icon ────────────
+// ── buildArtistSpan: render a clickable era-tinted musician chip (ADR-054) ─────
 function buildArtistSpan(artistRow, isPrimary, type, id) {
   const span = document.createElement('span');
-  span.className = isPrimary
-    ? 'trail-artist trail-artist-primary'
-    : 'trail-artist trail-artist-co';
 
-  if (artistRow.shape) {
-    const icon = document.createElement('span');
-    icon.className = 'trail-shape-icon';
-    icon.appendChild(makeShapeSVG(artistRow.shape || 'ellipse', 10));
-    span.appendChild(icon);
-  }
+  // Derive era from the Cytoscape node data; fall back to null (neutral tint).
+  const eraId = artistRow.nodeId
+    ? (cy.getElementById(artistRow.nodeId).data('era') || null)
+    : null;
+  const tint = THEME.eraTintCss(eraId);
+  span.style.setProperty('--chip-era-bg', tint.bg);
+  span.style.setProperty('--chip-era-border', tint.border);
+
+  // Primary performer → full-size chip; co-performer → secondary (smaller, italic)
+  span.className = isPrimary ? 'musician-chip' : 'musician-chip chip-secondary';
 
   span.appendChild(document.createTextNode(artistRow.artistLabel));
 
-  // Always stop propagation so clicking any artist name never opens the player.
-  // Only call selectNode when the artist has a graph node.
-  // The bani filter is intentionally NOT cleared here — the user must be
-  // able to switch back to the Bani Flow panel and find it unchanged.
   span.addEventListener('click', e => {
     e.stopPropagation();
+    // ADR-052: brief tap-flash feedback
+    span.classList.add('chip-tapped');
+    setTimeout(() => span.classList.remove('chip-tapped'), 200);
     if (artistRow.nodeId) {
       const n = cy.getElementById(artistRow.nodeId);
       if (n && n.length) {
         selectNode(n);
-        // ADR-046: open Musician (right) drawer; left drawer closes via mutual exclusion
         if (typeof window.setPanelState === 'function') {
           setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
         }

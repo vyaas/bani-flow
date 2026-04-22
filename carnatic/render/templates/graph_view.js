@@ -99,6 +99,12 @@ const cy = cytoscape({
     },
     { selector: '.faded',      style: { 'opacity': THEME.opacityFaded } },
     { selector: '.chip-faded', style: { 'opacity': THEME.opacityFaded } },
+    // ADR-055: dim nodes that have no playable content (recordings or compositions)
+    { selector: 'node[is_listenable = 0]', style: {
+        'opacity': 0.25,
+        'text-opacity': 1.0,
+      }
+    },
   ],
   layout: {
     name: 'cose', animate: true, animationDuration: 800,

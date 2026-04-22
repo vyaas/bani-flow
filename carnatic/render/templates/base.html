@@ -8,6 +8,17 @@
 <style>
   /* INJECT_CSS_VARS */
 
+  /* ── ADR-053/054/056: shared chip + play-button design tokens ─────────── */
+  :root {
+    --chip-size-primary:      0.74rem;
+    --chip-size-secondary:    0.66rem;
+    --chip-padding-primary:   2px 8px;
+    --chip-padding-secondary: 1px 6px;
+    --chip-era-bg:            transparent;       /* set inline per chip */
+    --chip-era-border:        var(--border-strong);
+    --bg-pressed:             rgba(0, 0, 0, 0.28);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg); color: var(--fg);
@@ -261,6 +272,35 @@
     font-size: 0.65rem; color: var(--fg-muted); margin-top: 2px;
   }
   .concert-bracket.expanded .concert-count { display: none; }
+
+  /* ── ADR-057: composer compositions section below recordings ── */
+  .comp-section {
+    border-top: 1px solid var(--border-strong);
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  .comp-section-header {
+    font-size: 0.68rem;
+    color: var(--fg-muted);
+    padding: 4px 8px 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .comp-section-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 4px;
+  }
+  .comp-section-item {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 3px 8px;
+    border-bottom: 1px solid var(--border);
+    cursor: default;
+  }
+  .comp-section-item:last-child { border-bottom: none; }
 
   /* ── composition list inside bracket ── */
   .concert-perf-list {
@@ -850,11 +890,11 @@
      No border/pill — keeps the sidebar uncluttered. */
   .raga-chip {
     display: inline-flex; align-items: center; gap: 2px;
-    padding: 0;
+    padding: var(--chip-padding-primary);
     border: none;
     border-radius: 0;
     color: var(--accent);
-    font-size: 0.72rem;
+    font-size: var(--chip-size-primary);
     font-weight: normal;
     cursor: pointer;
     user-select: none;
@@ -875,15 +915,15 @@
   }
 
   /* ── Composition chip: sidebar trail badge for navigable compositions ──
-     Mirrors .mp-comp-chip but sized for the sidebar (0.70rem).
+     Mirrors .mp-comp-chip but sized for the sidebar.
      Amber/sub-accent border signals "this is a composition — click to explore". */
   .comp-chip {
     display: inline-flex; align-items: center; gap: 3px;
-    padding: 1px 7px;
+    padding: var(--chip-padding-primary);
     border: 1px solid var(--accent-sub);
     border-radius: 10px;
     color: var(--accent-sub);
-    font-size: 0.70rem;
+    font-size: var(--chip-size-primary);
     font-weight: bold;
     cursor: pointer;
     user-select: none;
@@ -902,6 +942,132 @@
     color: var(--fg);
     border-color: var(--fg-sub);
   }
+
+  /* ── ADR-054: Musician chip — era-tinted, mirrors graph node colour ──
+     Translucent era fill + 2px solid era-colour left bar.
+     Inline custom properties --chip-era-bg and --chip-era-border are set at
+     row-build time from theme.eraTintCss(eraId). */
+  .musician-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: var(--chip-padding-primary);
+    border: 1px solid transparent;
+    border-left: 2px solid var(--chip-era-border);
+    background: var(--chip-era-bg);
+    color: var(--fg);
+    font-size: var(--chip-size-primary);
+    font-weight: bold;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: filter 0.12s, background 0.12s;
+  }
+  .musician-chip:hover {
+    color: var(--fg);
+    text-decoration: underline;
+    filter: brightness(1.15);
+  }
+  .musician-chip:active,
+  .musician-chip.chip-tapped {
+    filter: brightness(1.35);
+    text-decoration: underline;
+  }
+
+  /* ── ADR-057: Composer chip — same shape as musician-chip,
+     but uses ♯ glyph to mark "composer (compositions, not recordings)".  */
+  .composer-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: var(--chip-padding-primary);
+    border: 1px dashed var(--chip-era-border);
+    background: var(--chip-era-bg);
+    color: var(--fg);
+    font-size: var(--chip-size-primary);
+    font-weight: bold;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: filter 0.12s;
+  }
+  .composer-chip::before {
+    content: '♯';
+    font-size: 0.60rem;
+    opacity: 0.85;
+    color: var(--chip-era-border);
+  }
+  .composer-chip:hover {
+    color: var(--fg);
+    text-decoration: underline;
+    filter: brightness(1.15);
+  }
+  .composer-chip:active,
+  .composer-chip.chip-tapped {
+    filter: brightness(1.35);
+    text-decoration: underline;
+  }
+
+  /* ── ADR-056: secondary chip modifier — smaller italic for unmatched titles ── */
+  .chip-secondary {
+    font-size: var(--chip-size-secondary) !important;
+    padding: var(--chip-padding-secondary) !important;
+    opacity: 0.72;
+    font-style: italic;
+    font-weight: normal !important;
+  }
+
+  /* ── ADR-053: concert-vs-direct play button variants ─────────────────── */
+  .rec-play-btn.play-btn-concert {
+    border: 1px dashed var(--accent-sub);
+    color: var(--accent-sub);
+  }
+  .rec-play-btn.play-btn-concert:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg-input);
+  }
+  .rec-play-btn.play-btn-direct {
+    border: 1px solid var(--border-strong);
+  }
+
+  /* ── ADR-053: pressed-row state for the currently-playing track ──────── */
+  li.rec-legacy.playing,
+  li.concert-perf-item.playing,
+  #trail-list li.playing {
+    background: var(--bg-pressed);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45),
+                inset 0 0 0 1px var(--accent-sub);
+    border-radius: 4px;
+  }
+  li.rec-legacy.playing .rec-play-btn,
+  li.concert-perf-item.playing .rec-play-btn,
+  #trail-list li.playing .rec-play-btn {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ── ADR-052: extend tap-highlight suppression to all row containers ── */
+  li.rec-legacy,
+  li.concert-perf-item,
+  #trail-list li {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── ADR-052: chip-tapped flash on every chip class ─────────────────── */
+  .raga-chip.chip-tapped,
+  .raga-chip:active {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+  .comp-chip.chip-tapped,
+  .comp-chip:active {
+    background: rgba(131, 165, 152, 0.18);
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
+
+  /* ── ADR-053: bring chip max-width up for the larger primary size ── */
 
   /* ── ADR-026: in-player track list ── */
   .mp-tracklist-toggle {

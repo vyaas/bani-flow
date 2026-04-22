@@ -60,6 +60,7 @@ def render_html(
     raga_to_performances: dict,
     perf_to_performances: dict,
     tanpura_data: list | None = None,
+    listenable_set: set | None = None,
 ) -> str:
     node_count = len(graph["nodes"])
     edge_count = len(graph["edges"])
@@ -81,8 +82,14 @@ def render_html(
     tanpura_json             = json.dumps(tanpura_data or [], indent=2, ensure_ascii=False)
     edges_json               = json.dumps(graph["edges"], indent=2, ensure_ascii=False)
 
+    # ADR-055: listenable musician node IDs (as JS Set)
+    listenable_ids_json = json.dumps(sorted(listenable_set) if listenable_set else [], ensure_ascii=False)
+
     data_js = (
         f"const elements = {elements_json};\n"
+        f"\n"
+        f"// ── ADR-055: set of musician node IDs with playable content (recordings or compositions) ─\n"
+        f"const musiciansListenable = new Set({listenable_ids_json});\n"
         f"\n"
         f"// ── Compositions data (injected by render.py) ──────────────────────────────\n"
         f"const ragas        = {ragas_json};\n"

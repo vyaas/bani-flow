@@ -144,3 +144,59 @@ def build_composition_lookups(
                             raga_to_nodes[raga_id].append(mid)
 
     return dict(composition_to_nodes), dict(raga_to_nodes)
+
+
+def build_listenable_set(
+    graph: dict,
+    recordings_data: dict,
+    comp_data: dict,
+) -> set[str]:
+    """
+    Return the set of musician node IDs that are "listenable" — i.e. there
+    exists at least one recording or composition the user can play from their
+    panel.
+
+    A musician is listenable if ANY of the following is true:
+      • They have ≥1 legacy youtube[] track on their graph node.
+      • They appear as a performer in ≥1 recording session.
+      • They are the musician_node_id of a composer who has ≥1 composition.
+
+    This drives two UI features (ADR-055):
+      1. graph_view.js dims non-listenable nodes (opacity 0.25).
+      2. Trail rows and musician-panel co-performer chips that link to
+         non-listenable musicians can be hidden/de-emphasised.
+    """
+    listenable: set[str] = set()
+
+    # ── 1. Legacy tracks: any node with youtube[] entries ────────────────────
+    for node in graph["nodes"]:
+        if node.get("youtube"):
+            listenable.add(node["id"])
+
+    # ── 2. Structured recordings: any performer across all sessions ──────────
+    for rec in recordings_data.get("recordings", []):
+        for session in rec.get("sessions", []):
+            for pf in session.get("performers", []):
+                mid = pf.get("musician_id")
+                if mid:
+                    listenable.add(mid)
+
+    # ── 3. Composers with ≥1 composition whose musician_node_id is set ───────
+    comp_by_composer: dict[str, int] = {}
+    for comp in comp_data.get("compositions", []):
+        cid = comp.get("composer_id")
+        if cid:
+            comp_by_composer[cid] = comp_by_composer.get(cid, 0) + 1
+
+    # Map composer_id → musician_node_id
+    composer_to_node: dict[str, str] = {}
+    for composer in comp_data.get("composers", []):
+        mid = composer.get("musician_node_id")
+        if mid:
+            composer_to_node[composer["id"]] = mid
+
+    for composer_id, count in comp_by_composer.items():
+        if count > 0 and composer_id in composer_to_node:
+            listenable.add(composer_to_node[composer_id])
+
+    return listenable

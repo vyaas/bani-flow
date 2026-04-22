@@ -391,13 +391,14 @@ function toggleConcert(headerEl) {
 // ── buildConcertBracket — build one concert bracket DOM element ───────────────
 function buildConcertBracket(concert, nodeId, artistLabel) {
   // Collect all performers across all sessions, deduplicated, excluding self
+  // Each entry: { key, label, musicianId } for era-tinted chips (ADR-054)
   const coPerformerMap = new Map();
   let totalPieces = 0;
   concert.sessions.forEach(session => {
     totalPieces += session.perfs.length;
     session.performers.forEach(pf => {
       if (pf.musician_id === nodeId) return;
-      const key   = pf.musician_id || ('_' + (pf.unmatched_name || '?'));
+      const key = pf.musician_id || ('_' + (pf.unmatched_name || '?'));
       if (coPerformerMap.has(key)) return;
       let label;
       if (pf.musician_id) {
@@ -406,10 +407,9 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       } else {
         label = pf.unmatched_name || '?';
       }
-      coPerformerMap.set(key, label);
+      coPerformerMap.set(key, { label, musicianId: pf.musician_id || null });
     });
   });
-  const coPerformers = [...coPerformerMap.values()].join(', ');
 
   const bracket = document.createElement('div');
   bracket.className = 'concert-bracket';
@@ -440,16 +440,43 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   titleRow.appendChild(titleSpan);
   titleRow.appendChild(dateSpan);
 
+  // ADR-054: render each co-performer as an era-tinted musician chip
   const performersDiv = document.createElement('div');
   performersDiv.className = 'concert-performers';
-  performersDiv.textContent = coPerformers;
+  [...coPerformerMap.values()].forEach((pf, idx) => {
+    if (idx > 0) performersDiv.appendChild(document.createTextNode(' '));
+    const eraId = pf.musicianId
+      ? (cy.getElementById(pf.musicianId).data('era') || null)
+      : null;
+    const tint = THEME.eraTintCss(eraId);
+    const chip = document.createElement('span');
+    chip.className = 'musician-chip chip-secondary';
+    chip.style.setProperty('--chip-era-bg', tint.bg);
+    chip.style.setProperty('--chip-era-border', tint.border);
+    chip.textContent = pf.label;
+    if (pf.musicianId) {
+      chip.addEventListener('click', e => {
+        e.stopPropagation();
+        chip.classList.add('chip-tapped');
+        setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+        const n = cy.getElementById(pf.musicianId);
+        if (n && n.length) {
+          selectNode(n);
+          if (typeof window.setPanelState === 'function') {
+            setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+          }
+        }
+      });
+    }
+    performersDiv.appendChild(chip);
+  });
 
   const countDiv = document.createElement('div');
   countDiv.className = 'concert-count';
   countDiv.textContent = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
 
   headerBody.appendChild(titleRow);
-  if (coPerformers) headerBody.appendChild(performersDiv);
+  if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
   headerBody.appendChild(countDiv);
 
   header.appendChild(chevron);
@@ -500,10 +527,10 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         row1.appendChild(titleEl);
       }
 
-      // ▶ button → play only
+      // ▶ button — ADR-053: concert entries use dashed border
       const playBtn = document.createElement('button');
-      playBtn.className = 'rec-play-btn';
-      playBtn.title = 'Play';
+      playBtn.className = 'rec-play-btn play-btn-concert';
+      playBtn.title = concert.short_title || concert.title || 'Concert';
       playBtn.textContent = '▶';
       playBtn.addEventListener('click', e => {
         e.stopPropagation();
@@ -571,18 +598,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         metaSpan.textContent = [p.raga_id, talaPart].filter(Boolean).join(' · ');
       }
 
-      const linkA = document.createElement('a');
-      linkA.className = 'rec-link';
-      linkA.href      = ytDirectUrl(p.video_id, p.offset_seconds > 0 ? p.offset_seconds : undefined);
-      linkA.target    = '_blank';
-      linkA.textContent = (p.offset_seconds > 0
-        ? formatTimestamp(p.offset_seconds)
-        : '00:00') + ' \u2197';
-      linkA.title = 'Open in YouTube at this timestamp';
-      linkA.addEventListener('click', e => e.stopPropagation());
-
       row2.appendChild(metaSpan);
-      row2.appendChild(linkA);
 
       li.appendChild(row1);
       li.appendChild(row2);
@@ -693,9 +709,9 @@ function buildRecordingsList(nodeId, nodeData) {
     yearSpan.textContent = t.year ? String(t.year) : '';
     row1.appendChild(yearSpan);
 
-    // ▶ button → play only
+    // ▶ button — ADR-053: legacy (non-concert) entries use solid border
     const playBtn = document.createElement('button');
-    playBtn.className = 'rec-play-btn';
+    playBtn.className = 'rec-play-btn play-btn-direct';
     playBtn.title = 'Play';
     playBtn.textContent = '▶';
     playBtn.addEventListener('click', e => {
@@ -727,23 +743,81 @@ function buildRecordingsList(nodeId, nodeData) {
         metaSpan.textContent = t.raga_id;
       }
     }
-    const linkA = document.createElement('a');
-    linkA.className = 'rec-link';
-    linkA.href      = ytDirectUrl(t.vid, undefined);
-    linkA.target    = '_blank';
-    linkA.textContent = '00:00 \u2197';
-    linkA.title = 'Open in YouTube';
-    linkA.addEventListener('click', e => e.stopPropagation());
     row2.appendChild(metaSpan);
-    row2.appendChild(linkA);
 
     li.appendChild(row1);
     li.appendChild(row2);
     recList.appendChild(li);
   });
 
-  // ── 3. Show/hide panel ────────────────────────────────────────────────────
-  const hasContent = concerts.length > 0 || legacyTracks.length > 0;
+  // ── 3. Compositions by this musician (ADR-057) ───────────────────────────
+  // Find any composer whose musician_node_id matches this nodeId.
+  // List their compositions grouped under a collapsible header, each with
+  // a comp-chip (navigable) + raga-chip + composer name.
+  const composerForNode = (window.composers || []).find(
+    c => c.musician_node_id === nodeId
+  );
+  const composerComps = composerForNode
+    ? (window.compositions || []).filter(c => c.composer_id === composerForNode.id)
+    : [];
+
+  if (composerComps.length > 0) {
+    const compSection = document.createElement('div');
+    compSection.className = 'comp-section';
+
+    const compHeader = document.createElement('div');
+    compHeader.className = 'comp-section-header';
+    compHeader.textContent = `Compositions (${composerComps.length})`;
+    compSection.appendChild(compHeader);
+
+    const compList = document.createElement('ul');
+    compList.className = 'comp-section-list';
+
+    composerComps
+      .slice()
+      .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+      .forEach(comp => {
+        const li = document.createElement('li');
+        li.className = 'comp-section-item';
+
+        const compChip = document.createElement('span');
+        compChip.className = 'comp-chip';
+        compChip.textContent = comp.title || comp.id;
+        compChip.title = comp.title + ' — Explore in Bani Flow';
+        compChip.addEventListener('click', e => {
+          e.stopPropagation();
+          compChip.classList.add('chip-tapped');
+          setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+          triggerBaniSearch('comp', comp.id);
+        });
+        li.appendChild(compChip);
+
+        if (comp.raga_id) {
+          const ragaObj = (window.ragas || []).find(r => r.id === comp.raga_id);
+          if (ragaObj) {
+            const ragaChip = document.createElement('span');
+            ragaChip.className = 'raga-chip';
+            ragaChip.textContent = ragaObj.name;
+            ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+            ragaChip.addEventListener('click', e => {
+              e.stopPropagation();
+              ragaChip.classList.add('chip-tapped');
+              setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+              triggerBaniSearch('raga', comp.raga_id);
+            });
+            li.appendChild(ragaChip);
+          }
+        }
+
+        compList.appendChild(li);
+      });
+
+    compSection.appendChild(compList);
+    recList.appendChild(compSection);
+  }
+
+  // ── 4. Show/hide panel ────────────────────────────────────────────────────
+  const hasContent = concerts.length > 0 || legacyTracks.length > 0 || composerComps.length > 0;
   recPanel.style.display  = hasContent ? 'block' : 'none';
   recFilter.style.display = hasContent ? 'block' : 'none';
 }

@@ -692,17 +692,6 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     row2Div.appendChild(labelSpan);
   }
 
-  const offsetSecs = row.isStructured ? row.track.offset_seconds : 0;
-  const linkA = document.createElement('a');
-  linkA.className = 'trail-link';
-  linkA.href = ytDirectUrl(row.track.vid, offsetSecs || undefined);
-  linkA.target = '_blank';
-  linkA.textContent = (offsetSecs > 0)
-    ? `${formatTimestamp(offsetSecs)} \u2197`
-    : `00:00 \u2197`;
-  linkA.title = offsetSecs > 0 ? 'Open in YouTube at this timestamp' : 'Open in YouTube';
-  linkA.addEventListener('click', e => e.stopPropagation());
-
   // Version badge — shown only when this nodeId::composition_id has multiple entries.
   // _versionLabel is pre-computed in buildListeningTrail: explicit version string or v1/v2/…
   const versionKey = row.nodeId && row.track.composition_id
@@ -718,14 +707,12 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     row2Div.appendChild(versionBadge);
   }
 
-  row2Div.appendChild(linkA);
-
-  // ▶ button → play only
+  // ▶ button — ADR-053: dashed border for concert entries, solid for direct
+  const isConcertEntry = !!(row.isStructured && row.track.recording_id);
   const trailPlayBtn = document.createElement('button');
-  trailPlayBtn.className = 'rec-play-btn';
-  trailPlayBtn.title = row.isStructured
-    ? `Play from ${row.track.offset_seconds ? row.track.offset_seconds + 's' : 'start'}`
-    : 'Play';
+  const concertTitle = row.track.short_title || row.track.concert_title || null;
+  trailPlayBtn.className = isConcertEntry ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
+  trailPlayBtn.title = isConcertEntry && concertTitle ? `Part of: ${concertTitle}` : 'Play';
   trailPlayBtn.textContent = '▶';
   trailPlayBtn.addEventListener('click', e => {
     e.stopPropagation();
@@ -794,33 +781,32 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   return li;
 }
 
-// ── buildArtistSpan: render a clickable artist name with shape icon ────────────
+// ── buildArtistSpan: render a clickable era-tinted musician chip (ADR-054) ─────
 function buildArtistSpan(artistRow, isPrimary, type, id) {
   const span = document.createElement('span');
-  span.className = isPrimary
-    ? 'trail-artist trail-artist-primary'
-    : 'trail-artist trail-artist-co';
 
-  if (artistRow.shape) {
-    const icon = document.createElement('span');
-    icon.className = 'trail-shape-icon';
-    icon.appendChild(makeShapeSVG(artistRow.shape || 'ellipse', 10));
-    span.appendChild(icon);
-  }
+  // Derive era from the Cytoscape node data; fall back to null (neutral tint).
+  const eraId = artistRow.nodeId
+    ? (cy.getElementById(artistRow.nodeId).data('era') || null)
+    : null;
+  const tint = THEME.eraTintCss(eraId);
+  span.style.setProperty('--chip-era-bg', tint.bg);
+  span.style.setProperty('--chip-era-border', tint.border);
+
+  // Primary performer → full-size chip; co-performer → secondary (smaller, italic)
+  span.className = isPrimary ? 'musician-chip' : 'musician-chip chip-secondary';
 
   span.appendChild(document.createTextNode(artistRow.artistLabel));
 
-  // Always stop propagation so clicking any artist name never opens the player.
-  // Only call selectNode when the artist has a graph node.
-  // The bani filter is intentionally NOT cleared here — the user must be
-  // able to switch back to the Bani Flow panel and find it unchanged.
   span.addEventListener('click', e => {
     e.stopPropagation();
+    // ADR-052: brief tap-flash feedback
+    span.classList.add('chip-tapped');
+    setTimeout(() => span.classList.remove('chip-tapped'), 200);
     if (artistRow.nodeId) {
       const n = cy.getElementById(artistRow.nodeId);
       if (n && n.length) {
         selectNode(n);
-        // ADR-046: open Musician (right) drawer; left drawer closes via mutual exclusion
         if (typeof window.setPanelState === 'function') {
           setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
         }

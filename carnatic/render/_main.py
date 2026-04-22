@@ -39,7 +39,7 @@ if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:
 
 from carnatic.render.sync import sync_graph_json
 from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura
-from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups
+from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set
 from carnatic.render.graph_builder import build_elements
 from carnatic.render.html_generator import render_html
 
@@ -77,8 +77,18 @@ def main() -> None:
     musician_to_performances, composition_to_performances, raga_to_performances, perf_to_performances = \
         build_recording_lookups(recordings_data, comp_data)
 
+    # ADR-055: listenable set — set of musician node IDs with playable content
+    listenable_set = build_listenable_set(graph, recordings_data, comp_data)
+
+    # ADR-057: composer_node_map — {musician_node_id: composer_id} for composer chip routing
+    composer_node_map: dict[str, str] = {}
+    for composer in comp_data.get("composers", []):
+        mid = composer.get("musician_node_id")
+        if mid:
+            composer_node_map[mid] = composer["id"]
+
     # Step 3: build Cytoscape elements
-    elements = build_elements(graph)
+    elements = build_elements(graph, listenable_set, composer_node_map)
 
     # Step 3b: load tanpura drone data (ADR-029)
     tanpura_data = load_tanpura(ROOT / "data")
@@ -94,6 +104,7 @@ def main() -> None:
         raga_to_performances,
         perf_to_performances,
         tanpura_data=tanpura_data,
+        listenable_set=listenable_set,
     )
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")

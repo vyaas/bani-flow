@@ -139,6 +139,28 @@ const THEME = (() => {
     9:  '#af3a03',  10: P.red,      11: P.purple,  12: P.purpleBright,
   };
 
+  // ── ADR-054: era tint helpers ─────────────────────────────────────────────
+  // hexToRgba('#rrggbb', alpha) → 'rgba(r,g,b,alpha)'
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // eraTintCss(eraId) → { bg: '...', border: '...' }
+  // bg  = era colour at 13% opacity (translucent fill)
+  // border = era colour (solid, for left-bar or chip border)
+  // Falls back to neutral tokens for unknown era ids.
+  function eraTintCss(eraId) {
+    const col = S.era[eraId] || S.borderStrong;
+    return {
+      bg:     hexToRgba(col, 0.13),
+      border: col,
+    };
+  }
+
   // ── get / set API ─────────────────────────────────────────────────────────
   const tokens = { ...S, _primitives: P };
 
@@ -146,6 +168,8 @@ const THEME = (() => {
     ...tokens,
     get(key)        { return tokens[key]; },
     set(key, value) { tokens[key] = value; },
+    hexToRgba,
+    eraTintCss,
     // Convenience: dump all tokens as CSS custom properties string
     // (used by the render pipeline to inject into :root {})
     toCSSVars() {
