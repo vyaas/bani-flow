@@ -300,6 +300,12 @@
   .tree-comp-header {
     display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; width: 100%;
   }
+  /* Chip/unmatched-title fills all space so acts are always flush right */
+  .tree-comp-header > .comp-chip,
+  .tree-comp-header > .tree-unmatched-title {
+    flex: 1; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
   /* Inline acts (year + play + link) for single-recording compositions */
   .tree-comp-acts {
     margin-left: auto; display: flex; align-items: center; gap: 4px; flex-shrink: 0;
