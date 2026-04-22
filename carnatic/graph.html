@@ -200,7 +200,7 @@
 
   /* Scrollable zone inside left sidebar — only the trail list scrolls */
   #bani-scroll {
-    flex: 1; overflow-y: auto; min-height: 0;
+    flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0;
   }
 
   /* ── right sidebar (node-specific: selection, recordings, edge) ── */
@@ -226,7 +226,7 @@
 
   /* Scrollable zone inside right sidebar — only recordings/edge scroll */
   #right-scroll {
-    flex: 1; overflow-y: auto; min-height: 0;
+    flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0;
   }
   .panel { padding: 12px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .panel h3 {
