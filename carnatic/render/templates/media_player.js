@@ -145,16 +145,30 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   const bar = document.createElement('div');
   bar.className = 'mp-bar';
 
-  // ── Artist chip ────────────────────────────────────────────────────────────
+  // ── Artist chip — same musician-chip class + era tinting as panels ────────
   if (artistName) {
+    const eraId = (meta.nodeId && typeof cy !== 'undefined')
+      ? (cy.getElementById(meta.nodeId).data('era') || null) : null;
+    const tint = (typeof THEME !== 'undefined')
+      ? THEME.eraTintCss(eraId)
+      : { bg: 'transparent', border: 'var(--border-strong)' };
     const artistChip = document.createElement('span');
-    artistChip.className = 'mp-artist-chip';
+    artistChip.className = 'musician-chip';
+    artistChip.style.setProperty('--chip-era-bg',     tint.bg);
+    artistChip.style.setProperty('--chip-era-border', tint.border);
     artistChip.textContent = artistName;
     if (meta.nodeId) {
-      artistChip.title = 'Pan to ' + artistName + ' on graph';
+      artistChip.title = artistName + ' — Open Musician panel';
       artistChip.addEventListener('click', e => {
         e.stopPropagation();
-        if (typeof orientToNode === 'function') orientToNode(meta.nodeId);
+        artistChip.classList.add('chip-tapped');
+        setTimeout(() => artistChip.classList.remove('chip-tapped'), 200);
+        const n = cy.getElementById(meta.nodeId);
+        if (n && n.length) {
+          if (typeof selectNode === 'function') selectNode(n);
+          if (typeof window.setPanelState === 'function')
+            setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
       });
     } else {
       artistChip.style.cursor = 'default';
