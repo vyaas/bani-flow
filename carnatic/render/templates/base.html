@@ -312,16 +312,18 @@
   .tree-comp-meta .composer-label {
     font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
   }
-  /* Recording toggle button — line-height:1 + padding:0 keeps it flush with text */
+  /* Recording toggle button — inline-flex like .comp-chip so height is identical */
   .tree-rec-toggle {
     margin-left: auto; flex-shrink: 0;
+    display: inline-flex; align-items: center;
     background: none; border: 1px solid var(--border);
-    color: var(--fg-muted); font-size: 0.65rem;
-    padding: 0 5px; line-height: 1.4; height: auto;
-    border-radius: 2px; cursor: pointer; font-family: inherit;
-    white-space: nowrap; vertical-align: middle;
-    /* override any mobile min-height blanket rule */
-    min-height: 0;
+    color: var(--fg-muted);
+    font-size: var(--chip-size-primary);
+    padding: var(--chip-padding-primary);
+    height: auto; min-height: 0; line-height: 1;
+    border-radius: var(--chip-border-radius, 4px);
+    cursor: pointer; font-family: inherit;
+    white-space: nowrap;
   }
   .tree-rec-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .tree-rec-toggle[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
@@ -1891,8 +1893,8 @@
      Filter chip bar: horizontal scroll instead of wrap.
      No layout changes here — that belongs in ADR-034 (Phase 1). */
   @media (max-width: 768px) {
-    /* Exclude circular buttons — they expand touch target via ::after{inset:-9px} */
-    button:not(.rec-play-btn),
+    /* Exclude circular buttons and inline tree toggles — they size themselves */
+    button:not(.rec-play-btn):not(.tree-rec-toggle),
     .filter-clear {
       min-height: 44px;
     }
