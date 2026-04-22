@@ -414,16 +414,34 @@
     margin: 0;
     padding: 0 0 4px;
   }
-  .comp-section-item {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 3px 8px;
-    border-bottom: 1px solid var(--border);
-    cursor: default;
+  /* ── raga-first tree inside compositions section ── */
+  .comp-raga-group { list-style: none; }
+  .comp-raga-group + .comp-raga-group {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
   }
-  .comp-section-item:last-child { border-bottom: none; }
+  .comp-raga-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    padding: 5px 0 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-raga-header .rec-group-count {
+    font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
+  }
+  .comp-raga-children {
+    list-style: none; padding: 0 0 0 8px; margin: 0;
+  }
+  .comp-raga-item {
+    padding: 3px 0 3px 6px;
+    border-left: 2px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+  }
+  .comp-raga-item:last-child { border-bottom: none; }
+  .comp-raga-unknown {
+    font-size: 0.72rem; color: var(--fg-muted); font-style: italic;
+  }
 
   /* ── composition list inside bracket ── */
   .concert-perf-list {

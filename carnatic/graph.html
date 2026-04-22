@@ -437,16 +437,34 @@
     margin: 0;
     padding: 0 0 4px;
   }
-  .comp-section-item {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 3px 8px;
-    border-bottom: 1px solid var(--border);
-    cursor: default;
+  /* ── raga-first tree inside compositions section ── */
+  .comp-raga-group { list-style: none; }
+  .comp-raga-group + .comp-raga-group {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
   }
-  .comp-section-item:last-child { border-bottom: none; }
+  .comp-raga-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    padding: 5px 0 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-raga-header .rec-group-count {
+    font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
+  }
+  .comp-raga-children {
+    list-style: none; padding: 0 0 0 8px; margin: 0;
+  }
+  .comp-raga-item {
+    padding: 3px 0 3px 6px;
+    border-left: 2px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+  }
+  .comp-raga-item:last-child { border-bottom: none; }
+  .comp-raga-unknown {
+    font-size: 0.72rem; color: var(--fg-muted); font-style: italic;
+  }
 
   /* ── composition list inside bracket ── */
   .concert-perf-list {
@@ -68858,18 +68876,76 @@ function buildRecordingsList(nodeId, nodeData) {
     const compList = document.createElement('ul');
     compList.className = 'comp-section-list';
 
-    composerComps
-      .slice()
-      .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
-      .forEach(comp => {
-        const li = document.createElement('li');
-        li.className = 'comp-section-item';
+    // ── Group compositions by raga (raga-first tree) ──────────────────────
+    const ragaList = typeof ragas !== 'undefined' ? ragas : [];
+    const byRaga = {};
+    const ragaOrder = [];
+    composerComps.forEach(comp => {
+      const key = comp.raga_id || '__no_raga__';
+      if (!byRaga[key]) { byRaga[key] = []; ragaOrder.push(key); }
+      byRaga[key].push(comp);
+    });
+    // Sort raga groups alphabetically by raga name
+    ragaOrder.sort((a, b) => {
+      if (a === '__no_raga__') return 1;
+      if (b === '__no_raga__') return -1;
+      const ra = ragaList.find(r => r.id === a);
+      const rb = ragaList.find(r => r.id === b);
+      return (ra ? ra.name : a).localeCompare(rb ? rb.name : b);
+    });
 
-        // Row 1: composition chip
+    ragaOrder.forEach(ragaId => {
+      const compsInRaga = byRaga[ragaId]
+        .slice()
+        .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+
+      const groupLi = document.createElement('li');
+      groupLi.className = 'comp-raga-group';
+
+      // Raga header row
+      const groupHeader = document.createElement('div');
+      groupHeader.className = 'comp-raga-header';
+
+      if (ragaId !== '__no_raga__') {
+        const ragaObj = ragaList.find(r => r.id === ragaId);
+        if (ragaObj) {
+          const ragaChip = document.createElement('span');
+          ragaChip.className = 'raga-chip';
+          ragaChip.textContent = ragaObj.name;
+          ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+          ragaChip.addEventListener('click', e => {
+            e.stopPropagation();
+            ragaChip.classList.add('chip-tapped');
+            setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+            triggerBaniSearch('raga', ragaId);
+          });
+          groupHeader.appendChild(ragaChip);
+        }
+      } else {
+        const unknownLabel = document.createElement('span');
+        unknownLabel.className = 'comp-raga-unknown';
+        unknownLabel.textContent = 'Unknown raga';
+        groupHeader.appendChild(unknownLabel);
+      }
+
+      const countBadge = document.createElement('span');
+      countBadge.className = 'rec-group-count';
+      countBadge.textContent = `(${compsInRaga.length})`;
+      groupHeader.appendChild(countBadge);
+      groupLi.appendChild(groupHeader);
+
+      // Composition items indented under raga
+      const childList = document.createElement('ul');
+      childList.className = 'comp-raga-children';
+
+      compsInRaga.forEach(comp => {
+        const li = document.createElement('li');
+        li.className = 'comp-raga-item';
+
         const compChip = document.createElement('span');
         compChip.className = 'comp-chip';
         compChip.textContent = comp.title || comp.id;
-        compChip.title = comp.title + ' — Explore in Bani Flow';
+        compChip.title = (comp.title || comp.id) + ' — Explore in Bani Flow';
         compChip.addEventListener('click', e => {
           e.stopPropagation();
           compChip.classList.add('chip-tapped');
@@ -68877,30 +68953,12 @@ function buildRecordingsList(nodeId, nodeData) {
           triggerBaniSearch('comp', comp.id);
         });
         li.appendChild(compChip);
-
-        // Row 2: raga chip indented below
-        if (comp.raga_id) {
-          const ragaObj = (typeof ragas !== 'undefined' ? ragas : []).find(r => r.id === comp.raga_id);
-          if (ragaObj) {
-            const ragaRow = document.createElement('div');
-            ragaRow.className = 'comp-section-raga';
-            const ragaChip = document.createElement('span');
-            ragaChip.className = 'raga-chip';
-            ragaChip.textContent = ragaObj.name;
-            ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
-            ragaChip.addEventListener('click', e => {
-              e.stopPropagation();
-              ragaChip.classList.add('chip-tapped');
-              setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
-              triggerBaniSearch('raga', comp.raga_id);
-            });
-            ragaRow.appendChild(ragaChip);
-            li.appendChild(ragaRow);
-          }
-        }
-
-        compList.appendChild(li);
+        childList.appendChild(li);
       });
+
+      groupLi.appendChild(childList);
+      compList.appendChild(groupLi);
+    });
 
     compSection.appendChild(compList);
     recList.appendChild(compSection);
