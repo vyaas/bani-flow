@@ -184,7 +184,7 @@
     width: 280px; background: var(--bg-panel);
     border-right: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow-y: auto; font-size: 0.78rem;
+    overflow-y: auto; overflow-x: hidden; font-size: 0.78rem;
     z-index: 200;
     transform: translateX(-100%);
     transition: transform 0.22s ease;
@@ -210,7 +210,7 @@
     width: 280px; background: var(--bg-panel);
     border-left: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow-y: auto; font-size: 0.78rem;
+    overflow-y: auto; overflow-x: hidden; font-size: 0.78rem;
     z-index: 200;
     transform: translateX(100%);
     transition: transform 0.22s ease;
@@ -1023,12 +1023,12 @@
   /* Leaf primary row: [artist chip?] [version/ctx] [▶+↗ right] — no-wrap so acts stay inline */
   .tree-leaf-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
   /* Co-performers tag cloud — wrappable, below primary row.
-     ADR-072: extra --hier-indent-step + guide rail (level 3 — accompanists). */
+     ADR-072 (revised): no border rail — only the composition chip itself
+     should be visibly boxed; accompanists indent without an enclosing rule. */
   .tree-leaf-coperformers {
     display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
     margin-top: 3px;
     padding-left: var(--hier-indent-step);
-    border-left: 2px solid var(--border);
   }
   /* ADR-072: composer chip inside the trail group header is indented one
      level beneath its composition (level 1 of left-sidebar hierarchy). */
@@ -4108,24 +4108,6 @@ const elements = [
           "raga_id": "surutti",
           "year": null,
           "version": null,
-          "performers": []
-        },
-        {
-          "vid": "jecLhr8IL84",
-          "label": "Giripai Nelakonna / Sahana / Adi / Thyagaraja / M D Ramanathan",
-          "composition_id": "giripai_nelakona",
-          "raga_id": "sahana",
-          "year": null,
-          "version": "long",
-          "performers": []
-        },
-        {
-          "vid": "Vog63WOl54o",
-          "label": "Giripai - Sahana",
-          "composition_id": "giripai_nelakona",
-          "raga_id": "sahana",
-          "year": 1985,
-          "version": "short",
           "performers": []
         }
       ],
@@ -15096,10 +15078,6 @@ const compositionToNodes = {
   "vinata_suta_vahana": [
     "madurai_mani_iyer"
   ],
-  "giripai_nelakona": [
-    "md_ramanathan",
-    "ramnad_krishnan"
-  ],
   "ento_premato": [
     "ms_subbulakshmi",
     "r_vedavalli",
@@ -15276,6 +15254,9 @@ const compositionToNodes = {
     "ramnad_krishnan"
   ],
   "ka_va_va": [
+    "ramnad_krishnan"
+  ],
+  "giripai_nelakona": [
     "ramnad_krishnan"
   ],
   "dhyaname_varamaina": [
@@ -16118,16 +16099,6 @@ const ragaToNodes        = {
   "jayantasena": [
     "madurai_mani_iyer"
   ],
-  "sahana": [
-    "md_ramanathan",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "gnb",
-    "lalgudi_jayaraman",
-    "coimbatore_n_ramaswamy",
-    "t_brinda",
-    "t_muktha"
-  ],
   "kapi": [
     "ramnad_krishnan",
     "tm_krishna",
@@ -16240,6 +16211,15 @@ const ragaToNodes        = {
     "ariyakudi_ramanuja_iyengar",
     "tn_krishnan",
     "palghat_mani_iyer"
+  ],
+  "sahana": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "gnb",
+    "lalgudi_jayaraman",
+    "coimbatore_n_ramaswamy",
+    "t_brinda",
+    "t_muktha"
   ],
   "atana": [
     "ramnad_krishnan",

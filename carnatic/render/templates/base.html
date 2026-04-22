@@ -161,7 +161,7 @@
     width: 280px; background: var(--bg-panel);
     border-right: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow-y: auto; font-size: 0.78rem;
+    overflow-y: auto; overflow-x: hidden; font-size: 0.78rem;
     z-index: 200;
     transform: translateX(-100%);
     transition: transform 0.22s ease;
@@ -187,7 +187,7 @@
     width: 280px; background: var(--bg-panel);
     border-left: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
-    overflow-y: auto; font-size: 0.78rem;
+    overflow-y: auto; overflow-x: hidden; font-size: 0.78rem;
     z-index: 200;
     transform: translateX(100%);
     transition: transform 0.22s ease;
@@ -1000,12 +1000,12 @@
   /* Leaf primary row: [artist chip?] [version/ctx] [▶+↗ right] — no-wrap so acts stay inline */
   .tree-leaf-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
   /* Co-performers tag cloud — wrappable, below primary row.
-     ADR-072: extra --hier-indent-step + guide rail (level 3 — accompanists). */
+     ADR-072 (revised): no border rail — only the composition chip itself
+     should be visibly boxed; accompanists indent without an enclosing rule. */
   .tree-leaf-coperformers {
     display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
     margin-top: 3px;
     padding-left: var(--hier-indent-step);
-    border-left: 2px solid var(--border);
   }
   /* ADR-072: composer chip inside the trail group header is indented one
      level beneath its composition (level 1 of left-sidebar hierarchy). */
