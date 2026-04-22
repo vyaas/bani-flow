@@ -456,6 +456,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-19: ADR-044 click-again affordance nudge: a single shared #click-nudge div (pointer-events:none, fixed bottom-center, z-index 9999) is the correct pattern for cross-view transient hints — it sits outside both the SVG raga wheel and the Cytoscape canvas so no coordinate mapping is needed; showClickNudge/hideClickNudge live on window via an IIFE in base.html so both raga_wheel.js and graph_view.js can call them without import coupling.
 
 - 2026-04-18: ADR-035 pointer capture + preventDefault() on pointerdown suppresses ALL native click and dblclick events on the raga wheel SVG. Synthetic clicks (from _triggerMelaExpand via dispatchEvent) still work, masking the bug when navigating from panels. Fix: in _onPointerEnd, use document.elementFromPoint to resolve the real target under the pointer and re-dispatch a synthetic click when _dragMoved is false.
+- 2026-04-21: ADRs 052–057 split a UX coupling pass into six independent concerns — click parity, timestamp removal + concert play-button affordance, era-coloured musician chips, no-dead-end musician filtering and graph dimming, equal chip prominence with secondary fallback, and a composer panel that lists compositions instead of recordings; the unifying force is "panels and graph are one data set, two representations" — chip colour must equal node colour, and every clickable thing must lead somewhere listenable.
 
 ### 🪃 Orchestrator
 
