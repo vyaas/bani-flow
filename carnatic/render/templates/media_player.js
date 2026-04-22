@@ -718,58 +718,18 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
   }
 
   const recCount = sortedPerfs.length;
-  // Toggle button only for n > 1; single recordings are shown directly
-  let toggleBtn = null;
-  if (recCount > 1) {
-    toggleBtn = document.createElement('button');
-    toggleBtn.className = 'tree-rec-toggle';
-    toggleBtn.setAttribute('aria-expanded', 'true');
-    toggleBtn.textContent = '\u25BC ' + recCount + ' recordings';
-    compHeader.appendChild(toggleBtn);
-  }
-  li.appendChild(compHeader);
 
-  // ── Composer — same chip style as concert bracket section ─────────────
-  const composerChip = buildComposerChip(compId);
-  if (composerChip) {
-    const metaDiv = document.createElement('div');
-    metaDiv.className = 'tree-comp-meta';
-    metaDiv.appendChild(composerChip);
-    li.appendChild(metaDiv);
-  }
-
-  // ── Recording rows — start visible (all entries unfolded on load) ─────
-  const recUl = document.createElement('ul');
-  recUl.className = 'tree-rec-list';
-  recUl.hidden = false;
-
-  sortedPerfs.forEach(p => {
-    const recLi = document.createElement('li');
-    recLi.className = 'tree-leaf';
-    recLi.dataset.vid = p.video_id;
-    if (playerRegistry.has(p.video_id)) recLi.classList.add('playing');
-
-    const row = document.createElement('div');
-    row.className = 'trail-row2';
-
-    const chipsDiv = document.createElement('div');
-    chipsDiv.className = 'trail-chips';
-
-    // Year + short concert title
-    const labelParts = [];
-    if (p.date) labelParts.push(p.date.slice(0, 4));
-    if (p.short_title) labelParts.push(p.short_title);
-    if (labelParts.length) {
+  if (recCount === 1) {
+    // ── Single recording: inline year + play + link on the comp header row ─
+    const p = sortedPerfs[0];
+    const actsDiv = document.createElement('div');
+    actsDiv.className = 'tree-comp-acts';
+    if (p.date) {
       const yearSpan = document.createElement('span');
       yearSpan.className = 'rec-year';
-      yearSpan.textContent = labelParts.join(' \u00b7 ');
-      chipsDiv.appendChild(yearSpan);
+      yearSpan.textContent = p.date.slice(0, 4);
+      actsDiv.appendChild(yearSpan);
     }
-    row.appendChild(chipsDiv);
-
-    const actsDiv = document.createElement('div');
-    actsDiv.className = 'trail-acts';
-
     const playBtn = document.createElement('button');
     playBtn.className = 'rec-play-btn play-btn-concert';
     playBtn.setAttribute('data-vid', p.video_id);
@@ -786,16 +746,77 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     });
     actsDiv.appendChild(playBtn);
     actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
-    row.appendChild(actsDiv);
+    compHeader.appendChild(actsDiv);
+  } else {
+    // ── Multiple recordings: toggle button (starts expanded) ──────────────
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'tree-rec-toggle';
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    toggleBtn.textContent = '\u25BC ' + recCount + ' recordings';
+    compHeader.appendChild(toggleBtn);
 
-    recLi.appendChild(row);
-    recUl.appendChild(recLi);
-  });
+    li.appendChild(compHeader);
 
-  li.appendChild(recUl);
+    // Composer chip
+    const composerChip = buildComposerChip(compId);
+    if (composerChip) {
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'tree-comp-meta';
+      metaDiv.appendChild(composerChip);
+      li.appendChild(metaDiv);
+    }
 
-  // Wire toggle (only when n > 1)
-  if (toggleBtn) {
+    // Recording rows — start visible
+    const recUl = document.createElement('ul');
+    recUl.className = 'tree-rec-list';
+    recUl.hidden = false;
+
+    sortedPerfs.forEach((p, idx) => {
+      const recLi = document.createElement('li');
+      recLi.className = 'tree-leaf';
+      recLi.dataset.vid = p.video_id;
+      if (playerRegistry.has(p.video_id)) recLi.classList.add('playing');
+
+      const row = document.createElement('div');
+      row.className = 'trail-row2';
+
+      const chipsDiv = document.createElement('div');
+      chipsDiv.className = 'trail-chips';
+      const labelParts = ['v' + (idx + 1)];
+      if (p.date) labelParts.push(p.date.slice(0, 4));
+      if (p.short_title) labelParts.push(p.short_title);
+      const yearSpan = document.createElement('span');
+      yearSpan.className = 'rec-year';
+      yearSpan.textContent = labelParts.join(' \u00b7 ');
+      chipsDiv.appendChild(yearSpan);
+      row.appendChild(chipsDiv);
+
+      const actsDiv = document.createElement('div');
+      actsDiv.className = 'trail-acts';
+      const playBtn = document.createElement('button');
+      playBtn.className = 'rec-play-btn play-btn-concert';
+      playBtn.setAttribute('data-vid', p.video_id);
+      playBtn.title = p.short_title || p.title || 'Play';
+      playBtn.textContent = '\u25B6';
+      playBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openOrFocusPlayer(
+          p.video_id, p.display_title, artistLabel,
+          p.offset_seconds > 0 ? p.offset_seconds : undefined,
+          p.short_title || p.title, [],
+          { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null }
+        );
+      });
+      actsDiv.appendChild(playBtn);
+      actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
+      row.appendChild(actsDiv);
+
+      recLi.appendChild(row);
+      recUl.appendChild(recLi);
+    });
+
+    li.appendChild(recUl);
+
     toggleBtn.addEventListener('click', e => {
       e.stopPropagation();
       const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
@@ -803,6 +824,19 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
       toggleBtn.textContent = (isExpanded ? '\u25B6 ' : '\u25BC ') + recCount + ' recordings';
     });
+
+    return li;
+  }
+
+  li.appendChild(compHeader);
+
+  // Composer chip (single-recording path)
+  const composerChip = buildComposerChip(compId);
+  if (composerChip) {
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'tree-comp-meta';
+    metaDiv.appendChild(composerChip);
+    li.appendChild(metaDiv);
   }
 
   return li;
@@ -829,28 +863,12 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
     return yearA - yearB;
   });
 
-  const totalComps = compMap.size + (nullCompPerfs.length > 0 ? 1 : 0);
-  const isSingle = totalComps <= 1;
-
   const li = document.createElement('li');
-  li.className = 'tree-group tree-group-open' + (isSingle ? ' tree-group-single' : '');
+  li.className = 'tree-group tree-group-open';
 
-  // ── Header ─────────────────────────────────────────────────────────────
+  // ── Header: raga chip only — no chevron, no count ──────────────────────
   const header = document.createElement('div');
   header.className = 'tree-group-header';
-
-  const chevron = document.createElement('span');
-  chevron.className = 'tree-chevron';
-  chevron.setAttribute('aria-hidden', 'true');
-  chevron.addEventListener('click', e => {
-    e.stopPropagation();
-    const isOpen = li.classList.contains('tree-group-open');
-    li.classList.toggle('tree-group-open', !isOpen);
-    if (!isOpen && ragaId && typeof triggerBaniSearch === 'function') {
-      triggerBaniSearch('raga', ragaId);
-    }
-  });
-  header.appendChild(chevron);
 
   if (ragaId && ragaObj) {
     const ragaChip = document.createElement('span');
@@ -865,16 +883,11 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
     });
     header.appendChild(ragaChip);
   } else {
-    const unknownSpan = document.createElement('span');
-    unknownSpan.className = 'rec-group-label rec-unknown';
-    unknownSpan.textContent = 'Misc';
-    header.appendChild(unknownSpan);
+    const miscSpan = document.createElement('span');
+    miscSpan.className = 'rec-group-label rec-unknown';
+    miscSpan.textContent = 'Misc';
+    header.appendChild(miscSpan);
   }
-
-  const countSpan = document.createElement('span');
-  countSpan.className = 'rec-group-count';
-  countSpan.textContent = totalComps;
-  header.appendChild(countSpan);
 
   li.appendChild(header);
 

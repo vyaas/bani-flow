@@ -69021,7 +69021,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     recUl.className = 'tree-rec-list';
     recUl.hidden = false;
 
-    sortedPerfs.forEach(p => {
+    sortedPerfs.forEach((p, idx) => {
       const recLi = document.createElement('li');
       recLi.className = 'tree-leaf';
       recLi.dataset.vid = p.video_id;
@@ -69032,15 +69032,13 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
 
       const chipsDiv = document.createElement('div');
       chipsDiv.className = 'trail-chips';
-      const labelParts = [];
+      const labelParts = ['v' + (idx + 1)];
       if (p.date) labelParts.push(p.date.slice(0, 4));
       if (p.short_title) labelParts.push(p.short_title);
-      if (labelParts.length) {
-        const yearSpan = document.createElement('span');
-        yearSpan.className = 'rec-year';
-        yearSpan.textContent = labelParts.join(' \u00b7 ');
-        chipsDiv.appendChild(yearSpan);
-      }
+      const yearSpan = document.createElement('span');
+      yearSpan.className = 'rec-year';
+      yearSpan.textContent = labelParts.join(' \u00b7 ');
+      chipsDiv.appendChild(yearSpan);
       row.appendChild(chipsDiv);
 
       const actsDiv = document.createElement('div');
