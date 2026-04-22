@@ -450,7 +450,7 @@ function orientToNode(nodeId) {
   setTimeout(() => n.removeClass('bani-match'), 1400);
 }
 
-// ── rec-filter event listener — bracket-aware (ADR-018) ──────────────────────
+// ── rec-filter event listener — bracket-aware (ADR-018) + raga-tree-aware (ADR-064) ──
 document.getElementById('rec-filter').addEventListener('input', function() {
   const q       = this.value.toLowerCase().trim();
   const recList = document.getElementById('recordings-list');
@@ -490,6 +490,42 @@ document.getElementById('rec-filter').addEventListener('input', function() {
       anyVisible = true;
     } else {
       bracket.style.display = 'none';
+    }
+  });
+
+  // ── raga tree groups (ADR-064) ────────────────────────────────────────────
+  recList.querySelectorAll('li.tree-group').forEach(group => {
+    const compNodes = group.querySelectorAll('.tree-comp-node');
+    let groupHasMatch = false;
+
+    compNodes.forEach(node => {
+      if (!q) {
+        node.style.display = '';
+        groupHasMatch = true;
+        return;
+      }
+      const compText  = (node.querySelector('.comp-chip')     || {}).textContent || '';
+      const titleText = (node.querySelector('.rec-title')     || {}).textContent || '';
+      const composerText = (node.querySelector('.composer-label') || {}).textContent || '';
+      // Also search inside recording leaves (year / concert title)
+      const recText   = node.querySelector('.tree-rec-list')
+        ? node.querySelector('.tree-rec-list').textContent : '';
+      const matches = [compText, titleText, composerText, recText]
+        .some(t => t.toLowerCase().includes(q));
+      node.style.display = matches ? '' : 'none';
+      if (matches) groupHasMatch = true;
+    });
+
+    if (!q) {
+      group.style.display = '';
+      group.classList.add('tree-group-open');
+      anyVisible = true;
+    } else if (groupHasMatch) {
+      group.style.display = '';
+      group.classList.add('tree-group-open');
+      anyVisible = true;
+    } else {
+      group.style.display = 'none';
     }
   });
 

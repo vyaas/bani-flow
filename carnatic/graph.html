@@ -67896,7 +67896,7 @@ function orientToNode(nodeId) {
   setTimeout(() => n.removeClass('bani-match'), 1400);
 }
 
-// ── rec-filter event listener — bracket-aware (ADR-018) ──────────────────────
+// ── rec-filter event listener — bracket-aware (ADR-018) + raga-tree-aware (ADR-064) ──
 document.getElementById('rec-filter').addEventListener('input', function() {
   const q       = this.value.toLowerCase().trim();
   const recList = document.getElementById('recordings-list');
@@ -67936,6 +67936,42 @@ document.getElementById('rec-filter').addEventListener('input', function() {
       anyVisible = true;
     } else {
       bracket.style.display = 'none';
+    }
+  });
+
+  // ── raga tree groups (ADR-064) ────────────────────────────────────────────
+  recList.querySelectorAll('li.tree-group').forEach(group => {
+    const compNodes = group.querySelectorAll('.tree-comp-node');
+    let groupHasMatch = false;
+
+    compNodes.forEach(node => {
+      if (!q) {
+        node.style.display = '';
+        groupHasMatch = true;
+        return;
+      }
+      const compText  = (node.querySelector('.comp-chip')     || {}).textContent || '';
+      const titleText = (node.querySelector('.rec-title')     || {}).textContent || '';
+      const composerText = (node.querySelector('.composer-label') || {}).textContent || '';
+      // Also search inside recording leaves (year / concert title)
+      const recText   = node.querySelector('.tree-rec-list')
+        ? node.querySelector('.tree-rec-list').textContent : '';
+      const matches = [compText, titleText, composerText, recText]
+        .some(t => t.toLowerCase().includes(q));
+      node.style.display = matches ? '' : 'none';
+      if (matches) groupHasMatch = true;
+    });
+
+    if (!q) {
+      group.style.display = '';
+      group.classList.add('tree-group-open');
+      anyVisible = true;
+    } else if (groupHasMatch) {
+      group.style.display = '';
+      group.classList.add('tree-group-open');
+      anyVisible = true;
+    } else {
+      group.style.display = 'none';
     }
   });
 
@@ -69192,12 +69228,28 @@ function buildRecordingsList(nodeId, nodeData) {
     recList.appendChild(bracket);
   });
 
-  // ── 2. Legacy tracks as flat items (sorted by year) ───────────────────────
+  // ── 2. Raga tree (ADR-064) — structured perfs re-grouped by raga ─────────
+  if (structuredPerfs.length > 0) {
+    const ragaHeader = document.createElement('div');
+    ragaHeader.className = 'rec-section-header';
+    ragaHeader.textContent = 'By raga';
+    recList.appendChild(ragaHeader);
+    recList.appendChild(buildRagaTree(structuredPerfs, nodeId, artistLabel));
+  }
+
+  // ── 3. Legacy tracks as flat items (sorted by year) ───────────────────────
   const sortedLegacy = legacyTracks.slice().sort((a, b) => {
     if (a.year == null) return 1;
     if (b.year == null) return -1;
     return a.year - b.year;
   });
+
+  if (sortedLegacy.length > 0) {
+    const legacyHeader = document.createElement('div');
+    legacyHeader.className = 'rec-section-header';
+    legacyHeader.textContent = 'Other recordings';
+    recList.appendChild(legacyHeader);
+  }
 
   sortedLegacy.forEach(t => {
     const li = document.createElement('li');
@@ -69276,7 +69328,7 @@ function buildRecordingsList(nodeId, nodeData) {
     recList.appendChild(li);
   });
 
-  // ── 3. Compositions by this musician (ADR-057) ───────────────────────────
+  // ── 4. Compositions by this musician (ADR-057) ───────────────────────────
   // Find any composer whose musician_node_id matches this nodeId.
   // List their compositions grouped under a collapsible header, each with
   // a comp-chip (navigable) + raga-chip + composer name.

@@ -672,6 +672,257 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   return bracket;
 }
 
+// ── ADR-064: Raga tree helpers ─────────────────────────────────────────────────
+
+// buildCompNode — renders a <li class="tree-comp-node"> for one composition within a raga
+// perfs: array of structured_perf entries sharing the same composition_id
+function buildCompNode(compId, perfs, nodeId, artistLabel) {
+  const compObj = compId
+    ? ((typeof compositions !== 'undefined' ? compositions : []).find(c => c.id === compId) || null)
+    : null;
+  const composerObj = compObj && compObj.composer_id
+    ? ((typeof composers !== 'undefined' ? composers : []).find(c => c.id === compObj.composer_id) || null)
+    : null;
+
+  // Sort perfs: earliest year first, nulls last
+  const sortedPerfs = perfs.slice().sort((a, b) => {
+    const ya = a.date ? parseInt(a.date) : Infinity;
+    const yb = b.date ? parseInt(b.date) : Infinity;
+    return ya - yb;
+  });
+
+  const li = document.createElement('li');
+  li.className = 'tree-comp-node';
+
+  // ── Header: comp chip + recording-count toggle ─────────────────────────
+  const compHeader = document.createElement('div');
+  compHeader.className = 'tree-comp-header';
+
+  if (compObj) {
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = compObj.title || compId;
+    compChip.title = (compObj.title || compId) + ' — Explore in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      compChip.classList.add('chip-tapped');
+      setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compId);
+    });
+    compHeader.appendChild(compChip);
+  } else {
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'rec-title';
+    titleSpan.textContent = (sortedPerfs[0] && sortedPerfs[0].display_title) || 'Unknown composition';
+    compHeader.appendChild(titleSpan);
+  }
+
+  const recCount = sortedPerfs.length;
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'tree-rec-toggle';
+  toggleBtn.setAttribute('aria-expanded', 'false');
+  toggleBtn.textContent = '\u25B6 ' + recCount + (recCount === 1 ? ' recording' : ' recordings');
+  compHeader.appendChild(toggleBtn);
+  li.appendChild(compHeader);
+
+  // ── Composer sub-label — always visible ───────────────────────────────
+  if (composerObj) {
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'tree-comp-meta';
+    const composerLabel = document.createElement('span');
+    composerLabel.className = 'composer-label';
+    composerLabel.textContent = composerObj.name;
+    metaDiv.appendChild(composerLabel);
+    li.appendChild(metaDiv);
+  }
+
+  // ── Recording rows (hidden by default) ────────────────────────────────
+  const recUl = document.createElement('ul');
+  recUl.className = 'tree-rec-list';
+  recUl.hidden = true;
+
+  sortedPerfs.forEach(p => {
+    const recLi = document.createElement('li');
+    recLi.className = 'tree-leaf';
+    recLi.dataset.vid = p.video_id;
+    if (playerRegistry.has(p.video_id)) recLi.classList.add('playing');
+
+    const row = document.createElement('div');
+    row.className = 'trail-row2';
+
+    const chipsDiv = document.createElement('div');
+    chipsDiv.className = 'trail-chips';
+
+    // Year + short concert title
+    const labelParts = [];
+    if (p.date) labelParts.push(p.date.slice(0, 4));
+    if (p.short_title) labelParts.push(p.short_title);
+    if (labelParts.length) {
+      const yearSpan = document.createElement('span');
+      yearSpan.className = 'rec-year';
+      yearSpan.textContent = labelParts.join(' \u00b7 ');
+      chipsDiv.appendChild(yearSpan);
+    }
+    row.appendChild(chipsDiv);
+
+    const actsDiv = document.createElement('div');
+    actsDiv.className = 'trail-acts';
+
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.setAttribute('data-vid', p.video_id);
+    playBtn.title = p.short_title || p.title || 'Play';
+    playBtn.textContent = '\u25B6';
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(
+        p.video_id, p.display_title, artistLabel,
+        p.offset_seconds > 0 ? p.offset_seconds : undefined,
+        p.short_title || p.title, [],
+        { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null }
+      );
+    });
+    actsDiv.appendChild(playBtn);
+    actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
+    row.appendChild(actsDiv);
+
+    recLi.appendChild(row);
+    recUl.appendChild(recLi);
+  });
+
+  li.appendChild(recUl);
+
+  // Wire toggle
+  toggleBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+    recUl.hidden = isExpanded;
+    toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+    toggleBtn.textContent = (isExpanded ? '\u25B6 ' : '\u25BC ') +
+      recCount + (recCount === 1 ? ' recording' : ' recordings');
+  });
+
+  return li;
+}
+
+// buildRagaGroupItem — renders a <li class="tree-group"> for one raga
+function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
+  // Group perfs by composition_id
+  const compMap = new Map();
+  const nullCompPerfs = [];
+  perfs.forEach(p => {
+    if (!p.composition_id) { nullCompPerfs.push(p); return; }
+    if (!compMap.has(p.composition_id)) compMap.set(p.composition_id, []);
+    compMap.get(p.composition_id).push(p);
+  });
+
+  // Sort compositions by earliest year (asc), nulls last
+  const sortedComps = [...compMap.entries()].sort((a, b) => {
+    const yearA = Math.min(...a[1].map(p => p.date ? parseInt(p.date) : Infinity));
+    const yearB = Math.min(...b[1].map(p => p.date ? parseInt(p.date) : Infinity));
+    if (!isFinite(yearA) && !isFinite(yearB)) return 0;
+    if (!isFinite(yearA)) return 1;
+    if (!isFinite(yearB)) return -1;
+    return yearA - yearB;
+  });
+
+  const totalComps = compMap.size + (nullCompPerfs.length > 0 ? 1 : 0);
+  const isSingle = totalComps <= 1;
+
+  const li = document.createElement('li');
+  li.className = 'tree-group tree-group-open' + (isSingle ? ' tree-group-single' : '');
+
+  // ── Header ─────────────────────────────────────────────────────────────
+  const header = document.createElement('div');
+  header.className = 'tree-group-header';
+
+  const chevron = document.createElement('span');
+  chevron.className = 'tree-chevron';
+  chevron.setAttribute('aria-hidden', 'true');
+  chevron.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = li.classList.contains('tree-group-open');
+    li.classList.toggle('tree-group-open', !isOpen);
+    if (!isOpen && ragaId && typeof triggerBaniSearch === 'function') {
+      triggerBaniSearch('raga', ragaId);
+    }
+  });
+  header.appendChild(chevron);
+
+  if (ragaId && ragaObj) {
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.textContent = ragaObj.name;
+    ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+    ragaChip.addEventListener('click', e => {
+      e.stopPropagation();
+      ragaChip.classList.add('chip-tapped');
+      setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
+    });
+    header.appendChild(ragaChip);
+  } else {
+    const unknownSpan = document.createElement('span');
+    unknownSpan.className = 'rec-group-label rec-unknown';
+    unknownSpan.textContent = 'Unknown raga';
+    header.appendChild(unknownSpan);
+  }
+
+  const countSpan = document.createElement('span');
+  countSpan.className = 'rec-group-count';
+  countSpan.textContent = totalComps;
+  header.appendChild(countSpan);
+
+  li.appendChild(header);
+
+  // ── Children ───────────────────────────────────────────────────────────
+  const ul = document.createElement('ul');
+  ul.className = 'tree-children';
+  sortedComps.forEach(([compId, compPerfs]) => {
+    ul.appendChild(buildCompNode(compId, compPerfs, nodeId, artistLabel));
+  });
+  if (nullCompPerfs.length > 0) {
+    ul.appendChild(buildCompNode(null, nullCompPerfs, nodeId, artistLabel));
+  }
+  li.appendChild(ul);
+
+  return li;
+}
+
+// buildRagaTree — renders all raga groups from a structured_perfs array
+// Returns a DocumentFragment to append to the list.
+function buildRagaTree(perfs, nodeId, artistLabel) {
+  const ragaMap = new Map();
+  const nullRagaPerfs = [];
+
+  perfs.forEach(p => {
+    if (!p.raga_id) { nullRagaPerfs.push(p); return; }
+    if (!ragaMap.has(p.raga_id)) {
+      const ragaObj = (typeof ragas !== 'undefined' ? ragas : []).find(r => r.id === p.raga_id) || null;
+      ragaMap.set(p.raga_id, { ragaObj, perfs: [] });
+    }
+    ragaMap.get(p.raga_id).perfs.push(p);
+  });
+
+  // Sort raga groups: most recordings first; alphabetical tie-break
+  const sortedRagas = [...ragaMap.entries()].sort((a, b) => {
+    const countDiff = b[1].perfs.length - a[1].perfs.length;
+    if (countDiff !== 0) return countDiff;
+    const nameA = (a[1].ragaObj ? a[1].ragaObj.name : a[0]).toLowerCase();
+    const nameB = (b[1].ragaObj ? b[1].ragaObj.name : b[0]).toLowerCase();
+    return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+  });
+
+  const fragment = document.createDocumentFragment();
+  sortedRagas.forEach(([ragaId, { ragaObj, perfs: ragaPerfs }]) => {
+    fragment.appendChild(buildRagaGroupItem(ragaId, ragaObj, ragaPerfs, nodeId, artistLabel));
+  });
+  if (nullRagaPerfs.length > 0) {
+    fragment.appendChild(buildRagaGroupItem(null, null, nullRagaPerfs, nodeId, artistLabel));
+  }
+  return fragment;
+}
+
 // ── buildRecordingsList — concert-bracketed + legacy flat (ADR-018) ───────────
 function buildRecordingsList(nodeId, nodeData) {
   const recPanel  = document.getElementById('recordings-panel');
@@ -727,12 +978,28 @@ function buildRecordingsList(nodeId, nodeData) {
     recList.appendChild(bracket);
   });
 
-  // ── 2. Legacy tracks as flat items (sorted by year) ───────────────────────
+  // ── 2. Raga tree (ADR-064) — structured perfs re-grouped by raga ─────────
+  if (structuredPerfs.length > 0) {
+    const ragaHeader = document.createElement('div');
+    ragaHeader.className = 'rec-section-header';
+    ragaHeader.textContent = 'By raga';
+    recList.appendChild(ragaHeader);
+    recList.appendChild(buildRagaTree(structuredPerfs, nodeId, artistLabel));
+  }
+
+  // ── 3. Legacy tracks as flat items (sorted by year) ───────────────────────
   const sortedLegacy = legacyTracks.slice().sort((a, b) => {
     if (a.year == null) return 1;
     if (b.year == null) return -1;
     return a.year - b.year;
   });
+
+  if (sortedLegacy.length > 0) {
+    const legacyHeader = document.createElement('div');
+    legacyHeader.className = 'rec-section-header';
+    legacyHeader.textContent = 'Other recordings';
+    recList.appendChild(legacyHeader);
+  }
 
   sortedLegacy.forEach(t => {
     const li = document.createElement('li');
@@ -811,7 +1078,7 @@ function buildRecordingsList(nodeId, nodeData) {
     recList.appendChild(li);
   });
 
-  // ── 3. Compositions by this musician (ADR-057) ───────────────────────────
+  // ── 4. Compositions by this musician (ADR-057) ───────────────────────────
   // Find any composer whose musician_node_id matches this nodeId.
   // List their compositions grouped under a collapsible header, each with
   // a comp-chip (navigable) + raga-chip + composer name.
