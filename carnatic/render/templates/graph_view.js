@@ -378,9 +378,55 @@ cy.on('mousemove', 'node', evt => {
   popover.style.top  = (y + 16 + ph > window.innerHeight ? y - ph - 10 : y + 16) + 'px';
 });
 
+// ── Panel history (ADR-066) ──────────────────────────────────────────────────
+let _currentPanelNodeId = null;
+const panelHistory = { back: [], forward: [] };
+const PANEL_HISTORY_MAX = 5;
+
+function _updatePanelNavButtons() {
+  const backBtn = document.getElementById('panel-back-btn');
+  const fwdBtn  = document.getElementById('panel-fwd-btn');
+  if (backBtn) backBtn.disabled = panelHistory.back.length === 0;
+  if (fwdBtn)  fwdBtn.disabled  = panelHistory.forward.length === 0;
+}
+
+function panelBack() {
+  if (!panelHistory.back.length) return;
+  const targetId = panelHistory.back.pop();
+  if (_currentPanelNodeId) {
+    panelHistory.forward.unshift(_currentPanelNodeId);
+    if (panelHistory.forward.length > PANEL_HISTORY_MAX) panelHistory.forward.pop();
+  }
+  const n = cy.getElementById(targetId);
+  if (n && n.length) selectNode(n, { fromHistory: true });
+}
+
+function panelForward() {
+  if (!panelHistory.forward.length) return;
+  const targetId = panelHistory.forward.shift();
+  if (_currentPanelNodeId) {
+    panelHistory.back.push(_currentPanelNodeId);
+    if (panelHistory.back.length > PANEL_HISTORY_MAX) panelHistory.back.shift();
+  }
+  const n = cy.getElementById(targetId);
+  if (n && n.length) selectNode(n, { fromHistory: true });
+}
+
+document.getElementById('panel-back-btn').addEventListener('click', panelBack);
+document.getElementById('panel-fwd-btn').addEventListener('click', panelForward);
+
 // ── selectNode — shared selection logic (sidebar + graph highlight) ───────────
-function selectNode(node) {
+function selectNode(node, { fromHistory = false } = {}) {
   const d = node.data();
+  if (!fromHistory) {
+    if (_currentPanelNodeId && _currentPanelNodeId !== node.id()) {
+      panelHistory.back.push(_currentPanelNodeId);
+      if (panelHistory.back.length > PANEL_HISTORY_MAX) panelHistory.back.shift();
+      panelHistory.forward = [];
+    }
+  }
+  _currentPanelNodeId = node.id();
+  _updatePanelNavButtons();
 
   // Collapsed single-line header — build an era-tinted musician-chip
   const nameEl = document.getElementById('node-name');

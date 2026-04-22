@@ -215,6 +215,36 @@
     margin-bottom: 10px;
     text-align: center;
   }
+  /* ADR-066: Musician Panel history nav buttons */
+  #musician-panel h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: none;
+    border: 1px solid var(--border-weak);
+    border-radius: 50%;
+    color: var(--fg-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.15s, border-color 0.15s;
+  }
+  .panel-nav-btn:disabled {
+    opacity: 0.25;
+    cursor: default;
+    pointer-events: none;
+  }
+  .panel-nav-btn:not(:disabled):hover {
+    border-color: var(--accent-main);
+    color: var(--accent-main);
+  }
 
   /* ── node header (collapsed single-line) ── */
   #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -2524,7 +2554,11 @@
     <!-- ── sticky zone: musician search + node header + rec filter ── -->
     <div id="right-sticky">
       <div class="panel" id="musician-panel">
-        <h3>Musician &#9835;</h3>
+        <h3>
+          <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
+          Musician &#9835;
+          <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+        </h3>
         <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
           <input id="musician-search-input" class="search-input panel-search" type="text"
                  placeholder="&#128269; Search musician&#8230;"
@@ -67832,9 +67866,55 @@ cy.on('mousemove', 'node', evt => {
   popover.style.top  = (y + 16 + ph > window.innerHeight ? y - ph - 10 : y + 16) + 'px';
 });
 
+// ── Panel history (ADR-066) ──────────────────────────────────────────────────
+let _currentPanelNodeId = null;
+const panelHistory = { back: [], forward: [] };
+const PANEL_HISTORY_MAX = 5;
+
+function _updatePanelNavButtons() {
+  const backBtn = document.getElementById('panel-back-btn');
+  const fwdBtn  = document.getElementById('panel-fwd-btn');
+  if (backBtn) backBtn.disabled = panelHistory.back.length === 0;
+  if (fwdBtn)  fwdBtn.disabled  = panelHistory.forward.length === 0;
+}
+
+function panelBack() {
+  if (!panelHistory.back.length) return;
+  const targetId = panelHistory.back.pop();
+  if (_currentPanelNodeId) {
+    panelHistory.forward.unshift(_currentPanelNodeId);
+    if (panelHistory.forward.length > PANEL_HISTORY_MAX) panelHistory.forward.pop();
+  }
+  const n = cy.getElementById(targetId);
+  if (n && n.length) selectNode(n, { fromHistory: true });
+}
+
+function panelForward() {
+  if (!panelHistory.forward.length) return;
+  const targetId = panelHistory.forward.shift();
+  if (_currentPanelNodeId) {
+    panelHistory.back.push(_currentPanelNodeId);
+    if (panelHistory.back.length > PANEL_HISTORY_MAX) panelHistory.back.shift();
+  }
+  const n = cy.getElementById(targetId);
+  if (n && n.length) selectNode(n, { fromHistory: true });
+}
+
+document.getElementById('panel-back-btn').addEventListener('click', panelBack);
+document.getElementById('panel-fwd-btn').addEventListener('click', panelForward);
+
 // ── selectNode — shared selection logic (sidebar + graph highlight) ───────────
-function selectNode(node) {
+function selectNode(node, { fromHistory = false } = {}) {
   const d = node.data();
+  if (!fromHistory) {
+    if (_currentPanelNodeId && _currentPanelNodeId !== node.id()) {
+      panelHistory.back.push(_currentPanelNodeId);
+      if (panelHistory.back.length > PANEL_HISTORY_MAX) panelHistory.back.shift();
+      panelHistory.forward = [];
+    }
+  }
+  _currentPanelNodeId = node.id();
+  _updatePanelNavButtons();
 
   // Collapsed single-line header — build an era-tinted musician-chip
   const nameEl = document.getElementById('node-name');
