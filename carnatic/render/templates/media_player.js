@@ -388,6 +388,69 @@ function toggleConcert(headerEl) {
   }
 }
 
+// ── buildYtLink — external YouTube link icon always shown next to ▶ ─────────────
+// Returns an <a class="yt-ext-link"> that opens the video (at offset if given) in a
+// new tab — libredirect intercepts it transparently.
+function buildYtLink(vid, offsetSeconds) {
+  const secs = Math.floor(offsetSeconds || 0);
+  const url  = 'https://www.youtube.com/watch?v=' + encodeURIComponent(vid)
+             + (secs > 0 ? '&t=' + secs + 's' : '');
+  const a = document.createElement('a');
+  a.className = 'yt-ext-link';
+  a.href      = url;
+  a.target    = '_blank';
+  a.rel       = 'noopener noreferrer';
+  a.title     = 'Open on YouTube';
+  a.textContent = '↗';
+  a.addEventListener('click', e => e.stopPropagation());
+  return a;
+}
+
+// ── buildComposerChip — composer chip for a given composition_id ────────────────
+// Returns a .composer-chip <span> (navigable if musician_node_id is set) or null.
+function buildComposerChip(compositionId) {
+  if (!compositionId) return null;
+  const comp = (typeof compositions !== 'undefined' ? compositions : []).find(
+    c => c.id === compositionId
+  );
+  if (!comp || !comp.composer_id) return null;
+  const composerObj = (typeof composers !== 'undefined' ? composers : []).find(
+    c => c.id === comp.composer_id
+  );
+  if (!composerObj) return null;
+
+  const chip = document.createElement('span');
+  chip.className = 'composer-chip';
+  chip.textContent = composerObj.name;
+
+  const eraId = composerObj.musician_node_id
+    ? (cy.getElementById(composerObj.musician_node_id).data('era') || null)
+    : null;
+  const tint = THEME.eraTintCss(eraId);
+  chip.style.setProperty('--chip-era-bg', tint.bg);
+  chip.style.setProperty('--chip-era-border', tint.border);
+
+  if (composerObj.musician_node_id) {
+    chip.title = composerObj.name + ' — Open Musician panel';
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      chip.classList.add('chip-tapped');
+      setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+      const n = cy.getElementById(composerObj.musician_node_id);
+      if (n && n.length) {
+        selectNode(n);
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
+      }
+    });
+  } else {
+    chip.style.cursor = 'default';
+    chip.title = composerObj.name;
+  }
+  return chip;
+}
+
 // ── buildConcertBracket — build one concert bracket DOM element ───────────────
 function buildConcertBracket(concert, nodeId, artistLabel) {
   // Collect all performers across all sessions, deduplicated, excluding self
@@ -497,11 +560,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       const li = document.createElement('li');
       li.className = 'concert-perf-item' + (playerRegistry.has(p.video_id) ? ' playing' : '');
       li.dataset.vid = p.video_id;
-      // Row click → cross-navigate (composition or raga)
-      li.addEventListener('click', () => {
-        if (p.composition_id) triggerBaniSearch('comp', p.composition_id);
-        else if (p.raga_id)   triggerBaniSearch('raga', p.raga_id);
-      });
+      // ADR-052: container is not a click target; navigation lives in embedded chips.
 
       // Row 1: composition chip (navigable) or plain title for non-composition entries
       const row1 = document.createElement('div');
@@ -566,6 +625,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         );
       });
       row1.appendChild(playBtn);
+      row1.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
 
       // Row 2: raga chip + tala + timestamp link
       const row2 = document.createElement('div');
@@ -597,6 +657,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       } else if (p.raga_id || talaPart) {
         metaSpan.textContent = [p.raga_id, talaPart].filter(Boolean).join(' · ');
       }
+      const concertComposerChip = buildComposerChip(p.composition_id);
+      if (concertComposerChip) metaSpan.appendChild(concertComposerChip);
 
       row2.appendChild(metaSpan);
 
@@ -676,11 +738,7 @@ function buildRecordingsList(nodeId, nodeData) {
     const li = document.createElement('li');
     li.className = 'rec-legacy' + (playerRegistry.has(t.vid) ? ' playing' : '');
     li.dataset.vid = t.vid;
-    // Row click → cross-navigate
-    li.addEventListener('click', () => {
-      if (t.composition_id) triggerBaniSearch('comp', t.composition_id);
-      else if (t.raga_id)   triggerBaniSearch('raga', t.raga_id);
-    });
+    // ADR-052: container is not a click target; navigation lives in embedded chips.
 
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
@@ -720,6 +778,7 @@ function buildRecordingsList(nodeId, nodeData) {
         { nodeId, ragaId: t.raga_id || null, compositionId: t.composition_id || null });
     });
     row1.appendChild(playBtn);
+    row1.appendChild(buildYtLink(t.vid, 0));
 
     const row2 = document.createElement('div');
     row2.className = 'rec-row2';
@@ -743,6 +802,8 @@ function buildRecordingsList(nodeId, nodeData) {
         metaSpan.textContent = t.raga_id;
       }
     }
+    const legacyComposerChip = buildComposerChip(t.composition_id);
+    if (legacyComposerChip) metaSpan.appendChild(legacyComposerChip);
     row2.appendChild(metaSpan);
 
     li.appendChild(row1);
@@ -754,11 +815,13 @@ function buildRecordingsList(nodeId, nodeData) {
   // Find any composer whose musician_node_id matches this nodeId.
   // List their compositions grouped under a collapsible header, each with
   // a comp-chip (navigable) + raga-chip + composer name.
-  const composerForNode = (window.composers || []).find(
+  const composerForNode = (typeof composers !== 'undefined' ? composers : []).find(
     c => c.musician_node_id === nodeId
   );
   const composerComps = composerForNode
-    ? (window.compositions || []).filter(c => c.composer_id === composerForNode.id)
+    ? (typeof compositions !== 'undefined' ? compositions : []).filter(
+        c => c.composer_id === composerForNode.id
+      )
     : [];
 
   if (composerComps.length > 0) {
@@ -793,7 +856,7 @@ function buildRecordingsList(nodeId, nodeData) {
         li.appendChild(compChip);
 
         if (comp.raga_id) {
-          const ragaObj = (window.ragas || []).find(r => r.id === comp.raga_id);
+          const ragaObj = (typeof ragas !== 'undefined' ? ragas : []).find(r => r.id === comp.raga_id);
           if (ragaObj) {
             const ragaChip = document.createElement('span');
             ragaChip.className = 'raga-chip';

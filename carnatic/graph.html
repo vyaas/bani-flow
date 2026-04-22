@@ -360,12 +360,12 @@
     flex-shrink: 0; color: var(--fg-muted); font-size: 0.68rem;
     margin-left: auto; padding-left: 6px;
   }
-  .rec-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  .rec-row2 { display: flex; flex-direction: column; align-items: flex-start; width: 100%; gap: 3px; }
   .rec-row3 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
 
   /* ── Chip truncation in row contexts — play button must always be visible ──
      .comp-chip and .raga-chip are white-space:nowrap by default (good for
-     standalone use). Inside rec-row1 / trail-row2 they must truncate so the
+     standalone use). Inside rec-row1 they must truncate so the
      ▶ play button is never pushed out of view.
      max-width is a soft cap; the chip shrinks further if the row is narrow.
      The full name is always available via the title="" tooltip on hover.     */
@@ -376,16 +376,17 @@
     text-overflow: ellipsis;
     flex-shrink: 1;
   }
-  .trail-row2 .comp-chip,
-  .trail-row2 .raga-chip {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-shrink: 1;
+  /* trail-row2 / rec-meta chips: each chip on its own line — no truncation */
+  .trail-row2,
+  .rec-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
   }
   .rec-meta {
     color: var(--fg-dim); font-size: 0.70rem;
-    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
   }
   .rec-link {
     flex-shrink: 0; color: var(--accent-link); font-size: 0.70rem;
@@ -785,7 +786,9 @@
   .trail-lifespan { flex-shrink: 0; color: var(--fg-muted); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }
   .trail-artist { color: var(--accent); cursor: pointer; font-weight: bold; flex-shrink: 0; display: inline-flex; align-items: center; gap: 0; }
   .trail-artist:hover { text-decoration: underline; }
-  .trail-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  /* trail-row2: outer flex-row — chips column on left, play button on right */
+  .trail-row2 { display: flex; flex-direction: row; align-items: flex-start; width: 100%; gap: 6px; }
+  .trail-chips { display: flex; flex-direction: column; align-items: flex-start; flex: 1; min-width: 0; gap: 3px; }
   .trail-label { color: var(--fg-dim); font-size: 0.72rem; flex: 1; min-width: 0; }
   /* Instrument shape icon in trail rows — outline only, rendered as inline SVG by JS */
   .trail-shape-icon {
@@ -902,6 +905,28 @@
     background: var(--bg-input);
     border-color: var(--accent-sub);
     color: var(--fg);
+  }
+  /* YouTube external-link icon — always next to ▶ */
+  .yt-ext-link {
+    flex-shrink: 0;
+    color: var(--fg-muted);
+    font-size: 0.62rem;
+    text-decoration: none;
+    padding: 1px 4px;
+    border-radius: 3px;
+    line-height: 1.6;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .yt-ext-link:hover { color: var(--fg); background: var(--bg-active); }
+  /* trail-acts: ▶ + ↗ group — flex-col so they stack neatly on the right */
+  .trail-acts {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    margin-top: 1px;
   }
 
   /* ── ADR-025: raga name link in rec-meta ── */
@@ -68291,6 +68316,69 @@ function toggleConcert(headerEl) {
   }
 }
 
+// ── buildYtLink — external YouTube link icon always shown next to ▶ ─────────────
+// Returns an <a class="yt-ext-link"> that opens the video (at offset if given) in a
+// new tab — libredirect intercepts it transparently.
+function buildYtLink(vid, offsetSeconds) {
+  const secs = Math.floor(offsetSeconds || 0);
+  const url  = 'https://www.youtube.com/watch?v=' + encodeURIComponent(vid)
+             + (secs > 0 ? '&t=' + secs + 's' : '');
+  const a = document.createElement('a');
+  a.className = 'yt-ext-link';
+  a.href      = url;
+  a.target    = '_blank';
+  a.rel       = 'noopener noreferrer';
+  a.title     = 'Open on YouTube';
+  a.textContent = '↗';
+  a.addEventListener('click', e => e.stopPropagation());
+  return a;
+}
+
+// ── buildComposerChip — composer chip for a given composition_id ────────────────
+// Returns a .composer-chip <span> (navigable if musician_node_id is set) or null.
+function buildComposerChip(compositionId) {
+  if (!compositionId) return null;
+  const comp = (typeof compositions !== 'undefined' ? compositions : []).find(
+    c => c.id === compositionId
+  );
+  if (!comp || !comp.composer_id) return null;
+  const composerObj = (typeof composers !== 'undefined' ? composers : []).find(
+    c => c.id === comp.composer_id
+  );
+  if (!composerObj) return null;
+
+  const chip = document.createElement('span');
+  chip.className = 'composer-chip';
+  chip.textContent = composerObj.name;
+
+  const eraId = composerObj.musician_node_id
+    ? (cy.getElementById(composerObj.musician_node_id).data('era') || null)
+    : null;
+  const tint = THEME.eraTintCss(eraId);
+  chip.style.setProperty('--chip-era-bg', tint.bg);
+  chip.style.setProperty('--chip-era-border', tint.border);
+
+  if (composerObj.musician_node_id) {
+    chip.title = composerObj.name + ' — Open Musician panel';
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      chip.classList.add('chip-tapped');
+      setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+      const n = cy.getElementById(composerObj.musician_node_id);
+      if (n && n.length) {
+        selectNode(n);
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
+      }
+    });
+  } else {
+    chip.style.cursor = 'default';
+    chip.title = composerObj.name;
+  }
+  return chip;
+}
+
 // ── buildConcertBracket — build one concert bracket DOM element ───────────────
 function buildConcertBracket(concert, nodeId, artistLabel) {
   // Collect all performers across all sessions, deduplicated, excluding self
@@ -68465,6 +68553,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         );
       });
       row1.appendChild(playBtn);
+      row1.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
 
       // Row 2: raga chip + tala + timestamp link
       const row2 = document.createElement('div');
@@ -68496,6 +68585,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       } else if (p.raga_id || talaPart) {
         metaSpan.textContent = [p.raga_id, talaPart].filter(Boolean).join(' · ');
       }
+      const concertComposerChip = buildComposerChip(p.composition_id);
+      if (concertComposerChip) metaSpan.appendChild(concertComposerChip);
 
       row2.appendChild(metaSpan);
 
@@ -68615,6 +68706,7 @@ function buildRecordingsList(nodeId, nodeData) {
         { nodeId, ragaId: t.raga_id || null, compositionId: t.composition_id || null });
     });
     row1.appendChild(playBtn);
+    row1.appendChild(buildYtLink(t.vid, 0));
 
     const row2 = document.createElement('div');
     row2.className = 'rec-row2';
@@ -68638,6 +68730,8 @@ function buildRecordingsList(nodeId, nodeData) {
         metaSpan.textContent = t.raga_id;
       }
     }
+    const legacyComposerChip = buildComposerChip(t.composition_id);
+    if (legacyComposerChip) metaSpan.appendChild(legacyComposerChip);
     row2.appendChild(metaSpan);
 
     li.appendChild(row1);
@@ -68649,11 +68743,13 @@ function buildRecordingsList(nodeId, nodeData) {
   // Find any composer whose musician_node_id matches this nodeId.
   // List their compositions grouped under a collapsible header, each with
   // a comp-chip (navigable) + raga-chip + composer name.
-  const composerForNode = (window.composers || []).find(
+  const composerForNode = (typeof composers !== 'undefined' ? composers : []).find(
     c => c.musician_node_id === nodeId
   );
   const composerComps = composerForNode
-    ? (window.compositions || []).filter(c => c.composer_id === composerForNode.id)
+    ? (typeof compositions !== 'undefined' ? compositions : []).filter(
+        c => c.composer_id === composerForNode.id
+      )
     : [];
 
   if (composerComps.length > 0) {
@@ -68688,7 +68784,7 @@ function buildRecordingsList(nodeId, nodeData) {
         li.appendChild(compChip);
 
         if (comp.raga_id) {
-          const ragaObj = (window.ragas || []).find(r => r.id === comp.raga_id);
+          const ragaObj = (typeof ragas !== 'undefined' ? ragas : []).find(r => r.id === comp.raga_id);
           if (ragaObj) {
             const ragaChip = document.createElement('span');
             ragaChip.className = 'raga-chip';
@@ -71088,24 +71184,34 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     }
 
     if (composer) {
-      const composerSpan = document.createElement('span');
+      const eraId = composer.musician_node_id
+        ? (cy.getElementById(composer.musician_node_id).data('era') || null)
+        : null;
+      const tint = THEME.eraTintCss(eraId);
+      const composerChip = document.createElement('span');
+      composerChip.className = 'composer-chip';
+      composerChip.textContent = composer.name;
+      composerChip.style.setProperty('--chip-era-bg', tint.bg);
+      composerChip.style.setProperty('--chip-era-border', tint.border);
       if (composer.musician_node_id) {
-        const a = document.createElement('a');
-        a.className = 'bani-sub-link';
-        a.href = '#';
-        a.textContent = composer.name;
-        a.addEventListener('click', e => {
-          e.preventDefault();
+        composerChip.title = composer.name + ' — Open Musician panel';
+        composerChip.addEventListener('click', e => {
+          e.stopPropagation();
+          composerChip.classList.add('chip-tapped');
+          setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
           const n = cy.getElementById(composer.musician_node_id);
           if (n && n.length) {
             selectNode(n);
+            if (typeof window.setPanelState === 'function') {
+              setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+            }
           }
         });
-        composerSpan.appendChild(a);
       } else {
-        composerSpan.textContent = composer.name;
+        composerChip.style.cursor = 'default';
+        composerChip.title = composer.name;
       }
-      parts.push(composerSpan);
+      parts.push(composerChip);
     }
 
     // Join with ' · ' separators
@@ -71562,13 +71668,16 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   headerDiv.className = 'trail-header';
 
   // Primary artist row (artist name + lifespan on same line)
+  // In comp mode: era colouring already communicates the period; lifespan is redundant.
   const primaryRow = document.createElement('div');
   primaryRow.className = 'trail-header-primary';
   primaryRow.appendChild(buildArtistSpan(row, true, type, id));
-  const lifespanSpan = document.createElement('span');
-  lifespanSpan.className = 'trail-lifespan';
-  lifespanSpan.textContent = row.lifespan || (row.track.year ? String(row.track.year) : '');
-  primaryRow.appendChild(lifespanSpan);
+  if (type !== 'comp') {
+    const lifespanSpan = document.createElement('span');
+    lifespanSpan.className = 'trail-lifespan';
+    lifespanSpan.textContent = row.lifespan || (row.track.year ? String(row.track.year) : '');
+    primaryRow.appendChild(lifespanSpan);
+  }
   headerDiv.appendChild(primaryRow);
 
   // One row per co-performer (indented below primary)
@@ -71593,6 +71702,8 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
 
   const row2Div = document.createElement('div');
   row2Div.className = 'trail-row2';
+  const chipsDiv = document.createElement('div');
+  chipsDiv.className = 'trail-chips';
 
   // Chip suppression rules — avoid redundancy and overflow:
   // • comp filter: subject header already names the composition + its raga →
@@ -71613,7 +71724,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
       e.stopPropagation();
       triggerBaniSearch('comp', trailComp.id);
     });
-    row2Div.appendChild(compChip);
+    chipsDiv.appendChild(compChip);
   }
 
   // Raga chip — navigates to raga filter
@@ -71626,11 +71737,17 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
       e.stopPropagation();
       triggerBaniSearch('raga', trailRagaId);
     });
-    row2Div.appendChild(ragaChip);
+    chipsDiv.appendChild(ragaChip);
   }
 
-  // Fallback label — shown only when no chip is shown
-  if (!showCompChip && !showRagaChip) {
+  // Composer chip — shown in non-comp contexts (comp header already shows composer)
+  const trailComposerChip = (type !== 'comp' && typeof buildComposerChip === 'function')
+    ? buildComposerChip(row.track.composition_id)
+    : null;
+  if (trailComposerChip) chipsDiv.appendChild(trailComposerChip);
+
+  // Fallback label — shown only when no chip at all is shown
+  if (!showCompChip && !showRagaChip && !trailComposerChip) {
     let fallbackLabel = row.track.label;
     if (!row.isStructured && row.track.composition_id) {
       const comp = compositions.find(c => c.id === row.track.composition_id);
@@ -71639,7 +71756,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     const labelSpan = document.createElement('span');
     labelSpan.className = 'trail-label';
     labelSpan.textContent = fallbackLabel;
-    row2Div.appendChild(labelSpan);
+    chipsDiv.appendChild(labelSpan);
   }
 
   // Version badge — shown only when this nodeId::composition_id has multiple entries.
@@ -71654,8 +71771,10 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     versionBadge.className = 'trail-version';
     versionBadge.textContent = row.track._versionLabel;
     versionBadge.title = 'Version: ' + row.track._versionLabel;
-    row2Div.appendChild(versionBadge);
+    chipsDiv.appendChild(versionBadge);
   }
+
+  row2Div.appendChild(chipsDiv);
 
   // ▶ button — ADR-053: dashed border for concert entries, solid for direct
   const isConcertEntry = !!(row.isStructured && row.track.recording_id);
@@ -71724,7 +71843,11 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
       );
     }
   });
-  row2Div.appendChild(trailPlayBtn);
+  const actsDiv = document.createElement('div');
+  actsDiv.className = 'trail-acts';
+  actsDiv.appendChild(trailPlayBtn);
+  actsDiv.appendChild(buildYtLink(row.track.vid, row.track.offset_seconds || 0));
+  row2Div.appendChild(actsDiv);
 
   li.appendChild(headerDiv);
   li.appendChild(row2Div);

@@ -310,20 +310,22 @@
   }
   .concert-perf-item {
     padding: 4px 0; border-bottom: 1px solid var(--border);
-    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+    /* ADR-052: container is not a click target — chips are */
+    cursor: default; -webkit-tap-highlight-color: transparent;
+    display: flex; flex-direction: column; gap: 2px;
   }
   .concert-perf-item:last-child { border-bottom: none; }
-  .concert-perf-item:hover .rec-title { color: var(--accent); }
   .concert-perf-item.playing .rec-title { color: var(--accent-sub); }
 
   /* ── legacy flat items ── */
   li.rec-legacy {
     padding: 5px 0; border-bottom: 1px solid var(--border);
-    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+    /* ADR-052: container is not a click target — chips are */
+    cursor: default; -webkit-tap-highlight-color: transparent;
+    display: flex; flex-direction: column; gap: 2px;
     line-height: 1.4;
   }
   li.rec-legacy:last-child { border-bottom: none; }
-  li.rec-legacy:hover .rec-title { color: var(--accent); }
   li.rec-legacy.playing .rec-title { color: var(--accent-sub); }
 
   .rec-row1 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
@@ -335,12 +337,12 @@
     flex-shrink: 0; color: var(--fg-muted); font-size: 0.68rem;
     margin-left: auto; padding-left: 6px;
   }
-  .rec-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  .rec-row2 { display: flex; flex-direction: column; align-items: flex-start; width: 100%; gap: 3px; }
   .rec-row3 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
 
   /* ── Chip truncation in row contexts — play button must always be visible ──
      .comp-chip and .raga-chip are white-space:nowrap by default (good for
-     standalone use). Inside rec-row1 / trail-row2 they must truncate so the
+     standalone use). Inside rec-row1 they must truncate so the
      ▶ play button is never pushed out of view.
      max-width is a soft cap; the chip shrinks further if the row is narrow.
      The full name is always available via the title="" tooltip on hover.     */
@@ -351,16 +353,17 @@
     text-overflow: ellipsis;
     flex-shrink: 1;
   }
-  .trail-row2 .comp-chip,
-  .trail-row2 .raga-chip {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-shrink: 1;
+  /* trail-row2 / rec-meta chips: each chip on its own line — no truncation */
+  .trail-row2,
+  .rec-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
   }
   .rec-meta {
     color: var(--fg-dim); font-size: 0.70rem;
-    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
   }
   .rec-link {
     flex-shrink: 0; color: var(--accent-link); font-size: 0.70rem;
@@ -747,17 +750,22 @@
     padding: 5px 0; border-bottom: 1px solid var(--border);
     font-size: 0.74rem; color: var(--fg-dim);
     display: flex; flex-direction: column; gap: 2px; line-height: 1.4;
-    cursor: pointer;
+    /* Cursor contract (ADR-052): the row itself is not a click target.
+       Only the embedded chips (.musician-chip, .comp-chip, .raga-chip)
+       carry cursor:pointer — they are the single source of truth. */
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
   }
   #trail-list li:last-child { border-bottom: none; }
-  #trail-list li:hover { color: var(--accent); }
   #trail-list li.playing { color: var(--accent-sub); }
   .trail-header { display: flex; flex-direction: column; width: 100%; gap: 1px; }
   .trail-header-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
   .trail-lifespan { flex-shrink: 0; color: var(--fg-muted); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }
   .trail-artist { color: var(--accent); cursor: pointer; font-weight: bold; flex-shrink: 0; display: inline-flex; align-items: center; gap: 0; }
   .trail-artist:hover { text-decoration: underline; }
-  .trail-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
+  /* trail-row2: outer flex-row — chips column on left, play button on right */
+  .trail-row2 { display: flex; flex-direction: row; align-items: flex-start; width: 100%; gap: 6px; }
+  .trail-chips { display: flex; flex-direction: column; align-items: flex-start; flex: 1; min-width: 0; gap: 3px; }
   .trail-label { color: var(--fg-dim); font-size: 0.72rem; flex: 1; min-width: 0; }
   /* Instrument shape icon in trail rows — outline only, rendered as inline SVG by JS */
   .trail-shape-icon {
@@ -874,6 +882,28 @@
     background: var(--bg-input);
     border-color: var(--accent-sub);
     color: var(--fg);
+  }
+  /* YouTube external-link icon — always next to ▶ */
+  .yt-ext-link {
+    flex-shrink: 0;
+    color: var(--fg-muted);
+    font-size: 0.62rem;
+    text-decoration: none;
+    padding: 1px 4px;
+    border-radius: 3px;
+    line-height: 1.6;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .yt-ext-link:hover { color: var(--fg); background: var(--bg-active); }
+  /* trail-acts: ▶ + ↗ group — flex-col so they stack neatly on the right */
+  .trail-acts {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    margin-top: 1px;
   }
 
   /* ── ADR-025: raga name link in rec-meta ── */

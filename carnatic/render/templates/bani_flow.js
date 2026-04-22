@@ -132,24 +132,34 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     }
 
     if (composer) {
-      const composerSpan = document.createElement('span');
+      const eraId = composer.musician_node_id
+        ? (cy.getElementById(composer.musician_node_id).data('era') || null)
+        : null;
+      const tint = THEME.eraTintCss(eraId);
+      const composerChip = document.createElement('span');
+      composerChip.className = 'composer-chip';
+      composerChip.textContent = composer.name;
+      composerChip.style.setProperty('--chip-era-bg', tint.bg);
+      composerChip.style.setProperty('--chip-era-border', tint.border);
       if (composer.musician_node_id) {
-        const a = document.createElement('a');
-        a.className = 'bani-sub-link';
-        a.href = '#';
-        a.textContent = composer.name;
-        a.addEventListener('click', e => {
-          e.preventDefault();
+        composerChip.title = composer.name + ' — Open Musician panel';
+        composerChip.addEventListener('click', e => {
+          e.stopPropagation();
+          composerChip.classList.add('chip-tapped');
+          setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
           const n = cy.getElementById(composer.musician_node_id);
           if (n && n.length) {
             selectNode(n);
+            if (typeof window.setPanelState === 'function') {
+              setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+            }
           }
         });
-        composerSpan.appendChild(a);
       } else {
-        composerSpan.textContent = composer.name;
+        composerChip.style.cursor = 'default';
+        composerChip.title = composer.name;
       }
-      parts.push(composerSpan);
+      parts.push(composerChip);
     }
 
     // Join with ' · ' separators
@@ -598,27 +608,24 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   const li = document.createElement('li');
   li.dataset.vid = row.track.vid;
   li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
-  // Row click → cross-navigate to the composition or raga (ADR-025 Change 0)
-  li.addEventListener('click', () => {
-    if (row.isStructured && row.track.composition_id) {
-      triggerBaniSearch('comp', row.track.composition_id);
-    } else {
-      triggerBaniSearch(type, id);
-    }
-  });
+  // ADR-052: the container li is not a click target; navigation lives
+  // exclusively in the embedded chips (.musician-chip, .comp-chip, .raga-chip).
 
   // ── Row 1: primary artist + lifespan; then one row per co-performer ─────────
   const headerDiv = document.createElement('div');
   headerDiv.className = 'trail-header';
 
   // Primary artist row (artist name + lifespan on same line)
+  // In comp mode: era colouring already communicates the period; lifespan is redundant.
   const primaryRow = document.createElement('div');
   primaryRow.className = 'trail-header-primary';
   primaryRow.appendChild(buildArtistSpan(row, true, type, id));
-  const lifespanSpan = document.createElement('span');
-  lifespanSpan.className = 'trail-lifespan';
-  lifespanSpan.textContent = row.lifespan || (row.track.year ? String(row.track.year) : '');
-  primaryRow.appendChild(lifespanSpan);
+  if (type !== 'comp') {
+    const lifespanSpan = document.createElement('span');
+    lifespanSpan.className = 'trail-lifespan';
+    lifespanSpan.textContent = row.lifespan || (row.track.year ? String(row.track.year) : '');
+    primaryRow.appendChild(lifespanSpan);
+  }
   headerDiv.appendChild(primaryRow);
 
   // One row per co-performer (indented below primary)
@@ -643,6 +650,8 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
 
   const row2Div = document.createElement('div');
   row2Div.className = 'trail-row2';
+  const chipsDiv = document.createElement('div');
+  chipsDiv.className = 'trail-chips';
 
   // Chip suppression rules — avoid redundancy and overflow:
   // • comp filter: subject header already names the composition + its raga →
@@ -663,7 +672,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
       e.stopPropagation();
       triggerBaniSearch('comp', trailComp.id);
     });
-    row2Div.appendChild(compChip);
+    chipsDiv.appendChild(compChip);
   }
 
   // Raga chip — navigates to raga filter
@@ -676,11 +685,17 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
       e.stopPropagation();
       triggerBaniSearch('raga', trailRagaId);
     });
-    row2Div.appendChild(ragaChip);
+    chipsDiv.appendChild(ragaChip);
   }
 
-  // Fallback label — shown only when no chip is shown
-  if (!showCompChip && !showRagaChip) {
+  // Composer chip — shown in non-comp contexts (comp header already shows composer)
+  const trailComposerChip = (type !== 'comp' && typeof buildComposerChip === 'function')
+    ? buildComposerChip(row.track.composition_id)
+    : null;
+  if (trailComposerChip) chipsDiv.appendChild(trailComposerChip);
+
+  // Fallback label — shown only when no chip at all is shown
+  if (!showCompChip && !showRagaChip && !trailComposerChip) {
     let fallbackLabel = row.track.label;
     if (!row.isStructured && row.track.composition_id) {
       const comp = compositions.find(c => c.id === row.track.composition_id);
@@ -689,7 +704,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     const labelSpan = document.createElement('span');
     labelSpan.className = 'trail-label';
     labelSpan.textContent = fallbackLabel;
-    row2Div.appendChild(labelSpan);
+    chipsDiv.appendChild(labelSpan);
   }
 
   // Version badge — shown only when this nodeId::composition_id has multiple entries.
@@ -704,8 +719,10 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
     versionBadge.className = 'trail-version';
     versionBadge.textContent = row.track._versionLabel;
     versionBadge.title = 'Version: ' + row.track._versionLabel;
-    row2Div.appendChild(versionBadge);
+    chipsDiv.appendChild(versionBadge);
   }
+
+  row2Div.appendChild(chipsDiv);
 
   // ▶ button — ADR-053: dashed border for concert entries, solid for direct
   const isConcertEntry = !!(row.isStructured && row.track.recording_id);
@@ -774,7 +791,11 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
       );
     }
   });
-  row2Div.appendChild(trailPlayBtn);
+  const actsDiv = document.createElement('div');
+  actsDiv.className = 'trail-acts';
+  actsDiv.appendChild(trailPlayBtn);
+  actsDiv.appendChild(buildYtLink(row.track.vid, row.track.offset_seconds || 0));
+  row2Div.appendChild(actsDiv);
 
   li.appendChild(headerDiv);
   li.appendChild(row2Div);
