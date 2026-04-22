@@ -625,6 +625,7 @@ class CarnaticWriter:
         raga_id: str | None = None,
         year: int | None = None,
         version: str | None = None,
+        tala: str | None = None,
         compositions_path: Path | None = None,
         performers: list[dict] | None = None,
     ) -> WriteResult:
@@ -679,6 +680,8 @@ class CarnaticWriter:
             entry["year"] = year
         if version is not None:
             entry["version"] = version
+        if tala is not None:
+            entry["tala"] = tala
 
         # ADR-070: optional performers[] (back-compat: omit when not provided)
         if performers:

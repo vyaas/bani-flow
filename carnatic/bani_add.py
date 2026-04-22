@@ -187,6 +187,8 @@ def _process_musicians(
                     raga_id=yt.get("raga_id"),
                     year=yt.get("year"),
                     version=yt.get("version"),
+                    tala=yt.get("tala"),
+                    performers=yt.get("performers"),
                     compositions_path=comp_path,
                 )
                 _print_result(result)
@@ -238,6 +240,8 @@ def _process_musicians(
                     raga_id=yt.get("raga_id"),
                     year=yt.get("year"),
                     version=yt.get("version"),
+                    tala=yt.get("tala"),
+                    performers=yt.get("performers"),
                     compositions_path=comp_path,
                 )
                 _print_result(yt_result)

@@ -162,6 +162,7 @@ def cmd_add_youtube(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         raga_id=args.raga_id,
         year=year,
         version=args.version,
+        tala=args.tala,
         compositions_path=_compositions_path(),
         performers=performers,
     )
@@ -330,6 +331,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--raga-id",        default=None,  dest="raga_id",        help="Raga id (optional)")
     p.add_argument("--year",           default=None,                         help="Year (integer, optional)")
     p.add_argument("--version",        default=None,                         help="Version note (optional)")
+    p.add_argument("--tala",           default=None,                         help="Tala (optional, e.g. adi, rupakam)")
     p.add_argument("--performer",      action="append", default=None,
                    help="Accompanying performer as <musician_id>:<role>; repeatable. "
                         "Host musician is auto-injected. (ADR-070)")

@@ -867,6 +867,9 @@ function addYoutubeBlock(container, formWin) {
   const versionInp = efInput(null, 'text', 'e.g. live, studio, 1965 version', null);
   block.appendChild(efRow('Version', false, null, versionInp));
 
+  const talaInp = efInput(null, 'text', 'e.g. adi, rupakam, misra chapu', null);
+  block.appendChild(efRow('Tala', false, null, talaInp));
+
   // ── Accompanists subsection (ADR-070 / ADR-071) ──────────────────────────
   const perfContainer = document.createElement('div');
   perfContainer.className = 'ef-performers-container';
@@ -888,7 +891,7 @@ function addYoutubeBlock(container, formWin) {
 
   const addPerfBtn = efAddBtn('+ Add Accompanist');
   perfContainer.appendChild(addPerfBtn);
-  addPerfBtn.addEventListener('click', () => addPerformerBlock(perfRows, formWin));
+  addPerfBtn.addEventListener('click', () => addYoutubePerformerBlock(perfRows, formWin));
 
   block.appendChild(perfContainer);
 
@@ -897,8 +900,11 @@ function addYoutubeBlock(container, formWin) {
 }
 
 // ── Performer entry block (ADR-070 / ADR-071) ────────────────────────────────
+// NB: distinct from `addPerformerBlock` (concert-recording form). Hoisted
+// function declarations with the same name shadow each other; keep these
+// names disjoint so the YouTube-block accompanist UI is not overwritten.
 
-function addPerformerBlock(container, formWin) {
+function addYoutubePerformerBlock(container, formWin) {
   const row = document.createElement('div');
   row.className = 'ef-performer-row';
   row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
@@ -1019,12 +1025,14 @@ function generateMusicianJson(win) {
     const ragaId  = selects[1] ? selects[1].value : '';
     const year    = inputs[2]  ? inputs[2].value  : '';
     const version = inputs[3]  ? inputs[3].value.trim() : '';
+    const tala    = inputs[4]  ? inputs[4].value.trim() : '';
     if (!url) return;
     const entry = { url, label: lbl };
     if (compId)  entry.composition_id = compId;
     if (ragaId)  entry.raga_id        = ragaId;
     if (year)    entry.year           = parseInt(year, 10);
     if (version) entry.version        = version;
+    if (tala)    entry.tala           = tala;
     // ADR-070: optional performers[] (host auto-injected when any accompanist present)
     const performers = collectYoutubePerformers(block, id, instr);
     if (performers) entry.performers = performers;
@@ -2233,12 +2241,14 @@ function buildMusicianRecordingsForm() {
       const ragaId  = selects[1] ? selects[1].value        : '';
       const year    = inputs[2]  ? inputs[2].value         : '';
       const version = inputs[3]  ? inputs[3].value.trim()  : '';
+      const tala    = inputs[4]  ? inputs[4].value.trim()  : '';
       if (!url) return;
       const entry = { url, label: lbl };
       if (compId)  entry.composition_id = compId;
       if (ragaId)  entry.raga_id        = ragaId;
       if (year)    entry.year           = parseInt(year, 10);
       if (version) entry.version        = version;
+      if (tala)    entry.tala           = tala;
       const performers = collectYoutubePerformers(block, hostId, hostInstrument);
       if (performers) entry.performers = performers;
       entries.push(entry);
@@ -2295,7 +2305,7 @@ function buildMusicianRecordingsForm() {
 
   function buildStandaloneMusician() {
     if (mode === 'existing') {
-      const node = (graphData.nodes || []).find(n => n.id === musicianSel.value);
+      const node = (graphData.nodes || []).find(n => n.id === musicianSel.getValue());
       if (!node) return null;
       const existingYoutube = (node.youtube || []).map(t => {
         if (t.url) return t;
@@ -2305,6 +2315,7 @@ function buildMusicianRecordingsForm() {
           if (t.raga_id)        norm.raga_id        = t.raga_id;
           if (t.year)           norm.year           = t.year;
           if (t.version)        norm.version        = t.version;
+          if (t.tala)           norm.tala           = t.tala;
           return norm;
         }
         return t;
@@ -2516,12 +2527,14 @@ function buildAddYoutubeForm() {
       const ragaId  = selects[1] ? selects[1].value        : '';
       const year    = inputs[2]  ? inputs[2].value         : '';
       const version = inputs[3]  ? inputs[3].value.trim()  : '';
+      const tala    = inputs[4]  ? inputs[4].value.trim()  : '';
       if (!url) return;
       const entry = { url, label: lbl };
       if (compId)  entry.composition_id = compId;
       if (ragaId)  entry.raga_id        = ragaId;
       if (year)    entry.year           = parseInt(year, 10);
       if (version) entry.version        = version;
+      if (tala)    entry.tala           = tala;
       const performers = collectYoutubePerformers(block, hostId, hostInstrument);
       if (performers) entry.performers = performers;
       newEntries.push(entry);
@@ -2536,6 +2549,7 @@ function buildAddYoutubeForm() {
         if (t.raga_id)        norm.raga_id        = t.raga_id;
         if (t.year)           norm.year           = t.year;
         if (t.version)        norm.version        = t.version;
+        if (t.tala)           norm.tala           = t.tala;
         return norm;
       }
       return t;

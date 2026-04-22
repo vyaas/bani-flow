@@ -54,6 +54,7 @@ def build_elements(graph: dict, listenable_set: set | None = None,
                     "raga_id":        t.get("raga_id"),
                     "year":           t.get("year"),
                     "version":        t.get("version"),
+                    "tala":           t.get("tala"),
                     "performers":     t.get("performers", []),  # ADR-070
                 })
 
