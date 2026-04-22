@@ -110,4 +110,48 @@ def build_elements(graph: dict, listenable_set: set | None = None,
             "width":      width,
         }})
 
+    # ── ADR-070: cross-link accompanist youtube tracks ────────────────────────
+    # When a host's youtube[] entry carries performers[], surface that track on
+    # each accompanist's musician panel too. The synthesized track carries a
+    # `host_id` marker so the Bani Flow row builder can keep the lead musician
+    # as the primary attribution and never let the accompanist usurp it.
+    node_data_by_id = {
+        e["data"]["id"]: e["data"]
+        for e in elements
+        if not e["data"].get("source")
+    }
+    for host in graph["nodes"]:
+        host_id = host["id"]
+        for yt in host.get("youtube", []):
+            performers = yt.get("performers") or []
+            if not performers:
+                continue
+            vid = yt_video_id(yt.get("url", ""))
+            if not vid:
+                continue
+            for pf in performers:
+                mid = pf.get("musician_id")
+                if not mid or mid == host_id:
+                    continue
+                target = node_data_by_id.get(mid)
+                if not target:
+                    continue
+                target_tracks = target.setdefault("tracks", [])
+                # Skip if already present (host's own iteration covered it, or
+                # this performer is also in the same track twice)
+                if any(t.get("vid") == vid and t.get("host_id") == host_id
+                       for t in target_tracks):
+                    continue
+                target_tracks.append({
+                    "vid":            vid,
+                    "label":          yt.get("label", vid),
+                    "composition_id": yt.get("composition_id"),
+                    "raga_id":        yt.get("raga_id"),
+                    "year":           yt.get("year"),
+                    "version":        yt.get("version"),
+                    "tala":           yt.get("tala"),
+                    "performers":     performers,
+                    "host_id":        host_id,
+                })
+
     return elements

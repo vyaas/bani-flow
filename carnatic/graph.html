@@ -4141,6 +4141,29 @@ const elements = [
           "version": null,
           "tala": null,
           "performers": []
+        },
+        {
+          "vid": "jecLhr8IL84",
+          "label": "Giripai Nelakonna / Sahana / Adi / Thyagaraja / M D Ramanathan",
+          "composition_id": "giripai_nelakona",
+          "raga_id": "sahana",
+          "year": null,
+          "version": null,
+          "tala": "adi",
+          "performers": [
+            {
+              "musician_id": "md_ramanathan",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "tn_krishnan",
+              "role": "violin"
+            },
+            {
+              "musician_id": "palghat_mani_iyer",
+              "role": "mridangam"
+            }
+          ]
         }
       ],
       "is_listenable": 1,
@@ -4454,7 +4477,32 @@ const elements = [
       "label_tier": 2,
       "font_size": 14,
       "font_weight": "normal",
-      "tracks": [],
+      "tracks": [
+        {
+          "vid": "jecLhr8IL84",
+          "label": "Giripai Nelakonna / Sahana / Adi / Thyagaraja / M D Ramanathan",
+          "composition_id": "giripai_nelakona",
+          "raga_id": "sahana",
+          "year": null,
+          "version": null,
+          "tala": "adi",
+          "performers": [
+            {
+              "musician_id": "md_ramanathan",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "tn_krishnan",
+              "role": "violin"
+            },
+            {
+              "musician_id": "palghat_mani_iyer",
+              "role": "mridangam"
+            }
+          ],
+          "host_id": "md_ramanathan"
+        }
+      ],
       "is_listenable": 1,
       "is_composer": 0,
       "composer_id": null
@@ -7262,6 +7310,30 @@ const elements = [
           "version": null,
           "tala": null,
           "performers": []
+        },
+        {
+          "vid": "jecLhr8IL84",
+          "label": "Giripai Nelakonna / Sahana / Adi / Thyagaraja / M D Ramanathan",
+          "composition_id": "giripai_nelakona",
+          "raga_id": "sahana",
+          "year": null,
+          "version": null,
+          "tala": "adi",
+          "performers": [
+            {
+              "musician_id": "md_ramanathan",
+              "role": "vocal"
+            },
+            {
+              "musician_id": "tn_krishnan",
+              "role": "violin"
+            },
+            {
+              "musician_id": "palghat_mani_iyer",
+              "role": "mridangam"
+            }
+          ],
+          "host_id": "md_ramanathan"
         }
       ],
       "is_listenable": 1,
@@ -15316,6 +15388,12 @@ const compositionToNodes = {
   "vinata_suta_vahana": [
     "madurai_mani_iyer"
   ],
+  "giripai_nelakona": [
+    "md_ramanathan",
+    "tn_krishnan",
+    "palghat_mani_iyer",
+    "ramnad_krishnan"
+  ],
   "ento_premato": [
     "ms_subbulakshmi",
     "r_vedavalli",
@@ -15492,9 +15570,6 @@ const compositionToNodes = {
     "ramnad_krishnan"
   ],
   "ka_va_va": [
-    "ramnad_krishnan"
-  ],
-  "giripai_nelakona": [
     "ramnad_krishnan"
   ],
   "dhyaname_varamaina": [
@@ -16337,6 +16412,18 @@ const ragaToNodes        = {
   "jayantasena": [
     "madurai_mani_iyer"
   ],
+  "sahana": [
+    "md_ramanathan",
+    "tn_krishnan",
+    "palghat_mani_iyer",
+    "ramnad_krishnan",
+    "tm_krishna",
+    "gnb",
+    "lalgudi_jayaraman",
+    "coimbatore_n_ramaswamy",
+    "t_brinda",
+    "t_muktha"
+  ],
   "kapi": [
     "ramnad_krishnan",
     "tm_krishna",
@@ -16449,15 +16536,6 @@ const ragaToNodes        = {
     "ariyakudi_ramanuja_iyengar",
     "tn_krishnan",
     "palghat_mani_iyer"
-  ],
-  "sahana": [
-    "ramnad_krishnan",
-    "tm_krishna",
-    "gnb",
-    "lalgudi_jayaraman",
-    "coimbatore_n_ramaswamy",
-    "t_brinda",
-    "t_muktha"
   ],
   "atana": [
     "ramnad_krishnan",
@@ -72321,9 +72399,23 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         if (matches) {
           const vid = t.vid || '';
           const offset = t.offset_seconds || 0;
+          // ADR-070: when this track is cross-linked from a host (i.e. the
+          // current node is an accompanist on someone else's recording), use
+          // the host's identity for the primary row so the lead is never
+          // displaced. The accompanist still surfaces via co-performer chips
+          // built from allPerformers below.
+          let primaryNid = nid;
+          let primaryD   = d;
+          if (t.host_id && t.host_id !== nid) {
+            const hostNode = cy.getElementById(t.host_id);
+            if (hostNode && hostNode.length) {
+              primaryNid = t.host_id;
+              primaryD   = hostNode.data();
+            }
+          }
           rawRows.push({
-            nodeId: nid, artistLabel: d.label, born: d.born,
-            lifespan: d.lifespan, color: d.color, shape: d.shape,
+            nodeId: primaryNid, artistLabel: primaryD.label, born: primaryD.born,
+            lifespan: primaryD.lifespan, color: primaryD.color, shape: primaryD.shape,
             track: t, isStructured: false,
             perfKey: `${vid}::${offset}`,
             // ADR-070: legacy youtube entries may carry performers[] for

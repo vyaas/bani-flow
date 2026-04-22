@@ -473,9 +473,23 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         if (matches) {
           const vid = t.vid || '';
           const offset = t.offset_seconds || 0;
+          // ADR-070: when this track is cross-linked from a host (i.e. the
+          // current node is an accompanist on someone else's recording), use
+          // the host's identity for the primary row so the lead is never
+          // displaced. The accompanist still surfaces via co-performer chips
+          // built from allPerformers below.
+          let primaryNid = nid;
+          let primaryD   = d;
+          if (t.host_id && t.host_id !== nid) {
+            const hostNode = cy.getElementById(t.host_id);
+            if (hostNode && hostNode.length) {
+              primaryNid = t.host_id;
+              primaryD   = hostNode.data();
+            }
+          }
           rawRows.push({
-            nodeId: nid, artistLabel: d.label, born: d.born,
-            lifespan: d.lifespan, color: d.color, shape: d.shape,
+            nodeId: primaryNid, artistLabel: primaryD.label, born: primaryD.born,
+            lifespan: primaryD.lifespan, color: primaryD.color, shape: primaryD.shape,
             track: t, isStructured: false,
             perfKey: `${vid}::${offset}`,
             // ADR-070: legacy youtube entries may carry performers[] for
