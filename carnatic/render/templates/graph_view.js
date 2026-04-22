@@ -858,13 +858,15 @@ cy.on('taphold', 'edge', evt => {
 
 // ── ADR-027: reflective metadata inspector ────────────────────────────────────
 // ADR-033: isTouchDevice guard — true on phones/tablets (pointer: coarse)
-f
+function isTouchDevice() {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
 // Mobile-layout viewport (matches the breakpoint used by mobile.js / media_player).
 // Used for layout-driven UX choices (e.g. two-tap node reveal) that should
 // follow the sidebar layout, not the pointer modality.
 function isMobileViewport() {
   return window.matchMedia('(max-width: 768px)').matches;
-}  return window.matchMedia('(pointer: coarse)').matches;
 }
 
 function openMetaInspector(type, dataObj) {
