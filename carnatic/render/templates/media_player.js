@@ -977,6 +977,22 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
   // ── Children ───────────────────────────────────────────────────────────
   const ul = document.createElement('ul');
   ul.className = 'tree-children';
+
+  // Misc bucket (no raga) is always flat — no composition sub-grouping.
+  // Each recording is shown on its own row with the recording's own label.
+  if (!ragaId) {
+    const flatPerfs = perfs.slice().sort((a, b) => {
+      const ya = a.date ? parseInt(a.date) : Infinity;
+      const yb = b.date ? parseInt(b.date) : Infinity;
+      return ya - yb;
+    });
+    flatPerfs.forEach(p => {
+      ul.appendChild(buildMiscLeaf(p, nodeId, artistLabel));
+    });
+    li.appendChild(ul);
+    return li;
+  }
+
   sortedComps.forEach(([compId, compPerfs]) => {
     ul.appendChild(buildCompNode(compId, compPerfs, nodeId, artistLabel));
   });
@@ -985,6 +1001,79 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
   }
   li.appendChild(ul);
 
+  return li;
+}
+
+// buildMiscLeaf — one flat row in the Misc raga bucket.
+// Misc has no composition tree; each recording is rendered standalone with its
+// own label (display_title / short_title) shown in the de-emphasized
+// `.tree-unmatched-title` style. If the recording has a known composition_id,
+// the comp chip leads instead of a plain label.
+function buildMiscLeaf(p, nodeId, artistLabel) {
+  const li = document.createElement('li');
+  li.className = 'tree-leaf tree-misc-leaf';
+  li.dataset.vid = p.video_id;
+  if (playerRegistry.has(p.video_id)) li.classList.add('playing');
+
+  const row = document.createElement('div');
+  row.className = 'trail-row2';
+
+  const chipsDiv = document.createElement('div');
+  chipsDiv.className = 'trail-chips';
+
+  const compObj = p.composition_id
+    ? ((typeof compositions !== 'undefined' ? compositions : []).find(c => c.id === p.composition_id) || null)
+    : null;
+  if (compObj) {
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = compObj.title || p.composition_id;
+    compChip.title = (compObj.title || p.composition_id) + ' — Explore in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      compChip.classList.add('chip-tapped');
+      setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', p.composition_id);
+    });
+    chipsDiv.appendChild(compChip);
+  } else {
+    const labelText = p.display_title || p.short_title || p.title || 'Untitled';
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'tree-unmatched-title';
+    labelSpan.textContent = labelText;
+    labelSpan.title = labelText;
+    chipsDiv.appendChild(labelSpan);
+  }
+
+  if (p.date) {
+    const yearSpan = document.createElement('span');
+    yearSpan.className = 'rec-year';
+    yearSpan.textContent = p.date.slice(0, 4);
+    chipsDiv.appendChild(yearSpan);
+  }
+  row.appendChild(chipsDiv);
+
+  const actsDiv = document.createElement('div');
+  actsDiv.className = 'trail-acts';
+  const playBtn = document.createElement('button');
+  playBtn.className = 'rec-play-btn play-btn-concert';
+  playBtn.setAttribute('data-vid', p.video_id);
+  playBtn.title = p.display_title || p.short_title || p.title || 'Play';
+  playBtn.textContent = '\u25B6';
+  playBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    openOrFocusPlayer(
+      p.video_id, p.display_title, artistLabel,
+      p.offset_seconds > 0 ? p.offset_seconds : undefined,
+      p.short_title || p.title, [],
+      { nodeId, ragaId: null, compositionId: p.composition_id || null, tala: p.tala || null }
+    );
+  });
+  actsDiv.appendChild(playBtn);
+  actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
+  row.appendChild(actsDiv);
+
+  li.appendChild(row);
   return li;
 }
 

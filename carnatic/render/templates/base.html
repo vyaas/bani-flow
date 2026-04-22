@@ -522,6 +522,27 @@
     font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
     flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
+  /* ── Misc bucket leaves: flat row, label wraps to max 2 lines, never
+     obstructs the play / yt buttons. The action column reserves its width
+     via flex-shrink:0; the label column hard-clamps to 2 lines.            */
+  .tree-misc-leaf {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+  }
+  .tree-misc-leaf:last-child { border-bottom: none; }
+  .tree-misc-leaf .trail-row2 {
+    flex-direction: row; align-items: center; gap: 8px;
+  }
+  .tree-misc-leaf .trail-chips {
+    flex: 1 1 auto; min-width: 0;
+  }
+  .tree-misc-leaf .tree-unmatched-title {
+    white-space: normal; overflow: hidden; text-overflow: ellipsis;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    line-height: 1.35; word-break: break-word;
+  }
+  .tree-misc-leaf .trail-acts { flex-shrink: 0; align-self: center; }
   .rec-row2 { display: flex; flex-direction: column; align-items: flex-start; width: 100%; gap: 3px; }
   .rec-row3 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
 
