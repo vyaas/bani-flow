@@ -25,6 +25,10 @@
     --chip-comp-bg:           color-mix(in srgb, var(--chip-comp-border) 10%, transparent);
     --chip-border-radius:     4px;   /* was 10px pill for comp, 3px for musician; unified */
     --chip-border-width:      1px;
+    /* ADR-072: search-subject prominence + shared hierarchy indentation */
+    --subject-size:           1.05rem;     /* search-subject chip font-size */
+    --subject-padding:        4px 10px;    /* search-subject chip padding */
+    --hier-indent-step:       14px;        /* one indent level (desktop) */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -251,7 +255,13 @@
   #node-header { display: flex; align-items: center; gap: 5px; }
   /* #node-name is now a transparent wrapper — the .musician-chip inside it carries all styles */
   #node-name { display: inline-flex; align-items: center; }
-  #node-lifespan { font-size: 0.70rem; color: var(--fg-muted); margin-left: 4px; }
+  /* ADR-072: search-subject prominence — match left-sidebar bani-subject sizing */
+  #node-header .musician-chip,
+  #node-header .composer-chip {
+    font-size: var(--subject-size);
+    padding: var(--subject-padding);
+  }
+  #node-lifespan { font-size: 0.78rem; color: var(--fg-muted); margin-left: 4px; }
   .node-wiki-link {
     margin-left: auto; flex-shrink: 0;
     color: var(--accent-link); font-size: 0.72rem; text-decoration: none;
@@ -318,9 +328,10 @@
     display: none;
   }
 
-  /* ── ADR-064: composition node — second level of raga tree ── */
+  /* ── ADR-064: composition node — second level of raga tree ──
+     ADR-072: padding-left uses --hier-indent-step (level 1). */
   .tree-comp-node {
-    padding: 5px 0 5px 12px;
+    padding: 5px 0 5px var(--hier-indent-step);
     border-bottom: 1px solid var(--border);
     border-left: 2px solid var(--border);
     list-style: none;
@@ -333,9 +344,10 @@
   .tree-comp-acts {
     margin-left: auto; display: flex; align-items: center; gap: 4px; flex-shrink: 0;
   }
-  /* Composer sub-label — always visible, indented below composition chip */
+  /* Composer sub-label — always visible, indented below composition chip
+     ADR-072: padding-left uses --hier-indent-step (level 2 within tree-comp-node). */
   .tree-comp-meta {
-    padding-left: 6px; margin-top: 3px;
+    padding-left: var(--hier-indent-step); margin-top: 3px;
     display: flex; align-items: center;
   }
   .tree-comp-meta .composer-label {
@@ -356,12 +368,13 @@
   }
   .tree-rec-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .tree-rec-toggle[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
-  /* Recording rows — hidden by default, revealed on toggle */
+  /* Recording rows — hidden by default, revealed on toggle
+     ADR-072: margin-left + padding-left use --hier-indent-step (level 3 versions). */
   .tree-rec-list {
-    list-style: none; padding: 0; margin: 4px 0 0 8px;
+    list-style: none; padding: 0; margin: 4px 0 0 var(--hier-indent-step);
   }
   .tree-rec-list .tree-leaf {
-    padding: 3px 0 3px 8px;
+    padding: 3px 0 3px var(--hier-indent-step);
     border-left: 1px dashed var(--border);
     border-bottom: 1px solid var(--border);
     display: flex; flex-direction: column; gap: 2px;
@@ -452,11 +465,12 @@
   .comp-raga-header .rec-group-count {
     font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
   }
+  /* ADR-072: indents use --hier-indent-step for symmetry with tree-comp-* path. */
   .comp-raga-children {
-    list-style: none; padding: 0 0 0 8px; margin: 0;
+    list-style: none; padding: 0 0 0 var(--hier-indent-step); margin: 0;
   }
   .comp-raga-item {
-    padding: 3px 0 3px 6px;
+    padding: 3px 0 3px var(--hier-indent-step);
     border-left: 2px solid var(--border);
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center;
@@ -830,14 +844,18 @@
     flex: 0 1 auto;
     overflow: visible;
     text-overflow: clip;
-    font-size: 0.80rem;
+    /* ADR-072: subject prominence */
+    font-size: var(--subject-size);
+    padding: var(--subject-padding);
     color: var(--chip-comp-border);
   }
   #bani-subject-name.raga-chip {
     flex: 0 1 auto;
     overflow: visible;
     text-overflow: clip;
-    font-size: 0.85rem;
+    /* ADR-072: subject prominence */
+    font-size: var(--subject-size);
+    padding: var(--subject-padding);
     color: var(--chip-raga-border);
   }
   .bani-subject-link {
@@ -971,17 +989,27 @@
   /* Children list — shown when group is open */
   .tree-children { list-style: none; padding: 0; margin: 0; display: none; }
   .tree-group-open > .tree-children { display: block; }
-  /* Leaf rows — inherits #trail-list li base styles but indented */
+  /* Leaf rows — inherits #trail-list li base styles but indented.
+     ADR-072: padding-left uses 2× --hier-indent-step (level 2 — lead musician). */
   #trail-list li.tree-leaf {
-    padding: 4px 0 4px 12px;
+    padding: 4px 0 4px calc(var(--hier-indent-step) * 2);
     border-bottom: 1px solid var(--border);
     border-left: 2px solid var(--border);
   }
   #trail-list li.tree-leaf:last-child { border-bottom: none; }
   /* Leaf primary row: [artist chip?] [version/ctx] [▶+↗ right] — no-wrap so acts stay inline */
   .tree-leaf-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
-  /* Co-performers tag cloud — wrappable, below primary row */
-  .tree-leaf-coperformers { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 3px; }
+  /* Co-performers tag cloud — wrappable, below primary row.
+     ADR-072: extra --hier-indent-step + guide rail (level 3 — accompanists). */
+  .tree-leaf-coperformers {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    margin-top: 3px;
+    padding-left: var(--hier-indent-step);
+    border-left: 2px solid var(--border);
+  }
+  /* ADR-072: composer chip inside the trail group header is indented one
+     level beneath its composition (level 1 of left-sidebar hierarchy). */
+  .tree-header-text > .composer-chip { margin-left: var(--hier-indent-step); }
   .trail-header { display: flex; flex-direction: column; width: 100%; gap: 1px; }
   .trail-header-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
   .trail-lifespan { flex-shrink: 0; color: var(--fg-muted); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }
@@ -1970,6 +1998,12 @@
      Filter chip bar: horizontal scroll instead of wrap.
      No layout changes here — that belongs in ADR-034 (Phase 1). */
   @media (max-width: 768px) {
+    /* ADR-072: tighter subject + indent on small screens to preserve
+       horizontal room inside the 320 px drawer / sheet. */
+    :root {
+      --subject-size:     1.0rem;
+      --hier-indent-step: 10px;
+    }
     /* Exclude circular buttons and inline tree toggles — they size themselves */
     button:not(.rec-play-btn):not(.tree-rec-toggle):not(.filter-dropdown-btn):not(.filter-clear) {
       min-height: 44px;
