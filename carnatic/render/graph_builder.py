@@ -23,6 +23,10 @@ def build_elements(graph: dict, listenable_set: set | None = None,
         era      = node.get("era", "contemporary")
         instr    = node.get("instrument", "vocal")
         color    = ERA_COLORS.get(era, TOKENS["fgMuted"])
+        # ADR-074: per-node label chip tokens — era colour for musicians,
+        # dark fallback (labelOutline) for non-musician nodes (no 'era' key).
+        _era_raw = node.get("era")
+        _label_chip = ERA_COLORS.get(_era_raw, TOKENS["labelOutline"]) if _era_raw else TOKENS["labelOutline"]
         shape    = INSTRUMENT_SHAPES.get(instr, "ellipse")
         base     = NODE_SIZES.get(era, 44)
         deg      = degree.get(node["id"], 0)
@@ -85,6 +89,8 @@ def build_elements(graph: dict, listenable_set: set | None = None,
             "lifespan":     lifespan,
             "born":         node.get("born"),
             "color":        color,
+            "label_outline": _label_chip,
+            "label_bg":      _label_chip,
             "shape":        shape,
             "size":         size,
             "degree":       deg,
