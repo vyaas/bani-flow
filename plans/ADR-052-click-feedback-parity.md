@@ -1,6 +1,6 @@
 # ADR-052: Click Feedback Parity Across Bani Flow and Musician Panels
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-21
 **Agents**: graph-architect
 

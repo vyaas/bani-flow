@@ -1,6 +1,6 @@
 # ADR-055: No Dead Ends — Hide Empty Musicians in Panels, Dim Them on the Graph
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-21
 **Agents**: graph-architect
 

@@ -1,6 +1,6 @@
 # ADR-053: Drop Track Timestamps; Signal Concert Origin via Play-Button Shape and Pressed-Row State
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-21
 **Agents**: graph-architect
 

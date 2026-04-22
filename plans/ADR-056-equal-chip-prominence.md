@@ -1,6 +1,6 @@
 # ADR-056: Equal Chip Prominence; Smaller Chips for Unlabelled Tracks
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-21
 **Agents**: graph-architect
 

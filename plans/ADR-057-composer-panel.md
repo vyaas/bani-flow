@@ -1,6 +1,6 @@
 # ADR-057: Composer Panel — Compositions as the Listenable Surface
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-21
 **Agents**: graph-architect
 

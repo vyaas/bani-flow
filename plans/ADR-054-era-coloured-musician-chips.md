@@ -1,6 +1,6 @@
 # ADR-054: Era-Coloured Musician Chips (Cross-View Coupling)
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-21
 **Agents**: graph-architect
 
