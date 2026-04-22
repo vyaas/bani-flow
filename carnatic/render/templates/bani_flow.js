@@ -1007,11 +1007,12 @@ function buildTreeRaga(rows, trailList, multiVersionKeys) {
 
   sortedGroups.forEach(function(group, idx) {
     const isSingle = group.rows.length === 1;
-    const isFirst  = idx === 0;
 
     const li = document.createElement('li');
     li.className = 'tree-group';
-    if (isSingle || isFirst) li.classList.add('tree-group-open');
+    // Open all groups by default — discoverability over chrome economy.
+    // Users can still toggle to collapse via the chevron.
+    li.classList.add('tree-group-open');
     if (isSingle) li.classList.add('tree-group-single');
 
     // ── Group header ──────────────────────────────────────────────────────────
@@ -1107,11 +1108,12 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
 
   sortedGroups.forEach(function(group, idx) {
     const isSingle = group.rows.length === 1;
-    const isFirst  = idx === 0;
 
     const li = document.createElement('li');
     li.className = 'tree-group';
-    if (isSingle || isFirst) li.classList.add('tree-group-open');
+    // Open all groups by default — discoverability over chrome economy.
+    // Users can still toggle to collapse via the chevron.
+    li.classList.add('tree-group-open');
     if (isSingle) li.classList.add('tree-group-single');
 
     // ── Group header ──────────────────────────────────────────────────────────
