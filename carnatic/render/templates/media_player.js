@@ -785,10 +785,10 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       const labelParts = ['v' + (idx + 1)];
       if (p.date) labelParts.push(p.date.slice(0, 4));
       if (p.short_title) labelParts.push(p.short_title);
-      const yearSpan = document.createElement('span');
-      yearSpan.className = 'rec-year';
-      yearSpan.textContent = labelParts.join(' \u00b7 ');
-      chipsDiv.appendChild(yearSpan);
+      const verSpan = document.createElement('span');
+      verSpan.className = 'rec-version-label';
+      verSpan.textContent = labelParts.join(' \u00b7 ');
+      chipsDiv.appendChild(verSpan);
       row.appendChild(chipsDiv);
 
       const actsDiv = document.createElement('div');
