@@ -204,41 +204,16 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
 
 // ── buildPlayerFooter — musician + raga + comp + composer chips below the video ──
 // ADR-066: chips use same classes as panels for visual parity.
-// meta = { ragaId, compositionId, nodeId, artistName, displayTitle } — all optional
+// meta = { ragaId, compositionId, displayTitle } — all optional
+// Note: musician name is already shown in the title bar; no musician chip here.
 function buildPlayerFooter(meta) {
   if (!meta) return null;
-  const { ragaId, compositionId, nodeId, artistName, displayTitle } = meta;
-  const hasAny = ragaId || compositionId || nodeId || displayTitle;
+  const { ragaId, compositionId, displayTitle } = meta;
+  const hasAny = ragaId || compositionId || displayTitle;
   if (!hasAny) return null;
 
   const footer = document.createElement('div');
   footer.className = 'mp-footer';
-
-  // ── Musician chip (era-tinted, navigates to Musician panel) ─────────────
-  if (nodeId) {
-    const eraId = (typeof cy !== 'undefined') ? (cy.getElementById(nodeId).data('era') || null) : null;
-    const tint  = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: 'var(--border-strong)' };
-    const chip  = document.createElement('span');
-    chip.className = 'musician-chip';
-    chip.style.setProperty('--chip-era-bg',     tint.bg);
-    chip.style.setProperty('--chip-era-border', tint.border);
-    chip.textContent = artistName || nodeId;
-    chip.title = (artistName || nodeId) + ' — Open Musician panel';
-    chip.addEventListener('click', e => {
-      e.stopPropagation();
-      chip.classList.add('chip-tapped');
-      setTimeout(() => chip.classList.remove('chip-tapped'), 200);
-      if (typeof cy !== 'undefined') {
-        const n = cy.getElementById(nodeId);
-        if (n && n.length) {
-          if (typeof selectNode === 'function') selectNode(n);
-          if (typeof window.setPanelState === 'function')
-            setTimeout(() => window.setPanelState('MUSICIAN'), 50);
-        }
-      }
-    });
-    footer.appendChild(chip);
-  }
 
   // ── Raga chip (same .raga-chip class as panels) ──────────────────────────
   if (ragaId) {
@@ -292,21 +267,14 @@ function buildPlayerFooter(meta) {
 
 // ── updatePlayerFooter — replace the footer in-place when a track is selected ─
 // Called by buildPlayerTrackList on track click and on track swipe to keep chips in sync.
-// ADR-066: displayTitle added; nodeId+artistName pulled from player.meta.
+// ADR-066: displayTitle added; nodeId+artistName no longer needed (musician shown in bar).
 function updatePlayerFooter(player, ragaId, compositionId, displayTitle) {
   const el = player.el;
-  const baseMeta = (player && player.meta) ? player.meta : {};
   // Remove existing footer if present
   const existing = el.querySelector('.mp-footer');
   if (existing) existing.remove();
-  // Merge base meta (nodeId, artistName) with per-track overrides
-  const newFooter = buildPlayerFooter({
-    ragaId,
-    compositionId,
-    displayTitle: displayTitle || null,
-    nodeId:       baseMeta.nodeId       || null,
-    artistName:   baseMeta.artistName   || null,
-  });
+  // Build and insert new footer (before .mp-resize)
+  const newFooter = buildPlayerFooter({ ragaId, compositionId, displayTitle: displayTitle || null });
   if (newFooter) {
     const resize = el.querySelector('.mp-resize');
     if (resize) {
@@ -343,10 +311,9 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     allowfullscreen></iframe>`;
   el.appendChild(videoWrap);
 
-  // ── Footer: musician + raga + comp + composer chips (ADR-066) ────────────
-  // Merge artistName into meta so updatePlayerFooter can access it later.
+  // ── Footer: raga + comp + composer chips (ADR-066; musician shown in bar) ──
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
-  const footer = buildPlayerFooter(Object.assign({ displayTitle: trackLabel || null }, fullMeta));
+  const footer = buildPlayerFooter({ ragaId: (fullMeta.ragaId || null), compositionId: (fullMeta.compositionId || null), displayTitle: trackLabel || null });
   if (footer) el.appendChild(footer);
 
   const resizeHandle = document.createElement('div');
