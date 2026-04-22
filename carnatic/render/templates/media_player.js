@@ -1476,11 +1476,13 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
 
   // ── ADR-066: Build footer chips on initial mobile load ──────────────────
   // Passes full meta (musician, raga, comp, displayTitle) so all chips show.
+  // When tracks=[] (single-recording from raga tree), _initTrack is null so we
+  // fall back to mp.meta for both ragaId and compositionId.
   const _initTrack = mp.tracks[mp.trackIndex] || null;
   updatePlayerFooter(
     { el: mp.el, meta: mp.meta },
     _initTrack ? (_initTrack.raga_id || null) : (mp.currentRagaId || null),
-    _initTrack ? (_initTrack.composition_id || null) : null,
+    _initTrack ? (_initTrack.composition_id || null) : ((mp.meta && mp.meta.compositionId) || null),
     _initTrack ? (_initTrack.display_title || null) : (trackLabel || null)
   );
 
