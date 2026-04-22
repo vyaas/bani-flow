@@ -382,13 +382,18 @@ cy.on('mousemove', 'node', evt => {
 function selectNode(node) {
   const d = node.data();
 
-  // Collapsed single-line header
+  // Collapsed single-line header — build an era-tinted musician-chip
   const nameEl = document.getElementById('node-name');
-  nameEl.textContent = d.label;
-  nameEl.title = 'Pan to ' + d.label + ' on graph';
-  nameEl.style.cursor = 'pointer';
-  // Clicking the name re-centres the view on this node
-  nameEl.onclick = () => orientToNode(node.id());
+  nameEl.innerHTML = '';
+  const tint = THEME.eraTintCss(d.era || null);
+  const nameChip = document.createElement('span');
+  nameChip.className = 'musician-chip';
+  nameChip.style.setProperty('--chip-era-bg', tint.bg);
+  nameChip.style.setProperty('--chip-era-border', tint.border);
+  nameChip.textContent = d.label;
+  nameChip.title = 'Pan to ' + d.label + ' on graph';
+  nameChip.onclick = () => orientToNode(node.id());
+  nameEl.appendChild(nameChip);
 
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
@@ -758,7 +763,7 @@ cy.on('tap', evt => {
   if (evt.target !== cy) return;
   _focusedGraphNode = null;
   cy.elements().removeClass('faded highlighted');
-  document.getElementById('node-name').textContent          = '—';
+  document.getElementById('node-name').textContent          = '—'; // clear chip
   document.getElementById('node-lifespan').textContent      = '';
   document.getElementById('node-wiki-link').style.display   = 'none';
   document.getElementById('rec-filter').style.display       = 'none';

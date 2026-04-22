@@ -196,11 +196,8 @@
   /* ── node header (collapsed single-line) ── */
   #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   #node-header { display: flex; align-items: center; gap: 5px; }
-  #node-name {
-    font-size: 0.85rem; color: var(--accent); font-weight: bold;
-    cursor: pointer;
-  }
-  #node-name:hover { text-decoration: underline; }
+  /* #node-name is now a transparent wrapper — the .musician-chip inside it carries all styles */
+  #node-name { display: inline-flex; align-items: center; }
   #node-lifespan { font-size: 0.70rem; color: var(--fg-muted); margin-left: 4px; }
   .node-wiki-link {
     margin-left: auto; flex-shrink: 0;
@@ -271,7 +268,11 @@
   }
   .tree-comp-node:last-child { border-bottom: none; }
   .tree-comp-header {
-    display: flex; align-items: center; gap: 4px; flex-wrap: wrap; width: 100%;
+    display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; width: 100%;
+  }
+  /* Inline acts (year + play + link) for single-recording compositions */
+  .tree-comp-acts {
+    margin-left: auto; display: flex; align-items: center; gap: 4px; flex-shrink: 0;
   }
   /* Composer sub-label — always visible, indented below composition chip */
   .tree-comp-meta {
