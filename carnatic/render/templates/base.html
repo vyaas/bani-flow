@@ -282,13 +282,16 @@
   .tree-comp-meta .composer-label {
     font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
   }
-  /* Recording toggle button */
+  /* Recording toggle button — line-height:1 + padding:0 keeps it flush with text */
   .tree-rec-toggle {
     margin-left: auto; flex-shrink: 0;
     background: none; border: 1px solid var(--border);
-    color: var(--fg-muted); font-size: 0.65rem; padding: 1px 6px;
+    color: var(--fg-muted); font-size: 0.65rem;
+    padding: 0 5px; line-height: 1.4; height: auto;
     border-radius: 2px; cursor: pointer; font-family: inherit;
-    white-space: nowrap;
+    white-space: nowrap; vertical-align: middle;
+    /* override any mobile min-height blanket rule */
+    min-height: 0;
   }
   .tree-rec-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .tree-rec-toggle[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
