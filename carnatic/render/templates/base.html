@@ -198,6 +198,12 @@
   #node-header { display: flex; align-items: center; gap: 5px; }
   /* #node-name is now a transparent wrapper — the .musician-chip inside it carries all styles */
   #node-name { display: inline-flex; align-items: center; }
+  /* Primary subject chip: larger than the chips in the recording list below */
+  #node-name .musician-chip {
+    font-size: 1.0rem;
+    padding: 3px 10px;
+    border-left-width: 4px;
+  }
   #node-lifespan { font-size: 0.70rem; color: var(--fg-muted); margin-left: 4px; }
   .node-wiki-link {
     margin-left: auto; flex-shrink: 0;
@@ -282,16 +288,16 @@
   .tree-comp-meta .composer-label {
     font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
   }
-  /* Recording toggle button — line-height:1 + padding:0 keeps it flush with text */
+  /* Recording toggle button — matches comp-chip height via same padding + font vars */
   .tree-rec-toggle {
     margin-left: auto; flex-shrink: 0;
     background: none; border: 1px solid var(--border);
-    color: var(--fg-muted); font-size: 0.65rem;
-    padding: 0 5px; line-height: 1.4; height: auto;
-    border-radius: 2px; cursor: pointer; font-family: inherit;
+    color: var(--fg-muted);
+    font-size: var(--chip-size-primary); padding: var(--chip-padding-primary);
+    line-height: 1; height: auto; min-height: 0;
+    border-radius: var(--chip-border-radius, 4px);
+    cursor: pointer; font-family: inherit;
     white-space: nowrap; vertical-align: middle;
-    /* override any mobile min-height blanket rule */
-    min-height: 0;
   }
   .tree-rec-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .tree-rec-toggle[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
@@ -746,13 +752,19 @@
     flex: 0 1 auto;
     overflow: visible;
     text-overflow: clip;
-    font-size: 0.80rem;
+    /* Primary subject: visually larger than trail chips */
+    font-size: 1.0rem;
+    padding: 4px 12px;
+    border-width: 1px;
   }
   #bani-subject-name.raga-chip {
     flex: 0 1 auto;
     overflow: visible;
     text-overflow: clip;
-    font-size: 0.85rem;
+    /* Primary subject: visually larger than trail chips */
+    font-size: 1.0rem;
+    padding: 4px 12px;
+    border-width: 1px;
   }
   .bani-subject-link {
     margin-left: auto; flex-shrink: 0;
@@ -2215,12 +2227,14 @@
       padding-top: 0 !important;
       position: relative;
     }
+    /* ADR-066: tracklist fold-first — hidden by default, shown when .mp-tracklist-open is set */
     .media-player.full-mobile .mp-tracklist {
-      display: block;
-      flex: 1; overflow-y: auto;
+      display: none;
+      max-height: 45%;
+      overflow-y: auto;
+      flex-shrink: 0;
     }
-    /* No tracks → tracklist is empty; collapse it so the video fills all space */
-    .media-player.full-mobile .mp-tracklist:empty { display: none; }
+    .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; }
     .media-player.full-mobile .mp-footer { flex-shrink: 0; }
     .media-player.full-mobile .mp-resize { display: none; }
 
