@@ -67446,10 +67446,10 @@ function selectNode(node, { fromHistory = false } = {}) {
 
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
+  // ADR-069: instrument badge is now inside the name chip — hide the standalone
+  // shape icon to avoid the redundant double-circle next to the name.
   const shapeIcon = document.getElementById('node-shape-icon');
-  shapeIcon.className = 'node-shape-icon';
-  shapeIcon.innerHTML = '';
-  shapeIcon.appendChild(makeShapeSVG(d.shape || 'ellipse', 12));
+  shapeIcon.style.display = 'none';
 
   const wikiLink   = document.getElementById('node-wiki-link');
   const primarySrc = d.sources && d.sources.length > 0 ? d.sources[0] : null;
