@@ -578,12 +578,22 @@ function focusNode(node) {
 }
 
 cy.on('tap', 'node', evt => {
-  if (_focusedGraphNode === evt.target.id()) {
-    if (typeof hideClickNudge === 'function') hideClickNudge();
-    selectNode(evt.target);
+  const node = evt.target;
+
+  if (isTouchDevice()) {
+    // Mobile: two-tap UX preserved (ADR-044 nudge still shown)
+    if (_focusedGraphNode === node.id()) {
+      if (typeof hideClickNudge === 'function') hideClickNudge();
+      selectNode(node);
+    } else {
+      focusNode(node);
+      if (typeof showClickNudge === 'function')
+        showClickNudge('tap again \u00B7 open musician details');
+    }
   } else {
-    focusNode(evt.target);
-    if (typeof showClickNudge === 'function') showClickNudge('tap again \u00B7 open musician details');
+    // Desktop: single-tap focus + open panel immediately (ADR-058)
+    focusNode(node);
+    selectNode(node);
   }
 });
 

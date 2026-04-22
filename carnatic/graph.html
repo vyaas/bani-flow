@@ -333,20 +333,22 @@
   }
   .concert-perf-item {
     padding: 4px 0; border-bottom: 1px solid var(--border);
-    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+    /* ADR-052: container is not a click target — chips are */
+    cursor: default; -webkit-tap-highlight-color: transparent;
+    display: flex; flex-direction: column; gap: 2px;
   }
   .concert-perf-item:last-child { border-bottom: none; }
-  .concert-perf-item:hover .rec-title { color: var(--accent); }
   .concert-perf-item.playing .rec-title { color: var(--accent-sub); }
 
   /* ── legacy flat items ── */
   li.rec-legacy {
     padding: 5px 0; border-bottom: 1px solid var(--border);
-    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+    /* ADR-052: container is not a click target — chips are */
+    cursor: default; -webkit-tap-highlight-color: transparent;
+    display: flex; flex-direction: column; gap: 2px;
     line-height: 1.4;
   }
   li.rec-legacy:last-child { border-bottom: none; }
-  li.rec-legacy:hover .rec-title { color: var(--accent); }
   li.rec-legacy.playing .rec-title { color: var(--accent-sub); }
 
   .rec-row1 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
@@ -770,10 +772,13 @@
     padding: 5px 0; border-bottom: 1px solid var(--border);
     font-size: 0.74rem; color: var(--fg-dim);
     display: flex; flex-direction: column; gap: 2px; line-height: 1.4;
-    cursor: pointer;
+    /* Cursor contract (ADR-052): the row itself is not a click target.
+       Only the embedded chips (.musician-chip, .comp-chip, .raga-chip)
+       carry cursor:pointer — they are the single source of truth. */
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
   }
   #trail-list li:last-child { border-bottom: none; }
-  #trail-list li:hover { color: var(--accent); }
   #trail-list li.playing { color: var(--accent-sub); }
   .trail-header { display: flex; flex-direction: column; width: 100%; gap: 1px; }
   .trail-header-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
@@ -67768,12 +67773,22 @@ function focusNode(node) {
 }
 
 cy.on('tap', 'node', evt => {
-  if (_focusedGraphNode === evt.target.id()) {
-    if (typeof hideClickNudge === 'function') hideClickNudge();
-    selectNode(evt.target);
+  const node = evt.target;
+
+  if (isTouchDevice()) {
+    // Mobile: two-tap UX preserved (ADR-044 nudge still shown)
+    if (_focusedGraphNode === node.id()) {
+      if (typeof hideClickNudge === 'function') hideClickNudge();
+      selectNode(node);
+    } else {
+      focusNode(node);
+      if (typeof showClickNudge === 'function')
+        showClickNudge('tap again \u00B7 open musician details');
+    }
   } else {
-    focusNode(evt.target);
-    if (typeof showClickNudge === 'function') showClickNudge('tap again \u00B7 open musician details');
+    // Desktop: single-tap focus + open panel immediately (ADR-058)
+    focusNode(node);
+    selectNode(node);
   }
 });
 
@@ -68385,11 +68400,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       const li = document.createElement('li');
       li.className = 'concert-perf-item' + (playerRegistry.has(p.video_id) ? ' playing' : '');
       li.dataset.vid = p.video_id;
-      // Row click → cross-navigate (composition or raga)
-      li.addEventListener('click', () => {
-        if (p.composition_id) triggerBaniSearch('comp', p.composition_id);
-        else if (p.raga_id)   triggerBaniSearch('raga', p.raga_id);
-      });
+      // ADR-052: container is not a click target; navigation lives in embedded chips.
 
       // Row 1: composition chip (navigable) or plain title for non-composition entries
       const row1 = document.createElement('div');
@@ -68564,11 +68575,7 @@ function buildRecordingsList(nodeId, nodeData) {
     const li = document.createElement('li');
     li.className = 'rec-legacy' + (playerRegistry.has(t.vid) ? ' playing' : '');
     li.dataset.vid = t.vid;
-    // Row click → cross-navigate
-    li.addEventListener('click', () => {
-      if (t.composition_id) triggerBaniSearch('comp', t.composition_id);
-      else if (t.raga_id)   triggerBaniSearch('raga', t.raga_id);
-    });
+    // ADR-052: container is not a click target; navigation lives in embedded chips.
 
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
@@ -71547,14 +71554,8 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   const li = document.createElement('li');
   li.dataset.vid = row.track.vid;
   li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
-  // Row click → cross-navigate to the composition or raga (ADR-025 Change 0)
-  li.addEventListener('click', () => {
-    if (row.isStructured && row.track.composition_id) {
-      triggerBaniSearch('comp', row.track.composition_id);
-    } else {
-      triggerBaniSearch(type, id);
-    }
-  });
+  // ADR-052: the container li is not a click target; navigation lives
+  // exclusively in the embedded chips (.musician-chip, .comp-chip, .raga-chip).
 
   // ── Row 1: primary artist + lifespan; then one row per co-performer ─────────
   const headerDiv = document.createElement('div');
