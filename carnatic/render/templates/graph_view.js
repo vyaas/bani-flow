@@ -806,7 +806,9 @@ function focusNode(node) {
 
 cy.on('tap', 'node', evt => {
   const node = evt.target;
-.
+
+  if (isTouchDevice()) {
+    // Mobile: two-tap UX preserved (ADR-044 nudge still shown).
     // First tap focuses + pre-populates the Musician panel silently;
     // second tap reveals it. The panel content is therefore ready the
     // instant the drawer slides in (no perceived lag).
@@ -817,9 +819,7 @@ cy.on('tap', 'node', evt => {
       }
     } else {
       focusNode(node);
-      selectNode(node, { revealPanel: false }e);
-    } else {
-      focusNode(node);
+      selectNode(node, { revealPanel: false });
       if (typeof showClickNudge === 'function')
         showClickNudge('tap again \u00B7 open musician details');
     }
