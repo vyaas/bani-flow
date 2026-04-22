@@ -50,6 +50,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .render.roles import VALID_ROLES
+
 
 # ── path bootstrap (for direct script invocation) ──────────────────────────────
 if __name__ == "__main__":
@@ -408,6 +410,66 @@ def _default_graph_path() -> Path:
     return Path(__file__).parent / "data" / "graph.json"
 
 
+# ── performer normalisation (ADR-070 / ADR-071) ────────────────────────────────
+
+def _normalise_performers(
+    performers: list[dict],
+    *,
+    host_id: str,
+    host_instrument: str,
+    known_musician_ids: set[str],
+) -> list[dict] | WriteResult:
+    """Validate and normalise a performers[] list for a youtube entry.
+
+    Enforces ADR-070 invariants:
+      • every musician_id (when set) must exist in known_musician_ids,
+      • every role must be in VALID_ROLES,
+      • the host musician is present (auto-injected if missing).
+
+    Returns the normalised list or a WriteResult on validation failure.
+    """
+    out: list[dict] = []
+    seen_ids: set[str] = set()
+    for p in performers:
+        mid = p.get("musician_id")
+        role = p.get("role")
+        unmatched = p.get("unmatched_name")
+        if not role:
+            return _err(f"performer entry missing --role: {p}")
+        if role not in VALID_ROLES:
+            return _err(
+                f"performer role \"{role}\" is not in vocabulary\n"
+                f"       Valid roles: {', '.join(sorted(VALID_ROLES))}"
+            )
+        if mid is not None:
+            if mid not in known_musician_ids:
+                return _err(f"performer musician_id \"{mid}\" does not exist in nodes[]")
+            if mid in seen_ids:
+                continue
+            seen_ids.add(mid)
+            out.append({"musician_id": mid, "role": role})
+        else:
+            if not unmatched:
+                return _err("performer entry must have musician_id or unmatched_name")
+            out.append({"musician_id": None, "role": role, "unmatched_name": unmatched})
+
+    # Auto-inject host musician (ADR-070 invariant B)
+    if host_id not in seen_ids:
+        if host_instrument not in VALID_ROLES:
+            host_instrument = "vocal"
+        out.insert(0, {"musician_id": host_id, "role": host_instrument})
+
+    return out
+
+
+def _parse_performer_arg(arg: str) -> dict:
+    """Parse a CLI '--performer <id>:<role>' argument into a Performer dict."""
+    if ":" not in arg:
+        raise ValueError(f"--performer must be of the form <musician_id>:<role>, got {arg!r}")
+    mid, role = arg.split(":", 1)
+    return {"musician_id": mid.strip(), "role": role.strip()}
+
+
 # ── CarnaticWriter ─────────────────────────────────────────────────────────────
 
 class CarnaticWriter:
@@ -564,6 +626,7 @@ class CarnaticWriter:
         year: int | None = None,
         version: str | None = None,
         compositions_path: Path | None = None,
+        performers: list[dict] | None = None,
     ) -> WriteResult:
         """Append a YouTube recording entry to a musician node's youtube[] array."""
         video_id = _yt_video_id(url)
@@ -617,6 +680,19 @@ class CarnaticWriter:
         if version is not None:
             entry["version"] = version
 
+        # ADR-070: optional performers[] (back-compat: omit when not provided)
+        if performers:
+            host_instrument = node.get("instrument", "vocal")
+            normalised = _normalise_performers(
+                performers,
+                host_id=musician_id,
+                host_instrument=host_instrument,
+                known_musician_ids=known_musician_ids,
+            )
+            if isinstance(normalised, WriteResult):
+                return normalised
+            entry["performers"] = normalised
+
         if "youtube" not in node:
             node["youtube"] = []
         node["youtube"].append(entry)
@@ -634,6 +710,89 @@ class CarnaticWriter:
         return _ok(
             "[YOUTUBE+]",
             f"appended to {musician_id}: \"{label}\"\n{detail}"
+        )
+
+    def add_youtube_performer(
+        self,
+        musicians_path: Path,
+        *,
+        musician_id: str,
+        url: str,
+        performer_id: str | None,
+        role: str,
+        unmatched_name: str | None = None,
+    ) -> WriteResult:
+        """Append a performer to an existing youtube[] entry's performers[] (ADR-070).
+
+        Locates the entry by host musician_id + extracted video_id. If the entry
+        has no performers[] yet, initialises it with the host musician (role =
+        host node.instrument) before appending.
+        """
+        video_id = _yt_video_id(url)
+        if not video_id:
+            return _err(f"could not extract 11-char video ID from URL: {url}")
+
+        if role not in VALID_ROLES:
+            return _err(
+                f"--role \"{role}\" is not in vocabulary\n"
+                f"       Valid roles: {', '.join(sorted(VALID_ROLES))}"
+            )
+
+        nodes = _load_all_nodes(musicians_path)
+        known_musician_ids = {n["id"] for n in nodes}
+
+        if musician_id not in known_musician_ids:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        if performer_id is not None:
+            if performer_id not in known_musician_ids:
+                return _err(f"--performer-id \"{performer_id}\" does not exist in nodes[]")
+        elif not unmatched_name:
+            return _err("either --performer-id or --unmatched-name is required")
+
+        node = next((n for n in nodes if n["id"] == musician_id), None)
+        if node is None:
+            return _err(f"musician_id \"{musician_id}\" not found in musicians")
+
+        # Find the youtube entry by video_id
+        entry = None
+        for yt in node.get("youtube", []):
+            if _yt_video_id(yt.get("url", "")) == video_id:
+                entry = yt
+                break
+        if entry is None:
+            return _err(f"no youtube entry with video_id {video_id} on {musician_id}")
+
+        # Initialise performers[] if absent (auto-inject host)
+        existing = entry.get("performers") or []
+        host_instrument = node.get("instrument", "vocal")
+        if host_instrument not in VALID_ROLES:
+            host_instrument = "vocal"
+        if not existing:
+            existing = [{"musician_id": musician_id, "role": host_instrument}]
+
+        # Duplicate check
+        for p in existing:
+            if performer_id is not None and p.get("musician_id") == performer_id:
+                return _skip(
+                    f"performer {performer_id} already on {musician_id}'s youtube/{video_id}"
+                )
+
+        new_performer: dict[str, Any] = {"role": role}
+        if performer_id is not None:
+            new_performer["musician_id"] = performer_id
+        else:
+            new_performer["musician_id"] = None
+            new_performer["unmatched_name"] = unmatched_name
+        existing.append(new_performer)
+        entry["performers"] = existing
+
+        _write_node(musicians_path, node)
+
+        who = performer_id or f"\"{unmatched_name}\""
+        return _ok(
+            "[YOUTUBE-PERF+]",
+            f"added {who} ({role}) to {musician_id}'s youtube/{video_id}"
         )
 
     def add_source(

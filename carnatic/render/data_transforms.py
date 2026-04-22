@@ -3,6 +3,20 @@ carnatic/render/data_transforms.py — Denormalisation and lookup-table builders
 """
 from collections import defaultdict
 
+
+def _track_performer_ids(host_node_id: str, yt: dict) -> list[str]:
+    """Return the musician_ids associated with a youtube[] entry (ADR-070).
+
+    If the entry has no performers[] (or it is empty), the host node is the
+    implicit sole performer (back-compat). When performers[] is present, every
+    listed musician_id is returned (unmatched performers without a musician_id
+    are skipped because they do not contribute to graph indexing).
+    """
+    perfs = yt.get("performers") or []
+    if not perfs:
+        return [host_node_id]
+    return [p["musician_id"] for p in perfs if p.get("musician_id")]
+
 def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dict, dict, dict, dict]:
     """
     Build four denormalised lookup dicts from recordings.json:
@@ -110,20 +124,25 @@ def build_composition_lookups(
     raga_to_nodes: dict[str, list[str]] = defaultdict(list)
 
     # ── 1. Legacy schema: youtube[] entries on musician nodes ─────────────────
+    # ADR-070: a youtube entry may carry a performers[] array. When present,
+    # every listed musician_id is indexed; when absent, the host node id is
+    # the implicit single performer (back-compat).
     for node in graph["nodes"]:
         node_id = node["id"]
         for yt in node.get("youtube", []):
             cid = yt.get("composition_id")
             rid = yt.get("raga_id")
-            if cid:
-                if node_id not in composition_to_nodes[cid]:
-                    composition_to_nodes[cid].append(node_id)
-                inferred_raga = comp_raga.get(cid)
-                if inferred_raga and node_id not in raga_to_nodes[inferred_raga]:
-                    raga_to_nodes[inferred_raga].append(node_id)
-            if rid:
-                if node_id not in raga_to_nodes[rid]:
-                    raga_to_nodes[rid].append(node_id)
+            performer_ids = _track_performer_ids(node_id, yt)
+            for mid in performer_ids:
+                if cid:
+                    if mid not in composition_to_nodes[cid]:
+                        composition_to_nodes[cid].append(mid)
+                    inferred_raga = comp_raga.get(cid)
+                    if inferred_raga and mid not in raga_to_nodes[inferred_raga]:
+                        raga_to_nodes[inferred_raga].append(mid)
+                if rid:
+                    if mid not in raga_to_nodes[rid]:
+                        raga_to_nodes[rid].append(mid)
 
     # ── 2. Structured schema: recordings/*.json performers[] ─────────────────
     for rec in recordings_data.get("recordings", []):
@@ -169,9 +188,12 @@ def build_listenable_set(
     listenable: set[str] = set()
 
     # ── 1. Legacy tracks: any node with youtube[] entries ────────────────────
+    # ADR-070: also mark accompanists tagged via the optional performers[].
     for node in graph["nodes"]:
-        if node.get("youtube"):
-            listenable.add(node["id"])
+        node_id = node["id"]
+        for yt in node.get("youtube", []):
+            for mid in _track_performer_ids(node_id, yt):
+                listenable.add(mid)
 
     # ── 2. Structured recordings: any performer across all sessions ──────────
     for rec in recordings_data.get("recordings", []):

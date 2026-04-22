@@ -867,8 +867,92 @@ function addYoutubeBlock(container, formWin) {
   const versionInp = efInput(null, 'text', 'e.g. live, studio, 1965 version', null);
   block.appendChild(efRow('Version', false, null, versionInp));
 
+  // ── Accompanists subsection (ADR-070 / ADR-071) ──────────────────────────
+  const perfContainer = document.createElement('div');
+  perfContainer.className = 'ef-performers-container';
+  perfContainer.style.cssText = 'margin-top:8px;padding-top:8px;border-top:1px dashed var(--border-soft);';
+
+  const perfHeading = document.createElement('div');
+  perfHeading.style.cssText = 'font-size:0.7rem;font-weight:600;color:var(--fg-muted);margin-bottom:4px;';
+  perfHeading.textContent = 'Accompanists';
+  perfContainer.appendChild(perfHeading);
+
+  const perfHint = document.createElement('div');
+  perfHint.style.cssText = 'font-size:0.65rem;color:var(--fg-muted);margin-bottom:6px;';
+  perfHint.textContent = 'Lead artist (this musician) is added automatically. Add accompanying violinists, mridangists, etc.';
+  perfContainer.appendChild(perfHint);
+
+  const perfRows = document.createElement('div');
+  perfRows.className = 'ef-performers-rows';
+  perfContainer.appendChild(perfRows);
+
+  const addPerfBtn = efAddBtn('+ Add Accompanist');
+  perfContainer.appendChild(addPerfBtn);
+  addPerfBtn.addEventListener('click', () => addPerformerBlock(perfRows, formWin));
+
+  block.appendChild(perfContainer);
+
   container.appendChild(block);
   formWin.dispatchEvent(new Event('input'));
+}
+
+// ── Performer entry block (ADR-070 / ADR-071) ────────────────────────────────
+
+function addPerformerBlock(container, formWin) {
+  const row = document.createElement('div');
+  row.className = 'ef-performer-row';
+  row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
+
+  const musOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+  const musSel = efCombobox(null, musOpts, null, formWin);
+  musSel.style.flex = '2';
+  row.appendChild(musSel);
+
+  const roleOpts = (window.PERFORMER_ROLES || ['vocal', 'violin', 'mridangam'])
+    .map(r => ({ value: r, label: r }));
+  const roleSel = efCombobox(null, roleOpts, null, formWin);
+  roleSel.style.flex = '1';
+  row.appendChild(roleSel);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '×';
+  removeBtn.style.cssText = 'background:transparent;border:1px solid var(--border-soft);color:var(--fg-muted);width:24px;height:24px;border-radius:3px;cursor:pointer;';
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    formWin.dispatchEvent(new Event('input'));
+  });
+  row.appendChild(removeBtn);
+
+  // Mark for collection
+  row._musSel  = musSel;
+  row._roleSel = roleSel;
+
+  container.appendChild(row);
+  formWin.dispatchEvent(new Event('input'));
+}
+
+// ── Helper: collect performers from a youtube block, auto-injecting host ─────
+
+function collectYoutubePerformers(block, hostId, hostInstrument) {
+  const rows = block.querySelectorAll('.ef-performers-rows .ef-performer-row');
+  if (rows.length === 0) return null;
+  const out = [];
+  const seen = new Set();
+  rows.forEach(r => {
+    const mid  = r._musSel  && r._musSel.getValue  ? r._musSel.getValue()  : '';
+    const role = r._roleSel && r._roleSel.getValue ? r._roleSel.getValue() : '';
+    if (!mid || !role) return;
+    if (seen.has(mid)) return;
+    seen.add(mid);
+    out.push({ musician_id: mid, role: role });
+  });
+  if (out.length === 0) return null;
+  // Auto-inject host if missing (ADR-070 invariant B)
+  if (hostId && !seen.has(hostId)) {
+    out.unshift({ musician_id: hostId, role: hostInstrument || 'vocal' });
+  }
+  return out;
 }
 
 // ── Edge block (repeating) ────────────────────────────────────────────────────
@@ -927,8 +1011,8 @@ function generateMusicianJson(win) {
   // YouTube entries
   const youtube = [];
   win.querySelectorAll('.ef-youtube-block').forEach(block => {
-    const inputs  = block.querySelectorAll('input:not([data-combobox-filter])');
-    const selects = block.querySelectorAll('select');
+    const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+    const selects = block.querySelectorAll(':scope > .ef-row select');
     const url     = inputs[0] ? inputs[0].value.trim() : '';
     const lbl     = inputs[1] ? inputs[1].value.trim() : '';
     const compId  = selects[0] ? selects[0].value : '';
@@ -941,6 +1025,9 @@ function generateMusicianJson(win) {
     if (ragaId)  entry.raga_id        = ragaId;
     if (year)    entry.year           = parseInt(year, 10);
     if (version) entry.version        = version;
+    // ADR-070: optional performers[] (host auto-injected when any accompanist present)
+    const performers = collectYoutubePerformers(block, id, instr);
+    if (performers) entry.performers = performers;
     youtube.push(entry);
   });
 
@@ -2133,9 +2220,13 @@ function buildMusicianRecordingsForm() {
 
   function collectYoutube() {
     const entries = [];
+    // Resolve host context for performer auto-injection (ADR-070)
+    const hostId = (mode === 'existing' && musicianSel && musicianSel.getValue) ? musicianSel.getValue() : (idRow && idRow._idInput ? idRow._idInput.value.trim() : '');
+    const hostNode = (graphData.nodes || []).find(n => n.id === hostId);
+    const hostInstrument = hostNode ? hostNode.instrument : (instrSel ? instrSel.value : 'vocal');
     win.querySelectorAll('#efmr_youtube .ef-youtube-block').forEach(block => {
-      const inputs  = block.querySelectorAll('input:not([data-combobox-filter])');
-      const selects = block.querySelectorAll('select');
+      const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const selects = block.querySelectorAll(':scope > .ef-row select');
       const url     = inputs[0]  ? inputs[0].value.trim()  : '';
       const lbl     = inputs[1]  ? inputs[1].value.trim()  : '';
       const compId  = selects[0] ? selects[0].value        : '';
@@ -2148,6 +2239,8 @@ function buildMusicianRecordingsForm() {
       if (ragaId)  entry.raga_id        = ragaId;
       if (year)    entry.year           = parseInt(year, 10);
       if (version) entry.version        = version;
+      const performers = collectYoutubePerformers(block, hostId, hostInstrument);
+      if (performers) entry.performers = performers;
       entries.push(entry);
     });
     return entries;
@@ -2412,9 +2505,11 @@ function buildAddYoutubeForm() {
 
     // Collect new YouTube entries from the form
     const newEntries = [];
+    const hostId = node.id;
+    const hostInstrument = node.instrument || 'vocal';
     win.querySelectorAll('.ef-youtube-block').forEach(block => {
-      const inputs  = block.querySelectorAll('input:not([data-combobox-filter])');
-      const selects = block.querySelectorAll('select');
+      const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const selects = block.querySelectorAll(':scope > .ef-row select');
       const url     = inputs[0]  ? inputs[0].value.trim()  : '';
       const lbl     = inputs[1]  ? inputs[1].value.trim()  : '';
       const compId  = selects[0] ? selects[0].value        : '';
@@ -2427,6 +2522,8 @@ function buildAddYoutubeForm() {
       if (ragaId)  entry.raga_id        = ragaId;
       if (year)    entry.year           = parseInt(year, 10);
       if (version) entry.version        = version;
+      const performers = collectYoutubePerformers(block, hostId, hostInstrument);
+      if (performers) entry.performers = performers;
       newEntries.push(entry);
     });
 
@@ -2463,8 +2560,9 @@ function buildAddYoutubeForm() {
     const hasEntry = win.querySelectorAll('.ef-youtube-block').length > 0;
     // At least one entry with a URL
     let hasUrl = false;
-    win.querySelectorAll('.ef-youtube-block input:not([data-combobox-filter])').forEach((inp, i) => {
-      if (i % 4 === 0 && inp.value.trim()) hasUrl = true; // first input in each block = URL
+    win.querySelectorAll('.ef-youtube-block').forEach(block => {
+      const urlInp = block.querySelector(':scope > .ef-row input:not([data-combobox-filter])');
+      if (urlInp && urlInp.value.trim()) hasUrl = true;
     });
     dlBtn.disabled = !(musId && hasEntry && hasUrl);
     if (previewPre.style.display !== 'none') updatePreview();

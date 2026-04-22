@@ -145,6 +145,14 @@ def cmd_add_edge(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
 
 def cmd_add_youtube(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
     year = int(args.year) if args.year is not None else None
+    performers = None
+    if getattr(args, "performer", None):
+        from .writer import _parse_performer_arg
+        try:
+            performers = [_parse_performer_arg(p) for p in args.performer]
+        except ValueError as e:
+            from .writer import _err
+            return _err(str(e))
     return w.add_youtube(
         _musicians_path(),
         musician_id=args.musician_id,
@@ -155,6 +163,18 @@ def cmd_add_youtube(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         year=year,
         version=args.version,
         compositions_path=_compositions_path(),
+        performers=performers,
+    )
+
+
+def cmd_add_youtube_performer(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
+    return w.add_youtube_performer(
+        _musicians_path(),
+        musician_id=args.musician_id,
+        url=args.url,
+        performer_id=args.performer_id,
+        role=args.role,
+        unmatched_name=args.unmatched_name,
     )
 
 
@@ -310,7 +330,19 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--raga-id",        default=None,  dest="raga_id",        help="Raga id (optional)")
     p.add_argument("--year",           default=None,                         help="Year (integer, optional)")
     p.add_argument("--version",        default=None,                         help="Version note (optional)")
+    p.add_argument("--performer",      action="append", default=None,
+                   help="Accompanying performer as <musician_id>:<role>; repeatable. "
+                        "Host musician is auto-injected. (ADR-070)")
 
+    # ── add-youtube-performer ─────────────────────────────────────────
+    p = sub.add_parser("add-youtube-performer",
+                       help="Append a performer to an existing youtube[] entry (ADR-070)")
+    p.add_argument("--musician-id",    required=True, dest="musician_id",  help="Host musician node id")
+    p.add_argument("--url",            required=True,                      help="YouTube URL of the existing entry")
+    p.add_argument("--performer-id",   default=None,  dest="performer_id", help="Accompanist musician id")
+    p.add_argument("--role",           required=True,                      help="Performer role (e.g. violin, mridangam)")
+    p.add_argument("--unmatched-name", default=None,  dest="unmatched_name",
+                   help="Free-text name when no matching musician_id exists")
     # ── add-source ────────────────────────────────────────────────────────────
     p = sub.add_parser("add-source", help="Append a source to a musician node's sources[]")
     p.add_argument("--musician-id", required=True, dest="musician_id", help="Musician node id")
@@ -393,17 +425,18 @@ def _build_parser() -> argparse.ArgumentParser:
 # ── dispatch table ─────────────────────────────────────────────────────────────
 
 HANDLERS = {
-    "add-musician":    cmd_add_musician,
-    "add-edge":        cmd_add_edge,
-    "add-youtube":     cmd_add_youtube,
-    "add-source":      cmd_add_source,
-    "remove-edge":     cmd_remove_edge,
-    "patch-musician":  cmd_patch_musician,
-    "patch-edge":      cmd_patch_edge,
-    "add-raga":        cmd_add_raga,
-    "patch-raga":      cmd_patch_raga,
-    "add-composer":    cmd_add_composer,
-    "add-composition": cmd_add_composition,
+    "add-musician":           cmd_add_musician,
+    "add-edge":               cmd_add_edge,
+    "add-youtube":            cmd_add_youtube,
+    "add-youtube-performer":  cmd_add_youtube_performer,
+    "add-source":             cmd_add_source,
+    "remove-edge":            cmd_remove_edge,
+    "patch-musician":         cmd_patch_musician,
+    "patch-edge":             cmd_patch_edge,
+    "add-raga":               cmd_add_raga,
+    "patch-raga":             cmd_patch_raga,
+    "add-composer":           cmd_add_composer,
+    "add-composition":        cmd_add_composition,
 }
 
 

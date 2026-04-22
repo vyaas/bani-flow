@@ -751,6 +751,46 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         if raga_id is not None and raga_id not in known_raga_ids:
             errors.append(f"Composition {cid}: raga_id '{raga_id}' not in ragas")
 
+    # ── youtube performer integrity (ADR-070) ──────────────────────────────────
+    from carnatic.render.roles import VALID_ROLES
+    for node in g.get_all_musicians():
+        nid = node["id"]
+        for i, yt in enumerate(node.get("youtube", [])):
+            performers = yt.get("performers")
+            if not performers:
+                continue
+            host_present = False
+            for j, p in enumerate(performers):
+                mid = p.get("musician_id")
+                role = p.get("role")
+                unmatched = p.get("unmatched_name")
+                if mid == nid:
+                    host_present = True
+                if role is None:
+                    errors.append(
+                        f"Musician {nid} youtube[{i}].performers[{j}]: missing 'role'"
+                    )
+                elif role not in VALID_ROLES:
+                    errors.append(
+                        f"Musician {nid} youtube[{i}].performers[{j}]: "
+                        f"role '{role}' not in vocabulary"
+                    )
+                if mid is None and not unmatched:
+                    errors.append(
+                        f"Musician {nid} youtube[{i}].performers[{j}]: "
+                        f"must have musician_id or unmatched_name"
+                    )
+                if mid is not None and mid not in known_musician_ids:
+                    errors.append(
+                        f"Musician {nid} youtube[{i}].performers[{j}]: "
+                        f"musician_id '{mid}' not in graph"
+                    )
+            if not host_present:
+                errors.append(
+                    f"Musician {nid} youtube[{i}].performers: "
+                    f"host musician_id '{nid}' must be listed (ADR-070 invariant B)"
+                )
+
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
         "All musician_ids in recordings exist in graph",
@@ -761,6 +801,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "No self-loop edges",
         "All edge endpoints exist in musicians",
         "All composition composer_ids and raga_ids are valid",
+        "All youtube performers reference known musicians and roles (ADR-070)",
     ]
 
     if not errors:

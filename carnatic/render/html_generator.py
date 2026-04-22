@@ -143,6 +143,7 @@ def render_html(
     bani_flow    = _load("bani_flow.js")
     search       = _load("search.js")
     entry_forms  = _load("entry_forms.js")
+    roles_js     = _load("roles.js")
     mobile       = _load("mobile.js")
 
     # ── Substitute placeholders in base.html ──────────────────────────────────
@@ -171,6 +172,7 @@ def render_html(
         raga_wheel,
         bani_flow,
         search,
+        roles_js,      # ← before entry_forms: defines window.PERFORMER_ROLES (ADR-071)
         entry_forms,   # ← needs graphData + wireDrag/nextSpawnPosition/topZ
         mobile,        # ← LAST: exposes peekBottomSheet/dismissBottomSheet globals
         "</script>",

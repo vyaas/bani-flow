@@ -100,6 +100,11 @@ A session is a continuous performance block by a fixed set of performers. A mult
 | `role` | string | `vocal`, `violin`, `veena`, `flute`, `mridangam`, `ghatam`, `tampura`, etc. |
 | `unmatched_name` | string | Only present when `musician_id` is `null`. Raw name from source. |
 
+> **Shared shape (ADR-070):** the same `Performer` object is also used inside
+> `musician.youtube[].performers[]` for solo-track recordings. The role
+> vocabulary lives in [`carnatic/render/roles.py`](../../render/roles.py)
+> (mirror: [`templates/roles.js`](../../render/templates/roles.js)).
+
 ### Performance object
 
 | field | type | notes |

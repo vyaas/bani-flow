@@ -166,9 +166,33 @@ python3 carnatic/write_cli.py add-composition \
 | `era` | enum | `trinity` · `bridge` · `golden_age` · `disseminator` · `living_pillars` · `contemporary` |
 | `instrument` | enum | `vocal` · `veena` · `violin` · `flute` · `mridangam` · `bharatanatyam` · `ghatam` · `other` |
 | `bani` | string \| null | stylistic school / lineage label |
-| `youtube` | array | may be `[]`; `composition_id`, `raga_id`, `year`, `version` all optional |
+| `youtube` | array | may be `[]`; `composition_id`, `raga_id`, `year`, `version`, `performers` all optional |
 
 **Source object:** `{ "url": "…", "label": "…", "type": "wikipedia"|"pdf"|"article"|"archive"|"other" }`
+
+**`performers[]` (optional, ADR-070)**: a `youtube[]` entry may carry an explicit
+performer roster — same `Performer` shape as `recordings/*.json` sessions
+(`{ musician_id, role, unmatched_name? }`). When present, the host musician
+(the parent node) **must** be listed; the validator enforces this. When absent,
+the host is the implicit sole performer (back-compat — existing entries render
+unchanged). Use this to credit accompanists on a single-track recording so they
+flow through the graph the same way concert performers do. See
+[recordings/READYOU.md](recordings/READYOU.md) for the shared `Performer` shape
+and role vocabulary.
+
+```jsonc
+{
+  "url": "https://youtu.be/M4J_HtniTQA",
+  "label": "Gitarthamu · Surutti · Adi - MD Ramanathan",
+  "composition_id": "gitarthamu",
+  "raga_id": "surutti",
+  "performers": [
+    { "musician_id": "md_ramanathan",          "role": "vocal" },
+    { "musician_id": "lalgudi_jayaraman",      "role": "violin" },
+    { "musician_id": "umayalpuram_sivaraman",  "role": "mridangam" }
+  ]
+}
+```
 
 ### musicians/_edges.json
 

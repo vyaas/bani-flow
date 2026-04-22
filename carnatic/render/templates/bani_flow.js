@@ -478,7 +478,10 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             lifespan: d.lifespan, color: d.color, shape: d.shape,
             track: t, isStructured: false,
             perfKey: `${vid}::${offset}`,
-            allPerformers: null,
+            // ADR-070: legacy youtube entries may carry performers[] for
+            // accompanists; use it for co-performer chips just like
+            // structured-recording rows.
+            allPerformers: (t.performers && t.performers.length) ? t.performers : null,
           });
         }
       });
@@ -562,9 +565,10 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   const UNKNOWN_LABELS = new Set(['Unknown', 'Unidentified artiste', '?']);
 
   // For structured recordings: populate coPerformers from performers[] directly
-  // (more reliable than relying on node-iteration order)
+  // (more reliable than relying on node-iteration order).
+  // ADR-070: legacy youtube entries with a performers[] array also opt in.
   perfMap.forEach(row => {
-    if (row.isStructured && row.allPerformers) {
+    if (row.allPerformers) {
       row.coPerformers = [];
       row.allPerformers.forEach(pf => {
         if (pf.musician_id === row.nodeId) return; // skip primary
