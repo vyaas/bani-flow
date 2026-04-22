@@ -595,10 +595,16 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     row.track._versionLabel = row.track.version || `v${n}`;
   });
 
-  // ── 5. Render one <li> per deduplicated row ────────────────────────────────
-  rows.forEach(row => {
-    trailList.appendChild(buildTrailItem(row, type, id, multiVersionKeys));
-  });
+  // ── 5. Render trail — tree for raga/comp, flat list for perf/yt ──────────
+  if (type === 'raga') {
+    buildTreeRaga(rows, trailList, multiVersionKeys);
+  } else if (type === 'comp') {
+    buildTreeComp(rows, trailList, multiVersionKeys);
+  } else {
+    rows.forEach(row => {
+      trailList.appendChild(buildTrailItem(row, type, id, multiVersionKeys));
+    });
+  }
 
   trail.style.display = rows.length > 0 ? 'block' : 'none';
 }
@@ -800,6 +806,293 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   li.appendChild(headerDiv);
   li.appendChild(row2Div);
   return li;
+}
+
+// ── ADR-061: tree-structured trail helpers ────────────────────────────────────
+
+// _buildPlayActsDiv: shared ▶ + ↗ .trail-acts div for both flat and tree leaves.
+function _buildPlayActsDiv(row) {
+  const isConcertEntry = !!(row.isStructured && row.track.recording_id);
+  const concertTitle = row.track.short_title || row.track.concert_title || null;
+  const playBtn = document.createElement('button');
+  playBtn.className = isConcertEntry ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
+  playBtn.title = isConcertEntry && concertTitle ? 'Part of: ' + concertTitle : 'Play';
+  playBtn.textContent = '\u25b6';
+  playBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (row.isStructured && row.track.recording_id) {
+      const allPerfs = Object.values(musicianToPerformances).flat();
+      const concertPerfsMap = new Map();
+      allPerfs.forEach(function(sp) {
+        if (sp.recording_id !== row.track.recording_id) return;
+        const key = sp.session_index + '::' + sp.performance_index;
+        if (!concertPerfsMap.has(key)) concertPerfsMap.set(key, sp);
+      });
+      const concertPerfs = [...concertPerfsMap.values()];
+      const playerTracks = concertPerfs.slice()
+        .sort(function(a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); })
+        .map(function(sp) {
+          const spRagaObj = sp.raga_id ? ragas.find(function(r) { return r.id === sp.raga_id; }) : null;
+          return {
+            offset_seconds: sp.offset_seconds || 0,
+            display_title:  sp.display_title || '',
+            raga_id:        sp.raga_id || null,
+            raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
+            tala:           sp.tala || null,
+            timestamp:      sp.timestamp || '00:00',
+            composition_id: sp.composition_id || null,
+          };
+        });
+      openOrFocusPlayer(
+        row.track.vid, row.track.label, row.artistLabel,
+        row.track.offset_seconds || undefined,
+        row.track.short_title || row.track.concert_title,
+        playerTracks,
+        { nodeId: row.nodeId || null, ragaId: row.track.raga_id || null, compositionId: row.track.composition_id || null }
+      );
+    } else {
+      openOrFocusPlayer(
+        row.track.vid, row.track.label, row.artistLabel,
+        undefined, undefined, undefined,
+        { nodeId: row.nodeId || null, ragaId: row.track.raga_id || null, compositionId: row.track.composition_id || null }
+      );
+    }
+  });
+  const actsDiv = document.createElement('div');
+  actsDiv.className = 'trail-acts';
+  actsDiv.appendChild(playBtn);
+  actsDiv.appendChild(buildYtLink(row.track.vid, row.track.offset_seconds || 0));
+  return actsDiv;
+}
+
+// buildTreeLeaf: one <li class="tree-leaf"> for a performance row inside a group.
+// suppressArtist=true  → comp-view leaf (artist shown in group header; omit here)
+// suppressArtist=false → raga-view leaf (artist shown here)
+function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
+  const li = document.createElement('li');
+  li.className = 'tree-leaf';
+  li.dataset.vid = row.track.vid;
+  if (playerRegistry.has(row.track.vid)) li.classList.add('playing');
+
+  // Single flex row: [artist chip?] [version/context?] [co-performers comma-sep] [▶+↗ right]
+  const leafRow = document.createElement('div');
+  leafRow.className = 'tree-leaf-row';
+
+  if (!suppressArtist) {
+    // Raga-view: primary artist chip first
+    leafRow.appendChild(buildArtistSpan(row, true, 'raga', null));
+  }
+
+  // Version badge (when multiple recordings of same comp by same artist)
+  const versionKey = row.nodeId && row.track.composition_id
+    ? row.nodeId + '::' + row.track.composition_id : null;
+  const showVersion = versionKey && multiVersionKeys && multiVersionKeys.has(versionKey)
+    && row.track._versionLabel;
+  if (showVersion) {
+    const versionBadge = document.createElement('span');
+    versionBadge.className = 'trail-version';
+    versionBadge.textContent = row.track._versionLabel;
+    versionBadge.title = 'Version: ' + row.track._versionLabel;
+    leafRow.appendChild(versionBadge);
+  } else if (suppressArtist) {
+    // Comp-view: show year or concert title as context label
+    const ctx = row.track.year
+      ? String(row.track.year)
+      : (row.track.short_title || row.track.concert_title || row.track.label || '');
+    if (ctx) {
+      const ctxSpan = document.createElement('span');
+      ctxSpan.className = 'trail-label';
+      ctxSpan.textContent = ctx;
+      leafRow.appendChild(ctxSpan);
+    }
+  }
+
+  // Co-performers: comma-separated clickable chips inline (no separate rows)
+  if (row.coPerformers && row.coPerformers.length > 0) {
+    row.coPerformers.forEach(function(cp, i) {
+      leafRow.appendChild(document.createTextNode(i === 0 ? '\u00a0' : ', '));
+      leafRow.appendChild(buildArtistSpan(cp, false, 'raga', null));
+    });
+  }
+
+  // ▶ + ↗ pushed to right via margin-left: auto
+  const actsDiv = _buildPlayActsDiv(row);
+  actsDiv.style.marginLeft = 'auto';
+  leafRow.appendChild(actsDiv);
+
+  li.appendChild(leafRow);
+  return li;
+}
+
+// buildTreeRaga: raga-view trail — group rows by composition, one collapsible
+// .tree-group per composition; leaves show artist + version badge + ▶ + ↗.
+function buildTreeRaga(rows, trailList, multiVersionKeys) {
+  // Group by composition_id (null → 'no-comp' sentinel)
+  const groups = new Map();
+  rows.forEach(function(row) {
+    const cid = row.track.composition_id || 'no-comp';
+    if (!groups.has(cid)) {
+      const comp = cid !== 'no-comp' ? (compositions.find(function(c) { return c.id === cid; }) || null) : null;
+      groups.set(cid, { comp: comp, cid: cid, rows: [] });
+    }
+    groups.get(cid).rows.push(row);
+  });
+
+  // Sort by earliest born/year in group; null-comp bucket last
+  const sortedGroups = [...groups.values()].sort(function(a, b) {
+    if (a.cid === 'no-comp') return 1;
+    if (b.cid === 'no-comp') return -1;
+    const aBorn = Math.min.apply(null, a.rows.map(function(r) { return r.born || r.track.year || 9999; }));
+    const bBorn = Math.min.apply(null, b.rows.map(function(r) { return r.born || r.track.year || 9999; }));
+    return aBorn - bBorn;
+  });
+
+  sortedGroups.forEach(function(group, idx) {
+    const isSingle = group.rows.length === 1;
+    const isFirst  = idx === 0;
+
+    const li = document.createElement('li');
+    li.className = 'tree-group';
+    if (isSingle || isFirst) li.classList.add('tree-group-open');
+    if (isSingle) li.classList.add('tree-group-single');
+
+    // ── Group header ──────────────────────────────────────────────────────────
+    const header = document.createElement('div');
+    header.className = 'tree-group-header';
+
+    if (group.comp) {
+      // Comp title + composer chip stacked vertically; each navigates independently
+      const textDiv = document.createElement('div');
+      textDiv.className = 'tree-header-text';
+      const compChip = document.createElement('span');
+      compChip.className = 'comp-chip';
+      compChip.textContent = group.comp.title;
+      compChip.title = 'Explore ' + group.comp.title + ' in Bani Flow';
+      compChip.addEventListener('click', function(e) {
+        e.stopPropagation();
+        triggerBaniSearch('comp', group.cid);
+      });
+      textDiv.appendChild(compChip);
+      if (typeof buildComposerChip === 'function') {
+        const cc = buildComposerChip(group.cid);
+        if (cc) textDiv.appendChild(cc);
+      }
+      header.appendChild(textDiv);
+    } else {
+      const label = document.createElement('span');
+      label.className = 'trail-label';
+      label.textContent = 'Other recordings';
+      header.appendChild(label);
+    }
+
+    // Chevron — expand/collapse toggle (right-anchored); absent for single-child groups
+    if (!isSingle) {
+      const chevron = document.createElement('span');
+      chevron.className = 'tree-chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      chevron.addEventListener('click', function(e) {
+        e.stopPropagation();
+        li.classList.toggle('tree-group-open');
+      });
+      header.appendChild(chevron);
+    }
+
+    li.appendChild(header);
+
+    // ── Children ──────────────────────────────────────────────────────────────
+    const childrenUl = document.createElement('ul');
+    childrenUl.className = 'tree-children';
+    group.rows.forEach(function(row) {
+      childrenUl.appendChild(buildTreeLeaf(row, multiVersionKeys, false));
+    });
+    li.appendChild(childrenUl);
+
+    trailList.appendChild(li);
+  });
+}
+
+// buildTreeComp: comp-view trail — group rows by primary artist, one collapsible
+// .tree-group per artist; multi-version artists have version leaves; single-version
+// artists have inline ▶ + ↗ in header (no child list).
+function buildTreeComp(rows, trailList, multiVersionKeys) {
+  // Group by nodeId (null → 'no-node' sentinel)
+  const groups = new Map();
+  rows.forEach(function(row) {
+    const key = row.nodeId || 'no-node';
+    if (!groups.has(key)) {
+      groups.set(key, {
+        nodeId:      row.nodeId,
+        artistLabel: row.artistLabel,
+        born:        row.born,
+        lifespan:    row.lifespan,
+        color:       row.color,
+        shape:       row.shape,
+        rows:        [],
+      });
+    }
+    groups.get(key).rows.push(row);
+  });
+
+  // Sort by born; no-node last
+  const sortedGroups = [...groups.values()].sort(function(a, b) {
+    if (!a.nodeId) return 1;
+    if (!b.nodeId) return -1;
+    const ab = a.born, bb = b.born;
+    if (ab !== bb) {
+      if (ab == null) return 1;
+      if (bb == null) return -1;
+      return ab - bb;
+    }
+    return a.artistLabel.localeCompare(b.artistLabel);
+  });
+
+  sortedGroups.forEach(function(group, idx) {
+    const isSingle = group.rows.length === 1;
+    const isFirst  = idx === 0;
+
+    const li = document.createElement('li');
+    li.className = 'tree-group';
+    if (isSingle || isFirst) li.classList.add('tree-group-open');
+    if (isSingle) li.classList.add('tree-group-single');
+
+    // ── Group header ──────────────────────────────────────────────────────────
+    const header = document.createElement('div');
+    header.className = 'tree-group-header';
+
+    // Musician chip (era-tinted); no lifespan — era colour is the proxy
+    header.appendChild(buildArtistSpan(group, true, 'comp', null));
+
+    if (isSingle) {
+      // Single-version: inline ▶ + ↗ pushed to the right
+      const actsDiv = _buildPlayActsDiv(group.rows[0]);
+      actsDiv.style.marginLeft = 'auto';
+      header.appendChild(actsDiv);
+    } else {
+      // Multi-version: chevron right-anchored; click toggles only
+      const chevron = document.createElement('span');
+      chevron.className = 'tree-chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      chevron.addEventListener('click', function(e) {
+        e.stopPropagation();
+        li.classList.toggle('tree-group-open');
+      });
+      header.appendChild(chevron);
+    }
+
+    li.appendChild(header);
+
+    // ── Children (multi-version only) ─────────────────────────────────────────
+    if (!isSingle) {
+      const childrenUl = document.createElement('ul');
+      childrenUl.className = 'tree-children';
+      group.rows.forEach(function(row) {
+        childrenUl.appendChild(buildTreeLeaf(row, multiVersionKeys, true));
+      });
+      li.appendChild(childrenUl);
+    }
+
+    trailList.appendChild(li);
+  });
 }
 
 // ── buildArtistSpan: render a clickable era-tinted musician chip (ADR-054) ─────

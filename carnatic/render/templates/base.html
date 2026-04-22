@@ -758,6 +758,39 @@
   }
   #trail-list li:last-child { border-bottom: none; }
   #trail-list li.playing { color: var(--accent-sub); }
+
+  /* ── ADR-061: tree-structured trail ──────────────────────────────── */
+  /* .tree-group is the outer wrapper <li> — no padding/border of its own */
+  #trail-list li.tree-group {
+    padding: 0; border-bottom: none; gap: 0;
+  }
+  /* Reset :last-child override so the last group still has no border */
+  #trail-list li.tree-group:last-child { border-bottom: none; }
+  /* Group header — flex row: chevron + primary chip + secondary info */
+  .tree-group-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+    cursor: default; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Chevron — ▶ collapsed, ▼ expanded; right-anchored, own click target */
+  .tree-chevron { flex-shrink: 0; font-size: 0.85rem; color: var(--fg-muted); margin-left: auto; padding-left: 8px; cursor: pointer; }
+  .tree-chevron::before { content: '\25B6'; }
+  .tree-group-open > .tree-group-header > .tree-chevron::before { content: '\25BC'; }
+  /* Composition title + composer chip stacked vertically inside header */
+  .tree-header-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  /* Children list — shown when group is open */
+  .tree-children { list-style: none; padding: 0; margin: 0; display: none; }
+  .tree-group-open > .tree-children { display: block; }
+  /* Leaf rows — inherits #trail-list li base styles but indented */
+  #trail-list li.tree-leaf {
+    padding: 4px 0 4px 12px;
+    border-bottom: 1px solid var(--border);
+    border-left: 2px solid var(--border);
+  }
+  #trail-list li.tree-leaf:last-child { border-bottom: none; }
+  /* Single flex row: artist + co-performers (comma-sep, clickable) + ▶+↗ */
+  .tree-leaf-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; width: 100%; }
   .trail-header { display: flex; flex-direction: column; width: 100%; gap: 1px; }
   .trail-header-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
   .trail-lifespan { flex-shrink: 0; color: var(--fg-muted); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }
