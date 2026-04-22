@@ -545,6 +545,27 @@
     font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
     flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
+  /* ── Misc bucket leaves: flat row, label wraps to max 2 lines, never
+     obstructs the play / yt buttons. The action column reserves its width
+     via flex-shrink:0; the label column hard-clamps to 2 lines.            */
+  .tree-misc-leaf {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+  }
+  .tree-misc-leaf:last-child { border-bottom: none; }
+  .tree-misc-leaf .trail-row2 {
+    flex-direction: row; align-items: center; gap: 8px;
+  }
+  .tree-misc-leaf .trail-chips {
+    flex: 1 1 auto; min-width: 0;
+  }
+  .tree-misc-leaf .tree-unmatched-title {
+    white-space: normal; overflow: hidden; text-overflow: ellipsis;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    line-height: 1.35; word-break: break-word;
+  }
+  .tree-misc-leaf .trail-acts { flex-shrink: 0; align-self: center; }
   .rec-row2 { display: flex; flex-direction: column; align-items: flex-start; width: 100%; gap: 3px; }
   .rec-row3 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
 
@@ -68357,13 +68378,15 @@ cy.on('taphold', 'edge', evt => {
 
 // ── ADR-027: reflective metadata inspector ────────────────────────────────────
 // ADR-033: isTouchDevice guard — true on phones/tablets (pointer: coarse)
-f
+function isTouchDevice() {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
 // Mobile-layout viewport (matches the breakpoint used by mobile.js / media_player).
 // Used for layout-driven UX choices (e.g. two-tap node reveal) that should
 // follow the sidebar layout, not the pointer modality.
 function isMobileViewport() {
   return window.matchMedia('(max-width: 768px)').matches;
-}  return window.matchMedia('(pointer: coarse)').matches;
 }
 
 function openMetaInspector(type, dataObj) {
@@ -69429,6 +69452,22 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
   // ── Children ───────────────────────────────────────────────────────────
   const ul = document.createElement('ul');
   ul.className = 'tree-children';
+
+  // Misc bucket (no raga) is always flat — no composition sub-grouping.
+  // Each recording is shown on its own row with the recording's own label.
+  if (!ragaId) {
+    const flatPerfs = perfs.slice().sort((a, b) => {
+      const ya = a.date ? parseInt(a.date) : Infinity;
+      const yb = b.date ? parseInt(b.date) : Infinity;
+      return ya - yb;
+    });
+    flatPerfs.forEach(p => {
+      ul.appendChild(buildMiscLeaf(p, nodeId, artistLabel));
+    });
+    li.appendChild(ul);
+    return li;
+  }
+
   sortedComps.forEach(([compId, compPerfs]) => {
     ul.appendChild(buildCompNode(compId, compPerfs, nodeId, artistLabel));
   });
@@ -69437,6 +69476,79 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
   }
   li.appendChild(ul);
 
+  return li;
+}
+
+// buildMiscLeaf — one flat row in the Misc raga bucket.
+// Misc has no composition tree; each recording is rendered standalone with its
+// own label (display_title / short_title) shown in the de-emphasized
+// `.tree-unmatched-title` style. If the recording has a known composition_id,
+// the comp chip leads instead of a plain label.
+function buildMiscLeaf(p, nodeId, artistLabel) {
+  const li = document.createElement('li');
+  li.className = 'tree-leaf tree-misc-leaf';
+  li.dataset.vid = p.video_id;
+  if (playerRegistry.has(p.video_id)) li.classList.add('playing');
+
+  const row = document.createElement('div');
+  row.className = 'trail-row2';
+
+  const chipsDiv = document.createElement('div');
+  chipsDiv.className = 'trail-chips';
+
+  const compObj = p.composition_id
+    ? ((typeof compositions !== 'undefined' ? compositions : []).find(c => c.id === p.composition_id) || null)
+    : null;
+  if (compObj) {
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = compObj.title || p.composition_id;
+    compChip.title = (compObj.title || p.composition_id) + ' — Explore in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      compChip.classList.add('chip-tapped');
+      setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', p.composition_id);
+    });
+    chipsDiv.appendChild(compChip);
+  } else {
+    const labelText = p.display_title || p.short_title || p.title || 'Untitled';
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'tree-unmatched-title';
+    labelSpan.textContent = labelText;
+    labelSpan.title = labelText;
+    chipsDiv.appendChild(labelSpan);
+  }
+
+  if (p.date) {
+    const yearSpan = document.createElement('span');
+    yearSpan.className = 'rec-year';
+    yearSpan.textContent = p.date.slice(0, 4);
+    chipsDiv.appendChild(yearSpan);
+  }
+  row.appendChild(chipsDiv);
+
+  const actsDiv = document.createElement('div');
+  actsDiv.className = 'trail-acts';
+  const playBtn = document.createElement('button');
+  playBtn.className = 'rec-play-btn play-btn-concert';
+  playBtn.setAttribute('data-vid', p.video_id);
+  playBtn.title = p.display_title || p.short_title || p.title || 'Play';
+  playBtn.textContent = '\u25B6';
+  playBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    openOrFocusPlayer(
+      p.video_id, p.display_title, artistLabel,
+      p.offset_seconds > 0 ? p.offset_seconds : undefined,
+      p.short_title || p.title, [],
+      { nodeId, ragaId: null, compositionId: p.composition_id || null, tala: p.tala || null }
+    );
+  });
+  actsDiv.appendChild(playBtn);
+  actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
+  row.appendChild(actsDiv);
+
+  li.appendChild(row);
   return li;
 }
 
@@ -70555,18 +70667,40 @@ function svgEl(tag, attrs) {
   return el;
 }
 
-// Append a text label with a semi-transparent dark background pill to `layer`.
+// Read chip design tokens from CSS custom properties once per call.
+// Uses the solid border colour as SVG fill base (avoids color-mix() SVG attr issues).
+// ADR-073: mela labels remain on the legacy dark pill; only janya + comp use chip tokens.
+function _readChipTokens() {
+  const cs = getComputedStyle(document.documentElement);
+  return {
+    ragaBorder: cs.getPropertyValue('--chip-raga-border').trim() || '#6ec6a8',
+    compBorder: cs.getPropertyValue('--chip-comp-border').trim() || '#d79921',
+    radius:     parseFloat(cs.getPropertyValue('--chip-border-radius')) || 4,
+  };
+}
+
+// Append a text label with a background pill to `layer`.
 // cx, cy: centre of the label. extraAttrs: additional SVG text attributes (e.g. class).
 // clickHandler: optional fn(e) — when provided the pill background <rect> becomes a
 //   pointer-events hit target (pointer-events: all) and the handler fires on click.
 //   This makes the entire pill area tappable on mobile, not just the circle node.
 //   class and data-* attrs are hoisted onto the wrapper <g> so querySelectorAll works.
+// chipVariant (in extraAttrs): 'raga' | 'comp' — token-driven chip styling matching
+//   the panel chips (ADR-073). Omit for the legacy dark pill.
+// rotate (in extraAttrs): SVG rotate() arg string (e.g. '45, 100, 200') — applied to
+//   the wrapper <g> as transform:rotate(...). Used by mela rim labels.
+// wrapOpacity (in extraAttrs): envelope opacity applied to the wrapper <g>. Supports
+//   dimming effects; multiplies with per-rect fill opacity.
 // Returns the <text> element.
 function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs, clickHandler) {
   const PAD_X = 3, PAD_Y = 1.5;
-  // Estimate text width from character count (monospace approximation)
+  const variant = extraAttrs && extraAttrs.chipVariant;
+  const glyph = variant === 'raga' ? '\u25c8\u00a0' : variant === 'comp' ? '\u266a\u00a0' : '';
+  const displayText = glyph + text;
+  // Estimate text width from character count (monospace approximation).
+  // Include glyph prefix in width calculation when chip variant is active.
   const charW = fontSize * 0.55;
-  const tw = text.length * charW + PAD_X * 2;
+  const tw = displayText.length * charW + PAD_X * 2;
   const th = fontSize + PAD_Y * 2;
 
   // Wrapper group: carries class/data-* attrs for querySelectorAll selectors.
@@ -70574,39 +70708,66 @@ function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs, clickHandler) {
   const wrapAttrs = { 'pointer-events': 'none' };
   if (extraAttrs) {
     if (extraAttrs.class) wrapAttrs.class = extraAttrs.class;
+    if (extraAttrs.rotate !== undefined) wrapAttrs.transform = 'rotate(' + extraAttrs.rotate + ')';
+    if (extraAttrs.wrapOpacity !== undefined) wrapAttrs.opacity = extraAttrs.wrapOpacity;
     for (const [k, v] of Object.entries(extraAttrs)) {
       if (k.startsWith('data-')) wrapAttrs[k] = v;
     }
   }
   const wrap = svgEl('g', wrapAttrs);
 
+  // Chip variant: dark substrate with token-coloured border and text (ADR-073).
+  // Using THEME.bgDeep as fill keeps the chip legible over any cakra-sector colour.
+  // Mela/janya/comp labels all use chipVariant now; legacy dark-only pill is unused.
+  let fillColor = THEME.labelOutline, fillOpacity = 0.72;
+  let strokeColor = 'none', strokeWidth = 0;
+  let textColor = (extraAttrs && extraAttrs.fill) || THEME.fg;
+  const chipRadius = variant ? _readChipTokens().radius : 2;
+  if (variant === 'raga' || variant === 'comp') {
+    const tok = _readChipTokens();
+    const base = variant === 'raga' ? tok.ragaBorder : tok.compBorder;
+    fillColor   = THEME.bgDeep;  // near-opaque dark bg — legible over any cakra colour
+    fillOpacity = 0.92;
+    strokeColor = base;
+    strokeWidth = 1;
+    textColor   = base;
+  }
+
   // The rect is the actual hit target when a clickHandler is provided.
   // pointer-events: all makes it respond even when fill is semi-transparent.
-  const rectEl = svgEl('rect', {
+  const rectAttrs = {
     x: cx - tw / 2, y: cy - th / 2,
-    width: tw, height: th, rx: 2, ry: 2,
-    fill: THEME.labelOutline, opacity: 0.72,
+    width: tw, height: th, rx: chipRadius, ry: chipRadius,
+    fill: fillColor, opacity: fillOpacity,
     'pointer-events': clickHandler ? 'all' : 'none'
-  });
+  };
+  if (strokeWidth) {
+    rectAttrs.stroke = strokeColor;
+    rectAttrs['stroke-width'] = strokeWidth;
+  }
+  const rectEl = svgEl('rect', rectAttrs);
   if (clickHandler) {
     rectEl.style.cursor = 'pointer';
     rectEl.addEventListener('click', (e) => { e.stopPropagation(); clickHandler(e); });
   }
   wrap.appendChild(rectEl);
 
-  // Build text attrs — strip class and data-* (now on the wrapper group)
+  // Build text attrs — strip class, data-*, chipVariant, rotate, wrapOpacity (handled above).
+  const _SKIP = new Set(['class', 'chipVariant', 'rotate', 'wrapOpacity']);
   const textAttrs = {};
   if (extraAttrs) {
     for (const [k, v] of Object.entries(extraAttrs)) {
-      if (k !== 'class' && !k.startsWith('data-')) textAttrs[k] = v;
+      if (!_SKIP.has(k) && !k.startsWith('data-')) textAttrs[k] = v;
     }
   }
+  // Override fill with chip colour when variant is active.
+  if (variant === 'raga' || variant === 'comp') textAttrs.fill = textColor;
   const t = svgEl('text', Object.assign({
     x: cx, y: cy,
     'text-anchor': 'middle', 'dominant-baseline': 'middle',
     'pointer-events': 'none'
   }, textAttrs));
-  t.textContent = text;
+  t.textContent = displayText;
   wrap.appendChild(t);
 
   layer.appendChild(wrap);
@@ -71239,33 +71400,25 @@ window.drawRagaWheel = function() {
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
     const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
-    // For live mela labels: pointer-events: all on the <text> so glyphs are tappable.
-    // <text> has inherent glyph geometry — pointer-events: all makes the rendered
-    // characters themselves a hit target without needing a wrapper element.
-    // (A <g> with no fill/stroke has no geometry and is never returned by elementFromPoint.)
-    const lblText = svgEl('text', {
-      x: lp.x, y: lp.y, 'text-anchor': anchor, 'dominant-baseline': 'middle',
-      fill: isLiveLbl ? THEME.fg : (raga ? THEME.borderStrong : THEME.borderStrong),
-      'font-size': Math.max(7, minDim * 0.012) + 'px',
-      'pointer-events': isLiveLbl ? 'all' : 'none',
-      opacity: melaLblOpacity,
+    const melaFontSize = Math.max(7, minDim * 0.012);
+    // All mela labels now use the raga chip style (ADR-073: melas are ragas).
+    // rotate wraps the chip <g> so the rect+text rotate together around lp.
+    // wrapOpacity provides the inactive-mela dimming envelope.
+    // The rect click target replaces the prior pointer-events:all on <text>.
+    _labelWithBg(_labelLayer, raga ? raga.name : String(n), lp.x, lp.y, melaFontSize, {
+      'font-size': melaFontSize + 'px',
+      class: 'mela-label',
       'data-orig-opacity': melaLblOpacity,
       'data-id': raga ? raga.id : '',
-      class: 'mela-label',
-      transform: `rotate(${melaRotDeg}, ${lp.x}, ${lp.y})`
-    });
-    lblText.textContent = raga ? raga.name : String(n);
-    if (isLiveLbl) {
-      lblText.style.cursor = 'pointer';
-      lblText.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const melaG = vp.querySelector(`.mela-node[data-id="${CSS.escape(raga.id)}"]`);
-        if (melaG) melaG.dispatchEvent(new MouseEvent('click', {
-          bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
-        }));
-      });
-    }
-    _labelLayer.appendChild(lblText);
+      wrapOpacity: melaLblOpacity,
+      rotate: `${melaRotDeg}, ${lp.x}, ${lp.y}`,
+      chipVariant: 'raga'
+    }, isLiveLbl ? (e) => {
+      const melaG = vp.querySelector(`.mela-node[data-id="${CSS.escape(raga.id)}"]`);
+      if (melaG) melaG.dispatchEvent(new MouseEvent('click', {
+        bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
+      }));
+    } : null);
   });
   vp.appendChild(_labelLayer);
 };
@@ -71455,7 +71608,8 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         const jFontSize = Math.max(7, minDim * 0.011);
         _labelWithBg(_labelLayer, janya.name, jPos.x, jPos.y, jFontSize, {
           fill: THEME.fgSub, 'font-size': jFontSize + 'px',
-          class: 'sat-label sat-label-janya', 'data-janya-id': janya.id
+          class: 'sat-label sat-label-janya', 'data-janya-id': janya.id,
+          chipVariant: 'raga'
         }, (e) => {
           jg.dispatchEvent(new MouseEvent('click', {
             bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
@@ -71528,7 +71682,8 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       const cFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
         fill: THEME.fgSub, 'font-size': cFontSize + 'px',
-        class: 'sat-label sat-label-comp', 'data-comp-id': item.id || ''
+        class: 'sat-label sat-label-comp', 'data-comp-id': item.id || '',
+        chipVariant: 'comp'
       }, (e) => {
         cg.dispatchEvent(new MouseEvent('click', {
           bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
