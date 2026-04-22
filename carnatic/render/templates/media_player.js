@@ -748,8 +748,9 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     compHeader.appendChild(compChip);
   } else {
     const titleSpan = document.createElement('span');
-    titleSpan.className = 'rec-title';
+    titleSpan.className = 'tree-unmatched-title';
     titleSpan.textContent = (sortedPerfs[0] && sortedPerfs[0].display_title) || 'Unknown composition';
+    titleSpan.title = (sortedPerfs[0] && sortedPerfs[0].display_title) || '';
     compHeader.appendChild(titleSpan);
   }
 

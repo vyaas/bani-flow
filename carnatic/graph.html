@@ -479,6 +479,11 @@
   .rec-version-label {
     font-size: 0.65rem; color: var(--fg-muted);
   }
+  /* Non-composition label in raga tree — de-emphasized, no chip styling */
+  .tree-unmatched-title {
+    font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
+    flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
   .rec-row2 { display: flex; flex-direction: column; align-items: flex-start; width: 100%; gap: 3px; }
   .rec-row3 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
 
@@ -69092,8 +69097,9 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     compHeader.appendChild(compChip);
   } else {
     const titleSpan = document.createElement('span');
-    titleSpan.className = 'rec-title';
+    titleSpan.className = 'tree-unmatched-title';
     titleSpan.textContent = (sortedPerfs[0] && sortedPerfs[0].display_title) || 'Unknown composition';
+    titleSpan.title = (sortedPerfs[0] && sortedPerfs[0].display_title) || '';
     compHeader.appendChild(titleSpan);
   }
 
