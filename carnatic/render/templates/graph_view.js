@@ -494,7 +494,7 @@ document.getElementById('panel-back-btn').addEventListener('click', panelBack);
 document.getElementById('panel-fwd-btn').addEventListener('click', panelForward);
 
 // ── selectNode — shared selection logic (sidebar + graph highlight) ───────────
-function selectNode(node, { fromHistory = false } = {}) {
+function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   const d = node.data();
   if (!fromHistory) {
     if (_currentPanelNodeId && _currentPanelNodeId !== node.id()) {
@@ -552,8 +552,10 @@ function selectNode(node, { fromHistory = false } = {}) {
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
 
-  // ADR-046: open right drawer on any screen width when a node is selected
-  if (typeof window.setPanelState === 'function') {
+  // ADR-046: open right drawer on any screen width when a node is selected.
+  // Mobile first-tap suppresses reveal — panel is pre-populated, surfaced on
+  // the second tap (see node-tap handler below).
+  if (revealPanel && typeof window.setPanelState === 'function') {
     window.setPanelState('MUSICIAN');
   }
 }
@@ -804,12 +806,18 @@ function focusNode(node) {
 
 cy.on('tap', 'node', evt => {
   const node = evt.target;
-
-  if (isTouchDevice()) {
-    // Mobile: two-tap UX preserved (ADR-044 nudge still shown)
+.
+    // First tap focuses + pre-populates the Musician panel silently;
+    // second tap reveals it. The panel content is therefore ready the
+    // instant the drawer slides in (no perceived lag).
     if (_focusedGraphNode === node.id()) {
       if (typeof hideClickNudge === 'function') hideClickNudge();
-      selectNode(node);
+      if (typeof window.setPanelState === 'function') {
+        window.setPanelState('MUSICIAN');
+      }
+    } else {
+      focusNode(node);
+      selectNode(node, { revealPanel: false }e);
     } else {
       focusNode(node);
       if (typeof showClickNudge === 'function')
