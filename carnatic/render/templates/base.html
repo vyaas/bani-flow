@@ -232,6 +232,80 @@
   #recordings-panel { display: none; }
   #recordings-list { list-style: none; margin-top: 4px; }
 
+  /* ── ADR-064: section headers within recordings panel ── */
+  .rec-section-header {
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  /* ── ADR-064: raga tree — raga-level groups in musician panel ── */
+  #recordings-list li.tree-group {
+    padding: 0; border-bottom: none; gap: 0; list-style: none;
+  }
+  #recordings-list .tree-group-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+    cursor: default; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #recordings-list .rec-group-count {
+    font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
+  }
+  /* All raga groups start open — .tree-children override for rec context */
+  #recordings-list .tree-children {
+    list-style: none; padding: 0; margin: 0; display: block;
+  }
+  /* Single-raga chevron hidden */
+  #recordings-list .tree-group-single > .tree-group-header > .tree-chevron {
+    display: none;
+  }
+
+  /* ── ADR-064: composition node — second level of raga tree ── */
+  .tree-comp-node {
+    padding: 5px 0 5px 12px;
+    border-bottom: 1px solid var(--border);
+    border-left: 2px solid var(--border);
+    list-style: none;
+  }
+  .tree-comp-node:last-child { border-bottom: none; }
+  .tree-comp-header {
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap; width: 100%;
+  }
+  /* Composer sub-label — always visible, indented below composition chip */
+  .tree-comp-meta {
+    padding-left: 6px; margin-top: 3px;
+    display: flex; align-items: center;
+  }
+  .tree-comp-meta .composer-label {
+    font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
+  }
+  /* Recording toggle button */
+  .tree-rec-toggle {
+    margin-left: auto; flex-shrink: 0;
+    background: none; border: 1px solid var(--border);
+    color: var(--fg-muted); font-size: 0.65rem; padding: 1px 6px;
+    border-radius: 2px; cursor: pointer; font-family: inherit;
+    white-space: nowrap;
+  }
+  .tree-rec-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .tree-rec-toggle[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
+  /* Recording rows — hidden by default, revealed on toggle */
+  .tree-rec-list {
+    list-style: none; padding: 0; margin: 4px 0 0 8px;
+  }
+  .tree-rec-list .tree-leaf {
+    padding: 3px 0 3px 8px;
+    border-left: 1px dashed var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .tree-rec-list .tree-leaf:last-child { border-bottom: none; }
+  .tree-rec-list .trail-row2 { display: flex; flex-direction: row; align-items: center; width: 100%; gap: 6px; }
+  .tree-rec-list .trail-chips { display: flex; flex-wrap: wrap; align-items: center; flex: 1; min-width: 0; gap: 4px; }
+  .tree-rec-list .trail-acts  { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
   /* ── concert bracket (ADR-018) ── */
   .concert-bracket {
     border-bottom: 1px solid var(--border);
@@ -769,10 +843,29 @@
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-  /* Chevron — ▶ collapsed, ▼ expanded; right-anchored, own click target */
-  .tree-chevron { flex-shrink: 0; font-size: 0.85rem; color: var(--fg-muted); margin-left: auto; padding-left: 8px; cursor: pointer; }
+  /* Chevron — circular icon button matching play/link size (ADR-065) */
+  .tree-chevron {
+    flex-shrink: 0;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-muted, var(--border-strong));
+    background: none;
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.12s, border-color 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
   .tree-chevron::before { content: '\25B6'; }
   .tree-group-open > .tree-group-header > .tree-chevron::before { content: '\25BC'; }
+  .tree-chevron::after { content: ''; position: absolute; inset: -9px; }
+  .tree-chevron:hover { background: var(--bg-active); border-color: var(--fg-muted); }
   /* Composition title + composer chip stacked vertically inside header */
   /* align-items:flex-start prevents column flex from stretching chips to full width */
   .tree-header-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; flex: 1; min-width: 0; }
@@ -897,40 +990,85 @@
     font-size: 0.70rem; color: var(--fg-muted); margin-top: 2px;
   }
 
-  /* ── ADR-025: explicit play button ── */
+  /* ── ADR-065: circular play button ── */
   .rec-play-btn {
     flex-shrink: 0;
-    margin-left: auto;   /* always right-justified in rec-row1 */
+    margin-left: auto;   /* right-justified when direct child of rec-row1 */
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
     background: none;
-    border: 1px solid var(--border-strong);
     color: var(--accent-sub);
-    font-size: 0.65rem;
-    padding: 1px 5px;
-    border-radius: 6px;
+    font-size: 0.72rem;
     cursor: pointer;
     line-height: 1;
+    transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Expand hit target to 44px without inflating the layout box */
+  .rec-play-btn::after {
+    content: '';
+    position: absolute;
+    inset: -9px;
   }
   .rec-play-btn:hover {
     background: var(--bg-input);
     border-color: var(--accent-sub);
     color: var(--fg);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-sub) 25%, transparent);
   }
-  /* YouTube external-link icon — always next to ▶ */
+  .rec-play-btn:active {
+    background: var(--bg-pressed);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
+    transform: scale(0.93);
+  }
+  /* YouTube link — circular sibling of ▶ (ADR-065) */
   .yt-ext-link {
     flex-shrink: 0;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-muted, var(--border-strong));
     color: var(--fg-muted);
-    font-size: 0.62rem;
+    font-size: 0.70rem;
     text-decoration: none;
-    padding: 1px 4px;
-    border-radius: 3px;
-    line-height: 1.6;
     white-space: nowrap;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
   }
-  .yt-ext-link:hover { color: var(--fg); background: var(--bg-active); }
-  /* trail-acts: ▶ + ↗ side-by-side on one line */
+  .yt-ext-link::after {
+    content: '';
+    position: absolute;
+    inset: -9px;
+  }
+  .yt-ext-link:hover {
+    color: var(--fg);
+    background: var(--bg-active);
+    border-color: var(--fg-muted);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg-muted) 20%, transparent);
+  }
+  .yt-ext-link:active {
+    background: var(--bg-pressed);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
+    transform: scale(0.93);
+  }
+  /* trail-acts: ▶ + ↗ always right-aligned in any flex parent */
   .trail-acts {
     flex-shrink: 0;
+    margin-left: auto;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1085,18 +1223,25 @@
     font-weight: normal !important;
   }
 
-  /* ── ADR-053: concert-vs-direct play button variants ─────────────────── */
+  /* ── ADR-053/065: dashed ring = concert, solid ring = direct ───────────── */
   .rec-play-btn.play-btn-concert {
-    border: 1px dashed var(--accent-sub);
+    border: 1.5px dashed var(--accent-sub);
     color: var(--accent-sub);
   }
   .rec-play-btn.play-btn-concert:hover {
     border-color: var(--accent);
     color: var(--accent);
     background: var(--bg-input);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
   }
   .rec-play-btn.play-btn-direct {
-    border: 1px solid var(--border-strong);
+    border: 1.5px solid var(--border-strong);
+  }
+  /* ── Composer chip indented under its composition in all contexts ─────── */
+  .tree-header-text .composer-chip,
+  .trail-chips .composer-chip,
+  .rec-meta .composer-chip {
+    margin-left: 10px;
   }
 
   /* ── ADR-053: pressed-row state for the currently-playing track ──────── */

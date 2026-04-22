@@ -255,6 +255,80 @@
   #recordings-panel { display: none; }
   #recordings-list { list-style: none; margin-top: 4px; }
 
+  /* ── ADR-064: section headers within recordings panel ── */
+  .rec-section-header {
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  /* ── ADR-064: raga tree — raga-level groups in musician panel ── */
+  #recordings-list li.tree-group {
+    padding: 0; border-bottom: none; gap: 0; list-style: none;
+  }
+  #recordings-list .tree-group-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+    cursor: default; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #recordings-list .rec-group-count {
+    font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
+  }
+  /* All raga groups start open — .tree-children override for rec context */
+  #recordings-list .tree-children {
+    list-style: none; padding: 0; margin: 0; display: block;
+  }
+  /* Single-raga chevron hidden */
+  #recordings-list .tree-group-single > .tree-group-header > .tree-chevron {
+    display: none;
+  }
+
+  /* ── ADR-064: composition node — second level of raga tree ── */
+  .tree-comp-node {
+    padding: 5px 0 5px 12px;
+    border-bottom: 1px solid var(--border);
+    border-left: 2px solid var(--border);
+    list-style: none;
+  }
+  .tree-comp-node:last-child { border-bottom: none; }
+  .tree-comp-header {
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap; width: 100%;
+  }
+  /* Composer sub-label — always visible, indented below composition chip */
+  .tree-comp-meta {
+    padding-left: 6px; margin-top: 3px;
+    display: flex; align-items: center;
+  }
+  .tree-comp-meta .composer-label {
+    font-size: 0.65rem; color: var(--fg-muted); font-style: italic;
+  }
+  /* Recording toggle button */
+  .tree-rec-toggle {
+    margin-left: auto; flex-shrink: 0;
+    background: none; border: 1px solid var(--border);
+    color: var(--fg-muted); font-size: 0.65rem; padding: 1px 6px;
+    border-radius: 2px; cursor: pointer; font-family: inherit;
+    white-space: nowrap;
+  }
+  .tree-rec-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .tree-rec-toggle[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
+  /* Recording rows — hidden by default, revealed on toggle */
+  .tree-rec-list {
+    list-style: none; padding: 0; margin: 4px 0 0 8px;
+  }
+  .tree-rec-list .tree-leaf {
+    padding: 3px 0 3px 8px;
+    border-left: 1px dashed var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .tree-rec-list .tree-leaf:last-child { border-bottom: none; }
+  .tree-rec-list .trail-row2 { display: flex; flex-direction: row; align-items: center; width: 100%; gap: 6px; }
+  .tree-rec-list .trail-chips { display: flex; flex-wrap: wrap; align-items: center; flex: 1; min-width: 0; gap: 4px; }
+  .tree-rec-list .trail-acts  { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
   /* ── concert bracket (ADR-018) ── */
   .concert-bracket {
     border-bottom: 1px solid var(--border);
@@ -792,10 +866,29 @@
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-  /* Chevron — ▶ collapsed, ▼ expanded; right-anchored, own click target */
-  .tree-chevron { flex-shrink: 0; font-size: 0.85rem; color: var(--fg-muted); margin-left: auto; padding-left: 8px; cursor: pointer; }
+  /* Chevron — circular icon button matching play/link size (ADR-065) */
+  .tree-chevron {
+    flex-shrink: 0;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-muted, var(--border-strong));
+    background: none;
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.12s, border-color 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
   .tree-chevron::before { content: '\25B6'; }
   .tree-group-open > .tree-group-header > .tree-chevron::before { content: '\25BC'; }
+  .tree-chevron::after { content: ''; position: absolute; inset: -9px; }
+  .tree-chevron:hover { background: var(--bg-active); border-color: var(--fg-muted); }
   /* Composition title + composer chip stacked vertically inside header */
   /* align-items:flex-start prevents column flex from stretching chips to full width */
   .tree-header-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; flex: 1; min-width: 0; }
@@ -920,17 +1013,16 @@
     font-size: 0.70rem; color: var(--fg-muted); margin-top: 2px;
   }
 
-  /* ── ADR-065: circular play button (was ADR-025 pill) ── */
+  /* ── ADR-065: circular play button ── */
   .rec-play-btn {
     flex-shrink: 0;
-    margin-left: auto;   /* always right-justified in rec-row1 */
+    margin-left: auto;   /* right-justified when direct child of rec-row1 */
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    min-width: 44px;     /* WCAG 2.5.5: 44px logical touch target */
-    min-height: 44px;
+    width: 26px;
+    height: 26px;
     padding: 0;
     border-radius: 50%;
     border: 1.5px solid var(--border-strong);
@@ -943,6 +1035,12 @@
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
+  /* Expand hit target to 44px without inflating the layout box */
+  .rec-play-btn::after {
+    content: '';
+    position: absolute;
+    inset: -9px;
+  }
   .rec-play-btn:hover {
     background: var(--bg-input);
     border-color: var(--accent-sub);
@@ -954,16 +1052,15 @@
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
     transform: scale(0.93);
   }
-  /* YouTube external-link icon — circular sibling of ▶ (ADR-065) */
+  /* YouTube link — circular sibling of ▶ (ADR-065) */
   .yt-ext-link {
     flex-shrink: 0;
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    min-width: 44px;     /* WCAG 2.5.5: 44px logical touch target */
-    min-height: 44px;
+    width: 26px;
+    height: 26px;
     padding: 0;
     border-radius: 50%;
     border: 1.5px solid var(--border-muted, var(--border-strong));
@@ -974,6 +1071,11 @@
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
+  }
+  .yt-ext-link::after {
+    content: '';
+    position: absolute;
+    inset: -9px;
   }
   .yt-ext-link:hover {
     color: var(--fg);
@@ -986,9 +1088,10 @@
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
     transform: scale(0.93);
   }
-  /* trail-acts: ▶ + ↗ side-by-side on one line */
+  /* trail-acts: ▶ + ↗ always right-aligned in any flex parent */
   .trail-acts {
     flex-shrink: 0;
+    margin-left: auto;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1143,7 +1246,7 @@
     font-weight: normal !important;
   }
 
-  /* ── ADR-053/065: concert-vs-direct play button variants (dashed/solid ring) ─ */
+  /* ── ADR-053/065: dashed ring = concert, solid ring = direct ───────────── */
   .rec-play-btn.play-btn-concert {
     border: 1.5px dashed var(--accent-sub);
     color: var(--accent-sub);
@@ -1156,6 +1259,12 @@
   }
   .rec-play-btn.play-btn-direct {
     border: 1.5px solid var(--border-strong);
+  }
+  /* ── Composer chip indented under its composition in all contexts ─────── */
+  .tree-header-text .composer-chip,
+  .trail-chips .composer-chip,
+  .rec-meta .composer-chip {
+    margin-left: 10px;
   }
 
   /* ── ADR-053: pressed-row state for the currently-playing track ──────── */
@@ -68775,6 +68884,257 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
 
   bracket.appendChild(perfList);
   return bracket;
+}
+
+// ── ADR-064: Raga tree helpers ─────────────────────────────────────────────────
+
+// buildCompNode — renders a <li class="tree-comp-node"> for one composition within a raga
+// perfs: array of structured_perf entries sharing the same composition_id
+function buildCompNode(compId, perfs, nodeId, artistLabel) {
+  const compObj = compId
+    ? ((typeof compositions !== 'undefined' ? compositions : []).find(c => c.id === compId) || null)
+    : null;
+  const composerObj = compObj && compObj.composer_id
+    ? ((typeof composers !== 'undefined' ? composers : []).find(c => c.id === compObj.composer_id) || null)
+    : null;
+
+  // Sort perfs: earliest year first, nulls last
+  const sortedPerfs = perfs.slice().sort((a, b) => {
+    const ya = a.date ? parseInt(a.date) : Infinity;
+    const yb = b.date ? parseInt(b.date) : Infinity;
+    return ya - yb;
+  });
+
+  const li = document.createElement('li');
+  li.className = 'tree-comp-node';
+
+  // ── Header: comp chip + recording-count toggle ─────────────────────────
+  const compHeader = document.createElement('div');
+  compHeader.className = 'tree-comp-header';
+
+  if (compObj) {
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = compObj.title || compId;
+    compChip.title = (compObj.title || compId) + ' — Explore in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      compChip.classList.add('chip-tapped');
+      setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compId);
+    });
+    compHeader.appendChild(compChip);
+  } else {
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'rec-title';
+    titleSpan.textContent = (sortedPerfs[0] && sortedPerfs[0].display_title) || 'Unknown composition';
+    compHeader.appendChild(titleSpan);
+  }
+
+  const recCount = sortedPerfs.length;
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'tree-rec-toggle';
+  toggleBtn.setAttribute('aria-expanded', 'false');
+  toggleBtn.textContent = '\u25B6 ' + recCount + (recCount === 1 ? ' recording' : ' recordings');
+  compHeader.appendChild(toggleBtn);
+  li.appendChild(compHeader);
+
+  // ── Composer sub-label — always visible ───────────────────────────────
+  if (composerObj) {
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'tree-comp-meta';
+    const composerLabel = document.createElement('span');
+    composerLabel.className = 'composer-label';
+    composerLabel.textContent = composerObj.name;
+    metaDiv.appendChild(composerLabel);
+    li.appendChild(metaDiv);
+  }
+
+  // ── Recording rows (hidden by default) ────────────────────────────────
+  const recUl = document.createElement('ul');
+  recUl.className = 'tree-rec-list';
+  recUl.hidden = true;
+
+  sortedPerfs.forEach(p => {
+    const recLi = document.createElement('li');
+    recLi.className = 'tree-leaf';
+    recLi.dataset.vid = p.video_id;
+    if (playerRegistry.has(p.video_id)) recLi.classList.add('playing');
+
+    const row = document.createElement('div');
+    row.className = 'trail-row2';
+
+    const chipsDiv = document.createElement('div');
+    chipsDiv.className = 'trail-chips';
+
+    // Year + short concert title
+    const labelParts = [];
+    if (p.date) labelParts.push(p.date.slice(0, 4));
+    if (p.short_title) labelParts.push(p.short_title);
+    if (labelParts.length) {
+      const yearSpan = document.createElement('span');
+      yearSpan.className = 'rec-year';
+      yearSpan.textContent = labelParts.join(' \u00b7 ');
+      chipsDiv.appendChild(yearSpan);
+    }
+    row.appendChild(chipsDiv);
+
+    const actsDiv = document.createElement('div');
+    actsDiv.className = 'trail-acts';
+
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.setAttribute('data-vid', p.video_id);
+    playBtn.title = p.short_title || p.title || 'Play';
+    playBtn.textContent = '\u25B6';
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(
+        p.video_id, p.display_title, artistLabel,
+        p.offset_seconds > 0 ? p.offset_seconds : undefined,
+        p.short_title || p.title, [],
+        { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null }
+      );
+    });
+    actsDiv.appendChild(playBtn);
+    actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
+    row.appendChild(actsDiv);
+
+    recLi.appendChild(row);
+    recUl.appendChild(recLi);
+  });
+
+  li.appendChild(recUl);
+
+  // Wire toggle
+  toggleBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+    recUl.hidden = isExpanded;
+    toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+    toggleBtn.textContent = (isExpanded ? '\u25B6 ' : '\u25BC ') +
+      recCount + (recCount === 1 ? ' recording' : ' recordings');
+  });
+
+  return li;
+}
+
+// buildRagaGroupItem — renders a <li class="tree-group"> for one raga
+function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
+  // Group perfs by composition_id
+  const compMap = new Map();
+  const nullCompPerfs = [];
+  perfs.forEach(p => {
+    if (!p.composition_id) { nullCompPerfs.push(p); return; }
+    if (!compMap.has(p.composition_id)) compMap.set(p.composition_id, []);
+    compMap.get(p.composition_id).push(p);
+  });
+
+  // Sort compositions by earliest year (asc), nulls last
+  const sortedComps = [...compMap.entries()].sort((a, b) => {
+    const yearA = Math.min(...a[1].map(p => p.date ? parseInt(p.date) : Infinity));
+    const yearB = Math.min(...b[1].map(p => p.date ? parseInt(p.date) : Infinity));
+    if (!isFinite(yearA) && !isFinite(yearB)) return 0;
+    if (!isFinite(yearA)) return 1;
+    if (!isFinite(yearB)) return -1;
+    return yearA - yearB;
+  });
+
+  const totalComps = compMap.size + (nullCompPerfs.length > 0 ? 1 : 0);
+  const isSingle = totalComps <= 1;
+
+  const li = document.createElement('li');
+  li.className = 'tree-group tree-group-open' + (isSingle ? ' tree-group-single' : '');
+
+  // ── Header ─────────────────────────────────────────────────────────────
+  const header = document.createElement('div');
+  header.className = 'tree-group-header';
+
+  const chevron = document.createElement('span');
+  chevron.className = 'tree-chevron';
+  chevron.setAttribute('aria-hidden', 'true');
+  chevron.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = li.classList.contains('tree-group-open');
+    li.classList.toggle('tree-group-open', !isOpen);
+    if (!isOpen && ragaId && typeof triggerBaniSearch === 'function') {
+      triggerBaniSearch('raga', ragaId);
+    }
+  });
+  header.appendChild(chevron);
+
+  if (ragaId && ragaObj) {
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.textContent = ragaObj.name;
+    ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+    ragaChip.addEventListener('click', e => {
+      e.stopPropagation();
+      ragaChip.classList.add('chip-tapped');
+      setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
+    });
+    header.appendChild(ragaChip);
+  } else {
+    const unknownSpan = document.createElement('span');
+    unknownSpan.className = 'rec-group-label rec-unknown';
+    unknownSpan.textContent = 'Unknown raga';
+    header.appendChild(unknownSpan);
+  }
+
+  const countSpan = document.createElement('span');
+  countSpan.className = 'rec-group-count';
+  countSpan.textContent = totalComps;
+  header.appendChild(countSpan);
+
+  li.appendChild(header);
+
+  // ── Children ───────────────────────────────────────────────────────────
+  const ul = document.createElement('ul');
+  ul.className = 'tree-children';
+  sortedComps.forEach(([compId, compPerfs]) => {
+    ul.appendChild(buildCompNode(compId, compPerfs, nodeId, artistLabel));
+  });
+  if (nullCompPerfs.length > 0) {
+    ul.appendChild(buildCompNode(null, nullCompPerfs, nodeId, artistLabel));
+  }
+  li.appendChild(ul);
+
+  return li;
+}
+
+// buildRagaTree — renders all raga groups from a structured_perfs array
+// Returns a DocumentFragment to append to the list.
+function buildRagaTree(perfs, nodeId, artistLabel) {
+  const ragaMap = new Map();
+  const nullRagaPerfs = [];
+
+  perfs.forEach(p => {
+    if (!p.raga_id) { nullRagaPerfs.push(p); return; }
+    if (!ragaMap.has(p.raga_id)) {
+      const ragaObj = (typeof ragas !== 'undefined' ? ragas : []).find(r => r.id === p.raga_id) || null;
+      ragaMap.set(p.raga_id, { ragaObj, perfs: [] });
+    }
+    ragaMap.get(p.raga_id).perfs.push(p);
+  });
+
+  // Sort raga groups: most recordings first; alphabetical tie-break
+  const sortedRagas = [...ragaMap.entries()].sort((a, b) => {
+    const countDiff = b[1].perfs.length - a[1].perfs.length;
+    if (countDiff !== 0) return countDiff;
+    const nameA = (a[1].ragaObj ? a[1].ragaObj.name : a[0]).toLowerCase();
+    const nameB = (b[1].ragaObj ? b[1].ragaObj.name : b[0]).toLowerCase();
+    return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+  });
+
+  const fragment = document.createDocumentFragment();
+  sortedRagas.forEach(([ragaId, { ragaObj, perfs: ragaPerfs }]) => {
+    fragment.appendChild(buildRagaGroupItem(ragaId, ragaObj, ragaPerfs, nodeId, artistLabel));
+  });
+  if (nullRagaPerfs.length > 0) {
+    fragment.appendChild(buildRagaGroupItem(null, null, nullRagaPerfs, nodeId, artistLabel));
+  }
+  return fragment;
 }
 
 // ── buildRecordingsList — concert-bracketed + legacy flat (ADR-018) ───────────
