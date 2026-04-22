@@ -1151,6 +1151,14 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
   // Primary performer → full-size chip; co-performer → secondary (smaller, italic)
   span.className = isPrimary ? 'musician-chip' : 'musician-chip chip-secondary';
 
+  // ADR-069: instrument badge — resolve from Cytoscape node data when available
+  if (artistRow.nodeId) {
+    const instrKey = cy.getElementById(artistRow.nodeId).data('instrument');
+    if (instrKey && typeof makeInstrBadge === 'function') {
+      span.appendChild(makeInstrBadge(instrKey, isPrimary ? 13 : 11));
+    }
+  }
+
   span.appendChild(document.createTextNode(artistRow.artistLabel));
 
   span.addEventListener('click', e => {

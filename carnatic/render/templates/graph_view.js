@@ -121,7 +121,7 @@ cy.ready(() => {
     if (n.data('tracks').length > 0) n.addClass('has-tracks');
   });
   applyZoomLabels();
-  buildFilterChips();
+  buildFilterDropdowns();
   // Default view is Mela-Janya — switch after cy is ready so showRagaWheel()
   // has valid SVG dimensions to draw into.
   requestAnimationFrame(() => switchView('raga'));
@@ -196,13 +196,21 @@ function makeShapeSVG(shape, size) {
   return svg;
 }
 
+// ADR-069: instrument badge element for musician chips
+function makeInstrBadge(instrKey, size) {
+  const shape = INSTRUMENT_SHAPES[instrKey] || 'ellipse';
+  const badge = document.createElement('span');
+  badge.className = 'chip-instr-icon';
+  badge.setAttribute('aria-hidden', 'true');
+  badge.appendChild(makeShapeSVG(shape, size || 13));
+  return badge;
+}
+
 // ── chip filter state ─────────────────────────────────────────────────────────
 const activeFilters = { era: new Set(), instrument: new Set() };
 
-function buildFilterChips() {
-  const eraGroup   = document.getElementById('era-filter-group');
-  const instrGroup = document.getElementById('instr-filter-group');
-
+// ADR-068: build the two multi-select filter dropdowns
+function buildFilterDropdowns() {
   const eraOrder = [
     'trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'
   ];
@@ -214,23 +222,33 @@ function buildFilterChips() {
     living_pillars: 'Living Pillars',
     contemporary:   'Contemporary',
   };
+
+  const eraList = document.getElementById('era-dropdown-list');
   eraOrder.forEach(era => {
-    const chip = document.createElement('span');
-    chip.className   = 'filter-chip';
-    chip.dataset.key = era;
-    chip.dataset.group = 'era';
+    const li = document.createElement('li');
+    li.className = 'filter-dropdown-item';
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', 'false');
+    li.dataset.key   = era;
+    li.dataset.group = 'era';
 
     const dot = document.createElement('span');
-    dot.className = 'chip-dot ellipse';
+    dot.className = 'chip-dot';
     dot.style.background = ERA_COLOURS[era] || 'var(--gray)';
 
-    const label = document.createElement('span');
-    label.textContent = eraLabels[era] || era;
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = eraLabels[era] || era;
 
-    chip.appendChild(dot);
-    chip.appendChild(label);
-    chip.addEventListener('click', () => toggleFilterChip(chip));
-    eraGroup.appendChild(chip);
+    const check = document.createElement('span');
+    check.className = 'filter-checkmark';
+    check.setAttribute('aria-hidden', 'true');
+    check.textContent = '\u2713';
+
+    li.appendChild(dot);
+    li.appendChild(labelSpan);
+    li.appendChild(check);
+    li.addEventListener('click', () => toggleFilterItem(li));
+    eraList.appendChild(li);
   });
 
   const instrOrder = ['vocal', 'veena', 'violin', 'flute', 'mridangam'];
@@ -241,38 +259,94 @@ function buildFilterChips() {
     flute:     'Flute',
     mridangam: 'Mridangam',
   };
-  instrOrder.forEach(instr => {
-    const chip = document.createElement('span');
-    chip.className   = 'filter-chip';
-    chip.dataset.key = instr;
-    chip.dataset.group = 'instrument';
 
-    // Outline-only SVG icon — shape is the signal, no fill colour
+  const instrList = document.getElementById('instr-dropdown-list');
+  instrOrder.forEach(instr => {
+    const li = document.createElement('li');
+    li.className = 'filter-dropdown-item';
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', 'false');
+    li.dataset.key   = instr;
+    li.dataset.group = 'instrument';
+
     const iconWrap = document.createElement('span');
     iconWrap.className = 'chip-icon';
     iconWrap.appendChild(makeShapeSVG(INSTRUMENT_SHAPES[instr] || 'ellipse', 12));
 
-    const label = document.createElement('span');
-    label.textContent = instrLabels[instr] || instr;
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = instrLabels[instr] || instr;
 
-    chip.appendChild(iconWrap);
-    chip.appendChild(label);
-    chip.addEventListener('click', () => toggleFilterChip(chip));
-    instrGroup.appendChild(chip);
+    const check = document.createElement('span');
+    check.className = 'filter-checkmark';
+    check.setAttribute('aria-hidden', 'true');
+    check.textContent = '\u2713';
+
+    li.appendChild(iconWrap);
+    li.appendChild(labelSpan);
+    li.appendChild(check);
+    li.addEventListener('click', () => toggleFilterItem(li));
+    instrList.appendChild(li);
+  });
+
+  // Close dropdowns on outside click/touch
+  document.addEventListener('mousedown', _closeDropdownsOnOutsideClick);
+  document.addEventListener('touchstart', _closeDropdownsOnOutsideClick, { passive: true });
+}
+
+function _closeDropdownsOnOutsideClick(e) {
+  ['era', 'instr'].forEach(prefix => {
+    const wrap = document.getElementById(prefix + '-dropdown-wrap');
+    const list = document.getElementById(prefix + '-dropdown-list');
+    const btn  = document.getElementById(prefix + '-dropdown-btn');
+    if (wrap && !wrap.contains(e.target) && list && !list.hidden) {
+      list.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
   });
 }
 
-function toggleFilterChip(chip) {
-  const group = chip.dataset.group;
-  const key   = chip.dataset.key;
+function toggleFilterDropdown(group) {
+  const prefix = group === 'era' ? 'era' : 'instr';
+  const otherP = group === 'era' ? 'instr' : 'era';
+  const list   = document.getElementById(prefix + '-dropdown-list');
+  const btn    = document.getElementById(prefix + '-dropdown-btn');
+  const otherL = document.getElementById(otherP + '-dropdown-list');
+  const otherB = document.getElementById(otherP + '-dropdown-btn');
+  // Close the other dropdown first
+  if (otherL && !otherL.hidden) {
+    otherL.hidden = true;
+    otherB.setAttribute('aria-expanded', 'false');
+  }
+  const nowOpen = list.hidden;
+  list.hidden = !nowOpen;
+  btn.setAttribute('aria-expanded', String(nowOpen));
+}
+
+function toggleFilterItem(item) {
+  const group = item.dataset.group;
+  const key   = item.dataset.key;
   if (activeFilters[group].has(key)) {
     activeFilters[group].delete(key);
-    chip.classList.remove('active');
+    item.setAttribute('aria-selected', 'false');
   } else {
     activeFilters[group].add(key);
-    chip.classList.add('active');
+    item.setAttribute('aria-selected', 'true');
   }
+  _updateFilterBtnLabels();
   applyChipFilters();
+}
+
+function _updateFilterBtnLabels() {
+  const eraCount   = activeFilters.era.size;
+  const instrCount = activeFilters.instrument.size;
+  const eraCountEl   = document.getElementById('era-filter-count');
+  const instrCountEl = document.getElementById('instr-filter-count');
+  const eraBtn       = document.getElementById('era-dropdown-btn');
+  const instrBtn     = document.getElementById('instr-dropdown-btn');
+  if (eraCountEl)   eraCountEl.textContent   = eraCount   > 0 ? '(' + eraCount   + ')' : '';
+  if (instrCountEl) instrCountEl.textContent = instrCount > 0 ? '(' + instrCount + ')' : '';
+  if (eraBtn)   eraBtn.classList.toggle('filter-active',   eraCount   > 0);
+  if (instrBtn) instrBtn.classList.toggle('filter-active', instrCount > 0);
 }
 
 function applyChipFilters() {
@@ -285,9 +359,10 @@ function applyChipFilters() {
     clearBaniFilter();
   }
 
+  const clearBtn = document.getElementById('filter-clear-all');
   if (!anyActive) {
     cy.elements().removeClass('chip-faded');
-    document.getElementById('filter-clear-all').style.visibility = 'hidden';
+    if (clearBtn) clearBtn.hidden = true;
     setScopeLabels(false);
     return;
   }
@@ -314,16 +389,19 @@ function applyChipFilters() {
     }
   });
 
-  document.getElementById('filter-clear-all').style.visibility = 'visible';
+  if (clearBtn) clearBtn.hidden = false;
   setScopeLabels(true);
 }
 
 function clearAllChipFilters() {
   activeFilters.era.clear();
   activeFilters.instrument.clear();
-  document.querySelectorAll('.filter-chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.filter-dropdown-item[aria-selected="true"]')
+    .forEach(i => i.setAttribute('aria-selected', 'false'));
   cy.elements().removeClass('chip-faded');
-  document.getElementById('filter-clear-all').style.visibility = 'hidden';
+  const clearBtn = document.getElementById('filter-clear-all');
+  if (clearBtn) clearBtn.hidden = true;
+  _updateFilterBtnLabels();
   setScopeLabels(false);
 }
 
@@ -436,8 +514,9 @@ function selectNode(node, { fromHistory = false } = {}) {
   nameChip.className = 'musician-chip';
   nameChip.style.setProperty('--chip-era-bg', tint.bg);
   nameChip.style.setProperty('--chip-era-border', tint.border);
-  nameChip.textContent = d.label;
-  nameChip.title = 'Pan to ' + d.label + ' on graph';
+  if (d.instrument) nameChip.appendChild(makeInstrBadge(d.instrument));
+  nameChip.appendChild(document.createTextNode(d.label));
+  nameChip.title = 'Pan to ' + d.label + ' on graph (' + (d.instrument || '') + ')';
   nameChip.onclick = () => orientToNode(node.id());
   nameEl.appendChild(nameChip);
 

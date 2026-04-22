@@ -163,7 +163,12 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
     artistChip.className = 'musician-chip';
     artistChip.style.setProperty('--chip-era-bg',     tint.bg);
     artistChip.style.setProperty('--chip-era-border', tint.border);
-    artistChip.textContent = artistName;
+    // ADR-069: instrument badge
+    if (meta.nodeId && typeof cy !== 'undefined' && typeof makeInstrBadge === 'function') {
+      const instrKey = cy.getElementById(meta.nodeId).data('instrument');
+      if (instrKey) artistChip.appendChild(makeInstrBadge(instrKey));
+    }
+    artistChip.appendChild(document.createTextNode(artistName));
     if (meta.nodeId) {
       artistChip.title = artistName + ' — Open Musician panel';
       artistChip.addEventListener('click', e => {
@@ -585,7 +590,12 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     chip.className = 'musician-chip chip-secondary';
     chip.style.setProperty('--chip-era-bg', tint.bg);
     chip.style.setProperty('--chip-era-border', tint.border);
-    chip.textContent = pf.label;
+    // ADR-069: instrument badge
+    if (pf.musicianId && typeof makeInstrBadge === 'function') {
+      const instrKey = cy.getElementById(pf.musicianId).data('instrument');
+      if (instrKey) chip.appendChild(makeInstrBadge(instrKey, 11));
+    }
+    chip.appendChild(document.createTextNode(pf.label));
     if (pf.musicianId) {
       chip.addEventListener('click', e => {
         e.stopPropagation();

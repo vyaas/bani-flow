@@ -139,7 +139,9 @@
   function updateFilterBadge() {
     var filterBadge = document.getElementById('filter-active-badge');
     if (!filterBadge) return;
-    var activeCount = document.querySelectorAll('.filter-chip.active').length;
+    var activeCount = (typeof activeFilters !== 'undefined')
+      ? (activeFilters.era.size + activeFilters.instrument.size)
+      : 0;
     filterBadge.textContent = activeCount > 0 ? '(' + activeCount + ' active)' : '';
   }
 

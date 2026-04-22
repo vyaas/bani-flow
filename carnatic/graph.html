@@ -78,59 +78,82 @@
   #canvas-wrap {
     flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;
   }
+  /* ── ADR-068: compact filter bar — always single line ── */
   #filter-bar {
-    display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
-    padding: 6px 10px;
+    display: flex; align-items: center; flex-wrap: nowrap;
+    gap: 8px; padding: 6px 12px;
     background: var(--bg-panel); border-bottom: 1px solid var(--border-strong);
-    flex-shrink: 0;
-    min-height: 36px;   /* fixed height — prevents layout shift when clear-all appears */
+    flex-shrink: 0; min-height: 36px;
   }
 
-  /* ── filter groups ── */
-  .filter-group {
-    display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
-  }
-  .filter-separator {
-    width: 1px; height: 18px; background: var(--fg-dim);
-    flex-shrink: 0; margin: 0 6px; opacity: 0.4;
-  }
-
-  /* ── individual chips ── */
-  .filter-chip {
+  /* ── dropdown trigger buttons ── */
+  .filter-dropdown-wrap { position: relative; flex-shrink: 0; }
+  .filter-dropdown-btn {
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 8px; border-radius: 10px;
+    padding: 4px 10px; border-radius: 10px;
     border: 1px solid var(--border-strong); background: var(--bg-panel);
     color: var(--fg-dim); font-size: 0.72rem;
-    cursor: pointer; user-select: none;
-    transition: border-color 0.1s, color 0.1s, background 0.1s;
-    white-space: nowrap;
+    cursor: pointer; user-select: none; white-space: nowrap;
+    transition: border-color 0.12s, color 0.12s;
   }
-  .filter-chip:hover { border-color: var(--fg-sub); color: var(--fg); }
-  .filter-chip.active {
-    border-color: var(--accent); color: var(--accent); background: var(--bg-input);
+  .filter-dropdown-btn:hover { border-color: var(--fg-sub); color: var(--fg); }
+  .filter-dropdown-btn.filter-active {
+    border-color: var(--accent); color: var(--accent);
   }
-  /* Era chip dots: filled circle — colour is the signal */
-  .filter-chip .chip-dot {
+  .filter-count { font-weight: bold; }
+  .filter-arrow { font-size: 0.65rem; margin-left: 2px; }
+
+  /* ── dropdown list panel ── */
+  .filter-dropdown-list {
+    position: absolute; top: calc(100% + 4px); left: 0;
+    min-width: 160px;
+    background: var(--bg-panel); border: 1px solid var(--border-strong);
+    border-radius: 6px; padding: 4px 0;
+    list-style: none; margin: 0;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .filter-dropdown-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    cursor: pointer; font-size: 0.78rem; color: var(--fg-dim);
+    transition: background 0.1s;
+  }
+  .filter-dropdown-item:hover { background: var(--bg-active); }
+  .filter-dropdown-item[aria-selected="true"] { color: var(--fg); }
+  /* Era dot inside list item */
+  .filter-dropdown-item .chip-dot {
     width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
   }
-  /* Instrument chip icons: inline SVG rendered by JS — no CSS shape tricks needed */
-  .filter-chip .chip-icon {
+  /* Instrument icon inside list item */
+  .filter-dropdown-item .chip-icon {
     display: inline-flex; align-items: center; justify-content: center;
     flex-shrink: 0; width: 13px; height: 13px;
   }
-  .filter-chip .chip-icon svg { display: block; }
-
-  /* ── clear-all button ── */
-  /* Always occupies space (visibility toggled, not display) so it never
-     shifts the chip row when it appears or disappears. */
-  .filter-clear {
-    font-size: 0.70rem; color: var(--fg-dim);
-    background: none; border: none; cursor: pointer;
-    padding: 2px 6px; margin-left: 4px;
-    visibility: hidden;   /* hidden by default; JS sets visibility:visible */
-    flex-shrink: 0;
+  .filter-dropdown-item .chip-icon svg { display: block; }
+  .filter-checkmark {
+    margin-left: auto; opacity: 0;
+    font-size: 0.8rem; color: var(--accent);
   }
-  .filter-clear:hover { color: var(--fg); }
+  .filter-dropdown-item[aria-selected="true"] .filter-checkmark { opacity: 1; }
+
+  /* ── clear-all button (ADR-068: shown via hidden attr, not visibility) ── */
+  .filter-clear {
+    display: inline-flex; align-items: center;
+    padding: 4px 10px; border-radius: 10px;
+    border: 1px solid var(--border-strong); background: transparent;
+    color: var(--fg-dim); font-size: 0.72rem;
+    cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  }
+  .filter-clear:hover { color: var(--fg); border-color: var(--fg-sub); }
+
+  /* ── ADR-069: instrument badge inside musician chips ── */
+  .chip-instr-icon {
+    display: inline-flex; align-items: center; flex-shrink: 0;
+    width: 13px; height: 13px; opacity: 0.75;
+  }
+  .chip-instr-icon svg { display: block; width: 100%; height: 100%; }
+  .chip-secondary .chip-instr-icon { width: 11px; height: 11px; }
 
   /* ── scope label ── */
   .search-scope-label {
@@ -1971,16 +1994,8 @@
      No layout changes here — that belongs in ADR-034 (Phase 1). */
   @media (max-width: 768px) {
     /* Exclude circular buttons and inline tree toggles — they size themselves */
-    button:not(.rec-play-btn):not(.tree-rec-toggle),
-    .filter-clear {
+    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.filter-dropdown-btn):not(.filter-clear) {
       min-height: 44px;
-    }
-    .filter-chip {
-      min-height: 32px;
-      padding: 4px 10px;
-      font-size: 0.72rem;
-      align-items: center;
-      line-height: 1.2;
     }
     .view-btn {
       min-height: 44px;
@@ -1991,31 +2006,19 @@
       min-height: 44px;
       padding: 0 12px;
     }
-    /* ADR-040: always-visible wrapping filter bar */
+    /* ADR-068: filter bar is always single line — no wrap on mobile */
     #filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 8px;
-      padding: 6px 10px 8px;
-      max-height: none;
-      overflow: visible;
-      border-bottom: 1px solid var(--border-strong);
+      flex-wrap: nowrap;
+      gap: 6px;
+      padding: 5px 8px;
+    }
+    /* ADR-068: dropdown panel full-width on very narrow viewports */
+    .filter-dropdown-list {
+      min-width: min(160px, 90vw);
     }
     /* ADR-040: filter toggle button removed on mobile */
     #filter-toggle-btn {
       display: none;
-    }
-    .filter-group {
-      flex-wrap: wrap;
-      flex-shrink: 1;
-      gap: 4px 6px;
-    }
-    .filter-separator {
-      width: 100%;
-      height: 0;
-      border-top: 1px solid var(--border-strong);
-      margin: 2px 0;
-      background: none;
     }
   }
 
@@ -2576,11 +2579,26 @@
   <div id="canvas-wrap">
     <!-- ADR-040: filter toggle button removed (chips always visible, wrapping) -->
     <div id="filter-bar">
-      <div class="filter-group" id="era-filter-group" data-group="era"></div>
-      <div class="filter-separator"></div>
-      <div class="filter-group" id="instr-filter-group" data-group="instrument"></div>
+      <!-- ADR-068: compact multi-select dropdowns (era + instrument) -->
+      <div class="filter-dropdown-wrap" id="era-dropdown-wrap">
+        <button class="filter-dropdown-btn" id="era-dropdown-btn"
+                aria-haspopup="listbox" aria-expanded="false"
+                onclick="toggleFilterDropdown('era')">Era <span class="filter-count" id="era-filter-count"></span><span class="filter-arrow">&#9660;</span></button>
+        <ul class="filter-dropdown-list" id="era-dropdown-list"
+            role="listbox" aria-multiselectable="true"
+            aria-label="Filter by era" hidden></ul>
+      </div>
+      <div class="filter-dropdown-wrap" id="instr-dropdown-wrap">
+        <button class="filter-dropdown-btn" id="instr-dropdown-btn"
+                aria-haspopup="listbox" aria-expanded="false"
+                onclick="toggleFilterDropdown('instrument')">Instrument <span class="filter-count" id="instr-filter-count"></span><span class="filter-arrow">&#9660;</span></button>
+        <ul class="filter-dropdown-list" id="instr-dropdown-list"
+            role="listbox" aria-multiselectable="true"
+            aria-label="Filter by instrument" hidden></ul>
+      </div>
       <button class="filter-clear" id="filter-clear-all"
-              style="visibility:hidden" title="Clear all filters" onclick="clearAllChipFilters()">&#10005; Show all</button>
+              hidden title="Clear all filters"
+              onclick="clearAllChipFilters()">&#10005; Clear</button>
     </div>
     <div id="cy-wrap">
       <div id="cy"></div>
@@ -67027,7 +67045,7 @@ cy.ready(() => {
     if (n.data('tracks').length > 0) n.addClass('has-tracks');
   });
   applyZoomLabels();
-  buildFilterChips();
+  buildFilterDropdowns();
   // Default view is Mela-Janya — switch after cy is ready so showRagaWheel()
   // has valid SVG dimensions to draw into.
   requestAnimationFrame(() => switchView('raga'));
@@ -67102,13 +67120,21 @@ function makeShapeSVG(shape, size) {
   return svg;
 }
 
+// ADR-069: instrument badge element for musician chips
+function makeInstrBadge(instrKey, size) {
+  const shape = INSTRUMENT_SHAPES[instrKey] || 'ellipse';
+  const badge = document.createElement('span');
+  badge.className = 'chip-instr-icon';
+  badge.setAttribute('aria-hidden', 'true');
+  badge.appendChild(makeShapeSVG(shape, size || 13));
+  return badge;
+}
+
 // ── chip filter state ─────────────────────────────────────────────────────────
 const activeFilters = { era: new Set(), instrument: new Set() };
 
-function buildFilterChips() {
-  const eraGroup   = document.getElementById('era-filter-group');
-  const instrGroup = document.getElementById('instr-filter-group');
-
+// ADR-068: build the two multi-select filter dropdowns
+function buildFilterDropdowns() {
   const eraOrder = [
     'trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'
   ];
@@ -67120,23 +67146,33 @@ function buildFilterChips() {
     living_pillars: 'Living Pillars',
     contemporary:   'Contemporary',
   };
+
+  const eraList = document.getElementById('era-dropdown-list');
   eraOrder.forEach(era => {
-    const chip = document.createElement('span');
-    chip.className   = 'filter-chip';
-    chip.dataset.key = era;
-    chip.dataset.group = 'era';
+    const li = document.createElement('li');
+    li.className = 'filter-dropdown-item';
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', 'false');
+    li.dataset.key   = era;
+    li.dataset.group = 'era';
 
     const dot = document.createElement('span');
-    dot.className = 'chip-dot ellipse';
+    dot.className = 'chip-dot';
     dot.style.background = ERA_COLOURS[era] || 'var(--gray)';
 
-    const label = document.createElement('span');
-    label.textContent = eraLabels[era] || era;
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = eraLabels[era] || era;
 
-    chip.appendChild(dot);
-    chip.appendChild(label);
-    chip.addEventListener('click', () => toggleFilterChip(chip));
-    eraGroup.appendChild(chip);
+    const check = document.createElement('span');
+    check.className = 'filter-checkmark';
+    check.setAttribute('aria-hidden', 'true');
+    check.textContent = '\u2713';
+
+    li.appendChild(dot);
+    li.appendChild(labelSpan);
+    li.appendChild(check);
+    li.addEventListener('click', () => toggleFilterItem(li));
+    eraList.appendChild(li);
   });
 
   const instrOrder = ['vocal', 'veena', 'violin', 'flute', 'mridangam'];
@@ -67147,38 +67183,94 @@ function buildFilterChips() {
     flute:     'Flute',
     mridangam: 'Mridangam',
   };
-  instrOrder.forEach(instr => {
-    const chip = document.createElement('span');
-    chip.className   = 'filter-chip';
-    chip.dataset.key = instr;
-    chip.dataset.group = 'instrument';
 
-    // Outline-only SVG icon — shape is the signal, no fill colour
+  const instrList = document.getElementById('instr-dropdown-list');
+  instrOrder.forEach(instr => {
+    const li = document.createElement('li');
+    li.className = 'filter-dropdown-item';
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', 'false');
+    li.dataset.key   = instr;
+    li.dataset.group = 'instrument';
+
     const iconWrap = document.createElement('span');
     iconWrap.className = 'chip-icon';
     iconWrap.appendChild(makeShapeSVG(INSTRUMENT_SHAPES[instr] || 'ellipse', 12));
 
-    const label = document.createElement('span');
-    label.textContent = instrLabels[instr] || instr;
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = instrLabels[instr] || instr;
 
-    chip.appendChild(iconWrap);
-    chip.appendChild(label);
-    chip.addEventListener('click', () => toggleFilterChip(chip));
-    instrGroup.appendChild(chip);
+    const check = document.createElement('span');
+    check.className = 'filter-checkmark';
+    check.setAttribute('aria-hidden', 'true');
+    check.textContent = '\u2713';
+
+    li.appendChild(iconWrap);
+    li.appendChild(labelSpan);
+    li.appendChild(check);
+    li.addEventListener('click', () => toggleFilterItem(li));
+    instrList.appendChild(li);
+  });
+
+  // Close dropdowns on outside click/touch
+  document.addEventListener('mousedown', _closeDropdownsOnOutsideClick);
+  document.addEventListener('touchstart', _closeDropdownsOnOutsideClick, { passive: true });
+}
+
+function _closeDropdownsOnOutsideClick(e) {
+  ['era', 'instr'].forEach(prefix => {
+    const wrap = document.getElementById(prefix + '-dropdown-wrap');
+    const list = document.getElementById(prefix + '-dropdown-list');
+    const btn  = document.getElementById(prefix + '-dropdown-btn');
+    if (wrap && !wrap.contains(e.target) && list && !list.hidden) {
+      list.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
   });
 }
 
-function toggleFilterChip(chip) {
-  const group = chip.dataset.group;
-  const key   = chip.dataset.key;
+function toggleFilterDropdown(group) {
+  const prefix = group === 'era' ? 'era' : 'instr';
+  const otherP = group === 'era' ? 'instr' : 'era';
+  const list   = document.getElementById(prefix + '-dropdown-list');
+  const btn    = document.getElementById(prefix + '-dropdown-btn');
+  const otherL = document.getElementById(otherP + '-dropdown-list');
+  const otherB = document.getElementById(otherP + '-dropdown-btn');
+  // Close the other dropdown first
+  if (otherL && !otherL.hidden) {
+    otherL.hidden = true;
+    otherB.setAttribute('aria-expanded', 'false');
+  }
+  const nowOpen = list.hidden;
+  list.hidden = !nowOpen;
+  btn.setAttribute('aria-expanded', String(nowOpen));
+}
+
+function toggleFilterItem(item) {
+  const group = item.dataset.group;
+  const key   = item.dataset.key;
   if (activeFilters[group].has(key)) {
     activeFilters[group].delete(key);
-    chip.classList.remove('active');
+    item.setAttribute('aria-selected', 'false');
   } else {
     activeFilters[group].add(key);
-    chip.classList.add('active');
+    item.setAttribute('aria-selected', 'true');
   }
+  _updateFilterBtnLabels();
   applyChipFilters();
+}
+
+function _updateFilterBtnLabels() {
+  const eraCount   = activeFilters.era.size;
+  const instrCount = activeFilters.instrument.size;
+  const eraCountEl   = document.getElementById('era-filter-count');
+  const instrCountEl = document.getElementById('instr-filter-count');
+  const eraBtn       = document.getElementById('era-dropdown-btn');
+  const instrBtn     = document.getElementById('instr-dropdown-btn');
+  if (eraCountEl)   eraCountEl.textContent   = eraCount   > 0 ? '(' + eraCount   + ')' : '';
+  if (instrCountEl) instrCountEl.textContent = instrCount > 0 ? '(' + instrCount + ')' : '';
+  if (eraBtn)   eraBtn.classList.toggle('filter-active',   eraCount   > 0);
+  if (instrBtn) instrBtn.classList.toggle('filter-active', instrCount > 0);
 }
 
 function applyChipFilters() {
@@ -67191,9 +67283,10 @@ function applyChipFilters() {
     clearBaniFilter();
   }
 
+  const clearBtn = document.getElementById('filter-clear-all');
   if (!anyActive) {
     cy.elements().removeClass('chip-faded');
-    document.getElementById('filter-clear-all').style.visibility = 'hidden';
+    if (clearBtn) clearBtn.hidden = true;
     setScopeLabels(false);
     return;
   }
@@ -67220,16 +67313,19 @@ function applyChipFilters() {
     }
   });
 
-  document.getElementById('filter-clear-all').style.visibility = 'visible';
+  if (clearBtn) clearBtn.hidden = false;
   setScopeLabels(true);
 }
 
 function clearAllChipFilters() {
   activeFilters.era.clear();
   activeFilters.instrument.clear();
-  document.querySelectorAll('.filter-chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.filter-dropdown-item[aria-selected="true"]')
+    .forEach(i => i.setAttribute('aria-selected', 'false'));
   cy.elements().removeClass('chip-faded');
-  document.getElementById('filter-clear-all').style.visibility = 'hidden';
+  const clearBtn = document.getElementById('filter-clear-all');
+  if (clearBtn) clearBtn.hidden = true;
+  _updateFilterBtnLabels();
   setScopeLabels(false);
 }
 
@@ -67342,8 +67438,9 @@ function selectNode(node, { fromHistory = false } = {}) {
   nameChip.className = 'musician-chip';
   nameChip.style.setProperty('--chip-era-bg', tint.bg);
   nameChip.style.setProperty('--chip-era-border', tint.border);
-  nameChip.textContent = d.label;
-  nameChip.title = 'Pan to ' + d.label + ' on graph';
+  if (d.instrument) nameChip.appendChild(makeInstrBadge(d.instrument));
+  nameChip.appendChild(document.createTextNode(d.label));
+  nameChip.title = 'Pan to ' + d.label + ' on graph (' + (d.instrument || '') + ')';
   nameChip.onclick = () => orientToNode(node.id());
   nameEl.appendChild(nameChip);
 
@@ -67923,7 +68020,12 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
     artistChip.className = 'musician-chip';
     artistChip.style.setProperty('--chip-era-bg',     tint.bg);
     artistChip.style.setProperty('--chip-era-border', tint.border);
-    artistChip.textContent = artistName;
+    // ADR-069: instrument badge
+    if (meta.nodeId && typeof cy !== 'undefined' && typeof makeInstrBadge === 'function') {
+      const instrKey = cy.getElementById(meta.nodeId).data('instrument');
+      if (instrKey) artistChip.appendChild(makeInstrBadge(instrKey));
+    }
+    artistChip.appendChild(document.createTextNode(artistName));
     if (meta.nodeId) {
       artistChip.title = artistName + ' — Open Musician panel';
       artistChip.addEventListener('click', e => {
@@ -68345,7 +68447,12 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     chip.className = 'musician-chip chip-secondary';
     chip.style.setProperty('--chip-era-bg', tint.bg);
     chip.style.setProperty('--chip-era-border', tint.border);
-    chip.textContent = pf.label;
+    // ADR-069: instrument badge
+    if (pf.musicianId && typeof makeInstrBadge === 'function') {
+      const instrKey = cy.getElementById(pf.musicianId).data('instrument');
+      if (instrKey) chip.appendChild(makeInstrBadge(instrKey, 11));
+    }
+    chip.appendChild(document.createTextNode(pf.label));
     if (pf.musicianId) {
       chip.addEventListener('click', e => {
         e.stopPropagation();
@@ -72395,6 +72502,14 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
   // Primary performer → full-size chip; co-performer → secondary (smaller, italic)
   span.className = isPrimary ? 'musician-chip' : 'musician-chip chip-secondary';
 
+  // ADR-069: instrument badge — resolve from Cytoscape node data when available
+  if (artistRow.nodeId) {
+    const instrKey = cy.getElementById(artistRow.nodeId).data('instrument');
+    if (instrKey && typeof makeInstrBadge === 'function') {
+      span.appendChild(makeInstrBadge(instrKey, isPrimary ? 13 : 11));
+    }
+  }
+
   span.appendChild(document.createTextNode(artistRow.artistLabel));
 
   span.addEventListener('click', e => {
@@ -75305,7 +75420,9 @@ function buildAddYoutubeForm() {
   function updateFilterBadge() {
     var filterBadge = document.getElementById('filter-active-badge');
     if (!filterBadge) return;
-    var activeCount = document.querySelectorAll('.filter-chip.active').length;
+    var activeCount = (typeof activeFilters !== 'undefined')
+      ? (activeFilters.era.size + activeFilters.instrument.size)
+      : 0;
     filterBadge.textContent = activeCount > 0 ? '(' + activeCount + ' active)' : '';
   }
 
