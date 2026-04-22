@@ -1020,8 +1020,21 @@
     border-left: 2px solid var(--border);
   }
   #trail-list li.tree-leaf:last-child { border-bottom: none; }
-  /* Leaf primary row: [artist chip?] [version/ctx] [▶+↗ right] — no-wrap so acts stay inline */
-  .tree-leaf-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
+  /* Leaf primary row: [artist chip?] [version/ctx] [▶+↗ right] — no-wrap so acts stay inline.
+     min-width:0 lets the chip child shrink past its intrinsic content width. */
+  .tree-leaf-primary { display: flex; align-items: center; width: 100%; gap: 4px; min-width: 0; }
+  /* Inside any leaf primary row, the lead chip (musician/composer) must be
+     allowed to shrink and ellipsize — the play/link buttons to its right are
+     non-shrinkable, so the chip is what gives way when the row gets narrow.
+     Without these rules the chip's white-space:nowrap default pushes the
+     ▶ button past the sidebar's clipped right edge. */
+  .tree-leaf-primary > .musician-chip,
+  .tree-leaf-primary > .composer-chip {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   /* Co-performers tag cloud — wrappable, below primary row.
      ADR-072 (revised): no border rail — only the composition chip itself
      should be visibly boxed; accompanists indent without an enclosing rule. */
