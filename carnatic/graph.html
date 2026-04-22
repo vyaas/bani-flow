@@ -801,7 +801,8 @@
   .tree-chevron::before { content: '\25B6'; }
   .tree-group-open > .tree-group-header > .tree-chevron::before { content: '\25BC'; }
   /* Composition title + composer chip stacked vertically inside header */
-  .tree-header-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  /* align-items:flex-start prevents column flex from stretching chips to full width */
+  .tree-header-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; flex: 1; min-width: 0; }
   /* Children list — shown when group is open */
   .tree-children { list-style: none; padding: 0; margin: 0; display: none; }
   .tree-group-open > .tree-children { display: block; }
@@ -812,8 +813,10 @@
     border-left: 2px solid var(--border);
   }
   #trail-list li.tree-leaf:last-child { border-bottom: none; }
-  /* Single flex row: artist + co-performers (comma-sep, clickable) + ▶+↗ */
-  .tree-leaf-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; width: 100%; }
+  /* Leaf primary row: [artist chip?] [version/ctx] [▶+↗ right] — no-wrap so acts stay inline */
+  .tree-leaf-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
+  /* Co-performers tag cloud — wrappable, below primary row */
+  .tree-leaf-coperformers { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 3px; }
   .trail-header { display: flex; flex-direction: column; width: 100%; gap: 1px; }
   .trail-header-primary { display: flex; align-items: center; width: 100%; gap: 4px; }
   .trail-lifespan { flex-shrink: 0; color: var(--fg-muted); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }
@@ -72016,16 +72019,16 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
   li.dataset.vid = row.track.vid;
   if (playerRegistry.has(row.track.vid)) li.classList.add('playing');
 
-  // Single flex row: [artist chip?] [version/context?] [co-performers comma-sep] [▶+↗ right]
-  const leafRow = document.createElement('div');
-  leafRow.className = 'tree-leaf-row';
+  // ── Primary row: [artist chip?] [version/ctx/label] [▶+↗ right] ──────────
+  const primaryDiv = document.createElement('div');
+  primaryDiv.className = 'tree-leaf-primary';
 
   if (!suppressArtist) {
-    // Raga-view: primary artist chip first
-    leafRow.appendChild(buildArtistSpan(row, true, 'raga', null));
+    // Raga-view: primary artist chip
+    primaryDiv.appendChild(buildArtistSpan(row, true, 'raga', null));
   }
 
-  // Version badge (when multiple recordings of same comp by same artist)
+  // Version badge (when musician has multiple recordings of the same comp)
   const versionKey = row.nodeId && row.track.composition_id
     ? row.nodeId + '::' + row.track.composition_id : null;
   const showVersion = versionKey && multiVersionKeys && multiVersionKeys.has(versionKey)
@@ -72035,9 +72038,15 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     versionBadge.className = 'trail-version';
     versionBadge.textContent = row.track._versionLabel;
     versionBadge.title = 'Version: ' + row.track._versionLabel;
-    leafRow.appendChild(versionBadge);
+    primaryDiv.appendChild(versionBadge);
+  } else if (!suppressArtist && !row.track.composition_id && row.track.label) {
+    // Raga-view, no-comp bucket ("Other recordings"): show track label as context
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'trail-label';
+    labelSpan.textContent = row.track.label;
+    primaryDiv.appendChild(labelSpan);
   } else if (suppressArtist) {
-    // Comp-view: show year or concert title as context label
+    // Comp-view: show year or concert title as context
     const ctx = row.track.year
       ? String(row.track.year)
       : (row.track.short_title || row.track.concert_title || row.track.label || '');
@@ -72045,24 +72054,28 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
       const ctxSpan = document.createElement('span');
       ctxSpan.className = 'trail-label';
       ctxSpan.textContent = ctx;
-      leafRow.appendChild(ctxSpan);
+      primaryDiv.appendChild(ctxSpan);
     }
   }
 
-  // Co-performers: comma-separated clickable chips inline (no separate rows)
-  if (row.coPerformers && row.coPerformers.length > 0) {
-    row.coPerformers.forEach(function(cp, i) {
-      leafRow.appendChild(document.createTextNode(i === 0 ? '\u00a0' : ', '));
-      leafRow.appendChild(buildArtistSpan(cp, false, 'raga', null));
-    });
-  }
-
-  // ▶ + ↗ pushed to right via margin-left: auto
+  // ▶ + ↗ pushed to far right on same line as artist chip
   const actsDiv = _buildPlayActsDiv(row);
   actsDiv.style.marginLeft = 'auto';
-  leafRow.appendChild(actsDiv);
+  actsDiv.style.flexShrink = '0';
+  primaryDiv.appendChild(actsDiv);
 
-  li.appendChild(leafRow);
+  li.appendChild(primaryDiv);
+
+  // ── Co-performers: tag cloud below primary row (no commas) ────────────────
+  if (row.coPerformers && row.coPerformers.length > 0) {
+    const coDiv = document.createElement('div');
+    coDiv.className = 'tree-leaf-coperformers';
+    row.coPerformers.forEach(function(cp) {
+      coDiv.appendChild(buildArtistSpan(cp, false, 'raga', null));
+    });
+    li.appendChild(coDiv);
+  }
+
   return li;
 }
 
