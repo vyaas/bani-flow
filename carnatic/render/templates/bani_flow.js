@@ -874,16 +874,16 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
   li.dataset.vid = row.track.vid;
   if (playerRegistry.has(row.track.vid)) li.classList.add('playing');
 
-  // ── Primary row: [artist chip?] [version/ctx/label] [▶+↗ right] ──────────
+  // ── Primary row: [artist chip?] [version badge?] [▶+↗ right] ─────────────
+  // Labels (long text) are on their own sub-row below — not inline here.
   const primaryDiv = document.createElement('div');
   primaryDiv.className = 'tree-leaf-primary';
 
   if (!suppressArtist) {
-    // Raga-view: primary artist chip
     primaryDiv.appendChild(buildArtistSpan(row, true, 'raga', null));
   }
 
-  // Version badge (when musician has multiple recordings of the same comp)
+  // Version badge stays inline — it's short
   const versionKey = row.nodeId && row.track.composition_id
     ? row.nodeId + '::' + row.track.composition_id : null;
   const showVersion = versionKey && multiVersionKeys && multiVersionKeys.has(versionKey)
@@ -894,26 +894,9 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     versionBadge.textContent = row.track._versionLabel;
     versionBadge.title = 'Version: ' + row.track._versionLabel;
     primaryDiv.appendChild(versionBadge);
-  } else if (!suppressArtist && !row.track.composition_id && row.track.label) {
-    // Raga-view, no-comp bucket ("Other recordings"): show track label as context
-    const labelSpan = document.createElement('span');
-    labelSpan.className = 'trail-label';
-    labelSpan.textContent = row.track.label;
-    primaryDiv.appendChild(labelSpan);
-  } else if (suppressArtist) {
-    // Comp-view: show year or concert title as context
-    const ctx = row.track.year
-      ? String(row.track.year)
-      : (row.track.short_title || row.track.concert_title || row.track.label || '');
-    if (ctx) {
-      const ctxSpan = document.createElement('span');
-      ctxSpan.className = 'trail-label';
-      ctxSpan.textContent = ctx;
-      primaryDiv.appendChild(ctxSpan);
-    }
   }
 
-  // ▶ + ↗ pushed to far right on same line as artist chip
+  // ▶ + ↗ on the same line as the artist chip, pushed to far right
   const actsDiv = _buildPlayActsDiv(row);
   actsDiv.style.marginLeft = 'auto';
   actsDiv.style.flexShrink = '0';
@@ -921,7 +904,23 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
 
   li.appendChild(primaryDiv);
 
-  // ── Co-performers: tag cloud below primary row (no commas) ────────────────
+  // ── Context label: own sub-row, de-emphasised ─────────────────────────────
+  let labelText = '';
+  if (!suppressArtist && !row.track.composition_id && row.track.label) {
+    labelText = row.track.label;
+  } else if (suppressArtist) {
+    labelText = row.track.year
+      ? String(row.track.year)
+      : (row.track.short_title || row.track.concert_title || row.track.label || '');
+  }
+  if (labelText) {
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'tree-leaf-label';
+    labelDiv.textContent = labelText;
+    li.appendChild(labelDiv);
+  }
+
+  // ── Co-performers: tag cloud below (no commas) ────────────────────────────
   if (row.coPerformers && row.coPerformers.length > 0) {
     const coDiv = document.createElement('div');
     coDiv.className = 'tree-leaf-coperformers';
@@ -995,16 +994,17 @@ function buildTreeRaga(rows, trailList, multiVersionKeys) {
       header.appendChild(label);
     }
 
-    // Chevron — expand/collapse toggle (right-anchored); absent for single-child groups
+    // For multi-child groups the whole header bar is the toggle target.
+    // Chip clicks (comp chip, composer chip) already stopPropagation independently.
     if (!isSingle) {
       const chevron = document.createElement('span');
       chevron.className = 'tree-chevron';
       chevron.setAttribute('aria-hidden', 'true');
-      chevron.addEventListener('click', function(e) {
-        e.stopPropagation();
+      header.appendChild(chevron);
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', function() {
         li.classList.toggle('tree-group-open');
       });
-      header.appendChild(chevron);
     }
 
     li.appendChild(header);
@@ -1078,15 +1078,15 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
       actsDiv.style.marginLeft = 'auto';
       header.appendChild(actsDiv);
     } else {
-      // Multi-version: chevron right-anchored; click toggles only
+      // Multi-version: whole header bar toggles; artist chip stopPropagation handles its own click
       const chevron = document.createElement('span');
       chevron.className = 'tree-chevron';
       chevron.setAttribute('aria-hidden', 'true');
-      chevron.addEventListener('click', function(e) {
-        e.stopPropagation();
+      header.appendChild(chevron);
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', function() {
         li.classList.toggle('tree-group-open');
       });
-      header.appendChild(chevron);
     }
 
     li.appendChild(header);

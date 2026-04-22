@@ -932,14 +932,21 @@
     user-select: none;
   }
   .yt-ext-link:hover { color: var(--fg); background: var(--bg-active); }
-  /* trail-acts: ▶ + ↗ group — flex-col so they stack neatly on the right */
+  /* trail-acts: ▶ + ↗ side-by-side on one line */
   .trail-acts {
     flex-shrink: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 3px;
-    margin-top: 1px;
+    gap: 4px;
+  }
+  /* tree-leaf-label: context text on its own sub-row, de-emphasised */
+  .tree-leaf-label {
+    width: 100%;
+    font-size: 0.65rem;
+    color: var(--fg-dim);
+    padding: 2px 0 1px;
+    line-height: 1.3;
   }
 
   /* ── ADR-025: raga name link in rec-meta ── */
