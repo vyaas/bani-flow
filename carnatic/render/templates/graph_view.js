@@ -626,10 +626,15 @@ document.getElementById('rec-filter').addEventListener('input', function() {
   // ── raga tree groups (ADR-064) ────────────────────────────────────────────
   recList.querySelectorAll('li.tree-group').forEach(group => {
     const compNodes = group.querySelectorAll('.tree-comp-node');
+    // ADR-070: also match the raga chip in the group header so users who
+    // type a raga name (e.g. "sahana") find the compositions inside that
+    // raga even though the leaf nodes themselves only show comp titles.
+    const headerText = (group.querySelector('.tree-group-header') || {}).textContent || '';
+    const headerMatches = !!q && headerText.toLowerCase().includes(q);
     let groupHasMatch = false;
 
     compNodes.forEach(node => {
-      if (!q) {
+      if (!q || headerMatches) {
         node.style.display = '';
         groupHasMatch = true;
         return;
@@ -650,7 +655,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
       group.style.display = '';
       group.classList.add('tree-group-open');
       anyVisible = true;
-    } else if (groupHasMatch) {
+    } else if (groupHasMatch || headerMatches) {
       group.style.display = '';
       group.classList.add('tree-group-open');
       anyVisible = true;

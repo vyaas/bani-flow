@@ -1140,6 +1140,17 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
 
     li.appendChild(header);
 
+    // ADR-070: when a single-version row carries accompanists, render them
+    // directly under the header (multi-version path renders them per-leaf).
+    if (isSingle && group.rows[0].coPerformers && group.rows[0].coPerformers.length > 0) {
+      const coDiv = document.createElement('div');
+      coDiv.className = 'tree-leaf-coperformers';
+      group.rows[0].coPerformers.forEach(function(cp) {
+        coDiv.appendChild(buildArtistSpan(cp, false, 'comp', null));
+      });
+      li.appendChild(coDiv);
+    }
+
     // ── Children (multi-version only) ─────────────────────────────────────────
     if (!isSingle) {
       const childrenUl = document.createElement('ul');
