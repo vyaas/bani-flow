@@ -4,6 +4,24 @@
 const nodeBorn = {};
 cy.nodes().forEach(n => { nodeBorn[n.id()] = n.data('born'); });
 
+// Format a tala string for display: snake_case → Title Case with spaces
+// e.g. 'khanda_chapu' → 'Khanda Chapu', 'adi' → 'Adi'
+function formatTala(tala) {
+  if (!tala) return '';
+  return tala.split('_').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+}
+
+// Show a brief non-obtrusive notice when a composer/musician is not on the graph
+let _toastTimer = null;
+function showGraphAbsentToast(name) {
+  const el = document.getElementById('graph-absent-toast');
+  if (!el) return;
+  el.textContent = name + ' is not on the Guru-Shishya graph yet';
+  el.classList.add('visible');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.classList.remove('visible'); }, 3000);
+}
+
 let activeBaniFilter = null; // { type: 'comp'|'raga'|'perf'|'yt', id: string }
 
 function applyBaniFilter(type, id) {
@@ -127,7 +145,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
     if (comp && comp.tala) {
       const talaSpan = document.createElement('span');
-      talaSpan.textContent = comp.tala.charAt(0).toUpperCase() + comp.tala.slice(1);
+      talaSpan.className = 'trail-tala';
+      talaSpan.textContent = formatTala(comp.tala);
       parts.push(talaSpan);
     }
 
@@ -142,21 +161,32 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       composerChip.style.setProperty('--chip-era-bg', tint.bg);
       composerChip.style.setProperty('--chip-era-border', tint.border);
       if (composer.musician_node_id) {
-        composerChip.title = composer.name + ' — Open Musician panel';
-        composerChip.addEventListener('click', e => {
-          e.stopPropagation();
-          composerChip.classList.add('chip-tapped');
-          setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
-          const n = cy.getElementById(composer.musician_node_id);
-          if (n && n.length) {
-            selectNode(n);
+        const n = cy.getElementById(composer.musician_node_id);
+        if (n && n.length) {
+          composerChip.className += ' chip-navigable';
+          composerChip.title = composer.name + ' — Open Musician panel';
+          composerChip.addEventListener('click', e => {
+            e.stopPropagation();
+            composerChip.classList.add('chip-tapped');
+            setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
+            if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+              orientToNode(composer.musician_node_id);
+            } else {
+              selectNode(n);
+            }
             if (typeof window.setPanelState === 'function') {
               setTimeout(() => window.setPanelState('MUSICIAN'), 50);
             }
-          }
-        });
+          });
+        } else {
+          // musician_node_id set but not yet on the graph
+          composerChip.title = composer.name;
+          composerChip.addEventListener('click', e => {
+            e.stopPropagation();
+            showGraphAbsentToast(composer.name);
+          });
+        }
       } else {
-        composerChip.style.cursor = 'default';
         composerChip.title = composer.name;
       }
       parts.push(composerChip);
@@ -208,7 +238,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     }
     if (ref && ref.tala) {
       const talaSpan = document.createElement('span');
-      talaSpan.textContent = ref.tala.charAt(0).toUpperCase() + ref.tala.slice(1);
+      talaSpan.className = 'trail-tala';
+      talaSpan.textContent = formatTala(ref.tala);
       perfParts.push(talaSpan);
     }
     if (ref && ref.short_title) {
@@ -1130,7 +1161,12 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
     if (artistRow.nodeId) {
       const n = cy.getElementById(artistRow.nodeId);
       if (n && n.length) {
-        selectNode(n);
+        // Zoom + centre on the musician in graph view; fall back to highlight-only when wheel is active
+        if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+          orientToNode(artistRow.nodeId);
+        } else {
+          selectNode(n);
+        }
         if (typeof window.setPanelState === 'function') {
           setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
         }

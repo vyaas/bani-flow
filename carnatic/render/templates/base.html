@@ -1252,11 +1252,14 @@
     font-size: var(--chip-size-primary);
     font-weight: bold;
     border-radius: var(--chip-border-radius, 4px);
-    cursor: pointer;
+    cursor: default;
     user-select: none;
     white-space: nowrap;
     vertical-align: middle;
     transition: filter 0.12s;
+  }
+  .composer-chip.chip-navigable {
+    cursor: pointer;
   }
   .composer-chip::before {
     content: '♯';
@@ -1264,7 +1267,7 @@
     opacity: 0.85;
     color: var(--chip-era-border);
   }
-  .composer-chip:hover {
+  .composer-chip.chip-navigable:hover {
     filter: brightness(1.15);
     outline: 1px solid currentColor;
     outline-offset: 1px;
@@ -1274,6 +1277,17 @@
     filter: brightness(1.35);
     text-decoration: underline;
   }
+
+  /* ── Graph-absent toast — brief non-obtrusive notice —————————————— */
+  #graph-absent-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-panel); color: var(--fg-muted);
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    padding: 6px 14px; font-size: 0.72rem;
+    pointer-events: none; z-index: 9999;
+    opacity: 0; transition: opacity 0.25s;
+  }
+  #graph-absent-toast.visible { opacity: 1; }
 
   /* ── ADR-056: secondary chip modifier — smaller italic for unmatched titles ── */
   .chip-secondary {
@@ -2462,6 +2476,8 @@
     </div>
   </div>
 </header>
+
+<div id="graph-absent-toast"></div>
 
 <div id="main">
   <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->

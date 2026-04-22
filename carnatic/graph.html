@@ -1275,11 +1275,14 @@
     font-size: var(--chip-size-primary);
     font-weight: bold;
     border-radius: var(--chip-border-radius, 4px);
-    cursor: pointer;
+    cursor: default;
     user-select: none;
     white-space: nowrap;
     vertical-align: middle;
     transition: filter 0.12s;
+  }
+  .composer-chip.chip-navigable {
+    cursor: pointer;
   }
   .composer-chip::before {
     content: '♯';
@@ -1287,7 +1290,7 @@
     opacity: 0.85;
     color: var(--chip-era-border);
   }
-  .composer-chip:hover {
+  .composer-chip.chip-navigable:hover {
     filter: brightness(1.15);
     outline: 1px solid currentColor;
     outline-offset: 1px;
@@ -1297,6 +1300,17 @@
     filter: brightness(1.35);
     text-decoration: underline;
   }
+
+  /* ── Graph-absent toast — brief non-obtrusive notice —————————————— */
+  #graph-absent-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-panel); color: var(--fg-muted);
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    padding: 6px 14px; font-size: 0.72rem;
+    pointer-events: none; z-index: 9999;
+    opacity: 0; transition: opacity 0.25s;
+  }
+  #graph-absent-toast.visible { opacity: 1; }
 
   /* ── ADR-056: secondary chip modifier — smaller italic for unmatched titles ── */
   .chip-secondary {
@@ -2486,6 +2500,8 @@
   </div>
 </header>
 
+<div id="graph-absent-toast"></div>
+
 <div id="main">
   <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->
   <div id="left-sidebar">
@@ -3048,560 +3064,7 @@ const elements = [
       "label_tier": 2,
       "font_size": 11,
       "font_weight": "normal",
-      "tracks": [
-        {
-          "vid": "AEbAgJK30Z8",
-          "label": "Emaanadicchevo · Sahana · Adi - TM Krishna, Karnatic Modern Mumbai 2016",
-          "composition_id": "emaanadicchevo",
-          "raga_id": "sahana",
-          "year": 2016,
-          "version": null
-        },
-        {
-          "vid": "zGrDSEDeCI0",
-          "label": "Dikshitar kriti · Mayamalavagowla - TM Krishna & Akkarai Subbulakshmi, Karnatic Modern Mumbai 2017",
-          "composition_id": null,
-          "raga_id": "mayamalavagowla",
-          "year": 2017,
-          "version": null
-        },
-        {
-          "vid": "nuzjW5a--AU",
-          "label": "Kshetrayya padam · Mukhari - TM Krishna & Akkarai Subbulakshmi, Karnatic Modern Mumbai 2017",
-          "composition_id": null,
-          "raga_id": "mukhari",
-          "year": 2017,
-          "version": null
-        },
-        {
-          "vid": "5yZEsJDJ9yc",
-          "label": "Manavinaalakincha Raadate · Nalinakanthi - TM Krishna, Karnatic Modern Mumbai 2016",
-          "composition_id": "manavinaalakincha_raadate",
-          "raga_id": "nalinakanthi",
-          "year": 2016,
-          "version": null
-        },
-        {
-          "vid": "x1pbtvX89Bk",
-          "label": "Gajavadhana · Thodi - TM Krishna, Essential TM Krishna Mumbai 2018",
-          "composition_id": "gajavadhana",
-          "raga_id": "thodi",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "5eAPDJmmKOs",
-          "label": "Perumal Murugan composition · Hamir Kalyani - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-          "composition_id": null,
-          "raga_id": "hamir_kalyani",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "AjESfMHTgjg",
-          "label": "Ragamalika (Suruti-Shankarabharanam-Kapi-Ananda Bhairavi) - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "o55TExI7Dbc",
-          "label": "Composition · Khamas - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-          "composition_id": null,
-          "raga_id": "khamas",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "gPLyGjXcSkU",
-          "label": "Shri Viswanathan Bhajeham · Chaturdasa Ragamalika - TM Krishna, Essential TM Krishna Mumbai 2017",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2017,
-          "version": null
-        },
-        {
-          "vid": "vpoMFE5hrsc",
-          "label": "DV Gundappa composition · Behag - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-          "composition_id": null,
-          "raga_id": "behag",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "zpFZwR27_m4",
-          "label": "Aaguner Parashmoni Chhoao Praane · Bhairavi - TM Krishna & Akkarai Subbulakshmi, Essential TM Krishna Mumbai 2018",
-          "composition_id": "aaguner_parashmoni",
-          "raga_id": "bhairavi",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "PdIy9531_fM",
-          "label": "Manodharma II: Alapana (Lec-Dem Part 1) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "79ScPj4sE3Y",
-          "label": "Manodharma II: Pallavi (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "iDaanIHX30I",
-          "label": "Manodharma II: Accompanists (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "ErpI843IiG4",
-          "label": "Manodharma II: Kalpana Swara & Thani (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "VJkrZf-jtZw",
-          "label": "Nee Matumme · Kapi - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": null,
-          "raga_id": "kapi",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "f_zYXorgEPQ",
-          "label": "Sogasu Chooda · Kannada Gowla - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": "sogasu_chooda",
-          "raga_id": "kannada_gowla",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "GU--BVt4D0k",
-          "label": "Krishna Nee Begane · Yamuna Kalyani - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": "krishna_nee_begane",
-          "raga_id": "yamuna_kalyani",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "iQTs7PSnX3k",
-          "label": "Baro Krishnayya · Maund - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": "baro_krishnayya",
-          "raga_id": "maund",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "zQ1qhf1Lr9s",
-          "label": "Tiruvatriyur Thyagarajan · Atana - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": "tiruvatriyur_thyagarajan",
-          "raga_id": "atana",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "YFY7I2uyQSM",
-          "label": "Sri Venkata Girisa · Suruti - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": "sri_venkata_girisa",
-          "raga_id": "surutti",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "tDaCYam087k",
-          "label": "Nenarunchara · Simhavahini - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": "nenarunchara",
-          "raga_id": "simhavahini",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "Aa_9UMNlxBk",
-          "label": "Shri Guruna Palitosmi · Padi - TM Krishna, Karnatic Modern II Mumbai 2018",
-          "composition_id": "shri_guruna_palitosmi",
-          "raga_id": "padi",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "WknDE3b7Jjo",
-          "label": "Kamakshi · Varali - TM Krishna, Afghan Church Mumbai 2018",
-          "composition_id": "kamakshi_varali",
-          "raga_id": "varali",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "fuH3lZo0JsA",
-          "label": "Nadopasana · Begada - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
-          "composition_id": "nadopasana",
-          "raga_id": "begada",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "Fqzy22zwjeY",
-          "label": "Bare Panduranga · Maund - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
-          "composition_id": "bare_panduranga",
-          "raga_id": "maund",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "Bs9FiFwxvSQ",
-          "label": "Jagadodharana · Kapi - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
-          "composition_id": "jagadodharana",
-          "raga_id": "kapi",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "FauxpOMibu4",
-          "label": "TM Krishna feat. Vikku Vinayakram: Live at Afghan Church, Mumbai  - Raga Behag - Allahvai",
-          "composition_id": null,
-          "raga_id": null,
-          "year": null,
-          "version": null
-        },
-        {
-          "vid": "__UaWGlMbaU",
-          "label": "Dikshitar kriti · Purvi - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Pune 2018",
-          "composition_id": null,
-          "raga_id": "purvi",
-          "year": 2018,
-          "version": null
-        },
-        {
-          "vid": "BIEzjDD3pvA",
-          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
-          "composition_id": "maakelara_vicaaramu",
-          "raga_id": "ravichandrika",
-          "year": null,
-          "version": null
-        },
-        {
-          "vid": "j73jMamBZxU",
-          "label": "Ragamalika - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Pune 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "5MAI223JEVc",
-          "label": "Jagadananda Karaka · Nattai · Adi - TM Krishna",
-          "composition_id": "jagadananda_karaka",
-          "raga_id": "nata",
-          "year": null,
-          "version": null
-        },
-        {
-          "vid": "T4cEp03lJcM",
-          "label": "Sri Ramachandra Kripalu · Yamuna Kalyani - TM Krishna, Parallel Lines Pune 2019",
-          "composition_id": "sri_ramachandra_kripalu",
-          "raga_id": "yamuna_kalyani",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "KDPPDB0rG70",
-          "label": "Manodharma Lec-Dem Promo - TM Krishna & Akkarai Subbulakshmi 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "ovgWK5aQcpM",
-          "label": "Amba Nilayatakshi · Neelambari - TM Krishna, Kolkata 2019",
-          "composition_id": "amba_nilayatakshi",
-          "raga_id": "neelambari",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "Gkzru79jeT4",
-          "label": "Laavanya Rama Kannul Ara · Poorna Shadjam - TM Krishna, Kolkata 2019",
-          "composition_id": "laavanya_rama_kannul_ara",
-          "raga_id": "poornashadjam",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "3ZFVV64Or5g",
-          "label": "Kanaka Shaila Viharini · Punnagavarali - TM Krishna, Kolkata 2019",
-          "composition_id": "kanaka_shaila_viharini",
-          "raga_id": "punnagavarali",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "7A0YSVf-z3c",
-          "label": "Brocevarevarura · Khamas - TM Krishna, Kolkata 2019",
-          "composition_id": "brocevarevarura",
-          "raga_id": "khamas",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "v1g16qHvc74",
-          "label": "Jambu Pathe Mam Pahi · Yamuna Kalyani - TM Krishna, Kolkata 2019",
-          "composition_id": "jambu_pathe_mam_pahi",
-          "raga_id": "yamuna_kalyani",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "2-Hu2GXk6k8",
-          "label": "Saramaina Matalento · Behag - TM Krishna, Kolkata 2019",
-          "composition_id": "saramaina_matalento",
-          "raga_id": "behag",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "qd2XnI2qmGQ",
-          "label": "Dhana Dhanya Pushpa Bhara - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-          "composition_id": "dhana_dhanya_pushpa_bhara",
-          "raga_id": null,
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "KYXuPI4wDHM",
-          "label": "Ni Mattume · Kapi - TM Krishna, Kolkata 2019",
-          "composition_id": null,
-          "raga_id": "kapi",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "WJh305C0kAc",
-          "label": "Vande Meenakshi Twam · Shankarabharanam - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-          "composition_id": "vande_meenakshi_twam",
-          "raga_id": "shankarabharanam",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "85LcNLhZNMU",
-          "label": "Manodharma III: Alapana (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "qlq9EvFr8Uo",
-          "label": "Manodharma III: Kalpanaswarams (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "RccdN6suHUk",
-          "label": "Manodharma III: Tanam (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "LchtvWC_BpE",
-          "label": "Salatullah Salamullah · Ananda Bhairavi - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2019",
-          "composition_id": null,
-          "raga_id": "ananda_bhairavi",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "n63RJoxPzj8",
-          "label": "Essa Einay El Heharim (Hebrew Psalm) · Sindhu Bhairavi - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2019",
-          "composition_id": null,
-          "raga_id": "sindhu_bhairavi",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "NocL9bp4vIY",
-          "label": "Teliyaleru Rama · Dhenuka - TM Krishna, Concert for Peace Mumbai 2019",
-          "composition_id": "teliyaleru_rama",
-          "raga_id": "dhenuka",
-          "year": 2019,
-          "version": null
-        },
-        {
-          "vid": "vux5-s22v-s",
-          "label": "Aag Bhayi Bandhu · Lalitha - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2020",
-          "composition_id": null,
-          "raga_id": "lalitha",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "jW4nuLVo7Fk",
-          "label": "Hine Ma Tov Uma Na'im (Hebrew Psalm) - TM Krishna & Akkarai Subbulakshmi, Concert for Peace Mumbai 2020",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "NRc9yvEex2Q",
-          "label": "Endaro Mahanubhavulu · Sri - TM Krishna, Aikya Mumbai 2020",
-          "composition_id": "endaro_mahanubhavulu",
-          "raga_id": "sriraga",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "8upNeiMEdVc",
-          "label": "Sri Matrubhutam · Kannada - TM Krishna, Aikya Mumbai 2020",
-          "composition_id": "sri_matrubhutam",
-          "raga_id": "kaanada",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "F2TXcr1wAd4",
-          "label": "Chakkani Raja Margamu · Kharaharapriya - TM Krishna, Aikya Mumbai 2020",
-          "composition_id": "chakkani_raja_margamu",
-          "raga_id": "kharaharapriya",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "1Dp88V6m8Tw",
-          "label": "Jagadodharana · Kapi - TM Krishna, Aikya Mumbai 2020",
-          "composition_id": "jagadodharana",
-          "raga_id": "kapi",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "h6S9E2g6OA0",
-          "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: English Note-Ragam Shankarabharanam",
-          "composition_id": null,
-          "raga_id": null,
-          "year": null,
-          "version": null
-        },
-        {
-          "vid": "Bbh-_ZM8LzA",
-          "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: Mallari - Ragam Gambhira Nattai",
-          "composition_id": null,
-          "raga_id": null,
-          "year": null,
-          "version": null
-        },
-        {
-          "vid": "NfaWuqmljKM",
-          "label": "Muripemu Kalige · Mukhari - TM Krishna, Parallel Lines Bangalore 2020",
-          "composition_id": "muripemu_kalige",
-          "raga_id": "mukhari",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "Es04SHxFae4",
-          "label": "Bhajare Re Chitta Balambikam · Kalyani - TM Krishna, Parallel Lines Bangalore 2020",
-          "composition_id": "bhajare_re_chitta_balambikam",
-          "raga_id": "kalyani",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "Wt8SfrWwzh4",
-          "label": "2 Thillanas · Khamas - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-          "composition_id": null,
-          "raga_id": "khamas",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "j6gRDrvZGWk",
-          "label": "Virutham + Poonguyil Koovum Poonjolayil · Kapi - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-          "composition_id": null,
-          "raga_id": "kapi",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "kh3pw3u8If8",
-          "label": "Ragamalika + Jaya Jaya Shankara · Darbari Kanada - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-          "composition_id": null,
-          "raga_id": "darbari_kanada",
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "7x8-cde89Cg",
-          "label": "Allah Megh De (Bangladeshi folk) - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "0xBXnbsguKg",
-          "label": "Esho Shyamolo Sundoro (Tagore) - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Bangalore 2020",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2020,
-          "version": null
-        },
-        {
-          "vid": "rspIDApLZlE",
-          "label": "TM Krishna & The Jogappas: Live",
-          "composition_id": null,
-          "raga_id": null,
-          "year": null,
-          "version": null
-        },
-        {
-          "vid": "u2hoAfGGe6g",
-          "label": "Guruleka Etuvanti · Gowrimanohari - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
-          "composition_id": "guruleka_etuvanti",
-          "raga_id": "gowrimanohari",
-          "year": 2025,
-          "version": null
-        },
-        {
-          "vid": "NZlB2tgum10",
-          "label": "TM Krishna & Vikku Vinayakram: Ragam Hamirkalyani - Valudum Cherudum",
-          "composition_id": null,
-          "raga_id": null,
-          "year": null,
-          "version": null
-        },
-        {
-          "vid": "sOVYyQL2Df0",
-          "label": "Muddugare Yashoda · Kurinji - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
-          "composition_id": "muddugare_yashoda",
-          "raga_id": "kurinji",
-          "year": 2025,
-          "version": null
-        },
-        {
-          "vid": "B86oyObRYIY",
-          "label": "Sri Ramachandra Kripalu · Yaman Kalyan - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
-          "composition_id": "sri_ramachandra_kripalu",
-          "raga_id": "yamuna_kalyani",
-          "year": 2025,
-          "version": null
-        }
-      ],
+      "tracks": [],
       "is_listenable": 1,
       "is_composer": 0,
       "composer_id": null
@@ -15251,85 +14714,9 @@ const compositions = [
 const compositionToNodes = {
   "brocevarevarura": [
     "abhishek_raghuram",
-    "akkarai_subbulakshmi",
     "tm_krishna"
-  ],
-  "emaanadicchevo": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "manavinaalakincha_raadate": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "gajavadhana": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "aaguner_parashmoni": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "sogasu_chooda": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "krishna_nee_begane": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "baro_krishnayya": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "tiruvatriyur_thyagarajan": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "sri_venkata_girisa": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "vellore_ramabhadran"
-  ],
-  "nenarunchara": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "shri_guruna_palitosmi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "kamakshi_varali": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "nadopasana": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "bare_panduranga": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "jagadodharana": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "maakelara_vicaaramu": [
-    "akkarai_subbulakshmi",
-    "madurai_mani_iyer",
-    "ms_subbulakshmi",
-    "ramnad_krishnan",
-    "sanjay_subrahmanyan",
-    "semmangudi_srinivasa_iyer",
-    "tm_krishna",
-    "lalgudi_jayaraman",
-    "vellore_ramabhadran"
   ],
   "jagadananda_karaka": [
-    "akkarai_subbulakshmi",
     "alathur_brothers",
     "balamuralikrishna",
     "maharajapuram_santanam",
@@ -15341,86 +14728,6 @@ const compositionToNodes = {
     "lalgudi_jayaraman",
     "umayalpuram_sivaraman",
     "vellore_ramabhadran"
-  ],
-  "sri_ramachandra_kripalu": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "amba_nilayatakshi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "laavanya_rama_kannul_ara": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "lalgudi_jayaraman",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani"
-  ],
-  "kanaka_shaila_viharini": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "jambu_pathe_mam_pahi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "saramaina_matalento": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "dhana_dhanya_pushpa_bhara": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "vande_meenakshi_twam": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "teliyaleru_rama": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman"
-  ],
-  "endaro_mahanubhavulu": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "ariyakudi_ramanuja_iyengar",
-    "tn_krishnan",
-    "palghat_mani_iyer"
-  ],
-  "sri_matrubhutam": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "chakkani_raja_margamu": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "alathur_brothers",
-    "semmangudi_srinivasa_iyer",
-    "tn_krishnan",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman",
-    "vellore_ramabhadran"
-  ],
-  "muripemu_kalige": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "bhajare_re_chitta_balambikam": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "guruleka_etuvanti": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "muddugare_yashoda": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
   ],
   "abhimanamennedu": [
     "balamuralikrishna",
@@ -15462,6 +14769,16 @@ const compositionToNodes = {
   "ammaravamma": [
     "lalgudi_jayaraman",
     "ramnad_krishnan"
+  ],
+  "maakelara_vicaaramu": [
+    "madurai_mani_iyer",
+    "ms_subbulakshmi",
+    "ramnad_krishnan",
+    "sanjay_subrahmanyan",
+    "semmangudi_srinivasa_iyer",
+    "tm_krishna",
+    "lalgudi_jayaraman",
+    "vellore_ramabhadran"
   ],
   "vinata_suta_vahana": [
     "madurai_mani_iyer"
@@ -15672,12 +14989,60 @@ const compositionToNodes = {
   "jalandhara_supithasite": [
     "t_v_sankaranarayanan"
   ],
+  "emaanadicchevo": [
+    "tm_krishna"
+  ],
+  "manavinaalakincha_raadate": [
+    "tm_krishna"
+  ],
+  "gajavadhana": [
+    "tm_krishna"
+  ],
+  "sogasu_chooda": [
+    "tm_krishna"
+  ],
+  "krishna_nee_begane": [
+    "tm_krishna"
+  ],
+  "baro_krishnayya": [
+    "tm_krishna"
+  ],
+  "tiruvatriyur_thyagarajan": [
+    "tm_krishna"
+  ],
   "o_jagadamba": [
     "tm_krishna",
     "musiri_subramania_iyer",
     "umayalpuram_sivaraman"
   ],
+  "sri_venkata_girisa": [
+    "tm_krishna",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "vellore_ramabhadran"
+  ],
+  "nenarunchara": [
+    "tm_krishna"
+  ],
+  "shri_guruna_palitosmi": [
+    "tm_krishna"
+  ],
   "sri_dakshinamurte": [
+    "tm_krishna"
+  ],
+  "kamakshi_varali": [
+    "tm_krishna"
+  ],
+  "nadopasana": [
+    "tm_krishna"
+  ],
+  "bare_panduranga": [
+    "tm_krishna"
+  ],
+  "jagadodharana": [
+    "tm_krishna"
+  ],
+  "sri_ramachandra_kripalu": [
     "tm_krishna"
   ],
   "yarukkaghilum_bhayamaa": [
@@ -15698,10 +15063,74 @@ const compositionToNodes = {
   "kshitija_ramanam": [
     "tm_krishna"
   ],
+  "amba_nilayatakshi": [
+    "tm_krishna"
+  ],
+  "laavanya_rama_kannul_ara": [
+    "tm_krishna",
+    "lalgudi_jayaraman",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani"
+  ],
+  "kanaka_shaila_viharini": [
+    "tm_krishna"
+  ],
+  "jambu_pathe_mam_pahi": [
+    "tm_krishna"
+  ],
+  "saramaina_matalento": [
+    "tm_krishna"
+  ],
+  "teliyaleru_rama": [
+    "tm_krishna",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman"
+  ],
+  "endaro_mahanubhavulu": [
+    "tm_krishna",
+    "ariyakudi_ramanuja_iyengar",
+    "tn_krishnan",
+    "palghat_mani_iyer"
+  ],
+  "sri_matrubhutam": [
+    "tm_krishna"
+  ],
+  "chakkani_raja_margamu": [
+    "tm_krishna",
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "muripemu_kalige": [
+    "tm_krishna"
+  ],
+  "bhajare_re_chitta_balambikam": [
+    "tm_krishna"
+  ],
+  "guruleka_etuvanti": [
+    "tm_krishna"
+  ],
   "sarojadala_netri": [
     "tm_krishna"
   ],
+  "muddugare_yashoda": [
+    "tm_krishna"
+  ],
   "maithrim_bhajata": [
+    "tm_krishna"
+  ],
+  "aaguner_parashmoni": [
+    "tm_krishna"
+  ],
+  "dhana_dhanya_pushpa_bhara": [
+    "tm_krishna"
+  ],
+  "vande_meenakshi_twam": [
     "tm_krishna"
   ],
   "kamakshi_ni_pada": [
@@ -16261,7 +15690,6 @@ const ragaToNodes        = {
   ],
   "khamas": [
     "abhishek_raghuram",
-    "akkarai_subbulakshmi",
     "tm_krishna",
     "t_brinda",
     "t_muktha",
@@ -16278,47 +15706,133 @@ const ragaToNodes        = {
     "ariyakudi_ramanuja_iyengar",
     "tn_krishnan"
   ],
-  "sahana": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
+  "nata": [
+    "alathur_brothers",
+    "balamuralikrishna",
+    "maharajapuram_santanam",
+    "ms_subbulakshmi",
+    "nityashree_mahadevan",
     "tm_krishna",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "begada": [
+    "balamuralikrishna",
+    "hyderabad_brothers",
+    "lalgudi_jayaraman",
+    "musiri_subramania_iyer",
+    "ramnad_krishnan",
+    "t_brinda",
+    "tm_krishna",
+    "voleti_venkateshwarlu",
+    "t_muktha",
+    "vina_dhanammal",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani",
+    "tn_krishnan",
+    "vellore_ramabhadran",
+    "ariyakudi_ramanuja_iyengar"
+  ],
+  "bahudari": [
+    "bombay_jayashri",
+    "vina_dhanammal"
+  ],
+  "surutti": [
+    "dk_pattammal",
+    "kv_narayanaswamy",
+    "md_ramanathan",
+    "ms_subbulakshmi",
+    "r_vedavalli",
+    "ramnad_krishnan",
+    "ranjani_gayatri",
+    "s_sowmya",
+    "sanjay_subrahmanyan",
+    "semmangudi_srinivasa_iyer",
+    "tm_krishna",
+    "tn_krishnan",
     "gnb",
     "lalgudi_jayaraman",
     "coimbatore_n_ramaswamy",
-    "t_brinda",
-    "t_muktha"
+    "cr_mani_iyer",
+    "palghat_raghu",
+    "vellore_ramabhadran",
+    "umayalpuram_sivaraman"
   ],
-  "mayamalavagowla": [
-    "akkarai_subbulakshmi",
+  "hamsadhwani": [
+    "hyderabad_brothers",
+    "ml_vasanthakumari",
+    "sudha_ragunathan"
+  ],
+  "yadukulakamboji": [
+    "kv_narayanaswamy",
+    "ramakrishnan_murthy",
+    "ramnad_krishnan",
+    "semmangudi_srinivasa_iyer",
+    "t_brinda",
+    "tm_krishna",
+    "tn_krishnan",
+    "tr_mahalingam"
+  ],
+  "kalyani": [
+    "lalgudi_jayaraman",
     "ramnad_krishnan",
     "tm_krishna",
+    "vina_dhanammal",
+    "madurai_mani_iyer",
+    "vellore_ramabhadran",
+    "musiri_subramania_iyer",
+    "umayalpuram_sivaraman",
+    "semmangudi_srinivasa_iyer",
+    "ariyakudi_ramanuja_iyengar",
+    "tn_krishnan",
+    "palghat_mani_iyer"
+  ],
+  "ravichandrika": [
+    "madurai_mani_iyer",
+    "ms_subbulakshmi",
+    "ramnad_krishnan",
+    "sanjay_subrahmanyan",
+    "semmangudi_srinivasa_iyer",
+    "tm_krishna",
+    "lalgudi_jayaraman",
+    "vellore_ramabhadran"
+  ],
+  "jayantasena": [
+    "madurai_mani_iyer"
+  ],
+  "kapi": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "t_brinda",
+    "t_muktha",
+    "vina_dhanammal",
     "semmangudi_srinivasa_iyer",
     "lalgudi_jayaraman",
     "umayalpuram_sivaraman",
-    "vellore_ramabhadran",
-    "ms_subbulakshmi",
-    "radha_viswanathan",
-    "ramnad_raghavan"
+    "vellore_ramabhadran"
   ],
-  "mukhari": [
-    "akkarai_subbulakshmi",
+  "bhairavi": [
     "ramnad_krishnan",
     "tm_krishna",
+    "vina_dhanammal",
     "musiri_subramania_iyer",
     "umayalpuram_sivaraman",
     "lalgudi_jayaraman",
     "lalgudi_srimathi_brahmananda",
     "palghat_mani_iyer",
     "palghat_rajamani",
-    "semmangudi_srinivasa_iyer",
-    "vellore_ramabhadran"
-  ],
-  "nalinakanthi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
+    "kv_narayanaswamy",
+    "cr_mani_iyer",
+    "palghat_raghu",
+    "dk_pattammal",
+    "ariyakudi_ramanuja_iyengar",
+    "tn_krishnan"
   ],
   "thodi": [
-    "akkarai_subbulakshmi",
     "ramnad_krishnan",
     "tm_krishna",
     "gnb",
@@ -16342,324 +15856,20 @@ const ragaToNodes        = {
     "tn_krishnan",
     "palghat_mani_iyer"
   ],
-  "hamir_kalyani": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "behag": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "lalgudi_jayaraman",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani",
-    "kv_narayanaswamy",
-    "cr_mani_iyer",
-    "palghat_raghu",
-    "ramnad_krishnan",
-    "t_viswanathan"
-  ],
-  "bhairavi": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "vina_dhanammal",
-    "musiri_subramania_iyer",
-    "umayalpuram_sivaraman",
-    "lalgudi_jayaraman",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani",
-    "kv_narayanaswamy",
-    "cr_mani_iyer",
-    "palghat_raghu",
-    "dk_pattammal",
-    "ariyakudi_ramanuja_iyengar",
-    "tn_krishnan"
-  ],
-  "kapi": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "t_brinda",
-    "t_muktha",
-    "vina_dhanammal",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman",
-    "vellore_ramabhadran"
-  ],
-  "kannada_gowla": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "yamuna_kalyani": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "maund": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "atana": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna"
-  ],
-  "surutti": [
-    "akkarai_subbulakshmi",
-    "dk_pattammal",
-    "kv_narayanaswamy",
-    "md_ramanathan",
-    "ms_subbulakshmi",
-    "r_vedavalli",
-    "ramnad_krishnan",
-    "ranjani_gayatri",
-    "s_sowmya",
-    "sanjay_subrahmanyan",
-    "semmangudi_srinivasa_iyer",
-    "tm_krishna",
-    "tn_krishnan",
-    "gnb",
-    "lalgudi_jayaraman",
-    "coimbatore_n_ramaswamy",
-    "cr_mani_iyer",
-    "palghat_raghu",
-    "vellore_ramabhadran",
-    "umayalpuram_sivaraman"
-  ],
-  "simhavahini": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "padi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "varali": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman",
-    "alathur_brothers",
-    "tn_krishnan",
-    "vellore_ramabhadran",
-    "ariyakudi_ramanuja_iyengar",
-    "palghat_mani_iyer"
-  ],
-  "begada": [
-    "akkarai_subbulakshmi",
-    "balamuralikrishna",
-    "hyderabad_brothers",
-    "lalgudi_jayaraman",
-    "musiri_subramania_iyer",
-    "ramnad_krishnan",
-    "t_brinda",
-    "tm_krishna",
-    "voleti_venkateshwarlu",
-    "t_muktha",
-    "vina_dhanammal",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani",
-    "tn_krishnan",
-    "vellore_ramabhadran",
-    "ariyakudi_ramanuja_iyengar"
-  ],
-  "purvi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "ravichandrika": [
-    "akkarai_subbulakshmi",
-    "madurai_mani_iyer",
-    "ms_subbulakshmi",
-    "ramnad_krishnan",
-    "sanjay_subrahmanyan",
-    "semmangudi_srinivasa_iyer",
-    "tm_krishna",
-    "lalgudi_jayaraman",
-    "vellore_ramabhadran"
-  ],
-  "nata": [
-    "akkarai_subbulakshmi",
-    "alathur_brothers",
-    "balamuralikrishna",
-    "maharajapuram_santanam",
-    "ms_subbulakshmi",
-    "nityashree_mahadevan",
-    "tm_krishna",
-    "semmangudi_srinivasa_iyer",
-    "tn_krishnan",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman",
-    "vellore_ramabhadran"
-  ],
-  "neelambari": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman"
-  ],
-  "poornashadjam": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "lalgudi_jayaraman",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani",
-    "ramnad_krishnan",
-    "tn_krishnan",
-    "vellore_ramabhadran"
-  ],
-  "punnagavarali": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "t_brinda",
-    "t_muktha"
-  ],
-  "shankarabharanam": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "vina_dhanammal",
-    "kv_narayanaswamy",
-    "cr_mani_iyer",
-    "palghat_raghu",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman",
-    "vellore_ramabhadran"
-  ],
-  "ananda_bhairavi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "vina_dhanammal",
-    "musiri_subramania_iyer",
-    "umayalpuram_sivaraman",
-    "ariyakudi_ramanuja_iyengar",
-    "tn_krishnan",
-    "palghat_mani_iyer"
-  ],
-  "sindhu_bhairavi": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "ariyakudi_ramanuja_iyengar",
-    "tn_krishnan",
-    "palghat_mani_iyer"
-  ],
-  "dhenuka": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "umayalpuram_sivaraman"
-  ],
-  "lalitha": [
-    "akkarai_subbulakshmi",
-    "tm_krishna",
-    "vina_dhanammal"
-  ],
-  "sriraga": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "lalgudi_jayaraman",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani",
-    "alathur_brothers",
-    "semmangudi_srinivasa_iyer",
-    "tn_krishnan",
-    "umayalpuram_sivaraman",
-    "vellore_ramabhadran",
-    "ariyakudi_ramanuja_iyengar"
-  ],
-  "kannada": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "lalgudi_jayaraman",
-    "lalgudi_srimathi_brahmananda",
-    "palghat_mani_iyer",
-    "palghat_rajamani"
-  ],
-  "kaanada": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "vina_dhanammal",
-    "ariyakudi_ramanuja_iyengar",
-    "tn_krishnan",
-    "palghat_mani_iyer"
-  ],
-  "kharaharapriya": [
-    "akkarai_subbulakshmi",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "vina_dhanammal",
-    "semmangudi_srinivasa_iyer",
-    "lalgudi_jayaraman",
-    "vellore_ramabhadran",
-    "alathur_brothers",
-    "tn_krishnan",
-    "umayalpuram_sivaraman"
-  ],
-  "kalyani": [
-    "akkarai_subbulakshmi",
-    "lalgudi_jayaraman",
-    "ramnad_krishnan",
-    "tm_krishna",
-    "vina_dhanammal",
-    "madurai_mani_iyer",
-    "vellore_ramabhadran",
-    "musiri_subramania_iyer",
-    "umayalpuram_sivaraman",
-    "semmangudi_srinivasa_iyer",
-    "ariyakudi_ramanuja_iyengar",
-    "tn_krishnan",
-    "palghat_mani_iyer"
-  ],
-  "darbari_kanada": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "gowrimanohari": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "kurinji": [
-    "akkarai_subbulakshmi",
-    "tm_krishna"
-  ],
-  "bahudari": [
-    "bombay_jayashri",
-    "vina_dhanammal"
-  ],
-  "hamsadhwani": [
-    "hyderabad_brothers",
-    "ml_vasanthakumari",
-    "sudha_ragunathan"
-  ],
-  "yadukulakamboji": [
-    "kv_narayanaswamy",
-    "ramakrishnan_murthy",
-    "ramnad_krishnan",
-    "semmangudi_srinivasa_iyer",
-    "t_brinda",
-    "tm_krishna",
-    "tn_krishnan",
-    "tr_mahalingam"
-  ],
-  "jayantasena": [
-    "madurai_mani_iyer"
-  ],
   "keeravani": [
     "ramnad_krishnan",
     "t_viswanathan"
+  ],
+  "kharaharapriya": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "vina_dhanammal",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "vellore_ramabhadran",
+    "alathur_brothers",
+    "tn_krishnan",
+    "umayalpuram_sivaraman"
   ],
   "madhyamavati": [
     "ramnad_krishnan",
@@ -16668,6 +15878,31 @@ const ragaToNodes        = {
     "vellore_ramabhadran",
     "ariyakudi_ramanuja_iyengar",
     "tn_krishnan",
+    "palghat_mani_iyer"
+  ],
+  "shankarabharanam": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "vina_dhanammal",
+    "kv_narayanaswamy",
+    "cr_mani_iyer",
+    "palghat_raghu",
+    "akkarai_subbulakshmi",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "varali": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "alathur_brothers",
+    "tn_krishnan",
+    "vellore_ramabhadran",
+    "ariyakudi_ramanuja_iyengar",
     "palghat_mani_iyer"
   ],
   "pantuvarali": [
@@ -16682,16 +15917,68 @@ const ragaToNodes        = {
     "tn_krishnan",
     "palghat_mani_iyer"
   ],
+  "sahana": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "gnb",
+    "lalgudi_jayaraman",
+    "coimbatore_n_ramaswamy",
+    "t_brinda",
+    "t_muktha"
+  ],
+  "atana": [
+    "ramnad_krishnan",
+    "tm_krishna"
+  ],
+  "mukhari": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "musiri_subramania_iyer",
+    "umayalpuram_sivaraman",
+    "lalgudi_jayaraman",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani",
+    "semmangudi_srinivasa_iyer",
+    "vellore_ramabhadran"
+  ],
   "saveri": [
     "ramnad_krishnan",
     "t_brinda",
     "t_muktha"
+  ],
+  "kannada": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "lalgudi_jayaraman",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani"
+  ],
+  "kaanada": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "vina_dhanammal",
+    "ariyakudi_ramanuja_iyengar",
+    "tn_krishnan",
+    "palghat_mani_iyer"
   ],
   "huseni": [
     "ramnad_krishnan",
     "kv_narayanaswamy",
     "cr_mani_iyer",
     "palghat_raghu"
+  ],
+  "mayamalavagowla": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran",
+    "ms_subbulakshmi",
+    "radha_viswanathan",
+    "ramnad_raghavan"
   ],
   "devagandhari": [
     "ramnad_krishnan",
@@ -16715,6 +16002,20 @@ const ragaToNodes        = {
   ],
   "kedaragaula": [
     "ramnad_krishnan"
+  ],
+  "sriraga": [
+    "ramnad_krishnan",
+    "tm_krishna",
+    "lalgudi_jayaraman",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani",
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran",
+    "ariyakudi_ramanuja_iyengar"
   ],
   "bilahari": [
     "ramnad_krishnan",
@@ -16747,13 +16048,105 @@ const ragaToNodes        = {
   "valaji": [
     "t_v_sankaranarayanan"
   ],
+  "nalinakanthi": [
+    "tm_krishna"
+  ],
+  "kannada_gowla": [
+    "tm_krishna"
+  ],
+  "yamuna_kalyani": [
+    "tm_krishna"
+  ],
+  "maund": [
+    "tm_krishna"
+  ],
+  "ananda_bhairavi": [
+    "tm_krishna",
+    "vina_dhanammal",
+    "musiri_subramania_iyer",
+    "umayalpuram_sivaraman",
+    "ariyakudi_ramanuja_iyengar",
+    "tn_krishnan",
+    "palghat_mani_iyer"
+  ],
+  "simhavahini": [
+    "tm_krishna"
+  ],
+  "padi": [
+    "tm_krishna"
+  ],
   "karnataka_kapi": [
     "tm_krishna"
   ],
   "jonepuri": [
     "tm_krishna"
   ],
+  "neelambari": [
+    "tm_krishna",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman"
+  ],
+  "poornashadjam": [
+    "tm_krishna",
+    "lalgudi_jayaraman",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani",
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "punnagavarali": [
+    "tm_krishna",
+    "t_brinda",
+    "t_muktha"
+  ],
+  "behag": [
+    "tm_krishna",
+    "lalgudi_jayaraman",
+    "lalgudi_srimathi_brahmananda",
+    "palghat_mani_iyer",
+    "palghat_rajamani",
+    "kv_narayanaswamy",
+    "cr_mani_iyer",
+    "palghat_raghu",
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "dhenuka": [
+    "tm_krishna",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman"
+  ],
+  "gowrimanohari": [
+    "tm_krishna"
+  ],
+  "kurinji": [
+    "tm_krishna"
+  ],
+  "hamir_kalyani": [
+    "tm_krishna",
+    "akkarai_subbulakshmi"
+  ],
+  "purvi": [
+    "tm_krishna"
+  ],
+  "sindhu_bhairavi": [
+    "tm_krishna",
+    "ariyakudi_ramanuja_iyengar",
+    "tn_krishnan",
+    "palghat_mani_iyer"
+  ],
+  "lalitha": [
+    "tm_krishna",
+    "vina_dhanammal"
+  ],
   "gambhira_nattai": [
+    "tm_krishna"
+  ],
+  "darbari_kanada": [
     "tm_krishna"
   ],
   "chakravakam": [
@@ -68521,7 +67914,11 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
         setTimeout(() => artistChip.classList.remove('chip-tapped'), 200);
         const n = cy.getElementById(meta.nodeId);
         if (n && n.length) {
-          if (typeof selectNode === 'function') selectNode(n);
+          if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+            orientToNode(meta.nodeId);
+          } else if (typeof selectNode === 'function') {
+            selectNode(n);
+          }
           if (typeof window.setPanelState === 'function')
             setTimeout(() => window.setPanelState('MUSICIAN'), 50);
         }
@@ -68834,21 +68231,32 @@ function buildComposerChip(compositionId) {
   chip.style.setProperty('--chip-era-border', tint.border);
 
   if (composerObj.musician_node_id) {
-    chip.title = composerObj.name + ' — Open Musician panel';
-    chip.addEventListener('click', e => {
-      e.stopPropagation();
-      chip.classList.add('chip-tapped');
-      setTimeout(() => chip.classList.remove('chip-tapped'), 200);
-      const n = cy.getElementById(composerObj.musician_node_id);
-      if (n && n.length) {
-        selectNode(n);
+    const n = (typeof cy !== 'undefined') ? cy.getElementById(composerObj.musician_node_id) : null;
+    if (n && n.length) {
+      chip.className += ' chip-navigable';
+      chip.title = composerObj.name + ' — Open Musician panel';
+      chip.addEventListener('click', e => {
+        e.stopPropagation();
+        chip.classList.add('chip-tapped');
+        setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+        if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+          orientToNode(composerObj.musician_node_id);
+        } else if (typeof selectNode === 'function') {
+          selectNode(n);
+        }
         if (typeof window.setPanelState === 'function') {
           setTimeout(() => window.setPanelState('MUSICIAN'), 50);
         }
-      }
-    });
+      });
+    } else {
+      // musician_node_id set but composer not yet on the graph
+      chip.title = composerObj.name;
+      chip.addEventListener('click', e => {
+        e.stopPropagation();
+        if (typeof showGraphAbsentToast === 'function') showGraphAbsentToast(composerObj.name);
+      });
+    }
   } else {
-    chip.style.cursor = 'default';
     chip.title = composerObj.name;
   }
   return chip;
@@ -71789,6 +71197,17 @@ function formatTala(tala) {
   return tala.split('_').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
 }
 
+// Show a brief non-obtrusive notice when a composer/musician is not on the graph
+let _toastTimer = null;
+function showGraphAbsentToast(name) {
+  const el = document.getElementById('graph-absent-toast');
+  if (!el) return;
+  el.textContent = name + ' is not on the Guru-Shishya graph yet';
+  el.classList.add('visible');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.classList.remove('visible'); }, 3000);
+}
+
 let activeBaniFilter = null; // { type: 'comp'|'raga'|'perf'|'yt', id: string }
 
 function applyBaniFilter(type, id) {
@@ -71928,21 +71347,32 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       composerChip.style.setProperty('--chip-era-bg', tint.bg);
       composerChip.style.setProperty('--chip-era-border', tint.border);
       if (composer.musician_node_id) {
-        composerChip.title = composer.name + ' — Open Musician panel';
-        composerChip.addEventListener('click', e => {
-          e.stopPropagation();
-          composerChip.classList.add('chip-tapped');
-          setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
-          const n = cy.getElementById(composer.musician_node_id);
-          if (n && n.length) {
-            selectNode(n);
+        const n = cy.getElementById(composer.musician_node_id);
+        if (n && n.length) {
+          composerChip.className += ' chip-navigable';
+          composerChip.title = composer.name + ' — Open Musician panel';
+          composerChip.addEventListener('click', e => {
+            e.stopPropagation();
+            composerChip.classList.add('chip-tapped');
+            setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
+            if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+              orientToNode(composer.musician_node_id);
+            } else {
+              selectNode(n);
+            }
             if (typeof window.setPanelState === 'function') {
               setTimeout(() => window.setPanelState('MUSICIAN'), 50);
             }
-          }
-        });
+          });
+        } else {
+          // musician_node_id set but not yet on the graph
+          composerChip.title = composer.name;
+          composerChip.addEventListener('click', e => {
+            e.stopPropagation();
+            showGraphAbsentToast(composer.name);
+          });
+        }
       } else {
-        composerChip.style.cursor = 'default';
         composerChip.title = composer.name;
       }
       parts.push(composerChip);
@@ -72919,7 +72349,7 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
       if (n && n.length) {
         // Zoom + centre on the musician in graph view; fall back to highlight-only when wheel is active
         if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
-          orientToNode(n);
+          orientToNode(artistRow.nodeId);
         } else {
           selectNode(n);
         }

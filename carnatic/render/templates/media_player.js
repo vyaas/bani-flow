@@ -24,6 +24,13 @@ function formatTimestamp(seconds) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+// Format a tala string for display: snake_case → Title Case with spaces
+// e.g. 'khanda_chapu' → 'Khanda Chapu', 'adi' → 'Adi'
+function formatTala(tala) {
+  if (!tala) return '';
+  return tala.split('_').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+}
+
 function nextSpawnPosition() {
   const offset = (spawnCount % 8) * 28;
   spawnCount += 1;
@@ -113,7 +120,7 @@ function buildPlayerTrackList(vid, tracks, instance) {
 
     const metaSpan = document.createElement('span');
     metaSpan.className = 'mp-track-meta';
-    const parts = [t.raga_name, t.tala].filter(Boolean);
+    const parts = [t.raga_name, formatTala(t.tala)].filter(Boolean);
     metaSpan.textContent = (parts.length ? parts.join(' \u00b7 ') + ' \u00b7 ' : '') + (t.timestamp || '00:00');
 
     li.appendChild(labelSpan);
@@ -128,7 +135,7 @@ function buildPlayerTrackList(vid, tracks, instance) {
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
       li.classList.add('mp-track-active');
       // Update footer chips to reflect the newly selected track (ADR-066: pass displayTitle)
-      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null, t.display_title || null);
+      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null, t.display_title || null, t.tala || null);
       refreshPlayingIndicators();
     });
 
@@ -165,7 +172,11 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
         setTimeout(() => artistChip.classList.remove('chip-tapped'), 200);
         const n = cy.getElementById(meta.nodeId);
         if (n && n.length) {
-          if (typeof selectNode === 'function') selectNode(n);
+          if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+            orientToNode(meta.nodeId);
+          } else if (typeof selectNode === 'function') {
+            selectNode(n);
+          }
           if (typeof window.setPanelState === 'function')
             setTimeout(() => window.setPanelState('MUSICIAN'), 50);
         }
@@ -218,18 +229,18 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
 
 // ── buildPlayerFooter — musician + raga + comp + composer chips below the video ──
 // ADR-066: chips use same classes as panels for visual parity.
-// meta = { ragaId, compositionId, displayTitle } — all optional
+// meta = { ragaId, compositionId, displayTitle, tala } — all optional
 // Note: musician name is already shown in the title bar; no musician chip here.
 function buildPlayerFooter(meta) {
   if (!meta) return null;
-  const { ragaId, compositionId, displayTitle } = meta;
+  const { ragaId, compositionId, displayTitle, tala } = meta;
   const hasAny = ragaId || compositionId || displayTitle;
   if (!hasAny) return null;
 
   const footer = document.createElement('div');
   footer.className = 'mp-footer';
 
-  // ── Raga chip (same .raga-chip class as panels) ──────────────────────────
+  // ── Raga chip + tala (same .raga-chip class as panels; tala stays inline) ────
   if (ragaId) {
     const ragaObj = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
     const ragaName = ragaObj ? ragaObj.name : ragaId;
@@ -243,7 +254,18 @@ function buildPlayerFooter(meta) {
       setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
     });
-    footer.appendChild(ragaChip);
+    if (tala) {
+      const ragaTalaDiv = document.createElement('div');
+      ragaTalaDiv.className = 'rec-raga-tala';
+      ragaTalaDiv.appendChild(ragaChip);
+      const talaSpan = document.createElement('span');
+      talaSpan.className = 'trail-tala';
+      talaSpan.textContent = formatTala(tala);
+      ragaTalaDiv.appendChild(talaSpan);
+      footer.appendChild(ragaTalaDiv);
+    } else {
+      footer.appendChild(ragaChip);
+    }
   }
 
   // ── Composition chip (same .comp-chip class as panels) ──────────────────
@@ -282,13 +304,13 @@ function buildPlayerFooter(meta) {
 // ── updatePlayerFooter — replace the footer in-place when a track is selected ─
 // Called by buildPlayerTrackList on track click and on track swipe to keep chips in sync.
 // ADR-066: displayTitle added; nodeId+artistName no longer needed (musician shown in bar).
-function updatePlayerFooter(player, ragaId, compositionId, displayTitle) {
+function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
   const el = player.el;
   // Remove existing footer if present
   const existing = el.querySelector('.mp-footer');
   if (existing) existing.remove();
   // Build and insert new footer (before .mp-resize)
-  const newFooter = buildPlayerFooter({ ragaId, compositionId, displayTitle: displayTitle || null });
+  const newFooter = buildPlayerFooter({ ragaId, compositionId, displayTitle: displayTitle || null, tala: tala || null });
   if (newFooter) {
     const resize = el.querySelector('.mp-resize');
     if (resize) {
@@ -327,7 +349,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
 
   // ── Footer: raga + comp + composer chips (ADR-066; musician shown in bar) ──
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
-  const footer = buildPlayerFooter({ ragaId: (fullMeta.ragaId || null), compositionId: (fullMeta.compositionId || null), displayTitle: trackLabel || null });
+  const footer = buildPlayerFooter({ ragaId: (fullMeta.ragaId || null), compositionId: (fullMeta.compositionId || null), displayTitle: trackLabel || null, tala: fullMeta.tala || null });
   if (footer) el.appendChild(footer);
 
   const resizeHandle = document.createElement('div');
@@ -467,21 +489,32 @@ function buildComposerChip(compositionId) {
   chip.style.setProperty('--chip-era-border', tint.border);
 
   if (composerObj.musician_node_id) {
-    chip.title = composerObj.name + ' — Open Musician panel';
-    chip.addEventListener('click', e => {
-      e.stopPropagation();
-      chip.classList.add('chip-tapped');
-      setTimeout(() => chip.classList.remove('chip-tapped'), 200);
-      const n = cy.getElementById(composerObj.musician_node_id);
-      if (n && n.length) {
-        selectNode(n);
+    const n = (typeof cy !== 'undefined') ? cy.getElementById(composerObj.musician_node_id) : null;
+    if (n && n.length) {
+      chip.className += ' chip-navigable';
+      chip.title = composerObj.name + ' — Open Musician panel';
+      chip.addEventListener('click', e => {
+        e.stopPropagation();
+        chip.classList.add('chip-tapped');
+        setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+        if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+          orientToNode(composerObj.musician_node_id);
+        } else if (typeof selectNode === 'function') {
+          selectNode(n);
+        }
         if (typeof window.setPanelState === 'function') {
           setTimeout(() => window.setPanelState('MUSICIAN'), 50);
         }
-      }
-    });
+      });
+    } else {
+      // musician_node_id set but composer not yet on the graph
+      chip.title = composerObj.name;
+      chip.addEventListener('click', e => {
+        e.stopPropagation();
+        if (typeof showGraphAbsentToast === 'function') showGraphAbsentToast(composerObj.name);
+      });
+    }
   } else {
-    chip.style.cursor = 'default';
     chip.title = composerObj.name;
   }
   return chip;
@@ -657,7 +690,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           p.offset_seconds > 0 ? p.offset_seconds : undefined,
           concert.short_title || concert.title,
           playerTracks,
-          { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null }
+          { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null, tala: p.tala || null }
         );
       });
       row1.appendChild(playBtn);
@@ -683,15 +716,18 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         });
         metaSpan.appendChild(ragaChip);
         if (talaPart) {
+          const ragaTalaDiv = document.createElement('div');
+          ragaTalaDiv.className = 'rec-raga-tala';
+          ragaTalaDiv.appendChild(ragaChip);  // moves ragaChip from metaSpan into the wrapper
           const talaSpan = document.createElement('span');
-          talaSpan.textContent = talaPart;
-          talaSpan.style.color = 'var(--fg-muted)';
-          talaSpan.style.fontSize = '0.68rem';
-          talaSpan.style.marginLeft = '6px';
-          metaSpan.appendChild(talaSpan);
+          talaSpan.className = 'trail-tala';
+          talaSpan.textContent = formatTala(talaPart);
+          ragaTalaDiv.appendChild(talaSpan);
+          metaSpan.appendChild(ragaTalaDiv);
+          // else: ragaChip stays as a direct child of metaSpan (already appended above)
         }
       } else if (p.raga_id || talaPart) {
-        metaSpan.textContent = [p.raga_id, talaPart].filter(Boolean).join(' · ');
+        metaSpan.textContent = [(ragaObj ? ragaObj.name : p.raga_id), formatTala(talaPart)].filter(Boolean).join(' · ');
       }
       const concertComposerChip = buildComposerChip(p.composition_id);
       if (concertComposerChip) metaSpan.appendChild(concertComposerChip);
@@ -778,7 +814,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
         p.video_id, p.display_title, artistLabel,
         p.offset_seconds > 0 ? p.offset_seconds : undefined,
         p.short_title || p.title, [],
-        { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null }
+        { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null, tala: p.tala || null }
       );
     });
     actsDiv.appendChild(playBtn);
@@ -841,7 +877,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
           p.video_id, p.display_title, artistLabel,
           p.offset_seconds > 0 ? p.offset_seconds : undefined,
           p.short_title || p.title, [],
-          { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null }
+          { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null, tala: p.tala || null }
         );
       });
       actsDiv.appendChild(playBtn);
@@ -1498,7 +1534,8 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     { el: mp.el, meta: mp.meta },
     _initTrack ? (_initTrack.raga_id || null) : (mp.currentRagaId || null),
     _initTrack ? (_initTrack.composition_id || null) : ((mp.meta && mp.meta.compositionId) || null),
-    _initTrack ? (_initTrack.display_title || null) : (trackLabel || null)
+    _initTrack ? (_initTrack.display_title || null) : (trackLabel || null),
+    _initTrack ? (_initTrack.tala || null) : ((mp.meta && mp.meta.tala) || null)
   );
 
   // Show player in mini mode
@@ -1624,7 +1661,8 @@ function _swipeMobileTrack(direction) {
     { el: mp.el, meta: mp.meta },
     track.raga_id || null,
     track.composition_id || null,
-    track.display_title || null
+    track.display_title || null,
+    track.tala || null
   );
 }
 
