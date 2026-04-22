@@ -1037,6 +1037,7 @@ function buildRecordingsList(nodeId, nodeData) {
         const li = document.createElement('li');
         li.className = 'comp-section-item';
 
+        // Row 1: composition chip
         const compChip = document.createElement('span');
         compChip.className = 'comp-chip';
         compChip.textContent = comp.title || comp.id;
@@ -1049,9 +1050,12 @@ function buildRecordingsList(nodeId, nodeData) {
         });
         li.appendChild(compChip);
 
+        // Row 2: raga chip indented below
         if (comp.raga_id) {
           const ragaObj = (typeof ragas !== 'undefined' ? ragas : []).find(r => r.id === comp.raga_id);
           if (ragaObj) {
+            const ragaRow = document.createElement('div');
+            ragaRow.className = 'comp-section-raga';
             const ragaChip = document.createElement('span');
             ragaChip.className = 'raga-chip';
             ragaChip.textContent = ragaObj.name;
@@ -1062,7 +1066,8 @@ function buildRecordingsList(nodeId, nodeData) {
               setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
               triggerBaniSearch('raga', comp.raga_id);
             });
-            li.appendChild(ragaChip);
+            ragaRow.appendChild(ragaChip);
+            li.appendChild(ragaRow);
           }
         }
 
