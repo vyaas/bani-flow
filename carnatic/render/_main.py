@@ -38,7 +38,7 @@ if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 from carnatic.render.sync import sync_graph_json
-from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura
+from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura, load_help_empty_panels
 from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set, build_lecdem_indexes
 from carnatic.render.graph_builder import build_elements
 from carnatic.render.html_generator import render_html
@@ -97,6 +97,12 @@ def main() -> None:
     tanpura_data = load_tanpura(ROOT / "data")
     print(f"[LOAD] tanpura.json  ({len(tanpura_data)} entries)")
 
+    # Step 3c: load empty-panel tutorial data (ADR-086)
+    help_empty_panels = load_help_empty_panels(ROOT / "data")
+    if help_empty_panels is not None:
+        print(f"[LOAD] help/empty_panels.json  (schema_version="
+              f"{help_empty_panels.get('schema_version', '?')})")
+
     # Step 4: render HTML
     html = render_html(
         elements, graph, comp_data,
@@ -109,6 +115,7 @@ def main() -> None:
         tanpura_data=tanpura_data,
         listenable_set=listenable_set,
         lecdem_indexes=lecdem_indexes,
+        help_empty_panels=help_empty_panels,
     )
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")

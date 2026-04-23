@@ -2717,6 +2717,87 @@
       border-color: var(--fg-sub);
     }
   }
+
+  /* ── ADR-086: Empty-panel tutorials ───────────────────────────────────── */
+  .panel-tutorial {
+    padding: 12px 14px 16px;
+    margin: 8px 14px 12px;
+    background: var(--bg-deep);
+    border: 1px dashed var(--border-soft, var(--border-strong));
+    border-radius: 6px;
+    color: var(--fg-muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+  .panel-tutorial .pt-label {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-faint, var(--fg-muted));
+    margin-bottom: 8px;
+    opacity: 0.75;
+  }
+  .panel-tutorial .pt-headline {
+    color: var(--fg);
+    font-size: 0.92rem;
+    line-height: 1.35;
+    margin: 0 0 10px;
+  }
+  .panel-tutorial .pt-mechanics {
+    list-style: disc;
+    padding-left: 18px;
+    margin: 0 0 14px;
+  }
+  .panel-tutorial .pt-mechanics li {
+    margin: 4px 0;
+    color: var(--fg-muted);
+  }
+  .panel-tutorial .pt-try {
+    border-top: 1px solid var(--border-strong);
+    padding-top: 10px;
+  }
+  .panel-tutorial .pt-try-label {
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-group {
+    margin-bottom: 10px;
+  }
+  .panel-tutorial .pt-group:last-child { margin-bottom: 0; }
+  .panel-tutorial .pt-group-title {
+    color: var(--fg);
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+  }
+  .panel-tutorial .pt-group-blurb {
+    color: var(--fg-muted);
+    font-size: 0.74rem;
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+  .panel-tutorial .pt-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .panel-tutorial .pt-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--fg-muted);
+    font-size: 0.74rem;
+  }
+  .panel-tutorial .pt-chip:hover,
+  .panel-tutorial .comp-chip:hover,
+  .panel-tutorial .raga-chip:hover,
+  .panel-tutorial .musician-chip:hover,
+  .panel-tutorial .composer-chip:hover {
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
 </style>
 </head>
 <body>
@@ -2801,6 +2882,8 @@
     </div>
     <!-- ── scrollable zone: lecdem strip (ADR-081) + trail list ── -->
     <div id="bani-scroll">
+      <!-- ADR-086: empty-panel tutorial (shown when no subject loaded) -->
+      <div id="bani-tutorial" class="panel-tutorial" style="display:none"></div>
       <!-- Lecdem strip: shown above the trail when a raga/composition subject has lecdems -->
       <section id="bani-lecdem-strip" class="lecdem-strip" style="display:none"></section>
       <div id="listening-trail" style="display:none; padding: 0 14px;">
@@ -2895,6 +2978,8 @@
     </div>
     <!-- ── scrollable zone: recordings + edge info ── -->
     <div id="right-scroll">
+      <!-- ADR-086: empty-panel tutorial (shown when no node selected) -->
+      <div id="musician-tutorial" class="panel-tutorial" style="display:none"></div>
       <div class="panel" id="recordings-panel" style="display:none">
         <h3>Recordings</h3>
         <ul id="recordings-list"></ul>

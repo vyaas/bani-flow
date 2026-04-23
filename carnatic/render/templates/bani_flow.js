@@ -86,6 +86,8 @@ function applyBaniFilter(type, id) {
 }
 
 function buildListeningTrail(type, id, matchedNodeIds) {
+  // ADR-086: subject loaded → dismiss empty-panel tutorial
+  if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('bani');
   const trail = document.getElementById('listening-trail');
   const trailList = document.getElementById('trail-list');
   trailList.innerHTML = '';
@@ -1236,6 +1238,8 @@ function clearBaniFilter() {
   document.getElementById('bani-janyas-list').innerHTML = '';
   document.getElementById('bani-janyas-filter').value = '';
   applyZoomLabels();
+  // ADR-086: subject cleared → restore empty-panel tutorial
+  if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('bani');
   // Mutual exclusion: clear chip filters when Bani Flow filter clears
   clearAllChipFilters();
 }
