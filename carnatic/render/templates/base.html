@@ -1459,6 +1459,58 @@
     flex-shrink: 0;
   }
 
+  /* ── ADR-080: Lecdem section in musician panel ─────────────────────────── */
+  .lecdem-section {
+    border-top: 1px solid var(--border-strong);
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  .lecdem-section-header {
+    font-size: 0.68rem;
+    color: var(--fg-muted);
+    padding: 4px 8px 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .lecdem-subsection {
+    margin-top: 4px;
+  }
+  .lecdem-subsection-header {
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    padding: 2px 8px 2px 12px;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+  .lecdem-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 4px;
+  }
+  .lecdem-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 4px 8px 4px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lecdem-row:last-child { border-bottom: none; }
+  .lecdem-by {
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    font-style: italic;
+    cursor: pointer;
+    text-decoration: underline dotted;
+  }
+  .lecdem-by:hover { color: var(--fg-default); }
+  .lecdem-subjects {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
   /* ── Graph-absent toast — brief non-obtrusive notice —————————————— */
   #graph-absent-toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
