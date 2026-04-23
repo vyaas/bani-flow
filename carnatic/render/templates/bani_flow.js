@@ -444,6 +444,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   subjectHeader.style.display = 'block';
 
+  // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
+  _renderBaniFlowLecdemStrip(type, id);
+
   // ── 1. Collect raw rows ────────────────────────────────────────────────────
 
   // Legacy youtube[] entries from matched musician nodes.
@@ -1224,6 +1227,8 @@ function clearBaniFilter() {
   document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
   document.getElementById('bani-subject-header').style.display = 'none';
+  const _bfStrip = document.getElementById('bani-lecdem-strip');
+  if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
@@ -1312,5 +1317,165 @@ function triggerBaniSearch(type, id) {
       !window._wheelOriginatedTrigger) {
     orientRagaWheel(type, id);
   }
+}
+
+// ── ADR-081: Lecdem strip for the Bani Flow panel ────────────────────────────
+// Populates #bani-lecdem-strip with lecdems whose subjects include the current
+// raga or composition. Hidden (empty-state silence) when no lecdems exist or
+// when the subject is a musician / perf / yt entry.
+//
+// Discoverability invariant (ADR-081 §6): lecdems reach the user only through
+// this strip and the musician panel (ADR-080) — never through global search or
+// topbar filters.
+function _renderBaniFlowLecdemStrip(type, id) {
+  const section = document.getElementById('bani-lecdem-strip');
+  if (!section) return;
+  section.innerHTML = '';
+  section.style.display = 'none';
+
+  // §1: only raga and composition subjects get a strip
+  if (type !== 'raga' && type !== 'comp') return;
+
+  const refs = type === 'raga'
+    ? ((typeof lecdemsAboutRaga        !== 'undefined' && lecdemsAboutRaga[id])        || [])
+    : ((typeof lecdemsAboutComposition !== 'undefined' && lecdemsAboutComposition[id]) || []);
+
+  if (!refs || refs.length === 0) return;
+
+  // §4: sorted alphabetically by lecturer label
+  const sorted = refs.slice().sort(function(a, b) {
+    return (a.lecturer_label || '').localeCompare(b.lecturer_label || '');
+  });
+
+  // §2: header text — "Lecdems on {subject name}"
+  let subjectName;
+  if (type === 'raga') {
+    const raga = ragas.find(function(r) { return r.id === id; });
+    subjectName = raga ? raga.name : id;
+  } else {
+    const comp = compositions.find(function(c) { return c.id === id; });
+    subjectName = comp ? comp.title : id;
+  }
+  const hdr = document.createElement('div');
+  hdr.className = 'lecdem-section-header';
+  hdr.textContent = 'Lecdems on ' + subjectName;
+  section.appendChild(hdr);
+
+  // §3: one row per lecdem ref
+  const list = document.createElement('ul');
+  list.className = 'lecdem-list';
+
+  sorted.forEach(function(ref) {
+    const li = document.createElement('li');
+    li.className = 'lecdem-row';
+
+    // Lecdem chip — opens the media player (ADR-079)
+    const chip = (typeof buildLecdemChip === 'function') ? buildLecdemChip(ref) : null;
+    if (chip) li.appendChild(chip);
+
+    // §5: lecturer attribution — clickable → opens musician panel + pushes history
+    if (ref.lecturer_label) {
+      const bySpan = document.createElement('span');
+      bySpan.className = 'lecdem-by';
+      bySpan.textContent = '\u2014 ' + ref.lecturer_label;
+      bySpan.title = 'Open ' + ref.lecturer_label + '\u2019s panel';
+      bySpan.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (ref.lecturer_id) {
+          const node = cy.getElementById(ref.lecturer_id);
+          if (node && node.length && typeof selectNode === 'function') {
+            selectNode(node);
+            if (typeof window.setPanelState === 'function') {
+              setTimeout(function() { window.setPanelState('MUSICIAN'); }, 50);
+            }
+          }
+        }
+      });
+      li.appendChild(bySpan);
+    }
+
+    // Other subject chips — all subjects except the current trail subject (ADR-081 §3)
+    const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
+    if (subjectChips.length > 0) {
+      const wrap = document.createElement('span');
+      wrap.className = 'lecdem-subjects';
+      subjectChips.forEach(function(c) { wrap.appendChild(c); });
+      li.appendChild(wrap);
+    }
+
+    list.appendChild(li);
+  });
+
+  section.appendChild(list);
+  section.style.display = 'block';
+}
+
+// Build subject cross-link chips for a strip row, excluding the current trail
+// subject (excludeType + excludeId). Returns an array of chip elements.
+// §5: clicking a raga/comp chip navigates to that subject in Bani Flow;
+//     clicking a musician chip opens the target's musician panel.
+function _buildBaniFlowLecdemSubjectChips(subjects, excludeType, excludeId) {
+  if (!subjects) return [];
+  const chips = [];
+  const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
+  const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
+  const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
+
+  ragaIds.forEach(function(ragaId) {
+    if (excludeType === 'raga' && ragaId === excludeId) return;
+    const ragaObj  = ragas.find(function(r) { return r.id === ragaId; });
+    const ragaName = ragaObj ? ragaObj.name : ragaId;
+    const c = document.createElement('span');
+    c.className = 'raga-chip';
+    c.textContent = ragaName;
+    c.title = 'Explore ' + ragaName + ' in Bani Flow';
+    c.addEventListener('click', function(e) {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
+      triggerBaniSearch('raga', ragaId);
+    });
+    chips.push(c);
+  });
+
+  compIds.forEach(function(compId) {
+    if (excludeType === 'comp' && compId === excludeId) return;
+    const compObj  = compositions.find(function(x) { return x.id === compId; });
+    const compName = compObj ? compObj.title : compId;
+    const c = document.createElement('span');
+    c.className = 'comp-chip';
+    c.textContent = compName;
+    c.title = 'Explore ' + compName + ' in Bani Flow';
+    c.addEventListener('click', function(e) {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
+      triggerBaniSearch('comp', compId);
+    });
+    chips.push(c);
+  });
+
+  musicianIds.forEach(function(mid) {
+    const mNode  = cy.getElementById(mid);
+    const mLabel = (mNode && mNode.length) ? (mNode.data('label') || mid) : mid;
+    const c = document.createElement('span');
+    c.className = 'musician-chip';
+    c.textContent = mLabel;
+    c.title = 'Open ' + mLabel + '\u2019s panel';
+    c.addEventListener('click', function(e) {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
+      if (mNode && mNode.length && typeof selectNode === 'function') {
+        selectNode(mNode);
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(function() { window.setPanelState('MUSICIAN'); }, 50);
+        }
+      }
+    });
+    chips.push(c);
+  });
+
+  return chips;
 }
 

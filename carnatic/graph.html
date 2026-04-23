@@ -1482,6 +1482,14 @@
     flex-shrink: 0;
   }
 
+  /* ── ADR-081: Lecdem strip in the Bani Flow panel (above the trail) ──────── */
+  #bani-lecdem-strip {
+    margin: 4px 14px 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-panel);
+  }
+
   /* ── ADR-080: Lecdem section in musician panel ─────────────────────────── */
   .lecdem-section {
     border-top: 1px solid var(--border-strong);
@@ -2799,8 +2807,10 @@
                style="display:none" autocomplete="off" spellcheck="false" />
       </div>
     </div>
-    <!-- ── scrollable zone: trail list only ── -->
+    <!-- ── scrollable zone: lecdem strip (ADR-081) + trail list ── -->
     <div id="bani-scroll">
+      <!-- Lecdem strip: shown above the trail when a raga/composition subject has lecdems -->
+      <section id="bani-lecdem-strip" class="lecdem-strip" style="display:none"></section>
       <div id="listening-trail" style="display:none; padding: 0 14px;">
         <ul id="trail-list"></ul>
       </div>
@@ -67472,7 +67482,114 @@ const tanpuraData = [
 ];
 
 // ── Lecdem indexes (ADR-078) ─────────────────────────────────────────────────
-const lecdemsBy               = {};
+const lecdemsBy               = {
+  "tm_krishna": [
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=PdIy9531_fM",
+      "video_id": "PdIy9531_fM",
+      "label": "Manodharma II: Alapana (Lec-Dem Part 1) - TM Krishna & Akkarai Subbulakshmi 2018",
+      "year": 2018,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=79ScPj4sE3Y",
+      "video_id": "79ScPj4sE3Y",
+      "label": "Manodharma II: Pallavi (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi 2018",
+      "year": 2018,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=iDaanIHX30I",
+      "video_id": "iDaanIHX30I",
+      "label": "Manodharma II: Accompanists (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi 2018",
+      "year": 2018,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=ErpI843IiG4",
+      "video_id": "ErpI843IiG4",
+      "label": "Manodharma II: Kalpana Swara & Thani (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi 2018",
+      "year": 2018,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=KDPPDB0rG70",
+      "video_id": "KDPPDB0rG70",
+      "label": "Manodharma Lec-Dem Promo - TM Krishna & Akkarai Subbulakshmi 2019",
+      "year": 2019,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=85LcNLhZNMU",
+      "video_id": "85LcNLhZNMU",
+      "label": "Manodharma III: Alapana (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+      "year": 2019,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=qlq9EvFr8Uo",
+      "video_id": "qlq9EvFr8Uo",
+      "label": "Manodharma III: Kalpanaswarams (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+      "year": 2019,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "lecturer_id": "tm_krishna",
+      "lecturer_label": "TM Krishna",
+      "url": "https://www.youtube.com/watch?v=RccdN6suHUk",
+      "video_id": "RccdN6suHUk",
+      "label": "Manodharma III: Tanam (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
+      "year": 2019,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    }
+  ]
+};
 const lecdemsAboutMusician    = {};
 const lecdemsAboutRaga        = {};
 const lecdemsAboutComposition = {};
@@ -68030,6 +68147,10 @@ function makeInstrBadge(instrKey, size) {
 const activeFilters = { era: new Set(), instrument: new Set() };
 
 // ADR-068: build the two multi-select filter dropdowns
+// ADR-081 §6b: only era and instrument filters exist here — no lecdem filter.
+// Lecdems are a discovery experience, not a faceted filter. Adding a "lecdems"
+// filter would make lecdems a lookup target, violating the discoverability
+// invariant. See ADR-081 §6b for the authoritative rationale.
 function buildFilterDropdowns() {
   const eraOrder = [
     'trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'
@@ -73268,6 +73389,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   subjectHeader.style.display = 'block';
 
+  // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
+  _renderBaniFlowLecdemStrip(type, id);
+
   // ── 1. Collect raw rows ────────────────────────────────────────────────────
 
   // Legacy youtube[] entries from matched musician nodes.
@@ -74048,6 +74172,8 @@ function clearBaniFilter() {
   document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
   document.getElementById('bani-subject-header').style.display = 'none';
+  const _bfStrip = document.getElementById('bani-lecdem-strip');
+  if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
@@ -74136,6 +74262,166 @@ function triggerBaniSearch(type, id) {
       !window._wheelOriginatedTrigger) {
     orientRagaWheel(type, id);
   }
+}
+
+// ── ADR-081: Lecdem strip for the Bani Flow panel ────────────────────────────
+// Populates #bani-lecdem-strip with lecdems whose subjects include the current
+// raga or composition. Hidden (empty-state silence) when no lecdems exist or
+// when the subject is a musician / perf / yt entry.
+//
+// Discoverability invariant (ADR-081 §6): lecdems reach the user only through
+// this strip and the musician panel (ADR-080) — never through global search or
+// topbar filters.
+function _renderBaniFlowLecdemStrip(type, id) {
+  const section = document.getElementById('bani-lecdem-strip');
+  if (!section) return;
+  section.innerHTML = '';
+  section.style.display = 'none';
+
+  // §1: only raga and composition subjects get a strip
+  if (type !== 'raga' && type !== 'comp') return;
+
+  const refs = type === 'raga'
+    ? ((typeof lecdemsAboutRaga        !== 'undefined' && lecdemsAboutRaga[id])        || [])
+    : ((typeof lecdemsAboutComposition !== 'undefined' && lecdemsAboutComposition[id]) || []);
+
+  if (!refs || refs.length === 0) return;
+
+  // §4: sorted alphabetically by lecturer label
+  const sorted = refs.slice().sort(function(a, b) {
+    return (a.lecturer_label || '').localeCompare(b.lecturer_label || '');
+  });
+
+  // §2: header text — "Lecdems on {subject name}"
+  let subjectName;
+  if (type === 'raga') {
+    const raga = ragas.find(function(r) { return r.id === id; });
+    subjectName = raga ? raga.name : id;
+  } else {
+    const comp = compositions.find(function(c) { return c.id === id; });
+    subjectName = comp ? comp.title : id;
+  }
+  const hdr = document.createElement('div');
+  hdr.className = 'lecdem-section-header';
+  hdr.textContent = 'Lecdems on ' + subjectName;
+  section.appendChild(hdr);
+
+  // §3: one row per lecdem ref
+  const list = document.createElement('ul');
+  list.className = 'lecdem-list';
+
+  sorted.forEach(function(ref) {
+    const li = document.createElement('li');
+    li.className = 'lecdem-row';
+
+    // Lecdem chip — opens the media player (ADR-079)
+    const chip = (typeof buildLecdemChip === 'function') ? buildLecdemChip(ref) : null;
+    if (chip) li.appendChild(chip);
+
+    // §5: lecturer attribution — clickable → opens musician panel + pushes history
+    if (ref.lecturer_label) {
+      const bySpan = document.createElement('span');
+      bySpan.className = 'lecdem-by';
+      bySpan.textContent = '\u2014 ' + ref.lecturer_label;
+      bySpan.title = 'Open ' + ref.lecturer_label + '\u2019s panel';
+      bySpan.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (ref.lecturer_id) {
+          const node = cy.getElementById(ref.lecturer_id);
+          if (node && node.length && typeof selectNode === 'function') {
+            selectNode(node);
+            if (typeof window.setPanelState === 'function') {
+              setTimeout(function() { window.setPanelState('MUSICIAN'); }, 50);
+            }
+          }
+        }
+      });
+      li.appendChild(bySpan);
+    }
+
+    // Other subject chips — all subjects except the current trail subject (ADR-081 §3)
+    const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
+    if (subjectChips.length > 0) {
+      const wrap = document.createElement('span');
+      wrap.className = 'lecdem-subjects';
+      subjectChips.forEach(function(c) { wrap.appendChild(c); });
+      li.appendChild(wrap);
+    }
+
+    list.appendChild(li);
+  });
+
+  section.appendChild(list);
+  section.style.display = 'block';
+}
+
+// Build subject cross-link chips for a strip row, excluding the current trail
+// subject (excludeType + excludeId). Returns an array of chip elements.
+// §5: clicking a raga/comp chip navigates to that subject in Bani Flow;
+//     clicking a musician chip opens the target's musician panel.
+function _buildBaniFlowLecdemSubjectChips(subjects, excludeType, excludeId) {
+  if (!subjects) return [];
+  const chips = [];
+  const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
+  const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
+  const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
+
+  ragaIds.forEach(function(ragaId) {
+    if (excludeType === 'raga' && ragaId === excludeId) return;
+    const ragaObj  = ragas.find(function(r) { return r.id === ragaId; });
+    const ragaName = ragaObj ? ragaObj.name : ragaId;
+    const c = document.createElement('span');
+    c.className = 'raga-chip';
+    c.textContent = ragaName;
+    c.title = 'Explore ' + ragaName + ' in Bani Flow';
+    c.addEventListener('click', function(e) {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
+      triggerBaniSearch('raga', ragaId);
+    });
+    chips.push(c);
+  });
+
+  compIds.forEach(function(compId) {
+    if (excludeType === 'comp' && compId === excludeId) return;
+    const compObj  = compositions.find(function(x) { return x.id === compId; });
+    const compName = compObj ? compObj.title : compId;
+    const c = document.createElement('span');
+    c.className = 'comp-chip';
+    c.textContent = compName;
+    c.title = 'Explore ' + compName + ' in Bani Flow';
+    c.addEventListener('click', function(e) {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
+      triggerBaniSearch('comp', compId);
+    });
+    chips.push(c);
+  });
+
+  musicianIds.forEach(function(mid) {
+    const mNode  = cy.getElementById(mid);
+    const mLabel = (mNode && mNode.length) ? (mNode.data('label') || mid) : mid;
+    const c = document.createElement('span');
+    c.className = 'musician-chip';
+    c.textContent = mLabel;
+    c.title = 'Open ' + mLabel + '\u2019s panel';
+    c.addEventListener('click', function(e) {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
+      if (mNode && mNode.length && typeof selectNode === 'function') {
+        selectNode(mNode);
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(function() { window.setPanelState('MUSICIAN'); }, 50);
+        }
+      }
+    });
+    chips.push(c);
+  });
+
+  return chips;
 }
 
 
@@ -74250,6 +74536,12 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
 })();
 
 // ── bani flow search ──────────────────────────────────────────────────────────
+// ADR-081 §6a: lecdems are intentionally excluded from this search index.
+// They surface only via the bani-flow lecdem strip (ADR-081) and the musician
+// panel (ADR-080) — never as autonomous search targets. This discoverability
+// invariant is enforced here by design: the index is built from compositions
+// and ragas (via compositionToNodes / ragaToNodes), which already exclude
+// lecdem entries at the Python transform layer (data_transforms.py).
 (function() {
   const input    = document.getElementById('bani-search-input');
   const dropdown = document.getElementById('bani-search-dropdown');

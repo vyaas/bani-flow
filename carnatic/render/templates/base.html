@@ -1459,6 +1459,14 @@
     flex-shrink: 0;
   }
 
+  /* ── ADR-081: Lecdem strip in the Bani Flow panel (above the trail) ──────── */
+  #bani-lecdem-strip {
+    margin: 4px 14px 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-panel);
+  }
+
   /* ── ADR-080: Lecdem section in musician panel ─────────────────────────── */
   .lecdem-section {
     border-top: 1px solid var(--border-strong);
@@ -2776,8 +2784,10 @@
                style="display:none" autocomplete="off" spellcheck="false" />
       </div>
     </div>
-    <!-- ── scrollable zone: trail list only ── -->
+    <!-- ── scrollable zone: lecdem strip (ADR-081) + trail list ── -->
     <div id="bani-scroll">
+      <!-- Lecdem strip: shown above the trail when a raga/composition subject has lecdems -->
+      <section id="bani-lecdem-strip" class="lecdem-strip" style="display:none"></section>
       <div id="listening-trail" style="display:none; padding: 0 14px;">
         <ul id="trail-list"></ul>
       </div>
