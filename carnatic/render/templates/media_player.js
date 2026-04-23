@@ -117,6 +117,7 @@ function buildPlayerTrackList(vid, tracks, instance) {
     const labelSpan = document.createElement('span');
     labelSpan.className = 'mp-track-label';
     labelSpan.textContent = t.display_title;
+    labelSpan.title = t.display_title;
 
     const metaSpan = document.createElement('span');
     metaSpan.className = 'mp-track-meta';
@@ -207,6 +208,7 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
     const titleSpan = document.createElement('span');
     titleSpan.className = 'mp-title';
     titleSpan.textContent = titleText;
+    titleSpan.title = titleText;
     bar.appendChild(titleSpan);
   }
 
@@ -678,6 +680,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   const titleSpan = document.createElement('span');
   titleSpan.className = 'concert-title';
   titleSpan.textContent = concert.short_title || concert.title;
+  if (concert.title) titleSpan.title = concert.title;
 
   const dateSpan = document.createElement('span');
   dateSpan.className = 'concert-date';
@@ -705,6 +708,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       if (instrKey) chip.appendChild(makeInstrBadge(instrKey, 11));
     }
     chip.appendChild(document.createTextNode(pf.label));
+    chip.title = pf.musicianId ? pf.label + ' — Open Musician panel' : pf.label;
     if (pf.musicianId) {
       chip.addEventListener('click', e => {
         e.stopPropagation();
