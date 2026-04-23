@@ -16,8 +16,17 @@
     closePlayer('sruti');  // defined in media_player.js
   }
 
-  // Power indicator click = toggle off
-  if (indicator) indicator.addEventListener('click', deactivate);
+  // Power button: toggle on (default C) / toggle off
+  if (indicator) indicator.addEventListener('click', function () {
+    if (activeBtn) {
+      deactivate();
+    } else {
+      // Power on: activate C as default sruti pitch
+      var cBtn = Array.from(container.querySelectorAll('.sruti-btn'))
+        .find(function (b) { return b.textContent === 'C'; });
+      if (cBtn) cBtn.click();
+    }
+  });
 
   tanpuraData.forEach(function (entry) {
     const btn = document.createElement('button');

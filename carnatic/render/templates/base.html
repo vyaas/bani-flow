@@ -42,7 +42,7 @@
   header {
     padding: 13px 0; background: var(--bg-panel);
     border-bottom: 2px solid var(--border-strong);
-    display: grid; grid-template-columns: 260px 1fr 260px; align-items: center; gap: 0;
+    display: grid; grid-template-columns: 280px 1fr 280px; align-items: center; gap: 0;
   }
   #header-left {
     display: flex; align-items: center; gap: 8px; padding: 0 14px;
@@ -153,6 +153,34 @@
   /* #cy-wrap: positioned parent for SVG overlays, scoped below the filter bar */
   #cy-wrap { flex: 1; position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
   #cy      { flex: 1; background: var(--bg-deep); min-height: 0; }
+
+  /* ── DOM-overlay musician labels ────────────────────────────────────────
+     Real `.musician-chip` elements positioned over the Cytoscape canvas so
+     the on-graph node label is pixel-identical to the chips used in the
+     right sidebar / media player (era tint, left bar, instrument icon,
+     hover state). Replaces Cytoscape's canvas-rendered text-outline label
+     which read as a heavy "engraved" relief inappropriate to the subject.
+     Sync with the canvas is driven by graph_view.js (rAF-coalesced on
+     viewport / position events). */
+  #cy-labels {
+    position: absolute; inset: 0;
+    pointer-events: none; overflow: hidden;
+    z-index: 40;  /* above cy canvas, below timeline-ruler (50) and raga-wheel (60) */
+  }
+  .cy-overlay-chip {
+    position: absolute; left: 0; top: 0;
+    transform: translate(-9999px, -9999px);  /* off-screen until first sync */
+    transform-origin: 50% 0%;  /* scale anchored at top-centre (just under the disc) */
+    pointer-events: auto;
+    will-change: transform;
+    /* Inherits all visual styling from .musician-chip. */
+  }
+  .cy-overlay-chip.chip-hidden { display: none; }
+  .cy-overlay-chip.chip-faded  { opacity: 0.18; }
+  .cy-overlay-chip.chip-selected {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 
   /* ── left sidebar (global controls: Bani Flow, legends) ── */
   /* ADR-046: converted to fixed overlay drawer on all breakpoints */
@@ -1527,7 +1555,8 @@
   /* ── Sruti Bar — inline in header (ADR-029, ADR-076) ── */
   #sruti-strip {
     display: flex; align-items: center; gap: 4px;
-    flex: 0 0 auto; width: fit-content; max-width: 420px;
+    flex: 0 0 auto; width: fit-content; max-width: 600px;
+    justify-self: start;            /* flush with right edge of left header column */
     background: var(--bg-input);
     border: 1px solid var(--border-strong);
     border-radius: 6px;
@@ -1567,6 +1596,7 @@
   /* ── Sruti buttons: Winamp-style raised relief ── */
   .sruti-btn {
     flex: 1;                  /* equispaced: each button takes equal share */
+    min-width: 30px;          /* 1.5× wider than default; forces strip to expand */
     padding: 5px 2px;
     /* Raised bevel: light top/left, dark bottom/right */
     background: var(--bg-input);
@@ -2671,6 +2701,8 @@
     </div>
     <div id="cy-wrap">
       <div id="cy"></div>
+      <!-- ADR-074: DOM-overlay musician chip labels (replace canvas labels) -->
+      <div id="cy-labels" aria-hidden="true"></div>
       <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
       <!-- Raga wheel (ADR-023) -->
       <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);touch-action:none;"></svg>
