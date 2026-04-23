@@ -1524,30 +1524,40 @@
     color: var(--accent-match);
   }
 
-  /* ── Sruti Bar — inline in header (ADR-029) ── */
+  /* ── Sruti Bar — inline in header (ADR-029, ADR-076) ── */
   #sruti-strip {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex: 1;                  /* fills space between title and controls */
-    justify-content: center;
-    min-width: 0;
-  }
-  /* Power indicator ● */
-  .sruti-power {
-    font-size: 1.2rem;
-    color: var(--fg-muted);
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 8px;
+    display: flex; align-items: center; gap: 4px;
+    flex: 0 0 auto; width: fit-content; max-width: 420px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
     padding: 2px 6px;
-    border-radius: 4px;
-    transition: color 0.15s;
-    user-select: none;
-    line-height: 1;
   }
-  .sruti-power.sruti-on  { color: var(--accent-sub); }
-  .sruti-power:hover     { color: var(--accent-danger); }
+  /* "SRUTI" rackmount label */
+  .sruti-label {
+    font-size: 0.6rem; font-family: var(--font-mono, monospace);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--fg-sub); white-space: nowrap; user-select: none;
+    padding-right: 4px;
+    border-right: 1px solid var(--border-strong);
+    flex-shrink: 0;
+  }
+  /* Power button — sole on/off control (ADR-076) */
+  .sruti-power {
+    font-size: 1rem; background: none;
+    border: 1px solid var(--border-strong);
+    color: var(--fg-muted); cursor: pointer;
+    flex-shrink: 0; margin-left: 4px;
+    padding: 2px 5px; border-radius: 4px;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    user-select: none; line-height: 1;
+  }
+  .sruti-power.sruti-on  {
+    color: var(--accent-sub);
+    border-color: var(--accent-sub);
+    background: rgba(142,192,124,0.12);
+  }
+  .sruti-power:hover     { color: var(--accent-danger); border-color: var(--accent-danger); }
   #sruti-buttons {
     display: flex;
     gap: 0;
@@ -2562,10 +2572,11 @@
     <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
     <h1>Carnatic Explorer</h1>
   </div>
-  <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
+  <!-- ── Sruti Strip (ADR-076): labeled widget with power button ── -->
   <div id="sruti-strip">
+    <span id="sruti-label" class="sruti-label">SRUTI</span>
     <div id="sruti-buttons"></div>
-    <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
+    <button id="sruti-power" class="sruti-power" title="Tanpura on/off" aria-label="Sruti power">&#9211;</button>
   </div>
   <div class="controls">
     <div class="view-selector" id="view-selector">

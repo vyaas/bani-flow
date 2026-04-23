@@ -1378,9 +1378,16 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  el.querySelector('.mp-close').addEventListener('click', () => {
-    closePlayer(playerId);
-  });
+  // Named player: sruti drone has no close button — power switch is in the sruti bar (ADR-076)
+  if (playerId === 'sruti') {
+    const closeEl = el.querySelector('.mp-close');
+    if (closeEl) closeEl.remove();
+    // Do not wire a close-click listener for sruti
+  } else {
+    el.querySelector('.mp-close').addEventListener('click', () => {
+      closePlayer(playerId);
+    });
+  }
 
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));

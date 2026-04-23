@@ -1,6 +1,6 @@
-// sruti_bar.js — Sruti Bar (ADR-029)
+// sruti_bar.js — Sruti Bar (ADR-029, ADR-076)
 // Singleton tanpura drone. One pitch at a time.
-// Power indicator (●) shows on/off state.
+// Power button (⏻) shows on/off state; sole mechanism for dismissing the tanpura player.
 // Depends on: tanpuraData (injected by render pipeline), openPlayer/closePlayer (media_player.js).
 
 (function () {

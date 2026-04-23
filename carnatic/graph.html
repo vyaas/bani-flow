@@ -1547,30 +1547,40 @@
     color: var(--accent-match);
   }
 
-  /* ── Sruti Bar — inline in header (ADR-029) ── */
+  /* ── Sruti Bar — inline in header (ADR-029, ADR-076) ── */
   #sruti-strip {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex: 1;                  /* fills space between title and controls */
-    justify-content: center;
-    min-width: 0;
-  }
-  /* Power indicator ● */
-  .sruti-power {
-    font-size: 1.2rem;
-    color: var(--fg-muted);
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 8px;
+    display: flex; align-items: center; gap: 4px;
+    flex: 0 0 auto; width: fit-content; max-width: 420px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
     padding: 2px 6px;
-    border-radius: 4px;
-    transition: color 0.15s;
-    user-select: none;
-    line-height: 1;
   }
-  .sruti-power.sruti-on  { color: var(--accent-sub); }
-  .sruti-power:hover     { color: var(--accent-danger); }
+  /* "SRUTI" rackmount label */
+  .sruti-label {
+    font-size: 0.6rem; font-family: var(--font-mono, monospace);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--fg-sub); white-space: nowrap; user-select: none;
+    padding-right: 4px;
+    border-right: 1px solid var(--border-strong);
+    flex-shrink: 0;
+  }
+  /* Power button — sole on/off control (ADR-076) */
+  .sruti-power {
+    font-size: 1rem; background: none;
+    border: 1px solid var(--border-strong);
+    color: var(--fg-muted); cursor: pointer;
+    flex-shrink: 0; margin-left: 4px;
+    padding: 2px 5px; border-radius: 4px;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    user-select: none; line-height: 1;
+  }
+  .sruti-power.sruti-on  {
+    color: var(--accent-sub);
+    border-color: var(--accent-sub);
+    background: rgba(142,192,124,0.12);
+  }
+  .sruti-power:hover     { color: var(--accent-danger); border-color: var(--accent-danger); }
   #sruti-buttons {
     display: flex;
     gap: 0;
@@ -2585,10 +2595,11 @@
     <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
     <h1>Carnatic Explorer</h1>
   </div>
-  <!-- ── Sruti Strip (ADR-029): equispaced tanpura pitch buttons ── -->
+  <!-- ── Sruti Strip (ADR-076): labeled widget with power button ── -->
   <div id="sruti-strip">
+    <span id="sruti-label" class="sruti-label">SRUTI</span>
     <div id="sruti-buttons"></div>
-    <span id="sruti-power" class="sruti-power" title="Tanpura — click to stop">&#9679;</span>
+    <button id="sruti-power" class="sruti-power" title="Tanpura on/off" aria-label="Sruti power">&#9211;</button>
   </div>
   <div class="controls">
     <div class="view-selector" id="view-selector">
@@ -8632,7 +8643,7 @@ const ragas        = [
       "Deva Gandhari"
     ],
     "melakarta": null,
-    "parent_raga": "kharaharapriya",
+    "parent_raga": "shankarabharanam",
     "sources": [
       {
         "url": "https://en.wikipedia.org/wiki/Devagandhari",
@@ -8640,7 +8651,7 @@ const ragas        = [
         "type": "wikipedia"
       }
     ],
-    "notes": "Janya of Kharaharapriya (22nd melakarta); evokes devotion and grandeur; associated with compositions of Tyagaraja",
+    "notes": "Janya of Shankarabharanam (29th melakarta); audava-vakra-sampurna raga; bhashanga raga (uses kaishika nishada as anya swara); evokes devotion and grandeur; associated with compositions of Tyagaraja; not to be confused with Karnataka Devagandhari, which is a janya of Kharaharapriya",
     "is_melakarta": false
   },
   {
@@ -70006,9 +70017,16 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  el.querySelector('.mp-close').addEventListener('click', () => {
-    closePlayer(playerId);
-  });
+  // Named player: sruti drone has no close button — power switch is in the sruti bar (ADR-076)
+  if (playerId === 'sruti') {
+    const closeEl = el.querySelector('.mp-close');
+    if (closeEl) closeEl.remove();
+    // Do not wire a close-click listener for sruti
+  } else {
+    el.querySelector('.mp-close').addEventListener('click', () => {
+      closePlayer(playerId);
+    });
+  }
 
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
@@ -70458,9 +70476,9 @@ function _updateMiniDots(mp) {
 }
 
 
-// sruti_bar.js — Sruti Bar (ADR-029)
+// sruti_bar.js — Sruti Bar (ADR-029, ADR-076)
 // Singleton tanpura drone. One pitch at a time.
-// Power indicator (●) shows on/off state.
+// Power button (⏻) shows on/off state; sole mechanism for dismissing the tanpura player.
 // Depends on: tanpuraData (injected by render pipeline), openPlayer/closePlayer (media_player.js).
 
 (function () {
