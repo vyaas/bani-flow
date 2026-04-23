@@ -330,5 +330,26 @@
     "confidence": 0.97,
     "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
     "note": "principal guru and maternal uncle"
+  },
+  {
+    "source": "tiger_varadachariar",
+    "target": "s_gopalakrishnan",
+    "confidence": 0.92,
+    "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+    "note": "Varadachariar was the teacher of S Gopalakrishnan, per India Art Review article on Shobhana Rangachari"
+  },
+  {
+    "source": "s_gopalakrishnan",
+    "target": "shobhana_rangachari",
+    "confidence": 0.97,
+    "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+    "note": "Shobhana's primary guru; trained under him at AIR Delhi from youth; India Art Review profile"
+  },
+  {
+    "source": "patnam_subramanya_iyer",
+    "target": "tiger_varadachariar",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+    "note": "Varadachariar studied under Patnam Subramania Iyer for three years from age fourteen; per Wikipedia"
   }
 ]

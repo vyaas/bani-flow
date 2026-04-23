@@ -1,0 +1,17 @@
+{
+  "id": "tiger_varadachariar",
+  "label": "Tiger Varadachariar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1876,
+  "died": 1950,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": null,
+  "youtube": []
+}

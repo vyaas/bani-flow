@@ -1549,6 +1549,23 @@
         ]
       },
       {
+        "id": "s_gopalakrishnan",
+        "label": "S Gopalakrishnan",
+        "sources": [
+          {
+            "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+            "label": "India Art Review — Shobhana Rangachari: A Life Sketch of a Lesser-Known Carnatic Vocalist",
+            "type": "article"
+          }
+        ],
+        "born": 1918,
+        "died": 2000,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": "tiger_varadachariar",
+        "youtube": []
+      },
+      {
         "id": "s_ramanathan",
         "label": "S. Ramanathan",
         "sources": [
@@ -1659,6 +1676,23 @@
             "raga_id": "yadukulakamboji"
           }
         ]
+      },
+      {
+        "id": "shobhana_rangachari",
+        "label": "Shobhana Rangachari",
+        "sources": [
+          {
+            "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+            "label": "India Art Review — Shobhana Rangachari: A Life Sketch of a Lesser-Known Carnatic Vocalist",
+            "type": "article"
+          }
+        ],
+        "born": 1954,
+        "died": 1985,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": "tiger_varadachariar",
+        "youtube": []
       },
       {
         "id": "shyama_shastri",
@@ -1884,6 +1918,23 @@
             "raga_id": "keeravani"
           }
         ]
+      },
+      {
+        "id": "tiger_varadachariar",
+        "label": "Tiger Varadachariar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1876,
+        "died": 1950,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
       },
       {
         "id": "tm_krishna",
@@ -3021,6 +3072,27 @@
         "confidence": 0.97,
         "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
         "note": "principal guru and maternal uncle"
+      },
+      {
+        "source": "tiger_varadachariar",
+        "target": "s_gopalakrishnan",
+        "confidence": 0.92,
+        "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+        "note": "Varadachariar was the teacher of S Gopalakrishnan, per India Art Review article on Shobhana Rangachari"
+      },
+      {
+        "source": "s_gopalakrishnan",
+        "target": "shobhana_rangachari",
+        "confidence": 0.97,
+        "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+        "note": "Shobhana's primary guru; trained under him at AIR Delhi from youth; India Art Review profile"
+      },
+      {
+        "source": "patnam_subramanya_iyer",
+        "target": "tiger_varadachariar",
+        "confidence": 0.95,
+        "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+        "note": "Varadachariar studied under Patnam Subramania Iyer for three years from age fourteen; per Wikipedia"
       }
     ]
   },
@@ -4379,6 +4451,24 @@
           }
         ],
         "notes": "63th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₁ N₃ Ṡ"
+      },
+      {
+        "id": "madhava_manohari",
+        "name": "Madhava Manohari",
+        "aliases": [
+          "Madavamanohari",
+          "Madhavamanohari"
+        ],
+        "melakarta": null,
+        "parent_raga": "kharaharapriya",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-madhava-manohari-janya-of-mela-22-kharaharapriya",
+            "label": "Dr M Radhakrishnan — Eka Krithi Ragas: Madhava Manohari",
+            "type": "article"
+          }
+        ],
+        "notes": "Janya of Mela 22 Kharaharapriya (Dikshitar's Asampoorna system: janya of Sriraga mela); vakra-sampoorna shadava raga. Only significant composition is Mahalakshmi Karunarasa Lahari by Dikshitar."
       },
       {
         "id": "madhyamavati",
@@ -7588,6 +7678,21 @@
         "notes": "Tyagaraja kriti in Devamritavarshini; Tyagaraja asks who can determine the nature of the Lord"
       },
       {
+        "id": "evaricchirira",
+        "title": "Evaricchirira",
+        "composer_id": "tyagaraja",
+        "raga_id": "madhyamavati",
+        "tala": "adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://youtu.be/S1KyygjoxS4",
+            "label": "Shobhana Rangachari AIR Concert — Vaak",
+            "type": "other"
+          }
+        ]
+      },
+      {
         "id": "gajavadhana",
         "title": "Gajavadhana",
         "composer_id": "kumara_ettendra",
@@ -8321,6 +8426,22 @@
         "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire"
       },
       {
+        "id": "mahalakshmi_karunarasa_lahari",
+        "title": "Mahalakshmi Karunarasa Lahari",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "madhava_manohari",
+        "tala": "adi",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-madhava-manohari-janya-of-mela-22-kharaharapriya",
+            "label": "Dr M Radhakrishnan — Eka Krithi Ragas: Madhava Manohari",
+            "type": "article"
+          }
+        ],
+        "notes": "From Dikshitar's Lakshmi Saptakriti Mala; the sole popular composition in this raga"
+      },
+      {
         "id": "maithrim_bhajata",
         "title": "Maithrim Bhajata",
         "composer_id": "chandrasekharendra_saraswati",
@@ -8660,6 +8781,21 @@
           }
         ],
         "notes": "Javali in Saveri"
+      },
+      {
+        "id": "na_moralakimpa",
+        "title": "Na Moralakimpa",
+        "composer_id": "tyagaraja",
+        "raga_id": "devagandhari",
+        "tala": "rupakam",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://youtu.be/S1KyygjoxS4",
+            "label": "Ook Shobhana Rangachari AIR Concert — Vaak",
+            "type": "other"
+          }
+        ]
       },
       {
         "id": "naadaadina_maata",
@@ -10373,6 +10509,17 @@
         "ariyakudi_ramanuja_iyengar",
         "tn_krishnan",
         "palghat_mani_iyer"
+      ]
+    },
+    {
+      "id": "vaak_shobhana_rangachari_air",
+      "path": "recordings/vaak_shobhana_rangachari_air.json",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "venue": "All India Radio (exact station and date unknown)",
+      "primary_musician_ids": [
+        "shobhana_rangachari"
       ]
     },
     {

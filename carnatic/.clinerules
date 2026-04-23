@@ -271,6 +271,33 @@ their own work at the end of every session in which files changed.**
 
 ---
 
+## Bundle schema (v1)  ← ADR-083 reference
+
+Schema contract for `bani_add_bundle.json` (browser→disk write channel). Full spec: `plans/ADR-083-bani-add-bundle-canonical-write-channel.md`.
+
+**Envelope** (every bundle must have these top-level keys):
+```json
+{ "schema_version": 1, "generated_at": "<ISO-8601 UTC>", "items": { … } }
+```
+
+**Whitelisted item type keys** (in fixed processing order):
+`ragas` → `composers` → `musicians` → `compositions` → `recordings` → `edges`
+
+Any other key under `items` is a hard-error: `bani_add.py` exits 1 before processing any items.
+
+**Version gate**: `schema_version > MAX_VERSION (1)` → immediate refusal with upgrade hint.
+Additive field additions (new optional field on an existing item) do NOT bump the version.
+
+**`addToBundle(type, obj)`** in `entry_forms.js` throws `Error("addToBundle: unknown type '…'")` on a non-whitelisted type — no silent drops.
+
+**`MusicianItem` discriminator** (`type` field, required):
+- `"new"` — create musician node + seed `youtube[]`
+- `"youtube_append"` — append `youtube[]` entries to existing musician
+
+**`YoutubeEntryItem`** shape is byte-equivalent to one on-disk `node.youtube[]` element (recital track or lecdem — see ADR-077 for `kind`/`subjects` fields). The ingester forwards all keys to `writer.add_youtube` (transport, not translator).
+
+---
+
 ## Open questions  ← living memory; update every session
 
 
@@ -303,6 +330,11 @@ Nodes whose `wikipedia` field has no own article — flagged for community atten
 | `calcutta_ks_krishnamurthi` | no own page | points to `Sanjay_Subrahmanyan` (mentioned there) |
 | `subbaraya_sastri` | disambig page | `Subbaraya_Sastri` resolves but is a disambiguation — verify correct target |
 | `kanchipuram_naina_pillai` | disambig page | `Kanchipuram_Naina_Pillai` resolves but is a disambiguation — verify correct target |
+| `s_gopalakrishnan` | no own page | uses India Art Review profile on Shobhana Rangachari (indiaartreview.com) as reference |
+
+#### Unmatched performers — Shobhana Rangachari AIR Concert
+- **Marella Kesava Rao** (violin) — not in graph; assess significance and Wikipedia availability before adding.
+- **Varanasi Venkata Subbarama Sastry** (mridangam) — not in graph; assess significance and Wikipedia availability before adding.
 
 #### Unmatched performers — Shanmukhananda 1963
 - **B Rajam Iyer** (vocal support, 1963) — not in graph; assess significance and Wikipedia availability before adding.
@@ -391,6 +423,9 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-14: apply_diff on _composers.json silently failed when the SEARCH block did not exactly match the file content at the target line (the file had nested arrays at that position). The correct pattern for appending to a JSON array sidecar file is a dedicated Python script (add_missing_composers.py) that reads, deduplicates, appends, and writes atomically — not apply_diff. This is now the canonical pattern for _composers.json mutations.
 - 2026-04-14: Shanmukhananda Sabha 1963 concert (PT1tN4fCQ9I): B Rajam Iyer and Madurai N Krishnan (vocal support) are not in the graph — flagged as unmatched_name in the recording file. The Chatur Ragamalika RTP (Shankarabharanam–Thodi–Kalyani–Darbar) is modelled as three sequential performance entries (alapana, tanam, pallavi) with raga_id: null and notes recording the four ragas, consistent with the ragamalika modelling pattern established 2026-04-12.
 - 2026-04-22: A raga's notes field and parent_raga field can contradict each other silently — the notes field is free text and is never validated against parent_raga; always treat parent_raga as the authoritative field and audit notes for consistency after any parentage correction.
+- 2026-04-22: When adding a musician with no Wikipedia article but who is a necessary topological lineage link, use a magazine/journal article URL with source-type 'article' — the same precedent as swaminatha_pillai (references T._Viswanathan page); flag the node in the Wikipedia URL health table immediately.
+- 2026-04-22: Madhava Manohari is placed under Kharaharapriya (mela 22) in the modern saptasvara system; Dikshitar's own Asampoorna system classifies it as janya of Sriraga mela — record the discrepancy in the raga notes field and use parent_raga: kharaharapriya for DB consistency.
+- 2026-04-22: Added shobhana_rangachari (1954–85, disseminator, vocal) with full lineage chain tiger_varadachariar → s_gopalakrishnan → shobhana_rangachari; also added patnam_subramanya_iyer → tiger_varadachariar edge (0.95 confidence, Wikipedia-confirmed); concert recording vaak_shobhana_rangachari_air created with 7 timestamped performances including two alapanas (composition_id: null) and one AIR announcement entry.
 - 2026-04-22: ADR-077 lecdem retrofit on tm_krishna.json: tagging eight existing Manodharma youtube[] entries (Manodharma II 4-part 2018, Manodharma III 3-part 2019 Kolkata, plus the Lec-Dem Promo) required adding `kind: "lecdem"` and an empty `subjects: {raga_ids: [], composition_ids: [], musician_ids: []}` object per entry; empty subjects is the legal invariant-C "discoverable only via the lecturer" state — appropriate here because the videos discuss manodharma-as-such and any raga/composition/musician subjects can only be extracted by watching; the validator (cli.py ADR-077 check) accepts the shape and the recital ↔ lecdem boundary holds without composition_id/raga_id collisions because none of the eight entries had those fields to begin with.
 
 ### 🎵 Carnatic Coder
@@ -473,6 +508,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-22: ADR-070 cross-link symmetry: data layer alone is not enough — every render path must surface the new association the same way; `buildTreeRaga` always calls `buildTreeLeaf`, but `buildTreeComp` short-circuits single-version groups to render only a header (no leaf), so co-performers vanished in the comp view; fix is to mirror the multi-version `.tree-leaf-coperformers` block under the single-version header. Likewise the right-panel `rec-filter` searched only `.tree-comp-node` text, so a raga-name query (the very label the user clicks on the wheel) hid every group whose leaves only show comp titles — include `.tree-group-header` text so the chip itself is searchable.
 - 2026-04-22: Bani Flow tree groups (raga + comp views) now open by default — discoverability beats chrome economy; the chevron toggle remains so users can collapse, but a first-time searcher sees the full tree without having to spot a drop-down affordance. One-line change in `buildTreeRaga`/`buildTreeComp`: drop the `isFirst`-only gating and always add `tree-group-open`.
 - 2026-04-22: Lecdems must be excluded from `graph_builder.py` `tracks[]` (filter `t.get("kind") == "lecdem"`) so they never appear in the misc/raga tree; the three lecdem render surfaces (musician "by", musician "about", bani-flow strip) must all use the `trail-row2 / trail-chips / trail-acts` play-button pattern, not `buildLecdemChip`, so the label wraps to 2 lines and the ▶ / ↗ buttons remain right-aligned — CSS overrides go on `.lecdem-row` following the same approach as `.tree-misc-leaf`.
+- 2026-04-22: ADR-083 (bundle as canonical write channel): the two safety rails are (1) a `MAX_VERSION` constant + `> MAX_VERSION` check in `bani_add.py` (not `!= 1`, so future schema versions get a clear upgrade message), and (2) iterating `items.keys()` against a `KNOWN_ITEM_TYPES` frozenset before touching any processor — both checks exit before any items are processed, so a rogue key can never silently pass; `addToBundle` in `entry_forms.js` uses `type in baniBundle` (not `!baniBundle[type]`) so a key whose array is empty still passes rather than throwing a false positive.
 
 ### 🪃 Orchestrator
 
