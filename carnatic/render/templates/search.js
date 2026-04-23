@@ -109,6 +109,12 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
 })();
 
 // ── bani flow search ──────────────────────────────────────────────────────────
+// ADR-081 §6a: lecdems are intentionally excluded from this search index.
+// They surface only via the bani-flow lecdem strip (ADR-081) and the musician
+// panel (ADR-080) — never as autonomous search targets. This discoverability
+// invariant is enforced here by design: the index is built from compositions
+// and ragas (via compositionToNodes / ragaToNodes), which already exclude
+// lecdem entries at the Python transform layer (data_transforms.py).
 (function() {
   const input    = document.getElementById('bani-search-input');
   const dropdown = document.getElementById('bani-search-dropdown');

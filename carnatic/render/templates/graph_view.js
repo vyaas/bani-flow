@@ -198,6 +198,10 @@ function makeInstrBadge(instrKey, size) {
 const activeFilters = { era: new Set(), instrument: new Set() };
 
 // ADR-068: build the two multi-select filter dropdowns
+// ADR-081 §6b: only era and instrument filters exist here — no lecdem filter.
+// Lecdems are a discovery experience, not a faceted filter. Adding a "lecdems"
+// filter would make lecdems a lookup target, violating the discoverability
+// invariant. See ADR-081 §6b for the authoritative rationale.
 function buildFilterDropdowns() {
   const eraOrder = [
     'trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'

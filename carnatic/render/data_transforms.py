@@ -188,6 +188,7 @@ def build_composition_lookups(
         for yt in node.get("youtube", []):
             if yt.get("kind") == "lecdem":
                 continue                  # lecdems do not feed recital indexes (ADR-078)
+                                          # and must never appear in search results (ADR-081 §6a)
             cid = yt.get("composition_id")
             rid = yt.get("raga_id")
             performer_ids = _track_performer_ids(node_id, yt)
