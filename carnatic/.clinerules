@@ -513,3 +513,4 @@ Entries are terse — this is a log, not an essay.
 
 ### 🪃 Orchestrator
 
+- 2026-04-23: Lecdem lecturer attribution must be a first-class `.musician-chip` (era-tinted, clickable, navigates via `selectNode` + `setPanelState('MUSICIAN')`) — not a `.lecdem-by` plain-text span; the `_buildLecturerChip(id, label)` helper lives in media_player.js (loaded before bani_flow.js per html_generator.py script ordering) so both the musician-panel "about" subsection and the Bani Flow strip can call it. Lecturer chip + subject chips share one `.lecdem-subjects` wrap container so they flow as a single tag cloud rather than stacking lecturer on its own line.

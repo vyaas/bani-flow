@@ -1550,14 +1550,6 @@
     color: var(--fg-default, var(--fg));
   }
   .lecdem-row .trail-acts { flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
-  .lecdem-by {
-    font-size: 0.65rem;
-    color: var(--fg-muted);
-    font-style: italic;
-    cursor: pointer;
-    text-decoration: underline dotted;
-  }
-  .lecdem-by:hover { color: var(--fg-default); }
   .lecdem-subjects {
     display: flex;
     flex-wrap: wrap;
@@ -2908,7 +2900,7 @@
                  autocomplete="off" spellcheck="false">
           <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
           <div class="search-scope-label" id="musician-scope-label" style="display:none">
-            searching all 73 musicians
+            searching all 74 musicians
           </div>
         </div>
       </div>
@@ -5049,8 +5041,8 @@ const elements = [
       "label_outline": "#689d6a",
       "label_bg": "#689d6a",
       "shape": "ellipse",
-      "size": 64,
-      "degree": 3,
+      "size": 68,
+      "degree": 4,
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
@@ -6054,6 +6046,39 @@ const elements = [
         }
       ],
       "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
+    }
+  },
+  {
+    "data": {
+      "id": "ritha_rajan",
+      "label": "Ritha Rajan",
+      "url": "https://concertreviewbyshankarvenkataraman.blogspot.com/2019/12/paramparaa-myth-or-reality.html",
+      "sources": [
+        {
+          "url": "https://concertreviewbyshankarvenkataraman.blogspot.com/2019/12/paramparaa-myth-or-reality.html",
+          "label": "other",
+          "type": "other"
+        }
+      ],
+      "era": "living_pillars",
+      "era_label": "Living Pillars",
+      "instrument": "vocal",
+      "bani": "vina_dhanammal",
+      "lifespan": "b. 1948",
+      "born": 1948,
+      "color": "#b16286",
+      "label_outline": "#b16286",
+      "label_bg": "#b16286",
+      "shape": "ellipse",
+      "size": 52,
+      "degree": 1,
+      "label_tier": 2,
+      "font_size": 12,
+      "font_weight": "normal",
+      "tracks": [],
+      "is_listenable": 0,
       "is_composer": 0,
       "composer_id": null
     }
@@ -8557,6 +8582,17 @@ const elements = [
       "note": "S. Ramanathan listed as a direct student of Tiger Varadachariar per Wikipedia",
       "width": 3.3249999999999997
     }
+  },
+  {
+    "data": {
+      "id": "ramnad_krishnan→ritha_rajan",
+      "source": "ramnad_krishnan",
+      "target": "ritha_rajan",
+      "confidence": 1.0,
+      "source_url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+      "note": "principal guru",
+      "width": 3.5
+    }
   }
 ];
 
@@ -8621,7 +8657,8 @@ const ragas        = [
     "id": "arabhi",
     "name": "Arabhi",
     "aliases": [
-      "Arabi"
+      "Arabi",
+      "Aarabhi"
     ],
     "melakarta": null,
     "parent_raga": "shankarabharanam",
@@ -10367,7 +10404,8 @@ const ragas        = [
     "name": "Pantuvarali",
     "aliases": [
       "Purvi Kalyani",
-      "Kamavardani"
+      "Kamavardani",
+      "Panthuvarali"
     ],
     "melakarta": 51,
     "parent_raga": null,
@@ -10454,6 +10492,25 @@ const ragas        = [
       }
     ],
     "notes": "Janya of Tanarupi (6th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P D1 S, avarohana S D1 P M1 R1 S; evokes deep pathos and longing; a favourite for padams and javalis; associated with the Kshetrayya tradition",
+    "is_melakarta": false
+  },
+  {
+    "id": "purnachandrika",
+    "name": "Purnachandrika",
+    "aliases": [
+      "Poornachandrika",
+      "Purna Chandrika"
+    ],
+    "melakarta": null,
+    "parent_raga": "shankarabharanam",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Poornachandrika",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "Janya of Shankarabharanam (29th melakarta); ārohana: S R2 G3 M1 P D2 P S, avarohana: S N3 P M1 R2 G3 M1 R2 S; vakra (crooked) movements in both ascent and descent; used notably by Patnam Subramanya Iyer (Ne Jesina, Panchanadeesha Pahimaam)",
     "is_melakarta": false
   },
   {
@@ -10957,7 +11014,8 @@ const ragas        = [
     "name": "Sriranjini",
     "aliases": [
       "Shree Ranjani",
-      "Sreeranjani"
+      "Sreeranjani",
+      "Sriranjani"
     ],
     "melakarta": null,
     "parent_raga": "kharaharapriya",
@@ -13847,6 +13905,9 @@ const compositions = [
   {
     "id": "laavanya_rama_kannul_ara",
     "title": "Laavanya Rama Kannul Ara",
+    "aliases": [
+      "Lavanya Rama"
+    ],
     "composer_id": "tyagaraja",
     "raga_id": "poornashadjam",
     "tala": "Adi",
@@ -14281,6 +14342,22 @@ const compositions = [
     "notes": null
   },
   {
+    "id": "nadha_sudharasam",
+    "title": "Nadha Sudharasam",
+    "composer_id": "tyagaraja",
+    "raga_id": "arabhi",
+    "tala": "rupakam",
+    "language": "telugu",
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/",
+        "label": "Karnatik.com",
+        "type": "archive"
+      }
+    ],
+    "notes": "Tyagaraja kriti in Arabhi; Rupakam tala; celebrated for its Ghana-raga grandeur"
+  },
+  {
     "id": "nadopasana",
     "title": "Nadopasana",
     "composer_id": "tyagaraja",
@@ -14401,6 +14478,22 @@ const compositions = [
         "type": "article"
       }
     ]
+  },
+  {
+    "id": "ne_jesina_neramu",
+    "title": "Ne Jesina Neramu",
+    "composer_id": "patnam_subramanya_iyer",
+    "raga_id": "purnachandrika",
+    "tala": "adi",
+    "language": "telugu",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Poornachandrika",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "Kriti by Patnam Subramanya Iyer in Purnachandrika; listed on the Wikipedia Poornachandrika page as a popular composition"
   },
   {
     "id": "neevaada_ne_gaana",
@@ -14545,7 +14638,10 @@ const compositions = [
   },
   {
     "id": "ninnada",
-    "title": "Ninnada",
+    "title": "Ninnada Nela",
+    "aliases": [
+      "Ninnada"
+    ],
     "composer_id": "tyagaraja",
     "raga_id": "kannada",
     "language": "Telugu",
@@ -14879,6 +14975,9 @@ const compositions = [
   {
     "id": "samayamide_rara",
     "title": "Samayamide Rara",
+    "aliases": [
+      "Samayamithe"
+    ],
     "composer_id": "patnam_subramanya_iyer",
     "raga_id": "behag",
     "tala": "rupakam",
@@ -68641,6 +68740,23 @@ const tanpuraData = [
 
 // ── Lecdem indexes (ADR-078) ─────────────────────────────────────────────────
 const lecdemsBy               = {
+  "ritha_rajan": [
+    {
+      "lecturer_id": "ritha_rajan",
+      "lecturer_label": "Ritha Rajan",
+      "url": "https://youtu.be/24ZnUfsUupc",
+      "video_id": "24ZnUfsUupc",
+      "label": "On Ramnad Krishnan at Music Academy",
+      "year": null,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "ramnad_krishnan"
+        ]
+      }
+    }
+  ],
   "tm_krishna": [
     {
       "lecturer_id": "tm_krishna",
@@ -68748,7 +68864,25 @@ const lecdemsBy               = {
     }
   ]
 };
-const lecdemsAboutMusician    = {};
+const lecdemsAboutMusician    = {
+  "ramnad_krishnan": [
+    {
+      "lecturer_id": "ritha_rajan",
+      "lecturer_label": "Ritha Rajan",
+      "url": "https://youtu.be/24ZnUfsUupc",
+      "video_id": "24ZnUfsUupc",
+      "label": "On Ramnad Krishnan at Music Academy",
+      "year": null,
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "ramnad_krishnan"
+        ]
+      }
+    }
+  ]
+};
 const lecdemsAboutRaga        = {};
 const lecdemsAboutComposition = {};
 
@@ -69132,6 +69266,13 @@ const graphData = {
     "confidence": 0.95,
     "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
     "note": "S. Ramanathan listed as a direct student of Tiger Varadachariar per Wikipedia"
+  },
+  {
+    "source": "ramnad_krishnan",
+    "target": "ritha_rajan",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+    "note": "principal guru"
   }
 ],
   ragas:        ragas,
@@ -71749,24 +71890,13 @@ function buildRecordingsList(nodeId, nodeData) {
         labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
         chipsDiv.appendChild(labelSpan);
 
-        // Lecturer attribution
-        if (ref.lecturer_label) {
-          const bySpan = document.createElement('span');
-          bySpan.className = 'lecdem-by';
-          bySpan.textContent = `— ${ref.lecturer_label}`;
-          bySpan.title = `Open ${ref.lecturer_label}'s panel`;
-          bySpan.addEventListener('click', e => {
-            e.stopPropagation();
-            if (typeof selectNode === 'function') selectNode(ref.lecturer_id);
-          });
-          chipsDiv.appendChild(bySpan);
-        }
-
-        // Other subjects (exclude current node), e.g. ragas/comps discussed
-        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-        if (subjectChips && subjectChips.length > 0) {
+        // Tag cloud: lecturer chip + subject cross-link chips, wrapped together
+        const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
+        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
+        if (lecturerChip || subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
+          if (lecturerChip) subjectsWrap.appendChild(lecturerChip);
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
           chipsDiv.appendChild(subjectsWrap);
         }
@@ -71879,6 +72009,42 @@ function _buildLecdemSubjectChips(subjects, excludeId) {
   });
 
   return chips.length > 0 ? chips : null;
+}
+
+// ── _buildLecturerChip — render a lecdem lecturer as an era-tinted musician chip ──
+// Lecturers in lecdems are first-class musicians; render them with the same
+// .musician-chip affordance used everywhere else so they navigate to the
+// lecturer's musician panel on click. Returns null if id/label missing.
+function _buildLecturerChip(lecturerId, lecturerLabel) {
+  if (!lecturerId || !lecturerLabel) return null;
+  const chip = document.createElement('span');
+  chip.className = 'musician-chip';
+  chip.textContent = lecturerLabel;
+  chip.title = 'Open ' + lecturerLabel + "'s panel";
+
+  // Era-tint from cytoscape node (same pattern as other musician chips)
+  const lNode = (typeof cy !== 'undefined') ? cy.getElementById(lecturerId) : null;
+  if (lNode && lNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
+    const eraId = lNode.data('era') || null;
+    const tint  = THEME.eraTintCss(eraId);
+    chip.style.setProperty('--chip-era-bg',     tint.bg);
+    chip.style.setProperty('--chip-era-border', tint.border);
+  }
+
+  chip.addEventListener('click', e => {
+    e.stopPropagation();
+    chip.classList.add('chip-tapped');
+    setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+    if (lNode && lNode.length && typeof selectNode === 'function') {
+      selectNode(lNode);
+      if (typeof window.setPanelState === 'function') {
+        setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+      }
+    } else if (typeof showGraphAbsentToast === 'function') {
+      showGraphAbsentToast(lecturerLabel);
+    }
+  });
+  return chip;
 }
 
 // ── Named-player API (ADR-029: Sruti Bar) ─────────────────────────────────────
@@ -75599,32 +75765,16 @@ function _renderBaniFlowLecdemStrip(type, id) {
     labelSpan.title = (ref.label || 'Lecture-Demo') + ' \u2014 Watch lecture-demo';
     chipsDiv.appendChild(labelSpan);
 
-    // §5: lecturer attribution — clickable → opens musician panel + pushes history
-    if (ref.lecturer_label) {
-      const bySpan = document.createElement('span');
-      bySpan.className = 'lecdem-by';
-      bySpan.textContent = '\u2014 ' + ref.lecturer_label;
-      bySpan.title = 'Open ' + ref.lecturer_label + '\u2019s panel';
-      bySpan.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (ref.lecturer_id) {
-          const node = cy.getElementById(ref.lecturer_id);
-          if (node && node.length && typeof selectNode === 'function') {
-            selectNode(node);
-            if (typeof window.setPanelState === 'function') {
-              setTimeout(function() { window.setPanelState('MUSICIAN'); }, 50);
-            }
-          }
-        }
-      });
-      chipsDiv.appendChild(bySpan);
-    }
-
-    // Other subject chips — all subjects except the current trail subject (ADR-081 §3)
+    // §5: lecturer + other subjects flow together as a wrapped tag cloud.
+    // Lecturer renders as a first-class musician chip (clickable → musician panel).
+    const lecturerChip = (typeof _buildLecturerChip === 'function')
+      ? _buildLecturerChip(ref.lecturer_id, ref.lecturer_label)
+      : null;
     const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
-    if (subjectChips.length > 0) {
+    if (lecturerChip || subjectChips.length > 0) {
       const wrap = document.createElement('span');
       wrap.className = 'lecdem-subjects';
+      if (lecturerChip) wrap.appendChild(lecturerChip);
       subjectChips.forEach(function(c) { wrap.appendChild(c); });
       chipsDiv.appendChild(wrap);
     }
@@ -76759,22 +76909,41 @@ function addYoutubeBlock(container, formWin) {
   });
   block.appendChild(removeBtn);
 
+  // ── Lecdem toggle (ADR-082) ───────────────────────────────────────────────
+  const lecdemLabel = document.createElement('label');
+  lecdemLabel.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:0.7rem;color:var(--fg-muted);margin-bottom:6px;cursor:pointer;';
+  const lecdemCheck = document.createElement('input');
+  lecdemCheck.type = 'checkbox';
+  lecdemCheck.style.margin = '0';
+  lecdemLabel.appendChild(lecdemCheck);
+  lecdemLabel.appendChild(document.createTextNode('This is a lecture-demonstration'));
+  block.appendChild(lecdemLabel);
+  block._lecdemCheck = lecdemCheck;
+
   const urlInp = efInput(null, 'text', 'https://youtu.be/…');
   block.appendChild(efRow('YouTube URL', true, null, urlInp));
 
   const lblInp = efInput(null, 'text', 'e.g. nidhi chāla sukhama · Kalyāṇi · Ādi');
   block.appendChild(efRow('Label', true, null, lblInp));
 
+  // ── Recital fields (hidden when lecdem ON) ────────────────────────────────
+  const recitalFields = document.createElement('div');
+  recitalFields.className = 'ef-recital-fields';
+
   const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
   const compSel = efCombobox(null, compOpts, 'composition', formWin);
-  block.appendChild(efRow('Composition', false, null, compSel));
+  recitalFields.appendChild(efRow('Composition', false, null, compSel));
 
   const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
   const ragaSel = efCombobox(null, ragaOpts, 'raga', formWin);
-  block.appendChild(efRow('Raga', false, 'auto-filled from composition', ragaSel));
+  recitalFields.appendChild(efRow('Raga', false, 'auto-filled from composition', ragaSel));
 
   // Auto-fill raga when composition is selected
   wireCompRagaAutofill(compSel, ragaSel, null, formWin);
+
+  block.appendChild(recitalFields);
+  block._compSel = compSel;
+  block._ragaSel = ragaSel;
 
   const yearInp = efInput(null, 'number', 'e.g. 1965', null);
   yearInp.min = 1900; yearInp.max = 2030;
@@ -76811,8 +76980,144 @@ function addYoutubeBlock(container, formWin) {
 
   block.appendChild(perfContainer);
 
+  // ── Lecdem subject sections (ADR-082, hidden by default) ─────────────────
+  const lecdemFields = document.createElement('div');
+  lecdemFields.className = 'ef-lecdem-fields';
+  lecdemFields.style.display = 'none';
+  lecdemFields.style.marginTop = '8px';
+  lecdemFields.style.paddingTop = '8px';
+  lecdemFields.style.borderTop = '1px dashed var(--border-soft)';
+
+  const subjectDefs = [
+    {
+      axis:     'raga_ids',
+      label:    'Subjects — Ragas',
+      addLabel: '+ Add Raga',
+      opts:     () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id })),
+    },
+    {
+      axis:     'composition_ids',
+      label:    'Subjects — Compositions',
+      addLabel: '+ Add Composition',
+      opts:     () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id })),
+    },
+    {
+      axis:     'musician_ids',
+      label:    'Subjects — Musicians',
+      addLabel: '+ Add Musician',
+      opts:     () => (graphData.nodes || []).map(n => ({ value: n.id, label: n.label })),
+    },
+  ];
+
+  subjectDefs.forEach(({ axis, label, addLabel, opts }) => {
+    const section = document.createElement('div');
+    section.className = 'ef-lecdem-section';
+    section.dataset.axis = axis;
+    section.style.marginBottom = '8px';
+
+    const sHeader = document.createElement('div');
+    sHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;';
+
+    const sLabel = document.createElement('span');
+    sLabel.style.cssText = 'font-size:0.7rem;font-weight:600;color:var(--fg-muted);';
+    sLabel.textContent = label;
+    sHeader.appendChild(sLabel);
+
+    const addBtn = efAddBtn(addLabel);
+    sHeader.appendChild(addBtn);
+    section.appendChild(sHeader);
+
+    const rowsDiv = document.createElement('div');
+    rowsDiv.className = 'ef-lecdem-rows';
+    section.appendChild(rowsDiv);
+
+    addBtn.addEventListener('click', () => addLecdemSubjectRow(rowsDiv, opts(), formWin));
+
+    lecdemFields.appendChild(section);
+  });
+
+  const escapeHatch = document.createElement('div');
+  escapeHatch.style.cssText = 'font-size:0.65rem;color:var(--fg-muted);margin-top:4px;';
+  escapeHatch.textContent = 'Entity missing? Use ➕ in the composition / raga / musician forms to add it inline.';
+  lecdemFields.appendChild(escapeHatch);
+
+  block.appendChild(lecdemFields);
+  block._lecdemFields = lecdemFields;
+
+  // ── Toggle handler ────────────────────────────────────────────────────────
+  lecdemCheck.addEventListener('change', () => {
+    const on = lecdemCheck.checked;
+    recitalFields.style.display = on ? 'none' : '';
+    lecdemFields.style.display  = on ? ''     : 'none';
+    if (!on) {
+      lecdemFields.querySelectorAll('.ef-lecdem-row').forEach(r => r.remove());
+    }
+    formWin.dispatchEvent(new Event('input'));
+  });
+
   container.appendChild(block);
   formWin.dispatchEvent(new Event('input'));
+}
+
+// ── Lecdem subject row (ADR-082) ─────────────────────────────────────────────
+
+function addLecdemSubjectRow(rowsContainer, comboboxOpts, formWin) {
+  const row = document.createElement('div');
+  row.className = 'ef-lecdem-row';
+  row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
+
+  const sel = efCombobox(null, comboboxOpts, null, formWin);
+  sel.style.flex = '1';
+  row.appendChild(sel);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '×';
+  removeBtn.style.cssText = 'background:transparent;border:1px solid var(--border-soft);color:var(--fg-muted);width:24px;height:24px;border-radius:3px;cursor:pointer;';
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    if (formWin) formWin.dispatchEvent(new Event('input'));
+  });
+  row.appendChild(removeBtn);
+
+  row._subjectCombobox = sel;
+  rowsContainer.appendChild(row);
+  if (formWin) formWin.dispatchEvent(new Event('input'));
+}
+
+// ── Collect lecdem subjects from a youtube block (ADR-082) ───────────────────
+
+function collectLecdemSubjects(block) {
+  const subjects = { raga_ids: [], composition_ids: [], musician_ids: [] };
+  const lecdemFields = block._lecdemFields || block.querySelector('.ef-lecdem-fields');
+  if (!lecdemFields) return subjects;
+  lecdemFields.querySelectorAll('.ef-lecdem-section').forEach(section => {
+    const axis = section.dataset.axis;
+    if (!subjects[axis]) return;
+    section.querySelectorAll('.ef-lecdem-row').forEach(row => {
+      const val = row._subjectCombobox && row._subjectCombobox.getValue
+        ? row._subjectCombobox.getValue()
+        : '';
+      if (val) subjects[axis].push(val);
+    });
+  });
+  return subjects;
+}
+
+// ── Check for empty lecdem subject rows (ADR-082) ─────────────────────────────
+// Returns true if the block is a lecdem and has any subject row with no
+// value selected — an invalid state that should disable Download.
+
+function hasEmptyLecdemSubjectRow(block) {
+  if (!block._lecdemCheck || !block._lecdemCheck.checked) return false;
+  let empty = false;
+  block.querySelectorAll('.ef-lecdem-row').forEach(row => {
+    const val = row._subjectCombobox && row._subjectCombobox.getValue
+      ? row._subjectCombobox.getValue()
+      : '';
+    if (!val) empty = true;
+  });
+  return empty;
 }
 
 // ── Performer entry block (ADR-070 / ADR-071) ────────────────────────────────
@@ -76933,15 +77238,15 @@ function generateMusicianJson(win) {
   // YouTube entries
   const youtube = [];
   win.querySelectorAll('.ef-youtube-block').forEach(block => {
-    const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-    const selects = block.querySelectorAll(':scope > .ef-row select');
-    const url     = inputs[0] ? inputs[0].value.trim() : '';
-    const lbl     = inputs[1] ? inputs[1].value.trim() : '';
-    const compId  = selects[0] ? selects[0].value : '';
-    const ragaId  = selects[1] ? selects[1].value : '';
-    const year    = inputs[2]  ? inputs[2].value  : '';
-    const version = inputs[3]  ? inputs[3].value.trim() : '';
-    const tala    = inputs[4]  ? inputs[4].value.trim() : '';
+    const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+    const url      = inputs[0] ? inputs[0].value.trim() : '';
+    const lbl      = inputs[1] ? inputs[1].value.trim() : '';
+    const year     = inputs[2] ? inputs[2].value        : '';
+    const version  = inputs[3] ? inputs[3].value.trim() : '';
+    const tala     = inputs[4] ? inputs[4].value.trim() : '';
+    const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+    const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+    const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
     if (!url) return;
     const entry = { url, label: lbl };
     if (compId)  entry.composition_id = compId;
@@ -76952,6 +77257,11 @@ function generateMusicianJson(win) {
     // ADR-070: optional performers[] (host auto-injected when any accompanist present)
     const performers = collectYoutubePerformers(block, id, instr);
     if (performers) entry.performers = performers;
+    // ADR-082: lecdem entry
+    if (isLecdem) {
+      entry.kind     = 'lecdem';
+      entry.subjects = collectLecdemSubjects(block);
+    }
     youtube.push(entry);
   });
 
@@ -78149,15 +78459,15 @@ function buildMusicianRecordingsForm() {
     const hostNode = (graphData.nodes || []).find(n => n.id === hostId);
     const hostInstrument = hostNode ? hostNode.instrument : (instrSel ? instrSel.value : 'vocal');
     win.querySelectorAll('#efmr_youtube .ef-youtube-block').forEach(block => {
-      const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-      const selects = block.querySelectorAll(':scope > .ef-row select');
-      const url     = inputs[0]  ? inputs[0].value.trim()  : '';
-      const lbl     = inputs[1]  ? inputs[1].value.trim()  : '';
-      const compId  = selects[0] ? selects[0].value        : '';
-      const ragaId  = selects[1] ? selects[1].value        : '';
-      const year    = inputs[2]  ? inputs[2].value         : '';
-      const version = inputs[3]  ? inputs[3].value.trim()  : '';
-      const tala    = inputs[4]  ? inputs[4].value.trim()  : '';
+      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const url      = inputs[0]  ? inputs[0].value.trim()  : '';
+      const lbl      = inputs[1]  ? inputs[1].value.trim()  : '';
+      const year     = inputs[2]  ? inputs[2].value         : '';
+      const version  = inputs[3]  ? inputs[3].value.trim()  : '';
+      const tala     = inputs[4]  ? inputs[4].value.trim()  : '';
+      const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+      const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+      const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
       if (!url) return;
       const entry = { url, label: lbl };
       if (compId)  entry.composition_id = compId;
@@ -78167,6 +78477,11 @@ function buildMusicianRecordingsForm() {
       if (tala)    entry.tala           = tala;
       const performers = collectYoutubePerformers(block, hostId, hostInstrument);
       if (performers) entry.performers = performers;
+      // ADR-082: lecdem entry
+      if (isLecdem) {
+        entry.kind     = 'lecdem';
+        entry.subjects = collectLecdemSubjects(block);
+      }
       entries.push(entry);
     });
     return entries;
@@ -78281,7 +78596,11 @@ function buildMusicianRecordingsForm() {
       const dupId   = existingIds.includes(id);
       ok = !!(label && id && era && instr && srcUrl && srcLbl && srcType && !dupId);
     } else {
-      ok = !!(musicianSel.getValue() && win.querySelectorAll('#efmr_youtube .ef-youtube-block').length > 0);
+      let lecdemInvalid = false;
+      win.querySelectorAll('#efmr_youtube .ef-youtube-block').forEach(b => {
+        if (hasEmptyLecdemSubjectRow(b)) lecdemInvalid = true;
+      });
+      ok = !!(musicianSel.getValue() && win.querySelectorAll('#efmr_youtube .ef-youtube-block').length > 0 && !lecdemInvalid);
     }
     bundleBtn.disabled = !ok;
     dlBtn.disabled     = !ok;
@@ -78435,15 +78754,15 @@ function buildAddYoutubeForm() {
     const hostId = node.id;
     const hostInstrument = node.instrument || 'vocal';
     win.querySelectorAll('.ef-youtube-block').forEach(block => {
-      const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-      const selects = block.querySelectorAll(':scope > .ef-row select');
-      const url     = inputs[0]  ? inputs[0].value.trim()  : '';
-      const lbl     = inputs[1]  ? inputs[1].value.trim()  : '';
-      const compId  = selects[0] ? selects[0].value        : '';
-      const ragaId  = selects[1] ? selects[1].value        : '';
-      const year    = inputs[2]  ? inputs[2].value         : '';
-      const version = inputs[3]  ? inputs[3].value.trim()  : '';
-      const tala    = inputs[4]  ? inputs[4].value.trim()  : '';
+      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const url      = inputs[0]  ? inputs[0].value.trim()  : '';
+      const lbl      = inputs[1]  ? inputs[1].value.trim()  : '';
+      const year     = inputs[2]  ? inputs[2].value         : '';
+      const version  = inputs[3]  ? inputs[3].value.trim()  : '';
+      const tala     = inputs[4]  ? inputs[4].value.trim()  : '';
+      const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+      const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+      const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
       if (!url) return;
       const entry = { url, label: lbl };
       if (compId)  entry.composition_id = compId;
@@ -78453,6 +78772,11 @@ function buildAddYoutubeForm() {
       if (tala)    entry.tala           = tala;
       const performers = collectYoutubePerformers(block, hostId, hostInstrument);
       if (performers) entry.performers = performers;
+      // ADR-082: lecdem entry
+      if (isLecdem) {
+        entry.kind     = 'lecdem';
+        entry.subjects = collectLecdemSubjects(block);
+      }
       newEntries.push(entry);
     });
 
@@ -78494,7 +78818,11 @@ function buildAddYoutubeForm() {
       const urlInp = block.querySelector(':scope > .ef-row input:not([data-combobox-filter])');
       if (urlInp && urlInp.value.trim()) hasUrl = true;
     });
-    dlBtn.disabled = !(musId && hasEntry && hasUrl);
+    let lecdemInvalid = false;
+    win.querySelectorAll('.ef-youtube-block').forEach(b => {
+      if (hasEmptyLecdemSubjectRow(b)) lecdemInvalid = true;
+    });
+    dlBtn.disabled = !(musId && hasEntry && hasUrl && !lecdemInvalid);
     if (previewPre.style.display !== 'none') updatePreview();
   }
 

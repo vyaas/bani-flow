@@ -1550,24 +1550,13 @@ function buildRecordingsList(nodeId, nodeData) {
         labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
         chipsDiv.appendChild(labelSpan);
 
-        // Lecturer attribution
-        if (ref.lecturer_label) {
-          const bySpan = document.createElement('span');
-          bySpan.className = 'lecdem-by';
-          bySpan.textContent = `— ${ref.lecturer_label}`;
-          bySpan.title = `Open ${ref.lecturer_label}'s panel`;
-          bySpan.addEventListener('click', e => {
-            e.stopPropagation();
-            if (typeof selectNode === 'function') selectNode(ref.lecturer_id);
-          });
-          chipsDiv.appendChild(bySpan);
-        }
-
-        // Other subjects (exclude current node), e.g. ragas/comps discussed
-        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-        if (subjectChips && subjectChips.length > 0) {
+        // Tag cloud: lecturer chip + subject cross-link chips, wrapped together
+        const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
+        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
+        if (lecturerChip || subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
+          if (lecturerChip) subjectsWrap.appendChild(lecturerChip);
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
           chipsDiv.appendChild(subjectsWrap);
         }
@@ -1680,6 +1669,42 @@ function _buildLecdemSubjectChips(subjects, excludeId) {
   });
 
   return chips.length > 0 ? chips : null;
+}
+
+// ── _buildLecturerChip — render a lecdem lecturer as an era-tinted musician chip ──
+// Lecturers in lecdems are first-class musicians; render them with the same
+// .musician-chip affordance used everywhere else so they navigate to the
+// lecturer's musician panel on click. Returns null if id/label missing.
+function _buildLecturerChip(lecturerId, lecturerLabel) {
+  if (!lecturerId || !lecturerLabel) return null;
+  const chip = document.createElement('span');
+  chip.className = 'musician-chip';
+  chip.textContent = lecturerLabel;
+  chip.title = 'Open ' + lecturerLabel + "'s panel";
+
+  // Era-tint from cytoscape node (same pattern as other musician chips)
+  const lNode = (typeof cy !== 'undefined') ? cy.getElementById(lecturerId) : null;
+  if (lNode && lNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
+    const eraId = lNode.data('era') || null;
+    const tint  = THEME.eraTintCss(eraId);
+    chip.style.setProperty('--chip-era-bg',     tint.bg);
+    chip.style.setProperty('--chip-era-border', tint.border);
+  }
+
+  chip.addEventListener('click', e => {
+    e.stopPropagation();
+    chip.classList.add('chip-tapped');
+    setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+    if (lNode && lNode.length && typeof selectNode === 'function') {
+      selectNode(lNode);
+      if (typeof window.setPanelState === 'function') {
+        setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+      }
+    } else if (typeof showGraphAbsentToast === 'function') {
+      showGraphAbsentToast(lecturerLabel);
+    }
+  });
+  return chip;
 }
 
 // ── Named-player API (ADR-029: Sruti Bar) ─────────────────────────────────────
