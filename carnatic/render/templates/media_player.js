@@ -525,6 +525,115 @@ function buildComposerChip(compositionId) {
   return chip;
 }
 
+// ── buildLecdemChip — chip for a lecture-demo recording (ADR-079) ─────────────
+// ref is a LecdemRef (ADR-078): { video_id, label, subjects, lecturer_id, ... }
+function buildLecdemChip(ref) {
+  if (!ref || !ref.video_id) return null;
+  const chip = document.createElement('span');
+  chip.className = 'lecdem-chip';
+  chip.textContent = ref.label || 'Lecture-Demo';
+  chip.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+  chip.dataset.videoId = ref.video_id;
+  chip.addEventListener('click', e => {
+    e.stopPropagation();
+    chip.classList.add('chip-tapped');
+    setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+    // Open media player on the lecdem video
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+    // Inject subject cross-link chips into the player footer (ADR-079 §4)
+    const instance = playerRegistry.get(ref.video_id);
+    if (instance && ref.subjects) {
+      const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+      if (subFooter) {
+        const existing = instance.el.querySelector('.mp-footer');
+        if (existing) existing.remove();
+        const resize = instance.el.querySelector('.mp-resize');
+        if (resize) instance.el.insertBefore(subFooter, resize);
+        else        instance.el.appendChild(subFooter);
+      }
+    }
+  });
+  return chip;
+}
+
+// Helper: footer with subject cross-link chips for a lecdem player (ADR-079 §4)
+// Each raga_id → .raga-chip, composition_id → .comp-chip, musician_id → .musician-chip.
+// Returns null if all subject arrays are empty (no footer needed).
+function _buildLecdemSubjectFooter(subjects) {
+  const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
+  const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
+  const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
+  if (!ragaIds.length && !compIds.length && !musicianIds.length) return null;
+
+  const footer = document.createElement('div');
+  footer.className = 'mp-footer';
+
+  ragaIds.forEach(ragaId => {
+    const ragaObj  = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
+    const ragaName = ragaObj ? ragaObj.name : ragaId;
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.textContent = ragaName;
+    ragaChip.title = 'Explore ' + ragaName + ' in Bani Flow';
+    ragaChip.addEventListener('click', e => {
+      e.stopPropagation();
+      ragaChip.classList.add('chip-tapped');
+      setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
+    });
+    footer.appendChild(ragaChip);
+  });
+
+  compIds.forEach(compId => {
+    const compObj  = (typeof compositions !== 'undefined') ? compositions.find(c => c.id === compId) : null;
+    const compName = compObj ? compObj.title : compId;
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = compName;
+    compChip.title = 'Explore ' + compName + ' in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      compChip.classList.add('chip-tapped');
+      setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compId);
+    });
+    footer.appendChild(compChip);
+  });
+
+  musicianIds.forEach(musicianId => {
+    const node  = (typeof cy !== 'undefined') ? cy.getElementById(musicianId) : null;
+    const name  = (node && node.length) ? node.data('label') : musicianId;
+    const eraId = (node && node.length) ? (node.data('era') || null) : null;
+    const tint  = (typeof THEME !== 'undefined')
+      ? THEME.eraTintCss(eraId)
+      : { bg: 'transparent', border: 'var(--border-strong)' };
+    const mchip = document.createElement('span');
+    mchip.className = 'musician-chip';
+    mchip.style.setProperty('--chip-era-bg',     tint.bg);
+    mchip.style.setProperty('--chip-era-border', tint.border);
+    mchip.textContent = name;
+    mchip.title = name + ' — Open Musician panel';
+    if (node && node.length) {
+      mchip.addEventListener('click', e => {
+        e.stopPropagation();
+        mchip.classList.add('chip-tapped');
+        setTimeout(() => mchip.classList.remove('chip-tapped'), 200);
+        if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+          orientToNode(musicianId);
+        } else if (typeof selectNode === 'function') {
+          selectNode(node);
+        }
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
+      });
+    }
+    footer.appendChild(mchip);
+  });
+
+  return footer.hasChildNodes() ? footer : null;
+}
+
 // ── buildConcertBracket — build one concert bracket DOM element ───────────────
 function buildConcertBracket(concert, nodeId, artistLabel) {
   // Collect all performers across all sessions, deduplicated, excluding self

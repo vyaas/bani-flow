@@ -29,6 +29,12 @@
     --subject-size:           1.05rem;     /* search-subject chip font-size */
     --subject-padding:        4px 10px;    /* search-subject chip padding */
     --hier-indent-step:       14px;        /* one indent level (desktop) */
+    /* ADR-079: lecdem chip palette */
+    --lecdem-bg:       #2a2233;
+    --lecdem-border:   #6f5a8a;
+    --lecdem-text:     #e8def3;
+    --lecdem-glyph:    #c9b6e0;
+    --lecdem-hover-bg: #352a40;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1414,6 +1420,45 @@
     text-decoration: underline;
   }
 
+  /* ── ADR-079: Lecdem chip — distinct visual identity for lecture-demos ── */
+  .lecdem-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--chip-padding-primary);
+    font-size: var(--chip-size-primary);
+    font-weight: bold;
+    border-radius: var(--chip-border-radius, 4px);
+    background: var(--lecdem-bg);
+    color: var(--lecdem-text);
+    border: 1px solid var(--lecdem-border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: background-color 120ms ease;
+  }
+  .lecdem-chip:hover {
+    background: var(--lecdem-hover-bg);
+    outline: 1px solid var(--lecdem-border);
+    outline-offset: 1px;
+  }
+  .lecdem-chip:active,
+  .lecdem-chip.chip-tapped {
+    filter: brightness(1.35);
+    text-decoration: underline;
+  }
+  .lecdem-chip::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: var(--lecdem-glyph);
+    -webkit-mask: url("#icon-lecdem") center / contain no-repeat;
+            mask: url("#icon-lecdem") center / contain no-repeat;
+    flex-shrink: 0;
+  }
+
   /* ── Graph-absent toast — brief non-obtrusive notice —————————————— */
   #graph-absent-toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -2600,6 +2645,14 @@
 </style>
 </head>
 <body>
+<!-- ADR-079: inline SVG sprite — lecdem glyph referenced via CSS mask -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="icon-lecdem" viewBox="0 0 24 24">
+    <!-- stylised lectern with arc above suggesting voice projection -->
+    <path d="M4 19h16v2H4zm2-2 6-12 6 12H6z" />
+    <path d="M9 4 a4 4 0 0 1 6 0" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  </symbol>
+</svg>
 
 <header>
   <!-- ADR-045: header-left wraps help button + title -->
