@@ -1454,18 +1454,56 @@ function buildRecordingsList(nodeId, nodeData) {
         const li = document.createElement('li');
         li.className = 'lecdem-row';
 
-        const chip = buildLecdemChip(ref);
-        if (chip) li.appendChild(chip);
+        const row = document.createElement('div');
+        row.className = 'trail-row2';
+
+        const chipsDiv = document.createElement('div');
+        chipsDiv.className = 'trail-chips';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'lecdem-label';
+        labelSpan.textContent = ref.label || 'Lecture-Demo';
+        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+        chipsDiv.appendChild(labelSpan);
 
         // Subject chips (raga, comp, musician), excluding current node
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-        if (subjectChips) {
+        if (subjectChips && subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          li.appendChild(subjectsWrap);
+          chipsDiv.appendChild(subjectsWrap);
         }
 
+        row.appendChild(chipsDiv);
+
+        const actsDiv = document.createElement('div');
+        actsDiv.className = 'trail-acts';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'rec-play-btn play-btn-concert';
+        playBtn.setAttribute('data-vid', ref.video_id);
+        playBtn.title = ref.label || 'Play';
+        playBtn.textContent = '\u25B6';
+        playBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+          const instance = playerRegistry.get(ref.video_id);
+          if (instance && ref.subjects) {
+            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+            if (subFooter) {
+              const existing = instance.el.querySelector('.mp-footer');
+              if (existing) existing.remove();
+              const resize = instance.el.querySelector('.mp-resize');
+              if (resize) instance.el.insertBefore(subFooter, resize);
+              else        instance.el.appendChild(subFooter);
+            }
+          }
+        });
+        actsDiv.appendChild(playBtn);
+        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+        row.appendChild(actsDiv);
+
+        li.appendChild(row);
         byList.appendChild(li);
       });
 
@@ -1496,10 +1534,19 @@ function buildRecordingsList(nodeId, nodeData) {
         const li = document.createElement('li');
         li.className = 'lecdem-row';
 
-        const chip = buildLecdemChip(ref);
-        if (chip) li.appendChild(chip);
+        const row = document.createElement('div');
+        row.className = 'trail-row2';
 
-        // Lecturer attribution as inline clickable text
+        const chipsDiv = document.createElement('div');
+        chipsDiv.className = 'trail-chips';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'lecdem-label';
+        labelSpan.textContent = ref.label || 'Lecture-Demo';
+        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+        chipsDiv.appendChild(labelSpan);
+
+        // Lecturer attribution
         if (ref.lecturer_label) {
           const bySpan = document.createElement('span');
           bySpan.className = 'lecdem-by';
@@ -1509,18 +1556,47 @@ function buildRecordingsList(nodeId, nodeData) {
             e.stopPropagation();
             if (typeof selectNode === 'function') selectNode(ref.lecturer_id);
           });
-          li.appendChild(bySpan);
+          chipsDiv.appendChild(bySpan);
         }
 
         // Other subjects (exclude current node), e.g. ragas/comps discussed
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-        if (subjectChips) {
+        if (subjectChips && subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          li.appendChild(subjectsWrap);
+          chipsDiv.appendChild(subjectsWrap);
         }
 
+        row.appendChild(chipsDiv);
+
+        const actsDiv = document.createElement('div');
+        actsDiv.className = 'trail-acts';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'rec-play-btn play-btn-concert';
+        playBtn.setAttribute('data-vid', ref.video_id);
+        playBtn.title = ref.label || 'Play';
+        playBtn.textContent = '\u25B6';
+        playBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+          const instance = playerRegistry.get(ref.video_id);
+          if (instance && ref.subjects) {
+            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+            if (subFooter) {
+              const existing = instance.el.querySelector('.mp-footer');
+              if (existing) existing.remove();
+              const resize = instance.el.querySelector('.mp-resize');
+              if (resize) instance.el.insertBefore(subFooter, resize);
+              else        instance.el.appendChild(subFooter);
+            }
+          }
+        });
+        actsDiv.appendChild(playBtn);
+        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+        row.appendChild(actsDiv);
+
+        li.appendChild(row);
         aboutList.appendChild(li);
       });
 
