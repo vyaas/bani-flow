@@ -61,6 +61,7 @@ def render_html(
     perf_to_performances: dict,
     tanpura_data: list | None = None,
     listenable_set: set | None = None,
+    lecdem_indexes: dict | None = None,
 ) -> str:
     node_count = len(graph["nodes"])
     edge_count = len(graph["edges"])
@@ -84,6 +85,13 @@ def render_html(
 
     # ADR-055: listenable musician node IDs (as JS Set)
     listenable_ids_json = json.dumps(sorted(listenable_set) if listenable_set else [], ensure_ascii=False)
+
+    # ADR-078: lecdem subject-anchored indexes
+    _lecdem = lecdem_indexes or {}
+    lecdems_by_json               = json.dumps(_lecdem.get("lecdems_by", {}),                indent=2, ensure_ascii=False)
+    lecdems_about_musician_json   = json.dumps(_lecdem.get("lecdems_about_musician", {}),    indent=2, ensure_ascii=False)
+    lecdems_about_raga_json       = json.dumps(_lecdem.get("lecdems_about_raga", {}),        indent=2, ensure_ascii=False)
+    lecdems_about_composition_json= json.dumps(_lecdem.get("lecdems_about_composition", {}), indent=2, ensure_ascii=False)
 
     data_js = (
         f"const elements = {elements_json};\n"
@@ -109,6 +117,12 @@ def render_html(
         f"\n"
         f"// ── Tanpura drone data (ADR-029) ─────────────────────────────────────────────\n"
         f"const tanpuraData = {tanpura_json};\n"
+        f"\n"
+        f"// ── Lecdem indexes (ADR-078) ─────────────────────────────────────────────────\n"
+        f"const lecdemsBy               = {lecdems_by_json};\n"
+        f"const lecdemsAboutMusician    = {lecdems_about_musician_json};\n"
+        f"const lecdemsAboutRaga        = {lecdems_about_raga_json};\n"
+        f"const lecdemsAboutComposition = {lecdems_about_composition_json};\n"
         f"\n"
         f"// ── graphData: unified object for entry forms (ADR-031) ──────────────────────\n"
         f"const graphData = {{\n"

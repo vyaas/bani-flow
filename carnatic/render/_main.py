@@ -39,7 +39,7 @@ if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:
 
 from carnatic.render.sync import sync_graph_json
 from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura
-from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set
+from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set, build_lecdem_indexes
 from carnatic.render.graph_builder import build_elements
 from carnatic.render.html_generator import render_html
 
@@ -80,6 +80,9 @@ def main() -> None:
     # ADR-055: listenable set — set of musician node IDs with playable content
     listenable_set = build_listenable_set(graph, recordings_data, comp_data)
 
+    # ADR-078: lecdem subject-anchored indexes
+    lecdem_indexes = build_lecdem_indexes(graph["nodes"])
+
     # ADR-057: composer_node_map — {musician_node_id: composer_id} for composer chip routing
     composer_node_map: dict[str, str] = {}
     for composer in comp_data.get("composers", []):
@@ -105,6 +108,7 @@ def main() -> None:
         perf_to_performances,
         tanpura_data=tanpura_data,
         listenable_set=listenable_set,
+        lecdem_indexes=lecdem_indexes,
     )
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
