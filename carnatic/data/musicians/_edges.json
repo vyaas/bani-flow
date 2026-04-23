@@ -365,5 +365,12 @@
     "confidence": 0.95,
     "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
     "note": "S. Ramanathan listed as a direct student of Tiger Varadachariar per Wikipedia"
+  },
+  {
+    "source": "ramnad_krishnan",
+    "target": "ritha_rajan",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+    "note": "principal guru"
   }
 ]

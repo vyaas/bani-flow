@@ -1,0 +1,30 @@
+{
+  "id": "ritha_rajan",
+  "label": "Ritha Rajan",
+  "sources": [
+    {
+      "url": "https://concertreviewbyshankarvenkataraman.blogspot.com/2019/12/paramparaa-myth-or-reality.html",
+      "label": "other",
+      "type": "other"
+    }
+  ],
+  "born": 1948,
+  "died": null,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "vina_dhanammal",
+  "youtube": [
+    {
+      "url": "https://youtu.be/24ZnUfsUupc",
+      "label": "On Ramnad Krishnan at Music Academy",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "ramnad_krishnan"
+        ]
+      }
+    }
+  ]
+}

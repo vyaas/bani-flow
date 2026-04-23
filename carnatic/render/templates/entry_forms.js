@@ -1,6 +1,10 @@
 // ── ADR-031: Data Entry Forms — In-Browser JSON Generator ─────────────────────
 // Depends on: graphData (injected by render pipeline), nextSpawnPosition(),
 //             wireDrag(), topZ (from media_player.js)
+//
+// Bundle schema: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
+// addToBundle(type, obj) enforces the whitelist of six item types defined in §4 of
+// that ADR and throws on any unknown type — silent drops are forbidden.
 
 // ── Session bundle state ──────────────────────────────────────────────────────
 // All entry forms can push their output into this shared bundle.
@@ -17,7 +21,7 @@ const baniBundle = {
 };
 
 function addToBundle(type, obj) {
-  if (!baniBundle[type]) return;
+  if (!(type in baniBundle)) throw new Error(`addToBundle: unknown type '${type}'`);
   baniBundle[type].push(obj);
   _updateBundleBtn();
 }
@@ -843,22 +847,41 @@ function addYoutubeBlock(container, formWin) {
   });
   block.appendChild(removeBtn);
 
+  // ── Lecdem toggle (ADR-082) ───────────────────────────────────────────────
+  const lecdemLabel = document.createElement('label');
+  lecdemLabel.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:0.7rem;color:var(--fg-muted);margin-bottom:6px;cursor:pointer;';
+  const lecdemCheck = document.createElement('input');
+  lecdemCheck.type = 'checkbox';
+  lecdemCheck.style.margin = '0';
+  lecdemLabel.appendChild(lecdemCheck);
+  lecdemLabel.appendChild(document.createTextNode('This is a lecture-demonstration'));
+  block.appendChild(lecdemLabel);
+  block._lecdemCheck = lecdemCheck;
+
   const urlInp = efInput(null, 'text', 'https://youtu.be/…');
   block.appendChild(efRow('YouTube URL', true, null, urlInp));
 
   const lblInp = efInput(null, 'text', 'e.g. nidhi chāla sukhama · Kalyāṇi · Ādi');
   block.appendChild(efRow('Label', true, null, lblInp));
 
+  // ── Recital fields (hidden when lecdem ON) ────────────────────────────────
+  const recitalFields = document.createElement('div');
+  recitalFields.className = 'ef-recital-fields';
+
   const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
   const compSel = efCombobox(null, compOpts, 'composition', formWin);
-  block.appendChild(efRow('Composition', false, null, compSel));
+  recitalFields.appendChild(efRow('Composition', false, null, compSel));
 
   const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
   const ragaSel = efCombobox(null, ragaOpts, 'raga', formWin);
-  block.appendChild(efRow('Raga', false, 'auto-filled from composition', ragaSel));
+  recitalFields.appendChild(efRow('Raga', false, 'auto-filled from composition', ragaSel));
 
   // Auto-fill raga when composition is selected
   wireCompRagaAutofill(compSel, ragaSel, null, formWin);
+
+  block.appendChild(recitalFields);
+  block._compSel = compSel;
+  block._ragaSel = ragaSel;
 
   const yearInp = efInput(null, 'number', 'e.g. 1965', null);
   yearInp.min = 1900; yearInp.max = 2030;
@@ -895,8 +918,144 @@ function addYoutubeBlock(container, formWin) {
 
   block.appendChild(perfContainer);
 
+  // ── Lecdem subject sections (ADR-082, hidden by default) ─────────────────
+  const lecdemFields = document.createElement('div');
+  lecdemFields.className = 'ef-lecdem-fields';
+  lecdemFields.style.display = 'none';
+  lecdemFields.style.marginTop = '8px';
+  lecdemFields.style.paddingTop = '8px';
+  lecdemFields.style.borderTop = '1px dashed var(--border-soft)';
+
+  const subjectDefs = [
+    {
+      axis:     'raga_ids',
+      label:    'Subjects — Ragas',
+      addLabel: '+ Add Raga',
+      opts:     () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id })),
+    },
+    {
+      axis:     'composition_ids',
+      label:    'Subjects — Compositions',
+      addLabel: '+ Add Composition',
+      opts:     () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id })),
+    },
+    {
+      axis:     'musician_ids',
+      label:    'Subjects — Musicians',
+      addLabel: '+ Add Musician',
+      opts:     () => (graphData.nodes || []).map(n => ({ value: n.id, label: n.label })),
+    },
+  ];
+
+  subjectDefs.forEach(({ axis, label, addLabel, opts }) => {
+    const section = document.createElement('div');
+    section.className = 'ef-lecdem-section';
+    section.dataset.axis = axis;
+    section.style.marginBottom = '8px';
+
+    const sHeader = document.createElement('div');
+    sHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;';
+
+    const sLabel = document.createElement('span');
+    sLabel.style.cssText = 'font-size:0.7rem;font-weight:600;color:var(--fg-muted);';
+    sLabel.textContent = label;
+    sHeader.appendChild(sLabel);
+
+    const addBtn = efAddBtn(addLabel);
+    sHeader.appendChild(addBtn);
+    section.appendChild(sHeader);
+
+    const rowsDiv = document.createElement('div');
+    rowsDiv.className = 'ef-lecdem-rows';
+    section.appendChild(rowsDiv);
+
+    addBtn.addEventListener('click', () => addLecdemSubjectRow(rowsDiv, opts(), formWin));
+
+    lecdemFields.appendChild(section);
+  });
+
+  const escapeHatch = document.createElement('div');
+  escapeHatch.style.cssText = 'font-size:0.65rem;color:var(--fg-muted);margin-top:4px;';
+  escapeHatch.textContent = 'Entity missing? Use ➕ in the composition / raga / musician forms to add it inline.';
+  lecdemFields.appendChild(escapeHatch);
+
+  block.appendChild(lecdemFields);
+  block._lecdemFields = lecdemFields;
+
+  // ── Toggle handler ────────────────────────────────────────────────────────
+  lecdemCheck.addEventListener('change', () => {
+    const on = lecdemCheck.checked;
+    recitalFields.style.display = on ? 'none' : '';
+    lecdemFields.style.display  = on ? ''     : 'none';
+    if (!on) {
+      lecdemFields.querySelectorAll('.ef-lecdem-row').forEach(r => r.remove());
+    }
+    formWin.dispatchEvent(new Event('input'));
+  });
+
   container.appendChild(block);
   formWin.dispatchEvent(new Event('input'));
+}
+
+// ── Lecdem subject row (ADR-082) ─────────────────────────────────────────────
+
+function addLecdemSubjectRow(rowsContainer, comboboxOpts, formWin) {
+  const row = document.createElement('div');
+  row.className = 'ef-lecdem-row';
+  row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
+
+  const sel = efCombobox(null, comboboxOpts, null, formWin);
+  sel.style.flex = '1';
+  row.appendChild(sel);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '×';
+  removeBtn.style.cssText = 'background:transparent;border:1px solid var(--border-soft);color:var(--fg-muted);width:24px;height:24px;border-radius:3px;cursor:pointer;';
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    if (formWin) formWin.dispatchEvent(new Event('input'));
+  });
+  row.appendChild(removeBtn);
+
+  row._subjectCombobox = sel;
+  rowsContainer.appendChild(row);
+  if (formWin) formWin.dispatchEvent(new Event('input'));
+}
+
+// ── Collect lecdem subjects from a youtube block (ADR-082) ───────────────────
+
+function collectLecdemSubjects(block) {
+  const subjects = { raga_ids: [], composition_ids: [], musician_ids: [] };
+  const lecdemFields = block._lecdemFields || block.querySelector('.ef-lecdem-fields');
+  if (!lecdemFields) return subjects;
+  lecdemFields.querySelectorAll('.ef-lecdem-section').forEach(section => {
+    const axis = section.dataset.axis;
+    if (!subjects[axis]) return;
+    section.querySelectorAll('.ef-lecdem-row').forEach(row => {
+      const val = row._subjectCombobox && row._subjectCombobox.getValue
+        ? row._subjectCombobox.getValue()
+        : '';
+      if (val) subjects[axis].push(val);
+    });
+  });
+  return subjects;
+}
+
+// ── Check for empty lecdem subject rows (ADR-082) ─────────────────────────────
+// Returns true if the block is a lecdem and has any subject row with no
+// value selected — an invalid state that should disable Download.
+
+function hasEmptyLecdemSubjectRow(block) {
+  if (!block._lecdemCheck || !block._lecdemCheck.checked) return false;
+  let empty = false;
+  block.querySelectorAll('.ef-lecdem-row').forEach(row => {
+    const val = row._subjectCombobox && row._subjectCombobox.getValue
+      ? row._subjectCombobox.getValue()
+      : '';
+    if (!val) empty = true;
+  });
+  return empty;
 }
 
 // ── Performer entry block (ADR-070 / ADR-071) ────────────────────────────────
@@ -1017,15 +1176,15 @@ function generateMusicianJson(win) {
   // YouTube entries
   const youtube = [];
   win.querySelectorAll('.ef-youtube-block').forEach(block => {
-    const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-    const selects = block.querySelectorAll(':scope > .ef-row select');
-    const url     = inputs[0] ? inputs[0].value.trim() : '';
-    const lbl     = inputs[1] ? inputs[1].value.trim() : '';
-    const compId  = selects[0] ? selects[0].value : '';
-    const ragaId  = selects[1] ? selects[1].value : '';
-    const year    = inputs[2]  ? inputs[2].value  : '';
-    const version = inputs[3]  ? inputs[3].value.trim() : '';
-    const tala    = inputs[4]  ? inputs[4].value.trim() : '';
+    const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+    const url      = inputs[0] ? inputs[0].value.trim() : '';
+    const lbl      = inputs[1] ? inputs[1].value.trim() : '';
+    const year     = inputs[2] ? inputs[2].value        : '';
+    const version  = inputs[3] ? inputs[3].value.trim() : '';
+    const tala     = inputs[4] ? inputs[4].value.trim() : '';
+    const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+    const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+    const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
     if (!url) return;
     const entry = { url, label: lbl };
     if (compId)  entry.composition_id = compId;
@@ -1036,6 +1195,11 @@ function generateMusicianJson(win) {
     // ADR-070: optional performers[] (host auto-injected when any accompanist present)
     const performers = collectYoutubePerformers(block, id, instr);
     if (performers) entry.performers = performers;
+    // ADR-082: lecdem entry
+    if (isLecdem) {
+      entry.kind     = 'lecdem';
+      entry.subjects = collectLecdemSubjects(block);
+    }
     youtube.push(entry);
   });
 
@@ -2233,15 +2397,15 @@ function buildMusicianRecordingsForm() {
     const hostNode = (graphData.nodes || []).find(n => n.id === hostId);
     const hostInstrument = hostNode ? hostNode.instrument : (instrSel ? instrSel.value : 'vocal');
     win.querySelectorAll('#efmr_youtube .ef-youtube-block').forEach(block => {
-      const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-      const selects = block.querySelectorAll(':scope > .ef-row select');
-      const url     = inputs[0]  ? inputs[0].value.trim()  : '';
-      const lbl     = inputs[1]  ? inputs[1].value.trim()  : '';
-      const compId  = selects[0] ? selects[0].value        : '';
-      const ragaId  = selects[1] ? selects[1].value        : '';
-      const year    = inputs[2]  ? inputs[2].value         : '';
-      const version = inputs[3]  ? inputs[3].value.trim()  : '';
-      const tala    = inputs[4]  ? inputs[4].value.trim()  : '';
+      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const url      = inputs[0]  ? inputs[0].value.trim()  : '';
+      const lbl      = inputs[1]  ? inputs[1].value.trim()  : '';
+      const year     = inputs[2]  ? inputs[2].value         : '';
+      const version  = inputs[3]  ? inputs[3].value.trim()  : '';
+      const tala     = inputs[4]  ? inputs[4].value.trim()  : '';
+      const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+      const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+      const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
       if (!url) return;
       const entry = { url, label: lbl };
       if (compId)  entry.composition_id = compId;
@@ -2251,6 +2415,11 @@ function buildMusicianRecordingsForm() {
       if (tala)    entry.tala           = tala;
       const performers = collectYoutubePerformers(block, hostId, hostInstrument);
       if (performers) entry.performers = performers;
+      // ADR-082: lecdem entry
+      if (isLecdem) {
+        entry.kind     = 'lecdem';
+        entry.subjects = collectLecdemSubjects(block);
+      }
       entries.push(entry);
     });
     return entries;
@@ -2365,7 +2534,11 @@ function buildMusicianRecordingsForm() {
       const dupId   = existingIds.includes(id);
       ok = !!(label && id && era && instr && srcUrl && srcLbl && srcType && !dupId);
     } else {
-      ok = !!(musicianSel.getValue() && win.querySelectorAll('#efmr_youtube .ef-youtube-block').length > 0);
+      let lecdemInvalid = false;
+      win.querySelectorAll('#efmr_youtube .ef-youtube-block').forEach(b => {
+        if (hasEmptyLecdemSubjectRow(b)) lecdemInvalid = true;
+      });
+      ok = !!(musicianSel.getValue() && win.querySelectorAll('#efmr_youtube .ef-youtube-block').length > 0 && !lecdemInvalid);
     }
     bundleBtn.disabled = !ok;
     dlBtn.disabled     = !ok;
@@ -2519,15 +2692,15 @@ function buildAddYoutubeForm() {
     const hostId = node.id;
     const hostInstrument = node.instrument || 'vocal';
     win.querySelectorAll('.ef-youtube-block').forEach(block => {
-      const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-      const selects = block.querySelectorAll(':scope > .ef-row select');
-      const url     = inputs[0]  ? inputs[0].value.trim()  : '';
-      const lbl     = inputs[1]  ? inputs[1].value.trim()  : '';
-      const compId  = selects[0] ? selects[0].value        : '';
-      const ragaId  = selects[1] ? selects[1].value        : '';
-      const year    = inputs[2]  ? inputs[2].value         : '';
-      const version = inputs[3]  ? inputs[3].value.trim()  : '';
-      const tala    = inputs[4]  ? inputs[4].value.trim()  : '';
+      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const url      = inputs[0]  ? inputs[0].value.trim()  : '';
+      const lbl      = inputs[1]  ? inputs[1].value.trim()  : '';
+      const year     = inputs[2]  ? inputs[2].value         : '';
+      const version  = inputs[3]  ? inputs[3].value.trim()  : '';
+      const tala     = inputs[4]  ? inputs[4].value.trim()  : '';
+      const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+      const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+      const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
       if (!url) return;
       const entry = { url, label: lbl };
       if (compId)  entry.composition_id = compId;
@@ -2537,6 +2710,11 @@ function buildAddYoutubeForm() {
       if (tala)    entry.tala           = tala;
       const performers = collectYoutubePerformers(block, hostId, hostInstrument);
       if (performers) entry.performers = performers;
+      // ADR-082: lecdem entry
+      if (isLecdem) {
+        entry.kind     = 'lecdem';
+        entry.subjects = collectLecdemSubjects(block);
+      }
       newEntries.push(entry);
     });
 
@@ -2578,7 +2756,11 @@ function buildAddYoutubeForm() {
       const urlInp = block.querySelector(':scope > .ef-row input:not([data-combobox-filter])');
       if (urlInp && urlInp.value.trim()) hasUrl = true;
     });
-    dlBtn.disabled = !(musId && hasEntry && hasUrl);
+    let lecdemInvalid = false;
+    win.querySelectorAll('.ef-youtube-block').forEach(b => {
+      if (hasEmptyLecdemSubjectRow(b)) lecdemInvalid = true;
+    });
+    dlBtn.disabled = !(musId && hasEntry && hasUrl && !lecdemInvalid);
     if (previewPre.style.display !== 'none') updatePreview();
   }
 

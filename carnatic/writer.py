@@ -41,6 +41,7 @@ Usage (as a library):
 
 from __future__ import annotations
 
+import difflib
 import json
 import os
 import re
@@ -51,6 +52,7 @@ from pathlib import Path
 from typing import Any
 
 from .render.roles import VALID_ROLES
+from .render.youtube_kinds import VALID_YOUTUBE_KINDS
 
 
 # ── path bootstrap (for direct script invocation) ──────────────────────────────
@@ -470,6 +472,76 @@ def _parse_performer_arg(arg: str) -> dict:
     return {"musician_id": mid.strip(), "role": role.strip()}
 
 
+# ── Lecdem validation helper (ADR-084) ────────────────────────────────────────
+
+_LECDEM_SUBJECT_KEYS = frozenset({"raga_ids", "composition_ids", "musician_ids"})
+
+
+def _validate_lecdem_entry(
+    subjects: dict | None,
+    *,
+    ragas_path: Path | None,
+    compositions_path: Path | None,
+    musicians_path: Path,
+    known_musician_ids: set[str],
+) -> str | None:
+    """Validate a lecdem subjects dict against the data stores.
+
+    Returns an error message string, or None when valid.
+    Empty subjects (all three arrays empty) is valid — the Manodharma lecdem case.
+    """
+    if subjects is None:
+        return "lecdem entries must include a 'subjects' dict"
+
+    extra = set(subjects.keys()) - _LECDEM_SUBJECT_KEYS
+    missing = _LECDEM_SUBJECT_KEYS - set(subjects.keys())
+    if extra or missing:
+        parts = []
+        if missing:
+            parts.append(f"missing keys: {sorted(missing)}")
+        if extra:
+            parts.append(f"unexpected keys: {sorted(extra)}")
+        return (
+            "lecdem subjects must have keys raga_ids, composition_ids, musician_ids"
+            f" ({'; '.join(parts)})"
+        )
+
+    for key in _LECDEM_SUBJECT_KEYS:
+        val = subjects[key]
+        if not isinstance(val, list) or not all(isinstance(x, str) for x in val):
+            return f"lecdem subjects.{key} must be a list of strings"
+
+    _cp = compositions_path or _default_compositions_path()
+
+    # Resolve raga_ids
+    if subjects["raga_ids"]:
+        _rp = ragas_path or _default_ragas_path()
+        known_raga_ids = {r["id"] for r in _load_all_ragas(_cp, _rp)}
+        for rid in subjects["raga_ids"]:
+            if rid not in known_raga_ids:
+                suggestions = difflib.get_close_matches(rid, sorted(known_raga_ids), n=3, cutoff=0.6)
+                hint = f" (did you mean: {', '.join(suggestions)}?)" if suggestions else ""
+                return f"subject not found: raga='{rid}'{hint}"
+
+    # Resolve composition_ids
+    if subjects["composition_ids"]:
+        known_comp_ids = {c["id"] for c in _load_all_compositions(_cp)}
+        for cid in subjects["composition_ids"]:
+            if cid not in known_comp_ids:
+                suggestions = difflib.get_close_matches(cid, sorted(known_comp_ids), n=3, cutoff=0.6)
+                hint = f" (did you mean: {', '.join(suggestions)}?)" if suggestions else ""
+                return f"subject not found: composition='{cid}'{hint}"
+
+    # Resolve musician_ids
+    for mid in subjects["musician_ids"]:
+        if mid not in known_musician_ids:
+            suggestions = difflib.get_close_matches(mid, sorted(known_musician_ids), n=3, cutoff=0.6)
+            hint = f" (did you mean: {', '.join(suggestions)}?)" if suggestions else ""
+            return f"subject not found: musician='{mid}'{hint}"
+
+    return None
+
+
 # ── CarnaticWriter ─────────────────────────────────────────────────────────────
 
 class CarnaticWriter:
@@ -628,11 +700,23 @@ class CarnaticWriter:
         tala: str | None = None,
         compositions_path: Path | None = None,
         performers: list[dict] | None = None,
+        kind: str | None = None,
+        subjects: dict | None = None,
+        ragas_path: Path | None = None,
     ) -> WriteResult:
-        """Append a YouTube recording entry to a musician node's youtube[] array."""
+        """Append a YouTube recording entry to a musician node's youtube[] array.
+
+        kind=None / 'recital': standard recital track (existing behaviour, back-compat).
+        kind='lecdem': lecture-demonstration entry carrying a subjects dict (ADR-077,
+            ADR-084). Mutually exclusive with composition_id and raga_id.
+        """
         video_id = _yt_video_id(url)
         if not video_id:
             return _err(f"could not extract 11-char video ID from URL: {url}")
+
+        # ── kind validation (ADR-084) ──────────────────────────────────────────
+        if kind is not None and kind not in VALID_YOUTUBE_KINDS:
+            return _err(f"kind must be one of {tuple(VALID_YOUTUBE_KINDS)}; got '{kind}'")
 
         # Load all nodes for validation; in dir mode we'll write only the one file
         nodes = _load_all_nodes(musicians_path)
@@ -642,23 +726,48 @@ class CarnaticWriter:
         if musician_id not in known_musician_ids:
             return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
 
-        # Validate composition_id / raga_id directly from source files (ADR-016)
-        if composition_id is not None or raga_id is not None:
-            comp_path = compositions_path or _default_compositions_path()
+        # ── path-specific validation ───────────────────────────────────────────
+        if kind in (None, "recital"):
+            if subjects is not None:
+                return _err("subjects field is only valid on lecdem entries")
+            # Validate composition_id / raga_id directly from source files (ADR-016)
+            if composition_id is not None or raga_id is not None:
+                comp_path = compositions_path or _default_compositions_path()
+                if composition_id is not None:
+                    known_comp_ids = {c["id"] for c in _load_all_compositions(comp_path)}
+                    if composition_id not in known_comp_ids:
+                        return _err(
+                            f"--composition-id \"{composition_id}\" does not exist in compositions\n"
+                            f"       Run add-composition before referencing it here."
+                        )
+                if raga_id is not None:
+                    _cp = compositions_path or _default_compositions_path()
+                    known_raga_ids = {r["id"] for r in _load_all_ragas(_cp)}
+                    if raga_id not in known_raga_ids:
+                        return _err(
+                            f"--raga-id \"{raga_id}\" does not exist in ragas\n"
+                            f"       Run add-raga before referencing it here."
+                        )
+        elif kind == "lecdem":
             if composition_id is not None:
-                known_comp_ids = {c["id"] for c in _load_all_compositions(comp_path)}
-                if composition_id not in known_comp_ids:
-                    return _err(
-                        f"--composition-id \"{composition_id}\" does not exist in compositions\n"
-                        f"       Run add-composition before referencing it here."
-                    )
+                return _err(
+                    "composition_id must be None for lecdem entries "
+                    "(use subjects.composition_ids instead)"
+                )
             if raga_id is not None:
-                known_raga_ids = {r["id"] for r in _load_all_ragas(comp_path)}
-                if raga_id not in known_raga_ids:
-                    return _err(
-                        f"--raga-id \"{raga_id}\" does not exist in ragas\n"
-                        f"       Run add-raga before referencing it here."
-                    )
+                return _err(
+                    "raga_id must be None for lecdem entries "
+                    "(use subjects.raga_ids instead)"
+                )
+            err = _validate_lecdem_entry(
+                subjects,
+                ragas_path=ragas_path,
+                compositions_path=compositions_path,
+                musicians_path=musicians_path,
+                known_musician_ids=known_musician_ids,
+            )
+            if err:
+                return _err(err)
 
         # Find the node
         node = next((n for n in nodes if n["id"] == musician_id), None)
@@ -672,29 +781,39 @@ class CarnaticWriter:
                 return _skip(f"video_id {video_id} already in {musician_id}.youtube[]")
 
         entry: dict[str, Any] = {"url": url, "label": label}
-        if composition_id is not None:
-            entry["composition_id"] = composition_id
-        if raga_id is not None:
-            entry["raga_id"] = raga_id
-        if year is not None:
-            entry["year"] = year
-        if version is not None:
-            entry["version"] = version
-        if tala is not None:
-            entry["tala"] = tala
+        if kind == "lecdem":
+            entry["kind"] = "lecdem"
+            # Always write all three arrays, even when empty (ADR-077 invariant)
+            entry["subjects"] = {
+                "raga_ids":        (subjects or {}).get("raga_ids", []),
+                "composition_ids": (subjects or {}).get("composition_ids", []),
+                "musician_ids":    (subjects or {}).get("musician_ids", []),
+            }
+        else:
+            # Recital path — omit kind to keep existing entries byte-identical
+            if composition_id is not None:
+                entry["composition_id"] = composition_id
+            if raga_id is not None:
+                entry["raga_id"] = raga_id
+            if year is not None:
+                entry["year"] = year
+            if version is not None:
+                entry["version"] = version
+            if tala is not None:
+                entry["tala"] = tala
 
-        # ADR-070: optional performers[] (back-compat: omit when not provided)
-        if performers:
-            host_instrument = node.get("instrument", "vocal")
-            normalised = _normalise_performers(
-                performers,
-                host_id=musician_id,
-                host_instrument=host_instrument,
-                known_musician_ids=known_musician_ids,
-            )
-            if isinstance(normalised, WriteResult):
-                return normalised
-            entry["performers"] = normalised
+            # ADR-070: optional performers[] (back-compat: omit when not provided)
+            if performers:
+                host_instrument = node.get("instrument", "vocal")
+                normalised = _normalise_performers(
+                    performers,
+                    host_id=musician_id,
+                    host_instrument=host_instrument,
+                    known_musician_ids=known_musician_ids,
+                )
+                if isinstance(normalised, WriteResult):
+                    return normalised
+                entry["performers"] = normalised
 
         if "youtube" not in node:
             node["youtube"] = []
@@ -703,16 +822,111 @@ class CarnaticWriter:
         # Write only the affected node file (dir mode) or the whole file (legacy)
         _write_node(musicians_path, node)
 
+        if kind == "lecdem":
+            s = subjects or {}
+            n_raga = len(s.get("raga_ids", []))
+            n_comp = len(s.get("composition_ids", []))
+            n_musc = len(s.get("musician_ids", []))
+            return _ok(
+                "[YT+L]",
+                f"{musician_id} \u2190 {url} "
+                f"(lecdem; {n_raga} raga \u00b7 {n_comp} comp \u00b7 {n_musc} musician subjects)",
+            )
+
         detail_parts = [f"video_id: {video_id}"]
         if raga_id:
             detail_parts.append(f"raga: {raga_id}")
         if composition_id:
             detail_parts.append(f"composition: {composition_id}")
         detail = "  " + "  ".join(detail_parts)
-
         return _ok(
-            "[YOUTUBE+]",
+            "[YT+]",
             f"appended to {musician_id}: \"{label}\"\n{detail}"
+        )
+
+    def add_lecdem_subject(
+        self,
+        musicians_path: Path,
+        *,
+        musician_id: str,
+        url: str,
+        axis: str,
+        subject_id: str,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+    ) -> WriteResult:
+        """Append one subject id to an existing lecdem youtube[] entry (ADR-084 §4).
+
+        axis must be one of: raga_ids, composition_ids, musician_ids.
+        The entry is located by musician_id + extracted video_id.
+        The subject id is resolved against the appropriate store before writing.
+        """
+        _AXES = ("raga_ids", "composition_ids", "musician_ids")
+        if axis not in _AXES:
+            return _err(f"axis must be one of {_AXES}; got '{axis}'")
+
+        video_id = _yt_video_id(url)
+        if not video_id:
+            return _err(f"could not extract 11-char video ID from URL: {url}")
+
+        nodes = _load_all_nodes(musicians_path)
+        known_musician_ids = {n["id"] for n in nodes}
+        if musician_id not in known_musician_ids:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        node = next((n for n in nodes if n["id"] == musician_id), None)
+        if node is None:
+            return _err(f"musician_id \"{musician_id}\" not found in musicians")
+
+        # Find the youtube entry
+        entry = None
+        for yt in node.get("youtube", []):
+            if _yt_video_id(yt.get("url", "")) == video_id:
+                entry = yt
+                break
+        if entry is None:
+            return _err(f"no youtube entry with video_id {video_id} on {musician_id}")
+
+        if entry.get("kind") != "lecdem":
+            return _err(
+                f"youtube entry {video_id} on {musician_id} is not a lecdem "
+                "(add_lecdem_subject only applies to lecdem entries)"
+            )
+
+        # Resolve the subject id against the appropriate store
+        _cp = compositions_path or _default_compositions_path()
+        if axis == "raga_ids":
+            _rp = ragas_path or _default_ragas_path()
+            known_ids = {r["id"] for r in _load_all_ragas(_cp, _rp)}
+            kind_label = "raga"
+        elif axis == "composition_ids":
+            known_ids = {c["id"] for c in _load_all_compositions(_cp)}
+            kind_label = "composition"
+        else:  # musician_ids
+            known_ids = known_musician_ids
+            kind_label = "musician"
+
+        if subject_id not in known_ids:
+            suggestions = difflib.get_close_matches(subject_id, sorted(known_ids), n=3, cutoff=0.6)
+            hint = f" (did you mean: {', '.join(suggestions)}?)" if suggestions else ""
+            return _err(f"subject not found: {kind_label}='{subject_id}'{hint}")
+
+        # Initialise subjects dict if missing (defensive — should always exist on lecdem)
+        if "subjects" not in entry:
+            entry["subjects"] = {"raga_ids": [], "composition_ids": [], "musician_ids": []}
+
+        current_list = entry["subjects"].setdefault(axis, [])
+        if subject_id in current_list:
+            return _skip(
+                f"{kind_label} '{subject_id}' already in "
+                f"{musician_id}.youtube[{video_id}].subjects.{axis}"
+            )
+
+        current_list.append(subject_id)
+        _write_node(musicians_path, node)
+        return _ok(
+            "[YT-SUBJ+]",
+            f"added {kind_label} '{subject_id}' to {musician_id}'s lecdem/{video_id}.subjects.{axis}",
         )
 
     def add_youtube_performer(

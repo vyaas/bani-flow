@@ -26,7 +26,11 @@ Usage:
     python3 carnatic/write_cli.py add-youtube      --musician-id <id> --url <yt_url> \\
                                                     --label <label> \\
                                                     [--composition-id <id>] [--raga-id <id>] \\
-                                                    [--year <int>] [--version <text>]
+                                                    [--year <int>] [--version <text>] \\
+                                                    [--lecdem \\
+                                                       [--about-raga <raga_id>] \\
+                                                       [--about-composition <comp_id>] \\
+                                                       [--about-musician <musician_id>]]
 
     python3 carnatic/write_cli.py add-source       --musician-id <id> --url <url> \\
                                                     --label <label> --type <type>
@@ -153,6 +157,29 @@ def cmd_add_youtube(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         except ValueError as e:
             from .writer import _err
             return _err(str(e))
+
+    # ── lecdem assembly (ADR-084) ──────────────────────────────────────────
+    is_lecdem = getattr(args, "lecdem", False)
+    about_raga = getattr(args, "about_raga", None) or []
+    about_composition = getattr(args, "about_composition", None) or []
+    about_musician = getattr(args, "about_musician", None) or []
+
+    # Parse-time convenience: reject --about-* without --lecdem
+    if (about_raga or about_composition or about_musician) and not is_lecdem:
+        from .writer import _err
+        return _err("--about-raga/--about-composition/--about-musician require --lecdem")
+
+    kind: str | None = "lecdem" if is_lecdem else None
+    subjects: dict | None = (
+        {
+            "raga_ids": about_raga,
+            "composition_ids": about_composition,
+            "musician_ids": about_musician,
+        }
+        if is_lecdem
+        else None
+    )
+
     return w.add_youtube(
         _musicians_path(),
         musician_id=args.musician_id,
@@ -165,6 +192,22 @@ def cmd_add_youtube(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         tala=args.tala,
         compositions_path=_compositions_path(),
         performers=performers,
+        kind=kind,
+        subjects=subjects,
+        ragas_path=_ragas_path(),
+    )
+
+
+def cmd_add_lecdem_subject(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
+    """Append one subject id to an existing lecdem youtube[] entry (ADR-084 §4)."""
+    return w.add_lecdem_subject(
+        _musicians_path(),
+        musician_id=args.musician_id,
+        url=args.url,
+        axis=args.axis,
+        subject_id=args.subject_id,
+        compositions_path=_compositions_path(),
+        ragas_path=_ragas_path(),
     )
 
 
@@ -335,6 +378,29 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--performer",      action="append", default=None,
                    help="Accompanying performer as <musician_id>:<role>; repeatable. "
                         "Host musician is auto-injected. (ADR-070)")
+    p.add_argument("--lecdem",         action="store_true", default=False,
+                   help="Mark this entry as a lecture-demonstration (ADR-077/ADR-084)")
+    p.add_argument("--about-raga",     action="append", default=None, dest="about_raga",
+                   help="Raga id discussed in the lecdem; repeatable (requires --lecdem)")
+    p.add_argument("--about-composition", action="append", default=None, dest="about_composition",
+                   help="Composition id discussed in the lecdem; repeatable (requires --lecdem)")
+    p.add_argument("--about-musician", action="append", default=None, dest="about_musician",
+                   help="Musician id discussed in the lecdem; repeatable (requires --lecdem)")
+
+    # ── add-lecdem-subject ────────────────────────────────────────────────────
+    p = sub.add_parser(
+        "add-lecdem-subject",
+        help="Append a subject id to an existing lecdem youtube[] entry (ADR-084)",
+    )
+    p.add_argument("--musician-id", required=True, dest="musician_id", help="Host musician node id")
+    p.add_argument("--url",         required=True,                     help="YouTube URL of the lecdem entry")
+    p.add_argument(
+        "--axis",
+        required=True,
+        choices=("raga_ids", "composition_ids", "musician_ids"),
+        help="Subjects array to append to",
+    )
+    p.add_argument("--subject-id",  required=True, dest="subject_id", help="Id of the raga/composition/musician")
 
     # ── add-youtube-performer ─────────────────────────────────────────
     p = sub.add_parser("add-youtube-performer",
@@ -430,6 +496,7 @@ HANDLERS = {
     "add-musician":           cmd_add_musician,
     "add-edge":               cmd_add_edge,
     "add-youtube":            cmd_add_youtube,
+    "add-lecdem-subject":     cmd_add_lecdem_subject,
     "add-youtube-performer":  cmd_add_youtube_performer,
     "add-source":             cmd_add_source,
     "remove-edge":            cmd_remove_edge,
