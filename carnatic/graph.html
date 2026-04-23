@@ -2740,6 +2740,87 @@
       border-color: var(--fg-sub);
     }
   }
+
+  /* ── ADR-086: Empty-panel tutorials ───────────────────────────────────── */
+  .panel-tutorial {
+    padding: 12px 14px 16px;
+    margin: 8px 14px 12px;
+    background: var(--bg-deep);
+    border: 1px dashed var(--border-soft, var(--border-strong));
+    border-radius: 6px;
+    color: var(--fg-muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+  .panel-tutorial .pt-label {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-faint, var(--fg-muted));
+    margin-bottom: 8px;
+    opacity: 0.75;
+  }
+  .panel-tutorial .pt-headline {
+    color: var(--fg);
+    font-size: 0.92rem;
+    line-height: 1.35;
+    margin: 0 0 10px;
+  }
+  .panel-tutorial .pt-mechanics {
+    list-style: disc;
+    padding-left: 18px;
+    margin: 0 0 14px;
+  }
+  .panel-tutorial .pt-mechanics li {
+    margin: 4px 0;
+    color: var(--fg-muted);
+  }
+  .panel-tutorial .pt-try {
+    border-top: 1px solid var(--border-strong);
+    padding-top: 10px;
+  }
+  .panel-tutorial .pt-try-label {
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-group {
+    margin-bottom: 10px;
+  }
+  .panel-tutorial .pt-group:last-child { margin-bottom: 0; }
+  .panel-tutorial .pt-group-title {
+    color: var(--fg);
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+  }
+  .panel-tutorial .pt-group-blurb {
+    color: var(--fg-muted);
+    font-size: 0.74rem;
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+  .panel-tutorial .pt-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .panel-tutorial .pt-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--fg-muted);
+    font-size: 0.74rem;
+  }
+  .panel-tutorial .pt-chip:hover,
+  .panel-tutorial .comp-chip:hover,
+  .panel-tutorial .raga-chip:hover,
+  .panel-tutorial .musician-chip:hover,
+  .panel-tutorial .composer-chip:hover {
+    color: var(--fg);
+    border-color: var(--fg-sub);
+  }
 </style>
 </head>
 <body>
@@ -2824,6 +2905,8 @@
     </div>
     <!-- ── scrollable zone: lecdem strip (ADR-081) + trail list ── -->
     <div id="bani-scroll">
+      <!-- ADR-086: empty-panel tutorial (shown when no subject loaded) -->
+      <div id="bani-tutorial" class="panel-tutorial" style="display:none"></div>
       <!-- Lecdem strip: shown above the trail when a raga/composition subject has lecdems -->
       <section id="bani-lecdem-strip" class="lecdem-strip" style="display:none"></section>
       <div id="listening-trail" style="display:none; padding: 0 14px;">
@@ -2918,6 +3001,8 @@
     </div>
     <!-- ── scrollable zone: recordings + edge info ── -->
     <div id="right-scroll">
+      <!-- ADR-086: empty-panel tutorial (shown when no node selected) -->
+      <div id="musician-tutorial" class="panel-tutorial" style="display:none"></div>
       <div class="panel" id="recordings-panel" style="display:none">
         <h3>Recordings</h3>
         <ul id="recordings-list"></ul>
@@ -12277,6 +12362,20 @@ const composers    = [
         "type": "wikipedia"
       }
     ]
+  },
+  {
+    "id": "shivanamayogi",
+    "name": "Shivanamayogi",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/",
+        "label": "Karnatik.com (composer not individually listed; name sourced from Ramnad Krishnan Jamshedpur 1964 concert)",
+        "type": "archive"
+      }
+    ]
   }
 ];
 const compositions = [
@@ -13054,6 +13153,22 @@ const compositions = [
       }
     ],
     "notes": "Tyagaraja kriti in Shankarabharanam"
+  },
+  {
+    "id": "enna_punniyam",
+    "title": "Enna Punniyam",
+    "composer_id": "shivanamayogi",
+    "raga_id": "huseni",
+    "tala": "misra_chapu",
+    "language": "tamil",
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/",
+        "label": "Karnatik.com",
+        "type": "archive"
+      }
+    ],
+    "notes": "Tamil composition in Huseni by Shivanamayogi; composer details unverified — name sourced from Ramnad Krishnan Jamshedpur 1964 concert listing"
   },
   {
     "id": "ennaga_manasuku_rani",
@@ -14218,6 +14333,21 @@ const compositions = [
     ]
   },
   {
+    "id": "modi_jesavelara",
+    "title": "Modi Jesavelara",
+    "composer_id": "pattabhiramayya",
+    "raga_id": "khamas",
+    "tala": "adi",
+    "language": "telugu",
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/",
+        "label": "Karnatik.com",
+        "type": "archive"
+      }
+    ]
+  },
+  {
     "id": "mohana_rama",
     "title": "Mohana Rama",
     "composer_id": "tyagaraja",
@@ -14821,6 +14951,9 @@ const compositions = [
   {
     "id": "parulanna_matta",
     "title": "Parulanna Matta",
+    "aliases": [
+      "Parulanamata"
+    ],
     "composer_id": "dharmapuri_subbaraya_iyer",
     "raga_id": "kapi",
     "tala": "rupakam",
@@ -15611,6 +15744,21 @@ const compositions = [
       }
     ],
     "notes": "Thillana by Swati Tirunal in Dhanashree, Adi tala; tuned by Lalgudi G. Jayaraman"
+  },
+  {
+    "id": "thillana_purnachandrika",
+    "title": "Thillana (Purnachandrika)",
+    "composer_id": "ramnad_sreenivasa_iyengar",
+    "raga_id": "purnachandrika",
+    "tala": "adi",
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/",
+        "label": "Karnatik.com",
+        "type": "archive"
+      }
+    ],
+    "notes": "Thillana in Purnachandrika by Ramnad Sreenivasa Iyengar (Ramanathapuram Srinivasa Iyangar)"
   },
   {
     "id": "tiruppugazh_huseni",
@@ -68886,6 +69034,44 @@ const lecdemsAboutMusician    = {
 const lecdemsAboutRaga        = {};
 const lecdemsAboutComposition = {};
 
+// ── Empty-panel tutorial copy (ADR-086) ──────────────────────────────────────
+const helpEmptyPanels = {
+  "schema_version": 1,
+  "musician_panel": {
+    "headline": "This panel shows what a musician has recorded.",
+    "mechanics": [
+      "Type a name in the search box, or tap a node on the graph to load it here.",
+      "Use the filter to narrow the recording list."
+    ],
+    "try_these": {
+      "label": "Try one of these:",
+      "groups": [
+        {
+          "subject_kind": "musician",
+          "subject_id": "ramnad_krishnan",
+          "subject_label": "Ramnad Krishnan"
+        }
+      ]
+    }
+  },
+  "bani_flow_panel": {
+    "headline": "This panel shows everyone who has recorded a raga or composition.",
+    "mechanics": [
+      "Type a raga or composition in the search box."
+    ],
+    "try_these": {
+      "label": "Try one of these:",
+      "groups": [
+        {
+          "subject_kind": "raga",
+          "subject_id": "thodi",
+          "subject_label": "Thodi"
+        }
+      ]
+    }
+  }
+};
+
 // ── graphData: unified object for entry forms (ADR-031) ──────────────────────
 const graphData = {
   nodes:        elements.filter(e => !e.data.source).map(e => ({
@@ -69924,6 +70110,8 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
+  // ADR-086: subject loaded → dismiss empty-panel tutorial
+  if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
   // Clear filter and rebuild unified recordings list
   const recFilter = document.getElementById('rec-filter');
@@ -70303,6 +70491,8 @@ cy.on('tap', evt => {
   document.getElementById('node-info').style.display        = 'block';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  // ADR-086: subject cleared → restore empty-panel tutorial
+  if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   // NEW: clear chip filters on background tap
   clearAllChipFilters();
   applyZoomLabels();
@@ -71999,11 +72189,30 @@ function _buildLecdemSubjectChips(subjects, excludeId) {
     c.className = 'musician-chip';
     c.textContent = mLabel;
     c.title = 'Open ' + mLabel + "'s panel";
+
+    // Era-tint so the chip matches every other musician chip
+    if (mNode && mNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
+      const tint = THEME.eraTintCss(mNode.data('era') || null);
+      c.style.setProperty('--chip-era-bg',     tint.bg);
+      c.style.setProperty('--chip-era-border', tint.border);
+    }
+
     c.addEventListener('click', e => {
       e.stopPropagation();
       c.classList.add('chip-tapped');
       setTimeout(() => c.classList.remove('chip-tapped'), 200);
-      if (typeof selectNode === 'function') selectNode(mid);
+      // Zoom+center in the guru-shishya (graph) view, then populate the panel
+      if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+        orientToNode(mid);
+      }
+      if (mNode && mNode.length && typeof selectNode === 'function') {
+        selectNode(mNode);
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
+      } else if (typeof showGraphAbsentToast === 'function') {
+        showGraphAbsentToast(mLabel);
+      }
     });
     chips.push(c);
   });
@@ -72035,6 +72244,10 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
     e.stopPropagation();
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+    // Zoom+center in the guru-shishya (graph) view, then populate the panel
+    if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+      orientToNode(lecturerId);
+    }
     if (lNode && lNode.length && typeof selectNode === 'function') {
       selectNode(lNode);
       if (typeof window.setPanelState === 'function') {
@@ -74470,6 +74683,8 @@ function applyBaniFilter(type, id) {
 }
 
 function buildListeningTrail(type, id, matchedNodeIds) {
+  // ADR-086: subject loaded → dismiss empty-panel tutorial
+  if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('bani');
   const trail = document.getElementById('listening-trail');
   const trailList = document.getElementById('trail-list');
   trailList.innerHTML = '';
@@ -75620,6 +75835,8 @@ function clearBaniFilter() {
   document.getElementById('bani-janyas-list').innerHTML = '';
   document.getElementById('bani-janyas-filter').value = '';
   applyZoomLabels();
+  // ADR-086: subject cleared → restore empty-panel tutorial
+  if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('bani');
   // Mutual exclusion: clear chip filters when Bani Flow filter clears
   clearAllChipFilters();
 }
@@ -78852,6 +79069,222 @@ function buildAddYoutubeForm() {
 
   return win;
 }
+// ── empty_tutorials.js (ADR-086) ─────────────────────────────────────────────
+// Renders the null-state tutorial inside the Bani Flow and Musician panels.
+// Data comes from helpEmptyPanels (injected by html_generator from
+// data/help/empty_panels.json). When that file is absent the global is null
+// and every function in this module degrades to a no-op.
+//
+// Public surface:
+//   showPanelTutorial(slot)   — slot ∈ {'bani', 'musician'}
+//   hidePanelTutorial(slot)
+// Wired into bani_flow.js (clearBaniFilter / buildListeningTrail) and
+// graph_view.js (background tap / selectNode).
+
+(function () {
+  const SLOT_TO_BLOCK = {
+    bani:     'bani_flow_panel',
+    musician: 'musician_panel',
+  };
+  const SLOT_TO_CONTAINER_ID = {
+    bani:     'bani-tutorial',
+    musician: 'musician-tutorial',
+  };
+
+  function _block(slot) {
+    if (!helpEmptyPanels) return null;
+    const key = SLOT_TO_BLOCK[slot];
+    return key ? (helpEmptyPanels[key] || null) : null;
+  }
+
+  function _el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls)  e.className   = cls;
+    if (text) e.textContent = text;
+    return e;
+  }
+
+  // ── Click resolvers for try_these items ──────────────────────────────────
+  // Each kind navigates the app the same way the user would by hand.
+
+  function _onComposition(id) {
+    if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', id);
+  }
+
+  function _onRaga(id) {
+    if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', id);
+  }
+
+  function _orientToMusician(nodeId) {
+    if (!nodeId) return;
+    const n = (typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null;
+    if (!n || !n.length) return;
+    if (typeof orientToNode === 'function' &&
+        typeof currentView !== 'undefined' && currentView === 'graph') {
+      orientToNode(nodeId);
+    } else if (typeof selectNode === 'function') {
+      selectNode(n);
+    }
+    if (typeof window.setPanelState === 'function') {
+      setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+    }
+  }
+
+  function _onMusician(id) {
+    _orientToMusician(id);
+  }
+
+  function _onComposer(composerId) {
+    // composers global is injected by html_generator
+    const composer = (typeof composers !== 'undefined')
+      ? composers.find(c => c.id === composerId)
+      : null;
+    if (composer && composer.musician_node_id) {
+      _orientToMusician(composer.musician_node_id);
+    }
+  }
+
+  // recording_ref: {musician_id, concert_hint, raga_id} → resolve to a single
+  // performance and open it via triggerBaniSearch('perf', key).
+  function _onRecordingRef(item) {
+    const refs = (typeof musicianToPerformances !== 'undefined')
+      ? (musicianToPerformances[item.musician_id] || [])
+      : [];
+    const hint = (item.concert_hint || '').toLowerCase();
+    const match = refs.find(p =>
+      p.raga_id === item.raga_id &&
+      hint && (
+        (p.recording_id || '').toLowerCase().indexOf(hint) >= 0 ||
+        (p.title || '').toLowerCase().indexOf(hint) >= 0
+      )
+    );
+    if (match) {
+      const key = match.recording_id + '::' + match.performance_index;
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('perf', key);
+    } else {
+      // Soft fallback: open the musician panel so the user can find it manually
+      _orientToMusician(item.musician_id);
+    }
+  }
+
+  // lecdem_ref: open the musician panel for the named musician — the lecdem
+  // strip (ADR-080/ADR-081) takes over from there.
+  function _onLecdemRef(item) {
+    _orientToMusician(item.musician_id);
+  }
+
+  function _itemChip(item) {
+    const kind = item.kind;
+    let chip;
+    if (kind === 'composition') {
+      chip = _el('span', 'comp-chip', item.label);
+      chip.addEventListener('click', () => _onComposition(item.id));
+    } else if (kind === 'raga') {
+      chip = _el('span', 'raga-chip', item.label);
+      chip.addEventListener('click', () => _onRaga(item.id));
+    } else if (kind === 'musician') {
+      chip = _el('span', 'musician-chip', item.label);
+      chip.addEventListener('click', () => _onMusician(item.id));
+    } else if (kind === 'composer') {
+      chip = _el('span', 'composer-chip', item.label);
+      chip.addEventListener('click', () => _onComposer(item.id));
+    } else if (kind === 'recording_ref') {
+      chip = _el('span', 'pt-chip pt-chip-recording', '\u25b6 ' + item.label);
+      chip.addEventListener('click', () => _onRecordingRef(item));
+    } else if (kind === 'lecdem_ref') {
+      chip = _el('span', 'pt-chip pt-chip-lecdem', '\u270e ' + item.label);
+      chip.addEventListener('click', () => _onLecdemRef(item));
+    } else {
+      chip = _el('span', 'pt-chip', item.label || kind);
+    }
+    chip.style.cursor = 'pointer';
+    return chip;
+  }
+
+  function _groupNode(group) {
+    const wrap = _el('div', 'pt-group');
+    if (group.subject_label) {
+      wrap.appendChild(_el('div', 'pt-group-title', group.subject_label));
+    }
+    if (group.blurb) {
+      wrap.appendChild(_el('div', 'pt-group-blurb', group.blurb));
+    }
+    const items = group.items || [];
+    if (items.length) {
+      const chips = _el('div', 'pt-chips');
+      items.forEach(it => chips.appendChild(_itemChip(it)));
+      wrap.appendChild(chips);
+    } else if (group.subject_kind && group.subject_id) {
+      // Group without items — make the title itself the click target
+      const chips = _el('div', 'pt-chips');
+      chips.appendChild(_itemChip({
+        kind:  group.subject_kind === 'composer' ? 'composer'
+             : group.subject_kind === 'raga'     ? 'raga'
+             : group.subject_kind === 'composition' ? 'composition'
+             : 'musician',
+        id:    group.subject_id,
+        label: 'Open ' + (group.subject_label || group.subject_id),
+      }));
+      wrap.appendChild(chips);
+    }
+    return wrap;
+  }
+
+  function _renderInto(container, block) {
+    container.innerHTML = '';
+    container.appendChild(_el('div', 'pt-label', 'How to use this panel'));
+    if (block.headline) {
+      container.appendChild(_el('p', 'pt-headline', block.headline));
+    }
+    const mechanics = block.mechanics || [];
+    if (mechanics.length) {
+      const ul = _el('ul', 'pt-mechanics');
+      mechanics.forEach(line => ul.appendChild(_el('li', null, line)));
+      container.appendChild(ul);
+    }
+    const tt = block.try_these || null;
+    if (tt && (tt.groups || []).length) {
+      const tryWrap = _el('div', 'pt-try');
+      if (tt.label) tryWrap.appendChild(_el('div', 'pt-try-label', tt.label));
+      tt.groups.forEach(g => tryWrap.appendChild(_groupNode(g)));
+      container.appendChild(tryWrap);
+    }
+  }
+
+  function _ensureRendered(slot) {
+    const id = SLOT_TO_CONTAINER_ID[slot];
+    const container = id ? document.getElementById(id) : null;
+    if (!container) return null;
+    if (container.dataset.rendered === '1') return container;
+    const block = _block(slot);
+    if (!block) return container;  // leave empty; show/hide becomes a no-op
+    _renderInto(container, block);
+    container.dataset.rendered = '1';
+    return container;
+  }
+
+  window.showPanelTutorial = function (slot) {
+    const container = _ensureRendered(slot);
+    if (!container) return;
+    const block = _block(slot);
+    if (!block) return;
+    container.style.display = 'block';
+  };
+
+  window.hidePanelTutorial = function (slot) {
+    const id = SLOT_TO_CONTAINER_ID[slot];
+    const container = id ? document.getElementById(id) : null;
+    if (container) container.style.display = 'none';
+  };
+
+  // ── Initial paint: both panels are empty on first load ───────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!helpEmptyPanels) return;
+    window.showPanelTutorial('bani');
+    window.showPanelTutorial('musician');
+  });
+})();
+
 // ── ADR-034 + ADR-036 + ADR-039 + ADR-046: Navigation choreography ──────────
 // Panel state machine with mutual exclusion, dual drawers (left=Trail,
 // right=Musician), collapsible filter bar. All functions are exposed on

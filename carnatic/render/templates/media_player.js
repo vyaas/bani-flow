@@ -1659,11 +1659,30 @@ function _buildLecdemSubjectChips(subjects, excludeId) {
     c.className = 'musician-chip';
     c.textContent = mLabel;
     c.title = 'Open ' + mLabel + "'s panel";
+
+    // Era-tint so the chip matches every other musician chip
+    if (mNode && mNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
+      const tint = THEME.eraTintCss(mNode.data('era') || null);
+      c.style.setProperty('--chip-era-bg',     tint.bg);
+      c.style.setProperty('--chip-era-border', tint.border);
+    }
+
     c.addEventListener('click', e => {
       e.stopPropagation();
       c.classList.add('chip-tapped');
       setTimeout(() => c.classList.remove('chip-tapped'), 200);
-      if (typeof selectNode === 'function') selectNode(mid);
+      // Zoom+center in the guru-shishya (graph) view, then populate the panel
+      if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+        orientToNode(mid);
+      }
+      if (mNode && mNode.length && typeof selectNode === 'function') {
+        selectNode(mNode);
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
+      } else if (typeof showGraphAbsentToast === 'function') {
+        showGraphAbsentToast(mLabel);
+      }
     });
     chips.push(c);
   });
@@ -1695,6 +1714,10 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
     e.stopPropagation();
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+    // Zoom+center in the guru-shishya (graph) view, then populate the panel
+    if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+      orientToNode(lecturerId);
+    }
     if (lNode && lNode.length && typeof selectNode === 'function') {
       selectNode(lNode);
       if (typeof window.setPanelState === 'function') {
