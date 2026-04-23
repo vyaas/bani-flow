@@ -1672,6 +1672,168 @@
         ]
       },
       {
+        "id": "seetha_rajan",
+        "label": "Seetha Rajan",
+        "sources": [
+          {
+            "url": "https://www.nadatarangini.org/artists/seetha-rajan",
+            "label": "Nadatarangini",
+            "type": "other"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": [
+          {
+            "url": "https://www.youtube.com/watch?v=BPeYC1txTPk",
+            "label": "A Musical Exploration — An insight into the intrinsic beauty of ragas",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=uUVO9f8ovT4",
+            "label": "A Musical Exploration — Raga Shankarabharanam",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "shankarabharanam"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=o-z17NqlaIE",
+            "label": "A Musical Exploration — Harikambhoji, Kambhoji, Yadukulakambhoji, Khamas",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "harikambhoji",
+                "kambhoji",
+                "yadukulakamboji",
+                "khamas"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=4QCX8kqj0LM",
+            "label": "A Musical Exploration — Suddha Saveri, Sama, Arabhi and Devagandhari",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "suddha_saveri",
+                "sama",
+                "arabhi",
+                "devagandhari"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=04eXjFHbvJA",
+            "label": "A Musical Exploration — Kedaragaula, Narayanagaula and Surati",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "kedaragaula",
+                "narayanagowla",
+                "surutti"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=tXj52Od9Hmw",
+            "label": "A Musical Exploration — Kannada, Janaranjani, Purnachandrika, Malavi and Sahana",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "kannada",
+                "janaranjani",
+                "purnachandrika",
+                "malavi",
+                "sahana"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=EdltSELdEDo",
+            "label": "A Musical Exploration — Kedaram, Nilambari, Natakuranji and Begada",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "kedaram",
+                "neelambari",
+                "nattakurinji",
+                "begada"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=_aVUaSsXjt8",
+            "label": "A Musical Exploration — Mohanam, Hamsadhvani, Kalyani, Saranga, Hamirkalyani and more",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "mohanam",
+                "hamsadhwani",
+                "kalyani",
+                "saranga",
+                "hamir_kalyani"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=2VfvIJohas4",
+            "label": "A Musical Exploration — Kharaharapriya, Sri, Nayaki, Darbar, Madhyamavati and more",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "kharaharapriya",
+                "sriraga",
+                "nayaki",
+                "darbar",
+                "madhyamavati"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=oG6RRKJpTqQ",
+            "label": "A Musical Exploration — Abhogi, Sriranjani, Ritigaula, Kanada and more",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "abhogi",
+                "sriranjini",
+                "reetigowla",
+                "kaanada"
+              ],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          }
+        ]
+      },
+      {
         "id": "semmangudi_srinivasa_iyer",
         "label": "Semmangudi Srinivasa Iyer",
         "sources": [
@@ -3168,6 +3330,21 @@
         "is_melakarta": false
       },
       {
+        "id": "abhogi",
+        "name": "Abhogi",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "harikambhoji",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Abhogi",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya of Harikambhoji (28th melakarta); pentatonic raga; ārohana S R2 G2 M1 D2 S, avarohana S D2 M1 G2 R2 S; evokes calmness and devotion"
+      },
+      {
         "id": "ahiri",
         "name": "Ahiri",
         "aliases": [],
@@ -3847,7 +4024,8 @@
         "id": "hamir_kalyani",
         "name": "Hamir Kalyani",
         "aliases": [
-          "Hameer Kalyani"
+          "Hameer Kalyani",
+          "Hamirkalyani"
         ],
         "melakarta": null,
         "parent_raga": "kalyani",
@@ -3865,7 +4043,8 @@
         "id": "hamsadhwani",
         "name": "Hamsadhwani",
         "aliases": [
-          "Hansadhwani"
+          "Hansadhwani",
+          "Hamsadhvani"
         ],
         "melakarta": null,
         "parent_raga": "kalyani",
@@ -4777,7 +4956,8 @@
         "id": "narayanagowla",
         "name": "Narayanagowla",
         "aliases": [
-          "Narayana Gowla"
+          "Narayana Gowla",
+          "Narayanagaula"
         ],
         "melakarta": null,
         "parent_raga": "shankarabharanam",
@@ -4865,7 +5045,8 @@
         "id": "nattakurinji",
         "name": "Nattakurinji",
         "aliases": [
-          "Nata Kurinji"
+          "Nata Kurinji",
+          "Natakuranji"
         ],
         "melakarta": null,
         "parent_raga": "harikambhoji",
@@ -4895,6 +5076,21 @@
           }
         ],
         "notes": "40th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₂ N₂ Ṡ"
+      },
+      {
+        "id": "nayaki",
+        "name": "Nayaki",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "kharaharapriya",
+        "sources": [
+          {
+            "url": "https://www.shivkumar.org/music/kanugonu-nayaki.htm",
+            "label": "Shivkumar.org — Kanugonu Nayaki",
+            "type": "other"
+          }
+        ],
+        "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 M1 P D2 N2 D2 P S, avarohana S N2 S P D2 N2 D2 P M1 R2 G2 R2 S; vakra raga"
       },
       {
         "id": "neelambari",
@@ -5651,7 +5847,8 @@
         "id": "surutti",
         "name": "Surutti",
         "aliases": [
-          "Suruti"
+          "Suruti",
+          "Surati"
         ],
         "melakarta": null,
         "parent_raga": "harikambhoji",
@@ -5918,7 +6115,8 @@
         "name": "Yadukulakamboji",
         "aliases": [
           "Yadukula Kambhoji",
-          "Yadukulakhamboji"
+          "Yadukulakhamboji",
+          "Yadukulakambhoji"
         ],
         "melakarta": null,
         "parent_raga": "harikambhoji",

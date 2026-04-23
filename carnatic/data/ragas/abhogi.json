@@ -1,0 +1,15 @@
+{
+  "id": "abhogi",
+  "name": "Abhogi",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Abhogi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta); pentatonic raga; ārohana S R2 G2 M1 D2 S, avarohana S D2 M1 G2 R2 S; evokes calmness and devotion"
+}

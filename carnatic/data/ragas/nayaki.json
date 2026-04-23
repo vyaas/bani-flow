@@ -1,0 +1,15 @@
+{
+  "id": "nayaki",
+  "name": "Nayaki",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/kanugonu-nayaki.htm",
+      "label": "Shivkumar.org — Kanugonu Nayaki",
+      "type": "other"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); ārohana S R2 M1 P D2 N2 D2 P S, avarohana S N2 S P D2 N2 D2 P M1 R2 G2 R2 S; vakra raga"
+}
