@@ -2,6 +2,7 @@
 carnatic/render/data_transforms.py — Denormalisation and lookup-table builders.
 """
 from collections import defaultdict
+from .data_loaders import yt_video_id
 
 
 def _track_performer_ids(host_node_id: str, yt: dict) -> list[str]:
@@ -16,6 +17,61 @@ def _track_performer_ids(host_node_id: str, yt: dict) -> list[str]:
     if not perfs:
         return [host_node_id]
     return [p["musician_id"] for p in perfs if p.get("musician_id")]
+
+def _build_lecdem_ref(node: dict, entry: dict) -> dict:
+    """Construct a LecdemRef from a host node and a youtube[] lecdem entry (ADR-078)."""
+    subjects = entry.get("subjects") or {}
+    return {
+        "lecturer_id":    node["id"],
+        "lecturer_label": node.get("label", ""),
+        "url":            entry.get("url", ""),
+        "video_id":       yt_video_id(entry.get("url", "")) or "",
+        "label":          entry.get("label", ""),
+        "year":           entry.get("year"),
+        "subjects": {
+            "raga_ids":        subjects.get("raga_ids", []),
+            "composition_ids": subjects.get("composition_ids", []),
+            "musician_ids":    subjects.get("musician_ids", []),
+        },
+    }
+
+
+def build_lecdem_indexes(musicians: list[dict]) -> dict:
+    """Build four subject-anchored lecdem indexes from musician youtube[] entries (ADR-078).
+
+    Returns a dict with keys:
+      lecdems_by:                {lecturer_id    → [LecdemRef, …]}
+      lecdems_about_musician:    {subject mid    → [LecdemRef, …]}
+      lecdems_about_raga:        {subject rid    → [LecdemRef, …]}
+      lecdems_about_composition: {subject cid    → [LecdemRef, …]}
+
+    One traversal; pure function (input → output, no side effects).
+    """
+    by:                dict[str, list[dict]] = {}
+    about_musician:    dict[str, list[dict]] = {}
+    about_raga:        dict[str, list[dict]] = {}
+    about_composition: dict[str, list[dict]] = {}
+
+    for node in musicians:
+        for entry in node.get("youtube", []):
+            if entry.get("kind") != "lecdem":
+                continue
+            ref = _build_lecdem_ref(node, entry)
+            by.setdefault(node["id"], []).append(ref)
+            for mid in ref["subjects"]["musician_ids"]:
+                about_musician.setdefault(mid, []).append(ref)
+            for rid in ref["subjects"]["raga_ids"]:
+                about_raga.setdefault(rid, []).append(ref)
+            for cid in ref["subjects"]["composition_ids"]:
+                about_composition.setdefault(cid, []).append(ref)
+
+    return {
+        "lecdems_by":                by,
+        "lecdems_about_musician":    about_musician,
+        "lecdems_about_raga":        about_raga,
+        "lecdems_about_composition": about_composition,
+    }
+
 
 def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dict, dict, dict, dict]:
     """
@@ -130,6 +186,8 @@ def build_composition_lookups(
     for node in graph["nodes"]:
         node_id = node["id"]
         for yt in node.get("youtube", []):
+            if yt.get("kind") == "lecdem":
+                continue                  # lecdems do not feed recital indexes (ADR-078)
             cid = yt.get("composition_id")
             rid = yt.get("raga_id")
             performer_ids = _track_performer_ids(node_id, yt)
@@ -192,6 +250,8 @@ def build_listenable_set(
     for node in graph["nodes"]:
         node_id = node["id"]
         for yt in node.get("youtube", []):
+            if yt.get("kind") == "lecdem":
+                continue                  # lecdems do not feed listenable set (ADR-078)
             for mid in _track_performer_ids(node_id, yt):
                 listenable.add(mid)
 

@@ -164,8 +164,21 @@ Builds two lookup dicts mapping compositions/ragas → musician node IDs:
 | `raga_to_nodes` | `raga_id` | `[node_id, …]` |
 
 Indexes two sources and merges them (duplicates suppressed):
-1. **Legacy schema** — `youtube[]` entries embedded in `musicians.json` nodes
+1. **Legacy schema** — `youtube[]` entries embedded in `musicians.json` nodes (lecdem entries skipped — ADR-078)
 2. **Structured schema** — `performers[]` inside `recordings/*.json` sessions
+
+#### `build_lecdem_indexes(musicians) -> dict`
+
+Builds four subject-anchored lecdem indexes (ADR-078) from `youtube[]` entries where `kind == "lecdem"`:
+
+| Key | Type | Description |
+|---|---|---|
+| `lecdems_by` | `dict[lecturer_id, [LecdemRef, …]]` | All lecdems given by a musician |
+| `lecdems_about_musician` | `dict[subject_mid, [LecdemRef, …]]` | Lecdems that name this musician as a subject |
+| `lecdems_about_raga` | `dict[subject_rid, [LecdemRef, …]]` | Lecdems that discuss this raga |
+| `lecdems_about_composition` | `dict[subject_cid, [LecdemRef, …]]` | Lecdems that discuss this composition |
+
+Each `LecdemRef` carries: `lecturer_id`, `lecturer_label`, `url`, `video_id`, `label`, `year`, and a `subjects` object with `raga_ids[]`, `composition_ids[]`, `musician_ids[]`. One pass; pure function.
 
 ---
 
@@ -411,6 +424,10 @@ const recordings = […];                  // from recordings/*.json
 const musicianToPerformances = {…};      // musician_id → [PerformanceRef, …]
 const compositionToPerf = {…};           // composition_id → [PerformanceRef, …]
 const ragaToPerf = {…};                  // raga_id → [PerformanceRef, …]
+const lecdemsBy = {…};                   // ADR-078: lecturer_id → [LecdemRef, …]
+const lecdemsAboutMusician = {…};        // ADR-078: subject_mid → [LecdemRef, …]
+const lecdemsAboutRaga = {…};            // ADR-078: subject_rid → [LecdemRef, …]
+const lecdemsAboutComposition = {…};     // ADR-078: subject_cid → [LecdemRef, …]
 ```
 
 **Step 3 — Concatenate script block**
