@@ -6,7 +6,9 @@ Usage:
     bani-add  bundle.json
     python3 carnatic/bani_add.py  bundle.json
 
-Bundle schema (schema_version 1):
+Bundle schema reference: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
+
+Bundle envelope (schema_version 1):
 
   {
     "schema_version": 1,
@@ -23,7 +25,15 @@ Bundle schema (schema_version 1):
     }
   }
 
+Whitelisted item types: ragas, composers, musicians, compositions, recordings, edges.
+Unknown item types are rejected with a named error — silent drops are forbidden.
+
 Processing order: ragas → composers → musicians → compositions → recordings → edges.
+
+Version contract (§3 of ADR-083):
+  - bundles with schema_version > MAX_VERSION are refused immediately.
+  - bundles with schema_version < MAX_VERSION are accepted (migrations applied in order;
+    migration set is empty while only one version exists).
 
 Exit codes:
   0 — all items written or skipped (no errors)
@@ -162,6 +172,7 @@ def _process_musicians(
     writer: CarnaticWriter,
     musicians_path: Path,
     comp_path: Path,
+    ragas_path: Path,
 ) -> tuple[int, int, int]:
     added = skipped = errors = 0
     for m in musicians:
@@ -189,7 +200,10 @@ def _process_musicians(
                     version=yt.get("version"),
                     tala=yt.get("tala"),
                     performers=yt.get("performers"),
+                    kind=yt.get("kind"),
+                    subjects=yt.get("subjects"),
                     compositions_path=comp_path,
+                    ragas_path=ragas_path,
                 )
                 _print_result(result)
                 if result.ok:
@@ -242,7 +256,10 @@ def _process_musicians(
                     version=yt.get("version"),
                     tala=yt.get("tala"),
                     performers=yt.get("performers"),
+                    kind=yt.get("kind"),
+                    subjects=yt.get("subjects"),
                     compositions_path=comp_path,
+                    ragas_path=ragas_path,
                 )
                 _print_result(yt_result)
                 if yt_result.ok:
@@ -374,12 +391,28 @@ def main() -> None:
         print(f"ERROR  invalid JSON in bundle file: {exc}", file=sys.stderr)
         sys.exit(1)
 
+    MAX_VERSION = 1
+    KNOWN_ITEM_TYPES = {"ragas", "composers", "musicians", "compositions", "recordings", "edges"}
+
     schema_version = bundle.get("schema_version", 1)
-    if schema_version != 1:
-        print(f"ERROR  unsupported schema_version {schema_version} (expected 1)", file=sys.stderr)
+    if schema_version > MAX_VERSION:
+        print(
+            f"ERROR: bundle is schema_version {schema_version}, but this bani-add supports up "
+            f"to schema_version {MAX_VERSION}. Upgrade carnatic/ to ingest.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     items = bundle.get("items", {})
+    unknown_keys = set(items.keys()) - KNOWN_ITEM_TYPES
+    if unknown_keys:
+        print(
+            f"ERROR: bundle contains unknown item type(s) {sorted(unknown_keys)!r}. "
+            f"Known types: {', '.join(sorted(KNOWN_ITEM_TYPES))}.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     ragas        = items.get("ragas",        [])
     composers    = items.get("composers",    [])
     musicians    = items.get("musicians",    [])
@@ -410,7 +443,7 @@ def main() -> None:
     # ── musicians ─────────────────────────────────────────────────────────────
     if musicians:
         print(f"\nMusicians ({len(musicians)}):")
-        a, s, e = _process_musicians(musicians, writer, musicians_path, comp_path)
+        a, s, e = _process_musicians(musicians, writer, musicians_path, comp_path, ragas_path)
         total_added += a; total_skipped += s; total_errors += e
 
     # ── compositions ──────────────────────────────────────────────────────────
