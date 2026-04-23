@@ -77,10 +77,12 @@ function switchView(name) {
   _updateViewportToolbar(name, currentLayout);
 
   const filterBar = document.getElementById('filter-bar');
+  const cyLabels  = document.getElementById('cy-labels');
   if (name === 'graph') {
     hideTimelineRuler();
     hideRagaWheel();
     document.getElementById('cy').style.display = '';
+    if (cyLabels) cyLabels.style.display = '';
     if (filterBar) filterBar.style.display = 'flex';
     // Restore the sub-layout that was active when the user left
     if (currentLayout === 'timeline') {
@@ -89,9 +91,11 @@ function switchView(name) {
       currentLayout = 'graph';
       relayout();
     }
+    if (typeof scheduleCyChipSync === 'function') scheduleCyChipSync();
   } else if (name === 'raga') {
     hideTimelineRuler();
     document.getElementById('cy').style.display = 'none';
+    if (cyLabels) cyLabels.style.display = 'none';
     if (filterBar) filterBar.style.display = 'none';
     showRagaWheel(/* skipDraw when sync will redraw */ !!(typeof activeBaniFilter !== 'undefined' && activeBaniFilter));
     // Re-apply the current Bani filter to the wheel (ADR-025 sync gap)

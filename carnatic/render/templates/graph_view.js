@@ -20,23 +20,11 @@ const cy = cytoscape({
         'shape':              'data(shape)',
         'width':              'data(size)',
         'height':             'data(size)',
-        'label':              'data(label)',
-        'font-family':            THEME.fontUi,
-        'font-size':              'data(font_size)',
-        'font-weight':            'data(font_weight)',
-        'color':                  THEME.labelColor,
-        'text-valign':            'bottom',
-        'text-halign':            'center',
-        'text-margin-y':          '8px',
-        'text-wrap':              'wrap',
-        'text-max-width':         '100px',
-        'text-outline-color':      'data(label_outline)',
-        'text-outline-width':     '2px',
+        // ADR-074: canvas label is suppressed; labels are rendered as
+        // real `.musician-chip` DOM elements in `#cy-labels` so they match
+        // the sidebar chips exactly (era tint + left bar + instrument icon).
+        'label':              '',
         'min-zoomed-font-size':   8,
-        'text-background-color':   'data(label_bg)',
-        'text-background-opacity': 0.18,
-        'text-background-padding': '3px',
-        'text-background-shape':  'roundrectangle',
         'border-width':       '2px',
         'border-color':       THEME.nodeDefault,
       }
@@ -70,7 +58,6 @@ const cy = cytoscape({
       selector: 'node:selected',
       style: {
         'border-color': THEME.nodeSelected, 'border-width': '3px',
-        'label': 'data(label)',
       }
     },
     {
@@ -120,6 +107,7 @@ cy.ready(() => {
   cy.nodes().forEach(n => {
     if (n.data('tracks').length > 0) n.addClass('has-tracks');
   });
+  _initOverlayChips();
   applyZoomLabels();
   buildFilterDropdowns();
   // Default view is Mela-Janya — switch after cy is ready so showRagaWheel()
@@ -411,25 +399,135 @@ function setScopeLabels(visible) {
   document.getElementById('bani-scope-label').style.display     = display;
 }
 
+// ── ADR-074: DOM-overlay musician chip labels ───────────────────────────────
+// Each cy node has a sibling `.musician-chip` element in `#cy-labels`. Chips
+// are pixel-identical to the right-sidebar chips (same CSS class). Sync is
+// rAF-coalesced and driven by viewport (pan / zoom) and node-position events.
+
+const _cyChipMap = new Map();   // nodeId -> HTMLElement
+let   _cyChipSyncQueued = false;
+
+function _buildOverlayChip(node) {
+  const d = node.data();
+  const tint = THEME.eraTintCss(d.era || null);
+  const chip = document.createElement('span');
+  chip.className = 'musician-chip cy-overlay-chip';
+  chip.style.setProperty('--chip-era-bg', tint.bg);
+  chip.style.setProperty('--chip-era-border', tint.border);
+  if (d.instrument) chip.appendChild(makeInstrBadge(d.instrument));
+  chip.appendChild(document.createTextNode(d.label));
+  chip.title = d.label + (d.lifespan ? ' · ' + d.lifespan : '');
+  chip.dataset.nodeId = node.id();
+  // Forward chip clicks to the underlying cy node so the chip behaves
+  // exactly like tapping the disc (focus + open panel).
+  chip.addEventListener('click', evt => {
+    evt.stopPropagation();
+    const n = cy.getElementById(chip.dataset.nodeId);
+    if (n && n.length) n.emit('tap');
+  });
+  // Keep mouse hover in sync with the canvas hover state.
+  chip.addEventListener('mouseenter', () => {
+    const n = cy.getElementById(chip.dataset.nodeId);
+    if (n && n.length) n.emit('mouseover');
+  });
+  chip.addEventListener('mouseleave', () => {
+    const n = cy.getElementById(chip.dataset.nodeId);
+    if (n && n.length) n.emit('mouseout');
+  });
+  return chip;
+}
+
+function _initOverlayChips() {
+  const host = document.getElementById('cy-labels');
+  if (!host) return;
+  host.innerHTML = '';
+  _cyChipMap.clear();
+  cy.nodes().forEach(n => {
+    const chip = _buildOverlayChip(n);
+    host.appendChild(chip);
+    _cyChipMap.set(n.id(), chip);
+  });
+}
+
+function _syncOverlayChipPositions() {
+  _cyChipSyncQueued = false;
+  if (_cyChipMap.size === 0) return;
+  // Skip work when the cy canvas is hidden (raga-wheel view).
+  const cyEl = document.getElementById('cy');
+  if (cyEl && cyEl.style.display === 'none') return;
+  // Scale chips with the viewport zoom so they keep a fixed visual ratio to
+  // the node disc (which Cytoscape draws in graph-space). Clamp to keep the
+  // text legible at extreme zooms — tier-based hiding handles density.
+  const z      = cy.zoom();
+  const scale  = Math.max(0.45, Math.min(1.4, z));
+  cy.nodes().forEach(n => {
+    const chip = _cyChipMap.get(n.id());
+    if (!chip) return;
+    // Faded state mirrors cy's `.faded` class (set by selectNode etc).
+    chip.classList.toggle('chip-faded', n.hasClass('faded'));
+    if (chip.classList.contains('chip-hidden')) return;
+    const p = n.renderedPosition();
+    const h = n.renderedHeight();
+    // Anchor: top-centre of chip just below the disc. CSS transform-origin
+    // is 50% 0%, so scaling does not drift the chip away from the disc.
+    const x = Math.round(p.x);
+    const y = Math.round(p.y + h / 2 + 4);
+    chip.style.transform =
+      `translate(${x}px, ${y}px) translate(-50%, 0) scale(${scale})`;
+  });
+}
+
+function scheduleCyChipSync() {
+  if (_cyChipSyncQueued) return;
+  _cyChipSyncQueued = true;
+  requestAnimationFrame(_syncOverlayChipPositions);
+}
+
 // ── zoom-tiered labels (word-cloud / cartographic style) ──────────────────────
-// Font sizes are graph-space values — Cytoscape's viewport zoom scales them
-// naturally. min-zoomed-font-size (set in style) hides labels that become
-// too small on screen. We only control tier-based visibility here.
+// Tier-based show/hide of overlay chips. Mirrors the original canvas-label
+// thresholds so the perceived label density is unchanged.
 function applyZoomLabels() {
   const z = cy.zoom();
   cy.nodes().forEach(n => {
-    if (n.selected()) return;
+    const chip = _cyChipMap.get(n.id());
+    if (!chip) return;
     const tier = n.data('label_tier');
-    // Tier-0 (Trinity/Bridge): always visible
-    // Tier-1 (Golden Age/Disseminator): show from z≥0.35
-    // Tier-2 (Living Pillars/Contemporary): show from z≥0.60
-    const show = tier === 0 ||
+    const show = n.selected() ||
+                 tier === 0 ||
                  (tier === 1 && z >= 0.35) ||
                  (tier === 2 && z >= 0.60);
-    n.style('label', show ? n.data('label') : '');
+    chip.classList.toggle('chip-hidden', !show);
   });
+  scheduleCyChipSync();
 }
 cy.on('zoom', applyZoomLabels);
+cy.on('pan',  scheduleCyChipSync);
+cy.on('position', 'node', scheduleCyChipSync);
+cy.on('add remove', 'node', () => { _initOverlayChips(); applyZoomLabels(); });
+
+// Mirror cy hover state onto the overlay chip (canvas-originated hovers).
+cy.on('mouseover', 'node', evt => {
+  const chip = _cyChipMap.get(evt.target.id());
+  if (chip) chip.classList.add('chip-hovered');
+});
+cy.on('mouseout', 'node', evt => {
+  const chip = _cyChipMap.get(evt.target.id());
+  if (chip) chip.classList.remove('chip-hovered');
+});
+
+// Mirror cy selection state onto the overlay chip.
+cy.on('select', 'node', evt => {
+  const chip = _cyChipMap.get(evt.target.id());
+  if (chip) {
+    chip.classList.add('chip-selected');
+    chip.classList.remove('chip-hidden');
+  }
+});
+cy.on('unselect', 'node', evt => {
+  const chip = _cyChipMap.get(evt.target.id());
+  if (chip) chip.classList.remove('chip-selected');
+});
+
 
 // ── hover popover ─────────────────────────────────────────────────────────────
 const popover = document.getElementById('hover-popover');
