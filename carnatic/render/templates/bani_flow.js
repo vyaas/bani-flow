@@ -1381,32 +1381,16 @@ function _renderBaniFlowLecdemStrip(type, id) {
     labelSpan.title = (ref.label || 'Lecture-Demo') + ' \u2014 Watch lecture-demo';
     chipsDiv.appendChild(labelSpan);
 
-    // §5: lecturer attribution — clickable → opens musician panel + pushes history
-    if (ref.lecturer_label) {
-      const bySpan = document.createElement('span');
-      bySpan.className = 'lecdem-by';
-      bySpan.textContent = '\u2014 ' + ref.lecturer_label;
-      bySpan.title = 'Open ' + ref.lecturer_label + '\u2019s panel';
-      bySpan.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (ref.lecturer_id) {
-          const node = cy.getElementById(ref.lecturer_id);
-          if (node && node.length && typeof selectNode === 'function') {
-            selectNode(node);
-            if (typeof window.setPanelState === 'function') {
-              setTimeout(function() { window.setPanelState('MUSICIAN'); }, 50);
-            }
-          }
-        }
-      });
-      chipsDiv.appendChild(bySpan);
-    }
-
-    // Other subject chips — all subjects except the current trail subject (ADR-081 §3)
+    // §5: lecturer + other subjects flow together as a wrapped tag cloud.
+    // Lecturer renders as a first-class musician chip (clickable → musician panel).
+    const lecturerChip = (typeof _buildLecturerChip === 'function')
+      ? _buildLecturerChip(ref.lecturer_id, ref.lecturer_label)
+      : null;
     const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
-    if (subjectChips.length > 0) {
+    if (lecturerChip || subjectChips.length > 0) {
       const wrap = document.createElement('span');
       wrap.className = 'lecdem-subjects';
+      if (lecturerChip) wrap.appendChild(lecturerChip);
       subjectChips.forEach(function(c) { wrap.appendChild(c); });
       chipsDiv.appendChild(wrap);
     }
