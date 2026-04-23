@@ -3093,6 +3093,20 @@
         "confidence": 0.95,
         "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
         "note": "Varadachariar studied under Patnam Subramania Iyer for three years from age fourteen; per Wikipedia"
+      },
+      {
+        "source": "tiger_varadachariar",
+        "target": "md_ramanathan",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+        "note": "M. D. Ramanathan listed as a direct student of Tiger Varadachariar; confirmed by Wikipedia and MDR's bani field"
+      },
+      {
+        "source": "tiger_varadachariar",
+        "target": "s_ramanathan",
+        "confidence": 0.95,
+        "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+        "note": "S. Ramanathan listed as a direct student of Tiger Varadachariar per Wikipedia"
       }
     ]
   },
