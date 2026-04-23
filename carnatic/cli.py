@@ -842,6 +842,95 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                         f"(ADR-077 — use subjects arrays instead)"
                     )
 
+    # ── empty-panel tutorial integrity (ADR-086) ──────────────────────────────
+    # If carnatic/data/help/empty_panels.json exists, every id it references
+    # must resolve in the graph. recording_ref must also match at least one
+    # performance for its (musician_id, raga_id, concert_hint).
+    import json as _json
+    from pathlib import Path as _Path
+    _help_path = _Path(__file__).resolve().parent / "data" / "help" / "empty_panels.json"
+    if _help_path.exists():
+        known_recordings = g.get_all_recordings()
+        try:
+            help_data = _json.loads(_help_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            errors.append(f"help/empty_panels.json: invalid JSON ({e})")
+            help_data = None
+        if help_data:
+            def _resolve_subject(kind: str, sid: str, where: str) -> None:
+                if not sid:
+                    return
+                if kind == "musician" and sid not in known_musician_ids:
+                    errors.append(f"{where}: musician_id '{sid}' not in graph")
+                elif kind == "raga" and sid not in known_raga_ids:
+                    errors.append(f"{where}: raga_id '{sid}' not in ragas")
+                elif kind == "composition" and sid not in known_composition_ids:
+                    errors.append(f"{where}: composition_id '{sid}' not in compositions")
+                elif kind == "composer" and sid not in known_composer_ids:
+                    errors.append(f"{where}: composer_id '{sid}' not in composers")
+
+            def _resolve_recording_ref(item: dict, where: str) -> None:
+                mid = item.get("musician_id")
+                rid = item.get("raga_id")
+                hint = (item.get("concert_hint") or "").lower()
+                if mid is not None and mid not in known_musician_ids:
+                    errors.append(f"{where}: musician_id '{mid}' not in graph")
+                    return
+                if rid is not None and rid not in known_raga_ids:
+                    errors.append(f"{where}: raga_id '{rid}' not in ragas")
+                    return
+                # Verify at least one matching performance
+                hit = False
+                for rec in known_recordings:
+                    rec_id = (rec.get("id") or "").lower()
+                    rec_title = (rec.get("title") or "").lower()
+                    if hint and hint not in rec_id and hint not in rec_title:
+                        continue
+                    for sess in rec.get("sessions", []):
+                        performer_ids = {p.get("musician_id") for p in sess.get("performers", [])}
+                        if mid not in performer_ids:
+                            continue
+                        for perf in sess.get("performances", []):
+                            if perf.get("raga_id") == rid:
+                                hit = True
+                                break
+                        if hit:
+                            break
+                    if hit:
+                        break
+                if not hit:
+                    errors.append(
+                        f"{where}: no performance matches musician '{mid}' + raga '{rid}' "
+                        f"+ concert_hint '{item.get('concert_hint')}'"
+                    )
+
+            def _resolve_lecdem_ref(item: dict, where: str) -> None:
+                mid = item.get("musician_id")
+                if mid is not None and mid not in known_musician_ids:
+                    errors.append(f"{where}: musician_id '{mid}' not in graph")
+
+            for panel_key in ("musician_panel", "bani_flow_panel"):
+                block = help_data.get(panel_key) or {}
+                tt = block.get("try_these") or {}
+                for gi, group in enumerate(tt.get("groups", [])):
+                    g_where = f"help/empty_panels.json:{panel_key}.try_these.groups[{gi}]"
+                    _resolve_subject(
+                        group.get("subject_kind"),
+                        group.get("subject_id"),
+                        g_where + ".subject_id",
+                    )
+                    for ii, item in enumerate(group.get("items", [])):
+                        i_where = f"{g_where}.items[{ii}]"
+                        kind = item.get("kind")
+                        if kind in ("composition", "raga", "musician", "composer"):
+                            _resolve_subject(kind, item.get("id"), i_where + ".id")
+                        elif kind == "recording_ref":
+                            _resolve_recording_ref(item, i_where)
+                        elif kind == "lecdem_ref":
+                            _resolve_lecdem_ref(item, i_where)
+                        else:
+                            errors.append(f"{i_where}: unknown item kind '{kind}'")
+
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
         "All musician_ids in recordings exist in graph",
@@ -854,6 +943,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "All composition composer_ids and raga_ids are valid",
         "All youtube performers reference known musicians and roles (ADR-070)",
         "All youtube lecdem entries have valid kind, subjects, and resolvable ids (ADR-077)",
+        "All empty-panel tutorial ids resolve in graph (ADR-086)",
     ]
 
     if not errors:

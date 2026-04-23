@@ -62,6 +62,7 @@ def render_html(
     tanpura_data: list | None = None,
     listenable_set: set | None = None,
     lecdem_indexes: dict | None = None,
+    help_empty_panels: dict | None = None,
 ) -> str:
     node_count = len(graph["nodes"])
     edge_count = len(graph["edges"])
@@ -85,6 +86,9 @@ def render_html(
 
     # ADR-055: listenable musician node IDs (as JS Set)
     listenable_ids_json = json.dumps(sorted(listenable_set) if listenable_set else [], ensure_ascii=False)
+
+    # ADR-086: empty-panel tutorial data (None when data file is absent)
+    help_empty_panels_json = json.dumps(help_empty_panels, indent=2, ensure_ascii=False)
 
     # ADR-078: lecdem subject-anchored indexes
     _lecdem = lecdem_indexes or {}
@@ -124,6 +128,9 @@ def render_html(
         f"const lecdemsAboutRaga        = {lecdems_about_raga_json};\n"
         f"const lecdemsAboutComposition = {lecdems_about_composition_json};\n"
         f"\n"
+        f"// ── Empty-panel tutorial copy (ADR-086) ──────────────────────────────────────\n"
+        f"const helpEmptyPanels = {help_empty_panels_json};\n"
+        f"\n"
         f"// ── graphData: unified object for entry forms (ADR-031) ──────────────────────\n"
         f"const graphData = {{\n"
         f"  nodes:        elements.filter(e => !e.data.source).map(e => ({{\n"
@@ -158,6 +165,7 @@ def render_html(
     search       = _load("search.js")
     entry_forms  = _load("entry_forms.js")
     roles_js     = _load("roles.js")
+    empty_tut    = _load("empty_tutorials.js")
     mobile       = _load("mobile.js")
 
     # ── Substitute placeholders in base.html ──────────────────────────────────
@@ -188,6 +196,7 @@ def render_html(
         search,
         roles_js,      # ← before entry_forms: defines window.PERFORMER_ROLES (ADR-071)
         entry_forms,   # ← needs graphData + wireDrag/nextSpawnPosition/topZ
+        empty_tut,     # ← ADR-086: empty-panel tutorials; needs helpEmptyPanels + bani_flow + media_player
         mobile,        # ← LAST: exposes peekBottomSheet/dismissBottomSheet globals
         "</script>",
     ])

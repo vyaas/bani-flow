@@ -641,6 +641,8 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
+  // ADR-086: subject loaded → dismiss empty-panel tutorial
+  if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
   // Clear filter and rebuild unified recordings list
   const recFilter = document.getElementById('rec-filter');
@@ -1020,6 +1022,8 @@ cy.on('tap', evt => {
   document.getElementById('node-info').style.display        = 'block';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  // ADR-086: subject cleared → restore empty-panel tutorial
+  if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   // NEW: clear chip filters on background tap
   clearAllChipFilters();
   applyZoomLabels();

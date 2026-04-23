@@ -150,3 +150,16 @@ def load_tanpura(data_dir: Path) -> list:
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return []
+
+
+def load_help_empty_panels(data_dir: Path) -> dict | None:
+    """Load carnatic/data/help/empty_panels.json (ADR-086).
+
+    Returns the parsed JSON dict, or None if the file is absent. The render
+    pipeline injects this as `helpEmptyPanels`; downstream JS treats `null`
+    as "no tutorials configured" and skips rendering silently.
+    """
+    path = data_dir / "help" / "empty_panels.json"
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    return None
