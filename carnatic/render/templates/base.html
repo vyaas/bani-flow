@@ -1495,15 +1495,38 @@
     margin: 0;
     padding: 0 0 4px;
   }
+  /* ── Lecdem row: same play-button pattern as tree-misc-leaf ── */
   .lecdem-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 5px;
-    padding: 4px 8px 4px 12px;
+    padding: 6px 8px 6px 12px;
     border-bottom: 1px solid var(--border);
   }
   .lecdem-row:last-child { border-bottom: none; }
+  .lecdem-row .trail-row2 {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .lecdem-row .trail-chips {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  /* Label: wraps to at most 2 lines, never truncates the play button */
+  .lecdem-label {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.35;
+    word-break: break-word;
+    font-size: 0.72rem;
+    color: var(--fg-default, var(--fg));
+  }
+  .lecdem-row .trail-acts { flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
   .lecdem-by {
     font-size: 0.65rem;
     color: var(--fg-muted);
@@ -1513,9 +1536,9 @@
   }
   .lecdem-by:hover { color: var(--fg-default); }
   .lecdem-subjects {
-    display: inline-flex;
-    align-items: center;
+    display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 4px;
   }
 

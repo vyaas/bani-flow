@@ -1518,15 +1518,38 @@
     margin: 0;
     padding: 0 0 4px;
   }
+  /* ── Lecdem row: same play-button pattern as tree-misc-leaf ── */
   .lecdem-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 5px;
-    padding: 4px 8px 4px 12px;
+    padding: 6px 8px 6px 12px;
     border-bottom: 1px solid var(--border);
   }
   .lecdem-row:last-child { border-bottom: none; }
+  .lecdem-row .trail-row2 {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .lecdem-row .trail-chips {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  /* Label: wraps to at most 2 lines, never truncates the play button */
+  .lecdem-label {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.35;
+    word-break: break-word;
+    font-size: 0.72rem;
+    color: var(--fg-default, var(--fg));
+  }
+  .lecdem-row .trail-acts { flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
   .lecdem-by {
     font-size: 0.65rem;
     color: var(--fg-muted);
@@ -1536,9 +1559,9 @@
   }
   .lecdem-by:hover { color: var(--fg-default); }
   .lecdem-subjects {
-    display: inline-flex;
-    align-items: center;
+    display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 4px;
   }
 
@@ -7311,46 +7334,6 @@ const elements = [
           "performers": []
         },
         {
-          "vid": "PdIy9531_fM",
-          "label": "Manodharma II: Alapana (Lec-Dem Part 1) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
-          "vid": "79ScPj4sE3Y",
-          "label": "Manodharma II: Pallavi (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
-          "vid": "iDaanIHX30I",
-          "label": "Manodharma II: Accompanists (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
-          "vid": "ErpI843IiG4",
-          "label": "Manodharma II: Kalpana Swara & Thani (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi 2018",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2018,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
           "vid": "FauxpOMibu4",
           "label": "Allahvai · Behag - TM Krishna & Vikku Vinayakram & Akkarai Subbulakshmi, Afghan Church Mumbai 2018",
           "composition_id": null,
@@ -7373,46 +7356,6 @@ const elements = [
         {
           "vid": "j73jMamBZxU",
           "label": "Ragamalika - TM Krishna & Akkarai Subbulakshmi, Parallel Lines Pune 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
-          "vid": "KDPPDB0rG70",
-          "label": "Manodharma Lec-Dem Promo - TM Krishna & Akkarai Subbulakshmi 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
-          "vid": "85LcNLhZNMU",
-          "label": "Manodharma III: Alapana (Lec-Dem Part 2) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
-          "vid": "qlq9EvFr8Uo",
-          "label": "Manodharma III: Kalpanaswarams (Lec-Dem Part 3) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
-          "composition_id": null,
-          "raga_id": null,
-          "year": 2019,
-          "version": null,
-          "tala": null,
-          "performers": []
-        },
-        {
-          "vid": "RccdN6suHUk",
-          "label": "Manodharma III: Tanam (Lec-Dem Part 4) - TM Krishna & Akkarai Subbulakshmi, Kolkata 2019",
           "composition_id": null,
           "raga_id": null,
           "year": 2019,
@@ -70460,18 +70403,56 @@ function buildRecordingsList(nodeId, nodeData) {
         const li = document.createElement('li');
         li.className = 'lecdem-row';
 
-        const chip = buildLecdemChip(ref);
-        if (chip) li.appendChild(chip);
+        const row = document.createElement('div');
+        row.className = 'trail-row2';
+
+        const chipsDiv = document.createElement('div');
+        chipsDiv.className = 'trail-chips';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'lecdem-label';
+        labelSpan.textContent = ref.label || 'Lecture-Demo';
+        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+        chipsDiv.appendChild(labelSpan);
 
         // Subject chips (raga, comp, musician), excluding current node
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-        if (subjectChips) {
+        if (subjectChips && subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          li.appendChild(subjectsWrap);
+          chipsDiv.appendChild(subjectsWrap);
         }
 
+        row.appendChild(chipsDiv);
+
+        const actsDiv = document.createElement('div');
+        actsDiv.className = 'trail-acts';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'rec-play-btn play-btn-concert';
+        playBtn.setAttribute('data-vid', ref.video_id);
+        playBtn.title = ref.label || 'Play';
+        playBtn.textContent = '\u25B6';
+        playBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+          const instance = playerRegistry.get(ref.video_id);
+          if (instance && ref.subjects) {
+            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+            if (subFooter) {
+              const existing = instance.el.querySelector('.mp-footer');
+              if (existing) existing.remove();
+              const resize = instance.el.querySelector('.mp-resize');
+              if (resize) instance.el.insertBefore(subFooter, resize);
+              else        instance.el.appendChild(subFooter);
+            }
+          }
+        });
+        actsDiv.appendChild(playBtn);
+        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+        row.appendChild(actsDiv);
+
+        li.appendChild(row);
         byList.appendChild(li);
       });
 
@@ -70502,10 +70483,19 @@ function buildRecordingsList(nodeId, nodeData) {
         const li = document.createElement('li');
         li.className = 'lecdem-row';
 
-        const chip = buildLecdemChip(ref);
-        if (chip) li.appendChild(chip);
+        const row = document.createElement('div');
+        row.className = 'trail-row2';
 
-        // Lecturer attribution as inline clickable text
+        const chipsDiv = document.createElement('div');
+        chipsDiv.className = 'trail-chips';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'lecdem-label';
+        labelSpan.textContent = ref.label || 'Lecture-Demo';
+        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+        chipsDiv.appendChild(labelSpan);
+
+        // Lecturer attribution
         if (ref.lecturer_label) {
           const bySpan = document.createElement('span');
           bySpan.className = 'lecdem-by';
@@ -70515,18 +70505,47 @@ function buildRecordingsList(nodeId, nodeData) {
             e.stopPropagation();
             if (typeof selectNode === 'function') selectNode(ref.lecturer_id);
           });
-          li.appendChild(bySpan);
+          chipsDiv.appendChild(bySpan);
         }
 
         // Other subjects (exclude current node), e.g. ragas/comps discussed
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-        if (subjectChips) {
+        if (subjectChips && subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          li.appendChild(subjectsWrap);
+          chipsDiv.appendChild(subjectsWrap);
         }
 
+        row.appendChild(chipsDiv);
+
+        const actsDiv = document.createElement('div');
+        actsDiv.className = 'trail-acts';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'rec-play-btn play-btn-concert';
+        playBtn.setAttribute('data-vid', ref.video_id);
+        playBtn.title = ref.label || 'Play';
+        playBtn.textContent = '\u25B6';
+        playBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+          const instance = playerRegistry.get(ref.video_id);
+          if (instance && ref.subjects) {
+            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+            if (subFooter) {
+              const existing = instance.el.querySelector('.mp-footer');
+              if (existing) existing.remove();
+              const resize = instance.el.querySelector('.mp-resize');
+              if (resize) instance.el.insertBefore(subFooter, resize);
+              else        instance.el.appendChild(subFooter);
+            }
+          }
+        });
+        actsDiv.appendChild(playBtn);
+        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+        row.appendChild(actsDiv);
+
+        li.appendChild(row);
         aboutList.appendChild(li);
       });
 
@@ -74314,9 +74333,17 @@ function _renderBaniFlowLecdemStrip(type, id) {
     const li = document.createElement('li');
     li.className = 'lecdem-row';
 
-    // Lecdem chip — opens the media player (ADR-079)
-    const chip = (typeof buildLecdemChip === 'function') ? buildLecdemChip(ref) : null;
-    if (chip) li.appendChild(chip);
+    const row = document.createElement('div');
+    row.className = 'trail-row2';
+
+    const chipsDiv = document.createElement('div');
+    chipsDiv.className = 'trail-chips';
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'lecdem-label';
+    labelSpan.textContent = ref.label || 'Lecture-Demo';
+    labelSpan.title = (ref.label || 'Lecture-Demo') + ' \u2014 Watch lecture-demo';
+    chipsDiv.appendChild(labelSpan);
 
     // §5: lecturer attribution — clickable → opens musician panel + pushes history
     if (ref.lecturer_label) {
@@ -74336,7 +74363,7 @@ function _renderBaniFlowLecdemStrip(type, id) {
           }
         }
       });
-      li.appendChild(bySpan);
+      chipsDiv.appendChild(bySpan);
     }
 
     // Other subject chips — all subjects except the current trail subject (ADR-081 §3)
@@ -74345,9 +74372,42 @@ function _renderBaniFlowLecdemStrip(type, id) {
       const wrap = document.createElement('span');
       wrap.className = 'lecdem-subjects';
       subjectChips.forEach(function(c) { wrap.appendChild(c); });
-      li.appendChild(wrap);
+      chipsDiv.appendChild(wrap);
     }
 
+    row.appendChild(chipsDiv);
+
+    const actsDiv = document.createElement('div');
+    actsDiv.className = 'trail-acts';
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.setAttribute('data-vid', ref.video_id);
+    playBtn.title = ref.label || 'Play';
+    playBtn.textContent = '\u25B6';
+    playBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof openOrFocusPlayer === 'function') {
+        openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+        const instance = (typeof playerRegistry !== 'undefined') ? playerRegistry.get(ref.video_id) : null;
+        if (instance && ref.subjects && typeof _buildLecdemSubjectFooter === 'function') {
+          const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+          if (subFooter) {
+            const existing = instance.el.querySelector('.mp-footer');
+            if (existing) existing.remove();
+            const resize = instance.el.querySelector('.mp-resize');
+            if (resize) instance.el.insertBefore(subFooter, resize);
+            else        instance.el.appendChild(subFooter);
+          }
+        }
+      }
+    });
+    actsDiv.appendChild(playBtn);
+    if (typeof buildYtLink === 'function') {
+      actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+    }
+    row.appendChild(actsDiv);
+
+    li.appendChild(row);
     list.appendChild(li);
   });
 

@@ -1369,9 +1369,17 @@ function _renderBaniFlowLecdemStrip(type, id) {
     const li = document.createElement('li');
     li.className = 'lecdem-row';
 
-    // Lecdem chip — opens the media player (ADR-079)
-    const chip = (typeof buildLecdemChip === 'function') ? buildLecdemChip(ref) : null;
-    if (chip) li.appendChild(chip);
+    const row = document.createElement('div');
+    row.className = 'trail-row2';
+
+    const chipsDiv = document.createElement('div');
+    chipsDiv.className = 'trail-chips';
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'lecdem-label';
+    labelSpan.textContent = ref.label || 'Lecture-Demo';
+    labelSpan.title = (ref.label || 'Lecture-Demo') + ' \u2014 Watch lecture-demo';
+    chipsDiv.appendChild(labelSpan);
 
     // §5: lecturer attribution — clickable → opens musician panel + pushes history
     if (ref.lecturer_label) {
@@ -1391,7 +1399,7 @@ function _renderBaniFlowLecdemStrip(type, id) {
           }
         }
       });
-      li.appendChild(bySpan);
+      chipsDiv.appendChild(bySpan);
     }
 
     // Other subject chips — all subjects except the current trail subject (ADR-081 §3)
@@ -1400,9 +1408,42 @@ function _renderBaniFlowLecdemStrip(type, id) {
       const wrap = document.createElement('span');
       wrap.className = 'lecdem-subjects';
       subjectChips.forEach(function(c) { wrap.appendChild(c); });
-      li.appendChild(wrap);
+      chipsDiv.appendChild(wrap);
     }
 
+    row.appendChild(chipsDiv);
+
+    const actsDiv = document.createElement('div');
+    actsDiv.className = 'trail-acts';
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.setAttribute('data-vid', ref.video_id);
+    playBtn.title = ref.label || 'Play';
+    playBtn.textContent = '\u25B6';
+    playBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof openOrFocusPlayer === 'function') {
+        openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+        const instance = (typeof playerRegistry !== 'undefined') ? playerRegistry.get(ref.video_id) : null;
+        if (instance && ref.subjects && typeof _buildLecdemSubjectFooter === 'function') {
+          const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+          if (subFooter) {
+            const existing = instance.el.querySelector('.mp-footer');
+            if (existing) existing.remove();
+            const resize = instance.el.querySelector('.mp-resize');
+            if (resize) instance.el.insertBefore(subFooter, resize);
+            else        instance.el.appendChild(subFooter);
+          }
+        }
+      }
+    });
+    actsDiv.appendChild(playBtn);
+    if (typeof buildYtLink === 'function') {
+      actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+    }
+    row.appendChild(actsDiv);
+
+    li.appendChild(row);
     list.appendChild(li);
   });
 
