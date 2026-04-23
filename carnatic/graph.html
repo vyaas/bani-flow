@@ -196,7 +196,12 @@
     transform-origin: 50% 0%;  /* scale anchored at top-centre (just under the disc) */
     pointer-events: auto;
     will-change: transform;
-    /* Inherits all visual styling from .musician-chip. */
+    /* Inherits all visual styling from .musician-chip, but the canvas behind
+       has arrows / other nodes — stack the era tint over an opaque dark
+       backing so text and edges never bleed through the chip. */
+    background:
+      linear-gradient(var(--chip-era-bg), var(--chip-era-bg)),
+      var(--bg-deep);
   }
   .cy-overlay-chip.chip-hidden { display: none; }
   .cy-overlay-chip.chip-faded  { opacity: 0.18; }
