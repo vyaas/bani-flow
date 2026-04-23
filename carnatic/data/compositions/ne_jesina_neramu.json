@@ -1,0 +1,16 @@
+{
+  "id": "ne_jesina_neramu",
+  "title": "Ne Jesina Neramu",
+  "composer_id": "patnam_subramanya_iyer",
+  "raga_id": "purnachandrika",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Poornachandrika",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Kriti by Patnam Subramanya Iyer in Purnachandrika; listed on the Wikipedia Poornachandrika page as a popular composition"
+}

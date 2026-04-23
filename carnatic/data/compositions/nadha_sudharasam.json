@@ -1,0 +1,16 @@
+{
+  "id": "nadha_sudharasam",
+  "title": "Nadha Sudharasam",
+  "composer_id": "tyagaraja",
+  "raga_id": "arabhi",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Arabhi; Rupakam tala; celebrated for its Ghana-raga grandeur"
+}

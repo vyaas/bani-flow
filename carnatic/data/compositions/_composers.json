@@ -853,5 +853,19 @@
         "type": "wikipedia"
       }
     ]
+  },
+  {
+    "id": "shivanamayogi",
+    "name": "Shivanamayogi",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/",
+        "label": "Karnatik.com (composer not individually listed; name sourced from Ramnad Krishnan Jamshedpur 1964 concert)",
+        "type": "archive"
+      }
+    ]
   }
 ]

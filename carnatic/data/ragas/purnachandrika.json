@@ -1,0 +1,19 @@
+{
+  "id": "purnachandrika",
+  "name": "Purnachandrika",
+  "aliases": [
+    "Poornachandrika",
+    "Purna Chandrika"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Poornachandrika",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Shankarabharanam (29th melakarta); ārohana: S R2 G3 M1 P D2 P S, avarohana: S N3 P M1 R2 G3 M1 R2 S; vakra (crooked) movements in both ascent and descent; used notably by Patnam Subramanya Iyer (Ne Jesina, Panchanadeesha Pahimaam)",
+  "is_melakarta": false
+}

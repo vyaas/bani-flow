@@ -1,0 +1,15 @@
+{
+  "id": "modi_jesavelara",
+  "title": "Modi Jesavelara",
+  "composer_id": "pattabhiramayya",
+  "raga_id": "khamas",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}

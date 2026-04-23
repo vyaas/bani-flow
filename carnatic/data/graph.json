@@ -1549,6 +1549,36 @@
         ]
       },
       {
+        "id": "ritha_rajan",
+        "label": "Ritha Rajan",
+        "sources": [
+          {
+            "url": "https://concertreviewbyshankarvenkataraman.blogspot.com/2019/12/paramparaa-myth-or-reality.html",
+            "label": "other",
+            "type": "other"
+          }
+        ],
+        "born": 1948,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "vina_dhanammal",
+        "youtube": [
+          {
+            "url": "https://youtu.be/24ZnUfsUupc",
+            "label": "On Ramnad Krishnan at Music Academy",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [],
+              "composition_ids": [],
+              "musician_ids": [
+                "ramnad_krishnan"
+              ]
+            }
+          }
+        ]
+      },
+      {
         "id": "s_gopalakrishnan",
         "label": "S Gopalakrishnan",
         "sources": [
@@ -3107,6 +3137,13 @@
         "confidence": 0.95,
         "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
         "note": "S. Ramanathan listed as a direct student of Tiger Varadachariar per Wikipedia"
+      },
+      {
+        "source": "ramnad_krishnan",
+        "target": "ritha_rajan",
+        "confidence": 1.0,
+        "source_url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+        "note": "principal guru"
       }
     ]
   },
@@ -3168,7 +3205,8 @@
         "id": "arabhi",
         "name": "Arabhi",
         "aliases": [
-          "Arabi"
+          "Arabi",
+          "Aarabhi"
         ],
         "melakarta": null,
         "parent_raga": "shankarabharanam",
@@ -4914,7 +4952,8 @@
         "name": "Pantuvarali",
         "aliases": [
           "Purvi Kalyani",
-          "Kamavardani"
+          "Kamavardani",
+          "Panthuvarali"
         ],
         "melakarta": 51,
         "parent_raga": null,
@@ -5001,6 +5040,25 @@
           }
         ],
         "notes": "Janya of Tanarupi (6th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P D1 S, avarohana S D1 P M1 R1 S; evokes deep pathos and longing; a favourite for padams and javalis; associated with the Kshetrayya tradition",
+        "is_melakarta": false
+      },
+      {
+        "id": "purnachandrika",
+        "name": "Purnachandrika",
+        "aliases": [
+          "Poornachandrika",
+          "Purna Chandrika"
+        ],
+        "melakarta": null,
+        "parent_raga": "shankarabharanam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Poornachandrika",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya of Shankarabharanam (29th melakarta); ārohana: S R2 G3 M1 P D2 P S, avarohana: S N3 P M1 R2 G3 M1 R2 S; vakra (crooked) movements in both ascent and descent; used notably by Patnam Subramanya Iyer (Ne Jesina, Panchanadeesha Pahimaam)",
         "is_melakarta": false
       },
       {
@@ -5504,7 +5562,8 @@
         "name": "Sriranjini",
         "aliases": [
           "Shree Ranjani",
-          "Sreeranjani"
+          "Sreeranjani",
+          "Sriranjani"
         ],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -6766,6 +6825,20 @@
             "type": "wikipedia"
           }
         ]
+      },
+      {
+        "id": "shivanamayogi",
+        "name": "Shivanamayogi",
+        "musician_node_id": null,
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/",
+            "label": "Karnatik.com (composer not individually listed; name sourced from Ramnad Krishnan Jamshedpur 1964 concert)",
+            "type": "archive"
+          }
+        ]
       }
     ],
     "compositions": [
@@ -7543,6 +7616,22 @@
           }
         ],
         "notes": "Tyagaraja kriti in Shankarabharanam"
+      },
+      {
+        "id": "enna_punniyam",
+        "title": "Enna Punniyam",
+        "composer_id": "shivanamayogi",
+        "raga_id": "huseni",
+        "tala": "misra_chapu",
+        "language": "tamil",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/",
+            "label": "Karnatik.com",
+            "type": "archive"
+          }
+        ],
+        "notes": "Tamil composition in Huseni by Shivanamayogi; composer details unverified — name sourced from Ramnad Krishnan Jamshedpur 1964 concert listing"
       },
       {
         "id": "ennaga_manasuku_rani",
@@ -8394,6 +8483,9 @@
       {
         "id": "laavanya_rama_kannul_ara",
         "title": "Laavanya Rama Kannul Ara",
+        "aliases": [
+          "Lavanya Rama"
+        ],
         "composer_id": "tyagaraja",
         "raga_id": "poornashadjam",
         "tala": "Adi",
@@ -8704,6 +8796,21 @@
         ]
       },
       {
+        "id": "modi_jesavelara",
+        "title": "Modi Jesavelara",
+        "composer_id": "pattabhiramayya",
+        "raga_id": "khamas",
+        "tala": "adi",
+        "language": "telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/",
+            "label": "Karnatik.com",
+            "type": "archive"
+          }
+        ]
+      },
+      {
         "id": "mohana_rama",
         "title": "Mohana Rama",
         "composer_id": "tyagaraja",
@@ -8828,6 +8935,22 @@
         "notes": null
       },
       {
+        "id": "nadha_sudharasam",
+        "title": "Nadha Sudharasam",
+        "composer_id": "tyagaraja",
+        "raga_id": "arabhi",
+        "tala": "rupakam",
+        "language": "telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/",
+            "label": "Karnatik.com",
+            "type": "archive"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Arabhi; Rupakam tala; celebrated for its Ghana-raga grandeur"
+      },
+      {
         "id": "nadopasana",
         "title": "Nadopasana",
         "composer_id": "tyagaraja",
@@ -8948,6 +9071,22 @@
             "type": "article"
           }
         ]
+      },
+      {
+        "id": "ne_jesina_neramu",
+        "title": "Ne Jesina Neramu",
+        "composer_id": "patnam_subramanya_iyer",
+        "raga_id": "purnachandrika",
+        "tala": "adi",
+        "language": "telugu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Poornachandrika",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Kriti by Patnam Subramanya Iyer in Purnachandrika; listed on the Wikipedia Poornachandrika page as a popular composition"
       },
       {
         "id": "neevaada_ne_gaana",
@@ -9092,7 +9231,10 @@
       },
       {
         "id": "ninnada",
-        "title": "Ninnada",
+        "title": "Ninnada Nela",
+        "aliases": [
+          "Ninnada"
+        ],
         "composer_id": "tyagaraja",
         "raga_id": "kannada",
         "language": "Telugu",
@@ -9272,6 +9414,9 @@
       {
         "id": "parulanna_matta",
         "title": "Parulanna Matta",
+        "aliases": [
+          "Parulanamata"
+        ],
         "composer_id": "dharmapuri_subbaraya_iyer",
         "raga_id": "kapi",
         "tala": "rupakam",
@@ -9426,6 +9571,9 @@
       {
         "id": "samayamide_rara",
         "title": "Samayamide Rara",
+        "aliases": [
+          "Samayamithe"
+        ],
         "composer_id": "patnam_subramanya_iyer",
         "raga_id": "behag",
         "tala": "rupakam",
@@ -10061,6 +10209,21 @@
         "notes": "Thillana by Swati Tirunal in Dhanashree, Adi tala; tuned by Lalgudi G. Jayaraman"
       },
       {
+        "id": "thillana_purnachandrika",
+        "title": "Thillana (Purnachandrika)",
+        "composer_id": "ramnad_sreenivasa_iyengar",
+        "raga_id": "purnachandrika",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/",
+            "label": "Karnatik.com",
+            "type": "archive"
+          }
+        ],
+        "notes": "Thillana in Purnachandrika by Ramnad Sreenivasa Iyengar (Ramanathapuram Srinivasa Iyangar)"
+      },
+      {
         "id": "tiruppugazh_huseni",
         "title": "Tiruppugazh (Huseni)",
         "composer_id": "arunagirinathar",
@@ -10410,6 +10573,19 @@
         "madurai_mani_iyer",
         "lalgudi_jayaraman",
         "vellore_ramabhadran"
+      ]
+    },
+    {
+      "id": "jamshedpur_1964",
+      "path": "recordings/jamshedpur_1964.json",
+      "title": "Ramnad Krishnan — Jamshedpur 1964",
+      "short_title": "Jamshedpur 1964",
+      "date": "1964",
+      "venue": "Jamshedpur",
+      "primary_musician_ids": [
+        "ramnad_krishnan",
+        "lalgudi_jayaraman",
+        "palghat_raghu"
       ]
     },
     {

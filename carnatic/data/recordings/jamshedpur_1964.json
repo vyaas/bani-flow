@@ -1,0 +1,215 @@
+{
+  "id": "jamshedpur_1964",
+  "video_id": "r5MWNd8ufPE",
+  "url": "https://youtu.be/r5MWNd8ufPE",
+  "title": "Ramnad Krishnan — Jamshedpur 1964",
+  "short_title": "Jamshedpur 1964",
+  "date": "1964",
+  "venue": "Jamshedpur",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/r5MWNd8ufPE",
+      "label": "YouTube",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_raghu",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "brochevarevare",
+          "raga_id": "sriranjini",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Brochevarevare",
+          "notes": "incomplete"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "04:32",
+          "offset_seconds": 272,
+          "composition_id": "ne_jesina_neramu",
+          "raga_id": "purnachandrika",
+          "tala": "adi",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Ne Jesina Neramu",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "13:08",
+          "offset_seconds": 788,
+          "composition_id": "siva_siva_siva_ena_radha",
+          "raga_id": "pantuvarali",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Siva Siva Siva Ena Radha",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "31:53",
+          "offset_seconds": 1913,
+          "composition_id": "enduku_nirdaya",
+          "raga_id": "harikambhoji",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Enduku Nirdaya",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "45:24",
+          "offset_seconds": 2724,
+          "composition_id": "nadha_sudharasam",
+          "raga_id": "arabhi",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Nadha Sudharasam",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:02:20",
+          "offset_seconds": 3740,
+          "composition_id": "nidhi_chala_sukhama",
+          "raga_id": "kalyani",
+          "tala": "misra_chapu",
+          "composer_id": "tyagaraja",
+          "display_title": "Nidhi Chala Sukhama",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:45:13",
+          "offset_seconds": 6313,
+          "composition_id": "ninnada",
+          "raga_id": "kannada",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ninnada Nela",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:48:29",
+          "offset_seconds": 6509,
+          "composition_id": "sri_kamakshi_katakshi",
+          "raga_id": "vasantha",
+          "tala": "adi",
+          "composer_id": "subbaraya_sastri",
+          "display_title": "Sri Kamakshi Katakshi",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:53:13",
+          "offset_seconds": 6793,
+          "composition_id": "laavanya_rama_kannul_ara",
+          "raga_id": "poornashadjam",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Laavanya Rama Kannul Ara",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:56:16",
+          "offset_seconds": 6976,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Rāgam Tānam Pallavi (Bhairavi)",
+          "notes": "Rāgam Tānam Pallavi",
+          "type": "rtp"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:37:24",
+          "offset_seconds": 9444,
+          "composition_id": "modi_jesavelara",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "composer_id": "pattabhiramayya",
+          "display_title": "Modi Jesavelara",
+          "notes": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:39:39",
+          "offset_seconds": 9579,
+          "composition_id": "enna_punniyam",
+          "raga_id": "huseni",
+          "tala": "misra_chapu",
+          "composer_id": "shivanamayogi",
+          "display_title": "Enna Punniyam",
+          "notes": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:44:47",
+          "offset_seconds": 9887,
+          "composition_id": "parulanna_matta",
+          "raga_id": "kapi",
+          "tala": "rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Parulanna Matta",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:47:55",
+          "offset_seconds": 10075,
+          "composition_id": "thillana_purnachandrika",
+          "raga_id": "purnachandrika",
+          "tala": "adi",
+          "composer_id": "ramnad_sreenivasa_iyengar",
+          "display_title": "Thillana (Purnachandrika)",
+          "notes": "thillana"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:49:46",
+          "offset_seconds": 10186,
+          "composition_id": "samayamide_rara",
+          "raga_id": "behag",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Samayamide Rara",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:52:17",
+          "offset_seconds": 10337,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Mangalam",
+          "notes": "closing mangalam"
+        }
+      ]
+    }
+  ]
+}

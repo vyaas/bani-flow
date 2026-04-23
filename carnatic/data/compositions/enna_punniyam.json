@@ -1,0 +1,16 @@
+{
+  "id": "enna_punniyam",
+  "title": "Enna Punniyam",
+  "composer_id": "shivanamayogi",
+  "raga_id": "huseni",
+  "tala": "misra_chapu",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tamil composition in Huseni by Shivanamayogi; composer details unverified — name sourced from Ramnad Krishnan Jamshedpur 1964 concert listing"
+}
