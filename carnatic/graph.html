@@ -52,6 +52,12 @@
     --subject-size:           1.05rem;     /* search-subject chip font-size */
     --subject-padding:        4px 10px;    /* search-subject chip padding */
     --hier-indent-step:       14px;        /* one indent level (desktop) */
+    /* ADR-079: lecdem chip palette */
+    --lecdem-bg:       #2a2233;
+    --lecdem-border:   #6f5a8a;
+    --lecdem-text:     #e8def3;
+    --lecdem-glyph:    #c9b6e0;
+    --lecdem-hover-bg: #352a40;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1437,6 +1443,45 @@
     text-decoration: underline;
   }
 
+  /* ── ADR-079: Lecdem chip — distinct visual identity for lecture-demos ── */
+  .lecdem-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--chip-padding-primary);
+    font-size: var(--chip-size-primary);
+    font-weight: bold;
+    border-radius: var(--chip-border-radius, 4px);
+    background: var(--lecdem-bg);
+    color: var(--lecdem-text);
+    border: 1px solid var(--lecdem-border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: background-color 120ms ease;
+  }
+  .lecdem-chip:hover {
+    background: var(--lecdem-hover-bg);
+    outline: 1px solid var(--lecdem-border);
+    outline-offset: 1px;
+  }
+  .lecdem-chip:active,
+  .lecdem-chip.chip-tapped {
+    filter: brightness(1.35);
+    text-decoration: underline;
+  }
+  .lecdem-chip::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: var(--lecdem-glyph);
+    -webkit-mask: url("#icon-lecdem") center / contain no-repeat;
+            mask: url("#icon-lecdem") center / contain no-repeat;
+    flex-shrink: 0;
+  }
+
   /* ── Graph-absent toast — brief non-obtrusive notice —————————————— */
   #graph-absent-toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -2623,6 +2668,14 @@
 </style>
 </head>
 <body>
+<!-- ADR-079: inline SVG sprite — lecdem glyph referenced via CSS mask -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="icon-lecdem" viewBox="0 0 24 24">
+    <!-- stylised lectern with arc above suggesting voice projection -->
+    <path d="M4 19h16v2H4zm2-2 6-12 6 12H6z" />
+    <path d="M9 4 a4 4 0 0 1 6 0" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  </symbol>
+</svg>
 
 <header>
   <!-- ADR-045: header-left wraps help button + title -->
@@ -69303,6 +69356,115 @@ function buildComposerChip(compositionId) {
     chip.title = composerObj.name;
   }
   return chip;
+}
+
+// ── buildLecdemChip — chip for a lecture-demo recording (ADR-079) ─────────────
+// ref is a LecdemRef (ADR-078): { video_id, label, subjects, lecturer_id, ... }
+function buildLecdemChip(ref) {
+  if (!ref || !ref.video_id) return null;
+  const chip = document.createElement('span');
+  chip.className = 'lecdem-chip';
+  chip.textContent = ref.label || 'Lecture-Demo';
+  chip.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+  chip.dataset.videoId = ref.video_id;
+  chip.addEventListener('click', e => {
+    e.stopPropagation();
+    chip.classList.add('chip-tapped');
+    setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+    // Open media player on the lecdem video
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+    // Inject subject cross-link chips into the player footer (ADR-079 §4)
+    const instance = playerRegistry.get(ref.video_id);
+    if (instance && ref.subjects) {
+      const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+      if (subFooter) {
+        const existing = instance.el.querySelector('.mp-footer');
+        if (existing) existing.remove();
+        const resize = instance.el.querySelector('.mp-resize');
+        if (resize) instance.el.insertBefore(subFooter, resize);
+        else        instance.el.appendChild(subFooter);
+      }
+    }
+  });
+  return chip;
+}
+
+// Helper: footer with subject cross-link chips for a lecdem player (ADR-079 §4)
+// Each raga_id → .raga-chip, composition_id → .comp-chip, musician_id → .musician-chip.
+// Returns null if all subject arrays are empty (no footer needed).
+function _buildLecdemSubjectFooter(subjects) {
+  const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
+  const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
+  const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
+  if (!ragaIds.length && !compIds.length && !musicianIds.length) return null;
+
+  const footer = document.createElement('div');
+  footer.className = 'mp-footer';
+
+  ragaIds.forEach(ragaId => {
+    const ragaObj  = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
+    const ragaName = ragaObj ? ragaObj.name : ragaId;
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.textContent = ragaName;
+    ragaChip.title = 'Explore ' + ragaName + ' in Bani Flow';
+    ragaChip.addEventListener('click', e => {
+      e.stopPropagation();
+      ragaChip.classList.add('chip-tapped');
+      setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
+    });
+    footer.appendChild(ragaChip);
+  });
+
+  compIds.forEach(compId => {
+    const compObj  = (typeof compositions !== 'undefined') ? compositions.find(c => c.id === compId) : null;
+    const compName = compObj ? compObj.title : compId;
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.textContent = compName;
+    compChip.title = 'Explore ' + compName + ' in Bani Flow';
+    compChip.addEventListener('click', e => {
+      e.stopPropagation();
+      compChip.classList.add('chip-tapped');
+      setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compId);
+    });
+    footer.appendChild(compChip);
+  });
+
+  musicianIds.forEach(musicianId => {
+    const node  = (typeof cy !== 'undefined') ? cy.getElementById(musicianId) : null;
+    const name  = (node && node.length) ? node.data('label') : musicianId;
+    const eraId = (node && node.length) ? (node.data('era') || null) : null;
+    const tint  = (typeof THEME !== 'undefined')
+      ? THEME.eraTintCss(eraId)
+      : { bg: 'transparent', border: 'var(--border-strong)' };
+    const mchip = document.createElement('span');
+    mchip.className = 'musician-chip';
+    mchip.style.setProperty('--chip-era-bg',     tint.bg);
+    mchip.style.setProperty('--chip-era-border', tint.border);
+    mchip.textContent = name;
+    mchip.title = name + ' — Open Musician panel';
+    if (node && node.length) {
+      mchip.addEventListener('click', e => {
+        e.stopPropagation();
+        mchip.classList.add('chip-tapped');
+        setTimeout(() => mchip.classList.remove('chip-tapped'), 200);
+        if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+          orientToNode(musicianId);
+        } else if (typeof selectNode === 'function') {
+          selectNode(node);
+        }
+        if (typeof window.setPanelState === 'function') {
+          setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+        }
+      });
+    }
+    footer.appendChild(mchip);
+  });
+
+  return footer.hasChildNodes() ? footer : null;
 }
 
 // ── buildConcertBracket — build one concert bracket DOM element ───────────────
