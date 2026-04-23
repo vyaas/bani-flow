@@ -49,6 +49,8 @@ def build_elements(graph: dict, listenable_set: set | None = None,
 
         tracks = []
         for t in node.get("youtube", []):
+            if t.get("kind") == "lecdem":
+                continue            # lecdems handled by build_lecdem_indexes (ADR-078)
             vid = yt_video_id(t.get("url", ""))
             if vid:
                 tracks.append({
