@@ -791,6 +791,57 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                     f"host musician_id '{nid}' must be listed (ADR-070 invariant B)"
                 )
 
+    # ── youtube lecdem integrity (ADR-077) ────────────────────────────────────
+    from carnatic.render.youtube_kinds import VALID_YOUTUBE_KINDS
+    _SUBJECTS_KEYS = ("raga_ids", "composition_ids", "musician_ids")
+    for node in g.get_all_musicians():
+        nid = node["id"]
+        for i, yt in enumerate(node.get("youtube", [])):
+            kind = yt.get("kind")
+            if kind is not None and kind not in VALID_YOUTUBE_KINDS:
+                errors.append(
+                    f"Musician {nid} youtube[{i}]: "
+                    f"kind '{kind}' not in vocabulary"
+                )
+            if kind == "lecdem":
+                subjects = yt.get("subjects")
+                if subjects is None:
+                    errors.append(
+                        f"Musician {nid} youtube[{i}]: "
+                        f"lecdem entry missing 'subjects' object (ADR-077 invariant B)"
+                    )
+                else:
+                    for key in _SUBJECTS_KEYS:
+                        if key not in subjects:
+                            errors.append(
+                                f"Musician {nid} youtube[{i}].subjects: "
+                                f"missing required key '{key}' (ADR-077 invariant B)"
+                            )
+                    for rid2 in subjects.get("raga_ids", []):
+                        if rid2 not in known_raga_ids:
+                            errors.append(
+                                f"Musician {nid} youtube[{i}].subjects.raga_ids: "
+                                f"'{rid2}' not in ragas (ADR-077 invariant D)"
+                            )
+                    for cid2 in subjects.get("composition_ids", []):
+                        if cid2 not in known_composition_ids:
+                            errors.append(
+                                f"Musician {nid} youtube[{i}].subjects.composition_ids: "
+                                f"'{cid2}' not in compositions (ADR-077 invariant D)"
+                            )
+                    for mid2 in subjects.get("musician_ids", []):
+                        if mid2 not in known_musician_ids:
+                            errors.append(
+                                f"Musician {nid} youtube[{i}].subjects.musician_ids: "
+                                f"'{mid2}' not in musicians (ADR-077 invariant D)"
+                            )
+                if yt.get("composition_id") is not None or yt.get("raga_id") is not None:
+                    errors.append(
+                        f"Musician {nid} youtube[{i}]: "
+                        f"lecdem entry must not carry composition_id or raga_id "
+                        f"(ADR-077 — use subjects arrays instead)"
+                    )
+
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
         "All musician_ids in recordings exist in graph",
@@ -802,6 +853,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "All edge endpoints exist in musicians",
         "All composition composer_ids and raga_ids are valid",
         "All youtube performers reference known musicians and roles (ADR-070)",
+        "All youtube lecdem entries have valid kind, subjects, and resolvable ids (ADR-077)",
     ]
 
     if not errors:
