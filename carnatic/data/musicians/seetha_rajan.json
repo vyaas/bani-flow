@@ -1,0 +1,162 @@
+{
+  "id": "seetha_rajan",
+  "label": "Seetha Rajan",
+  "sources": [
+    {
+      "url": "https://www.nadatarangini.org/artists/seetha-rajan",
+      "label": "Nadatarangini",
+      "type": "other"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=BPeYC1txTPk",
+      "label": "A Musical Exploration — An insight into the intrinsic beauty of ragas",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=uUVO9f8ovT4",
+      "label": "A Musical Exploration — Raga Shankarabharanam",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "shankarabharanam"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=o-z17NqlaIE",
+      "label": "A Musical Exploration — Harikambhoji, Kambhoji, Yadukulakambhoji, Khamas",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "harikambhoji",
+          "kambhoji",
+          "yadukulakamboji",
+          "khamas"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=4QCX8kqj0LM",
+      "label": "A Musical Exploration — Suddha Saveri, Sama, Arabhi and Devagandhari",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "suddha_saveri",
+          "sama",
+          "arabhi",
+          "devagandhari"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=04eXjFHbvJA",
+      "label": "A Musical Exploration — Kedaragaula, Narayanagaula and Surati",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "kedaragaula",
+          "narayanagowla",
+          "surutti"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=tXj52Od9Hmw",
+      "label": "A Musical Exploration — Kannada, Janaranjani, Purnachandrika, Malavi and Sahana",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "kannada",
+          "janaranjani",
+          "purnachandrika",
+          "malavi",
+          "sahana"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=EdltSELdEDo",
+      "label": "A Musical Exploration — Kedaram, Nilambari, Natakuranji and Begada",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "kedaram",
+          "neelambari",
+          "nattakurinji",
+          "begada"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=_aVUaSsXjt8",
+      "label": "A Musical Exploration — Mohanam, Hamsadhvani, Kalyani, Saranga, Hamirkalyani and more",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "mohanam",
+          "hamsadhwani",
+          "kalyani",
+          "saranga",
+          "hamir_kalyani"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=2VfvIJohas4",
+      "label": "A Musical Exploration — Kharaharapriya, Sri, Nayaki, Darbar, Madhyamavati and more",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "kharaharapriya",
+          "sriraga",
+          "nayaki",
+          "darbar",
+          "madhyamavati"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=oG6RRKJpTqQ",
+      "label": "A Musical Exploration — Abhogi, Sriranjani, Ritigaula, Kanada and more",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "abhogi",
+          "sriranjini",
+          "reetigowla",
+          "kaanada"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    }
+  ]
+}
