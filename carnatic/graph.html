@@ -2908,7 +2908,7 @@
                  autocomplete="off" spellcheck="false">
           <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
           <div class="search-scope-label" id="musician-scope-label" style="display:none">
-            searching all 70 musicians
+            searching all 73 musicians
           </div>
         </div>
       </div>
@@ -4890,8 +4890,8 @@ const elements = [
       "label_outline": "#d65d0e",
       "label_bg": "#d65d0e",
       "shape": "ellipse",
-      "size": 77,
-      "degree": 3,
+      "size": 81,
+      "degree": 4,
       "label_tier": 0,
       "font_size": 19,
       "font_weight": "bold",
@@ -6060,6 +6060,39 @@ const elements = [
   },
   {
     "data": {
+      "id": "s_gopalakrishnan",
+      "label": "S Gopalakrishnan",
+      "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+      "sources": [
+        {
+          "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+          "label": "India Art Review — Shobhana Rangachari: A Life Sketch of a Lesser-Known Carnatic Vocalist",
+          "type": "article"
+        }
+      ],
+      "era": "disseminator",
+      "era_label": "Disseminators",
+      "instrument": "vocal",
+      "bani": "tiger_varadachariar",
+      "lifespan": "1918–2000",
+      "born": 1918,
+      "color": "#689d6a",
+      "label_outline": "#689d6a",
+      "label_bg": "#689d6a",
+      "shape": "ellipse",
+      "size": 60,
+      "degree": 2,
+      "label_tier": 1,
+      "font_size": 14,
+      "font_weight": "normal",
+      "tracks": [],
+      "is_listenable": 0,
+      "is_composer": 0,
+      "composer_id": null
+    }
+  },
+  {
+    "data": {
       "id": "s_ramanathan",
       "label": "S. Ramanathan",
       "url": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
@@ -6253,6 +6286,39 @@ const elements = [
           "performers": []
         }
       ],
+      "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
+    }
+  },
+  {
+    "data": {
+      "id": "shobhana_rangachari",
+      "label": "Shobhana Rangachari",
+      "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+      "sources": [
+        {
+          "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+          "label": "India Art Review — Shobhana Rangachari: A Life Sketch of a Lesser-Known Carnatic Vocalist",
+          "type": "article"
+        }
+      ],
+      "era": "disseminator",
+      "era_label": "Disseminators",
+      "instrument": "vocal",
+      "bani": "tiger_varadachariar",
+      "lifespan": "1954–1985",
+      "born": 1954,
+      "color": "#689d6a",
+      "label_outline": "#689d6a",
+      "label_bg": "#689d6a",
+      "shape": "ellipse",
+      "size": 56,
+      "degree": 1,
+      "label_tier": 1,
+      "font_size": 13,
+      "font_weight": "normal",
+      "tracks": [],
       "is_listenable": 1,
       "is_composer": 0,
       "composer_id": null
@@ -6681,6 +6747,39 @@ const elements = [
         }
       ],
       "is_listenable": 1,
+      "is_composer": 0,
+      "composer_id": null
+    }
+  },
+  {
+    "data": {
+      "id": "tiger_varadachariar",
+      "label": "Tiger Varadachariar",
+      "url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "era": "golden_age",
+      "era_label": "Golden Age",
+      "instrument": "vocal",
+      "bani": null,
+      "lifespan": "1876–1950",
+      "born": 1876,
+      "color": "#458588",
+      "label_outline": "#458588",
+      "label_bg": "#458588",
+      "shape": "ellipse",
+      "size": 66,
+      "degree": 2,
+      "label_tier": 1,
+      "font_size": 16,
+      "font_weight": "normal",
+      "tracks": [],
+      "is_listenable": 0,
       "is_composer": 0,
       "composer_id": null
     }
@@ -8403,11 +8502,44 @@ const elements = [
       "note": "principal guru and maternal uncle",
       "width": 3.395
     }
+  },
+  {
+    "data": {
+      "id": "tiger_varadachariar→s_gopalakrishnan",
+      "source": "tiger_varadachariar",
+      "target": "s_gopalakrishnan",
+      "confidence": 0.92,
+      "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+      "note": "Varadachariar was the teacher of S Gopalakrishnan, per India Art Review article on Shobhana Rangachari",
+      "width": 3.22
+    }
+  },
+  {
+    "data": {
+      "id": "s_gopalakrishnan→shobhana_rangachari",
+      "source": "s_gopalakrishnan",
+      "target": "shobhana_rangachari",
+      "confidence": 0.97,
+      "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+      "note": "Shobhana's primary guru; trained under him at AIR Delhi from youth; India Art Review profile",
+      "width": 3.395
+    }
+  },
+  {
+    "data": {
+      "id": "patnam_subramanya_iyer→tiger_varadachariar",
+      "source": "patnam_subramanya_iyer",
+      "target": "tiger_varadachariar",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+      "note": "Varadachariar studied under Patnam Subramania Iyer for three years from age fourteen; per Wikipedia",
+      "width": 3.3249999999999997
+    }
   }
 ];
 
 // ── ADR-055: set of musician node IDs with playable content (recordings or compositions) ─
-const musiciansListenable = new Set(["abhishek_raghuram", "akkarai_subbulakshmi", "alathur_brothers", "ariyakudi_ramanuja_iyengar", "balamuralikrishna", "bombay_jayashri", "coimbatore_n_ramaswamy", "cr_mani_iyer", "dk_pattammal", "gnb", "hyderabad_brothers", "kv_narayanaswamy", "lalgudi_jayaraman", "lalgudi_srimathi_brahmananda", "madurai_mani_iyer", "maharajapuram_santanam", "md_ramanathan", "ml_vasanthakumari", "ms_subbulakshmi", "musiri_subramania_iyer", "muthuswami_dikshitar", "nityashree_mahadevan", "palghat_mani_iyer", "palghat_raghu", "palghat_rajamani", "patnam_subramanya_iyer", "r_vedavalli", "radha_viswanathan", "ramakrishnan_murthy", "ramnad_krishnan", "ramnad_raghavan", "ranjani_gayatri", "s_sowmya", "sanjay_subrahmanyan", "semmangudi_srinivasa_iyer", "shyama_shastri", "subbarama_dikshitar", "subbaraya_sastri", "sudha_ragunathan", "t_brinda", "t_muktha", "t_v_sankaranarayanan", "t_viswanathan", "tm_krishna", "tn_krishnan", "tr_mahalingam", "tyagaraja", "umayalpuram_sivaraman", "vellore_ramabhadran", "vina_dhanammal", "voleti_venkateshwarlu"]);
+const musiciansListenable = new Set(["abhishek_raghuram", "akkarai_subbulakshmi", "alathur_brothers", "ariyakudi_ramanuja_iyengar", "balamuralikrishna", "bombay_jayashri", "coimbatore_n_ramaswamy", "cr_mani_iyer", "dk_pattammal", "gnb", "hyderabad_brothers", "kv_narayanaswamy", "lalgudi_jayaraman", "lalgudi_srimathi_brahmananda", "madurai_mani_iyer", "maharajapuram_santanam", "md_ramanathan", "ml_vasanthakumari", "ms_subbulakshmi", "musiri_subramania_iyer", "muthuswami_dikshitar", "nityashree_mahadevan", "palghat_mani_iyer", "palghat_raghu", "palghat_rajamani", "patnam_subramanya_iyer", "r_vedavalli", "radha_viswanathan", "ramakrishnan_murthy", "ramnad_krishnan", "ramnad_raghavan", "ranjani_gayatri", "s_sowmya", "sanjay_subrahmanyan", "semmangudi_srinivasa_iyer", "shobhana_rangachari", "shyama_shastri", "subbarama_dikshitar", "subbaraya_sastri", "sudha_ragunathan", "t_brinda", "t_muktha", "t_v_sankaranarayanan", "t_viswanathan", "tm_krishna", "tn_krishnan", "tr_mahalingam", "tyagaraja", "umayalpuram_sivaraman", "vellore_ramabhadran", "vina_dhanammal", "voleti_venkateshwarlu"]);
 
 // ── Compositions data (injected by render.py) ──────────────────────────────
 const ragas        = [
@@ -9764,6 +9896,24 @@ const ragas        = [
       }
     ],
     "notes": "63th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₁ N₃ Ṡ"
+  },
+  {
+    "id": "madhava_manohari",
+    "name": "Madhava Manohari",
+    "aliases": [
+      "Madavamanohari",
+      "Madhavamanohari"
+    ],
+    "melakarta": null,
+    "parent_raga": "kharaharapriya",
+    "sources": [
+      {
+        "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-madhava-manohari-janya-of-mela-22-kharaharapriya",
+        "label": "Dr M Radhakrishnan — Eka Krithi Ragas: Madhava Manohari",
+        "type": "article"
+      }
+    ],
+    "notes": "Janya of Mela 22 Kharaharapriya (Dikshitar's Asampoorna system: janya of Sriraga mela); vakra-sampoorna shadava raga. Only significant composition is Mahalakshmi Karunarasa Lahari by Dikshitar."
   },
   {
     "id": "madhyamavati",
@@ -12973,6 +13123,21 @@ const compositions = [
     "notes": "Tyagaraja kriti in Devamritavarshini; Tyagaraja asks who can determine the nature of the Lord"
   },
   {
+    "id": "evaricchirira",
+    "title": "Evaricchirira",
+    "composer_id": "tyagaraja",
+    "raga_id": "madhyamavati",
+    "tala": "adi",
+    "language": "Telugu",
+    "sources": [
+      {
+        "url": "https://youtu.be/S1KyygjoxS4",
+        "label": "Shobhana Rangachari AIR Concert — Vaak",
+        "type": "other"
+      }
+    ]
+  },
+  {
     "id": "gajavadhana",
     "title": "Gajavadhana",
     "composer_id": "kumara_ettendra",
@@ -13706,6 +13871,22 @@ const compositions = [
     "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire"
   },
   {
+    "id": "mahalakshmi_karunarasa_lahari",
+    "title": "Mahalakshmi Karunarasa Lahari",
+    "composer_id": "muthuswami_dikshitar",
+    "raga_id": "madhava_manohari",
+    "tala": "adi",
+    "language": "Sanskrit",
+    "sources": [
+      {
+        "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-madhava-manohari-janya-of-mela-22-kharaharapriya",
+        "label": "Dr M Radhakrishnan — Eka Krithi Ragas: Madhava Manohari",
+        "type": "article"
+      }
+    ],
+    "notes": "From Dikshitar's Lakshmi Saptakriti Mala; the sole popular composition in this raga"
+  },
+  {
     "id": "maithrim_bhajata",
     "title": "Maithrim Bhajata",
     "composer_id": "chandrasekharendra_saraswati",
@@ -14045,6 +14226,21 @@ const compositions = [
       }
     ],
     "notes": "Javali in Saveri"
+  },
+  {
+    "id": "na_moralakimpa",
+    "title": "Na Moralakimpa",
+    "composer_id": "tyagaraja",
+    "raga_id": "devagandhari",
+    "tala": "rupakam",
+    "language": "Telugu",
+    "sources": [
+      {
+        "url": "https://youtu.be/S1KyygjoxS4",
+        "label": "Ook Shobhana Rangachari AIR Concert — Vaak",
+        "type": "other"
+      }
+    ]
   },
   {
     "id": "naadaadina_maata",
@@ -16326,7 +16522,8 @@ const compositionToNodes = {
   "sri_kamakshi_katakshi": [
     "semmangudi_srinivasa_iyer",
     "lalgudi_jayaraman",
-    "umayalpuram_sivaraman"
+    "umayalpuram_sivaraman",
+    "shobhana_rangachari"
   ],
   "kanna_tandri_napai": [
     "semmangudi_srinivasa_iyer",
@@ -16555,6 +16752,15 @@ const compositionToNodes = {
     "tn_krishnan",
     "palghat_mani_iyer"
   ],
+  "mahalakshmi_karunarasa_lahari": [
+    "shobhana_rangachari"
+  ],
+  "na_moralakimpa": [
+    "shobhana_rangachari"
+  ],
+  "evaricchirira": [
+    "shobhana_rangachari"
+  ],
   "yagnadulu_sukhamanu": [
     "ramnad_krishnan",
     "t_viswanathan"
@@ -16778,7 +16984,8 @@ const ragaToNodes        = {
     "vellore_ramabhadran",
     "ariyakudi_ramanuja_iyengar",
     "tn_krishnan",
-    "palghat_mani_iyer"
+    "palghat_mani_iyer",
+    "shobhana_rangachari"
   ],
   "shankarabharanam": [
     "ramnad_krishnan",
@@ -16878,7 +17085,8 @@ const ragaToNodes        = {
     "lalgudi_jayaraman",
     "umayalpuram_sivaraman",
     "kv_narayanaswamy",
-    "vellore_ramabhadran"
+    "vellore_ramabhadran",
+    "shobhana_rangachari"
   ],
   "saranga": [
     "ramnad_krishnan",
@@ -17161,7 +17369,8 @@ const ragaToNodes        = {
     "semmangudi_srinivasa_iyer",
     "lalgudi_jayaraman",
     "umayalpuram_sivaraman",
-    "vellore_ramabhadran"
+    "vellore_ramabhadran",
+    "shobhana_rangachari"
   ],
   "devamanohari": [
     "semmangudi_srinivasa_iyer",
@@ -17230,6 +17439,9 @@ const ragaToNodes        = {
     "ariyakudi_ramanuja_iyengar",
     "tn_krishnan",
     "palghat_mani_iyer"
+  ],
+  "madhava_manohari": [
+    "shobhana_rangachari"
   ],
   "jayamanohari": [
     "ramnad_krishnan",
@@ -20285,6 +20497,123 @@ const recordings             = [
             "composer_id": null,
             "display_title": "Sloka (Mangalam)",
             "notes": "mangalam; slokam in Madhyamavati"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "vaak_shobhana_rangachari_air",
+    "video_id": "S1KyygjoxS4",
+    "url": "https://youtu.be/S1KyygjoxS4",
+    "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+    "short_title": "Shobhana Rangachari AIR",
+    "date": "1970s-1980s",
+    "venue": "All India Radio (exact station and date unknown)",
+    "occasion": "Archival AIR concert shared by husband C.S. Rangachari. Uploaded by Vaak for archival / fair-dealing educational use. Recording cleaned up for best listening experience.",
+    "sources": [
+      {
+        "url": "https://youtu.be/S1KyygjoxS4",
+        "label": "YouTube — Vaak",
+        "type": "other"
+      }
+    ],
+    "sessions": [
+      {
+        "session_index": 1,
+        "performers": [
+          {
+            "musician_id": "shobhana_rangachari",
+            "role": "vocal"
+          },
+          {
+            "musician_id": null,
+            "role": "violin",
+            "unmatched_name": "Marella Kesava Rao"
+          },
+          {
+            "musician_id": null,
+            "role": "mridangam",
+            "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+          }
+        ],
+        "performances": [
+          {
+            "performance_index": 1,
+            "timestamp": "00:00:00",
+            "offset_seconds": 0,
+            "composition_id": null,
+            "raga_id": null,
+            "tala": null,
+            "composer_id": null,
+            "display_title": "AIR Announcement",
+            "notes": "All India Radio station announcement"
+          },
+          {
+            "performance_index": 2,
+            "timestamp": "00:00:39",
+            "offset_seconds": 39,
+            "composition_id": "mahalakshmi_karunarasa_lahari",
+            "raga_id": "madhava_manohari",
+            "tala": "adi",
+            "composer_id": "muthuswami_dikshitar",
+            "display_title": "Mahalakshmi Karunarasa Lahari",
+            "notes": null
+          },
+          {
+            "performance_index": 3,
+            "timestamp": "00:09:24",
+            "offset_seconds": 564,
+            "composition_id": null,
+            "raga_id": "devagandhari",
+            "tala": null,
+            "composer_id": null,
+            "display_title": "Devagandhari — Alapana",
+            "notes": "Alapana"
+          },
+          {
+            "performance_index": 4,
+            "timestamp": "00:19:33",
+            "offset_seconds": 1173,
+            "composition_id": "na_moralakimpa",
+            "raga_id": "devagandhari",
+            "tala": "rupakam",
+            "composer_id": "tyagaraja",
+            "display_title": "Na Moralakimpa",
+            "notes": null
+          },
+          {
+            "performance_index": 5,
+            "timestamp": "00:29:29",
+            "offset_seconds": 1769,
+            "composition_id": "evaricchirira",
+            "raga_id": "madhyamavati",
+            "tala": "adi",
+            "composer_id": "tyagaraja",
+            "display_title": "Evaricchirira",
+            "notes": null
+          },
+          {
+            "performance_index": 6,
+            "timestamp": "00:36:22",
+            "offset_seconds": 2182,
+            "composition_id": null,
+            "raga_id": "vasantha",
+            "tala": null,
+            "composer_id": null,
+            "display_title": "Vasantha — Alapana",
+            "notes": "Alapana"
+          },
+          {
+            "performance_index": 7,
+            "timestamp": "00:47:41",
+            "offset_seconds": 2861,
+            "composition_id": "sri_kamakshi_katakshi",
+            "raga_id": "vasantha",
+            "tala": "adi",
+            "composer_id": "subbaraya_sastri",
+            "display_title": "Sri Kamakshi Katakshi",
+            "notes": "Attribution disputed per source"
           }
         ]
       }
@@ -44866,6 +45195,253 @@ const musicianToPerformances = {
       "version": null
     }
   ],
+  "shobhana_rangachari": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 1,
+      "timestamp": "00:00:00",
+      "offset_seconds": 0,
+      "display_title": "AIR Announcement",
+      "composition_id": null,
+      "raga_id": null,
+      "tala": null,
+      "composer_id": null,
+      "notes": "All India Radio station announcement",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 2,
+      "timestamp": "00:00:39",
+      "offset_seconds": 39,
+      "display_title": "Mahalakshmi Karunarasa Lahari",
+      "composition_id": "mahalakshmi_karunarasa_lahari",
+      "raga_id": "madhava_manohari",
+      "tala": "adi",
+      "composer_id": "muthuswami_dikshitar",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 3,
+      "timestamp": "00:09:24",
+      "offset_seconds": 564,
+      "display_title": "Devagandhari — Alapana",
+      "composition_id": null,
+      "raga_id": "devagandhari",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Alapana",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 4,
+      "timestamp": "00:19:33",
+      "offset_seconds": 1173,
+      "display_title": "Na Moralakimpa",
+      "composition_id": "na_moralakimpa",
+      "raga_id": "devagandhari",
+      "tala": "rupakam",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 5,
+      "timestamp": "00:29:29",
+      "offset_seconds": 1769,
+      "display_title": "Evaricchirira",
+      "composition_id": "evaricchirira",
+      "raga_id": "madhyamavati",
+      "tala": "adi",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 6,
+      "timestamp": "00:36:22",
+      "offset_seconds": 2182,
+      "display_title": "Vasantha — Alapana",
+      "composition_id": null,
+      "raga_id": "vasantha",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Alapana",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 7,
+      "timestamp": "00:47:41",
+      "offset_seconds": 2861,
+      "display_title": "Sri Kamakshi Katakshi",
+      "composition_id": "sri_kamakshi_katakshi",
+      "raga_id": "vasantha",
+      "tala": "adi",
+      "composer_id": "subbaraya_sastri",
+      "notes": "Attribution disputed per source",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
   "t_viswanathan": [
     {
       "recording_id": "wesleyan_1967_ramnad_krishnan",
@@ -48300,6 +48876,41 @@ const compositionToPerf      = {
         }
       ],
       "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 7,
+      "timestamp": "00:47:41",
+      "offset_seconds": 2861,
+      "display_title": "Sri Kamakshi Katakshi",
+      "composition_id": "sri_kamakshi_katakshi",
+      "raga_id": "vasantha",
+      "tala": "adi",
+      "composer_id": "subbaraya_sastri",
+      "notes": "Attribution disputed per source",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
     }
   ],
   "kanna_tandri_napai": [
@@ -50711,6 +51322,117 @@ const compositionToPerf      = {
         {
           "musician_id": "palghat_mani_iyer",
           "role": "mridangam"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "mahalakshmi_karunarasa_lahari": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 2,
+      "timestamp": "00:00:39",
+      "offset_seconds": 39,
+      "display_title": "Mahalakshmi Karunarasa Lahari",
+      "composition_id": "mahalakshmi_karunarasa_lahari",
+      "raga_id": "madhava_manohari",
+      "tala": "adi",
+      "composer_id": "muthuswami_dikshitar",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "na_moralakimpa": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 4,
+      "timestamp": "00:19:33",
+      "offset_seconds": 1173,
+      "display_title": "Na Moralakimpa",
+      "composition_id": "na_moralakimpa",
+      "raga_id": "devagandhari",
+      "tala": "rupakam",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "evaricchirira": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 5,
+      "timestamp": "00:29:29",
+      "offset_seconds": 1769,
+      "display_title": "Evaricchirira",
+      "composition_id": "evaricchirira",
+      "raga_id": "madhyamavati",
+      "tala": "adi",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
         }
       ],
       "version": null
@@ -56772,6 +57494,76 @@ const ragaToPerf             = {
         }
       ],
       "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 3,
+      "timestamp": "00:09:24",
+      "offset_seconds": 564,
+      "display_title": "Devagandhari — Alapana",
+      "composition_id": null,
+      "raga_id": "devagandhari",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Alapana",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 4,
+      "timestamp": "00:19:33",
+      "offset_seconds": 1173,
+      "display_title": "Na Moralakimpa",
+      "composition_id": "na_moralakimpa",
+      "raga_id": "devagandhari",
+      "tala": "rupakam",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
     }
   ],
   "sama": [
@@ -56945,6 +57737,76 @@ const ragaToPerf             = {
         {
           "musician_id": "vellore_ramabhadran",
           "role": "mridangam"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 6,
+      "timestamp": "00:36:22",
+      "offset_seconds": 2182,
+      "display_title": "Vasantha — Alapana",
+      "composition_id": null,
+      "raga_id": "vasantha",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Alapana",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 7,
+      "timestamp": "00:47:41",
+      "offset_seconds": 2861,
+      "display_title": "Sri Kamakshi Katakshi",
+      "composition_id": "sri_kamakshi_katakshi",
+      "raga_id": "vasantha",
+      "tala": "adi",
+      "composer_id": "subbaraya_sastri",
+      "notes": "Attribution disputed per source",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
         }
       ],
       "version": null
@@ -57839,6 +58701,41 @@ const ragaToPerf             = {
         }
       ],
       "version": null
+    },
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 5,
+      "timestamp": "00:29:29",
+      "offset_seconds": 1769,
+      "display_title": "Evaricchirira",
+      "composition_id": "evaricchirira",
+      "raga_id": "madhyamavati",
+      "tala": "adi",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
     }
   ],
   "hamir_kalyani": [
@@ -58357,6 +59254,43 @@ const ragaToPerf             = {
         {
           "musician_id": "palghat_mani_iyer",
           "role": "mridangam"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "madhava_manohari": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 2,
+      "timestamp": "00:00:39",
+      "offset_seconds": 39,
+      "display_title": "Mahalakshmi Karunarasa Lahari",
+      "composition_id": "mahalakshmi_karunarasa_lahari",
+      "raga_id": "madhava_manohari",
+      "tala": "adi",
+      "composer_id": "muthuswami_dikshitar",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
         }
       ],
       "version": null
@@ -66930,6 +67864,265 @@ const perfToPerf             = {
       "version": null
     }
   ],
+  "vaak_shobhana_rangachari_air::1": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 1,
+      "timestamp": "00:00:00",
+      "offset_seconds": 0,
+      "display_title": "AIR Announcement",
+      "composition_id": null,
+      "raga_id": null,
+      "tala": null,
+      "composer_id": null,
+      "notes": "All India Radio station announcement",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "vaak_shobhana_rangachari_air::2": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 2,
+      "timestamp": "00:00:39",
+      "offset_seconds": 39,
+      "display_title": "Mahalakshmi Karunarasa Lahari",
+      "composition_id": "mahalakshmi_karunarasa_lahari",
+      "raga_id": "madhava_manohari",
+      "tala": "adi",
+      "composer_id": "muthuswami_dikshitar",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "vaak_shobhana_rangachari_air::3": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 3,
+      "timestamp": "00:09:24",
+      "offset_seconds": 564,
+      "display_title": "Devagandhari — Alapana",
+      "composition_id": null,
+      "raga_id": "devagandhari",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Alapana",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "vaak_shobhana_rangachari_air::4": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 4,
+      "timestamp": "00:19:33",
+      "offset_seconds": 1173,
+      "display_title": "Na Moralakimpa",
+      "composition_id": "na_moralakimpa",
+      "raga_id": "devagandhari",
+      "tala": "rupakam",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "vaak_shobhana_rangachari_air::5": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 5,
+      "timestamp": "00:29:29",
+      "offset_seconds": 1769,
+      "display_title": "Evaricchirira",
+      "composition_id": "evaricchirira",
+      "raga_id": "madhyamavati",
+      "tala": "adi",
+      "composer_id": "tyagaraja",
+      "notes": null,
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "vaak_shobhana_rangachari_air::6": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 6,
+      "timestamp": "00:36:22",
+      "offset_seconds": 2182,
+      "display_title": "Vasantha — Alapana",
+      "composition_id": null,
+      "raga_id": "vasantha",
+      "tala": null,
+      "composer_id": null,
+      "notes": "Alapana",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
+  "vaak_shobhana_rangachari_air::7": [
+    {
+      "recording_id": "vaak_shobhana_rangachari_air",
+      "video_id": "S1KyygjoxS4",
+      "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+      "short_title": "Shobhana Rangachari AIR",
+      "date": "1970s-1980s",
+      "session_index": 1,
+      "performance_index": 7,
+      "timestamp": "00:47:41",
+      "offset_seconds": 2861,
+      "display_title": "Sri Kamakshi Katakshi",
+      "composition_id": "sri_kamakshi_katakshi",
+      "raga_id": "vasantha",
+      "tala": "adi",
+      "composer_id": "subbaraya_sastri",
+      "notes": "Attribution disputed per source",
+      "type": null,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "version": null
+    }
+  ],
   "wesleyan_1967_ramnad_krishnan::1": [
     {
       "recording_id": "wesleyan_1967_ramnad_krishnan",
@@ -67882,6 +69075,27 @@ const graphData = {
     "confidence": 0.97,
     "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
     "note": "principal guru and maternal uncle"
+  },
+  {
+    "source": "tiger_varadachariar",
+    "target": "s_gopalakrishnan",
+    "confidence": 0.92,
+    "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+    "note": "Varadachariar was the teacher of S Gopalakrishnan, per India Art Review article on Shobhana Rangachari"
+  },
+  {
+    "source": "s_gopalakrishnan",
+    "target": "shobhana_rangachari",
+    "confidence": 0.97,
+    "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+    "note": "Shobhana's primary guru; trained under him at AIR Delhi from youth; India Art Review profile"
+  },
+  {
+    "source": "patnam_subramanya_iyer",
+    "target": "tiger_varadachariar",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+    "note": "Varadachariar studied under Patnam Subramania Iyer for three years from age fourteen; per Wikipedia"
   }
 ],
   ragas:        ragas,
@@ -74663,6 +75877,10 @@ window.PERFORMER_ROLES = [
 // ── ADR-031: Data Entry Forms — In-Browser JSON Generator ─────────────────────
 // Depends on: graphData (injected by render pipeline), nextSpawnPosition(),
 //             wireDrag(), topZ (from media_player.js)
+//
+// Bundle schema: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
+// addToBundle(type, obj) enforces the whitelist of six item types defined in §4 of
+// that ADR and throws on any unknown type — silent drops are forbidden.
 
 // ── Session bundle state ──────────────────────────────────────────────────────
 // All entry forms can push their output into this shared bundle.
@@ -74679,7 +75897,7 @@ const baniBundle = {
 };
 
 function addToBundle(type, obj) {
-  if (!baniBundle[type]) return;
+  if (!(type in baniBundle)) throw new Error(`addToBundle: unknown type '${type}'`);
   baniBundle[type].push(obj);
   _updateBundleBtn();
 }

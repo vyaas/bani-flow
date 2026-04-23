@@ -1,0 +1,117 @@
+{
+  "id": "vaak_shobhana_rangachari_air",
+  "video_id": "S1KyygjoxS4",
+  "url": "https://youtu.be/S1KyygjoxS4",
+  "title": "Shobhana Rangachari AIR Concert — Vaak Archives",
+  "short_title": "Shobhana Rangachari AIR",
+  "date": "1970s-1980s",
+  "venue": "All India Radio (exact station and date unknown)",
+  "occasion": "Archival AIR concert shared by husband C.S. Rangachari. Uploaded by Vaak for archival / fair-dealing educational use. Recording cleaned up for best listening experience.",
+  "sources": [
+    {
+      "url": "https://youtu.be/S1KyygjoxS4",
+      "label": "YouTube — Vaak",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Marella Kesava Rao"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Varanasi Venkata Subbarama Sastry"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "AIR Announcement",
+          "notes": "All India Radio station announcement"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:00:39",
+          "offset_seconds": 39,
+          "composition_id": "mahalakshmi_karunarasa_lahari",
+          "raga_id": "madhava_manohari",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Mahalakshmi Karunarasa Lahari",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:09:24",
+          "offset_seconds": 564,
+          "composition_id": null,
+          "raga_id": "devagandhari",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Devagandhari — Alapana",
+          "notes": "Alapana"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:19:33",
+          "offset_seconds": 1173,
+          "composition_id": "na_moralakimpa",
+          "raga_id": "devagandhari",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Na Moralakimpa",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:29:29",
+          "offset_seconds": 1769,
+          "composition_id": "evaricchirira",
+          "raga_id": "madhyamavati",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Evaricchirira",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:36:22",
+          "offset_seconds": 2182,
+          "composition_id": null,
+          "raga_id": "vasantha",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Vasantha — Alapana",
+          "notes": "Alapana"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:47:41",
+          "offset_seconds": 2861,
+          "composition_id": "sri_kamakshi_katakshi",
+          "raga_id": "vasantha",
+          "tala": "adi",
+          "composer_id": "subbaraya_sastri",
+          "display_title": "Sri Kamakshi Katakshi",
+          "notes": "Attribution disputed per source"
+        }
+      ]
+    }
+  ]
+}
