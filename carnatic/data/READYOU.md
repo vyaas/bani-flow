@@ -180,6 +180,64 @@ flow through the graph the same way concert performers do. See
 [recordings/READYOU.md](recordings/READYOU.md) for the shared `Performer` shape
 and role vocabulary.
 
+**`kind` and `subjects` (optional, ADR-077)**: a `youtube[]` entry may be
+declared as a **lecture-demonstration** (lecdem) by setting `kind: "lecdem"`.
+A lecdem is a recording where the musician *talks about* the tradition rather
+than rendering a composition. Two new optional fields are introduced; both are
+absent on every existing recital entry (back-compat — no existing data changes).
+
+| field | type | notes |
+|---|---|---|
+| `kind` | `"recital"` \| `"lecdem"` \| omit | Absent means recital. `"lecdem"` requires `subjects`. Vocabulary in `carnatic/render/youtube_kinds.py`. |
+| `subjects` | object | **Required** when `kind === "lecdem"`; **must not** appear otherwise. Contains three arrays (all required, may be empty). |
+| `subjects.raga_ids` | `string[]` | Ragas discussed. Each id must resolve in `ragas/`. |
+| `subjects.composition_ids` | `string[]` | Compositions discussed. Each id must resolve in `compositions/`. |
+| `subjects.musician_ids` | `string[]` | Musicians discussed. Each id must resolve. The host node is **not** auto-injected — include explicitly only if the lecdem is genuinely about the host. |
+
+**Invariants (enforced by `python3 carnatic/cli.py validate`):**
+
+- A lecdem entry **must not** carry `composition_id` or `raga_id`; use `subjects` arrays instead.
+- Every id in any `subjects.*_ids` array **must** resolve — no unmatched-name escape hatch.
+- An empty `subjects` (`raga_ids: [], composition_ids: [], musician_ids: []`) is valid; the lecdem is discoverable only through its lecturer.
+
+```jsonc
+// lecdem with raga subjects
+{
+  "url": "https://youtu.be/lecdem8888",
+  "label": "Lec-dem: Surutti, Kedaragowla, Narayana Gowla — TM Krishna",
+  "kind": "lecdem",
+  "subjects": {
+    "raga_ids":        ["surutti", "kedaragowla", "narayana_gowla"],
+    "composition_ids": [],
+    "musician_ids":    []
+  }
+}
+
+// lecdem about a musician
+{
+  "url": "https://youtu.be/lecdem7777",
+  "label": "Lec-dem on MD Ramanathan's bani — Aruna Sairam",
+  "kind": "lecdem",
+  "subjects": {
+    "raga_ids":        [],
+    "composition_ids": [],
+    "musician_ids":    ["md_ramanathan"]
+  }
+}
+
+// lecdem about nothing specific (discoverable only via the lecturer)
+{
+  "url": "https://youtu.be/lecdem9999",
+  "label": "Lec-dem on Manodharma — TM Krishna",
+  "kind": "lecdem",
+  "subjects": {
+    "raga_ids":        [],
+    "composition_ids": [],
+    "musician_ids":    []
+  }
+}
+```
+
 ```jsonc
 {
   "url": "https://youtu.be/M4J_HtniTQA",
