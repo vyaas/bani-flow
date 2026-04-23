@@ -1482,6 +1482,58 @@
     flex-shrink: 0;
   }
 
+  /* ── ADR-080: Lecdem section in musician panel ─────────────────────────── */
+  .lecdem-section {
+    border-top: 1px solid var(--border-strong);
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  .lecdem-section-header {
+    font-size: 0.68rem;
+    color: var(--fg-muted);
+    padding: 4px 8px 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .lecdem-subsection {
+    margin-top: 4px;
+  }
+  .lecdem-subsection-header {
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    padding: 2px 8px 2px 12px;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+  .lecdem-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 4px;
+  }
+  .lecdem-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 4px 8px 4px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lecdem-row:last-child { border-bottom: none; }
+  .lecdem-by {
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    font-style: italic;
+    cursor: pointer;
+    text-decoration: underline dotted;
+  }
+  .lecdem-by:hover { color: var(--fg-default); }
+  .lecdem-subjects {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
   /* ── Graph-absent toast — brief non-obtrusive notice —————————————— */
   #graph-absent-toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -70245,10 +70297,194 @@ function buildRecordingsList(nodeId, nodeData) {
     recList.appendChild(compSection);
   }
 
-  // ── 4. Show/hide panel ────────────────────────────────────────────────────
-  const hasContent = concerts.length > 0 || legacyTracks.length > 0 || composerComps.length > 0;
+  // ── 5. Lecdems section (ADR-080) ─────────────────────────────────────────
+  // 5a: Lecdems by this musician (lecturer = this node)
+  // 5b: Lecdems about this musician (subject = this node)
+  const lecdemsBy_     = (typeof lecdemsBy !== 'undefined' ? lecdemsBy[nodeId]            : null) || [];
+  const lecdemsAbout_  = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician[nodeId] : null) || [];
+
+  if (lecdemsBy_.length > 0 || lecdemsAbout_.length > 0) {
+    const lsSection = document.createElement('section');
+    lsSection.className = 'lecdem-section';
+    lsSection.dataset.section = 'lecdems';
+
+    const lsSectionHdr = document.createElement('div');
+    lsSectionHdr.className = 'lecdem-section-header';
+    lsSectionHdr.textContent = 'Lecdems';
+    lsSection.appendChild(lsSectionHdr);
+
+    // 5a — Lecdems by this musician
+    if (lecdemsBy_.length > 0) {
+      // Sort: year desc, year-less entries last by label alpha
+      const sortedBy = lecdemsBy_.slice().sort((a, b) => {
+        if (a.year != null && b.year != null) return b.year - a.year;
+        if (a.year != null) return -1;
+        if (b.year != null) return 1;
+        return (a.label || '').localeCompare(b.label || '');
+      });
+
+      const bySubsec = document.createElement('div');
+      bySubsec.className = 'lecdem-subsection';
+      bySubsec.dataset.subsection = 'by';
+
+      const byHdr = document.createElement('div');
+      byHdr.className = 'lecdem-subsection-header';
+      byHdr.textContent = `Lecdems by ${artistLabel}`;
+      bySubsec.appendChild(byHdr);
+
+      const byList = document.createElement('ul');
+      byList.className = 'lecdem-list';
+
+      sortedBy.forEach(ref => {
+        const li = document.createElement('li');
+        li.className = 'lecdem-row';
+
+        const chip = buildLecdemChip(ref);
+        if (chip) li.appendChild(chip);
+
+        // Subject chips (raga, comp, musician), excluding current node
+        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
+        if (subjectChips) {
+          const subjectsWrap = document.createElement('span');
+          subjectsWrap.className = 'lecdem-subjects';
+          subjectChips.forEach(c => subjectsWrap.appendChild(c));
+          li.appendChild(subjectsWrap);
+        }
+
+        byList.appendChild(li);
+      });
+
+      bySubsec.appendChild(byList);
+      lsSection.appendChild(bySubsec);
+    }
+
+    // 5b — Lecdems about this musician
+    if (lecdemsAbout_.length > 0) {
+      // Sort: alphabetical by lecturer label
+      const sortedAbout = lecdemsAbout_.slice().sort((a, b) =>
+        (a.lecturer_label || '').localeCompare(b.lecturer_label || '')
+      );
+
+      const aboutSubsec = document.createElement('div');
+      aboutSubsec.className = 'lecdem-subsection';
+      aboutSubsec.dataset.subsection = 'about';
+
+      const aboutHdr = document.createElement('div');
+      aboutHdr.className = 'lecdem-subsection-header';
+      aboutHdr.textContent = `Lecdems about ${artistLabel}`;
+      aboutSubsec.appendChild(aboutHdr);
+
+      const aboutList = document.createElement('ul');
+      aboutList.className = 'lecdem-list';
+
+      sortedAbout.forEach(ref => {
+        const li = document.createElement('li');
+        li.className = 'lecdem-row';
+
+        const chip = buildLecdemChip(ref);
+        if (chip) li.appendChild(chip);
+
+        // Lecturer attribution as inline clickable text
+        if (ref.lecturer_label) {
+          const bySpan = document.createElement('span');
+          bySpan.className = 'lecdem-by';
+          bySpan.textContent = `— ${ref.lecturer_label}`;
+          bySpan.title = `Open ${ref.lecturer_label}'s panel`;
+          bySpan.addEventListener('click', e => {
+            e.stopPropagation();
+            if (typeof selectNode === 'function') selectNode(ref.lecturer_id);
+          });
+          li.appendChild(bySpan);
+        }
+
+        // Other subjects (exclude current node), e.g. ragas/comps discussed
+        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
+        if (subjectChips) {
+          const subjectsWrap = document.createElement('span');
+          subjectsWrap.className = 'lecdem-subjects';
+          subjectChips.forEach(c => subjectsWrap.appendChild(c));
+          li.appendChild(subjectsWrap);
+        }
+
+        aboutList.appendChild(li);
+      });
+
+      aboutSubsec.appendChild(aboutList);
+      lsSection.appendChild(aboutSubsec);
+    }
+
+    recList.appendChild(lsSection);
+  }
+
+  // ── 6. Show/hide panel ────────────────────────────────────────────────────
+  const lecdemsBy__    = (typeof lecdemsBy !== 'undefined' ? lecdemsBy[nodeId]            : null) || [];
+  const lecdemsAbout__ = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician[nodeId] : null) || [];
+  const hasContent = concerts.length > 0 || legacyTracks.length > 0 || composerComps.length > 0
+    || lecdemsBy__.length > 0 || lecdemsAbout__.length > 0;
   recPanel.style.display  = hasContent ? 'block' : 'none';
   recFilter.style.display = hasContent ? 'block' : 'none';
+}
+
+// ── _buildLecdemSubjectChips — subject cross-links for a lecdem row (ADR-080) ──
+// Returns an array of chip elements for all subjects, excluding `excludeId`
+// (the current musician node).  Returns null if no chips to render.
+function _buildLecdemSubjectChips(subjects, excludeId) {
+  if (!subjects) return null;
+  const chips = [];
+  const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
+  const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
+  const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
+
+  ragaIds.forEach(ragaId => {
+    const ragaObj  = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
+    const ragaName = ragaObj ? ragaObj.name : ragaId;
+    const c = document.createElement('span');
+    c.className = 'raga-chip';
+    c.textContent = ragaName;
+    c.title = 'Explore ' + ragaName + ' in Bani Flow';
+    c.addEventListener('click', e => {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(() => c.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
+    });
+    chips.push(c);
+  });
+
+  compIds.forEach(compId => {
+    const compObj  = (typeof compositions !== 'undefined') ? compositions.find(x => x.id === compId) : null;
+    const compName = compObj ? compObj.title : compId;
+    const c = document.createElement('span');
+    c.className = 'comp-chip';
+    c.textContent = compName;
+    c.title = 'Explore ' + compName + ' in Bani Flow';
+    c.addEventListener('click', e => {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(() => c.classList.remove('chip-tapped'), 200);
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compId);
+    });
+    chips.push(c);
+  });
+
+  musicianIds.forEach(mid => {
+    if (mid === excludeId) return;   // skip the current node — it's already the panel subject
+    const mNode    = (typeof cy !== 'undefined') ? cy.getElementById(mid) : null;
+    const mLabel   = (mNode && mNode.length) ? (mNode.data('label') || mid) : mid;
+    const c = document.createElement('span');
+    c.className = 'musician-chip';
+    c.textContent = mLabel;
+    c.title = 'Open ' + mLabel + "'s panel";
+    c.addEventListener('click', e => {
+      e.stopPropagation();
+      c.classList.add('chip-tapped');
+      setTimeout(() => c.classList.remove('chip-tapped'), 200);
+      if (typeof selectNode === 'function') selectNode(mid);
+    });
+    chips.push(c);
+  });
+
+  return chips.length > 0 ? chips : null;
 }
 
 // ── Named-player API (ADR-029: Sruti Bar) ─────────────────────────────────────
