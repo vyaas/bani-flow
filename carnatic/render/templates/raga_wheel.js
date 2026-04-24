@@ -200,6 +200,12 @@ function _readChipTokens() {
   };
 }
 
+function _readChipSpacingK() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = parseFloat(cs.getPropertyValue('--wheel-chip-spacing-k'));
+  return Number.isFinite(v) && v > 0 ? v : 1.15;
+}
+
 // Append a text label with a background pill to `layer`.
 // cx, cy: centre of the label. extraAttrs: additional SVG text attributes (e.g. class).
 // clickHandler: optional fn(e) — when provided the pill background <rect> becomes a
@@ -298,6 +304,47 @@ function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs, clickHandler) {
 function polar(cx, cy, r, angleDeg) {
   const rad = (angleDeg - 90) * Math.PI / 180;
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function polarRad(cx, cy, r, angleRad) {
+  const rad = angleRad - Math.PI / 2;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+// ADR-093: deterministic ring/fan solver based on minimum arc-length spacing.
+function solveRingLayout(opts) {
+  if (!opts || !opts.n || opts.n < 1) return { radius: 0, spread: 0, angles: [] };
+  const padX = opts.fontSize * 0.6;
+  const chipWidth = Math.max(1, opts.maxLabelChars || 1) * opts.fontSize * 0.55 + padX * 2;
+  const sMin = opts.k * chipWidth;
+
+  if (opts.closedRim) {
+    const rRequired = opts.n * sMin / (2 * Math.PI);
+    const radius = Math.max(opts.closedRim.rBaseline, rRequired);
+    const angles = Array.from({ length: opts.n }, (_, i) => i * 2 * Math.PI / opts.n);
+    return { radius, spread: 2 * Math.PI, angles };
+  }
+
+  if (opts.openFan) {
+    const { anchorAngle, maxSpread, rBaseline } = opts.openFan;
+    const spreadAtBaseline = opts.n === 1 ? 0 : ((opts.n - 1) * sMin) / Math.max(1e-6, rBaseline);
+    let spread, radius;
+    if (spreadAtBaseline <= maxSpread) {
+      spread = spreadAtBaseline;
+      radius = rBaseline;
+    } else {
+      spread = maxSpread;
+      radius = opts.n === 1 ? rBaseline : ((opts.n - 1) * sMin) / Math.max(1e-6, maxSpread);
+    }
+    const angles = opts.n === 1
+      ? [anchorAngle]
+      : Array.from({ length: opts.n }, (_, i) =>
+          anchorAngle - spread / 2 + (spread / (opts.n - 1)) * i
+        );
+    return { radius, spread, angles };
+  }
+
+  throw new Error('solveRingLayout: must specify closedRim or openFan');
 }
 
 function sectorPath(cx, cy, r1, r2, startDeg, endDeg) {
@@ -565,7 +612,7 @@ window.drawRagaWheel = function() {
 
   const R_INNER = minDim * 0.08;
   const R_CAKRA = minDim * 0.155;
-  const R_MELA  = minDim * 0.38;
+  const R_MELA_BASE  = minDim * 0.38;
   const R_JANYA = minDim * 0.56;
   const R_COMP  = minDim * 0.72;
   const R_MUSC  = minDim * 0.88;
@@ -586,6 +633,20 @@ window.drawRagaWheel = function() {
     if (!janyasByMela[r.parent_raga]) janyasByMela[r.parent_raga] = [];
     janyasByMela[r.parent_raga].push(r);
   });
+
+  const melaFontSize = Math.max(7, minDim * 0.012);
+  const melaMaxChars = Array.from({ length: 72 }, (_, i) => {
+    const r = melaByNum[i + 1];
+    return (r && r.name ? r.name : String(i + 1)).length;
+  }).reduce((m, n) => Math.max(m, n), 1);
+  const melaLayout = solveRingLayout({
+    n: 72,
+    fontSize: melaFontSize,
+    maxLabelChars: melaMaxChars,
+    k: _readChipSpacingK(),
+    closedRim: { rBaseline: R_MELA_BASE }
+  });
+  const R_MELA = melaLayout.radius;
 
   // ── compsByRaga: three sources ────────────────────────────────────────────
   // Source 1: compositions.json compositions[] — canonical compositions
@@ -923,8 +984,9 @@ window.drawRagaWheel = function() {
   // Pass 1: circles + interaction (no labels yet)
   const melaCirleGroups = [];
   for (let n = 1; n <= 72; n++) {
-    const angleDeg = (n - 1) * 5;
-    const pos = polar(cx, cy, R_MELA, angleDeg);
+    const angleRad = melaLayout.angles[n - 1];
+    const angleDeg = angleRad * 180 / Math.PI;
+    const pos = polarRad(cx, cy, R_MELA, angleRad);
     const raga = melaByNum[n];
     const cakra = Math.ceil(n / 6);
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
@@ -972,7 +1034,7 @@ window.drawRagaWheel = function() {
           _collapseAll(vp, melaByNum);
         } else {
           _collapseAll(vp, melaByNum);
-          _expandMela(vp, svg, raga, angleDeg, cx, cy,
+          _expandMela(vp, svg, raga, angleRad, cx, cy,
             R_MELA, R_JANYA, R_COMP, R_MUSC,
             NR_MELA, NR_JANYA, NR_COMP, NR_MUSC,
             janyasByMela, compsByRaga, rtpByRaga, color, minDim);
@@ -1011,23 +1073,23 @@ window.drawRagaWheel = function() {
       });
     }
     vp.appendChild(g);
-    melaCirleGroups.push({ n, angleDeg, raga });
+    melaCirleGroups.push({ n, angleRad, raga });
   }
 
   // Pass 2: labels — in the module-level _labelLayer so they are always topmost
   _labelLayer = svgEl('g', { id: 'wheel-label-layer', 'pointer-events': 'none' });
-  melaCirleGroups.forEach(({ n, angleDeg, raga }) => {
+  melaCirleGroups.forEach(({ n, angleRad, raga }) => {
+    const angleDeg = angleRad * 180 / Math.PI;
     const labelR = R_MELA + NR_MELA + Math.max(5, minDim * 0.014);
-    const lp = polar(cx, cy, labelR, angleDeg);
+    const lp = polarRad(cx, cy, labelR, angleRad);
     const normAngle = ((angleDeg % 360) + 360) % 360;
     let melaRotDeg, anchor;
-    if (normAngle === 0)        { melaRotDeg = 0;             anchor = 'middle'; }
-    else if (normAngle === 180) { melaRotDeg = 0;             anchor = 'middle'; }
+    if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = 0;             anchor = 'middle'; }
+    else if (Math.abs(normAngle - 180) < 1e-6) { melaRotDeg = 0;             anchor = 'middle'; }
     else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
     const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
-    const melaFontSize = Math.max(7, minDim * 0.012);
     // All mela labels now use the raga chip style (ADR-073: melas are ragas).
     // rotate wraps the chip <g> so the rect+text rotate together around lp.
     // wrapOpacity provides the inactive-mela dimming envelope.
@@ -1116,7 +1178,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
     NR_MELA, NR_JANYA, NR_COMP, NR_MUSC,
     janyasByMela, compsByRaga, rtpByRaga, melaColor, minDim) {
   const janyas = janyasByMela[raga.id] || [];
-  const melaPos = polar(cx, cy, R_MELA, melaAngle);
+  const melaPos = polarRad(cx, cy, R_MELA, melaAngle);
   const g = svgEl('g', { class: 'janya-group', 'data-parent': raga.id });
 
   // Always show the mela's own music (compositions + performances) directly at R_COMP.
@@ -1125,7 +1187,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
   if (janyas.length === 0 && melaDirect === 0) {
     // Nothing to show at all
-    const lp = polar(cx, cy, R_JANYA, melaAngle);
+    const lp = polarRad(cx, cy, R_JANYA, melaAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
       fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
@@ -1138,11 +1200,23 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
   // Draw janya satellites (if any)
   if (janyas.length > 0) {
-    const SPREAD = Math.min(50, janyas.length * 8);
+    // ADR-093: solve fan geometry from chip length scale, then compute radius/spread.
+    const jFontSize = Math.max(7, minDim * 0.011);
+    const jMaxChars = janyas.reduce((m, j) => Math.max(m, (j.name || '').length), 1);
+    const janyaLayout = solveRingLayout({
+      n: janyas.length,
+      fontSize: jFontSize,
+      maxLabelChars: jMaxChars,
+      k: _readChipSpacingK(),
+      openFan: {
+        anchorAngle: melaAngle,
+        maxSpread: (5 * Math.PI / 180) * 0.85,
+        rBaseline: R_JANYA
+      }
+    });
     janyas.forEach((janya, i) => {
-      const offset = janyas.length === 1 ? 0 : -SPREAD / 2 + (SPREAD / (janyas.length - 1)) * i;
-      const jAngle = melaAngle + offset;
-      const jPos = polar(cx, cy, R_JANYA, jAngle);
+      const jAngle = janyaLayout.angles[i];
+      const jPos = polarRad(cx, cy, janyaLayout.radius, jAngle);
 
       const janyaConnLine = svgEl('line', {
         x1: melaPos.x, y1: melaPos.y, x2: jPos.x, y2: jPos.y,
@@ -1234,7 +1308,6 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
       // Janya label goes into _labelLayer so it is always on top.
       // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
       if (_labelLayer) {
-        const jFontSize = Math.max(7, minDim * 0.011);
         _labelWithBg(_labelLayer, janya.name, jPos.x, jPos.y, jFontSize, {
           fill: THEME.fgSub, 'font-size': jFontSize + 'px',
           class: 'sat-label sat-label-janya', 'data-janya-id': janya.id,
@@ -1273,7 +1346,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
   const g = svgEl('g', { class: 'comp-group', 'data-parent': janya.id });
 
   if (items.length === 0) {
-    const lp = polar(cx, cy, R_COMP, jAngle);
+    const lp = polarRad(cx, cy, R_COMP, jAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
       fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
@@ -1284,11 +1357,23 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     return;
   }
 
-  const SPREAD = Math.min(40, items.length * 7);
+  // ADR-093: composition fan layout uses the same deterministic solver.
+  const cFontSize = Math.max(6, minDim * 0.010);
+  const cMaxChars = items.reduce((m, item) => Math.max(m, (item.title || '').length), 1);
+  const compLayout = solveRingLayout({
+    n: items.length,
+    fontSize: cFontSize,
+    maxLabelChars: cMaxChars,
+    k: _readChipSpacingK(),
+    openFan: {
+      anchorAngle: jAngle,
+      maxSpread: (5 * Math.PI / 180) * 0.85,
+      rBaseline: R_COMP
+    }
+  });
   items.forEach((item, i) => {
-    const offset = items.length === 1 ? 0 : -SPREAD / 2 + (SPREAD / (items.length - 1)) * i;
-    const cAngle = jAngle + offset;
-    const cPos = polar(cx, cy, R_COMP, cAngle);
+    const cAngle = compLayout.angles[i];
+    const cPos = polarRad(cx, cy, compLayout.radius, cAngle);
 
     const connLine = svgEl('line', {
       x1: jPos.x, y1: jPos.y, x2: cPos.x, y2: cPos.y,
@@ -1308,7 +1393,6 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     // Label goes into _labelLayer so it is always rendered on top of all circles.
     // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
     if (_labelLayer) {
-      const cFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
         fill: THEME.fgSub, 'font-size': cFontSize + 'px',
         class: 'sat-label sat-label-comp', 'data-comp-id': item.id || '',
@@ -1697,6 +1781,16 @@ function orientRagaWheel(type, id) {
       targetX = W / 2 + R_MELA * Math.cos(rad);
       targetY = H / 2 + R_MELA * Math.sin(rad);
       TARGET_SCALE = 1.8;
+
+      // ADR-093: prefer actual rendered mela node position (R_MELA may be solver-grown).
+      const melaEl = document.querySelector(
+        `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
+      );
+      if (melaEl) {
+        const mx = parseFloat(melaEl.getAttribute('cx'));
+        const my = parseFloat(melaEl.getAttribute('cy'));
+        if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
+      }
     }
 
     const targetVX = W / 2 - TARGET_SCALE * targetX;

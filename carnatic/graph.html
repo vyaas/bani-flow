@@ -48,6 +48,7 @@
     --chip-comp-bg:           color-mix(in srgb, var(--chip-comp-border) 10%, transparent);
     --chip-border-radius:     4px;   /* was 10px pill for comp, 3px for musician; unified */
     --chip-border-width:      1px;
+    --wheel-chip-spacing-k:   1.15;  /* ADR-093: minimum chip arc-spacing multiplier */
     /* ADR-072: search-subject prominence + shared hierarchy indentation */
     --subject-size:           1.05rem;     /* search-subject chip font-size */
     --subject-padding:        4px 10px;    /* search-subject chip padding */
@@ -2838,9 +2839,13 @@
   }
   .panel-tutorial .pt-cat-row {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--bg-card, rgba(255,255,255,0.04));
+    margin-bottom: 6px;
   }
   .panel-tutorial .pt-action-label {
     display: inline-block;
@@ -2853,13 +2858,62 @@
   }
   .panel-tutorial .pt-effect {
     color: var(--fg-muted);
-    font-size: 0.72rem;
+    font-size: 0.70rem;
     display: flex;
     flex-direction: column;
     gap: 1px;
+    padding-top: 3px;
+    padding-left: 2px;
+    white-space: normal;
   }
   .panel-tutorial .pt-effect-line {
     display: block;
+  }
+  .panel-tutorial .pt-nowrap {
+    white-space: nowrap;
+  }
+  .panel-tutorial .pt-demo-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .panel-tutorial .pt-demo-row-lecdem {
+    flex-wrap: nowrap;
+  }
+  .panel-tutorial .pt-demo-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: var(--fg-dim);
+  }
+  .panel-tutorial .pt-demo-acts {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-demo-acts .rec-play-btn,
+  .panel-tutorial .pt-demo-acts .yt-ext-link {
+    width: 24px;
+    height: 24px;
+    font-size: 0.68rem;
+  }
+  .panel-tutorial .pt-demo-static {
+    cursor: default;
+    opacity: 0.92;
+  }
+  .panel-tutorial .pt-demo-label {
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+  }
+  .panel-tutorial .pt-demo-tala {
+    margin-left: 0;
   }
   .panel-tutorial .pt-divider {
     border: none;
@@ -2873,6 +2927,19 @@
     font-size: 0.74rem;
     color: var(--fg-muted);
     margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-seed-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .panel-tutorial .pt-seed-note {
+    font-size: 0.66rem;
+    color: var(--fg-muted);
+    opacity: 0.85;
+    margin-left: 2px;
+    line-height: 1.15;
   }
 </style>
 </head>
@@ -73438,75 +73505,82 @@ const lecdemsAboutComposition = {};
 
 // ── Empty-panel tutorial copy (ADR-086) ──────────────────────────────────────
 const helpEmptyPanels = {
-  "schema_version": 2,
+  "schema_version": 3,
   "musician_panel": {
     "chip_catalogue": [
       {
-        "css_class": "musician-chip",
-        "example_id": "ramnad_krishnan",
-        "example_kind": "musician",
-        "example_label": "Ramnad Krishnan",
-        "effect": "→ opens that musician in this panel (back ← → forward to navigate)"
-      },
-      {
         "css_class": "raga-chip",
-        "example_id": "thodi",
         "example_kind": "raga",
+        "example_id": "thodi",
         "example_label": "Thodi",
-        "effect": "→ opens the Bani Flow trail for that raga (left panel)"
+        "effect": "· opens the Bani Flow trail for that raga (left panel)"
       },
       {
         "css_class": "comp-chip",
-        "example_id": "parulanna_matta",
-        "example_kind": "composition",
-        "example_label": "Parulanna Matta",
-        "effect": "→ opens the Bani Flow trail for that composition (left panel)"
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "composition_row",
+          "comp_id": "parulanna_matta",
+          "comp_label": "Parulanna Matta",
+          "raga_id": "kapi",
+          "raga_label": "Kapi",
+          "tala": "Rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "composer_label": "Dharmapuri Subbaraya Iyer"
+        },
+        "effect": "· composition rows carry raga and tala; clicking the raga opens its Bani Flow trail"
       },
       {
         "css_class": "tree-play-btn",
-        "example_id": null,
         "example_kind": "action",
+        "example_id": null,
         "example_label": "▶",
-        "effect": "→ opens the floating YouTube player on that track"
+        "effect": "· opens the floating YouTube player on that track"
       },
       {
         "css_class": "tree-ext-link",
-        "example_id": null,
         "example_kind": "action",
+        "example_id": null,
         "example_label": "↗",
-        "effect": "→ opens the source page (YouTube / Wikipedia) in a new tab"
+        "effect": "· opens the source page (YouTube / Wikipedia) in a new tab"
       },
       {
         "css_class": "lecdem-chip",
-        "example_id": "tm_krishna",
-        "example_kind": "lecdem_by",
-        "example_label": "✎ TM Krishna — Manodharma",
-        "effect": "→ opens the lecdem in the floating player"
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "lecdem_row",
+          "title": "Manodharma Lec-Dem Promo — TM Krishna & Akkarai Subbulakshmi",
+          "video_id": "KDPPDB0rG70",
+          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70"
+        },
+        "effect": "· lecdem rows appear above the trail when a subject has lecture-demonstrations"
       }
     ],
     "cross_panel_seeds": {
-      "prompt": "Tap these — watch the Bani Flow panel respond:",
+      "prompt": "Tap these — watch the Bani Flow panel (and wheel in Mela-Janya view) respond:",
       "panel_target": "bani",
       "items": [
         {
           "kind": "raga",
-          "id": "thodi",
-          "label": "Thodi"
+          "id": "kharaharapriya",
+          "label": "Kharaharapriya",
+          "note": "melakarta"
         },
         {
           "kind": "raga",
-          "id": "bhairavi",
-          "label": "Bhairavi"
+          "id": "thodi",
+          "label": "Thodi",
+          "note": "janya"
         },
         {
           "kind": "composition",
           "id": "parulanna_matta",
-          "label": "Parulanna Matta"
-        },
-        {
-          "kind": "composition",
-          "id": "ninnada",
-          "label": "Ninnada Nela"
+          "label": "Parulanna Matta",
+          "note": "composition"
         }
       ]
     }
@@ -73514,47 +73588,55 @@ const helpEmptyPanels = {
   "bani_flow_panel": {
     "chip_catalogue": [
       {
-        "css_class": "raga-chip",
-        "example_id": "thodi",
-        "example_kind": "raga",
-        "example_label": "Thodi",
-        "effect_graph": "→ loads this panel's recording trail for that raga",
-        "effect_raga": "→ also selects the raga on the wheel; recording trail loads here"
+        "css_class": "musician-chip",
+        "example_kind": "musician",
+        "example_id": "ramnad_krishnan",
+        "example_label": "Ramnad Krishnan",
+        "effect": "· opens that musician in the Musician panel (right panel)"
       },
       {
         "css_class": "comp-chip",
-        "example_id": "parulanna_matta",
-        "example_kind": "composition",
-        "example_label": "Parulanna Matta",
-        "effect": "→ loads this panel's recording trail for that composition"
-      },
-      {
-        "css_class": "musician-chip",
-        "example_id": "ramnad_krishnan",
-        "example_kind": "musician",
-        "example_label": "Ramnad Krishnan",
-        "effect": "→ opens that musician in the Musician panel (right panel)"
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "composition_row",
+          "comp_id": "parulanna_matta",
+          "comp_label": "Parulanna Matta",
+          "raga_id": "kapi",
+          "raga_label": "Kapi",
+          "tala": "Rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "composer_label": "Dharmapuri Subbaraya Iyer"
+        },
+        "effect": "· composition rows show raga, tala, and composer; clicking the composer opens them in the Musician panel"
       },
       {
         "css_class": "tree-play-btn",
-        "example_id": null,
         "example_kind": "action",
+        "example_id": null,
         "example_label": "▶",
-        "effect": "→ opens the floating YouTube player on that track"
+        "effect": "· opens the floating YouTube player on that track"
       },
       {
         "css_class": "tree-ext-link",
-        "example_id": null,
         "example_kind": "action",
+        "example_id": null,
         "example_label": "↗",
-        "effect": "→ opens the source page (YouTube / Wikipedia) in a new tab"
+        "effect": "· opens the source page (YouTube / Wikipedia) in a new tab"
       },
       {
         "css_class": "lecdem-chip",
-        "example_id": "tm_krishna",
-        "example_kind": "lecdem_about",
-        "example_label": "✎ TM Krishna on Thodi",
-        "effect": "→ opens the lecdem in the floating player (appears above the trail when one exists)"
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "lecdem_row",
+          "title": "Manodharma Lec-Dem Promo — TM Krishna & Akkarai Subbulakshmi",
+          "video_id": "KDPPDB0rG70",
+          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70"
+        },
+        "effect": "· lecdem rows appear above the trail when a subject has lecture-demonstrations"
       }
     ],
     "cross_panel_seeds": {
@@ -77692,6 +77774,12 @@ function _readChipTokens() {
   };
 }
 
+function _readChipSpacingK() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = parseFloat(cs.getPropertyValue('--wheel-chip-spacing-k'));
+  return Number.isFinite(v) && v > 0 ? v : 1.15;
+}
+
 // Append a text label with a background pill to `layer`.
 // cx, cy: centre of the label. extraAttrs: additional SVG text attributes (e.g. class).
 // clickHandler: optional fn(e) — when provided the pill background <rect> becomes a
@@ -77790,6 +77878,47 @@ function _labelWithBg(layer, text, cx, cy, fontSize, extraAttrs, clickHandler) {
 function polar(cx, cy, r, angleDeg) {
   const rad = (angleDeg - 90) * Math.PI / 180;
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function polarRad(cx, cy, r, angleRad) {
+  const rad = angleRad - Math.PI / 2;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+// ADR-093: deterministic ring/fan solver based on minimum arc-length spacing.
+function solveRingLayout(opts) {
+  if (!opts || !opts.n || opts.n < 1) return { radius: 0, spread: 0, angles: [] };
+  const padX = opts.fontSize * 0.6;
+  const chipWidth = Math.max(1, opts.maxLabelChars || 1) * opts.fontSize * 0.55 + padX * 2;
+  const sMin = opts.k * chipWidth;
+
+  if (opts.closedRim) {
+    const rRequired = opts.n * sMin / (2 * Math.PI);
+    const radius = Math.max(opts.closedRim.rBaseline, rRequired);
+    const angles = Array.from({ length: opts.n }, (_, i) => i * 2 * Math.PI / opts.n);
+    return { radius, spread: 2 * Math.PI, angles };
+  }
+
+  if (opts.openFan) {
+    const { anchorAngle, maxSpread, rBaseline } = opts.openFan;
+    const spreadAtBaseline = opts.n === 1 ? 0 : ((opts.n - 1) * sMin) / Math.max(1e-6, rBaseline);
+    let spread, radius;
+    if (spreadAtBaseline <= maxSpread) {
+      spread = spreadAtBaseline;
+      radius = rBaseline;
+    } else {
+      spread = maxSpread;
+      radius = opts.n === 1 ? rBaseline : ((opts.n - 1) * sMin) / Math.max(1e-6, maxSpread);
+    }
+    const angles = opts.n === 1
+      ? [anchorAngle]
+      : Array.from({ length: opts.n }, (_, i) =>
+          anchorAngle - spread / 2 + (spread / (opts.n - 1)) * i
+        );
+    return { radius, spread, angles };
+  }
+
+  throw new Error('solveRingLayout: must specify closedRim or openFan');
 }
 
 function sectorPath(cx, cy, r1, r2, startDeg, endDeg) {
@@ -78057,7 +78186,7 @@ window.drawRagaWheel = function() {
 
   const R_INNER = minDim * 0.08;
   const R_CAKRA = minDim * 0.155;
-  const R_MELA  = minDim * 0.38;
+  const R_MELA_BASE  = minDim * 0.38;
   const R_JANYA = minDim * 0.56;
   const R_COMP  = minDim * 0.72;
   const R_MUSC  = minDim * 0.88;
@@ -78078,6 +78207,20 @@ window.drawRagaWheel = function() {
     if (!janyasByMela[r.parent_raga]) janyasByMela[r.parent_raga] = [];
     janyasByMela[r.parent_raga].push(r);
   });
+
+  const melaFontSize = Math.max(7, minDim * 0.012);
+  const melaMaxChars = Array.from({ length: 72 }, (_, i) => {
+    const r = melaByNum[i + 1];
+    return (r && r.name ? r.name : String(i + 1)).length;
+  }).reduce((m, n) => Math.max(m, n), 1);
+  const melaLayout = solveRingLayout({
+    n: 72,
+    fontSize: melaFontSize,
+    maxLabelChars: melaMaxChars,
+    k: _readChipSpacingK(),
+    closedRim: { rBaseline: R_MELA_BASE }
+  });
+  const R_MELA = melaLayout.radius;
 
   // ── compsByRaga: three sources ────────────────────────────────────────────
   // Source 1: compositions.json compositions[] — canonical compositions
@@ -78415,8 +78558,9 @@ window.drawRagaWheel = function() {
   // Pass 1: circles + interaction (no labels yet)
   const melaCirleGroups = [];
   for (let n = 1; n <= 72; n++) {
-    const angleDeg = (n - 1) * 5;
-    const pos = polar(cx, cy, R_MELA, angleDeg);
+    const angleRad = melaLayout.angles[n - 1];
+    const angleDeg = angleRad * 180 / Math.PI;
+    const pos = polarRad(cx, cy, R_MELA, angleRad);
     const raga = melaByNum[n];
     const cakra = Math.ceil(n / 6);
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
@@ -78464,7 +78608,7 @@ window.drawRagaWheel = function() {
           _collapseAll(vp, melaByNum);
         } else {
           _collapseAll(vp, melaByNum);
-          _expandMela(vp, svg, raga, angleDeg, cx, cy,
+          _expandMela(vp, svg, raga, angleRad, cx, cy,
             R_MELA, R_JANYA, R_COMP, R_MUSC,
             NR_MELA, NR_JANYA, NR_COMP, NR_MUSC,
             janyasByMela, compsByRaga, rtpByRaga, color, minDim);
@@ -78503,23 +78647,23 @@ window.drawRagaWheel = function() {
       });
     }
     vp.appendChild(g);
-    melaCirleGroups.push({ n, angleDeg, raga });
+    melaCirleGroups.push({ n, angleRad, raga });
   }
 
   // Pass 2: labels — in the module-level _labelLayer so they are always topmost
   _labelLayer = svgEl('g', { id: 'wheel-label-layer', 'pointer-events': 'none' });
-  melaCirleGroups.forEach(({ n, angleDeg, raga }) => {
+  melaCirleGroups.forEach(({ n, angleRad, raga }) => {
+    const angleDeg = angleRad * 180 / Math.PI;
     const labelR = R_MELA + NR_MELA + Math.max(5, minDim * 0.014);
-    const lp = polar(cx, cy, labelR, angleDeg);
+    const lp = polarRad(cx, cy, labelR, angleRad);
     const normAngle = ((angleDeg % 360) + 360) % 360;
     let melaRotDeg, anchor;
-    if (normAngle === 0)        { melaRotDeg = 0;             anchor = 'middle'; }
-    else if (normAngle === 180) { melaRotDeg = 0;             anchor = 'middle'; }
+    if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = 0;             anchor = 'middle'; }
+    else if (Math.abs(normAngle - 180) < 1e-6) { melaRotDeg = 0;             anchor = 'middle'; }
     else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
     const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
-    const melaFontSize = Math.max(7, minDim * 0.012);
     // All mela labels now use the raga chip style (ADR-073: melas are ragas).
     // rotate wraps the chip <g> so the rect+text rotate together around lp.
     // wrapOpacity provides the inactive-mela dimming envelope.
@@ -78608,7 +78752,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
     NR_MELA, NR_JANYA, NR_COMP, NR_MUSC,
     janyasByMela, compsByRaga, rtpByRaga, melaColor, minDim) {
   const janyas = janyasByMela[raga.id] || [];
-  const melaPos = polar(cx, cy, R_MELA, melaAngle);
+  const melaPos = polarRad(cx, cy, R_MELA, melaAngle);
   const g = svgEl('g', { class: 'janya-group', 'data-parent': raga.id });
 
   // Always show the mela's own music (compositions + performances) directly at R_COMP.
@@ -78617,7 +78761,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
   if (janyas.length === 0 && melaDirect === 0) {
     // Nothing to show at all
-    const lp = polar(cx, cy, R_JANYA, melaAngle);
+    const lp = polarRad(cx, cy, R_JANYA, melaAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
       fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
@@ -78630,11 +78774,23 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
   // Draw janya satellites (if any)
   if (janyas.length > 0) {
-    const SPREAD = Math.min(50, janyas.length * 8);
+    // ADR-093: solve fan geometry from chip length scale, then compute radius/spread.
+    const jFontSize = Math.max(7, minDim * 0.011);
+    const jMaxChars = janyas.reduce((m, j) => Math.max(m, (j.name || '').length), 1);
+    const janyaLayout = solveRingLayout({
+      n: janyas.length,
+      fontSize: jFontSize,
+      maxLabelChars: jMaxChars,
+      k: _readChipSpacingK(),
+      openFan: {
+        anchorAngle: melaAngle,
+        maxSpread: (5 * Math.PI / 180) * 0.85,
+        rBaseline: R_JANYA
+      }
+    });
     janyas.forEach((janya, i) => {
-      const offset = janyas.length === 1 ? 0 : -SPREAD / 2 + (SPREAD / (janyas.length - 1)) * i;
-      const jAngle = melaAngle + offset;
-      const jPos = polar(cx, cy, R_JANYA, jAngle);
+      const jAngle = janyaLayout.angles[i];
+      const jPos = polarRad(cx, cy, janyaLayout.radius, jAngle);
 
       const janyaConnLine = svgEl('line', {
         x1: melaPos.x, y1: melaPos.y, x2: jPos.x, y2: jPos.y,
@@ -78726,7 +78882,6 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
       // Janya label goes into _labelLayer so it is always on top.
       // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
       if (_labelLayer) {
-        const jFontSize = Math.max(7, minDim * 0.011);
         _labelWithBg(_labelLayer, janya.name, jPos.x, jPos.y, jFontSize, {
           fill: THEME.fgSub, 'font-size': jFontSize + 'px',
           class: 'sat-label sat-label-janya', 'data-janya-id': janya.id,
@@ -78765,7 +78920,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
   const g = svgEl('g', { class: 'comp-group', 'data-parent': janya.id });
 
   if (items.length === 0) {
-    const lp = polar(cx, cy, R_COMP, jAngle);
+    const lp = polarRad(cx, cy, R_COMP, jAngle);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
       fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
@@ -78776,11 +78931,23 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     return;
   }
 
-  const SPREAD = Math.min(40, items.length * 7);
+  // ADR-093: composition fan layout uses the same deterministic solver.
+  const cFontSize = Math.max(6, minDim * 0.010);
+  const cMaxChars = items.reduce((m, item) => Math.max(m, (item.title || '').length), 1);
+  const compLayout = solveRingLayout({
+    n: items.length,
+    fontSize: cFontSize,
+    maxLabelChars: cMaxChars,
+    k: _readChipSpacingK(),
+    openFan: {
+      anchorAngle: jAngle,
+      maxSpread: (5 * Math.PI / 180) * 0.85,
+      rBaseline: R_COMP
+    }
+  });
   items.forEach((item, i) => {
-    const offset = items.length === 1 ? 0 : -SPREAD / 2 + (SPREAD / (items.length - 1)) * i;
-    const cAngle = jAngle + offset;
-    const cPos = polar(cx, cy, R_COMP, cAngle);
+    const cAngle = compLayout.angles[i];
+    const cPos = polarRad(cx, cy, compLayout.radius, cAngle);
 
     const connLine = svgEl('line', {
       x1: jPos.x, y1: jPos.y, x2: cPos.x, y2: cPos.y,
@@ -78800,7 +78967,6 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     // Label goes into _labelLayer so it is always rendered on top of all circles.
     // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
     if (_labelLayer) {
-      const cFontSize = Math.max(6, minDim * 0.010);
       _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
         fill: THEME.fgSub, 'font-size': cFontSize + 'px',
         class: 'sat-label sat-label-comp', 'data-comp-id': item.id || '',
@@ -79189,6 +79355,16 @@ function orientRagaWheel(type, id) {
       targetX = W / 2 + R_MELA * Math.cos(rad);
       targetY = H / 2 + R_MELA * Math.sin(rad);
       TARGET_SCALE = 1.8;
+
+      // ADR-093: prefer actual rendered mela node position (R_MELA may be solver-grown).
+      const melaEl = document.querySelector(
+        `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
+      );
+      if (melaEl) {
+        const mx = parseFloat(melaEl.getAttribute('cx'));
+        const my = parseFloat(melaEl.getAttribute('cy'));
+        if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
+      }
     }
 
     const targetVX = W / 2 - TARGET_SCALE * targetX;
@@ -83769,6 +83945,11 @@ function buildAddYoutubeForm() {
     }
   }
 
+  function _normalizeEffectText(text) {
+    if (!text) return '';
+    return String(text).replace(/^\s*(?:\u2192|->|\u00b7|\u2022)\s*/u, '').trim();
+  }
+
   // recording_ref: {musician_id, concert_hint, raga_id} → resolve to a single
   // performance and open it via triggerBaniSearch('perf', key).
   function _onRecordingRef(item) {
@@ -83821,6 +84002,112 @@ function buildAddYoutubeForm() {
     return chip;
   }
 
+  function _lookupComposerNodeId(composerId) {
+    if (!composerId) return null;
+    if (typeof cy !== 'undefined') {
+      const node = cy.getElementById(composerId);
+      if (node && node.length) return composerId;
+    }
+    const composer = (typeof composers !== 'undefined')
+      ? composers.find(c => c.id === composerId)
+      : null;
+    if (!composer || !composer.musician_node_id) return null;
+    if (typeof cy !== 'undefined') {
+      const cNode = cy.getElementById(composer.musician_node_id);
+      if (!cNode || !cNode.length) return null;
+    }
+    return composer.musician_node_id;
+  }
+
+  function _chipLikeLabel(cls, text) {
+    const el = _el('span', cls + ' pt-demo-static', text);
+    el.style.cursor = 'default';
+    return el;
+  }
+
+  function _renderDemoRow(slot, entry) {
+    const demo = entry.demo_row || {};
+    const type = demo.type;
+
+    if (type === 'lecdem_row') {
+      const row = _el('div', 'pt-demo-row pt-demo-row-lecdem');
+      const title = _el('span', 'pt-demo-title', demo.title || 'Lecture-Demo');
+      row.appendChild(title);
+
+      const acts = _el('div', 'pt-demo-acts');
+      const playBtn = _el('button', 'tree-play-btn rec-play-btn play-btn-concert', '\u25b6');
+      playBtn.type = 'button';
+      playBtn.title = 'Play';
+      playBtn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (typeof openPlayer === 'function' && demo.video_id) {
+          openPlayer(demo.video_id, demo.title || 'Lecture-Demo');
+        }
+      });
+      acts.appendChild(playBtn);
+
+      const ext = _el('a', 'tree-ext-link yt-ext-link', '\u2197');
+      ext.href = demo.youtube_url || '#';
+      ext.target = '_blank';
+      ext.rel = 'noopener noreferrer';
+      ext.title = 'Open source';
+      ext.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (!demo.youtube_url) evt.preventDefault();
+      });
+      acts.appendChild(ext);
+      row.appendChild(acts);
+      return row;
+    }
+
+    if (type === 'composition_row') {
+      const row = _el('div', 'pt-demo-row pt-demo-row-composition');
+      row.appendChild(slot === 'musician'
+        ? _catalogueChip({
+            css_class: 'comp-chip',
+            example_kind: 'composition',
+            example_id: demo.comp_id,
+            example_label: demo.comp_label || demo.comp_id,
+          })
+        : _chipLikeLabel('comp-chip', demo.comp_label || demo.comp_id || 'Composition'));
+
+      row.appendChild(slot === 'musician'
+        ? _catalogueChip({
+            css_class: 'raga-chip',
+            example_kind: 'raga',
+            example_id: demo.raga_id,
+            example_label: demo.raga_label || demo.raga_id,
+          })
+        : _chipLikeLabel('raga-chip', demo.raga_label || demo.raga_id || 'Raga'));
+
+      if (demo.tala) {
+        row.appendChild(_el('span', 'trail-tala pt-demo-tala', demo.tala));
+      }
+
+      if (demo.composer_label) {
+        if (slot === 'bani') {
+          const nodeId = _lookupComposerNodeId(demo.composer_id);
+          if (nodeId) {
+            row.appendChild(_catalogueChip({
+              css_class: 'musician-chip',
+              example_kind: 'musician',
+              example_id: nodeId,
+              example_label: demo.composer_label,
+            }));
+          } else {
+            row.appendChild(_el('span', 'pt-demo-label', demo.composer_label));
+          }
+        } else {
+          row.appendChild(_el('span', 'pt-demo-label', demo.composer_label));
+        }
+      }
+
+      return row;
+    }
+
+    return _el('span', 'pt-demo-label', 'Invalid demo row');
+  }
+
   // _seedChip: creates a clickable chip for the cross-panel seeds section.
   function _seedChip(item) {
     const kind = item.kind;
@@ -83844,13 +84131,13 @@ function buildAddYoutubeForm() {
     return chip;
   }
 
-  function _renderInto(container, block) {
+  function _renderInto(container, block, slot) {
     container.innerHTML = '';
 
     const schemaVersion = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
       ? (helpEmptyPanels.schema_version || 1)
       : 1;
-    if (schemaVersion > 2) {
+    if (schemaVersion > 3) {
       container.appendChild(_el('p', 'pt-upgrade',
         'Tutorial data schema (' + schemaVersion + ') is newer than this render. Please update.'));
       return;
@@ -83865,7 +84152,9 @@ function buildAddYoutubeForm() {
       const catList = _el('div', 'pt-catalogue');
       catalogue.forEach(function (entry) {
         const row = _el('div', 'pt-cat-row');
-        if (entry.example_kind === 'action' || !entry.example_id) {
+        if (entry.example_kind === 'demo_row' && entry.demo_row) {
+          row.appendChild(_renderDemoRow(slot, entry));
+        } else if (entry.example_kind === 'action' || !entry.example_id) {
           // Non-clickable action label (▶, ↗)
           row.appendChild(_el('span', 'pt-action-label', entry.example_label));
         } else {
@@ -83874,11 +84163,18 @@ function buildAddYoutubeForm() {
         // Effect statement — view-sensitive or single
         if (entry.effect_graph && entry.effect_raga) {
           const eff = _el('span', 'pt-effect');
-          eff.appendChild(_el('span', 'pt-effect-line', '\u2299 Graph: ' + entry.effect_graph));
-          eff.appendChild(_el('span', 'pt-effect-line', '\u25ce Ragas: ' + entry.effect_raga));
+          const graphLine = _el('span', 'pt-effect-line');
+          graphLine.appendChild(_el('span', 'pt-nowrap', '(Guru-Shishya)'));
+          graphLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_graph)));
+          eff.appendChild(graphLine);
+
+          const ragaLine = _el('span', 'pt-effect-line');
+          ragaLine.appendChild(_el('span', 'pt-nowrap', '(Mela-Janya)'));
+          ragaLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_raga)));
+          eff.appendChild(ragaLine);
           row.appendChild(eff);
         } else {
-          row.appendChild(_el('span', 'pt-effect', entry.effect || ''));
+          row.appendChild(_el('span', 'pt-effect', '\u00b7 ' + _normalizeEffectText(entry.effect || '')));
         }
         catList.appendChild(row);
       });
@@ -83897,7 +84193,14 @@ function buildAddYoutubeForm() {
       const cross = _el('div', 'pt-cross-seeds');
       if (seeds.prompt) cross.appendChild(_el('div', 'pt-cross-prompt', seeds.prompt));
       const chips = _el('div', 'pt-chips');
-      seedItems.forEach(function (item) { chips.appendChild(_seedChip(item)); });
+      seedItems.forEach(function (item) {
+        const wrap = _el('div', 'pt-seed-item');
+        wrap.appendChild(_seedChip(item));
+        if (item.note) {
+          wrap.appendChild(_el('div', 'pt-seed-note', '(' + item.note + ')'));
+        }
+        chips.appendChild(wrap);
+      });
       cross.appendChild(chips);
       container.appendChild(cross);
     }
@@ -83910,7 +84213,7 @@ function buildAddYoutubeForm() {
     if (container.dataset.rendered === '1') return container;
     const block = _block(slot);
     if (!block) return container;  // leave empty; show/hide becomes a no-op
-    _renderInto(container, block);
+    _renderInto(container, block, slot);
     container.dataset.rendered = '1';
     return container;
   }
