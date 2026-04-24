@@ -639,6 +639,70 @@
     if (container) container.style.display = 'none';
   };
 
+  // ── Help-toggle (non-destructive overlay) ────────────────────────────────
+  // Click the `?` button on a panel header → fills the panel with the help
+  // deck without disturbing the existing panel state. Click again → restores
+  // the panel exactly as it was. Lets users peek at help and return to flow.
+  // Help fills only the scrollable area — the sticky zone above (subject
+  // header, search input, trail/recordings filter) stays visible so users
+  // keep their bearings while peeking at help.
+  const SLOT_TO_CONTAINERS = {
+    bani:     ['bani-scroll'],
+    musician: ['right-scroll'],
+  };
+  const SLOT_TO_BTN_ID = {
+    bani:     'bani-reset-btn',
+    musician: 'musician-reset-btn',
+  };
+  const _helpState = { bani: null, musician: null };
+
+  function _exitHelp(slot) {
+    const state = _helpState[slot];
+    if (!state) return;
+    state.hidden.forEach(function (entry) {
+      entry.el.style.display = entry.prevDisplay;
+    });
+    window.hidePanelTutorial(slot);
+    _helpState[slot] = null;
+    const btn = document.getElementById(SLOT_TO_BTN_ID[slot]);
+    if (btn) btn.classList.remove('panel-help-active');
+  }
+
+  function _enterHelp(slot) {
+    const tutorialId = SLOT_TO_CONTAINER_ID[slot];
+    const containers = SLOT_TO_CONTAINERS[slot] || [];
+    const hidden = [];
+    containers.forEach(function (cid) {
+      const root = document.getElementById(cid);
+      if (!root) return;
+      Array.prototype.forEach.call(root.children, function (el) {
+        if (el.tagName === 'H3') return;          // keep the panel header
+        if (el.id === tutorialId) return;         // never hide the deck itself
+        const cs = window.getComputedStyle(el).display;
+        if (cs === 'none') return;                // already hidden — leave alone
+        hidden.push({ el: el, prevDisplay: el.style.display || '' });
+        el.style.display = 'none';
+      });
+    });
+    _helpState[slot] = { hidden: hidden };
+    window.showPanelTutorial(slot);
+    const btn = document.getElementById(SLOT_TO_BTN_ID[slot]);
+    if (btn) btn.classList.add('panel-help-active');
+  }
+
+  window.togglePanelHelp = function (slot) {
+    if (!SLOT_TO_CONTAINERS[slot]) return;
+    if (_helpState[slot]) _exitHelp(slot);
+    else                  _enterHelp(slot);
+  };
+
+  // Clean up help overlay before any code populates the panel with new
+  // content (e.g. selectNode, applyBaniFilter). Called by callers that
+  // already know they're about to write into the panel.
+  window.dismissPanelHelp = function (slot) {
+    if (_helpState[slot]) _exitHelp(slot);
+  };
+
   // ── Initial paint: both panels are empty on first load ───────────────────
   document.addEventListener('DOMContentLoaded', () => {
     if (!helpEmptyPanels) return;

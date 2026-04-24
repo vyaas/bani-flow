@@ -301,6 +301,11 @@
     border-color: var(--accent-main);
     color: var(--accent-main);
   }
+  .panel-nav-btn.panel-help-active {
+    border-color: var(--accent-main);
+    color: var(--accent-main);
+    background: rgba(184, 187, 38, 0.12);
+  }
 
   /* ── node header (collapsed single-line) ── */
   #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -3117,7 +3122,7 @@
         <h3>
           <span class="panel-nav-spacer" aria-hidden="true"></span>
           Bani Flow &#9835;
-          <button id="bani-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="clearBaniFilter()">?</button>
+          <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
           <input id="bani-search-input" class="search-input panel-search" type="text"
@@ -3231,7 +3236,7 @@
           Musician &#9835;
           <span style="display:inline-flex;align-items:center;gap:4px">
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-            <button id="musician-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="window.clearMusicianPanel &amp;&amp; window.clearMusicianPanel()">?</button>
+            <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
           </span>
         </h3>
         <div class="search-wrap panel-search-wrap" id="musician-search-wrap">

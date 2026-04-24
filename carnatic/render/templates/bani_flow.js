@@ -87,6 +87,7 @@ function applyBaniFilter(type, id) {
 
 function buildListeningTrail(type, id, matchedNodeIds) {
   // ADR-086: subject loaded → dismiss empty-panel tutorial
+  if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('bani');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('bani');
   const trail = document.getElementById('listening-trail');
   const trailList = document.getElementById('trail-list');
