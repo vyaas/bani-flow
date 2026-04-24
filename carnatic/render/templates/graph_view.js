@@ -1036,6 +1036,23 @@ cy.on('tap', evt => {
   }
 });
 
+// ── Panel reset — exposed for the reset button in #musician-panel h3 ─────────
+window.clearMusicianPanel = function () {
+  _focusedGraphNode = null;
+  cy.elements().removeClass('faded highlighted');
+  document.getElementById('node-name').textContent          = '—';
+  document.getElementById('node-lifespan').textContent      = '';
+  document.getElementById('node-wiki-link').style.display   = 'none';
+  document.getElementById('rec-filter').style.display       = 'none';
+  document.getElementById('rec-filter').value               = '';
+  document.getElementById('node-info').style.display        = 'block';
+  document.getElementById('recordings-panel').style.display = 'none';
+  document.getElementById('edge-info').style.display        = 'none';
+  if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
+  if (typeof clearAllChipFilters === 'function') clearAllChipFilters();
+  if (typeof applyZoomLabels === 'function') applyZoomLabels();
+};
+
 // ── controls ──────────────────────────────────────────────────────────────────
 function relayout() {
   if (currentLayout === 'timeline') { applyTimelineLayout(); return; }

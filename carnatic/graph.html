@@ -288,6 +288,18 @@
     align-items: center;
     justify-content: space-between;
   }
+  /* Bani Flow panel title — flex row to host reset button */
+  #bani-flow-panel > h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+  }
+  .panel-nav-spacer {
+    display: inline-block;
+    width: 22px;
+    flex-shrink: 0;
+  }
   .panel-nav-btn {
     display: inline-flex;
     align-items: center;
@@ -897,8 +909,9 @@
   }
   .wdp-chip:hover { opacity: 0.80; }
   .wdp-chip.wdp-raga { border-color: var(--chip-raga-border); color: var(--chip-raga-border); background: var(--chip-raga-bg); }
-  .wdp-chip.wdp-raga.wdp-selected { background: var(--chip-raga-border); color: var(--bg-deep); }
+  .wdp-chip.wdp-raga.wdp-selected { background: var(--chip-raga-border); color: var(--bg-deep); font-weight: 600; border-left: 3px solid var(--accent-select, #ffb347); }
   .wdp-chip.wdp-comp { border-color: var(--chip-comp-border); color: var(--chip-comp-border); background: var(--chip-comp-bg); }
+  .wdp-chip.wdp-comp.wdp-active { background: var(--chip-comp-border); color: var(--bg-deep); font-weight: 600; border-left: 3px solid var(--accent-select); }
   .wdp-chip-count { margin-left: auto; font-size: 0.66rem; opacity: 0.65; flex-shrink: 0; padding-left: 4px; }
 
   #viewport-toolbar {
@@ -1990,7 +2003,8 @@
   .mp-tracklist,
   .search-dropdown,
   #mi-pre,
-  .ew-body {
+  .ew-body,
+  #wheel-detail-panel {
     scrollbar-width: thin;
     scrollbar-color: var(--bg-active) var(--bg-panel);
   }
@@ -2001,7 +2015,8 @@
   .mp-tracklist::-webkit-scrollbar,
   .search-dropdown::-webkit-scrollbar,
   #mi-pre::-webkit-scrollbar,
-  .ew-body::-webkit-scrollbar {
+  .ew-body::-webkit-scrollbar,
+  #wheel-detail-panel::-webkit-scrollbar {
     width: 6px;
   }
 
@@ -2011,7 +2026,8 @@
   .mp-tracklist::-webkit-scrollbar-track,
   .search-dropdown::-webkit-scrollbar-track,
   #mi-pre::-webkit-scrollbar-track,
-  .ew-body::-webkit-scrollbar-track {
+  .ew-body::-webkit-scrollbar-track,
+  #wheel-detail-panel::-webkit-scrollbar-track {
     background: var(--bg-panel);
   }
 
@@ -2021,7 +2037,8 @@
   .mp-tracklist::-webkit-scrollbar-thumb,
   .search-dropdown::-webkit-scrollbar-thumb,
   #mi-pre::-webkit-scrollbar-thumb,
-  .ew-body::-webkit-scrollbar-thumb {
+  .ew-body::-webkit-scrollbar-thumb,
+  #wheel-detail-panel::-webkit-scrollbar-thumb {
     background: var(--bg-active);   /* #665c54 — gruvbox bg3 */
     border-radius: 3px;
     border: 1px solid var(--bg-panel);
@@ -2033,7 +2050,8 @@
   .mp-tracklist::-webkit-scrollbar-thumb:hover,
   .search-dropdown::-webkit-scrollbar-thumb:hover,
   #mi-pre::-webkit-scrollbar-thumb:hover,
-  .ew-body::-webkit-scrollbar-thumb:hover {
+  .ew-body::-webkit-scrollbar-thumb:hover,
+  #wheel-detail-panel::-webkit-scrollbar-thumb:hover {
     background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
   }
 
@@ -3119,7 +3137,11 @@
     <!-- ── sticky zone: search bar + subject header + trail filter ── -->
     <div id="bani-sticky">
       <div class="panel" id="bani-flow-panel">
-        <h3>Bani Flow &#9835;</h3>
+        <h3>
+          <span class="panel-nav-spacer" aria-hidden="true"></span>
+          Bani Flow &#9835;
+          <button id="bani-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="clearBaniFilter()">?</button>
+        </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
           <input id="bani-search-input" class="search-input panel-search" type="text"
                  placeholder="&#9833; Search raga / composition"
@@ -3230,7 +3252,10 @@
         <h3>
           <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
           Musician &#9835;
-          <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+          <span style="display:inline-flex;align-items:center;gap:4px">
+            <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+            <button id="musician-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="window.clearMusicianPanel &amp;&amp; window.clearMusicianPanel()">?</button>
+          </span>
         </h3>
         <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
           <input id="musician-search-input" class="search-input panel-search" type="text"
@@ -75304,6 +75329,23 @@ cy.on('tap', evt => {
   }
 });
 
+// ── Panel reset — exposed for the reset button in #musician-panel h3 ─────────
+window.clearMusicianPanel = function () {
+  _focusedGraphNode = null;
+  cy.elements().removeClass('faded highlighted');
+  document.getElementById('node-name').textContent          = '—';
+  document.getElementById('node-lifespan').textContent      = '';
+  document.getElementById('node-wiki-link').style.display   = 'none';
+  document.getElementById('rec-filter').style.display       = 'none';
+  document.getElementById('rec-filter').value               = '';
+  document.getElementById('node-info').style.display        = 'block';
+  document.getElementById('recordings-panel').style.display = 'none';
+  document.getElementById('edge-info').style.display        = 'none';
+  if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
+  if (typeof clearAllChipFilters === 'function') clearAllChipFilters();
+  if (typeof applyZoomLabels === 'function') applyZoomLabels();
+};
+
 // ── controls ──────────────────────────────────────────────────────────────────
 function relayout() {
   if (currentLayout === 'timeline') { applyTimelineLayout(); return; }
@@ -77869,6 +77911,7 @@ function switchView(name) {
   if (name === 'graph') {
     hideTimelineRuler();
     hideRagaWheel();
+    if (typeof window._closeWheelDetailPanel === 'function') window._closeWheelDetailPanel();
     document.getElementById('cy').style.display = '';
     if (cyLabels) cyLabels.style.display = '';
     if (filterBar) filterBar.style.display = 'flex';
@@ -78221,6 +78264,7 @@ function _closeWheelDetailPanel() {
   const panel = document.getElementById('wheel-detail-panel');
   if (panel) { panel.classList.remove('wdp-open'); panel.innerHTML = ''; }
 }
+window._closeWheelDetailPanel = _closeWheelDetailPanel;
 
 function _openWheelDetailPanel(raga) {
   if (!_wdpData || !raga) return;
@@ -78303,37 +78347,57 @@ function _openWheelDetailPanel(raga) {
   panel.classList.add('wdp-open');
 }
 
-function _wdpSelectJanya(janya, chipEl) {
+// suppressFilter=true: visual-only selection — do NOT override the active bani filter.
+// Used by _triggerMelaExpand when syncing the wheel to a composition search result;
+// the bani filter was already set to 'comp' and must not be clobbered by 'raga'.
+// activeCompId: if set, the matching comp chip gets wdp-active at render time.
+function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
   if (!_wdpData) return;
   const { compsByRaga } = _wdpData;
   const panel = document.getElementById('wheel-detail-panel');
   if (!panel) return;
 
-  // Toggle: clicking the active janya collapses its comp list
-  const wasSelected = chipEl && chipEl.classList.contains('wdp-selected');
+  // Toggle: clicking the active janya collapses its comp list (only on user-initiated clicks)
+  const wasSelected = !suppressFilter && chipEl && chipEl.classList.contains('wdp-selected');
   panel.querySelectorAll('.wdp-chip.wdp-raga').forEach(c => c.classList.remove('wdp-selected'));
   panel.querySelectorAll('.wdp-comp-group').forEach(el => el.remove());
+  panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
   if (wasSelected) return;
 
   if (chipEl) chipEl.classList.add('wdp-selected');
   const items = compsByRaga[janya.id] || [];
-  if (items.length > 0 && chipEl) _wdpRenderComps(panel, items, janya.id, chipEl);
+  // Pass activeCompId so the matching chip is marked wdp-active synchronously during render.
+  if (items.length > 0 && chipEl) _wdpRenderComps(panel, items, janya.id, chipEl, activeCompId || null);
 
-  // Silently load bani-flow trail for this janya's mela
-  window._wheelSyncInProgress = true;
-  if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
-  window._wheelSyncInProgress = false;
+  // Load bani-flow trail for this janya — only when user clicks, not during programmatic sync.
+  // suppressFilter=true means the caller (syncRagaWheelToFilter) already set the bani filter
+  // to a specific composition; overwriting it with the parent raga would lose that context.
+  if (!suppressFilter) {
+    window._wheelSyncInProgress = true;
+    if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
+    window._wheelSyncInProgress = false;
+  }
 }
 
-function _wdpRenderComps(panel, items, ragaId, afterChip) {
+// activeCompId: if non-null and matches item.id, the chip gets wdp-active at render time.
+function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
   const group = document.createElement('div');
   group.className = 'wdp-comp-group';
   items.forEach(item => {
     const chip = document.createElement('div');
     chip.className = 'wdp-chip wdp-comp';
+    chip.dataset.id = item.id || '';
+    if (activeCompId && item.id && item.id === activeCompId) chip.classList.add('wdp-active');
     chip.textContent = '\u266a ' + (item.title || item.id || '');
     chip.addEventListener('click', (e) => {
       e.stopPropagation();
+      // Mark this chip active immediately — wdp-active cannot be set via the normal
+      // syncRagaWheelToFilter path because _wheelSyncInProgress=true blocks it.
+      const panel = document.getElementById('wheel-detail-panel');
+      if (panel) {
+        panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
+      }
+      chip.classList.add('wdp-active');
       window._wheelSyncInProgress = true;
       window._wheelOriginatedTrigger = true;
       if (!item._isPerf) {
@@ -79591,12 +79655,17 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     const raga = _wdpData && _wdpData.melaByNum[melaNum];
     if (!raga) { window._wheelSyncInProgress = false; return; }
 
-    // Highlight the mela node on the wheel ring
+    // Highlight the mela node on the wheel ring.
+    // _wheelPreviewNoPanel suppresses the applyBaniFilter('raga', melaId) call inside the
+    // mela click handler — we must not overwrite the bani filter that the search already set.
     const melaG = document.querySelector(`#wheel-viewport .mela-node[data-mela="${melaNum}"]`);
+    window._wheelPreviewNoPanel = true;
     if (melaG) melaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     else _openWheelDetailPanel(raga);
+    window._wheelPreviewNoPanel = false;
 
-    // Pre-select the target janya in the panel
+    // Pre-select the target janya in the panel — visual only (suppressFilter=true so the
+    // bani filter already set by the caller is not overridden by the parent raga).
     if (targetRagaId && _wdpData) {
       setTimeout(() => {
         const janya = (_wdpData.janyasByMela[raga.id] || []).find(j => j.id === targetRagaId);
@@ -79604,9 +79673,24 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
           const chipEl = document.querySelector(
             `#wdp-janya-list .wdp-chip.wdp-raga[data-id="${CSS.escape(targetRagaId)}"]`
           );
-          _wdpSelectJanya(janya, chipEl);
+          // Pass targetCompId so the matching comp chip is marked wdp-active during render.
+          _wdpSelectJanya(janya, chipEl, true, targetCompId || null);
         }
         setTimeout(() => { window._wheelSyncInProgress = false; }, 50);
+      }, 50);
+    } else if (targetCompId && _wdpData) {
+      // Mela-direct composition (no janya intermediary) —
+      // re-render the mela-direct comp list with wdp-active applied at render time.
+      setTimeout(() => {
+        const melaRagaObj = _wdpData.melaByNum[melaNum];
+        if (melaRagaObj && _wdpData.compsByRaga[melaRagaObj.id]) {
+          const panel = document.getElementById('wheel-detail-panel');
+          if (panel) {
+            panel.querySelectorAll('.wdp-comp-group').forEach(el => el.remove());
+            _wdpRenderComps(panel, _wdpData.compsByRaga[melaRagaObj.id], melaRagaObj.id, null, targetCompId);
+          }
+        }
+        window._wheelSyncInProgress = false;
       }, 50);
     } else {
       window._wheelSyncInProgress = false;

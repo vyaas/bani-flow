@@ -265,6 +265,18 @@
     align-items: center;
     justify-content: space-between;
   }
+  /* Bani Flow panel title — flex row to host reset button */
+  #bani-flow-panel > h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+  }
+  .panel-nav-spacer {
+    display: inline-block;
+    width: 22px;
+    flex-shrink: 0;
+  }
   .panel-nav-btn {
     display: inline-flex;
     align-items: center;
@@ -874,8 +886,9 @@
   }
   .wdp-chip:hover { opacity: 0.80; }
   .wdp-chip.wdp-raga { border-color: var(--chip-raga-border); color: var(--chip-raga-border); background: var(--chip-raga-bg); }
-  .wdp-chip.wdp-raga.wdp-selected { background: var(--chip-raga-border); color: var(--bg-deep); }
+  .wdp-chip.wdp-raga.wdp-selected { background: var(--chip-raga-border); color: var(--bg-deep); font-weight: 600; border-left: 3px solid var(--accent-select, #ffb347); }
   .wdp-chip.wdp-comp { border-color: var(--chip-comp-border); color: var(--chip-comp-border); background: var(--chip-comp-bg); }
+  .wdp-chip.wdp-comp.wdp-active { background: var(--chip-comp-border); color: var(--bg-deep); font-weight: 600; border-left: 3px solid var(--accent-select); }
   .wdp-chip-count { margin-left: auto; font-size: 0.66rem; opacity: 0.65; flex-shrink: 0; padding-left: 4px; }
 
   #viewport-toolbar {
@@ -1967,7 +1980,8 @@
   .mp-tracklist,
   .search-dropdown,
   #mi-pre,
-  .ew-body {
+  .ew-body,
+  #wheel-detail-panel {
     scrollbar-width: thin;
     scrollbar-color: var(--bg-active) var(--bg-panel);
   }
@@ -1978,7 +1992,8 @@
   .mp-tracklist::-webkit-scrollbar,
   .search-dropdown::-webkit-scrollbar,
   #mi-pre::-webkit-scrollbar,
-  .ew-body::-webkit-scrollbar {
+  .ew-body::-webkit-scrollbar,
+  #wheel-detail-panel::-webkit-scrollbar {
     width: 6px;
   }
 
@@ -1988,7 +2003,8 @@
   .mp-tracklist::-webkit-scrollbar-track,
   .search-dropdown::-webkit-scrollbar-track,
   #mi-pre::-webkit-scrollbar-track,
-  .ew-body::-webkit-scrollbar-track {
+  .ew-body::-webkit-scrollbar-track,
+  #wheel-detail-panel::-webkit-scrollbar-track {
     background: var(--bg-panel);
   }
 
@@ -1998,7 +2014,8 @@
   .mp-tracklist::-webkit-scrollbar-thumb,
   .search-dropdown::-webkit-scrollbar-thumb,
   #mi-pre::-webkit-scrollbar-thumb,
-  .ew-body::-webkit-scrollbar-thumb {
+  .ew-body::-webkit-scrollbar-thumb,
+  #wheel-detail-panel::-webkit-scrollbar-thumb {
     background: var(--bg-active);   /* #665c54 — gruvbox bg3 */
     border-radius: 3px;
     border: 1px solid var(--bg-panel);
@@ -2010,7 +2027,8 @@
   .mp-tracklist::-webkit-scrollbar-thumb:hover,
   .search-dropdown::-webkit-scrollbar-thumb:hover,
   #mi-pre::-webkit-scrollbar-thumb:hover,
-  .ew-body::-webkit-scrollbar-thumb:hover {
+  .ew-body::-webkit-scrollbar-thumb:hover,
+  #wheel-detail-panel::-webkit-scrollbar-thumb:hover {
     background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
   }
 
@@ -3096,7 +3114,11 @@
     <!-- ── sticky zone: search bar + subject header + trail filter ── -->
     <div id="bani-sticky">
       <div class="panel" id="bani-flow-panel">
-        <h3>Bani Flow &#9835;</h3>
+        <h3>
+          <span class="panel-nav-spacer" aria-hidden="true"></span>
+          Bani Flow &#9835;
+          <button id="bani-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="clearBaniFilter()">?</button>
+        </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
           <input id="bani-search-input" class="search-input panel-search" type="text"
                  placeholder="&#9833; Search raga / composition"
@@ -3207,7 +3229,10 @@
         <h3>
           <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
           Musician &#9835;
-          <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+          <span style="display:inline-flex;align-items:center;gap:4px">
+            <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+            <button id="musician-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="window.clearMusicianPanel &amp;&amp; window.clearMusicianPanel()">?</button>
+          </span>
         </h3>
         <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
           <input id="musician-search-input" class="search-input panel-search" type="text"
