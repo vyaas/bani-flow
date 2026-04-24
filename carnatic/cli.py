@@ -842,11 +842,11 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                         f"(ADR-077 — use subjects arrays instead)"
                     )
 
-    # ── empty-panel tutorial integrity (ADR-087) ──────────────────────────────
+    # ── empty-panel tutorial integrity (ADR-090) ──────────────────────────────
     # If carnatic/data/help/empty_panels.json exists, every entity id it
     # references must resolve in the graph. Action items (example_kind=action,
-    # example_id=null) are exempt. Also validates cross_panel_seeds invariants
-    # and the schema version gate.
+    # example_id=null) are exempt. Also validates cross_panel_seeds invariants,
+    # self-erase prevention, demo_row contracts, and the schema version gate.
     import json as _json
     from pathlib import Path as _Path
     _help_path = _Path(__file__).resolve().parent / "data" / "help" / "empty_panels.json"
@@ -858,9 +858,9 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
             help_data = None
         if help_data:
             _schema_version = help_data.get("schema_version", 1)
-            if _schema_version > 2:
+            if _schema_version > 3:
                 errors.append(
-                    f"help/empty_panels.json: schema_version {_schema_version} > 2; "
+                    f"help/empty_panels.json: schema_version {_schema_version} > 3; "
                     f"update cli.py to handle the new schema"
                 )
             else:
@@ -874,6 +874,17 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                     "musician_panel":  {"raga", "composition"},
                     "bani_flow_panel": {"musician"},
                 }
+                # self-erase hard error: catalogue chips must not navigate the
+                # panel they are rendered in
+                _CATALOGUE_FORBIDDEN_KINDS = {
+                    "musician_panel": {"musician"},
+                    "bani_flow_panel": {"raga", "composition"},
+                }
+                _DEMO_ROW_ALLOWED_TYPES = {"lecdem_row", "composition_row", "action_row"}
+                _STRICT_VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
+
+                def _is_non_empty_string(v: object) -> bool:
+                    return isinstance(v, str) and bool(v.strip())
 
                 for panel_key in ("musician_panel", "bani_flow_panel"):
                     block = help_data.get(panel_key) or {}
@@ -883,10 +894,20 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                         c_where = f"help/empty_panels.json:{panel_key}.chip_catalogue[{ci}]"
                         kind = entry.get("example_kind")
                         eid  = entry.get("example_id")
+
+                        # Self-erase invariant (ADR-090): chips in panel X must
+                        # never navigate panel X.
+                        forbidden_kinds = _CATALOGUE_FORBIDDEN_KINDS.get(panel_key, set())
+                        if eid is not None and kind in forbidden_kinds:
+                            errors.append(
+                                f"{c_where}: example_kind '{kind}' with example_id "
+                                f"self-navigates {panel_key} (forbidden by ADR-090)"
+                            )
+
                         # Action items with null example_id are exempt
                         if kind == "action" or eid is None:
-                            continue
-                        if kind == "musician" and eid not in known_musician_ids:
+                            pass
+                        elif kind == "musician" and eid not in known_musician_ids:
                             errors.append(f"{c_where}: musician_id '{eid}' not in graph")
                         elif kind == "raga" and eid not in known_raga_ids:
                             errors.append(f"{c_where}: raga_id '{eid}' not in ragas")
@@ -897,6 +918,80 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                                 errors.append(
                                     f"{c_where}: musician_id '{eid}' not in graph (lecdem example)"
                                 )
+
+                        # demo_row schema and referential checks (ADR-090)
+                        if kind == "demo_row":
+                            demo = entry.get("demo_row")
+                            if not isinstance(demo, dict):
+                                errors.append(f"{c_where}: demo_row must be an object")
+                                continue
+
+                            demo_type = demo.get("type")
+                            if demo_type not in _DEMO_ROW_ALLOWED_TYPES:
+                                errors.append(
+                                    f"{c_where}.demo_row.type: '{demo_type}' is invalid "
+                                    f"(allowed: {sorted(_DEMO_ROW_ALLOWED_TYPES)})"
+                                )
+                                continue
+
+                            if demo_type == "lecdem_row":
+                                video_id = str(demo.get("video_id") or "")
+                                youtube_url = str(demo.get("youtube_url") or "")
+                                if not _STRICT_VIDEO_ID_RE.fullmatch(video_id):
+                                    errors.append(
+                                        f"{c_where}.demo_row.video_id: '{video_id}' is not "
+                                        f"11-character alphanumeric"
+                                    )
+                                resolved_id = _yt_video_id(youtube_url)
+                                if "youtube.com" not in youtube_url and "youtu.be" not in youtube_url:
+                                    errors.append(
+                                        f"{c_where}.demo_row.youtube_url: must be a YouTube URL"
+                                    )
+                                if not resolved_id or resolved_id != video_id:
+                                    errors.append(
+                                        f"{c_where}.demo_row.youtube_url: does not resolve to "
+                                        f"video_id '{video_id}'"
+                                    )
+
+                                raga_tags = demo.get("raga_tags")
+                                if raga_tags is not None:
+                                    if not isinstance(raga_tags, list):
+                                        errors.append(
+                                            f"{c_where}.demo_row.raga_tags: must be an array when present"
+                                        )
+                                    else:
+                                        for ti, tag in enumerate(raga_tags):
+                                            t_where = f"{c_where}.demo_row.raga_tags[{ti}]"
+                                            if not isinstance(tag, dict):
+                                                errors.append(f"{t_where}: must be an object")
+                                                continue
+                                            tag_id = tag.get("id")
+                                            if tag_id not in known_raga_ids:
+                                                errors.append(
+                                                    f"{t_where}.id: raga_id '{tag_id}' not in ragas"
+                                                )
+
+                            if demo_type == "composition_row":
+                                comp_id = demo.get("comp_id")
+                                raga_id = demo.get("raga_id")
+                                composer_id = demo.get("composer_id")
+                                if comp_id not in known_composition_ids:
+                                    errors.append(
+                                        f"{c_where}.demo_row.comp_id: '{comp_id}' not in compositions"
+                                    )
+                                if raga_id not in known_raga_ids:
+                                    errors.append(
+                                        f"{c_where}.demo_row.raga_id: '{raga_id}' not in ragas"
+                                    )
+                                if (
+                                    composer_id is not None
+                                    and composer_id not in known_musician_ids
+                                    and composer_id not in known_composer_ids
+                                ):
+                                    errors.append(
+                                        f"{c_where}.demo_row.composer_id: '{composer_id}' not in "
+                                        f"musicians or composers"
+                                    )
 
                     # Validate cross_panel_seeds
                     seeds = block.get("cross_panel_seeds") or {}
@@ -927,6 +1022,30 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                         elif item_kind == "composition" and item_id not in known_composition_ids:
                             errors.append(f"{s_where}: composition_id '{item_id}' not in compositions")
 
+                    # ADR-091: optional note fields on cross_panel_seeds
+                    for field in ("intro_note", "search_note", "closing_note"):
+                        if field in seeds and not _is_non_empty_string(seeds.get(field)):
+                            errors.append(
+                                f"help/empty_panels.json:{panel_key}.cross_panel_seeds.{field}: "
+                                f"must be a non-empty string when present"
+                            )
+
+                    # ADR-091: optional view_section with label and 2 notes
+                    if "view_section" in block:
+                        view_section = block.get("view_section")
+                        if not isinstance(view_section, dict):
+                            errors.append(
+                                f"help/empty_panels.json:{panel_key}.view_section: "
+                                f"must be an object"
+                            )
+                        else:
+                            for field in ("label", "graph_note", "raga_note"):
+                                if field in view_section and not _is_non_empty_string(view_section.get(field)):
+                                    errors.append(
+                                        f"help/empty_panels.json:{panel_key}.view_section.{field}: "
+                                        f"must be a non-empty string when present"
+                                    )
+
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
         "All musician_ids in recordings exist in graph",
@@ -939,7 +1058,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "All composition composer_ids and raga_ids are valid",
         "All youtube performers reference known musicians and roles (ADR-070)",
         "All youtube lecdem entries have valid kind, subjects, and resolvable ids (ADR-077)",
-        "All empty-panel tutorial ids resolve in graph (ADR-087)",
+        "All empty-panel tutorial ids, demo rows, and notes validate (ADR-091)",
     ]
 
     if not errors:
