@@ -25,6 +25,7 @@
     --chip-comp-bg:           color-mix(in srgb, var(--chip-comp-border) 10%, transparent);
     --chip-border-radius:     4px;   /* was 10px pill for comp, 3px for musician; unified */
     --chip-border-width:      1px;
+    --wheel-chip-spacing-k:   1.15;  /* ADR-093: minimum chip arc-spacing multiplier */
     /* ADR-072: search-subject prominence + shared hierarchy indentation */
     --subject-size:           1.05rem;     /* search-subject chip font-size */
     --subject-padding:        4px 10px;    /* search-subject chip padding */
@@ -2815,9 +2816,13 @@
   }
   .panel-tutorial .pt-cat-row {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--bg-card, rgba(255,255,255,0.04));
+    margin-bottom: 6px;
   }
   .panel-tutorial .pt-action-label {
     display: inline-block;
@@ -2830,13 +2835,62 @@
   }
   .panel-tutorial .pt-effect {
     color: var(--fg-muted);
-    font-size: 0.72rem;
+    font-size: 0.70rem;
     display: flex;
     flex-direction: column;
     gap: 1px;
+    padding-top: 3px;
+    padding-left: 2px;
+    white-space: normal;
   }
   .panel-tutorial .pt-effect-line {
     display: block;
+  }
+  .panel-tutorial .pt-nowrap {
+    white-space: nowrap;
+  }
+  .panel-tutorial .pt-demo-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .panel-tutorial .pt-demo-row-lecdem {
+    flex-wrap: nowrap;
+  }
+  .panel-tutorial .pt-demo-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: var(--fg-dim);
+  }
+  .panel-tutorial .pt-demo-acts {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-demo-acts .rec-play-btn,
+  .panel-tutorial .pt-demo-acts .yt-ext-link {
+    width: 24px;
+    height: 24px;
+    font-size: 0.68rem;
+  }
+  .panel-tutorial .pt-demo-static {
+    cursor: default;
+    opacity: 0.92;
+  }
+  .panel-tutorial .pt-demo-label {
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+  }
+  .panel-tutorial .pt-demo-tala {
+    margin-left: 0;
   }
   .panel-tutorial .pt-divider {
     border: none;
@@ -2850,6 +2904,19 @@
     font-size: 0.74rem;
     color: var(--fg-muted);
     margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-seed-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .panel-tutorial .pt-seed-note {
+    font-size: 0.66rem;
+    color: var(--fg-muted);
+    opacity: 0.85;
+    margin-left: 2px;
+    line-height: 1.15;
   }
 </style>
 </head>
