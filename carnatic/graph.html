@@ -2880,8 +2880,18 @@
     min-width: 0;
     flex-wrap: wrap;
   }
+  .panel-tutorial .pt-demo-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
   .panel-tutorial .pt-demo-row-lecdem {
     flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+  .panel-tutorial .pt-demo-row-actions {
+    justify-content: flex-start;
   }
   .panel-tutorial .pt-demo-title {
     flex: 1;
@@ -2891,6 +2901,12 @@
     white-space: nowrap;
     font-size: 0.72rem;
     color: var(--fg-dim);
+  }
+  .panel-tutorial .pt-demo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: 2px;
   }
   .panel-tutorial .pt-demo-acts {
     display: inline-flex;
@@ -2903,6 +2919,13 @@
     width: 24px;
     height: 24px;
     font-size: 0.68rem;
+    margin-left: 0;
+  }
+  .panel-tutorial .pt-action-note {
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+    line-height: 1.2;
+    margin-left: 2px;
   }
   .panel-tutorial .pt-demo-static {
     cursor: default;
@@ -73634,7 +73657,7 @@ const helpEmptyPanels = {
         "example_kind": "musician",
         "example_id": "ramnad_krishnan",
         "example_label": "Ramnad Krishnan",
-        "effect": "· opens that musician in the Musician panel (right panel)"
+        "effect": "· opens in the Musician panel and focuses the Guru-Shishya parampara graph on this musician's links"
       },
       {
         "css_class": "comp-chip",
@@ -73643,29 +73666,30 @@ const helpEmptyPanels = {
         "example_label": null,
         "demo_row": {
           "type": "composition_row",
-          "comp_id": "parulanna_matta",
-          "comp_label": "Parulanna Matta",
-          "raga_id": "kapi",
-          "raga_label": "Kapi",
-          "tala": "Rupakam",
-          "composer_id": "dharmapuri_subbaraya_iyer",
-          "composer_label": "Dharmapuri Subbaraya Iyer"
+          "comp_id": "muripemu_kalige",
+          "comp_label": "Muripemu Kalige",
+          "raga_id": "mukhari",
+          "raga_label": "Mukhari",
+          "tala": "Adi",
+          "composer_id": "tyagaraja",
+          "composer_label": "Tyagaraja"
         },
-        "effect": "· composition rows show raga, tala, and composer; clicking the composer opens them in the Musician panel"
+        "effect": "· Composition: Muripemu Kalige; Raga: Mukhari; Composer: Tyagaraja (all clickable)"
       },
       {
-        "css_class": "tree-play-btn",
-        "example_kind": "action",
+        "css_class": "trail-acts",
+        "example_kind": "demo_row",
         "example_id": null,
-        "example_label": "▶",
-        "effect": "· opens the floating YouTube player on that track"
-      },
-      {
-        "css_class": "tree-ext-link",
-        "example_kind": "action",
-        "example_id": null,
-        "example_label": "↗",
-        "effect": "· opens the source page (YouTube / Wikipedia) in a new tab"
+        "example_label": null,
+        "demo_row": {
+          "type": "action_row",
+          "play_label": "Muripemu Kalige — tutorial sample",
+          "video_id": "AkRGOouMKWQ",
+          "youtube_url": "https://www.youtube.com/watch?v=AkRGOouMKWQ",
+          "play_note": "· ▶ play in the floating player",
+          "link_note": "· ↗ open source in a new tab"
+        },
+        "effect": ""
       },
       {
         "css_class": "lecdem-chip",
@@ -73674,16 +73698,30 @@ const helpEmptyPanels = {
         "example_label": null,
         "demo_row": {
           "type": "lecdem_row",
-          "title": "Manodharma Lec-Dem Promo — TM Krishna & Akkarai Subbulakshmi",
-          "video_id": "KDPPDB0rG70",
-          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70"
+          "chip_label": "✎ Seetha Rajan — Lec-Dem",
+          "title": "A Musical Exploration — Kedaragaula, Narayanagowla, Surutti",
+          "video_id": "04eXjFHbvJA",
+          "youtube_url": "https://www.youtube.com/watch?v=04eXjFHbvJA",
+          "raga_tags": [
+            {
+              "id": "kedaragaula",
+              "label": "Kedaragaula"
+            },
+            {
+              "id": "narayanagowla",
+              "label": "Narayanagowla"
+            },
+            {
+              "id": "surutti",
+              "label": "Surutti"
+            }
+          ]
         },
-        "effect": "· lecdem rows appear above the trail when a subject has lecture-demonstrations"
+        "effect": "· lec-dem subject tags are clickable and focus those ragas on the wheel"
       }
     ],
     "cross_panel_seeds": {
       "prompt": "Tap these — watch the Musician panel respond:",
-      "intro_note": "In Guru-Shishya view, tap any musician node on the graph — or tap one of these:",
       "search_note": "Or search by raga or composition in the box above ↑",
       "panel_target": "musician",
       "items": [
@@ -77713,12 +77751,16 @@ function switchView(name) {
     document.getElementById('cy').style.display = '';
     if (cyLabels) cyLabels.style.display = '';
     if (filterBar) filterBar.style.display = 'flex';
+    if (typeof cy !== 'undefined' && cy) cy.resize();
     // Restore the sub-layout that was active when the user left
     if (currentLayout === 'timeline') {
       applyTimelineLayout();
     } else {
       currentLayout = 'graph';
-      relayout();
+      _restoreGraphPositions();
+    }
+    if (typeof cy !== 'undefined' && cy) {
+      requestAnimationFrame(() => cy.resize());
     }
     if (typeof scheduleCyChipSync === 'function') scheduleCyChipSync();
   } else if (name === 'raga') {
@@ -78829,17 +78871,19 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
   // Draw janya satellites (if any)
   if (janyas.length > 0) {
-    // ADR-093: solve fan geometry from chip length scale, then compute radius/spread.
+    // ADR-093: solve fan geometry using node-circle footprint for arc spacing.
+    // maxLabelChars:1 → sMin ≈ chip height (≈ 2×NR_JANYA) so radius stays at rBaseline.
+    // maxSpread grows proportionally with count (mirrors pre-ADR-093 SPREAD formula)
+    // so the fan spreads naturally without inflating the radius.
     const jFontSize = Math.max(7, minDim * 0.011);
-    const jMaxChars = janyas.reduce((m, j) => Math.max(m, (j.name || '').length), 1);
     const janyaLayout = solveRingLayout({
       n: janyas.length,
       fontSize: jFontSize,
-      maxLabelChars: jMaxChars,
+      maxLabelChars: 1,
       k: _readChipSpacingK(),
       openFan: {
         anchorAngle: melaAngle,
-        maxSpread: (5 * Math.PI / 180) * 0.85,
+        maxSpread: Math.min(janyas.length * (5 * Math.PI / 180), Math.PI * 0.85),
         rBaseline: R_JANYA
       }
     });
@@ -78986,17 +79030,16 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     return;
   }
 
-  // ADR-093: composition fan layout uses the same deterministic solver.
+  // ADR-093: composition fan layout — same node-circle-footprint approach as janya fan.
   const cFontSize = Math.max(6, minDim * 0.010);
-  const cMaxChars = items.reduce((m, item) => Math.max(m, (item.title || '').length), 1);
   const compLayout = solveRingLayout({
     n: items.length,
     fontSize: cFontSize,
-    maxLabelChars: cMaxChars,
+    maxLabelChars: 1,
     k: _readChipSpacingK(),
     openFan: {
       anchorAngle: jAngle,
-      maxSpread: (5 * Math.PI / 180) * 0.85,
+      maxSpread: Math.min(items.length * (5 * Math.PI / 180), Math.PI * 0.85),
       rBaseline: R_COMP
     }
   });
@@ -83963,27 +84006,58 @@ function buildAddYoutubeForm() {
   // ── Click resolvers for try_these items ──────────────────────────────────
   // Each kind navigates the app the same way the user would by hand.
 
-  function _onComposition(id) {
+  function _previewWheel(type, id) {
+    if (typeof switchView === 'function' &&
+        typeof currentView !== 'undefined' &&
+        currentView !== 'raga') {
+      switchView('raga');
+    }
+    setTimeout(function () {
+      if (typeof syncRagaWheelToFilter === 'function') {
+        syncRagaWheelToFilter(type, id);
+      }
+      if (typeof orientRagaWheel === 'function') {
+        orientRagaWheel(type, id);
+      }
+    }, 70);
+  }
+
+  function _onComposition(id, opts) {
+    if (opts && opts.previewOnly) {
+      _previewWheel('comp', id);
+      return;
+    }
     if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', id);
   }
 
-  function _onRaga(id) {
+  function _onRaga(id, opts) {
+    if (opts && opts.previewOnly) {
+      _previewWheel('raga', id);
+      return;
+    }
     if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', id);
   }
 
   function _orientToMusician(nodeId) {
     if (!nodeId) return;
+    if (typeof switchView === 'function' &&
+        typeof currentView !== 'undefined' &&
+        currentView !== 'graph') {
+      switchView('graph');
+    }
     const n = (typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null;
     if (!n || !n.length) return;
-    if (typeof orientToNode === 'function' &&
-        typeof currentView !== 'undefined' && currentView === 'graph') {
-      orientToNode(nodeId);
-    } else if (typeof selectNode === 'function') {
-      selectNode(n);
-    }
-    if (typeof window.setPanelState === 'function') {
-      setTimeout(() => window.setPanelState('MUSICIAN'), 50);
-    }
+    setTimeout(function () {
+      if (typeof orientToNode === 'function' &&
+          typeof currentView !== 'undefined' && currentView === 'graph') {
+        orientToNode(nodeId);
+      } else if (typeof selectNode === 'function') {
+        selectNode(n);
+      }
+      if (typeof window.setPanelState === 'function') {
+        window.setPanelState('MUSICIAN');
+      }
+    }, 70);
   }
 
   function _onMusician(id) {
@@ -84042,7 +84116,7 @@ function buildAddYoutubeForm() {
 
   // _catalogueChip: creates a clickable chip for the catalogue section.
   // Never called for action items (example_kind === 'action' / example_id null).
-  function _catalogueChip(entry) {
+  function _catalogueChip(entry, opts) {
     const cls  = entry.css_class;
     const lbl  = entry.example_label;
     const kind = entry.example_kind;
@@ -84050,9 +84124,9 @@ function buildAddYoutubeForm() {
     const chip = _el('span', cls, lbl);
     chip.style.cursor = 'pointer';
     if (kind === 'raga') {
-      chip.addEventListener('click', () => _onRaga(id));
+      chip.addEventListener('click', () => _onRaga(id, opts));
     } else if (kind === 'composition') {
-      chip.addEventListener('click', () => _onComposition(id));
+      chip.addEventListener('click', () => _onComposition(id, opts));
     } else if (kind === 'musician') {
       chip.addEventListener('click', () => _onMusician(id));
     } else if (kind === 'lecdem_by' || kind === 'lecdem_about') {
@@ -84088,8 +84162,45 @@ function buildAddYoutubeForm() {
     const demo = entry.demo_row || {};
     const type = demo.type;
 
+    if (type === 'action_row') {
+      const block = _el('div', 'pt-demo-block');
+      const row = _el('div', 'pt-demo-row pt-demo-row-actions');
+      const acts = _el('div', 'pt-demo-acts');
+
+      const playBtn = _el('button', 'tree-play-btn rec-play-btn play-btn-concert', '\u25b6');
+      playBtn.type = 'button';
+      playBtn.title = 'Play';
+      playBtn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (typeof openPlayer === 'function' && demo.video_id) {
+          openPlayer(demo.video_id, demo.play_label || 'Tutorial sample');
+        }
+      });
+      acts.appendChild(playBtn);
+
+      const ext = _el('a', 'tree-ext-link yt-ext-link', '\u2197');
+      ext.href = demo.youtube_url || '#';
+      ext.target = '_blank';
+      ext.rel = 'noopener noreferrer';
+      ext.title = 'Open source';
+      ext.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (!demo.youtube_url) evt.preventDefault();
+      });
+      acts.appendChild(ext);
+
+      row.appendChild(acts);
+      block.appendChild(row);
+
+      if (demo.play_note) block.appendChild(_el('div', 'pt-action-note', demo.play_note));
+      if (demo.link_note) block.appendChild(_el('div', 'pt-action-note', demo.link_note));
+      return block;
+    }
+
     if (type === 'lecdem_row') {
+      const block = _el('div', 'pt-demo-block');
       const row = _el('div', 'pt-demo-row pt-demo-row-lecdem');
+      row.appendChild(_chipLikeLabel('lecdem-chip', demo.chip_label || '\u270e Lec-Dem'));
       const title = _el('span', 'pt-demo-title', demo.title || 'Lecture-Demo');
       row.appendChild(title);
 
@@ -84116,11 +84227,28 @@ function buildAddYoutubeForm() {
       });
       acts.appendChild(ext);
       row.appendChild(acts);
-      return row;
+      block.appendChild(row);
+
+      const tags = Array.isArray(demo.raga_tags) ? demo.raga_tags : [];
+      if (tags.length) {
+        const tagRow = _el('div', 'pt-demo-tags');
+        tags.forEach(function (tag) {
+          tagRow.appendChild(_catalogueChip({
+            css_class: 'raga-chip',
+            example_kind: 'raga',
+            example_id: tag.id,
+            example_label: tag.label || tag.id,
+          }, { previewOnly: true }));
+        });
+        block.appendChild(tagRow);
+      }
+
+      return block;
     }
 
     if (type === 'composition_row') {
       const row = _el('div', 'pt-demo-row pt-demo-row-composition');
+      const previewOnly = slot === 'bani';
       row.appendChild(slot === 'musician'
         ? _catalogueChip({
             css_class: 'comp-chip',
@@ -84128,7 +84256,12 @@ function buildAddYoutubeForm() {
             example_id: demo.comp_id,
             example_label: demo.comp_label || demo.comp_id,
           })
-        : _chipLikeLabel('comp-chip', demo.comp_label || demo.comp_id || 'Composition'));
+        : _catalogueChip({
+            css_class: 'comp-chip',
+            example_kind: 'composition',
+            example_id: demo.comp_id,
+            example_label: demo.comp_label || demo.comp_id,
+          }, { previewOnly: previewOnly }));
 
       row.appendChild(slot === 'musician'
         ? _catalogueChip({
@@ -84137,7 +84270,12 @@ function buildAddYoutubeForm() {
             example_id: demo.raga_id,
             example_label: demo.raga_label || demo.raga_id,
           })
-        : _chipLikeLabel('raga-chip', demo.raga_label || demo.raga_id || 'Raga'));
+        : _catalogueChip({
+            css_class: 'raga-chip',
+            example_kind: 'raga',
+            example_id: demo.raga_id,
+            example_label: demo.raga_label || demo.raga_id,
+          }, { previewOnly: previewOnly }));
 
       if (demo.tala) {
         row.appendChild(_el('span', 'trail-tala pt-demo-tala', demo.tala));
@@ -84173,10 +84311,10 @@ function buildAddYoutubeForm() {
     let cls, onClick;
     if (kind === 'raga') {
       cls     = 'raga-chip';
-      onClick = () => _onRaga(item.id);
+      onClick = () => _onRaga(item.id, item.preview_only ? { previewOnly: true } : null);
     } else if (kind === 'composition') {
       cls     = 'comp-chip';
-      onClick = () => _onComposition(item.id);
+      onClick = () => _onComposition(item.id, item.preview_only ? { previewOnly: true } : null);
     } else if (kind === 'musician') {
       cls     = 'musician-chip';
       onClick = () => _onMusician(item.id);
@@ -84204,86 +84342,12 @@ function buildAddYoutubeForm() {
 
     container.appendChild(_el('div', 'pt-label', 'How to use this panel'));
 
-    // ── Section A: chip catalogue ─────────────────────────────────────────
-    const catalogue = block.chip_catalogue || [];
-    if (catalogue.length) {
-      container.appendChild(_el('div', 'pt-catalogue-heading', 'Every chip type in this panel'));
-      const catList = _el('div', 'pt-catalogue');
-      catalogue.forEach(function (entry) {
-        const row = _el('div', 'pt-cat-row');
-        if (entry.example_kind === 'demo_row' && entry.demo_row) {
-          row.appendChild(_renderDemoRow(slot, entry));
-        } else if (entry.example_kind === 'action' || !entry.example_id) {
-          // Non-clickable action label (▶, ↗)
-          row.appendChild(_el('span', 'pt-action-label', entry.example_label));
-        } else {
-          row.appendChild(_catalogueChip(entry));
-        }
-        // Effect statement — view-sensitive or single
-        if (entry.effect_graph && entry.effect_raga) {
-          const eff = _el('span', 'pt-effect');
-          const graphLine = _el('span', 'pt-effect-line');
-          graphLine.appendChild(_el('span', 'pt-nowrap', '(Guru-Shishya)'));
-          graphLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_graph)));
-          eff.appendChild(graphLine);
-
-          const ragaLine = _el('span', 'pt-effect-line');
-          ragaLine.appendChild(_el('span', 'pt-nowrap', '(Mela-Janya)'));
-          ragaLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_raga)));
-          eff.appendChild(ragaLine);
-          row.appendChild(eff);
-        } else {
-          row.appendChild(_el('span', 'pt-effect', '\u00b7 ' + _normalizeEffectText(entry.effect || '')));
-        }
-        catList.appendChild(row);
-      });
-      container.appendChild(catList);
-    }
-
-    // ── Divider ───────────────────────────────────────────────────────────
-    const hr = document.createElement('hr');
-    hr.className = 'pt-divider';
-    container.appendChild(hr);
-
-    // ── Section B: cross-panel seeds ──────────────────────────────────────
-    const seeds = block.cross_panel_seeds || {};
-    const seedItems = seeds.items || [];
-    const hasSeeds = seedItems.length ||
-      _nonEmptyString(seeds.prompt) ||
-      _nonEmptyString(seeds.intro_note) ||
-      _nonEmptyString(seeds.search_note) ||
-      _nonEmptyString(seeds.closing_note);
-    if (hasSeeds) {
-      const cross = _el('div', 'pt-cross-seeds');
-      if (seeds.intro_note) cross.appendChild(_el('p', 'pt-intro-note', seeds.intro_note));
-      if (seeds.prompt) cross.appendChild(_el('div', 'pt-cross-prompt', seeds.prompt));
-      if (seedItems.length) {
-        const chips = _el('div', 'pt-chips');
-        seedItems.forEach(function (item) {
-          const wrap = _el('div', 'pt-seed-item');
-          wrap.appendChild(_seedChip(item));
-          if (item.note) {
-            wrap.appendChild(_el('div', 'pt-seed-note', '(' + item.note + ')'));
-          }
-          chips.appendChild(wrap);
-        });
-        cross.appendChild(chips);
-      }
-      if (seeds.search_note) cross.appendChild(_el('p', 'pt-search-note', seeds.search_note));
-      if (seeds.closing_note) cross.appendChild(_el('p', 'pt-closing-note', seeds.closing_note));
-      container.appendChild(cross);
-    }
-
-    // ── Section C: view discovery (ADR-091) ───────────────────────────────
+    // ── Section A: view discovery (ADR-091) ───────────────────────────────
     const viewSection = block.view_section || {};
     const hasViewSection = _nonEmptyString(viewSection.label) ||
       _nonEmptyString(viewSection.graph_note) ||
       _nonEmptyString(viewSection.raga_note);
     if (hasViewSection) {
-      const hr2 = document.createElement('hr');
-      hr2.className = 'pt-divider';
-      container.appendChild(hr2);
-
       const section = _el('div', 'pt-view-section');
       if (viewSection.label) {
         section.appendChild(_el('div', 'pt-view-label', viewSection.label));
@@ -84321,7 +84385,90 @@ function buildAddYoutubeForm() {
         section.appendChild(_el('p', 'pt-view-note', viewSection.raga_note));
       }
       container.appendChild(section);
+
+      const hr0 = document.createElement('hr');
+      hr0.className = 'pt-divider';
+      container.appendChild(hr0);
     }
+
+    // ── Section B: chip catalogue ─────────────────────────────────────────
+    const catalogue = block.chip_catalogue || [];
+    if (catalogue.length) {
+      container.appendChild(_el('div', 'pt-catalogue-heading', 'Every chip type in this panel'));
+      const catList = _el('div', 'pt-catalogue');
+      catalogue.forEach(function (entry) {
+        const row = _el('div', 'pt-cat-row');
+        if (entry.example_kind === 'demo_row' && entry.demo_row) {
+          row.appendChild(_renderDemoRow(slot, entry));
+        } else if (entry.example_kind === 'action' || !entry.example_id) {
+          // Non-clickable action label (▶, ↗)
+          row.appendChild(_el('span', 'pt-action-label', entry.example_label));
+        } else {
+          row.appendChild(_catalogueChip(
+            entry,
+            (slot === 'bani' && (entry.example_kind === 'raga' || entry.example_kind === 'composition'))
+              ? { previewOnly: true }
+              : null
+          ));
+        }
+        // Effect statement — view-sensitive or single
+        if (entry.effect_graph && entry.effect_raga) {
+          const eff = _el('span', 'pt-effect');
+          const graphLine = _el('span', 'pt-effect-line');
+          graphLine.appendChild(_el('span', 'pt-nowrap', '(Guru-Shishya)'));
+          graphLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_graph)));
+          eff.appendChild(graphLine);
+
+          const ragaLine = _el('span', 'pt-effect-line');
+          ragaLine.appendChild(_el('span', 'pt-nowrap', '(Mela-Janya)'));
+          ragaLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_raga)));
+          eff.appendChild(ragaLine);
+          row.appendChild(eff);
+        } else {
+          const text = _normalizeEffectText(entry.effect || '');
+          if (text) {
+            row.appendChild(_el('span', 'pt-effect', '\u00b7 ' + text));
+          }
+        }
+        catList.appendChild(row);
+      });
+      container.appendChild(catList);
+    }
+
+    // ── Divider ───────────────────────────────────────────────────────────
+    const hr = document.createElement('hr');
+    hr.className = 'pt-divider';
+    container.appendChild(hr);
+
+    // ── Section C: cross-panel seeds ──────────────────────────────────────
+    const seeds = block.cross_panel_seeds || {};
+    const seedItems = seeds.items || [];
+    const hasSeeds = seedItems.length ||
+      _nonEmptyString(seeds.prompt) ||
+      _nonEmptyString(seeds.intro_note) ||
+      _nonEmptyString(seeds.search_note) ||
+      _nonEmptyString(seeds.closing_note);
+    if (hasSeeds) {
+      const cross = _el('div', 'pt-cross-seeds');
+      if (seeds.intro_note) cross.appendChild(_el('p', 'pt-intro-note', seeds.intro_note));
+      if (seeds.prompt) cross.appendChild(_el('div', 'pt-cross-prompt', seeds.prompt));
+      if (seedItems.length) {
+        const chips = _el('div', 'pt-chips');
+        seedItems.forEach(function (item) {
+          const wrap = _el('div', 'pt-seed-item');
+          wrap.appendChild(_seedChip(item));
+          if (item.note) {
+            wrap.appendChild(_el('div', 'pt-seed-note', '(' + item.note + ')'));
+          }
+          chips.appendChild(wrap);
+        });
+        cross.appendChild(chips);
+      }
+      if (seeds.search_note) cross.appendChild(_el('p', 'pt-search-note', seeds.search_note));
+      if (seeds.closing_note) cross.appendChild(_el('p', 'pt-closing-note', seeds.closing_note));
+      container.appendChild(cross);
+    }
+
   }
 
   function _ensureRendered(slot) {

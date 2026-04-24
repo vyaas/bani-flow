@@ -90,12 +90,16 @@ function switchView(name) {
     document.getElementById('cy').style.display = '';
     if (cyLabels) cyLabels.style.display = '';
     if (filterBar) filterBar.style.display = 'flex';
+    if (typeof cy !== 'undefined' && cy) cy.resize();
     // Restore the sub-layout that was active when the user left
     if (currentLayout === 'timeline') {
       applyTimelineLayout();
     } else {
       currentLayout = 'graph';
-      relayout();
+      _restoreGraphPositions();
+    }
+    if (typeof cy !== 'undefined' && cy) {
+      requestAnimationFrame(() => cy.resize());
     }
     if (typeof scheduleCyChipSync === 'function') scheduleCyChipSync();
   } else if (name === 'raga') {
@@ -1206,17 +1210,19 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
   // Draw janya satellites (if any)
   if (janyas.length > 0) {
-    // ADR-093: solve fan geometry from chip length scale, then compute radius/spread.
+    // ADR-093: solve fan geometry using node-circle footprint for arc spacing.
+    // maxLabelChars:1 → sMin ≈ chip height (≈ 2×NR_JANYA) so radius stays at rBaseline.
+    // maxSpread grows proportionally with count (mirrors pre-ADR-093 SPREAD formula)
+    // so the fan spreads naturally without inflating the radius.
     const jFontSize = Math.max(7, minDim * 0.011);
-    const jMaxChars = janyas.reduce((m, j) => Math.max(m, (j.name || '').length), 1);
     const janyaLayout = solveRingLayout({
       n: janyas.length,
       fontSize: jFontSize,
-      maxLabelChars: jMaxChars,
+      maxLabelChars: 1,
       k: _readChipSpacingK(),
       openFan: {
         anchorAngle: melaAngle,
-        maxSpread: (5 * Math.PI / 180) * 0.85,
+        maxSpread: Math.min(janyas.length * (5 * Math.PI / 180), Math.PI * 0.85),
         rBaseline: R_JANYA
       }
     });
@@ -1363,17 +1369,16 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     return;
   }
 
-  // ADR-093: composition fan layout uses the same deterministic solver.
+  // ADR-093: composition fan layout — same node-circle-footprint approach as janya fan.
   const cFontSize = Math.max(6, minDim * 0.010);
-  const cMaxChars = items.reduce((m, item) => Math.max(m, (item.title || '').length), 1);
   const compLayout = solveRingLayout({
     n: items.length,
     fontSize: cFontSize,
-    maxLabelChars: cMaxChars,
+    maxLabelChars: 1,
     k: _readChipSpacingK(),
     openFan: {
       anchorAngle: jAngle,
-      maxSpread: (5 * Math.PI / 180) * 0.85,
+      maxSpread: Math.min(items.length * (5 * Math.PI / 180), Math.PI * 0.85),
       rBaseline: R_COMP
     }
   });
