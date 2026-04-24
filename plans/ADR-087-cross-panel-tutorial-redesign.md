@@ -1,6 +1,6 @@
 # ADR-087: Cross-Panel Tutorial Redesign — Chip Catalogue as the Only README
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-23
 **Agents**: graph-architect (proposes); carnatic-coder (implements rendering + data shape); librarian (curates seed chips once schema lands)
 **Depends on**: ADR-086 (tutorial schema, render contract, `empty_panels.json`), ADR-028 (design tokens), ADR-056 (chip prominence), ADR-067 (Musician panel history), ADR-079 (lecdem chip)
