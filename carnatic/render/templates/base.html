@@ -842,6 +842,42 @@
   }
 
   /* ── Viewport toolbar — compact overlay, top-right of graph canvas (ADR-030) ── */
+  /* ── Wheel Detail Panel (Option B, ADR-096): mela→janya→comp list overlay ── */
+  #wheel-detail-panel {
+    display: none;
+    position: absolute; top: 8px; left: 8px;
+    width: 228px; max-height: calc(100% - 60px);
+    overflow-y: auto; z-index: 65;
+    background: var(--bg-panel); border: 1px solid var(--border-strong);
+    border-radius: 8px; padding: 10px 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.55);
+    pointer-events: all; box-sizing: border-box;
+  }
+  #wheel-detail-panel.wdp-open { display: flex; flex-direction: column; gap: 5px; }
+  .wdp-header {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 6px;
+    border-bottom: 1px solid var(--border-strong); padding-bottom: 6px;
+  }
+  .wdp-title { font-size: 0.88rem; font-weight: bold; color: var(--fg); flex: 1; line-height: 1.3; }
+  .wdp-subtitle { display: block; font-size: 0.68rem; font-weight: normal; color: var(--fg-sub); margin-top: 2px; }
+  .wdp-close { background: none; border: none; cursor: pointer; color: var(--fg-dim); font-size: 1.1rem; line-height: 1; padding: 0 2px; flex-shrink: 0; }
+  .wdp-close:hover { color: var(--fg); }
+  .wdp-section-label { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--fg-sub); margin-top: 2px; }
+  .wdp-empty { font-size: 0.78rem; color: var(--fg-sub); padding: 4px 0; }
+  .wdp-chips { display: flex; flex-direction: column; gap: 2px; }
+  .wdp-comp-group { display: flex; flex-direction: column; gap: 2px; margin-left: 10px; margin-top: 2px; margin-bottom: 4px; }
+  .wdp-chip {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 8px; border-radius: 5px; cursor: pointer;
+    border: 1px solid; font-size: 0.76rem; line-height: 1.3; word-break: break-word;
+    transition: opacity 0.1s;
+  }
+  .wdp-chip:hover { opacity: 0.80; }
+  .wdp-chip.wdp-raga { border-color: var(--chip-raga-border); color: var(--chip-raga-border); background: var(--chip-raga-bg); }
+  .wdp-chip.wdp-raga.wdp-selected { background: var(--chip-raga-border); color: var(--bg-deep); }
+  .wdp-chip.wdp-comp { border-color: var(--chip-comp-border); color: var(--chip-comp-border); background: var(--chip-comp-bg); }
+  .wdp-chip-count { margin-left: auto; font-size: 0.66rem; opacity: 0.65; flex-shrink: 0; padding-left: 4px; }
+
   #viewport-toolbar {
     position: absolute;
     top: 8px;
@@ -2823,6 +2859,7 @@
     border-radius: 6px;
     background: var(--bg-card, rgba(255,255,255,0.04));
     margin-bottom: 6px;
+    overflow: hidden;
   }
   .panel-tutorial .pt-action-label {
     display: inline-block;
@@ -2857,8 +2894,33 @@
     min-width: 0;
     flex-wrap: wrap;
   }
+  .panel-tutorial .pt-demo-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
   .panel-tutorial .pt-demo-row-lecdem {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .panel-tutorial .pt-demo-row-actions {
+    justify-content: flex-start;
+  }
+  .panel-tutorial .pt-action-line {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    min-width: 0;
+    margin-left: 0;
+  }
+  .panel-tutorial .pt-action-line .rec-play-btn,
+  .panel-tutorial .pt-action-line .yt-ext-link,
+  .panel-tutorial .pt-demo-acts .rec-play-btn,
+  .panel-tutorial .pt-demo-acts .yt-ext-link {
+    margin-left: 0;
+    align-self: flex-start;
   }
   .panel-tutorial .pt-demo-title {
     flex: 1;
@@ -2869,17 +2931,31 @@
     font-size: 0.72rem;
     color: var(--fg-dim);
   }
+  .panel-tutorial .pt-demo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: 2px;
+  }
   .panel-tutorial .pt-demo-acts {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     flex-shrink: 0;
+    margin-left: 0;
   }
   .panel-tutorial .pt-demo-acts .rec-play-btn,
   .panel-tutorial .pt-demo-acts .yt-ext-link {
     width: 24px;
     height: 24px;
     font-size: 0.68rem;
+    margin-left: 0;
+  }
+  .panel-tutorial .pt-action-note {
+    color: var(--fg-muted);
+    font-size: 0.70rem;
+    line-height: 1.2;
+    margin-left: 0;
   }
   .panel-tutorial .pt-demo-static {
     cursor: default;
@@ -2905,6 +2981,22 @@
     color: var(--fg-muted);
     margin-bottom: 8px;
   }
+  .panel-tutorial .pt-intro-note,
+  .panel-tutorial .pt-search-note,
+  .panel-tutorial .pt-closing-note,
+  .panel-tutorial .pt-view-note {
+    color: var(--fg-muted);
+    font-size: 0.72rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .panel-tutorial .pt-intro-note {
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-search-note,
+  .panel-tutorial .pt-closing-note {
+    margin-top: 8px;
+  }
   .panel-tutorial .pt-seed-item {
     display: inline-flex;
     flex-direction: column;
@@ -2917,6 +3009,25 @@
     opacity: 0.85;
     margin-left: 2px;
     line-height: 1.15;
+  }
+  .panel-tutorial .pt-view-section {
+    padding-top: 2px;
+  }
+  .panel-tutorial .pt-view-label {
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-view-switch {
+    margin-left: 0;
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-view-switch .view-btn {
+    font-size: 0.74rem;
+    padding: 4px 10px;
+  }
+  .panel-tutorial .pt-view-note + .pt-view-note {
+    margin-top: 6px;
   }
 </style>
 </head>
@@ -3044,6 +3155,8 @@
       <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
       <!-- Raga wheel (ADR-023) -->
       <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);touch-action:none;"></svg>
+      <!-- ADR-096 Option B: mela→janya→comp detail panel (replaces SVG satellite fans) -->
+      <div id="wheel-detail-panel"></div>
       <!-- ── Viewport toolbar (ADR-030): compact overlay, bottom-right of canvas pane ── -->
       <div id="viewport-toolbar">
         <button id="btn-fit"      class="vp-btn" title="Fit all nodes into view"      onclick="vpFit()">Fit</button>
