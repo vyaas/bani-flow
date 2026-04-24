@@ -78500,8 +78500,11 @@ window.drawRagaWheel = function() {
       _dragStartX = e.clientX; _dragStartY = e.clientY;
       _dragVX = RagaWheel._state.panX; _dragVY = RagaWheel._state.panY;
 
-      // Rim-drag rotation only starts from background (not chip elements).
-      if (e.target === bg || e.target === svg) {
+      // Rim-drag rotation only on touch (not mouse): on desktop, all drags pan.
+      // Rationale: rOuter=0.88×minDim covers most of a wide canvas, making
+      // rotation trigger unpredictably on mouse. Touch users rotate intentionally
+      // by dragging with one finger on the outer rim.
+      if (e.pointerType !== 'mouse' && (e.target === bg || e.target === svg)) {
         const p = _toSvgPoint(svg, e.clientX, e.clientY);
         if (RagaWheel.isRimDrag(p.x, p.y)) {
           _gestureMode = 'rotate';
@@ -78746,8 +78749,8 @@ window.drawRagaWheel = function() {
             applyBaniFilter('raga', raga.id);
           }
           window._wheelSyncInProgress = false;
-          // Auto-zoom to bring the expanded mela's janya fan into view
-          _animateToTarget(pos.x, pos.y, 2.2);
+          // Auto-zoom: scale 1.8 shows the mela node + its janya ring together
+          _animateToTarget(pos.x, pos.y, 1.8);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -78985,8 +78988,9 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
           applyBaniFilter('raga', janya.id);
         }
         window._wheelSyncInProgress = false;
-        // Auto-zoom to bring the expanded janya's comp fan into view
-        _animateToTarget(jPos.x, jPos.y, 3.0);
+        // Auto-zoom: scale 2.2 centred on janya shows janya + comp fan together
+        // (half-viewport ≈ W/(2×2.2) just covers R_COMP−R_JANYA + label overhang)
+        _animateToTarget(jPos.x, jPos.y, 2.2);
       });
       jg.addEventListener('dblclick', (e) => {
         e.stopPropagation();
@@ -79216,7 +79220,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       }
       window._wheelSyncInProgress = false;
       // Auto-zoom to bring the selected composition into focus
-      _animateToTarget(cPos.x, cPos.y, 3.5);
+      _animateToTarget(cPos.x, cPos.y, 2.8);
     });
     g.appendChild(cg);
   });
@@ -79458,7 +79462,7 @@ function orientRagaWheel(type, id) {
       const R_COMP = minDim * 0.72;
       targetX = W / 2 + R_COMP * Math.cos(rad);
       targetY = H / 2 + R_COMP * Math.sin(rad);
-      TARGET_SCALE = 3.0;   // zoom in so the comp node is clearly visible
+      TARGET_SCALE = 2.5;   // zoom so comp + janya context are both visible
 
       // Prefer the actual rendered position of the selected comp node if available
       const compEl = document.querySelector(
@@ -79473,7 +79477,7 @@ function orientRagaWheel(type, id) {
       const R_MELA = minDim * 0.38;
       targetX = W / 2 + R_MELA * Math.cos(rad);
       targetY = H / 2 + R_MELA * Math.sin(rad);
-      TARGET_SCALE = 2.5;
+      TARGET_SCALE = 2.0;
 
       // ADR-093: prefer actual rendered mela node position (R_MELA may be solver-grown).
       const melaEl = document.querySelector(
