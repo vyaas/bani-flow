@@ -324,6 +324,11 @@
     border-color: var(--accent-main);
     color: var(--accent-main);
   }
+  .panel-nav-btn.panel-help-active {
+    border-color: var(--accent-main);
+    color: var(--accent-main);
+    background: rgba(184, 187, 38, 0.12);
+  }
 
   /* ── node header (collapsed single-line) ── */
   #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -3140,7 +3145,7 @@
         <h3>
           <span class="panel-nav-spacer" aria-hidden="true"></span>
           Bani Flow &#9835;
-          <button id="bani-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="clearBaniFilter()">?</button>
+          <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
           <input id="bani-search-input" class="search-input panel-search" type="text"
@@ -3254,7 +3259,7 @@
           Musician &#9835;
           <span style="display:inline-flex;align-items:center;gap:4px">
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-            <button id="musician-reset-btn" class="panel-nav-btn" title="Restore help deck" onclick="window.clearMusicianPanel &amp;&amp; window.clearMusicianPanel()">?</button>
+            <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
           </span>
         </h3>
         <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
@@ -74935,6 +74940,7 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
   // ADR-086: subject loaded → dismiss empty-panel tutorial
+  if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
   // Clear filter and rebuild unified recordings list
@@ -79914,6 +79920,7 @@ function applyBaniFilter(type, id) {
 
 function buildListeningTrail(type, id, matchedNodeIds) {
   // ADR-086: subject loaded → dismiss empty-panel tutorial
+  if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('bani');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('bani');
   const trail = document.getElementById('listening-trail');
   const trailList = document.getElementById('trail-list');
@@ -84938,6 +84945,70 @@ function buildAddYoutubeForm() {
     const id = SLOT_TO_CONTAINER_ID[slot];
     const container = id ? document.getElementById(id) : null;
     if (container) container.style.display = 'none';
+  };
+
+  // ── Help-toggle (non-destructive overlay) ────────────────────────────────
+  // Click the `?` button on a panel header → fills the panel with the help
+  // deck without disturbing the existing panel state. Click again → restores
+  // the panel exactly as it was. Lets users peek at help and return to flow.
+  // Help fills only the scrollable area — the sticky zone above (subject
+  // header, search input, trail/recordings filter) stays visible so users
+  // keep their bearings while peeking at help.
+  const SLOT_TO_CONTAINERS = {
+    bani:     ['bani-scroll'],
+    musician: ['right-scroll'],
+  };
+  const SLOT_TO_BTN_ID = {
+    bani:     'bani-reset-btn',
+    musician: 'musician-reset-btn',
+  };
+  const _helpState = { bani: null, musician: null };
+
+  function _exitHelp(slot) {
+    const state = _helpState[slot];
+    if (!state) return;
+    state.hidden.forEach(function (entry) {
+      entry.el.style.display = entry.prevDisplay;
+    });
+    window.hidePanelTutorial(slot);
+    _helpState[slot] = null;
+    const btn = document.getElementById(SLOT_TO_BTN_ID[slot]);
+    if (btn) btn.classList.remove('panel-help-active');
+  }
+
+  function _enterHelp(slot) {
+    const tutorialId = SLOT_TO_CONTAINER_ID[slot];
+    const containers = SLOT_TO_CONTAINERS[slot] || [];
+    const hidden = [];
+    containers.forEach(function (cid) {
+      const root = document.getElementById(cid);
+      if (!root) return;
+      Array.prototype.forEach.call(root.children, function (el) {
+        if (el.tagName === 'H3') return;          // keep the panel header
+        if (el.id === tutorialId) return;         // never hide the deck itself
+        const cs = window.getComputedStyle(el).display;
+        if (cs === 'none') return;                // already hidden — leave alone
+        hidden.push({ el: el, prevDisplay: el.style.display || '' });
+        el.style.display = 'none';
+      });
+    });
+    _helpState[slot] = { hidden: hidden };
+    window.showPanelTutorial(slot);
+    const btn = document.getElementById(SLOT_TO_BTN_ID[slot]);
+    if (btn) btn.classList.add('panel-help-active');
+  }
+
+  window.togglePanelHelp = function (slot) {
+    if (!SLOT_TO_CONTAINERS[slot]) return;
+    if (_helpState[slot]) _exitHelp(slot);
+    else                  _enterHelp(slot);
+  };
+
+  // Clean up help overlay before any code populates the panel with new
+  // content (e.g. selectNode, applyBaniFilter). Called by callers that
+  // already know they're about to write into the panel.
+  window.dismissPanelHelp = function (slot) {
+    if (_helpState[slot]) _exitHelp(slot);
   };
 
   // ── Initial paint: both panels are empty on first load ───────────────────
