@@ -3,10 +3,27 @@
   "musician_panel": {
     "chip_catalogue": [
       {
+        "css_class": "comp-chip",
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "composition_row",
+          "comp_id": "parulanna_matta",
+          "comp_label": "Parulanna Matta",
+          "raga_id": "kapi",
+          "raga_label": "Kapi",
+          "tala": "Rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "composer_label": "Dharmapuri Subbaraya Iyer"
+        },
+        "effect": "· composition rows carry raga and tala; clicking the raga opens its Bani Flow trail"
+      },
+      {
         "css_class": "raga-chip",
         "example_kind": "raga",
-        "example_id": "thodi",
-        "example_label": "Thodi",
+        "example_id": "kaanada",
+        "example_label": "Kaanada",
         "effect": "· opens the Bani Flow trail for that raga (left panel)"
       },
       {
@@ -23,27 +40,20 @@
         "example_id": null,
         "example_label": null,
         "demo_row": {
-          "type": "lecdem_row",
-          "chip_label": "♪ Ramnad Krishnan — Poonamallee 1965",
+          "type": "recording_row",
+          "chip_label": "♪ Poonamallee 1965",
           "play_label": "Ramnad Krishnan — Poonamallee 1965 (full concert)",
+          "artist_label": "Ramnad Krishnan",
+          "recording_id": "poonamallee_1965",
           "video_id": "_rj8fHJiSLA",
           "youtube_url": "https://www.youtube.com/watch?v=_rj8fHJiSLA",
-          "raga_tags": [
-            {
-              "id": "reetigowla",
-              "label": "Reetigowla"
-            },
-            {
-              "id": "begada",
-              "label": "Begada"
-            },
-            {
-              "id": "surutti",
-              "label": "Surutti"
-            }
+          "performers": [
+            { "id": "ramnad_krishnan", "label": "Ramnad Krishnan" },
+            { "id": "tn_krishnan", "label": "TN Krishnan" },
+            { "id": "vellore_ramabhadran", "label": "Vellore G. Ramabhadran" }
           ]
         },
-        "effect": "· concert recordings show bracketed track lists — ▶ plays in the floating player, ↗ opens the source"
+        "effect": "· concert recordings open with a full track list — ▶ opens the scrollable setlist player, ↗ opens YouTube"
       },
       {
         "css_class": "lecdem-chip",
@@ -52,29 +62,15 @@
         "example_label": null,
         "demo_row": {
           "type": "lecdem_row",
-          "chip_label": "✎ TM Krishna — Manodharma Lec-Dem",
+          "chip_label": "✎ Manodharma Lec-Dem",
           "play_label": "Manodharma Lec-Dem Promo — TM Krishna & Akkarai Subbulakshmi",
           "video_id": "KDPPDB0rG70",
-          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70"
+          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70",
+          "performers": [
+            { "id": "tm_krishna", "label": "TM Krishna" }
+          ]
         },
         "effect": "· lec-dem rows appear above the trail when a subject has lecture-demonstrations"
-      },
-      {
-        "css_class": "comp-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "composition_row",
-          "comp_id": "parulanna_matta",
-          "comp_label": "Parulanna Matta",
-          "raga_id": "kapi",
-          "raga_label": "Kapi",
-          "tala": "Rupakam",
-          "composer_id": "dharmapuri_subbaraya_iyer",
-          "composer_label": "Dharmapuri Subbaraya Iyer"
-        },
-        "effect": "· composition rows carry raga and tala; clicking the raga opens its Bani Flow trail"
       }
     ],
     "cross_panel_seeds": {
@@ -90,15 +86,9 @@
         },
         {
           "kind": "raga",
-          "id": "thodi",
-          "label": "Thodi",
+          "id": "kaanada",
+          "label": "Kaanada",
           "note": "janya"
-        },
-        {
-          "kind": "composition",
-          "id": "parulanna_matta",
-          "label": "Parulanna Matta",
-          "note": "composition"
         }
       ]
     },

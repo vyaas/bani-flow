@@ -2861,6 +2861,21 @@
     margin-bottom: 6px;
     overflow: hidden;
   }
+  /* Standalone chips at the top level of a cat-row should fit their text */
+  .panel-tutorial .pt-cat-row > .raga-chip,
+  .panel-tutorial .pt-cat-row > .musician-chip,
+  .panel-tutorial .pt-cat-row > .comp-chip,
+  .panel-tutorial .pt-cat-row > .lecdem-chip {
+    align-self: flex-start;
+  }
+  /* Prevent lecdem-chip label from being clipped in tutorial context */
+  .panel-tutorial .pt-demo-row .lecdem-chip {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+  .panel-tutorial .pt-rec-performers {
+    margin-top: 4px;
+  }
   .panel-tutorial .pt-cat-note {
     font-size: 0.72rem;
     color: var(--fg-muted);
