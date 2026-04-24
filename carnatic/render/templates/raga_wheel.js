@@ -626,10 +626,10 @@ window.drawRagaWheel = function() {
   const R_JANYA = minDim * 0.56;
   const R_COMP  = minDim * 0.72;
   const R_MUSC  = minDim * 0.88;
-  const NR_MELA  = Math.max(4,  minDim * 0.013);
-  const NR_JANYA = Math.max(3,  minDim * 0.008);
-  const NR_COMP  = Math.max(3,  minDim * 0.008);
-  const NR_MUSC  = Math.max(3,  minDim * 0.008);
+  const NR_MELA  = Math.max(6,  minDim * 0.018);
+  const NR_JANYA = Math.max(5,  minDim * 0.013);
+  const NR_COMP  = Math.max(5,  minDim * 0.013);
+  const NR_MUSC  = Math.max(4,  minDim * 0.010);
 
   RagaWheel._geometry.cx = cx;
   RagaWheel._geometry.cy = cy;
@@ -644,19 +644,13 @@ window.drawRagaWheel = function() {
     janyasByMela[r.parent_raga].push(r);
   });
 
-  const melaFontSize = Math.max(7, minDim * 0.012);
-  // Mela chip labels are radially oriented (each chip group is rotation-transformed
-  // along its spoke direction).  Their tangential arc footprint is the chip HEIGHT
-  // (~fontSize + 3px), NOT the chip width.  Passing maxLabelChars:1 keeps the
-  // computed sMin ≈ chip height so the solver never inflates R_MELA beyond R_MELA_BASE.
-  const melaLayout = solveRingLayout({
-    n: 72,
-    fontSize: melaFontSize,
-    maxLabelChars: 1,
-    k: _readChipSpacingK(),
-    closedRim: { rBaseline: R_MELA_BASE }
-  });
-  const R_MELA = melaLayout.radius;
+  const melaFontSize = Math.max(10, minDim * 0.022);
+  // Mela nodes: 72 evenly-spaced fixed at R_MELA_BASE. solveRingLayout is not used
+  // here because mela chips are radially rotated — their tangential footprint is the
+  // chip HEIGHT (fontSize+3px), not width, which can't be expressed via maxLabelChars.
+  // Evenly-spaced angles are always correct for a closed 72-node ring.
+  const R_MELA = R_MELA_BASE;
+  const melaAngles = Array.from({ length: 72 }, (_, i) => i * 2 * Math.PI / 72);
 
   // ── compsByRaga: three sources ────────────────────────────────────────────
   // Source 1: compositions.json compositions[] — canonical compositions
@@ -994,7 +988,7 @@ window.drawRagaWheel = function() {
   // Pass 1: circles + interaction (no labels yet)
   const melaCirleGroups = [];
   for (let n = 1; n <= 72; n++) {
-    const angleRad = melaLayout.angles[n - 1];
+    const angleRad = melaAngles[n - 1];
     const angleDeg = angleRad * 180 / Math.PI;
     const pos = polarRad(cx, cy, R_MELA, angleRad);
     const raga = melaByNum[n];
@@ -1074,8 +1068,8 @@ window.drawRagaWheel = function() {
             applyBaniFilter('raga', raga.id);
           }
           window._wheelSyncInProgress = false;
-          // Auto-zoom to bring the expanded mela into focus
-          _animateToTarget(pos.x, pos.y, 1.6);
+          // Auto-zoom to bring the expanded mela's janya fan into view
+          _animateToTarget(pos.x, pos.y, 2.2);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -1215,7 +1209,7 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
     // ADR-093: solve fan geometry using actual chip widths for tangential arc spacing.
     // maxSpread=0.9π is a wide ceiling so spreadAtBaseline drives layout for typical
     // node counts (radius stays at rBaseline); only degenerate large fans inflate it.
-    const jFontSize = Math.max(7, minDim * 0.011);
+    const jFontSize = Math.max(10, minDim * 0.020);
     const jMaxChars = janyas.reduce((m, j) => Math.max(m, (j.name || '').length), 1);
     const janyaLayout = solveRingLayout({
       n: janyas.length,
@@ -1313,8 +1307,8 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
           applyBaniFilter('raga', janya.id);
         }
         window._wheelSyncInProgress = false;
-        // Auto-zoom to bring the expanded janya into focus
-        _animateToTarget(jPos.x, jPos.y, 2.0);
+        // Auto-zoom to bring the expanded janya's comp fan into view
+        _animateToTarget(jPos.x, jPos.y, 3.0);
       });
       jg.addEventListener('dblclick', (e) => {
         e.stopPropagation();
@@ -1374,7 +1368,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
   }
 
   // ADR-093: composition fan — actual chip widths for tangential spacing, wide ceiling.
-  const cFontSize = Math.max(6, minDim * 0.010);
+  const cFontSize = Math.max(9, minDim * 0.018);
   const cMaxChars = items.reduce((m, item) => Math.max(m, (item.title || '').length), 1);
   const compLayout = solveRingLayout({
     n: items.length,
@@ -1544,7 +1538,7 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       }
       window._wheelSyncInProgress = false;
       // Auto-zoom to bring the selected composition into focus
-      _animateToTarget(cPos.x, cPos.y, 2.5);
+      _animateToTarget(cPos.x, cPos.y, 3.5);
     });
     g.appendChild(cg);
   });
@@ -1786,7 +1780,7 @@ function orientRagaWheel(type, id) {
       const R_COMP = minDim * 0.72;
       targetX = W / 2 + R_COMP * Math.cos(rad);
       targetY = H / 2 + R_COMP * Math.sin(rad);
-      TARGET_SCALE = 2.2;   // zoom in a bit more so the comp node is clearly visible
+      TARGET_SCALE = 3.0;   // zoom in so the comp node is clearly visible
 
       // Prefer the actual rendered position of the selected comp node if available
       const compEl = document.querySelector(
@@ -1801,7 +1795,7 @@ function orientRagaWheel(type, id) {
       const R_MELA = minDim * 0.38;
       targetX = W / 2 + R_MELA * Math.cos(rad);
       targetY = H / 2 + R_MELA * Math.sin(rad);
-      TARGET_SCALE = 1.8;
+      TARGET_SCALE = 2.5;
 
       // ADR-093: prefer actual rendered mela node position (R_MELA may be solver-grown).
       const melaEl = document.querySelector(
