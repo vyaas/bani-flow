@@ -2884,6 +2884,13 @@
     margin-bottom: 6px;
     overflow: hidden;
   }
+  .panel-tutorial .pt-cat-note {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+    line-height: 1.45;
+    padding: 4px 2px 2px;
+    font-style: italic;
+  }
   .panel-tutorial .pt-action-label {
     display: inline-block;
     padding: 2px 8px;
@@ -73629,6 +73636,56 @@ const helpEmptyPanels = {
         "effect": "· opens the Bani Flow trail for that raga (left panel)"
       },
       {
+        "css_class": null,
+        "example_kind": "note",
+        "example_id": null,
+        "example_label": null,
+        "note_text": "In Mela-Janya view, these open the raga wheel and recording trail — try switching the view first.",
+        "effect": ""
+      },
+      {
+        "css_class": "lecdem-chip",
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "lecdem_row",
+          "chip_label": "♪ Ramnad Krishnan — Poonamallee 1965",
+          "play_label": "Ramnad Krishnan — Poonamallee 1965 (full concert)",
+          "video_id": "_rj8fHJiSLA",
+          "youtube_url": "https://www.youtube.com/watch?v=_rj8fHJiSLA",
+          "raga_tags": [
+            {
+              "id": "reetigowla",
+              "label": "Reetigowla"
+            },
+            {
+              "id": "begada",
+              "label": "Begada"
+            },
+            {
+              "id": "surutti",
+              "label": "Surutti"
+            }
+          ]
+        },
+        "effect": "· concert recordings show bracketed track lists — ▶ plays in the floating player, ↗ opens the source"
+      },
+      {
+        "css_class": "lecdem-chip",
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "lecdem_row",
+          "chip_label": "✎ TM Krishna — Manodharma Lec-Dem",
+          "play_label": "Manodharma Lec-Dem Promo — TM Krishna & Akkarai Subbulakshmi",
+          "video_id": "KDPPDB0rG70",
+          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70"
+        },
+        "effect": "· lec-dem rows appear above the trail when a subject has lecture-demonstrations"
+      },
+      {
         "css_class": "comp-chip",
         "example_kind": "demo_row",
         "example_id": null,
@@ -73644,38 +73701,10 @@ const helpEmptyPanels = {
           "composer_label": "Dharmapuri Subbaraya Iyer"
         },
         "effect": "· composition rows carry raga and tala; clicking the raga opens its Bani Flow trail"
-      },
-      {
-        "css_class": "tree-play-btn",
-        "example_kind": "action",
-        "example_id": null,
-        "example_label": "▶",
-        "effect": "· opens the floating YouTube player on that track"
-      },
-      {
-        "css_class": "tree-ext-link",
-        "example_kind": "action",
-        "example_id": null,
-        "example_label": "↗",
-        "effect": "· opens the source page (YouTube / Wikipedia) in a new tab"
-      },
-      {
-        "css_class": "lecdem-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "lecdem_row",
-          "title": "Manodharma Lec-Dem Promo — TM Krishna & Akkarai Subbulakshmi",
-          "video_id": "KDPPDB0rG70",
-          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70"
-        },
-        "effect": "· lecdem rows appear above the trail when a subject has lecture-demonstrations"
       }
     ],
     "cross_panel_seeds": {
       "prompt": "Tap these — watch the Bani Flow panel (and wheel in Mela-Janya view) respond:",
-      "intro_note": "In Mela-Janya view, these open the raga wheel and recording trail — try switching the view first.",
       "closing_note": "In Guru-Shishya view, tap any musician on the lineage graph to load them here — or search by name above ↑",
       "panel_target": "bani",
       "items": [
@@ -78955,8 +78984,8 @@ window.drawRagaWheel = function() {
             applyBaniFilter('raga', raga.id);
           }
           window._wheelSyncInProgress = false;
-          // Auto-zoom: scale 1.8 shows the mela node + its janya ring together
-          _animateToTarget(pos.x, pos.y, 1.8);
+          // Option B: zoom to the mela node — detail is in the panel, SVG only has the ring
+          _animateToTarget(pos.x, pos.y, 2.5);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -79608,7 +79637,7 @@ function syncRagaWheelToFilter(type, id) {
  * Only acts when the raga wheel is the active view.  Does NOT switch views.
  * Waits for syncRagaWheelToFilter (called by applyBaniFilter just before this)
  * to finish its expand sequence, then animates the viewport to centre on the
- * mela that contains the raga (or the raga of the composition) at zoom 1.8.
+ * mela that contains the raga (or the raga of the composition) at zoom 2.5.
  *
  * @param {'raga'|'comp'} type
  * @param {string}        id    — raga id or composition id
@@ -79619,12 +79648,10 @@ function orientRagaWheel(type, id) {
 
   // Resolve composition → raga_id
   let ragaId = id;
-  let compId = null;
   if (type === 'comp') {
     const comp = compositions.find(c => c.id === id);
     if (!comp || !comp.raga_id) return;
     ragaId = comp.raga_id;
-    compId = id;
   }
 
   const raga = ragas.find(r => r.id === ragaId);
@@ -79652,42 +79679,20 @@ function orientRagaWheel(type, id) {
     const melaAngle = (melaRaga.melakarta - 1) * 5;
     const rad = (melaAngle - 90) * Math.PI / 180;
 
-    // For a composition: pan to the composition node (at R_COMP radius) so it
-    // is centred in view.  For a raga: pan to the mela node (at R_MELA).
-    let targetX, targetY, TARGET_SCALE;
-    if (compId) {
-      // Try to find the rendered comp node and use its actual SVG position.
-      // The comp node is at R_COMP along the mela angle (spread may shift it
-      // slightly, but the mela angle is a good approximation for centering).
-      const R_COMP = minDim * 0.72;
-      targetX = W / 2 + R_COMP * Math.cos(rad);
-      targetY = H / 2 + R_COMP * Math.sin(rad);
-      TARGET_SCALE = 2.5;   // zoom so comp + janya context are both visible
+    // Option B: always zoom to the mela node — comp/janya fans no longer exist in SVG.
+    const R_MELA_EST = minDim * 0.38;
+    let targetX = W / 2 + R_MELA_EST * Math.cos(rad);
+    let targetY = H / 2 + R_MELA_EST * Math.sin(rad);
+    const TARGET_SCALE = 2.5;
 
-      // Prefer the actual rendered position of the selected comp node if available
-      const compEl = document.querySelector(
-        `#wheel-viewport .comp-node[data-id="${CSS.escape(compId)}"] circle`
-      );
-      if (compEl) {
-        const cx = parseFloat(compEl.getAttribute('cx'));
-        const cy = parseFloat(compEl.getAttribute('cy'));
-        if (!isNaN(cx) && !isNaN(cy)) { targetX = cx; targetY = cy; }
-      }
-    } else {
-      const R_MELA = minDim * 0.38;
-      targetX = W / 2 + R_MELA * Math.cos(rad);
-      targetY = H / 2 + R_MELA * Math.sin(rad);
-      TARGET_SCALE = 2.0;
-
-      // ADR-093: prefer actual rendered mela node position (R_MELA may be solver-grown).
-      const melaEl = document.querySelector(
-        `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
-      );
-      if (melaEl) {
-        const mx = parseFloat(melaEl.getAttribute('cx'));
-        const my = parseFloat(melaEl.getAttribute('cy'));
-        if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
-      }
+    // Prefer the actual rendered mela node position (R_MELA may differ from estimate).
+    const melaEl = document.querySelector(
+      `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
+    );
+    if (melaEl) {
+      const mx = parseFloat(melaEl.getAttribute('cx'));
+      const my = parseFloat(melaEl.getAttribute('cy'));
+      if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
     }
 
     const targetVX = W / 2 - TARGET_SCALE * targetX;
@@ -84618,6 +84623,9 @@ function buildAddYoutubeForm() {
         const row = _el('div', 'pt-cat-row');
         if (entry.example_kind === 'demo_row' && entry.demo_row) {
           row.appendChild(_renderDemoRow(slot, entry));
+        } else if (entry.example_kind === 'note') {
+          // Inline explanatory note — no chip, just text
+          row.appendChild(_el('div', 'pt-cat-note', entry.note_text || ''));
         } else if (entry.example_kind === 'action' || !entry.example_id) {
           // Non-clickable action label (▶, ↗)
           row.appendChild(_el('span', 'pt-action-label', entry.example_label));

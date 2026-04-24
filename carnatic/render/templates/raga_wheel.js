@@ -1219,8 +1219,8 @@ window.drawRagaWheel = function() {
             applyBaniFilter('raga', raga.id);
           }
           window._wheelSyncInProgress = false;
-          // Auto-zoom: scale 1.8 shows the mela node + its janya ring together
-          _animateToTarget(pos.x, pos.y, 1.8);
+          // Option B: zoom to the mela node — detail is in the panel, SVG only has the ring
+          _animateToTarget(pos.x, pos.y, 2.5);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -1872,7 +1872,7 @@ function syncRagaWheelToFilter(type, id) {
  * Only acts when the raga wheel is the active view.  Does NOT switch views.
  * Waits for syncRagaWheelToFilter (called by applyBaniFilter just before this)
  * to finish its expand sequence, then animates the viewport to centre on the
- * mela that contains the raga (or the raga of the composition) at zoom 1.8.
+ * mela that contains the raga (or the raga of the composition) at zoom 2.5.
  *
  * @param {'raga'|'comp'} type
  * @param {string}        id    — raga id or composition id
@@ -1883,12 +1883,10 @@ function orientRagaWheel(type, id) {
 
   // Resolve composition → raga_id
   let ragaId = id;
-  let compId = null;
   if (type === 'comp') {
     const comp = compositions.find(c => c.id === id);
     if (!comp || !comp.raga_id) return;
     ragaId = comp.raga_id;
-    compId = id;
   }
 
   const raga = ragas.find(r => r.id === ragaId);
@@ -1916,42 +1914,20 @@ function orientRagaWheel(type, id) {
     const melaAngle = (melaRaga.melakarta - 1) * 5;
     const rad = (melaAngle - 90) * Math.PI / 180;
 
-    // For a composition: pan to the composition node (at R_COMP radius) so it
-    // is centred in view.  For a raga: pan to the mela node (at R_MELA).
-    let targetX, targetY, TARGET_SCALE;
-    if (compId) {
-      // Try to find the rendered comp node and use its actual SVG position.
-      // The comp node is at R_COMP along the mela angle (spread may shift it
-      // slightly, but the mela angle is a good approximation for centering).
-      const R_COMP = minDim * 0.72;
-      targetX = W / 2 + R_COMP * Math.cos(rad);
-      targetY = H / 2 + R_COMP * Math.sin(rad);
-      TARGET_SCALE = 2.5;   // zoom so comp + janya context are both visible
+    // Option B: always zoom to the mela node — comp/janya fans no longer exist in SVG.
+    const R_MELA_EST = minDim * 0.38;
+    let targetX = W / 2 + R_MELA_EST * Math.cos(rad);
+    let targetY = H / 2 + R_MELA_EST * Math.sin(rad);
+    const TARGET_SCALE = 2.5;
 
-      // Prefer the actual rendered position of the selected comp node if available
-      const compEl = document.querySelector(
-        `#wheel-viewport .comp-node[data-id="${CSS.escape(compId)}"] circle`
-      );
-      if (compEl) {
-        const cx = parseFloat(compEl.getAttribute('cx'));
-        const cy = parseFloat(compEl.getAttribute('cy'));
-        if (!isNaN(cx) && !isNaN(cy)) { targetX = cx; targetY = cy; }
-      }
-    } else {
-      const R_MELA = minDim * 0.38;
-      targetX = W / 2 + R_MELA * Math.cos(rad);
-      targetY = H / 2 + R_MELA * Math.sin(rad);
-      TARGET_SCALE = 2.0;
-
-      // ADR-093: prefer actual rendered mela node position (R_MELA may be solver-grown).
-      const melaEl = document.querySelector(
-        `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
-      );
-      if (melaEl) {
-        const mx = parseFloat(melaEl.getAttribute('cx'));
-        const my = parseFloat(melaEl.getAttribute('cy'));
-        if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
-      }
+    // Prefer the actual rendered mela node position (R_MELA may differ from estimate).
+    const melaEl = document.querySelector(
+      `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
+    );
+    if (melaEl) {
+      const mx = parseFloat(melaEl.getAttribute('cx'));
+      const my = parseFloat(melaEl.getAttribute('cy'));
+      if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
     }
 
     const targetVX = W / 2 - TARGET_SCALE * targetX;
