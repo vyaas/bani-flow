@@ -2884,6 +2884,21 @@
     margin-bottom: 6px;
     overflow: hidden;
   }
+  /* Standalone chips at the top level of a cat-row should fit their text */
+  .panel-tutorial .pt-cat-row > .raga-chip,
+  .panel-tutorial .pt-cat-row > .musician-chip,
+  .panel-tutorial .pt-cat-row > .comp-chip,
+  .panel-tutorial .pt-cat-row > .lecdem-chip {
+    align-self: flex-start;
+  }
+  /* Prevent lecdem-chip label from being clipped in tutorial context */
+  .panel-tutorial .pt-demo-row .lecdem-chip {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+  .panel-tutorial .pt-rec-performers {
+    margin-top: 4px;
+  }
   .panel-tutorial .pt-cat-note {
     font-size: 0.72rem;
     color: var(--fg-muted);
@@ -73629,10 +73644,27 @@ const helpEmptyPanels = {
   "musician_panel": {
     "chip_catalogue": [
       {
+        "css_class": "comp-chip",
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "composition_row",
+          "comp_id": "parulanna_matta",
+          "comp_label": "Parulanna Matta",
+          "raga_id": "kapi",
+          "raga_label": "Kapi",
+          "tala": "Rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "composer_label": "Dharmapuri Subbaraya Iyer"
+        },
+        "effect": "· composition rows carry raga and tala; clicking the raga opens its Bani Flow trail"
+      },
+      {
         "css_class": "raga-chip",
         "example_kind": "raga",
-        "example_id": "thodi",
-        "example_label": "Thodi",
+        "example_id": "kaanada",
+        "example_label": "Kaanada",
         "effect": "· opens the Bani Flow trail for that raga (left panel)"
       },
       {
@@ -73649,27 +73681,29 @@ const helpEmptyPanels = {
         "example_id": null,
         "example_label": null,
         "demo_row": {
-          "type": "lecdem_row",
-          "chip_label": "♪ Ramnad Krishnan — Poonamallee 1965",
+          "type": "recording_row",
+          "chip_label": "♪ Poonamallee 1965",
           "play_label": "Ramnad Krishnan — Poonamallee 1965 (full concert)",
+          "artist_label": "Ramnad Krishnan",
+          "recording_id": "poonamallee_1965",
           "video_id": "_rj8fHJiSLA",
           "youtube_url": "https://www.youtube.com/watch?v=_rj8fHJiSLA",
-          "raga_tags": [
+          "performers": [
             {
-              "id": "reetigowla",
-              "label": "Reetigowla"
+              "id": "ramnad_krishnan",
+              "label": "Ramnad Krishnan"
             },
             {
-              "id": "begada",
-              "label": "Begada"
+              "id": "tn_krishnan",
+              "label": "TN Krishnan"
             },
             {
-              "id": "surutti",
-              "label": "Surutti"
+              "id": "vellore_ramabhadran",
+              "label": "Vellore G. Ramabhadran"
             }
           ]
         },
-        "effect": "· concert recordings show bracketed track lists — ▶ plays in the floating player, ↗ opens the source"
+        "effect": "· concert recordings open with a full track list — ▶ opens the scrollable setlist player, ↗ opens YouTube"
       },
       {
         "css_class": "lecdem-chip",
@@ -73678,29 +73712,18 @@ const helpEmptyPanels = {
         "example_label": null,
         "demo_row": {
           "type": "lecdem_row",
-          "chip_label": "✎ TM Krishna — Manodharma Lec-Dem",
+          "chip_label": "✎ Manodharma Lec-Dem",
           "play_label": "Manodharma Lec-Dem Promo — TM Krishna & Akkarai Subbulakshmi",
           "video_id": "KDPPDB0rG70",
-          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70"
+          "youtube_url": "https://www.youtube.com/watch?v=KDPPDB0rG70",
+          "performers": [
+            {
+              "id": "tm_krishna",
+              "label": "TM Krishna"
+            }
+          ]
         },
         "effect": "· lec-dem rows appear above the trail when a subject has lecture-demonstrations"
-      },
-      {
-        "css_class": "comp-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "composition_row",
-          "comp_id": "parulanna_matta",
-          "comp_label": "Parulanna Matta",
-          "raga_id": "kapi",
-          "raga_label": "Kapi",
-          "tala": "Rupakam",
-          "composer_id": "dharmapuri_subbaraya_iyer",
-          "composer_label": "Dharmapuri Subbaraya Iyer"
-        },
-        "effect": "· composition rows carry raga and tala; clicking the raga opens its Bani Flow trail"
       }
     ],
     "cross_panel_seeds": {
@@ -73716,15 +73739,9 @@ const helpEmptyPanels = {
         },
         {
           "kind": "raga",
-          "id": "thodi",
-          "label": "Thodi",
+          "id": "kaanada",
+          "label": "Kaanada",
           "note": "janya"
-        },
-        {
-          "kind": "composition",
-          "id": "parulanna_matta",
-          "label": "Parulanna Matta",
-          "note": "composition"
         }
       ]
     },
@@ -84452,6 +84469,33 @@ function buildAddYoutubeForm() {
 
       block.appendChild(row);
 
+      // Optional performer chips (same era-tint pattern as recording_row)
+      const lecdPerformers = Array.isArray(demo.performers) ? demo.performers : [];
+      if (lecdPerformers.length) {
+        const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
+        lecdPerformers.forEach(function (pf) {
+          const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+          const node = nodes.find(function (n) { return n.id === pf.id; });
+          const eraId = node ? (node.era || null) : null;
+          const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
+          const chip = document.createElement('span');
+          chip.className = 'musician-chip chip-secondary';
+          chip.style.setProperty('--chip-era-bg', tint.bg);
+          chip.style.setProperty('--chip-era-border', tint.border);
+          chip.textContent = pf.label || pf.id;
+          chip.title = pf.label || pf.id;
+          if (pf.id) {
+            chip.style.cursor = 'pointer';
+            chip.addEventListener('click', function (evt) {
+              evt.stopPropagation();
+              _onMusician(pf.id);
+            });
+          }
+          pfRow.appendChild(chip);
+        });
+        block.appendChild(pfRow);
+      }
+
       const tags = Array.isArray(demo.raga_tags) ? demo.raga_tags : [];
       if (tags.length) {
         const tagRow = _el('div', 'pt-demo-tags');
@@ -84464,6 +84508,95 @@ function buildAddYoutubeForm() {
           }, { previewOnly: true }));
         });
         block.appendChild(tagRow);
+      }
+
+      return block;
+    }
+
+    if (type === 'recording_row') {
+      // Full concert recording row: chip + era-tinted performer chips + ▶/↗
+      const block = _el('div', 'pt-demo-block');
+      const headerRow = _el('div', 'pt-demo-row pt-demo-row-lecdem');
+
+      // Concert header chip (short title)
+      headerRow.appendChild(_chipLikeLabel('lecdem-chip', demo.chip_label || '\u266a Recording'));
+
+      // ▶ / ↗ buttons
+      const acts = _el('div', 'trail-acts pt-demo-acts');
+      const playBtn = _el('button', 'tree-play-btn rec-play-btn play-btn-concert', '\u25b6');
+      playBtn.type = 'button';
+      playBtn.title = 'Open concert with full track list';
+      playBtn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (typeof openOrFocusPlayer !== 'function') return;
+        // Assemble full track list from graphData.recordings
+        const recordingId = demo.recording_id;
+        const recordings = (typeof graphData !== 'undefined' && graphData.recordings) || [];
+        const rec = recordings.find(function (r) { return r.id === recordingId; });
+        if (!rec) { return; }
+        const ragas_ = (typeof ragas !== 'undefined') ? ragas : [];
+        const allTracks = [];
+        (rec.sessions || []).forEach(function (sess) {
+          (sess.performances || []).forEach(function (p) {
+            const ragaObj = p.raga_id ? ragas_.find(function (r) { return r.id === p.raga_id; }) : null;
+            allTracks.push({
+              offset_seconds: p.offset_seconds || 0,
+              display_title:  p.display_title || '',
+              raga_id:        p.raga_id || null,
+              raga_name:      ragaObj ? ragaObj.name : (p.raga_id || ''),
+              tala:           p.tala || null,
+              timestamp:      p.timestamp || '00:00',
+              composition_id: p.composition_id || null,
+            });
+          });
+        });
+        allTracks.sort(function (a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
+        openOrFocusPlayer(
+          demo.video_id,
+          demo.play_label || rec.title || demo.chip_label || 'Concert',
+          demo.artist_label || '',
+          0,
+          rec.short_title || rec.title || '',
+          allTracks.length ? allTracks : null,
+          {}
+        );
+      });
+      acts.appendChild(playBtn);
+
+      const videoHost = demo.video_id ? 'https://www.youtube.com/watch?v=' + demo.video_id : '#';
+      const ext = _el('a', 'tree-ext-link yt-ext-link', '\u2197');
+      ext.href = demo.youtube_url || videoHost;
+      ext.title = 'Open on YouTube';
+      ext.addEventListener('click', function (evt) { evt.stopPropagation(); });
+      acts.appendChild(ext);
+      headerRow.appendChild(acts);
+      block.appendChild(headerRow);
+
+      // Era-tinted performer chips
+      const performers = Array.isArray(demo.performers) ? demo.performers : [];
+      if (performers.length) {
+        const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
+        performers.forEach(function (pf) {
+          const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+          const node = nodes.find(function (n) { return n.id === pf.id; });
+          const eraId = node ? (node.era || null) : null;
+          const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
+          const chip = document.createElement('span');
+          chip.className = 'musician-chip chip-secondary';
+          chip.style.setProperty('--chip-era-bg', tint.bg);
+          chip.style.setProperty('--chip-era-border', tint.border);
+          chip.textContent = pf.label || pf.id;
+          chip.title = pf.label || pf.id;
+          if (pf.id) {
+            chip.style.cursor = 'pointer';
+            chip.addEventListener('click', function (evt) {
+              evt.stopPropagation();
+              _onMusician(pf.id);
+            });
+          }
+          pfRow.appendChild(chip);
+        });
+        block.appendChild(pfRow);
       }
 
       return block;

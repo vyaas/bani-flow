@@ -252,6 +252,33 @@
 
       block.appendChild(row);
 
+      // Optional performer chips (same era-tint pattern as recording_row)
+      const lecdPerformers = Array.isArray(demo.performers) ? demo.performers : [];
+      if (lecdPerformers.length) {
+        const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
+        lecdPerformers.forEach(function (pf) {
+          const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+          const node = nodes.find(function (n) { return n.id === pf.id; });
+          const eraId = node ? (node.era || null) : null;
+          const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
+          const chip = document.createElement('span');
+          chip.className = 'musician-chip chip-secondary';
+          chip.style.setProperty('--chip-era-bg', tint.bg);
+          chip.style.setProperty('--chip-era-border', tint.border);
+          chip.textContent = pf.label || pf.id;
+          chip.title = pf.label || pf.id;
+          if (pf.id) {
+            chip.style.cursor = 'pointer';
+            chip.addEventListener('click', function (evt) {
+              evt.stopPropagation();
+              _onMusician(pf.id);
+            });
+          }
+          pfRow.appendChild(chip);
+        });
+        block.appendChild(pfRow);
+      }
+
       const tags = Array.isArray(demo.raga_tags) ? demo.raga_tags : [];
       if (tags.length) {
         const tagRow = _el('div', 'pt-demo-tags');
@@ -264,6 +291,95 @@
           }, { previewOnly: true }));
         });
         block.appendChild(tagRow);
+      }
+
+      return block;
+    }
+
+    if (type === 'recording_row') {
+      // Full concert recording row: chip + era-tinted performer chips + ▶/↗
+      const block = _el('div', 'pt-demo-block');
+      const headerRow = _el('div', 'pt-demo-row pt-demo-row-lecdem');
+
+      // Concert header chip (short title)
+      headerRow.appendChild(_chipLikeLabel('lecdem-chip', demo.chip_label || '\u266a Recording'));
+
+      // ▶ / ↗ buttons
+      const acts = _el('div', 'trail-acts pt-demo-acts');
+      const playBtn = _el('button', 'tree-play-btn rec-play-btn play-btn-concert', '\u25b6');
+      playBtn.type = 'button';
+      playBtn.title = 'Open concert with full track list';
+      playBtn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (typeof openOrFocusPlayer !== 'function') return;
+        // Assemble full track list from graphData.recordings
+        const recordingId = demo.recording_id;
+        const recordings = (typeof graphData !== 'undefined' && graphData.recordings) || [];
+        const rec = recordings.find(function (r) { return r.id === recordingId; });
+        if (!rec) { return; }
+        const ragas_ = (typeof ragas !== 'undefined') ? ragas : [];
+        const allTracks = [];
+        (rec.sessions || []).forEach(function (sess) {
+          (sess.performances || []).forEach(function (p) {
+            const ragaObj = p.raga_id ? ragas_.find(function (r) { return r.id === p.raga_id; }) : null;
+            allTracks.push({
+              offset_seconds: p.offset_seconds || 0,
+              display_title:  p.display_title || '',
+              raga_id:        p.raga_id || null,
+              raga_name:      ragaObj ? ragaObj.name : (p.raga_id || ''),
+              tala:           p.tala || null,
+              timestamp:      p.timestamp || '00:00',
+              composition_id: p.composition_id || null,
+            });
+          });
+        });
+        allTracks.sort(function (a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
+        openOrFocusPlayer(
+          demo.video_id,
+          demo.play_label || rec.title || demo.chip_label || 'Concert',
+          demo.artist_label || '',
+          0,
+          rec.short_title || rec.title || '',
+          allTracks.length ? allTracks : null,
+          {}
+        );
+      });
+      acts.appendChild(playBtn);
+
+      const videoHost = demo.video_id ? 'https://www.youtube.com/watch?v=' + demo.video_id : '#';
+      const ext = _el('a', 'tree-ext-link yt-ext-link', '\u2197');
+      ext.href = demo.youtube_url || videoHost;
+      ext.title = 'Open on YouTube';
+      ext.addEventListener('click', function (evt) { evt.stopPropagation(); });
+      acts.appendChild(ext);
+      headerRow.appendChild(acts);
+      block.appendChild(headerRow);
+
+      // Era-tinted performer chips
+      const performers = Array.isArray(demo.performers) ? demo.performers : [];
+      if (performers.length) {
+        const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
+        performers.forEach(function (pf) {
+          const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+          const node = nodes.find(function (n) { return n.id === pf.id; });
+          const eraId = node ? (node.era || null) : null;
+          const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
+          const chip = document.createElement('span');
+          chip.className = 'musician-chip chip-secondary';
+          chip.style.setProperty('--chip-era-bg', tint.bg);
+          chip.style.setProperty('--chip-era-border', tint.border);
+          chip.textContent = pf.label || pf.id;
+          chip.title = pf.label || pf.id;
+          if (pf.id) {
+            chip.style.cursor = 'pointer';
+            chip.addEventListener('click', function (evt) {
+              evt.stopPropagation();
+              _onMusician(pf.id);
+            });
+          }
+          pfRow.appendChild(chip);
+        });
+        block.appendChild(pfRow);
       }
 
       return block;

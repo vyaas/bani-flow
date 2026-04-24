@@ -880,7 +880,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                     "musician_panel": {"musician"},
                     "bani_flow_panel": {"raga", "composition"},
                 }
-                _DEMO_ROW_ALLOWED_TYPES = {"lecdem_row", "composition_row", "action_row"}
+                _DEMO_ROW_ALLOWED_TYPES = {"lecdem_row", "composition_row", "action_row", "recording_row"}
                 _STRICT_VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 
                 def _is_non_empty_string(v: object) -> bool:
@@ -933,6 +933,25 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                                     f"(allowed: {sorted(_DEMO_ROW_ALLOWED_TYPES)})"
                                 )
                                 continue
+
+                            if demo_type == "recording_row":
+                                video_id = str(demo.get("video_id") or "")
+                                youtube_url = str(demo.get("youtube_url") or "")
+                                recording_id = demo.get("recording_id")
+                                if not _STRICT_VIDEO_ID_RE.fullmatch(video_id):
+                                    errors.append(
+                                        f"{c_where}.demo_row.video_id: '{video_id}' is not "
+                                        f"11-character alphanumeric"
+                                    )
+                                if "youtube.com" not in youtube_url and "youtu.be" not in youtube_url:
+                                    errors.append(
+                                        f"{c_where}.demo_row.youtube_url: must be a YouTube URL"
+                                    )
+                                known_recording_ids = {r["id"] for r in g.get_all_recordings()}
+                                if recording_id not in known_recording_ids:
+                                    errors.append(
+                                        f"{c_where}.demo_row.recording_id: '{recording_id}' not in recordings"
+                                    )
 
                             if demo_type == "lecdem_row":
                                 video_id = str(demo.get("video_id") or "")
