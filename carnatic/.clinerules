@@ -466,6 +466,7 @@ Entries are terse — this is a log, not an essay.
 
 - 2026-04-13: `const` globals injected into a `<script>` block are NOT properties of `window` in modern browsers; guard with `typeof tanpuraData === 'undefined'` not `!window.tanpuraData` — the latter silently returns true even when the const is defined.
 - 2026-04-13: Named-player registry pattern (ADR-029): a secondary `namedPlayerRegistry` keyed by a string `playerId` (e.g. `'sruti'`) is the correct way to manage singleton UI players that must coexist with the vid-keyed concert player registry; `openPlayer(vid, title, playerId)` + `closePlayer(playerId)` are the public API; the sruti player spawns at a fixed top-right position rather than the default stacked offset.
+- 2026-04-23: ADR-087 tutorial redesign: replaced _itemChip/_groupNode/try_these/mechanics with _catalogueChip/_seedChip and a two-section _renderInto (chip catalogue + hr + cross-panel seeds); schema_version bumped 1→2 in empty_panels.json; cli.py ADR-086 block replaced with ADR-087 rules (schema gate, catalogue id resolution, cross_panel_seeds self-target guard, kind-target agreement).
 
 ### 🏛️ Graph Architect
 

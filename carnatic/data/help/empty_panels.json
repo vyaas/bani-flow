@@ -1,71 +1,114 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "musician_panel": {
-    "headline": "This panel shows what a musician has recorded.",
-    "mechanics": [
-      "Type a name in the search box, or tap a musician on the graph to load them here.",
-      "In Guru-Shishya view, the panel follows whichever musician you tap on the lineage graph.",
-      "In Mela-Janya view, tapping a raga opens the Bani Flow panel; this panel stays in sync with the last musician you visited.",
-      "Use the filter to narrow the recording list by composition, raga, or year.",
-      "Tap \u25b6 on any recording to open it in the floating player.",
-      "Use + Musician / + Concert Recording in the bottom bar to contribute recordings you know about."
+    "chip_catalogue": [
+      {
+        "css_class": "musician-chip",
+        "example_id": "ramnad_krishnan",
+        "example_kind": "musician",
+        "example_label": "Ramnad Krishnan",
+        "effect": "\u2192 opens that musician in this panel (back \u2190 \u2192 forward to navigate)"
+      },
+      {
+        "css_class": "raga-chip",
+        "example_id": "thodi",
+        "example_kind": "raga",
+        "example_label": "Thodi",
+        "effect": "\u2192 opens the Bani Flow trail for that raga (left panel)"
+      },
+      {
+        "css_class": "comp-chip",
+        "example_id": "parulanna_matta",
+        "example_kind": "composition",
+        "example_label": "Parulanna Matta",
+        "effect": "\u2192 opens the Bani Flow trail for that composition (left panel)"
+      },
+      {
+        "css_class": "tree-play-btn",
+        "example_id": null,
+        "example_kind": "action",
+        "example_label": "\u25b6",
+        "effect": "\u2192 opens the floating YouTube player on that track"
+      },
+      {
+        "css_class": "tree-ext-link",
+        "example_id": null,
+        "example_kind": "action",
+        "example_label": "\u2197",
+        "effect": "\u2192 opens the source page (YouTube / Wikipedia) in a new tab"
+      },
+      {
+        "css_class": "lecdem-chip",
+        "example_id": "tm_krishna",
+        "example_kind": "lecdem_by",
+        "example_label": "\u270e TM Krishna \u2014 Manodharma",
+        "effect": "\u2192 opens the lecdem in the floating player"
+      }
     ],
-    "try_these": {
-      "label": "Try one of these to see the panel in action:",
-      "groups": [
-        {
-          "subject_kind": "composer",
-          "subject_id": "tyagaraja",
-          "subject_label": "Tyagaraja \u2014 two compositions",
-          "items": [
-            { "kind": "composition", "id": "ninnada",          "label": "Ninnada Nela" },
-            { "kind": "composition", "id": "samayamide_rara",  "label": "Samayamide Rara" }
-          ]
-        },
-        {
-          "subject_kind": "musician",
-          "subject_id": "ramnad_krishnan",
-          "subject_label": "Ramnad Krishnan \u2014 Poonamallee 1965",
-          "items": [
-            { "kind": "recording_ref", "musician_id": "ramnad_krishnan", "concert_hint": "poonamallee_1965", "raga_id": "begada",  "label": "Begada (Poonamallee 1965)" },
-            { "kind": "recording_ref", "musician_id": "ramnad_krishnan", "concert_hint": "poonamallee_1965", "raga_id": "surutti", "label": "Surutti (Poonamallee 1965)" }
-          ]
-        },
-        {
-          "subject_kind": "musician",
-          "subject_id": "tm_krishna",
-          "subject_label": "TM Krishna \u2014 lecture-demonstrations",
-          "items": [
-            { "kind": "lecdem_ref", "musician_id": "tm_krishna", "label": "Open lecdems on TMK's panel" }
-          ]
-        }
+    "cross_panel_seeds": {
+      "prompt": "Tap these \u2014 watch the Bani Flow panel respond:",
+      "panel_target": "bani",
+      "items": [
+        { "kind": "raga",        "id": "thodi",           "label": "Thodi"           },
+        { "kind": "raga",        "id": "bhairavi",        "label": "Bhairavi"        },
+        { "kind": "composition", "id": "parulanna_matta", "label": "Parulanna Matta" },
+        { "kind": "composition", "id": "ninnada",         "label": "Ninnada Nela"    }
       ]
     }
   },
   "bani_flow_panel": {
-    "headline": "This panel shows everyone who has recorded a raga or composition.",
-    "mechanics": [
-      "Type a raga or composition in the search box, or tap a raga on the wheel / a composition chip in the Musician panel.",
-      "Mela-Janya view: tapping a raga in the wheel loads its trail of recordings here, oldest \u2192 newest.",
-      "Guru-Shishya view: search by composition to see every musician who has it in their repertoire.",
-      "When the subject is a melakarta raga, expand Janyas to navigate to its derived ragas.",
-      "Lecdems on the subject appear as a strip above the trail."
+    "chip_catalogue": [
+      {
+        "css_class": "raga-chip",
+        "example_id": "thodi",
+        "example_kind": "raga",
+        "example_label": "Thodi",
+        "effect_graph": "\u2192 loads this panel's recording trail for that raga",
+        "effect_raga":  "\u2192 also selects the raga on the wheel; recording trail loads here"
+      },
+      {
+        "css_class": "comp-chip",
+        "example_id": "parulanna_matta",
+        "example_kind": "composition",
+        "example_label": "Parulanna Matta",
+        "effect": "\u2192 loads this panel's recording trail for that composition"
+      },
+      {
+        "css_class": "musician-chip",
+        "example_id": "ramnad_krishnan",
+        "example_kind": "musician",
+        "example_label": "Ramnad Krishnan",
+        "effect": "\u2192 opens that musician in the Musician panel (right panel)"
+      },
+      {
+        "css_class": "tree-play-btn",
+        "example_id": null,
+        "example_kind": "action",
+        "example_label": "\u25b6",
+        "effect": "\u2192 opens the floating YouTube player on that track"
+      },
+      {
+        "css_class": "tree-ext-link",
+        "example_id": null,
+        "example_kind": "action",
+        "example_label": "\u2197",
+        "effect": "\u2192 opens the source page (YouTube / Wikipedia) in a new tab"
+      },
+      {
+        "css_class": "lecdem-chip",
+        "example_id": "tm_krishna",
+        "example_kind": "lecdem_about",
+        "example_label": "\u270e TM Krishna on Thodi",
+        "effect": "\u2192 opens the lecdem in the floating player (appears above the trail when one exists)"
+      }
     ],
-    "try_these": {
-      "label": "Try one of these to see the panel in action:",
-      "groups": [
-        {
-          "subject_kind": "raga",
-          "subject_id": "thodi",
-          "subject_label": "Thodi \u2014 the heavyweight",
-          "blurb": "Every era and every bani has a Thodi. The trail spans the early masters through the contemporary stage."
-        },
-        {
-          "subject_kind": "composition",
-          "subject_id": "parulanna_matta",
-          "subject_label": "Parulanna Matta (Kapi)",
-          "blurb": "A javali in Kapi by Dharmapuri Subbaraya Iyer; recorded across vocal and instrumental traditions \u2014 useful for hearing how a single composition travels."
-        }
+    "cross_panel_seeds": {
+      "prompt": "Tap these \u2014 watch the Musician panel respond:",
+      "panel_target": "musician",
+      "items": [
+        { "kind": "musician", "id": "ramnad_krishnan", "label": "Ramnad Krishnan" },
+        { "kind": "musician", "id": "ms_subbulakshmi", "label": "MS Subbulakshmi" },
+        { "kind": "musician", "id": "tm_krishna",      "label": "TM Krishna"      }
       ]
     }
   }

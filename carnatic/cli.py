@@ -842,94 +842,90 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                         f"(ADR-077 — use subjects arrays instead)"
                     )
 
-    # ── empty-panel tutorial integrity (ADR-086) ──────────────────────────────
-    # If carnatic/data/help/empty_panels.json exists, every id it references
-    # must resolve in the graph. recording_ref must also match at least one
-    # performance for its (musician_id, raga_id, concert_hint).
+    # ── empty-panel tutorial integrity (ADR-087) ──────────────────────────────
+    # If carnatic/data/help/empty_panels.json exists, every entity id it
+    # references must resolve in the graph. Action items (example_kind=action,
+    # example_id=null) are exempt. Also validates cross_panel_seeds invariants
+    # and the schema version gate.
     import json as _json
     from pathlib import Path as _Path
     _help_path = _Path(__file__).resolve().parent / "data" / "help" / "empty_panels.json"
     if _help_path.exists():
-        known_recordings = g.get_all_recordings()
         try:
             help_data = _json.loads(_help_path.read_text(encoding="utf-8"))
         except Exception as e:
             errors.append(f"help/empty_panels.json: invalid JSON ({e})")
             help_data = None
         if help_data:
-            def _resolve_subject(kind: str, sid: str, where: str) -> None:
-                if not sid:
-                    return
-                if kind == "musician" and sid not in known_musician_ids:
-                    errors.append(f"{where}: musician_id '{sid}' not in graph")
-                elif kind == "raga" and sid not in known_raga_ids:
-                    errors.append(f"{where}: raga_id '{sid}' not in ragas")
-                elif kind == "composition" and sid not in known_composition_ids:
-                    errors.append(f"{where}: composition_id '{sid}' not in compositions")
-                elif kind == "composer" and sid not in known_composer_ids:
-                    errors.append(f"{where}: composer_id '{sid}' not in composers")
+            _schema_version = help_data.get("schema_version", 1)
+            if _schema_version > 2:
+                errors.append(
+                    f"help/empty_panels.json: schema_version {_schema_version} > 2; "
+                    f"update cli.py to handle the new schema"
+                )
+            else:
+                # panel_target value that would self-reference each panel block
+                _PANEL_TARGET_FORBIDDEN = {
+                    "musician_panel":  "musician",
+                    "bani_flow_panel": "bani",
+                }
+                # allowed item kinds in cross_panel_seeds per panel
+                _SEED_ALLOWED_KINDS = {
+                    "musician_panel":  {"raga", "composition"},
+                    "bani_flow_panel": {"musician"},
+                }
 
-            def _resolve_recording_ref(item: dict, where: str) -> None:
-                mid = item.get("musician_id")
-                rid = item.get("raga_id")
-                hint = (item.get("concert_hint") or "").lower()
-                if mid is not None and mid not in known_musician_ids:
-                    errors.append(f"{where}: musician_id '{mid}' not in graph")
-                    return
-                if rid is not None and rid not in known_raga_ids:
-                    errors.append(f"{where}: raga_id '{rid}' not in ragas")
-                    return
-                # Verify at least one matching performance
-                hit = False
-                for rec in known_recordings:
-                    rec_id = (rec.get("id") or "").lower()
-                    rec_title = (rec.get("title") or "").lower()
-                    if hint and hint not in rec_id and hint not in rec_title:
-                        continue
-                    for sess in rec.get("sessions", []):
-                        performer_ids = {p.get("musician_id") for p in sess.get("performers", [])}
-                        if mid not in performer_ids:
+                for panel_key in ("musician_panel", "bani_flow_panel"):
+                    block = help_data.get(panel_key) or {}
+
+                    # Validate chip_catalogue entity ids
+                    for ci, entry in enumerate(block.get("chip_catalogue", [])):
+                        c_where = f"help/empty_panels.json:{panel_key}.chip_catalogue[{ci}]"
+                        kind = entry.get("example_kind")
+                        eid  = entry.get("example_id")
+                        # Action items with null example_id are exempt
+                        if kind == "action" or eid is None:
                             continue
-                        for perf in sess.get("performances", []):
-                            if perf.get("raga_id") == rid:
-                                hit = True
-                                break
-                        if hit:
-                            break
-                    if hit:
-                        break
-                if not hit:
-                    errors.append(
-                        f"{where}: no performance matches musician '{mid}' + raga '{rid}' "
-                        f"+ concert_hint '{item.get('concert_hint')}'"
-                    )
+                        if kind == "musician" and eid not in known_musician_ids:
+                            errors.append(f"{c_where}: musician_id '{eid}' not in graph")
+                        elif kind == "raga" and eid not in known_raga_ids:
+                            errors.append(f"{c_where}: raga_id '{eid}' not in ragas")
+                        elif kind == "composition" and eid not in known_composition_ids:
+                            errors.append(f"{c_where}: composition_id '{eid}' not in compositions")
+                        elif kind in ("lecdem_by", "lecdem_about"):
+                            if eid not in known_musician_ids:
+                                errors.append(
+                                    f"{c_where}: musician_id '{eid}' not in graph (lecdem example)"
+                                )
 
-            def _resolve_lecdem_ref(item: dict, where: str) -> None:
-                mid = item.get("musician_id")
-                if mid is not None and mid not in known_musician_ids:
-                    errors.append(f"{where}: musician_id '{mid}' not in graph")
-
-            for panel_key in ("musician_panel", "bani_flow_panel"):
-                block = help_data.get(panel_key) or {}
-                tt = block.get("try_these") or {}
-                for gi, group in enumerate(tt.get("groups", [])):
-                    g_where = f"help/empty_panels.json:{panel_key}.try_these.groups[{gi}]"
-                    _resolve_subject(
-                        group.get("subject_kind"),
-                        group.get("subject_id"),
-                        g_where + ".subject_id",
-                    )
-                    for ii, item in enumerate(group.get("items", [])):
-                        i_where = f"{g_where}.items[{ii}]"
-                        kind = item.get("kind")
-                        if kind in ("composition", "raga", "musician", "composer"):
-                            _resolve_subject(kind, item.get("id"), i_where + ".id")
-                        elif kind == "recording_ref":
-                            _resolve_recording_ref(item, i_where)
-                        elif kind == "lecdem_ref":
-                            _resolve_lecdem_ref(item, i_where)
-                        else:
-                            errors.append(f"{i_where}: unknown item kind '{kind}'")
+                    # Validate cross_panel_seeds
+                    seeds = block.get("cross_panel_seeds") or {}
+                    panel_target = seeds.get("panel_target")
+                    forbidden_target = _PANEL_TARGET_FORBIDDEN.get(panel_key)
+                    if panel_target and panel_target == forbidden_target:
+                        errors.append(
+                            f"help/empty_panels.json:{panel_key}.cross_panel_seeds.panel_target "
+                            f"'{panel_target}' self-targets this panel (must target the other panel)"
+                        )
+                    allowed_kinds = _SEED_ALLOWED_KINDS.get(panel_key, set())
+                    for si, item in enumerate(seeds.get("items", [])):
+                        s_where = (
+                            f"help/empty_panels.json:{panel_key}.cross_panel_seeds.items[{si}]"
+                        )
+                        item_kind = item.get("kind")
+                        item_id   = item.get("id")
+                        if item_kind not in allowed_kinds:
+                            errors.append(
+                                f"{s_where}: kind '{item_kind}' is not allowed in {panel_key} "
+                                f"cross_panel_seeds (allowed: {sorted(allowed_kinds)})"
+                            )
+                            continue
+                        if item_kind == "musician" and item_id not in known_musician_ids:
+                            errors.append(f"{s_where}: musician_id '{item_id}' not in graph")
+                        elif item_kind == "raga" and item_id not in known_raga_ids:
+                            errors.append(f"{s_where}: raga_id '{item_id}' not in ragas")
+                        elif item_kind == "composition" and item_id not in known_composition_ids:
+                            errors.append(f"{s_where}: composition_id '{item_id}' not in compositions")
 
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
@@ -943,7 +939,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "All composition composer_ids and raga_ids are valid",
         "All youtube performers reference known musicians and roles (ADR-070)",
         "All youtube lecdem entries have valid kind, subjects, and resolvable ids (ADR-077)",
-        "All empty-panel tutorial ids resolve in graph (ADR-086)",
+        "All empty-panel tutorial ids resolve in graph (ADR-087)",
     ]
 
     if not errors:
