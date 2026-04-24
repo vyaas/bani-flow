@@ -429,8 +429,154 @@ function hideWheelTooltip() {
 
 let _expandedMela = null, _expandedJanya = null, _expandedComp = null;
 let _labelLayer = null;  // top-most <g> in vp — all text labels go here
+let _wdpData = null;     // Option B: panel data cache (set in drawRagaWheel)
+
+// ── Wheel Detail Panel (Option B, ADR-096) ─────────────────────────────────
+// Shows mela→janya→comp as a scrollable HTML overlay panel, replacing SVG
+// satellite fans. The wheel stays fully at overview scale; detail is beside it.
+
+function _closeWheelDetailPanel() {
+  const panel = document.getElementById('wheel-detail-panel');
+  if (panel) { panel.classList.remove('wdp-open'); panel.innerHTML = ''; }
+}
+
+function _openWheelDetailPanel(raga) {
+  if (!_wdpData || !raga) return;
+  const { janyasByMela, compsByRaga, melaByNum } = _wdpData;
+  const panel = document.getElementById('wheel-detail-panel');
+  if (!panel) return;
+  panel.innerHTML = '';
+
+  // Header: mela name + cakra label + close button
+  const cakra = raga.melakarta ? Math.ceil(raga.melakarta / 6) : null;
+  const header = document.createElement('div');
+  header.className = 'wdp-header';
+  const titleEl = document.createElement('span');
+  titleEl.className = 'wdp-title';
+  titleEl.textContent = raga.name;
+  if (cakra) {
+    const sub = document.createElement('span');
+    sub.className = 'wdp-subtitle';
+    sub.textContent = 'Mela ' + raga.melakarta + ' \u00b7 ' + (CAKRA_NAMES[cakra] || 'Cakra ' + cakra);
+    titleEl.appendChild(sub);
+  }
+  header.appendChild(titleEl);
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'wdp-close'; closeBtn.textContent = '\u00d7';
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    _closeWheelDetailPanel();
+    const svg = document.getElementById('raga-wheel');
+    if (svg && _wdpData) {
+      const vp = svg.querySelector('#wheel-viewport');
+      if (vp) _collapseAll(vp, _wdpData.melaByNum);
+    }
+  });
+  header.appendChild(closeBtn);
+  panel.appendChild(header);
+
+  // Direct mela compositions (no janya intermediary)
+  const melaDirect = compsByRaga[raga.id] || [];
+  if (melaDirect.length > 0) {
+    const lbl = document.createElement('div');
+    lbl.className = 'wdp-section-label';
+    lbl.textContent = melaDirect.length + ' composition' + (melaDirect.length > 1 ? 's' : '') + ' (mela direct)';
+    panel.appendChild(lbl);
+    _wdpRenderComps(panel, melaDirect, raga.id, null);
+  }
+
+  // Janyas — sorted alphabetically
+  const janyas = (janyasByMela[raga.id] || []).slice()
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  if (janyas.length > 0) {
+    const lbl = document.createElement('div');
+    lbl.className = 'wdp-section-label';
+    lbl.textContent = janyas.length + ' janya raga' + (janyas.length > 1 ? 's' : '');
+    panel.appendChild(lbl);
+    const janyaList = document.createElement('div');
+    janyaList.className = 'wdp-chips'; janyaList.id = 'wdp-janya-list';
+    janyas.forEach(janya => {
+      const comps = compsByRaga[janya.id] || [];
+      const chip = document.createElement('div');
+      chip.className = 'wdp-chip wdp-raga'; chip.dataset.id = janya.id;
+      chip.textContent = '\u25c8 ' + janya.name;
+      if (comps.length) {
+        const cnt = document.createElement('span');
+        cnt.className = 'wdp-chip-count'; cnt.textContent = comps.length;
+        chip.appendChild(cnt);
+      }
+      chip.addEventListener('click', (e) => { e.stopPropagation(); _wdpSelectJanya(janya, chip); });
+      janyaList.appendChild(chip);
+    });
+    panel.appendChild(janyaList);
+  }
+
+  if (janyas.length === 0 && melaDirect.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'wdp-empty';
+    empty.textContent = 'No compositions or janyas recorded';
+    panel.appendChild(empty);
+  }
+
+  panel.classList.add('wdp-open');
+}
+
+function _wdpSelectJanya(janya, chipEl) {
+  if (!_wdpData) return;
+  const { compsByRaga } = _wdpData;
+  const panel = document.getElementById('wheel-detail-panel');
+  if (!panel) return;
+
+  // Toggle: clicking the active janya collapses its comp list
+  const wasSelected = chipEl && chipEl.classList.contains('wdp-selected');
+  panel.querySelectorAll('.wdp-chip.wdp-raga').forEach(c => c.classList.remove('wdp-selected'));
+  panel.querySelectorAll('.wdp-comp-group').forEach(el => el.remove());
+  if (wasSelected) return;
+
+  if (chipEl) chipEl.classList.add('wdp-selected');
+  const items = compsByRaga[janya.id] || [];
+  if (items.length > 0 && chipEl) _wdpRenderComps(panel, items, janya.id, chipEl);
+
+  // Silently load bani-flow trail for this janya's mela
+  window._wheelSyncInProgress = true;
+  if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
+  window._wheelSyncInProgress = false;
+}
+
+function _wdpRenderComps(panel, items, ragaId, afterChip) {
+  const group = document.createElement('div');
+  group.className = 'wdp-comp-group';
+  items.forEach(item => {
+    const chip = document.createElement('div');
+    chip.className = 'wdp-chip wdp-comp';
+    chip.textContent = '\u266a ' + (item.title || item.id || '');
+    chip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window._wheelSyncInProgress = true;
+      window._wheelOriginatedTrigger = true;
+      if (!item._isPerf) {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', item.id);
+      } else if (item._recording_id && item._perf_index != null) {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('perf', item._recording_id + '::' + item._perf_index);
+      } else if (item._ytVid) {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('yt', item._ytVid + '::' + ragaId);
+      } else {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
+      }
+      window._wheelSyncInProgress = false;
+      window._wheelOriginatedTrigger = false;
+    });
+    group.appendChild(chip);
+  });
+  if (afterChip) {
+    afterChip.insertAdjacentElement('afterend', group);
+  } else {
+    panel.appendChild(group);
+  }
+}
 let _wheelMouseMove = null;
 let _wheelMouseUp   = null;
+let _animRafId = null;  // current _animateToTarget rAF handle (cancelled on new call)
 
 // AbortController for SVG-level event listeners — aborted and re-created on
 // each drawRagaWheel() call so stale handlers from previous draws don't
@@ -767,6 +913,10 @@ window.drawRagaWheel = function() {
     });
   });
 
+  // Option B: cache data for the detail panel and clear any stale panel from previous draw
+  _wdpData = { janyasByMela, compsByRaga, melaByNum };
+  _closeWheelDetailPanel();
+
   // Background rect — transparent hit-target for pan/zoom gestures.
   // Single-click on empty space collapses the full-mobile player (exploration
   // intent) but otherwise does nothing to prevent accidental resets while
@@ -1041,10 +1191,8 @@ window.drawRagaWheel = function() {
           _collapseAll(vp, melaByNum);
         } else {
           _collapseAll(vp, melaByNum);
-          _expandMela(vp, svg, raga, angleRad, cx, cy,
-            R_MELA, R_JANYA, R_COMP, R_MUSC,
-            NR_MELA, NR_JANYA, NR_COMP, NR_MUSC,
-            janyasByMela, compsByRaga, rtpByRaga, color, minDim);
+          // Option B: show mela→janya→comp in the detail panel instead of SVG fans
+          _openWheelDetailPanel(raga);
           circle.setAttribute('stroke', THEME.accentSelect);
           circle.setAttribute('stroke-width', 2.5);
           _expandedMela = raga.id;
@@ -1123,6 +1271,7 @@ window.drawRagaWheel = function() {
 
 // vp = viewport <g> for pan/zoom; svg = root SVG for tooltip sizing
 function _collapseAll(vp, melaByNum) {
+  _closeWheelDetailPanel();
   vp.querySelectorAll('.janya-group, .comp-group, .musc-group').forEach(g => g.remove());
   // Also clear satellite labels from the shared label layer
   if (_labelLayer) {
@@ -1159,6 +1308,12 @@ function _animateToTarget(targetX, targetY, targetScale) {
   const targetVX = W / 2 - targetScale * targetX;
   const targetVY = H / 2 - targetScale * targetY;
 
+  // Cancel any in-flight animation so two concurrent calls don't fight over state
+  if (_animRafId !== null) {
+    cancelAnimationFrame(_animRafId);
+    _animRafId = null;
+  }
+
   const startVX = RagaWheel._state.panX;
   const startVY = RagaWheel._state.panY;
   const startScale = RagaWheel._state.scale;
@@ -1177,9 +1332,13 @@ function _animateToTarget(targetX, targetY, targetScale) {
     RagaWheel._state.panY = startVY + (targetVY - startVY) * e;
     RagaWheel._state.scale = startScale + (targetScale - startScale) * e;
     _applyTransform();
-    if (t < 1) requestAnimationFrame(step);
+    if (t < 1) {
+      _animRafId = requestAnimationFrame(step);
+    } else {
+      _animRafId = null;
+    }
   }
-  requestAnimationFrame(step);
+  _animRafId = requestAnimationFrame(step);
 }
 
 function _expandMela(vp, svg, raga, melaAngle, cx, cy,
@@ -1643,46 +1802,29 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
   _bringLabelsToFront(vp);
 }
 
-  // Expose _triggerMelaExpand at window level so syncRagaWheelToFilter (outside IIFE) can call it
+  // Expose _triggerMelaExpand at window level so syncRagaWheelToFilter (outside IIFE) can call it.
+  // Option B: opens the detail panel for the given mela and pre-selects the janya/comp.
   window._triggerMelaExpand = function(melaNum, targetRagaId, targetCompId) {
-    window._wheelSyncInProgress = true;   // prevent syncRagaWheelToFilter re-entry
+    window._wheelSyncInProgress = true;
+    const raga = _wdpData && _wdpData.melaByNum[melaNum];
+    if (!raga) { window._wheelSyncInProgress = false; return; }
 
-    // Find the mela node <g> by data-mela attribute and dispatch a click
-    const melaG = document.querySelector(
-      `#wheel-viewport .mela-node[data-mela="${melaNum}"]`
-    );
+    // Highlight the mela node on the wheel ring
+    const melaG = document.querySelector(`#wheel-viewport .mela-node[data-mela="${melaNum}"]`);
     if (melaG) melaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    else _openWheelDetailPanel(raga);
 
-    // If targetRagaId is a janya, also expand it
-    if (targetRagaId) {
-      // Use setTimeout to allow the mela expansion to render first
+    // Pre-select the target janya in the panel
+    if (targetRagaId && _wdpData) {
       setTimeout(() => {
-        const janyaG = document.querySelector(
-          `#wheel-viewport .janya-node[data-id="${targetRagaId}"]`
-        );
-        if (janyaG) janyaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-        // If a specific composition should also be highlighted, click it after janya expands
-        if (targetCompId) {
-          setTimeout(() => {
-            const compG = document.querySelector(
-              `#wheel-viewport .comp-node[data-id="${targetCompId}"]`
-            );
-            if (compG) compG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-            window._wheelSyncInProgress = false;   // re-enable after comp click settles
-          }, 50);
-        } else {
-          window._wheelSyncInProgress = false;   // re-enable after janya click settles
+        const janya = (_wdpData.janyasByMela[raga.id] || []).find(j => j.id === targetRagaId);
+        if (janya) {
+          const chipEl = document.querySelector(
+            `#wdp-janya-list .wdp-chip.wdp-raga[data-id="${CSS.escape(targetRagaId)}"]`
+          );
+          _wdpSelectJanya(janya, chipEl);
         }
-      }, 50);
-    } else if (targetCompId) {
-      // Mela-direct composition (no janya intermediary) — click comp after mela expands
-      setTimeout(() => {
-        const compG = document.querySelector(
-          `#wheel-viewport .comp-node[data-id="${targetCompId}"]`
-        );
-        if (compG) compG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        window._wheelSyncInProgress = false;
+        setTimeout(() => { window._wheelSyncInProgress = false; }, 50);
       }, 50);
     } else {
       window._wheelSyncInProgress = false;
