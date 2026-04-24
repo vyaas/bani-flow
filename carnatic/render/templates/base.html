@@ -2798,6 +2798,59 @@
     color: var(--fg);
     border-color: var(--fg-sub);
   }
+  /* ADR-087: chip catalogue + cross-panel seeds layout */
+  .panel-tutorial .pt-catalogue-heading {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+    margin: 0 0 8px;
+    opacity: 0.8;
+  }
+  .panel-tutorial .pt-catalogue {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 0;
+  }
+  .panel-tutorial .pt-cat-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .panel-tutorial .pt-action-label {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    color: var(--fg-faint, var(--fg-muted));
+    font-size: 0.74rem;
+    opacity: 0.65;
+  }
+  .panel-tutorial .pt-effect {
+    color: var(--fg-muted);
+    font-size: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .panel-tutorial .pt-effect-line {
+    display: block;
+  }
+  .panel-tutorial .pt-divider {
+    border: none;
+    border-top: 1px solid var(--border-strong);
+    margin: 10px 0;
+  }
+  .panel-tutorial .pt-cross-seeds {
+    padding-top: 2px;
+  }
+  .panel-tutorial .pt-cross-prompt {
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
 </style>
 </head>
 <body>

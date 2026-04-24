@@ -102,81 +102,108 @@
     _orientToMusician(item.musician_id);
   }
 
-  function _itemChip(item) {
-    const kind = item.kind;
-    let chip;
-    if (kind === 'composition') {
-      chip = _el('span', 'comp-chip', item.label);
-      chip.addEventListener('click', () => _onComposition(item.id));
-    } else if (kind === 'raga') {
-      chip = _el('span', 'raga-chip', item.label);
-      chip.addEventListener('click', () => _onRaga(item.id));
-    } else if (kind === 'musician') {
-      chip = _el('span', 'musician-chip', item.label);
-      chip.addEventListener('click', () => _onMusician(item.id));
-    } else if (kind === 'composer') {
-      chip = _el('span', 'composer-chip', item.label);
-      chip.addEventListener('click', () => _onComposer(item.id));
-    } else if (kind === 'recording_ref') {
-      chip = _el('span', 'pt-chip pt-chip-recording', '\u25b6 ' + item.label);
-      chip.addEventListener('click', () => _onRecordingRef(item));
-    } else if (kind === 'lecdem_ref') {
-      chip = _el('span', 'pt-chip pt-chip-lecdem', '\u270e ' + item.label);
-      chip.addEventListener('click', () => _onLecdemRef(item));
-    } else {
-      chip = _el('span', 'pt-chip', item.label || kind);
-    }
+  // ── Chip factories (ADR-087) ─────────────────────────────────────────────
+
+  // _catalogueChip: creates a clickable chip for the catalogue section.
+  // Never called for action items (example_kind === 'action' / example_id null).
+  function _catalogueChip(entry) {
+    const cls  = entry.css_class;
+    const lbl  = entry.example_label;
+    const kind = entry.example_kind;
+    const id   = entry.example_id;
+    const chip = _el('span', cls, lbl);
     chip.style.cursor = 'pointer';
+    if (kind === 'raga') {
+      chip.addEventListener('click', () => _onRaga(id));
+    } else if (kind === 'composition') {
+      chip.addEventListener('click', () => _onComposition(id));
+    } else if (kind === 'musician') {
+      chip.addEventListener('click', () => _onMusician(id));
+    } else if (kind === 'lecdem_by' || kind === 'lecdem_about') {
+      chip.addEventListener('click', () => _onMusician(id));
+    }
     return chip;
   }
 
-  function _groupNode(group) {
-    const wrap = _el('div', 'pt-group');
-    if (group.subject_label) {
-      wrap.appendChild(_el('div', 'pt-group-title', group.subject_label));
+  // _seedChip: creates a clickable chip for the cross-panel seeds section.
+  function _seedChip(item) {
+    const kind = item.kind;
+    let cls, onClick;
+    if (kind === 'raga') {
+      cls     = 'raga-chip';
+      onClick = () => _onRaga(item.id);
+    } else if (kind === 'composition') {
+      cls     = 'comp-chip';
+      onClick = () => _onComposition(item.id);
+    } else if (kind === 'musician') {
+      cls     = 'musician-chip';
+      onClick = () => _onMusician(item.id);
+    } else {
+      cls     = 'pt-chip';
+      onClick = null;
     }
-    if (group.blurb) {
-      wrap.appendChild(_el('div', 'pt-group-blurb', group.blurb));
-    }
-    const items = group.items || [];
-    if (items.length) {
-      const chips = _el('div', 'pt-chips');
-      items.forEach(it => chips.appendChild(_itemChip(it)));
-      wrap.appendChild(chips);
-    } else if (group.subject_kind && group.subject_id) {
-      // Group without items — make the title itself the click target
-      const chips = _el('div', 'pt-chips');
-      chips.appendChild(_itemChip({
-        kind:  group.subject_kind === 'composer' ? 'composer'
-             : group.subject_kind === 'raga'     ? 'raga'
-             : group.subject_kind === 'composition' ? 'composition'
-             : 'musician',
-        id:    group.subject_id,
-        label: 'Open ' + (group.subject_label || group.subject_id),
-      }));
-      wrap.appendChild(chips);
-    }
-    return wrap;
+    const chip = _el('span', cls, item.label || kind);
+    chip.style.cursor = 'pointer';
+    if (onClick) chip.addEventListener('click', onClick);
+    return chip;
   }
 
   function _renderInto(container, block) {
     container.innerHTML = '';
+
+    const schemaVersion = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
+      ? (helpEmptyPanels.schema_version || 1)
+      : 1;
+    if (schemaVersion > 2) {
+      container.appendChild(_el('p', 'pt-upgrade',
+        'Tutorial data schema (' + schemaVersion + ') is newer than this render. Please update.'));
+      return;
+    }
+
     container.appendChild(_el('div', 'pt-label', 'How to use this panel'));
-    if (block.headline) {
-      container.appendChild(_el('p', 'pt-headline', block.headline));
+
+    // ── Section A: chip catalogue ─────────────────────────────────────────
+    const catalogue = block.chip_catalogue || [];
+    if (catalogue.length) {
+      container.appendChild(_el('div', 'pt-catalogue-heading', 'Every chip type in this panel'));
+      const catList = _el('div', 'pt-catalogue');
+      catalogue.forEach(function (entry) {
+        const row = _el('div', 'pt-cat-row');
+        if (entry.example_kind === 'action' || !entry.example_id) {
+          // Non-clickable action label (▶, ↗)
+          row.appendChild(_el('span', 'pt-action-label', entry.example_label));
+        } else {
+          row.appendChild(_catalogueChip(entry));
+        }
+        // Effect statement — view-sensitive or single
+        if (entry.effect_graph && entry.effect_raga) {
+          const eff = _el('span', 'pt-effect');
+          eff.appendChild(_el('span', 'pt-effect-line', '\u2299 Graph: ' + entry.effect_graph));
+          eff.appendChild(_el('span', 'pt-effect-line', '\u25ce Ragas: ' + entry.effect_raga));
+          row.appendChild(eff);
+        } else {
+          row.appendChild(_el('span', 'pt-effect', entry.effect || ''));
+        }
+        catList.appendChild(row);
+      });
+      container.appendChild(catList);
     }
-    const mechanics = block.mechanics || [];
-    if (mechanics.length) {
-      const ul = _el('ul', 'pt-mechanics');
-      mechanics.forEach(line => ul.appendChild(_el('li', null, line)));
-      container.appendChild(ul);
-    }
-    const tt = block.try_these || null;
-    if (tt && (tt.groups || []).length) {
-      const tryWrap = _el('div', 'pt-try');
-      if (tt.label) tryWrap.appendChild(_el('div', 'pt-try-label', tt.label));
-      tt.groups.forEach(g => tryWrap.appendChild(_groupNode(g)));
-      container.appendChild(tryWrap);
+
+    // ── Divider ───────────────────────────────────────────────────────────
+    const hr = document.createElement('hr');
+    hr.className = 'pt-divider';
+    container.appendChild(hr);
+
+    // ── Section B: cross-panel seeds ──────────────────────────────────────
+    const seeds = block.cross_panel_seeds || {};
+    const seedItems = seeds.items || [];
+    if (seedItems.length) {
+      const cross = _el('div', 'pt-cross-seeds');
+      if (seeds.prompt) cross.appendChild(_el('div', 'pt-cross-prompt', seeds.prompt));
+      const chips = _el('div', 'pt-chips');
+      seedItems.forEach(function (item) { chips.appendChild(_seedChip(item)); });
+      cross.appendChild(chips);
+      container.appendChild(cross);
     }
   }
 
