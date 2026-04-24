@@ -2928,6 +2928,22 @@
     color: var(--fg-muted);
     margin-bottom: 8px;
   }
+  .panel-tutorial .pt-intro-note,
+  .panel-tutorial .pt-search-note,
+  .panel-tutorial .pt-closing-note,
+  .panel-tutorial .pt-view-note {
+    color: var(--fg-muted);
+    font-size: 0.72rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .panel-tutorial .pt-intro-note {
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-search-note,
+  .panel-tutorial .pt-closing-note {
+    margin-top: 8px;
+  }
   .panel-tutorial .pt-seed-item {
     display: inline-flex;
     flex-direction: column;
@@ -2940,6 +2956,25 @@
     opacity: 0.85;
     margin-left: 2px;
     line-height: 1.15;
+  }
+  .panel-tutorial .pt-view-section {
+    padding-top: 2px;
+  }
+  .panel-tutorial .pt-view-label {
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-view-switch {
+    margin-left: 0;
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-view-switch .view-btn {
+    font-size: 0.74rem;
+    padding: 4px 10px;
+  }
+  .panel-tutorial .pt-view-note + .pt-view-note {
+    margin-top: 6px;
   }
 </style>
 </head>
@@ -73562,6 +73597,8 @@ const helpEmptyPanels = {
     ],
     "cross_panel_seeds": {
       "prompt": "Tap these — watch the Bani Flow panel (and wheel in Mela-Janya view) respond:",
+      "intro_note": "In Mela-Janya view, these open the raga wheel and recording trail — try switching the view first.",
+      "closing_note": "In Guru-Shishya view, tap any musician on the lineage graph to load them here — or search by name above ↑",
       "panel_target": "bani",
       "items": [
         {
@@ -73583,6 +73620,11 @@ const helpEmptyPanels = {
           "note": "composition"
         }
       ]
+    },
+    "view_section": {
+      "label": "Explore both views:",
+      "graph_note": "Guru-Shishya: lineage graph — each node a musician, each edge a teaching relationship",
+      "raga_note": "Mela-Janya: raga wheel — 72 melas, each with its janya ragas and compositions"
     }
   },
   "bani_flow_panel": {
@@ -73641,6 +73683,8 @@ const helpEmptyPanels = {
     ],
     "cross_panel_seeds": {
       "prompt": "Tap these — watch the Musician panel respond:",
+      "intro_note": "In Guru-Shishya view, tap any musician node on the graph — or tap one of these:",
+      "search_note": "Or search by raga or composition in the box above ↑",
       "panel_target": "musician",
       "items": [
         {
@@ -73659,6 +73703,11 @@ const helpEmptyPanels = {
           "label": "TM Krishna"
         }
       ]
+    },
+    "view_section": {
+      "label": "Explore both views:",
+      "graph_note": "Guru-Shishya: lineage graph — each node a musician, each edge a teaching relationship",
+      "raga_note": "Mela-Janya: raga wheel — 72 melas, each with its janya ragas and compositions"
     }
   }
 };
@@ -77642,10 +77691,16 @@ function switchView(name) {
 
   currentView = name;
 
-  // Update primary view button states (only 'graph' and 'raga' buttons exist)
-  ['graph', 'raga'].forEach(v => {
-    const btn = document.getElementById('view-btn-' + v);
-    if (btn) btn.classList.toggle('active', v === name);
+  // Keep every view button in sync (header + inline tutorial buttons).
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    const explicit = btn.dataset ? btn.dataset.view : null;
+    const legacy = (btn.id && btn.id.indexOf('view-btn-') === 0)
+      ? btn.id.slice('view-btn-'.length)
+      : null;
+    const view = explicit || legacy;
+    if (view === 'graph' || view === 'raga') {
+      btn.classList.toggle('active', view === name);
+    }
   });
 
   _updateViewportToolbar(name, currentLayout);
@@ -78209,14 +78264,14 @@ window.drawRagaWheel = function() {
   });
 
   const melaFontSize = Math.max(7, minDim * 0.012);
-  const melaMaxChars = Array.from({ length: 72 }, (_, i) => {
-    const r = melaByNum[i + 1];
-    return (r && r.name ? r.name : String(i + 1)).length;
-  }).reduce((m, n) => Math.max(m, n), 1);
+  // Mela chip labels are radially oriented (each chip group is rotation-transformed
+  // along its spoke direction).  Their tangential arc footprint is the chip HEIGHT
+  // (~fontSize + 3px), NOT the chip width.  Passing maxLabelChars:1 keeps the
+  // computed sMin ≈ chip height so the solver never inflates R_MELA beyond R_MELA_BASE.
   const melaLayout = solveRingLayout({
     n: 72,
     fontSize: melaFontSize,
-    maxLabelChars: melaMaxChars,
+    maxLabelChars: 1,
     k: _readChipSpacingK(),
     closedRim: { rBaseline: R_MELA_BASE }
   });
@@ -83950,6 +84005,10 @@ function buildAddYoutubeForm() {
     return String(text).replace(/^\s*(?:\u2192|->|\u00b7|\u2022)\s*/u, '').trim();
   }
 
+  function _nonEmptyString(v) {
+    return typeof v === 'string' && v.trim().length > 0;
+  }
+
   // recording_ref: {musician_id, concert_hint, raga_id} → resolve to a single
   // performance and open it via triggerBaniSearch('perf', key).
   function _onRecordingRef(item) {
@@ -84189,20 +84248,79 @@ function buildAddYoutubeForm() {
     // ── Section B: cross-panel seeds ──────────────────────────────────────
     const seeds = block.cross_panel_seeds || {};
     const seedItems = seeds.items || [];
-    if (seedItems.length) {
+    const hasSeeds = seedItems.length ||
+      _nonEmptyString(seeds.prompt) ||
+      _nonEmptyString(seeds.intro_note) ||
+      _nonEmptyString(seeds.search_note) ||
+      _nonEmptyString(seeds.closing_note);
+    if (hasSeeds) {
       const cross = _el('div', 'pt-cross-seeds');
+      if (seeds.intro_note) cross.appendChild(_el('p', 'pt-intro-note', seeds.intro_note));
       if (seeds.prompt) cross.appendChild(_el('div', 'pt-cross-prompt', seeds.prompt));
-      const chips = _el('div', 'pt-chips');
-      seedItems.forEach(function (item) {
-        const wrap = _el('div', 'pt-seed-item');
-        wrap.appendChild(_seedChip(item));
-        if (item.note) {
-          wrap.appendChild(_el('div', 'pt-seed-note', '(' + item.note + ')'));
-        }
-        chips.appendChild(wrap);
-      });
-      cross.appendChild(chips);
+      if (seedItems.length) {
+        const chips = _el('div', 'pt-chips');
+        seedItems.forEach(function (item) {
+          const wrap = _el('div', 'pt-seed-item');
+          wrap.appendChild(_seedChip(item));
+          if (item.note) {
+            wrap.appendChild(_el('div', 'pt-seed-note', '(' + item.note + ')'));
+          }
+          chips.appendChild(wrap);
+        });
+        cross.appendChild(chips);
+      }
+      if (seeds.search_note) cross.appendChild(_el('p', 'pt-search-note', seeds.search_note));
+      if (seeds.closing_note) cross.appendChild(_el('p', 'pt-closing-note', seeds.closing_note));
       container.appendChild(cross);
+    }
+
+    // ── Section C: view discovery (ADR-091) ───────────────────────────────
+    const viewSection = block.view_section || {};
+    const hasViewSection = _nonEmptyString(viewSection.label) ||
+      _nonEmptyString(viewSection.graph_note) ||
+      _nonEmptyString(viewSection.raga_note);
+    if (hasViewSection) {
+      const hr2 = document.createElement('hr');
+      hr2.className = 'pt-divider';
+      container.appendChild(hr2);
+
+      const section = _el('div', 'pt-view-section');
+      if (viewSection.label) {
+        section.appendChild(_el('div', 'pt-view-label', viewSection.label));
+      }
+
+      const switcher = _el('div', 'view-selector pt-view-switch');
+      const graphBtn = _el('button', 'view-btn', 'Guru-Shishya');
+      graphBtn.type = 'button';
+      graphBtn.dataset.view = 'graph';
+      graphBtn.addEventListener('click', function () {
+        if (typeof switchView === 'function') switchView('graph');
+      });
+
+      const ragaBtn = _el('button', 'view-btn', 'Mela-Janya');
+      ragaBtn.type = 'button';
+      ragaBtn.dataset.view = 'raga';
+      ragaBtn.addEventListener('click', function () {
+        if (typeof switchView === 'function') switchView('raga');
+      });
+
+      const activeView = (typeof currentView !== 'undefined' && currentView === 'graph')
+        ? 'graph'
+        : 'raga';
+      graphBtn.classList.toggle('active', activeView === 'graph');
+      ragaBtn.classList.toggle('active', activeView === 'raga');
+
+      switcher.appendChild(graphBtn);
+      switcher.appendChild(ragaBtn);
+      section.appendChild(switcher);
+
+      if (viewSection.graph_note) {
+        section.appendChild(_el('p', 'pt-view-note', viewSection.graph_note));
+      }
+      if (viewSection.raga_note) {
+        section.appendChild(_el('p', 'pt-view-note', viewSection.raga_note));
+      }
+      container.appendChild(section);
     }
   }
 

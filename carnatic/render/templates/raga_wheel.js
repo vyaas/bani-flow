@@ -68,10 +68,16 @@ function switchView(name) {
 
   currentView = name;
 
-  // Update primary view button states (only 'graph' and 'raga' buttons exist)
-  ['graph', 'raga'].forEach(v => {
-    const btn = document.getElementById('view-btn-' + v);
-    if (btn) btn.classList.toggle('active', v === name);
+  // Keep every view button in sync (header + inline tutorial buttons).
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    const explicit = btn.dataset ? btn.dataset.view : null;
+    const legacy = (btn.id && btn.id.indexOf('view-btn-') === 0)
+      ? btn.id.slice('view-btn-'.length)
+      : null;
+    const view = explicit || legacy;
+    if (view === 'graph' || view === 'raga') {
+      btn.classList.toggle('active', view === name);
+    }
   });
 
   _updateViewportToolbar(name, currentLayout);
@@ -635,14 +641,14 @@ window.drawRagaWheel = function() {
   });
 
   const melaFontSize = Math.max(7, minDim * 0.012);
-  const melaMaxChars = Array.from({ length: 72 }, (_, i) => {
-    const r = melaByNum[i + 1];
-    return (r && r.name ? r.name : String(i + 1)).length;
-  }).reduce((m, n) => Math.max(m, n), 1);
+  // Mela chip labels are radially oriented (each chip group is rotation-transformed
+  // along its spoke direction).  Their tangential arc footprint is the chip HEIGHT
+  // (~fontSize + 3px), NOT the chip width.  Passing maxLabelChars:1 keeps the
+  // computed sMin ≈ chip height so the solver never inflates R_MELA beyond R_MELA_BASE.
   const melaLayout = solveRingLayout({
     n: 72,
     fontSize: melaFontSize,
-    maxLabelChars: melaMaxChars,
+    maxLabelChars: 1,
     k: _readChipSpacingK(),
     closedRim: { rBaseline: R_MELA_BASE }
   });
