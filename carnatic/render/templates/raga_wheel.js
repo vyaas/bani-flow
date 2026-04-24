@@ -1070,7 +1070,9 @@ window.drawRagaWheel = function() {
           // Silently load bani-flow data (no panel pop-open).
           // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
           window._wheelSyncInProgress = true;
-          if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', raga.id);
+          if (!window._wheelPreviewNoPanel && typeof applyBaniFilter === 'function') {
+            applyBaniFilter('raga', raga.id);
+          }
           window._wheelSyncInProgress = false;
           // Auto-zoom to bring the expanded mela into focus
           _animateToTarget(pos.x, pos.y, 1.6);
@@ -1210,19 +1212,19 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
 
   // Draw janya satellites (if any)
   if (janyas.length > 0) {
-    // ADR-093: solve fan geometry using node-circle footprint for arc spacing.
-    // maxLabelChars:1 → sMin ≈ chip height (≈ 2×NR_JANYA) so radius stays at rBaseline.
-    // maxSpread grows proportionally with count (mirrors pre-ADR-093 SPREAD formula)
-    // so the fan spreads naturally without inflating the radius.
+    // ADR-093: solve fan geometry using actual chip widths for tangential arc spacing.
+    // maxSpread=0.9π is a wide ceiling so spreadAtBaseline drives layout for typical
+    // node counts (radius stays at rBaseline); only degenerate large fans inflate it.
     const jFontSize = Math.max(7, minDim * 0.011);
+    const jMaxChars = janyas.reduce((m, j) => Math.max(m, (j.name || '').length), 1);
     const janyaLayout = solveRingLayout({
       n: janyas.length,
       fontSize: jFontSize,
-      maxLabelChars: 1,
+      maxLabelChars: jMaxChars,
       k: _readChipSpacingK(),
       openFan: {
         anchorAngle: melaAngle,
-        maxSpread: Math.min(janyas.length * (5 * Math.PI / 180), Math.PI * 0.85),
+        maxSpread: Math.PI * 0.9,
         rBaseline: R_JANYA
       }
     });
@@ -1307,7 +1309,9 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
         // Silently load bani-flow data (no panel pop-open).
         // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
         window._wheelSyncInProgress = true;
-        if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
+        if (!window._wheelPreviewNoPanel && typeof applyBaniFilter === 'function') {
+          applyBaniFilter('raga', janya.id);
+        }
         window._wheelSyncInProgress = false;
         // Auto-zoom to bring the expanded janya into focus
         _animateToTarget(jPos.x, jPos.y, 2.0);
@@ -1369,16 +1373,17 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
     return;
   }
 
-  // ADR-093: composition fan layout — same node-circle-footprint approach as janya fan.
+  // ADR-093: composition fan — actual chip widths for tangential spacing, wide ceiling.
   const cFontSize = Math.max(6, minDim * 0.010);
+  const cMaxChars = items.reduce((m, item) => Math.max(m, (item.title || '').length), 1);
   const compLayout = solveRingLayout({
     n: items.length,
     fontSize: cFontSize,
-    maxLabelChars: 1,
+    maxLabelChars: cMaxChars,
     k: _readChipSpacingK(),
     openFan: {
       anchorAngle: jAngle,
-      maxSpread: Math.min(items.length * (5 * Math.PI / 180), Math.PI * 0.85),
+      maxSpread: Math.PI * 0.9,
       rBaseline: R_COMP
     }
   });
@@ -1459,6 +1464,9 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         l.setAttribute('opacity', '0.08');
       });
       if (_expandedComp === item.id) {
+        if (window._wheelPreviewNoPanel) {
+          return;
+        }
         // Second click on already-selected comp → open the bani-flow panel.
         if (typeof hideClickNudge === 'function') hideClickNudge();
         window._wheelSyncInProgress    = true;
@@ -1516,11 +1524,13 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
       cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
       connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
       _expandedComp = item.id;
-      if (typeof showClickNudge === 'function') showClickNudge('tap again \u00B7 open bani flow');
+      if (!window._wheelPreviewNoPanel && typeof showClickNudge === 'function') {
+        showClickNudge('tap again \u00B7 open bani flow');
+      }
       // Silently load bani-flow data (no panel pop-open on first click).
       // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
       window._wheelSyncInProgress = true;
-      if (typeof applyBaniFilter === 'function') {
+      if (!window._wheelPreviewNoPanel && typeof applyBaniFilter === 'function') {
         // Resolve the filter type/id for this comp item
         if (!item._isPerf) {
           applyBaniFilter('comp', item.id);
