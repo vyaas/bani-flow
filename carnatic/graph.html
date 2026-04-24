@@ -77620,7 +77620,11 @@ function vpToggleTimeline() {
 
 function vpFit() {
   if (currentView === 'raga') {
-    wheelFit();
+    if (window.RagaWheel && typeof window.RagaWheel.fit === 'function') {
+      window.RagaWheel.fit();
+    } else {
+      wheelFit();
+    }
   } else {
     cy.fit();
   }
@@ -77634,6 +77638,10 @@ function vpRelayout() {
 // ── Wheel viewport stub (ADR-030) ─────────────────────────────────────────────
 // wheelFit: reset pan/zoom so the full wheel is centred and fits the SVG canvas.
 function wheelFit() {
+  if (window.RagaWheel && typeof window.RagaWheel.fit === 'function') {
+    window.RagaWheel.fit();
+    return;
+  }
   window._wheelSetVx(0);
   window._wheelSetVy(0);
   window._wheelSetVscale(1);
@@ -77866,9 +77874,87 @@ let _svgListenerController = null;
 
 // Pan/zoom state — inside the IIFE but exposed on window so orientRagaWheel
 // (defined outside the IIFE) can read/write them for the pan animation.
-let _vx = 0, _vy = 0, _vscale = 1;
 let _dragging = false, _dragStartX = 0, _dragStartY = 0, _dragVX = 0, _dragVY = 0;
 let _dragMoved = false;
+let _gestureMode = null; // 'pan' | 'rotate' | 'pinch' | null
+let _rotateStartAngle = 0, _rotateStartRotation = 0;
+
+const RagaWheel = {
+  _state: {
+    panX: 0,
+    panY: 0,
+    scale: 1,
+    rotation: 0,
+  },
+  _geometry: {
+    cx: 0,
+    cy: 0,
+    rOuter: 0,
+  },
+  _clampScale(v) {
+    return Math.min(4.0, Math.max(0.5, v));
+  },
+  _normaliseRotation(rad) {
+    let r = rad;
+    while (r > Math.PI) r -= Math.PI * 2;
+    while (r < -Math.PI) r += Math.PI * 2;
+    return r;
+  },
+  pan(dx, dy) {
+    this._state.panX += dx;
+    this._state.panY += dy;
+    this._applyTransform();
+  },
+  zoom(factor, anchor) {
+    if (!isFinite(factor) || factor <= 0) return;
+    const oldScale = this._state.scale;
+    const newScale = this._clampScale(oldScale * factor);
+    if (Math.abs(newScale - oldScale) < 1e-6) return;
+    const a = anchor || { x: this._geometry.cx, y: this._geometry.cy };
+    const actualFactor = newScale / oldScale;
+    this._state.panX = a.x - actualFactor * (a.x - this._state.panX);
+    this._state.panY = a.y - actualFactor * (a.y - this._state.panY);
+    this._state.scale = newScale;
+    this._applyTransform();
+  },
+  rotate(dTheta, anchor) {
+    if (!isFinite(dTheta)) return;
+    // Off-centre anchors are reserved for future use.
+    this._state.rotation = this._normaliseRotation(this._state.rotation + dTheta);
+    this._applyTransform();
+  },
+  fit() {
+    this._state.panX = 0;
+    this._state.panY = 0;
+    this._state.scale = 1;
+    this._state.rotation = 0;
+    this._applyTransform();
+  },
+  centreOn(targetX, targetY, targetScale) {
+    _animateToTarget(targetX, targetY, targetScale);
+  },
+  alignLabelTo(angleRad) {
+    this._state.rotation = this._normaliseRotation(-angleRad);
+    this._applyTransform();
+  },
+  isRimDrag(svgX, svgY) {
+    const dx = svgX - this._geometry.cx;
+    const dy = svgY - this._geometry.cy;
+    return Math.hypot(dx, dy) > this._geometry.rOuter;
+  },
+  _applyTransform() {
+    const vp = document.getElementById('wheel-viewport');
+    if (!vp) return;
+    const s = this._state;
+    const g = this._geometry;
+    const deg = s.rotation * 180 / Math.PI;
+    vp.setAttribute(
+      'transform',
+      `translate(${s.panX},${s.panY}) scale(${s.scale}) rotate(${deg} ${g.cx} ${g.cy})`
+    );
+  },
+};
+window.RagaWheel = RagaWheel;
 
 // ── Pointer Events state (ADR-035) ────────────────────────────────────────────
 // Multi-touch map: pointerId → {x, y}
@@ -77924,21 +78010,25 @@ function _getPinchDistance() {
   return Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
 }
 
+function _toSvgPoint(svg, clientX, clientY) {
+  const rect = svg.getBoundingClientRect();
+  return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
 // Apply the current pan/zoom transform to the viewport group.
 // Looks up #wheel-viewport by ID so it works after a full SVG rebuild.
 function _applyTransform() {
-  const vp = document.getElementById('wheel-viewport');
-  if (vp) vp.setAttribute('transform', `translate(${_vx},${_vy}) scale(${_vscale})`);
+  RagaWheel._applyTransform();
 }
 
 // Expose pan/zoom state and transform function on window so orientRagaWheel
 // (outside this IIFE) can drive the pan animation.
-window._wheelGetVx      = () => _vx;
-window._wheelGetVy      = () => _vy;
-window._wheelGetVscale  = () => _vscale;
-window._wheelSetVx      = (v) => { _vx = v; };
-window._wheelSetVy      = (v) => { _vy = v; };
-window._wheelSetVscale  = (v) => { _vscale = v; };
+window._wheelGetVx      = () => RagaWheel._state.panX;
+window._wheelGetVy      = () => RagaWheel._state.panY;
+window._wheelGetVscale  = () => RagaWheel._state.scale;
+window._wheelSetVx      = (v) => { RagaWheel._state.panX = v; };
+window._wheelSetVy      = (v) => { RagaWheel._state.panY = v; };
+window._wheelSetVscale  = (v) => { RagaWheel._state.scale = v; };
 window._wheelApplyTransform = () => _applyTransform();
 
 // Expose abort helper so hideRagaWheel (outside IIFE) can clean up SVG listeners
@@ -77975,6 +78065,10 @@ window.drawRagaWheel = function() {
   const NR_JANYA = Math.max(3,  minDim * 0.008);
   const NR_COMP  = Math.max(3,  minDim * 0.008);
   const NR_MUSC  = Math.max(3,  minDim * 0.008);
+
+  RagaWheel._geometry.cx = cx;
+  RagaWheel._geometry.cy = cy;
+  RagaWheel._geometry.rOuter = R_MUSC;
 
   // Build lookups
   const melaByNum = {};
@@ -78131,16 +78225,9 @@ window.drawRagaWheel = function() {
     // can be large; clamp the effective delta to ±1 "notch" worth of zoom.
     const delta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 50);
     const factor = Math.pow(1.05, -delta / 50);   // ≤5% per 50-pixel notch
-    const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, _vscale * factor));
-    if (Math.abs(newScale - _vscale) < 1e-6) return;   // already at limit
-    const actualFactor = newScale / _vscale;
     // Zoom toward cursor position
-    const rect = svg.getBoundingClientRect();
-    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    _vx = mx - actualFactor * (mx - _vx);
-    _vy = my - actualFactor * (my - _vy);
-    _vscale = newScale;
-    _applyTransform();
+    const p = _toSvgPoint(svg, e.clientX, e.clientY);
+    RagaWheel.zoom(factor, { x: p.x, y: p.y });
   }, { passive: false, signal: _signal });
 
   // Wheel pan/pinch-zoom — Pointer Events API (ADR-035)
@@ -78157,16 +78244,29 @@ window.drawRagaWheel = function() {
 
     if (_activePointers.size === 1) {
       _dragging = true;
+      _gestureMode = 'pan';
       _dragMoved = false;
       _dragStartX = e.clientX; _dragStartY = e.clientY;
-      _dragVX = _vx; _dragVY = _vy;
+      _dragVX = RagaWheel._state.panX; _dragVY = RagaWheel._state.panY;
+
+      // Rim-drag rotation only starts from background (not chip elements).
+      if (e.target === bg || e.target === svg) {
+        const p = _toSvgPoint(svg, e.clientX, e.clientY);
+        if (RagaWheel.isRimDrag(p.x, p.y)) {
+          _gestureMode = 'rotate';
+          _rotateStartAngle = Math.atan2(p.y - RagaWheel._geometry.cy, p.x - RagaWheel._geometry.cx);
+          _rotateStartRotation = RagaWheel._state.rotation;
+        }
+      }
+
       if (e.pointerType !== 'mouse') _startTapHoldTimer(e);
       svg.style.cursor = 'grabbing';
     } else if (_activePointers.size === 2) {
+      _gestureMode = 'pinch';
       _cancelTapHoldTimer();
       _dragMoved = true;  // suppress tap action when second finger lands
       _pinchStartDist = _getPinchDistance();
-      _pinchStartScale = _vscale;
+      _pinchStartScale = RagaWheel._state.scale;
     }
   }, { signal: _signal });
 
@@ -78174,14 +78274,24 @@ window.drawRagaWheel = function() {
     if (!_activePointers.has(e.pointerId)) return;
     _activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    if (_activePointers.size === 1 && _dragging) {
+    if (_activePointers.size === 1 && _dragging && _gestureMode === 'pan') {
       const dx = e.clientX - _dragStartX, dy = e.clientY - _dragStartY;
       if (!_dragMoved && Math.hypot(dx, dy) > 5) {
         _dragMoved = true;
         _cancelTapHoldTimer();
       }
-      _vx = _dragVX + dx;
-      _vy = _dragVY + dy;
+      RagaWheel._state.panX = _dragVX + dx;
+      RagaWheel._state.panY = _dragVY + dy;
+      _applyTransform();
+    } else if (_activePointers.size === 1 && _dragging && _gestureMode === 'rotate') {
+      const p = _toSvgPoint(svg, e.clientX, e.clientY);
+      const currentAngle = Math.atan2(p.y - RagaWheel._geometry.cy, p.x - RagaWheel._geometry.cx);
+      const delta = currentAngle - _rotateStartAngle;
+      RagaWheel._state.rotation = RagaWheel._normaliseRotation(_rotateStartRotation + delta);
+      if (!_dragMoved && Math.abs(delta) > (2 * Math.PI / 180)) {
+        _dragMoved = true;
+        _cancelTapHoldTimer();
+      }
       _applyTransform();
     } else if (_activePointers.size === 2 && _pinchStartDist !== null) {
       const newDist = _getPinchDistance();
@@ -78193,11 +78303,14 @@ window.drawRagaWheel = function() {
       const rect = svg.getBoundingClientRect();
       const mx = (pts[0].x + pts[1].x) / 2 - rect.left;
       const my = (pts[0].y + pts[1].y) / 2 - rect.top;
-      const actualFactor = newScale / _vscale;
-      _vx = mx - actualFactor * (mx - _vx);
-      _vy = my - actualFactor * (my - _vy);
-      _vscale = newScale;
-      _applyTransform();
+      const oldScale = RagaWheel._state.scale;
+      if (Math.abs(newScale - oldScale) >= 1e-6) {
+        const actualFactor = newScale / oldScale;
+        RagaWheel._state.panX = mx - actualFactor * (mx - RagaWheel._state.panX);
+        RagaWheel._state.panY = my - actualFactor * (my - RagaWheel._state.panY);
+        RagaWheel._state.scale = newScale;
+        _applyTransform();
+      }
     }
   }, { signal: _signal });
 
@@ -78214,12 +78327,14 @@ window.drawRagaWheel = function() {
       const remaining = [..._activePointers.values()][0];
       _dragStartX = remaining.x;
       _dragStartY = remaining.y;
-      _dragVX = _vx;
-      _dragVY = _vy;
+      _dragVX = RagaWheel._state.panX;
+      _dragVY = RagaWheel._state.panY;
+      if (_gestureMode === 'pinch') _gestureMode = 'pan';
     }
 
     if (_activePointers.size === 0) {
       _dragging = false;
+      _gestureMode = null;
       svg.style.cursor = '';
 
       // ADR-035 fix: e.preventDefault() on pointerdown suppresses native click
@@ -78233,7 +78348,7 @@ window.drawRagaWheel = function() {
       if (!_dragMoved && realTarget && (realTarget === bg || realTarget === svg)) {
         const now = Date.now();
         if (now - _lastTapTime < 300 && _lastTapTarget === bg) {
-          wheelFit();
+          RagaWheel.fit();
           _lastTapTime = 0; _lastTapTarget = null;
           return;
         }
@@ -78266,8 +78381,7 @@ window.drawRagaWheel = function() {
   svg.addEventListener('dblclick', (e) => {
     e.stopPropagation();
     if (_dragMoved) { _dragMoved = false; return; }
-    _vx = 0; _vy = 0; _vscale = 1;
-    _applyTransform();
+    RagaWheel.fit();
   }, { signal: _signal });
 
   // Cakra sectors — appended to viewport group (vp) for pan/zoom
@@ -78466,7 +78580,9 @@ function _animateToTarget(targetX, targetY, targetScale) {
   const targetVX = W / 2 - targetScale * targetX;
   const targetVY = H / 2 - targetScale * targetY;
 
-  const startVX = _vx, startVY = _vy, startScale = _vscale;
+  const startVX = RagaWheel._state.panX;
+  const startVY = RagaWheel._state.panY;
+  const startScale = RagaWheel._state.scale;
   const DURATION = 400;
   const startTime = performance.now();
 
@@ -78478,9 +78594,9 @@ function _animateToTarget(targetX, targetY, targetScale) {
     const elapsed = now - startTime;
     const t = Math.min(1, elapsed / DURATION);
     const e = easeInOutCubic(t);
-    _vx = startVX    + (targetVX    - startVX)    * e;
-    _vy = startVY    + (targetVY    - startVY)    * e;
-    _vscale = startScale + (targetScale - startScale) * e;
+    RagaWheel._state.panX = startVX + (targetVX - startVX) * e;
+    RagaWheel._state.panY = startVY + (targetVY - startVY) * e;
+    RagaWheel._state.scale = startScale + (targetScale - startScale) * e;
     _applyTransform();
     if (t < 1) requestAnimationFrame(step);
   }
