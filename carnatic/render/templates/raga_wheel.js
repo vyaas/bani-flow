@@ -87,6 +87,7 @@ function switchView(name) {
   if (name === 'graph') {
     hideTimelineRuler();
     hideRagaWheel();
+    if (typeof window._closeWheelDetailPanel === 'function') window._closeWheelDetailPanel();
     document.getElementById('cy').style.display = '';
     if (cyLabels) cyLabels.style.display = '';
     if (filterBar) filterBar.style.display = 'flex';
@@ -439,6 +440,7 @@ function _closeWheelDetailPanel() {
   const panel = document.getElementById('wheel-detail-panel');
   if (panel) { panel.classList.remove('wdp-open'); panel.innerHTML = ''; }
 }
+window._closeWheelDetailPanel = _closeWheelDetailPanel;
 
 function _openWheelDetailPanel(raga) {
   if (!_wdpData || !raga) return;
@@ -521,37 +523,57 @@ function _openWheelDetailPanel(raga) {
   panel.classList.add('wdp-open');
 }
 
-function _wdpSelectJanya(janya, chipEl) {
+// suppressFilter=true: visual-only selection — do NOT override the active bani filter.
+// Used by _triggerMelaExpand when syncing the wheel to a composition search result;
+// the bani filter was already set to 'comp' and must not be clobbered by 'raga'.
+// activeCompId: if set, the matching comp chip gets wdp-active at render time.
+function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
   if (!_wdpData) return;
   const { compsByRaga } = _wdpData;
   const panel = document.getElementById('wheel-detail-panel');
   if (!panel) return;
 
-  // Toggle: clicking the active janya collapses its comp list
-  const wasSelected = chipEl && chipEl.classList.contains('wdp-selected');
+  // Toggle: clicking the active janya collapses its comp list (only on user-initiated clicks)
+  const wasSelected = !suppressFilter && chipEl && chipEl.classList.contains('wdp-selected');
   panel.querySelectorAll('.wdp-chip.wdp-raga').forEach(c => c.classList.remove('wdp-selected'));
   panel.querySelectorAll('.wdp-comp-group').forEach(el => el.remove());
+  panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
   if (wasSelected) return;
 
   if (chipEl) chipEl.classList.add('wdp-selected');
   const items = compsByRaga[janya.id] || [];
-  if (items.length > 0 && chipEl) _wdpRenderComps(panel, items, janya.id, chipEl);
+  // Pass activeCompId so the matching chip is marked wdp-active synchronously during render.
+  if (items.length > 0 && chipEl) _wdpRenderComps(panel, items, janya.id, chipEl, activeCompId || null);
 
-  // Silently load bani-flow trail for this janya's mela
-  window._wheelSyncInProgress = true;
-  if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
-  window._wheelSyncInProgress = false;
+  // Load bani-flow trail for this janya — only when user clicks, not during programmatic sync.
+  // suppressFilter=true means the caller (syncRagaWheelToFilter) already set the bani filter
+  // to a specific composition; overwriting it with the parent raga would lose that context.
+  if (!suppressFilter) {
+    window._wheelSyncInProgress = true;
+    if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
+    window._wheelSyncInProgress = false;
+  }
 }
 
-function _wdpRenderComps(panel, items, ragaId, afterChip) {
+// activeCompId: if non-null and matches item.id, the chip gets wdp-active at render time.
+function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
   const group = document.createElement('div');
   group.className = 'wdp-comp-group';
   items.forEach(item => {
     const chip = document.createElement('div');
     chip.className = 'wdp-chip wdp-comp';
+    chip.dataset.id = item.id || '';
+    if (activeCompId && item.id && item.id === activeCompId) chip.classList.add('wdp-active');
     chip.textContent = '\u266a ' + (item.title || item.id || '');
     chip.addEventListener('click', (e) => {
       e.stopPropagation();
+      // Mark this chip active immediately — wdp-active cannot be set via the normal
+      // syncRagaWheelToFilter path because _wheelSyncInProgress=true blocks it.
+      const panel = document.getElementById('wheel-detail-panel');
+      if (panel) {
+        panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
+      }
+      chip.classList.add('wdp-active');
       window._wheelSyncInProgress = true;
       window._wheelOriginatedTrigger = true;
       if (!item._isPerf) {
@@ -1809,12 +1831,17 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     const raga = _wdpData && _wdpData.melaByNum[melaNum];
     if (!raga) { window._wheelSyncInProgress = false; return; }
 
-    // Highlight the mela node on the wheel ring
+    // Highlight the mela node on the wheel ring.
+    // _wheelPreviewNoPanel suppresses the applyBaniFilter('raga', melaId) call inside the
+    // mela click handler — we must not overwrite the bani filter that the search already set.
     const melaG = document.querySelector(`#wheel-viewport .mela-node[data-mela="${melaNum}"]`);
+    window._wheelPreviewNoPanel = true;
     if (melaG) melaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     else _openWheelDetailPanel(raga);
+    window._wheelPreviewNoPanel = false;
 
-    // Pre-select the target janya in the panel
+    // Pre-select the target janya in the panel — visual only (suppressFilter=true so the
+    // bani filter already set by the caller is not overridden by the parent raga).
     if (targetRagaId && _wdpData) {
       setTimeout(() => {
         const janya = (_wdpData.janyasByMela[raga.id] || []).find(j => j.id === targetRagaId);
@@ -1822,9 +1849,24 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
           const chipEl = document.querySelector(
             `#wdp-janya-list .wdp-chip.wdp-raga[data-id="${CSS.escape(targetRagaId)}"]`
           );
-          _wdpSelectJanya(janya, chipEl);
+          // Pass targetCompId so the matching comp chip is marked wdp-active during render.
+          _wdpSelectJanya(janya, chipEl, true, targetCompId || null);
         }
         setTimeout(() => { window._wheelSyncInProgress = false; }, 50);
+      }, 50);
+    } else if (targetCompId && _wdpData) {
+      // Mela-direct composition (no janya intermediary) —
+      // re-render the mela-direct comp list with wdp-active applied at render time.
+      setTimeout(() => {
+        const melaRagaObj = _wdpData.melaByNum[melaNum];
+        if (melaRagaObj && _wdpData.compsByRaga[melaRagaObj.id]) {
+          const panel = document.getElementById('wheel-detail-panel');
+          if (panel) {
+            panel.querySelectorAll('.wdp-comp-group').forEach(el => el.remove());
+            _wdpRenderComps(panel, _wdpData.compsByRaga[melaRagaObj.id], melaRagaObj.id, null, targetCompId);
+          }
+        }
+        window._wheelSyncInProgress = false;
       }, 50);
     } else {
       window._wheelSyncInProgress = false;
