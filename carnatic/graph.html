@@ -74081,45 +74081,6 @@ const lecdemsBy               = {
         "composition_ids": [],
         "musician_ids": []
       }
-    },
-    {
-      "lecturer_id": "tm_krishna",
-      "lecturer_label": "TM Krishna",
-      "url": "https://youtu.be/Va7kZP434LE",
-      "video_id": "Va7kZP434LE",
-      "label": "Manodharma - A Lec-Dem Part One",
-      "year": null,
-      "subjects": {
-        "raga_ids": [],
-        "composition_ids": [],
-        "musician_ids": []
-      }
-    },
-    {
-      "lecturer_id": "tm_krishna",
-      "lecturer_label": "TM Krishna",
-      "url": "https://youtu.be/iaZJSah3NyE",
-      "video_id": "iaZJSah3NyE",
-      "label": "Manodharma - A Lec-Dem Part Two",
-      "year": null,
-      "subjects": {
-        "raga_ids": [],
-        "composition_ids": [],
-        "musician_ids": []
-      }
-    },
-    {
-      "lecturer_id": "tm_krishna",
-      "lecturer_label": "TM Krishna",
-      "url": "https://youtu.be/6jMvw76Zprw",
-      "video_id": "6jMvw76Zprw",
-      "label": "Manodharma - A Lec-Dem Part Three",
-      "year": null,
-      "subjects": {
-        "raga_ids": [],
-        "composition_ids": [],
-        "musician_ids": []
-      }
     }
   ]
 };
@@ -79615,41 +79576,7 @@ function polarRad(cx, cy, r, angleRad) {
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
 }
 
-// ADR-093: deterministic ring/fan solver based on minimum arc-length spacing.
-function solveRingLayout(opts) {
-  if (!opts || !opts.n || opts.n < 1) return { radius: 0, spread: 0, angles: [] };
-  const padX = opts.fontSize * 0.6;
-  const chipWidth = Math.max(1, opts.maxLabelChars || 1) * opts.fontSize * 0.55 + padX * 2;
-  const sMin = opts.k * chipWidth;
-
-  if (opts.closedRim) {
-    const rRequired = opts.n * sMin / (2 * Math.PI);
-    const radius = Math.max(opts.closedRim.rBaseline, rRequired);
-    const angles = Array.from({ length: opts.n }, (_, i) => i * 2 * Math.PI / opts.n);
-    return { radius, spread: 2 * Math.PI, angles };
-  }
-
-  if (opts.openFan) {
-    const { anchorAngle, maxSpread, rBaseline } = opts.openFan;
-    const spreadAtBaseline = opts.n === 1 ? 0 : ((opts.n - 1) * sMin) / Math.max(1e-6, rBaseline);
-    let spread, radius;
-    if (spreadAtBaseline <= maxSpread) {
-      spread = spreadAtBaseline;
-      radius = rBaseline;
-    } else {
-      spread = maxSpread;
-      radius = opts.n === 1 ? rBaseline : ((opts.n - 1) * sMin) / Math.max(1e-6, maxSpread);
-    }
-    const angles = opts.n === 1
-      ? [anchorAngle]
-      : Array.from({ length: opts.n }, (_, i) =>
-          anchorAngle - spread / 2 + (spread / (opts.n - 1)) * i
-        );
-    return { radius, spread, angles };
-  }
-
-  throw new Error('solveRingLayout: must specify closedRim or openFan');
-}
+// ADR-096: solveRingLayout removed — fan geometry replaced by arc-slice subdivision.
 
 function sectorPath(cx, cy, r1, r2, startDeg, endDeg) {
   const s1 = polar(cx, cy, r1, startDeg), e1 = polar(cx, cy, r1, endDeg);
@@ -80001,22 +79928,18 @@ function _startTapHoldTimer(e) {
     if (!_tapHoldTarget) return;
     const el = _tapHoldTarget.closest('[data-id]') || _tapHoldTarget.closest('[data-mela]');
     if (!el) return;
-    // Determine node type from containing group class
-    const g = el.closest('.mela-node, .janya-node, .comp-node, .musc-node');
+    // Determine node type from containing group class (ADR-096: mela-arc replaces mela-node)
+    const g = el.closest('.mela-arc, .janya-arc-group, .comp-arc-group');
     if (!g) return;
     let nodeType, nodeId;
-    if (g.classList.contains('mela-node')) {
+    if (g.classList.contains('mela-arc')) {
       nodeType = 'mela';
-      const n = parseInt(g.getAttribute('data-mela'));
       const melaId = g.getAttribute('data-id');
-      // Re-use click handler's raga lookup via the DOM data-id attribute
       nodeId = melaId || null;
-    } else if (g.classList.contains('janya-node')) {
-      nodeType = 'janya'; nodeId = g.getAttribute('data-id');
-    } else if (g.classList.contains('comp-node')) {
-      nodeType = 'composition'; nodeId = g.getAttribute('data-id');
-    } else if (g.classList.contains('musc-node')) {
-      nodeType = null;  // musicians open via click, not inspector
+    } else if (g.classList.contains('janya-arc-group')) {
+      nodeType = null;  // janya detail is in WDP panel — no inspector on arc
+    } else if (g.classList.contains('comp-arc-group')) {
+      nodeType = null;  // comp detail via triggerBaniSearch — no inspector on arc
     }
     if (nodeType && nodeId && typeof openMetaInspector === 'function') {
       openMetaInspector(nodeType, { id: nodeId });
@@ -80081,20 +80004,16 @@ window.drawRagaWheel = function() {
   const cx = W / 2, cy = H / 2;
   const minDim = Math.min(W, H);
 
-  const R_INNER = minDim * 0.08;
-  const R_CAKRA = minDim * 0.155;
-  const R_MELA_BASE  = minDim * 0.38;
-  const R_JANYA = minDim * 0.56;
-  const R_COMP  = minDim * 0.72;
-  const R_MUSC  = minDim * 0.88;
-  const NR_MELA  = Math.max(6,  minDim * 0.018);
-  const NR_JANYA = Math.max(5,  minDim * 0.013);
-  const NR_COMP  = Math.max(5,  minDim * 0.013);
-  const NR_MUSC  = Math.max(4,  minDim * 0.010);
+  // ADR-096: sunburst radii — all three levels fit within 0.70 × minDim
+  const R_INNER       = minDim * 0.08;   // cakra hub (unchanged)
+  const R_CAKRA       = minDim * 0.20;   // cakra sector outer — wider for label headroom
+  const R_MELA_OUTER  = minDim * 0.38;   // mela arc outer rim
+  const R_JANYA_OUTER = minDim * 0.56;   // janya sub-arc outer rim
+  const R_COMP_OUTER  = minDim * 0.70;   // comp sub-arc outer rim
 
   RagaWheel._geometry.cx = cx;
   RagaWheel._geometry.cy = cy;
-  RagaWheel._geometry.rOuter = R_MUSC;
+  RagaWheel._geometry.rOuter = R_MELA_OUTER;  // rim-drag boundary = mela arc edge
 
   // Build lookups
   const melaByNum = {};
@@ -80105,13 +80024,7 @@ window.drawRagaWheel = function() {
     janyasByMela[r.parent_raga].push(r);
   });
 
-  const melaFontSize = Math.max(10, minDim * 0.022);
-  // Mela nodes: 72 evenly-spaced fixed at R_MELA_BASE. solveRingLayout is not used
-  // here because mela chips are radially rotated — their tangential footprint is the
-  // chip HEIGHT (fontSize+3px), not width, which can't be expressed via maxLabelChars.
-  // Evenly-spaced angles are always correct for a closed 72-node ring.
-  const R_MELA = R_MELA_BASE;
-  const melaAngles = Array.from({ length: 72 }, (_, i) => i * 2 * Math.PI / 72);
+  const melaLabelFontSize = Math.max(7, minDim * 0.013); // radial spoke font (ADR-096)
 
   // ── compsByRaga: three sources ────────────────────────────────────────────
   // Source 1: compositions.json compositions[] — canonical compositions
@@ -80452,37 +80365,40 @@ window.drawRagaWheel = function() {
     cx, cy, r: R_CAKRA, fill: 'none', stroke: THEME.edgeLine, 'stroke-width': 1
   }));
 
-  // Fix 7: two-pass rendering — all circles first, then all labels on top
-  // Pass 1: circles + interaction (no labels yet)
-  const melaCirleGroups = [];
+  // ADR-096: 72 mela arc-slices (sunburst formalism) ──────────────────────────
+  // Each mela occupies a fixed 5° wedge spanning R_CAKRA → R_MELA_OUTER.
+  // Labels are radial spoke text outside R_MELA_OUTER (no chip pills).
+  _labelLayer = svgEl('g', { id: 'wheel-label-layer', 'pointer-events': 'none' });
   for (let n = 1; n <= 72; n++) {
-    const angleRad = melaAngles[n - 1];
-    const angleDeg = angleRad * 180 / Math.PI;
-    const pos = polarRad(cx, cy, R_MELA, angleRad);
+    const startDeg = (n - 1) * 5;
+    const endDeg   = n * 5;
+    const midDeg   = startDeg + 2.5;
     const raga = melaByNum[n];
     const cakra = Math.ceil(n / 6);
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
-
     const isLive = raga && melasWithMusic.has(raga.id);
-    const origOpacity = isLive ? 1 : (raga ? 0.28 : 0.5);
-    const g = svgEl('g', { class: 'mela-node', 'data-mela': n, 'data-id': raga ? raga.id : '' });
-    const circle = svgEl('circle', {
-      cx: pos.x, cy: pos.y, r: NR_MELA,
+    const origOpacity = isLive ? 0.85 : (raga ? 0.25 : 0.4);
+
+    const g = svgEl('g', { class: 'mela-arc', 'data-mela': n, 'data-id': raga ? raga.id : '' });
+
+    // Arc-slice: spans R_CAKRA → R_MELA_OUTER within the 5° wedge
+    const arc = svgEl('path', {
+      d: sectorPath(cx, cy, R_CAKRA, R_MELA_OUTER, startDeg, endDeg),
       fill: raga ? color : THEME.bgPanel,
-      stroke: raga ? THEME.fg : THEME.edgeLine,
-      'stroke-width': raga ? 1.5 : 1,
+      stroke: THEME.labelOutline,
+      'stroke-width': 0.5,
       opacity: origOpacity,
       cursor: isLive ? 'pointer' : 'default',
       'data-mela': n,
-      'data-orig-opacity': origOpacity
+      'data-orig-opacity': origOpacity,
     });
-    g.appendChild(circle);
-    // Invisible hit-target circle for touch accuracy (ADR-035 §7)
-    const hitCircleMela = svgEl('circle', {
-      cx: pos.x, cy: pos.y, r: NR_MELA + 8,
-      fill: 'transparent', 'pointer-events': 'all', 'stroke': 'none'
-    });
-    g.appendChild(hitCircleMela);
+    g.appendChild(arc);
+
+    // Fat transparent hit-target arc for touch accuracy (ADR-035 §7)
+    g.appendChild(svgEl('path', {
+      d: sectorPath(cx, cy, R_CAKRA - 4, R_MELA_OUTER + 4, startDeg, endDeg),
+      fill: 'transparent', 'pointer-events': 'all', stroke: 'none',
+    }));
 
     if (isLive) {
       g.style.cursor = 'pointer';
@@ -80497,7 +80413,8 @@ window.drawRagaWheel = function() {
         }
         const jc = (janyasByMela[raga.id] || []).length;
         if (jc) lines.push(jc + ' janya raga' + (jc > 1 ? 's' : ''));
-        showWheelTooltip(svg, pos.x, pos.y, lines);
+        const ap = polar(cx, cy, (R_CAKRA + R_MELA_OUTER) / 2, midDeg);
+        showWheelTooltip(svg, ap.x, ap.y, lines);
       });
       g.addEventListener('mouseleave', hideWheelTooltip);
       g.addEventListener('click', (e) => {
@@ -80506,36 +80423,35 @@ window.drawRagaWheel = function() {
           _collapseAll(vp, melaByNum);
         } else {
           _collapseAll(vp, melaByNum);
-          // Option B: show mela→janya→comp in the detail panel instead of SVG fans
           _openWheelDetailPanel(raga);
-          circle.setAttribute('stroke', THEME.accentSelect);
-          circle.setAttribute('stroke-width', 2.5);
+          arc.setAttribute('opacity', '1');
+          arc.setAttribute('stroke', THEME.accentSelect);
+          arc.setAttribute('stroke-width', '1.5');
           _expandedMela = raga.id;
-          // Dim all other mela nodes so the selected one stands out
-          vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
-            const melaG = c.closest('.mela-node');
+          // Dim all other mela arcs
+          vp.querySelectorAll('.mela-arc path[data-mela]').forEach(p => {
+            const melaG = p.closest('.mela-arc');
             const nodeId = melaG ? melaG.getAttribute('data-id') : '';
-            if (nodeId !== raga.id) {
-              c.setAttribute('opacity', '0.15');
-            }
+            if (nodeId !== raga.id) p.setAttribute('opacity', '0.12');
           });
-          // Dim all other mela labels
+          // Dim all other spoke labels
           if (_labelLayer) {
             _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
-              if (lbl.getAttribute('data-id') !== raga.id) {
-                lbl.setAttribute('opacity', '0.12');
-              }
+              if (lbl.getAttribute('data-id') !== raga.id)
+                lbl.setAttribute('opacity', '0.10');
             });
           }
-          // Silently load bani-flow data (no panel pop-open).
-          // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
+          // Draw janya sub-arcs in SVG (ADR-096 sunburst expansion)
+          _expandMelaSunburst(vp, svg, raga, startDeg, endDeg, cx, cy,
+            R_MELA_OUTER, R_JANYA_OUTER, R_COMP_OUTER, color, minDim);
           window._wheelSyncInProgress = true;
           if (!window._wheelPreviewNoPanel && typeof applyBaniFilter === 'function') {
             applyBaniFilter('raga', raga.id);
           }
           window._wheelSyncInProgress = false;
-          // Option B: zoom to the mela node — detail is in the panel, SVG only has the ring
-          _animateToTarget(pos.x, pos.y, 2.5);
+          // Zoom to arc centroid
+          const ap = polar(cx, cy, (R_CAKRA + R_MELA_OUTER) / 2, midDeg);
+          _animateToTarget(ap.x, ap.y, 2.5);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -80545,72 +80461,185 @@ window.drawRagaWheel = function() {
       });
     }
     vp.appendChild(g);
-    melaCirleGroups.push({ n, angleRad, raga });
-  }
 
-  // Pass 2: labels — in the module-level _labelLayer so they are always topmost
-  _labelLayer = svgEl('g', { id: 'wheel-label-layer', 'pointer-events': 'none' });
-  melaCirleGroups.forEach(({ n, angleRad, raga }) => {
-    const angleDeg = angleRad * 180 / Math.PI;
-    const labelR = R_MELA + NR_MELA + Math.max(5, minDim * 0.014);
-    const lp = polarRad(cx, cy, labelR, angleRad);
-    const normAngle = ((angleDeg % 360) + 360) % 360;
-    let melaRotDeg, anchor;
-    if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = 0;             anchor = 'middle'; }
-    else if (Math.abs(normAngle - 180) < 1e-6) { melaRotDeg = 0;             anchor = 'middle'; }
-    else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
-    else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
-    const isLiveLbl = raga && melasWithMusic.has(raga.id);
-    const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
-    // All mela labels now use the raga chip style (ADR-073: melas are ragas).
-    // rotate wraps the chip <g> so the rect+text rotate together around lp.
-    // wrapOpacity provides the inactive-mela dimming envelope.
-    // The rect click target replaces the prior pointer-events:all on <text>.
-    _labelWithBg(_labelLayer, raga ? raga.name : String(n), lp.x, lp.y, melaFontSize, {
-      'font-size': melaFontSize + 'px',
-      class: 'mela-label',
-      'data-orig-opacity': melaLblOpacity,
-      'data-id': raga ? raga.id : '',
-      wrapOpacity: melaLblOpacity,
-      rotate: `${melaRotDeg}, ${lp.x}, ${lp.y}`,
-      chipVariant: 'raga'
-    }, isLiveLbl ? (e) => {
-      const melaG = vp.querySelector(`.mela-node[data-id="${CSS.escape(raga.id)}"]`);
-      if (melaG) melaG.dispatchEvent(new MouseEvent('click', {
-        bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
-      }));
-    } : null);
-  });
+    // Radial spoke label outside R_MELA_OUTER
+    const spokePad = Math.max(4, minDim * 0.008);
+    const lp = polar(cx, cy, R_MELA_OUTER + spokePad, midDeg);
+    const normMid = ((midDeg % 360) + 360) % 360;
+    let spokRotDeg, textAnchor;
+    if (normMid < 1 || normMid > 359)    { spokRotDeg = 0;           textAnchor = 'middle'; }
+    else if (Math.abs(normMid - 180) < 1){ spokRotDeg = 0;           textAnchor = 'middle'; }
+    else if (normMid < 180)              { spokRotDeg = midDeg - 90; textAnchor = 'start';  }
+    else                                 { spokRotDeg = midDeg + 90; textAnchor = 'end';    }
+    const spokeLabel = raga ? abbrev(raga.name, 5) : String(n);
+    const lblOpacity = isLive ? 0.85 : (raga ? 0.30 : 0.40);
+    const lbl = svgEl('text', {
+      x: lp.x, y: lp.y,
+      'text-anchor': textAnchor, 'dominant-baseline': 'middle',
+      fill: isLive ? THEME.fg : (THEME.fgMuted || THEME.borderStrong),
+      'font-size': melaLabelFontSize + 'px',
+      opacity: lblOpacity,
+      'data-orig-opacity': lblOpacity,
+      class: 'mela-label', 'data-id': raga ? raga.id : '',
+      transform: `rotate(${spokRotDeg}, ${lp.x}, ${lp.y})`,
+    });
+    lbl.textContent = spokeLabel;
+    _labelLayer.appendChild(lbl);
+  }
   vp.appendChild(_labelLayer);
 };
 
 // vp = viewport <g> for pan/zoom; svg = root SVG for tooltip sizing
 function _collapseAll(vp, melaByNum) {
   _closeWheelDetailPanel();
-  vp.querySelectorAll('.janya-group, .comp-group, .musc-group').forEach(g => g.remove());
-  // Also clear satellite labels from the shared label layer
-  if (_labelLayer) {
-    _labelLayer.querySelectorAll('.sat-label').forEach(el => el.remove());
-  }
-  vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
-    const n = parseInt(c.getAttribute('data-mela'));
-    const raga = melaByNum[n];
-    c.setAttribute('stroke', raga ? THEME.fg : THEME.edgeLine);
-    c.setAttribute('stroke-width', raga ? 1.5 : 1);
-    // Restore original opacity (Bug fix: mela nodes stayed dimmed after comp collapse)
-    const orig = c.getAttribute('data-orig-opacity');
-    if (orig) c.setAttribute('opacity', orig);
+  // Remove janya and comp arc sub-groups (ADR-096 sunburst)
+  vp.querySelectorAll('.janya-arc-group, .comp-arc-group').forEach(g => g.remove());
+  // Restore mela arc opacity and stroke
+  vp.querySelectorAll('.mela-arc path[data-mela]').forEach(p => {
+    p.setAttribute('stroke', THEME.labelOutline);
+    p.setAttribute('stroke-width', '0.5');
+    const orig = p.getAttribute('data-orig-opacity');
+    if (orig) p.setAttribute('opacity', orig);
   });
-  // Restore mela label opacity
+  // Restore mela spoke label opacity
   if (_labelLayer) {
     _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
       const orig = lbl.getAttribute('data-orig-opacity');
       if (orig) lbl.setAttribute('opacity', orig);
     });
   }
-  vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
   hideWheelTooltip();
+}
+
+// ADR-096: Draw janya sub-arcs for the selected mela within its 5° wedge.
+// janyas are subdivided with equal angular slices: sliceDeg = (endDeg - startDeg) / n_janyas.
+function _expandMelaSunburst(vp, svg, raga, melaStartDeg, melaEndDeg, cx, cy,
+    R_MELA_OUTER, R_JANYA_OUTER, R_COMP_OUTER, melaColor, minDim) {
+  if (!_wdpData) return;
+  const { janyasByMela } = _wdpData;
+  const janyas = (janyasByMela[raga.id] || []).slice()
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  if (janyas.length === 0) return;
+
+  const g = svgEl('g', { class: 'janya-arc-group', 'data-parent': raga.id });
+  const wedgeDeg = melaEndDeg - melaStartDeg;  // always 5°
+  const sliceDeg = wedgeDeg / janyas.length;
+
+  janyas.forEach((janya, i) => {
+    const jStartDeg = melaStartDeg + i * sliceDeg;
+    const jEndDeg   = jStartDeg + sliceDeg;
+    const jMidDeg   = jStartDeg + sliceDeg / 2;
+
+    const jArc = svgEl('path', {
+      d: sectorPath(cx, cy, R_MELA_OUTER, R_JANYA_OUTER, jStartDeg, jEndDeg),
+      fill: melaColor,
+      stroke: THEME.labelOutline,
+      'stroke-width': 0.5,
+      opacity: 0.55,
+      cursor: 'pointer',
+      'data-id': janya.id,
+    });
+
+    jArc.addEventListener('mouseenter', () => {
+      const comps = (_wdpData.compsByRaga[janya.id] || []).length;
+      const lines = [janya.name, 'Janya of ' + raga.name];
+      if (comps) lines.push(comps + ' composition' + (comps > 1 ? 's' : ''));
+      const tp = polar(cx, cy, (R_MELA_OUTER + R_JANYA_OUTER) / 2, jMidDeg);
+      showWheelTooltip(svg, tp.x, tp.y, lines);
+    });
+    jArc.addEventListener('mouseleave', hideWheelTooltip);
+    jArc.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Dim siblings, highlight this arc
+      g.querySelectorAll('path').forEach(p => p.setAttribute('opacity', '0.20'));
+      jArc.setAttribute('opacity', '0.90');
+      jArc.setAttribute('stroke', THEME.accentSelect);
+      jArc.setAttribute('stroke-width', '1');
+      // Expand comp sub-arcs
+      vp.querySelectorAll('.comp-arc-group').forEach(el => el.remove());
+      _expandJanyaSunburst(vp, svg, janya, jStartDeg, jEndDeg, cx, cy,
+        R_JANYA_OUTER, R_COMP_OUTER, melaColor, minDim);
+      // Mirror selection in WDP panel (text labels)
+      const chipEl = document.querySelector(
+        `#wdp-janya-list .wdp-chip.wdp-raga[data-id="${CSS.escape(janya.id)}"]`
+      );
+      _wdpSelectJanya(janya, chipEl, false, null);
+      _expandedJanya = janya.id;
+      // Zoom toward the janya arc centroid
+      const jp = polar(cx, cy, (R_MELA_OUTER + R_JANYA_OUTER) / 2, jMidDeg);
+      _animateToTarget(jp.x, jp.y, 2.2);
+    });
+
+    g.appendChild(jArc);
+  });
+
+  vp.appendChild(g);
+}
+
+// ADR-096: Draw comp sub-arcs for the selected janya within its angular slice.
+function _expandJanyaSunburst(vp, svg, janya, jStartDeg, jEndDeg, cx, cy,
+    R_JANYA_OUTER, R_COMP_OUTER, parentColor, minDim) {
+  if (!_wdpData) return;
+  const items = _wdpData.compsByRaga[janya.id] || [];
+  if (items.length === 0) return;
+
+  const g = svgEl('g', { class: 'comp-arc-group', 'data-parent': janya.id });
+  const wedgeDeg = jEndDeg - jStartDeg;
+  const sliceDeg = wedgeDeg / items.length;
+
+  items.forEach((item, i) => {
+    const cStartDeg = jStartDeg + i * sliceDeg;
+    const cEndDeg   = cStartDeg + sliceDeg;
+    const cMidDeg   = cStartDeg + sliceDeg / 2;
+
+    const cArc = svgEl('path', {
+      d: sectorPath(cx, cy, R_JANYA_OUTER, R_COMP_OUTER, cStartDeg, cEndDeg),
+      fill: THEME.accent,
+      stroke: THEME.labelOutline,
+      'stroke-width': 0.5,
+      opacity: 0.65,
+      cursor: 'pointer',
+      'data-id': item.id || '',
+    });
+
+    cArc.addEventListener('mouseenter', () => {
+      const header = (item._isPerf && item._fullLabel) ? item._fullLabel : (item.title || '');
+      const lines = [header];
+      if (item.concert) lines.push(item.concert);
+      if (item.date || item.year) lines.push(item.date || String(item.year));
+      const tp = polar(cx, cy, (R_JANYA_OUTER + R_COMP_OUTER) / 2, cMidDeg);
+      showWheelTooltip(svg, tp.x, tp.y, lines);
+    });
+    cArc.addEventListener('mouseleave', hideWheelTooltip);
+    cArc.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Highlight selected arc
+      g.querySelectorAll('path').forEach(p => p.setAttribute('opacity', '0.25'));
+      cArc.setAttribute('opacity', '1');
+      cArc.setAttribute('stroke', THEME.accentSelect);
+      cArc.setAttribute('stroke-width', '1');
+      _expandedComp = item.id;
+      // Trigger bani-flow search
+      window._wheelSyncInProgress    = true;
+      window._wheelOriginatedTrigger = true;
+      if (!item._isPerf) {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', item.id);
+      } else if (item._recording_id && item._perf_index != null) {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('perf', item._recording_id + '::' + item._perf_index);
+      } else if (item._ytVid) {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('yt', item._ytVid + '::' + (item.raga_id || janya.id));
+      } else {
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', item.raga_id || janya.id);
+      }
+      window._wheelSyncInProgress    = false;
+      window._wheelOriginatedTrigger = false;
+    });
+
+    g.appendChild(cArc);
+  });
+
+  vp.appendChild(g);
 }
 
 // Animate the wheel viewport to centre on (targetX, targetY) at the given scale.
@@ -80656,478 +80685,18 @@ function _animateToTarget(targetX, targetY, targetScale) {
   _animRafId = requestAnimationFrame(step);
 }
 
-function _expandMela(vp, svg, raga, melaAngle, cx, cy,
-    R_MELA, R_JANYA, R_COMP, R_MUSC,
-    NR_MELA, NR_JANYA, NR_COMP, NR_MUSC,
-    janyasByMela, compsByRaga, rtpByRaga, melaColor, minDim) {
-  const janyas = janyasByMela[raga.id] || [];
-  const melaPos = polarRad(cx, cy, R_MELA, melaAngle);
-  const g = svgEl('g', { class: 'janya-group', 'data-parent': raga.id });
-
-  // Always show the mela's own music (compositions + performances) directly at R_COMP.
-  // compsByRaga already includes all three sources (compositions, recordings, youtube).
-  const melaDirect = (compsByRaga[raga.id] || []).length;
-
-  if (janyas.length === 0 && melaDirect === 0) {
-    // Nothing to show at all
-    const lp = polarRad(cx, cy, R_JANYA, melaAngle);
-    const t = svgEl('text', {
-      x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
-    });
-    t.textContent = 'no janyas or compositions';
-    g.appendChild(t);
-    vp.appendChild(g);
-    return;
-  }
-
-  // Draw janya satellites (if any)
-  if (janyas.length > 0) {
-    // ADR-093: solve fan geometry using actual chip widths for tangential arc spacing.
-    // maxSpread=0.9π is a wide ceiling so spreadAtBaseline drives layout for typical
-    // node counts (radius stays at rBaseline); only degenerate large fans inflate it.
-    const jFontSize = Math.max(10, minDim * 0.020);
-    const jMaxChars = janyas.reduce((m, j) => Math.max(m, (j.name || '').length), 1);
-    const janyaLayout = solveRingLayout({
-      n: janyas.length,
-      fontSize: jFontSize,
-      maxLabelChars: jMaxChars,
-      k: _readChipSpacingK(),
-      openFan: {
-        anchorAngle: melaAngle,
-        maxSpread: Math.PI * 0.9,
-        rBaseline: R_JANYA
-      }
-    });
-    janyas.forEach((janya, i) => {
-      const jAngle = janyaLayout.angles[i];
-      const jPos = polarRad(cx, cy, janyaLayout.radius, jAngle);
-
-      const janyaConnLine = svgEl('line', {
-        x1: melaPos.x, y1: melaPos.y, x2: jPos.x, y2: jPos.y,
-        stroke: melaColor, 'stroke-width': 1, opacity: 0.5, 'pointer-events': 'none'
-      });
-      g.appendChild(janyaConnLine);
-
-      const jCircle = svgEl('circle', {
-        cx: jPos.x, cy: jPos.y, r: NR_JANYA,
-        fill: melaColor, opacity: 0.75, stroke: THEME.fg, 'stroke-width': 1, cursor: 'pointer'
-      });
-      const jg = svgEl('g', { class: 'janya-node', 'data-id': janya.id });
-      jg.style.cursor = 'pointer';
-      jg._connLine = janyaConnLine;  // stash for retrieval by comp click handler
-      jg.appendChild(jCircle);
-      // Invisible hit-target circle for touch accuracy (ADR-035 §7)
-      jg.appendChild(svgEl('circle', {
-        cx: jPos.x, cy: jPos.y, r: NR_JANYA + 8,
-        fill: 'transparent', 'pointer-events': 'all', stroke: 'none'
-      }));
-
-      jg.addEventListener('mouseenter', () => {
-        const lines = [janya.name, 'Janya of ' + raga.name];
-        if (janya.notes) lines.push(janya.notes.slice(0, 60) + (janya.notes.length > 60 ? '\u2026' : ''));
-        showWheelTooltip(svg, jPos.x, jPos.y, lines);
-      });
-      jg.addEventListener('mouseleave', hideWheelTooltip);
-      jg.addEventListener('click', (e) => {
-        e.stopPropagation();
-        vp.querySelectorAll('.comp-group, .musc-group').forEach(el => el.remove());
-        // Remove comp and musician labels only — preserve janya labels (.sat-label-janya)
-        if (_labelLayer) _labelLayer.querySelectorAll('.sat-label:not(.sat-label-janya)').forEach(el => el.remove());
-        vp.querySelectorAll('.janya-node circle').forEach(c => {
-          c.setAttribute('stroke', THEME.fg); c.setAttribute('stroke-width', 1);
-          c.setAttribute('opacity', '0.35');   // dim all janyas first
-        });
-        // Dim all janya connector lines
-        vp.querySelectorAll('.janya-group line').forEach(l => {
-          l.setAttribute('opacity', '0.1');
-        });
-        // Dim all janya labels
-        if (_labelLayer) {
-          _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
-            el.setAttribute('opacity', '0.2');
-          });
-        }
-        if (_expandedJanya === janya.id) {
-          // un-dim all on collapse
-          vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
-          vp.querySelectorAll('.janya-group line').forEach(l => l.setAttribute('opacity', '0.5'));
-          if (_labelLayer) {
-            _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
-              el.setAttribute('opacity', '1');
-            });
-          }
-          _expandedJanya = null;
-          return;
-        }
-        jCircle.setAttribute('stroke', THEME.accentSelect);
-        jCircle.setAttribute('stroke-width', 2.5);
-        jCircle.setAttribute('opacity', '0.75');   // restore selected janya to full opacity
-        // Restore selected janya's connector line and labels
-        if (jg._connLine) jg._connLine.setAttribute('opacity', '0.5');
-        if (_labelLayer) {
-          _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
-            if (el.getAttribute('data-janya-id') === janya.id) {
-              el.setAttribute('opacity', '1');
-            }
-          });
-        }
-        _expandedJanya = janya.id;
-        _expandedComp = null;
-        _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
-          R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
-          compsByRaga, rtpByRaga, melaColor, minDim);
-        // Silently load bani-flow data (no panel pop-open).
-        // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
-        window._wheelSyncInProgress = true;
-        if (!window._wheelPreviewNoPanel && typeof applyBaniFilter === 'function') {
-          applyBaniFilter('raga', janya.id);
-        }
-        window._wheelSyncInProgress = false;
-        // Auto-zoom: scale 2.2 centred on janya shows janya + comp fan together
-        // (half-viewport ≈ W/(2×2.2) just covers R_COMP−R_JANYA + label overhang)
-        _animateToTarget(jPos.x, jPos.y, 2.2);
-      });
-      jg.addEventListener('dblclick', (e) => {
-        e.stopPropagation();
-        if (_dragMoved) return;
-        if (typeof openMetaInspector === 'function') openMetaInspector('janya', janya);
-      });
-      // Janya label goes into _labelLayer so it is always on top.
-      // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
-      if (_labelLayer) {
-        _labelWithBg(_labelLayer, janya.name, jPos.x, jPos.y, jFontSize, {
-          fill: THEME.fgSub, 'font-size': jFontSize + 'px',
-          class: 'sat-label sat-label-janya', 'data-janya-id': janya.id,
-          chipVariant: 'raga'
-        }, (e) => {
-          jg.dispatchEvent(new MouseEvent('click', {
-            bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
-          }));
-        });
-      }
-      g.appendChild(jg);
-    });
-  }
-
-  vp.appendChild(g);
-  _bringLabelsToFront(vp);
-
-  // Fix 8: also show the mela's own compositions/RTPs directly (no janya intermediary).
-  if (melaDirect > 0) {
-    _expandComps(vp, svg, raga, melaAngle, melaPos, cx, cy,
-      R_COMP, R_MUSC, NR_MELA, NR_COMP, NR_MUSC,
-      compsByRaga, rtpByRaga, melaColor, minDim, /*isMelaDirect=*/true);
-  }
-}
-
-// _expandComps: show all music tagged to this raga — compositions, structured
-// recording performances, and youtube-only entries (Sources 1–3 from compsByRaga).
-// isMelaDirect: true when called for a mela's own compositions (no janya intermediary).
-function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
-    R_COMP, R_MUSC, NR_JANYA, NR_COMP, NR_MUSC,
-    compsByRaga, rtpByRaga, parentColor, minDim, isMelaDirect) {
-  // compsByRaga already contains all three sources; rtpByRaga is kept for
-  // the tooltip badge only — no need to merge again here.
-  const items = compsByRaga[janya.id] || [];
-
-  const g = svgEl('g', { class: 'comp-group', 'data-parent': janya.id });
-
-  if (items.length === 0) {
-    const lp = polarRad(cx, cy, R_COMP, jAngle);
-    const t = svgEl('text', {
-      x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
-    });
-    t.textContent = 'no compositions';
-    g.appendChild(t);
-    vp.appendChild(g);
-    return;
-  }
-
-  // ADR-093: composition fan — actual chip widths for tangential spacing, wide ceiling.
-  const cFontSize = Math.max(9, minDim * 0.018);
-  const cMaxChars = items.reduce((m, item) => Math.max(m, (item.title || '').length), 1);
-  const compLayout = solveRingLayout({
-    n: items.length,
-    fontSize: cFontSize,
-    maxLabelChars: cMaxChars,
-    k: _readChipSpacingK(),
-    openFan: {
-      anchorAngle: jAngle,
-      maxSpread: Math.PI * 0.9,
-      rBaseline: R_COMP
-    }
-  });
-  items.forEach((item, i) => {
-    const cAngle = compLayout.angles[i];
-    const cPos = polarRad(cx, cy, compLayout.radius, cAngle);
-
-    const connLine = svgEl('line', {
-      x1: jPos.x, y1: jPos.y, x2: cPos.x, y2: cPos.y,
-      stroke: parentColor, 'stroke-width': 1, opacity: 0.4, 'pointer-events': 'none'
-    });
-    g.appendChild(connLine);
-
-    // RTP nodes are diamond-shaped (rotated square) in a distinct colour
-    const isRtp = item._isRtp;
-    const cCircle = svgEl('circle', {
-      cx: cPos.x, cy: cPos.y, r: NR_COMP,
-      fill: isRtp ? THEME.nodeHasTracks : THEME.accent,
-      opacity: 0.85, stroke: THEME.fg, 'stroke-width': 1, cursor: 'pointer'
-    });
-    const cg = svgEl('g', { class: 'comp-node', 'data-id': item.id || '' });
-    cg.appendChild(cCircle);
-    // Label goes into _labelLayer so it is always rendered on top of all circles.
-    // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
-    if (_labelLayer) {
-      _labelWithBg(_labelLayer, item.title || '', cPos.x, cPos.y, cFontSize, {
-        fill: THEME.fgSub, 'font-size': cFontSize + 'px',
-        class: 'sat-label sat-label-comp', 'data-comp-id': item.id || '',
-        chipVariant: 'comp'
-      }, (e) => {
-        cg.dispatchEvent(new MouseEvent('click', {
-          bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
-        }));
-      });
-    }
-
-    cg.addEventListener('mouseenter', () => {
-      // For _isPerf items, show the full label as the tooltip header if available
-      const lines = [(item._isPerf && item._fullLabel) ? item._fullLabel : (item.title || '')];
-      if (isRtp) {
-        lines.push('Ragam-Tanam-Pallavi');
-        if (item.concert) lines.push('Concert: ' + item.concert);
-        if (item.date) lines.push(item.date);
-      } else if (item._isPerf) {
-        // Structured recording performance or youtube-only entry
-        if (item.concert) lines.push('Concert: ' + item.concert);
-        if (item.date) lines.push(item.date);
-        if (item.year) lines.push(String(item.year));
-        if (item._ytVid) lines.push('YouTube recording');
-        if (item.performers && item.performers.length) {
-          lines.push(item.performers.map(p => p.musician_id || p).join(', '));
-        }
-      } else {
-        if (item.composer_id) {
-          const composer = composers.find(c => c.id === item.composer_id);
-          if (composer) lines.push('Composer: ' + composer.name);
-        }
-        if (item.tala) lines.push('Tala: ' + item.tala);
-      }
-      showWheelTooltip(svg, cPos.x, cPos.y, lines);
-    });
-    cg.addEventListener('mouseleave', hideWheelTooltip);
-    cg.addEventListener('dblclick', (e) => {
-      e.stopPropagation();
-      if (_dragMoved) return;
-      if (typeof openMetaInspector === 'function') openMetaInspector('composition', item);
-    });
-    cg.addEventListener('click', (e) => {
-      e.stopPropagation();
-      vp.querySelectorAll('.musc-group').forEach(el => el.remove());
-      if (_labelLayer) _labelLayer.querySelectorAll('.sat-label-musc').forEach(el => el.remove());
-      vp.querySelectorAll('.comp-node circle').forEach(c => {
-        c.setAttribute('stroke', THEME.fg); c.setAttribute('stroke-width', 1);
-        c.setAttribute('opacity', '0.35');   // dim all comp nodes first
-      });
-      // Dim all connector lines (mela→janya and janya→comp)
-      vp.querySelectorAll('.janya-group line, .comp-group line').forEach(l => {
-        l.setAttribute('opacity', '0.08');
-      });
-      if (_expandedComp === item.id) {
-        if (window._wheelPreviewNoPanel) {
-          return;
-        }
-        // Second click on already-selected comp → open the bani-flow panel.
-        if (typeof hideClickNudge === 'function') hideClickNudge();
-        window._wheelSyncInProgress    = true;
-        window._wheelOriginatedTrigger = true;
-        if (!item._isPerf) {
-          triggerBaniSearch('comp', item.id);
-        } else if (item._recording_id && item._perf_index != null) {
-          triggerBaniSearch('perf', item._recording_id + '::' + item._perf_index);
-        } else if (item._ytVid) {
-          triggerBaniSearch('yt', item._ytVid + '::' + (item.raga_id || janya.id));
-        } else {
-          triggerBaniSearch('raga', item.raga_id || janya.id);
-        }
-        window._wheelSyncInProgress    = false;
-        window._wheelOriginatedTrigger = false;
-        return;
-      }
-      // Dim all mela nodes except the currently expanded one so the path lights up
-      vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
-        const melaId = c.closest('.mela-node') && c.closest('.mela-node').getAttribute('data-id');
-        c.setAttribute('opacity', melaId === _expandedMela ? '1' : '0.2');
-      });
-      // Dim all janya nodes except the parent of this comp (janya.id).
-      // For mela-direct comps, janya IS the mela — dim all janya nodes.
-      let parentJanyaConnLine = null;
-      vp.querySelectorAll('.janya-node').forEach(jn => {
-        const jid = jn.getAttribute('data-id');
-        const jCircle = jn.querySelector('circle');
-        if (jid === janya.id) {
-          if (jCircle) jCircle.setAttribute('opacity', '0.75');
-          parentJanyaConnLine = jn._connLine || null;
-        } else {
-          if (jCircle) jCircle.setAttribute('opacity', '0.15');
-        }
-      });
-      // Dim non-parent janya labels; keep parent janya label visible
-      if (_labelLayer) {
-        _labelLayer.querySelectorAll('.sat-label-janya').forEach(el => {
-          el.setAttribute('opacity', el.getAttribute('data-janya-id') === janya.id ? '1' : '0.12');
-        });
-      }
-      // Restore the mela→janya connector line for the parent janya
-      if (parentJanyaConnLine) parentJanyaConnLine.setAttribute('opacity', '0.5');
-      // Dim all comp labels, then restore the selected one
-      if (_labelLayer) {
-        _labelLayer.querySelectorAll('.sat-label-comp').forEach(el => {
-          el.setAttribute('opacity', '0.15');
-        });
-        _labelLayer.querySelectorAll('.sat-label-comp[data-comp-id="' + CSS.escape(item.id || '') + '"]').forEach(el => {
-          el.setAttribute('opacity', '1');
-        });
-      }
-      cCircle.setAttribute('stroke', THEME.accentSelect);
-      cCircle.setAttribute('stroke-width', 2.5);
-      cCircle.setAttribute('opacity', '0.85');   // restore selected comp to full opacity
-      connLine.setAttribute('opacity', '0.8');   // highlight the line leading to this comp
-      _expandedComp = item.id;
-      if (!window._wheelPreviewNoPanel && typeof showClickNudge === 'function') {
-        showClickNudge('tap again \u00B7 open bani flow');
-      }
-      // Silently load bani-flow data (no panel pop-open on first click).
-      // Guard: prevent syncRagaWheelToFilter from redrawing the wheel.
-      window._wheelSyncInProgress = true;
-      if (!window._wheelPreviewNoPanel && typeof applyBaniFilter === 'function') {
-        // Resolve the filter type/id for this comp item
-        if (!item._isPerf) {
-          applyBaniFilter('comp', item.id);
-        } else if (item._recording_id && item._perf_index != null) {
-          applyBaniFilter('perf', item._recording_id + '::' + item._perf_index);
-        } else if (item._ytVid) {
-          applyBaniFilter('yt', item._ytVid + '::' + (item.raga_id || janya.id));
-        } else {
-          applyBaniFilter('raga', item.raga_id || janya.id);
-        }
-      }
-      window._wheelSyncInProgress = false;
-      // Auto-zoom to bring the selected composition into focus
-      _animateToTarget(cPos.x, cPos.y, 2.8);
-    });
-    g.appendChild(cg);
-  });
-  vp.appendChild(g);
-  _bringLabelsToFront(vp);
-}
-
-function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
-    R_MUSC, NR_COMP, NR_MUSC, parentColor, minDim, fallbackRagaId) {
-  // For canonical compositions: look up by composition id.
-  // For synthetic perf/youtube items (_isPerf): look up by raga id via ragaToNodes,
-  // or use the performers[] array embedded in the item itself.
-  let muscIds;
-  if (!comp._isPerf) {
-    muscIds = compositionToNodes[comp.id] || [];
-  } else {
-    const ragaId = comp.raga_id || fallbackRagaId;
-    // Start from ragaToNodes (covers both youtube and recording sources)
-    const fromRaga = ragaToNodes[ragaId] || [];
-    // Also include any performers[] embedded directly in the item
-    const fromPerf = (comp.performers || [])
-      .map(p => p.musician_id || p)
-      .filter(Boolean);
-    // Merge, deduplicate
-    const seen = new Set(fromRaga);
-    muscIds = [...fromRaga];
-    fromPerf.forEach(mid => { if (!seen.has(mid)) { seen.add(mid); muscIds.push(mid); } });
-    // If item has a single _nodeId (youtube source), include it too
-    if (comp._nodeId && !seen.has(comp._nodeId)) muscIds.push(comp._nodeId);
-  }
-  const g = svgEl('g', { class: 'musc-group', 'data-parent': comp.id });
-
-  if (muscIds.length === 0) {
-    const lp = polar(cx, cyCY, R_MUSC, cAngle);
-    const t = svgEl('text', {
-      x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.borderStrong, 'font-size': '11px', 'pointer-events': 'none'
-    });
-    t.textContent = 'no musicians';
-    g.appendChild(t);
-    vp.appendChild(g);
-    return;
-  }
-
-  const SPREAD = Math.min(35, muscIds.length * 6);
-  muscIds.forEach((mid, i) => {
-    const offset = muscIds.length === 1 ? 0 : -SPREAD / 2 + (SPREAD / (muscIds.length - 1)) * i;
-    const mAngle = cAngle + offset;
-    const mPos = polar(cx, cyCY, R_MUSC, mAngle);
-    const node = cy.getElementById(mid);
-    const mData = node && node.length ? node.data() : {};
-    const mName = mData.label || mid;
-
-    g.appendChild(svgEl('line', {
-      x1: cPos.x, y1: cPos.y, x2: mPos.x, y2: mPos.y,
-      stroke: parentColor, 'stroke-width': 1, opacity: 0.35, 'pointer-events': 'none'
-    }));
-
-    const mCircle = svgEl('circle', {
-      cx: mPos.x, cy: mPos.y, r: NR_MUSC,
-      fill: mData.color || THEME.accentMatch, opacity: 0.85,
-      stroke: THEME.fg, 'stroke-width': 1, cursor: 'pointer'
-    });
-    const mg = svgEl('g', { class: 'musc-node', 'data-id': mid });
-    mg.appendChild(mCircle);
-    // Label goes into _labelLayer so it is always rendered on top of all circles.
-    // Passing a clickHandler makes the pill a pointer target — improves touch accuracy.
-    if (_labelLayer) {
-      const mFontSize = Math.max(6, minDim * 0.010);
-      _labelWithBg(_labelLayer, mName, mPos.x, mPos.y, mFontSize, {
-        fill: THEME.fgSub, 'font-size': mFontSize + 'px',
-        class: 'sat-label sat-label-musc'
-      }, (e) => {
-        mg.dispatchEvent(new MouseEvent('click', {
-          bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
-        }));
-      });
-    }
-
-    mg.addEventListener('mouseenter', () => {
-      const lines = [mName];
-      if (mData.era) lines.push('Era: ' + mData.era);
-      if (mData.instrument) lines.push('Instrument: ' + mData.instrument);
-      showWheelTooltip(svg, mPos.x, mPos.y, lines);
-    });
-    mg.addEventListener('mouseleave', hideWheelTooltip);
-    mg.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (node && node.length) {
-        switchView('graph');
-        cy.elements().removeClass('faded highlighted bani-match');
-        selectNode(node);
-      }
-    });
-    g.appendChild(mg);
-  });
-  vp.appendChild(g);
-  _bringLabelsToFront(vp);
-}
 
   // Expose _triggerMelaExpand at window level so syncRagaWheelToFilter (outside IIFE) can call it.
-  // Option B: opens the detail panel for the given mela and pre-selects the janya/comp.
+  // ADR-096: opens the detail panel for the given mela and pre-selects the janya/comp.
   window._triggerMelaExpand = function(melaNum, targetRagaId, targetCompId) {
     window._wheelSyncInProgress = true;
     const raga = _wdpData && _wdpData.melaByNum[melaNum];
     if (!raga) { window._wheelSyncInProgress = false; return; }
 
-    // Highlight the mela node on the wheel ring.
+    // Highlight the mela arc on the wheel ring.
     // _wheelPreviewNoPanel suppresses the applyBaniFilter('raga', melaId) call inside the
     // mela click handler — we must not overwrite the bani filter that the search already set.
-    const melaG = document.querySelector(`#wheel-viewport .mela-node[data-mela="${melaNum}"]`);
+    const melaG = document.querySelector(`#wheel-viewport .mela-arc[data-mela="${melaNum}"]`);
     window._wheelPreviewNoPanel = true;
     if (melaG) melaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     else _openWheelDetailPanel(raga);
@@ -81246,24 +80815,13 @@ function orientRagaWheel(type, id) {
     const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
     const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
     const minDim = Math.min(W, H);
-    const melaAngle = (melaRaga.melakarta - 1) * 5;
+    // ADR-096: target is the arc centroid at midpoint of (R_CAKRA=0.20 + R_MELA_OUTER=0.38)/2
+    const R_ARC_CENTROID = minDim * 0.29;
+    const melaAngle = (melaRaga.melakarta - 1) * 5 + 2.5;  // arc midpoint angle (degrees)
     const rad = (melaAngle - 90) * Math.PI / 180;
-
-    // Option B: always zoom to the mela node — comp/janya fans no longer exist in SVG.
-    const R_MELA_EST = minDim * 0.38;
-    let targetX = W / 2 + R_MELA_EST * Math.cos(rad);
-    let targetY = H / 2 + R_MELA_EST * Math.sin(rad);
     const TARGET_SCALE = 2.5;
-
-    // Prefer the actual rendered mela node position (R_MELA may differ from estimate).
-    const melaEl = document.querySelector(
-      `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
-    );
-    if (melaEl) {
-      const mx = parseFloat(melaEl.getAttribute('cx'));
-      const my = parseFloat(melaEl.getAttribute('cy'));
-      if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
-    }
+    const targetX = W / 2 + R_ARC_CENTROID * Math.cos(rad);
+    const targetY = H / 2 + R_ARC_CENTROID * Math.sin(rad);
 
     const targetVX = W / 2 - TARGET_SCALE * targetX;
     const targetVY = H / 2 - TARGET_SCALE * targetY;
