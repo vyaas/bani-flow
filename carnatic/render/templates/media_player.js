@@ -1370,6 +1370,21 @@ function buildRecordingsList(nodeId, nodeData) {
         });
         actsDiv.appendChild(playBtn);
         actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+
+        // ADR-101 §C: Add-segment button on each lecdem row
+        if (typeof openEntryForm === 'function') {
+          const addSegBtn = document.createElement('button');
+          addSegBtn.className = 'rec-play-btn';
+          addSegBtn.title = 'Add timestamped segment to this lecdem';
+          addSegBtn.textContent = '＋';
+          addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+          addSegBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
+          });
+          actsDiv.appendChild(addSegBtn);
+        }
+
         row.appendChild(actsDiv);
 
         li.appendChild(row);
@@ -1456,6 +1471,21 @@ function buildRecordingsList(nodeId, nodeData) {
         });
         actsDiv.appendChild(playBtn);
         actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+
+        // ADR-101 §C: Add-segment button on each lecdem row
+        if (typeof openEntryForm === 'function') {
+          const addSegBtn = document.createElement('button');
+          addSegBtn.className = 'rec-play-btn';
+          addSegBtn.title = 'Add timestamped segment to this lecdem';
+          addSegBtn.textContent = '＋';
+          addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+          addSegBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
+          });
+          actsDiv.appendChild(addSegBtn);
+        }
+
         row.appendChild(actsDiv);
 
         li.appendChild(row);
