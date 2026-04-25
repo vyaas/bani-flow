@@ -1,0 +1,13 @@
+It is presently hard to add new metadata, despite the various entry forms provided by carnatic/render/templates/entry_forms.js
+
+Pain points include:
+* When adding a raga, we have a long list of ragas to scroll through for the parent: this should not be the case though: only mela ragas are parent ragas so only this should show in the dropdown.
+* We run into bootstrapping issues: when the user wants to add a composition in a raga that doesn't exist yet, for a composer that doesn't exist yet, they first need to add these, then re-render, then add the composition so the items are available in the drop-down boxes. This introduces a lot of unncessary friction: it should be possible to add missing details on the fly without worrying about the prior existence of key (necessary) data to fill the form.
+* Composers cannot be added via the form yet so the user is forced to go into a json file to add this specific information (= they are forced out of the platform and into the terminal, which defeats the purpose of having entry forms)
+* There is some confusion re adding musicians and youtube entries: the latter live in a musician file so really both entry forms produce a musicians.json file, which can confuse the user ("I just added a youtube url to TM Krishna, why am I getting a tm_krishna.json file in return?")
+* The forms don't make use of the various category chips (musician, composition, raga, etc.) so the visual unity of our system is lost: raga looks alien on the forms compared to the Bani-Flow main page.
+
+So some recommendations:
+* Unite Add Youtube with Add Musician: i.e. we should be able to add a new musician and accompanying youtube videos or pick a musician and modify details.
+* Enable adding missing info on the fly for ANY of the forms: we should not have to do multiple steps of adding and rendering to make it to the end.
+* The ideal solution seems to be having one entry point for the form where one can make all kinds of additions to any of the categories and once done only one json file is produced which can be used by a cli tool (needs to be written) that parses the json file and correctly populates the various directories (data/musicians, data/ragas, etc.) appropriately. This will spare the user from the burden of handling multiple files offline (a single json file solves this) and moving them to the appropriate directories (a single script handles this where the generated json file is the argument: we could even call the script bani-add)

@@ -531,6 +531,24 @@ def _process_recordings(
     for rec in recordings:
         op = rec.get("op", "create")
 
+        if op == "patch":
+            rec_id = rec.get("id")
+            field  = rec.get("field")
+            value  = rec.get("value")
+            if not rec_id or not field:
+                print(f"  ERROR  recording patch missing 'id' or 'field': {rec}")
+                errors += 1
+                continue
+            result = writer.patch_recording_outer(
+                recording_id=rec_id, field=field, value=value,
+                recordings_path=recordings_path,
+            )
+            _print_result(result)
+            if result.ok:       added   += 1
+            elif result.skipped: skipped += 1
+            else:                errors  += 1
+            continue
+
         if op == "annotate":
             result = writer.add_note(
                 entity_type="recording", entity_id=rec.get("id", ""),
@@ -546,7 +564,7 @@ def _process_recordings(
             continue
 
         if op not in ("create", None):  # reject unknown ops
-            print(f"  ERROR  recording item has unknown op '{op}'. Known ops: create, annotate.")
+            print(f"  ERROR  recording item has unknown op '{op}'. Known ops: create, patch, annotate.")
             errors += 1
             continue
 

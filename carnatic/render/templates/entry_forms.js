@@ -665,16 +665,32 @@ function efSourceFields(prefix, defaults) {
   return frag;
 }
 
-// ── PATCH_METADATA — mirrors writer.py PATCHABLE_*_FIELDS (ADR-097 §6) ────────
+// ── PATCH_METADATA — mirrors writer.py PATCHABLE_*_FIELDS (ADR-100 §6) ────────
 // Drives buildEditForm(): field lists, value-input types, append selectors.
-// MVP entities: musician, raga, edge, composition, composer.
+// All entity rows per ADR-100 §1 coverage matrix.
 const PATCH_METADATA = {
   musician: {
     bucket:          'musicians',
     label:           'Musician',
     pickLabel:       'Pick Musician',
     pickOpts:        () => (graphData.nodes || []).map(n => ({ value: n.id, label: n.label })),
-    patchFields:     ['label', 'born', 'died', 'era', 'instrument', 'bani'],
+    patchFields:     ['label', 'born', 'died', 'era', 'instrument', 'bani', 'notes_text'],
+    // Nested-path fields: element-picker required before value input.
+    // Format: { path: 'template', pickerKind: 'sources'|'youtube'|'youtube_performer',
+    //           leaf: 'field', label: 'UI label' }
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources',            leaf: 'url',          label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources',            leaf: 'label',        label: 'Source Label (by host)' },
+      { path: 'youtube[<vid>].label',           pickerKind: 'youtube',   leaf: 'label',        label: 'YouTube entry label' },
+      { path: 'youtube[<vid>].year',            pickerKind: 'youtube',   leaf: 'year',         label: 'YouTube entry year' },
+      { path: 'youtube[<vid>].version',         pickerKind: 'youtube',   leaf: 'version',      label: 'YouTube entry version' },
+      { path: 'youtube[<vid>].tala',            pickerKind: 'youtube',   leaf: 'tala',         label: 'YouTube entry tala' },
+      { path: 'youtube[<vid>].composition_id',  pickerKind: 'youtube',   leaf: 'composition_id', label: 'YouTube composition' },
+      { path: 'youtube[<vid>].raga_id',         pickerKind: 'youtube',   leaf: 'raga_id',      label: 'YouTube raga' },
+      { path: 'youtube[<vid>].kind',            pickerKind: 'youtube',   leaf: 'kind',         label: 'YouTube entry kind' },
+      { path: 'youtube[<vid>].performers[<key>].role',        pickerKind: 'youtube_performer', leaf: 'role',        label: 'Performer role' },
+      { path: 'youtube[<vid>].performers[<key>].musician_id', pickerKind: 'youtube_performer', leaf: 'musician_id', label: 'Performer musician' },
+    ],
     appendArrays:    ['youtube', 'sources'],
     supportsAnnotate: true,
     fieldMeta: {
@@ -684,6 +700,7 @@ const PATCH_METADATA = {
       era:        { inputType: 'select', opts: ['trinity','bridge','golden_age','disseminator','living_pillars','contemporary'] },
       instrument: { inputType: 'select', opts: ['vocal','veena','violin','flute','mridangam','bharatanatyam','ghatam','other'] },
       bani:       { inputType: 'text',   placeholder: 'e.g. Ariyakudi, Semmangudi' },
+      notes_text: { inputType: 'text',   placeholder: 'short freeform note on this musician' },
     },
   },
   raga: {
@@ -691,43 +708,62 @@ const PATCH_METADATA = {
     label:           'Raga',
     pickLabel:       'Pick Raga',
     pickOpts:        () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id })),
-    patchFields:     ['name', 'parent_raga', 'melakarta', 'is_melakarta', 'cakra', 'notes'],
-    appendArrays:    ['aliases'],
+    patchFields:     ['name', 'label', 'parent_raga', 'melakarta', 'melakarta_number', 'is_melakarta', 'cakra', 'notes', 'mela_id', 'arohana', 'avarohana'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
+    appendArrays:    ['aliases', 'sources'],
     supportsAnnotate: true,
     fieldMeta: {
-      name:         { inputType: 'text',     placeholder: 'Raga name' },
-      parent_raga:  { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
-      melakarta:    { inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
-      is_melakarta: { inputType: 'select',   opts: [{ value: 'true', label: 'Yes — Melakarta' }, { value: 'false', label: 'No — Janya' }] },
-      cakra:        { inputType: 'number',   placeholder: '1–12',  min: 1, max: 12 },
-      notes:        { inputType: 'text',     placeholder: 'musicological note' },
+      name:            { inputType: 'text',     placeholder: 'Raga name' },
+      label:           { inputType: 'text',     placeholder: 'Display label' },
+      parent_raga:     { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
+      melakarta:       { inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
+      melakarta_number:{ inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
+      is_melakarta:    { inputType: 'select',   opts: [{ value: 'true', label: 'Yes — Melakarta' }, { value: 'false', label: 'No — Janya' }] },
+      cakra:           { inputType: 'number',   placeholder: '1–12',  min: 1, max: 12 },
+      notes:           { inputType: 'text',     placeholder: 'musicological note' },
+      mela_id:         { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
+      arohana:         { inputType: 'text',     placeholder: 'ascending scale notes' },
+      avarohana:       { inputType: 'text',     placeholder: 'descending scale notes' },
     },
   },
   edge: {
     bucket:          'edges',
     label:           'Edge (Guru→Shishya)',
     pickLabel:       null,   // edges use source+target pair; no single-entity pick
-    patchFields:     ['confidence', 'source_url', 'note'],
+    patchFields:     ['confidence', 'source_url', 'note', 'relation'],
+    nestedPatchFields: [],
     appendArrays:    [],
     supportsAnnotate: false,
     fieldMeta: {
       confidence:  { inputType: 'number', placeholder: '0.0–1.0', min: 0, max: 1, step: 0.01 },
       source_url:  { inputType: 'text',   placeholder: 'https://…' },
       note:        { inputType: 'text',   placeholder: 'e.g. principal guru' },
+      relation:    { inputType: 'select', opts: ['guru_shishya','concert_partner','family','disciple','unknown'] },
     },
   },
   composition: {
     bucket:          'compositions',
     label:           'Composition',
     pickLabel:       'Pick Composition',
-    pickOpts:        () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id })),
-    patchFields:     ['title', 'tala', 'language'],
-    appendArrays:    [],
+    pickOpts:        () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.display_title || c.id })),
+    patchFields:     ['display_title', 'title', 'composer_id', 'raga_id', 'tala', 'language', 'type'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
+    appendArrays:    ['sources'],
     supportsAnnotate: true,
     fieldMeta: {
-      title:    { inputType: 'text',   placeholder: 'Composition title' },
-      tala:     { inputType: 'select', opts: ['adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other'] },
-      language: { inputType: 'select', opts: ['Telugu','Sanskrit','Tamil','Kannada','Malayalam','Other'] },
+      display_title: { inputType: 'text',     placeholder: 'Display title (with diacritics)' },
+      title:         { inputType: 'text',     placeholder: 'Composition title' },
+      composer_id:   { inputType: 'combobox', optsGetter: () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id })) },
+      raga_id:       { inputType: 'combobox', optsGetter: () => (graphData.ragas    || []).map(r => ({ value: r.id, label: r.name || r.id })) },
+      tala:          { inputType: 'select',   opts: ['adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other'] },
+      language:      { inputType: 'select',   opts: ['Telugu','Sanskrit','Tamil','Kannada','Malayalam','Other'] },
+      type:          { inputType: 'select',   opts: ['kriti','varnam','padam','javali','tillana','svarajati','other'] },
     },
   },
   composer: {
@@ -735,13 +771,38 @@ const PATCH_METADATA = {
     label:           'Composer',
     pickLabel:       'Pick Composer',
     pickOpts:        () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id })),
-    patchFields:     ['name', 'born', 'died'],
+    patchFields:     ['name', 'born', 'died', 'tradition'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
+    appendArrays:    ['sources'],
+    supportsAnnotate: true,
+    fieldMeta: {
+      name:      { inputType: 'text',   placeholder: 'Composer name' },
+      born:      { inputType: 'number', placeholder: 'e.g. 1890', min: 1600, max: 2030 },
+      died:      { inputType: 'number', placeholder: 'e.g. 1950', min: 1600, max: 2030 },
+      tradition: { inputType: 'text',   placeholder: 'e.g. Carnatic, Hindustani' },
+    },
+  },
+  recording: {
+    bucket:          'recordings',
+    label:           'Recording',
+    pickLabel:       'Pick Recording',
+    pickOpts:        () => (graphData.recordings || []).map(r => ({ value: r.id, label: r.title || r.short_title || r.id })),
+    patchFields:     ['title', 'short_title', 'date', 'venue', 'occasion'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
     appendArrays:    [],
     supportsAnnotate: true,
     fieldMeta: {
-      name: { inputType: 'text',   placeholder: 'Composer name' },
-      born: { inputType: 'number', placeholder: 'e.g. 1890', min: 1600, max: 2030 },
-      died: { inputType: 'number', placeholder: 'e.g. 1950', min: 1600, max: 2030 },
+      title:     { inputType: 'text', placeholder: 'Full concert title' },
+      short_title: { inputType: 'text', placeholder: 'Short label' },
+      date:      { inputType: 'text', placeholder: 'YYYY-MM-DD' },
+      venue:     { inputType: 'text', placeholder: 'e.g. All India Radio' },
+      occasion:  { inputType: 'text', placeholder: 'Brief occasion note' },
     },
   },
 };
@@ -3054,6 +3115,192 @@ function buildEditForm() {
         setTimeout(() => { patchBtn.textContent = '+ Stage patch \u2192 bundle'; }, 1400);
       });
       opsWrap.appendChild(patchBtn);
+    }
+
+    // ── PATCH NESTED FIELD (sources[<host>], youtube[<vid>], performers) ──────
+    if (meta.nestedPatchFields && meta.nestedPatchFields.length > 0) {
+      const sec = document.createElement('div');
+      sec.className = 'ef-section';
+      sec.style.marginTop = '12px';
+      sec.textContent = 'Patch Nested Field';
+      opsWrap.appendChild(sec);
+
+      // Wikipedia URL convenience row (ADR-100 §3) — shown only for musician
+      if (typeKey === 'musician') {
+        const wikiHint = document.createElement('div');
+        wikiHint.style.cssText = 'font-size:0.67rem;color:var(--fg-muted);margin:2px 0 6px 0;';
+        wikiHint.innerHTML = '🔗 <strong>Wikipedia URL</strong>: use <em>sources[en_wikipedia_org].url</em> below to fix a renamed Wikipedia page.';
+        opsWrap.appendChild(wikiHint);
+      }
+
+      const pathSel = efSelect('ef_edit_nested_path',
+        meta.nestedPatchFields.map(nf => ({ value: nf.path, label: nf.label })), true);
+      opsWrap.appendChild(efRow('Nested path', true, null, pathSel));
+
+      // Element-picker: shown when path needs a concrete selector
+      const elemPickerWrap = document.createElement('div');
+      opsWrap.appendChild(elemPickerWrap);
+
+      // Second element-picker for youtube_performer (needs vid then key)
+      const elemPickerWrap2 = document.createElement('div');
+      opsWrap.appendChild(elemPickerWrap2);
+
+      const nestedValueWrap = document.createElement('div');
+      opsWrap.appendChild(nestedValueWrap);
+
+      function _hostOptsFor(entityId) {
+        // Build list of normalised host tokens for sources[] on the selected entity
+        const nodeData = (graphData.nodes || []).find(n => n.id === entityId)
+          || (graphData.ragas || []).find(r => r.id === entityId)
+          || (graphData.compositions || []).find(c => c.id === entityId)
+          || (graphData.composers || []).find(c => c.id === entityId)
+          || (graphData.recordings || []).find(r => r.id === entityId);
+        if (!nodeData || !nodeData.sources) return [];
+        return nodeData.sources.map(s => {
+          const url = s.url || '';
+          let host = url.replace(/^https?:\/\//, '').split('/')[0].split(':')[0].toLowerCase().replace(/\./g, '_');
+          return { value: host, label: `${host}  (${s.label || ''})` };
+        });
+      }
+
+      function _vidOptsFor(entityId) {
+        const node = (graphData.nodes || []).find(n => n.id === entityId);
+        if (!node || !node.youtube) return [];
+        return node.youtube.map(yt => {
+          const url = yt.url || '';
+          const m = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+          const vid = m ? m[1] : url;
+          return { value: vid, label: `${vid}  ${yt.label || ''}` };
+        });
+      }
+
+      function _performerKeyOptsFor(entityId, vid) {
+        const node = (graphData.nodes || []).find(n => n.id === entityId);
+        if (!node || !node.youtube) return [];
+        const entry = node.youtube.find(yt => {
+          const m = (yt.url || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+          return (m ? m[1] : yt.url) === vid;
+        });
+        if (!entry || !entry.performers) return [];
+        return entry.performers.map(p => {
+          const key = p.musician_id || (p.unmatched_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+          return { value: key, label: key + (p.unmatched_name ? ` (${p.unmatched_name})` : '') };
+        });
+      }
+
+      let cbNestedElem1 = null;
+      let cbNestedElem2 = null;
+
+      function rebuildNestedPickers() {
+        elemPickerWrap.innerHTML  = '';
+        elemPickerWrap2.innerHTML = '';
+        nestedValueWrap.innerHTML = '';
+        cbNestedElem1 = null;
+        cbNestedElem2 = null;
+
+        const nf = meta.nestedPatchFields.find(f => f.path === pathSel.value);
+        if (!nf) return;
+
+        const entityId = cbPicker ? cbPicker.getValue() : '';
+        const kind = nf.pickerKind;
+
+        if (kind === 'sources') {
+          const opts = entityId ? _hostOptsFor(entityId) : [];
+          cbNestedElem1 = efCombobox('ef_edit_nested_host', opts, null, win);
+          elemPickerWrap.appendChild(efRow('Host token', true, 'e.g. en_wikipedia_org', cbNestedElem1));
+        } else if (kind === 'youtube') {
+          const opts = entityId ? _vidOptsFor(entityId) : [];
+          cbNestedElem1 = efCombobox('ef_edit_nested_vid', opts, null, win);
+          elemPickerWrap.appendChild(efRow('Video id', true, '11-char YouTube id', cbNestedElem1));
+        } else if (kind === 'youtube_performer') {
+          const vidOpts = entityId ? _vidOptsFor(entityId) : [];
+          cbNestedElem1 = efCombobox('ef_edit_nested_vid2', vidOpts, null, win);
+          elemPickerWrap.appendChild(efRow('Video id', true, null, cbNestedElem1));
+          // Performer key picker depends on vid selection
+          cbNestedElem2 = efCombobox('ef_edit_nested_perf', [], null, win);
+          elemPickerWrap2.appendChild(efRow('Performer key', true, 'musician_id or unmatched slug', cbNestedElem2));
+          cbNestedElem1.addEventListener('change', () => {
+            const vid = cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value;
+            const opts2 = entityId ? _performerKeyOptsFor(entityId, vid) : [];
+            elemPickerWrap2.innerHTML = '';
+            cbNestedElem2 = efCombobox('ef_edit_nested_perf', opts2, null, win);
+            elemPickerWrap2.appendChild(efRow('Performer key', true, null, cbNestedElem2));
+          });
+        }
+
+        // Value input for the leaf field
+        const leafInputType = (nf.leaf === 'year') ? 'number'
+          : (nf.leaf === 'musician_id' || nf.leaf === 'raga_id' || nf.leaf === 'composition_id') ? 'combobox'
+          : (nf.leaf === 'role' || nf.leaf === 'kind') ? 'select'
+          : 'text';
+
+        let leafInput;
+        if (leafInputType === 'combobox') {
+          const leafOpts = nf.leaf === 'musician_id'
+            ? (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }))
+            : nf.leaf === 'raga_id'
+            ? (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }))
+            : (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+          leafInput = efCombobox('ef_edit_nested_val', leafOpts, null, win);
+        } else if (leafInputType === 'select') {
+          const selectOpts = nf.leaf === 'role'
+            ? ['vocal','veena','violin','flute','mridangam','ghatam','tampura','violin_accompaniment','other']
+            : ['concert','lecdem','documentary','interview','other'];
+          leafInput = efSelect('ef_edit_nested_val', selectOpts.map(o => ({ value: o, label: o })), true);
+        } else if (leafInputType === 'number') {
+          leafInput = efInput('ef_edit_nested_val', 'number', 'e.g. 2008');
+        } else {
+          leafInput = efInput('ef_edit_nested_val', 'text', '');
+        }
+        nestedValueWrap.appendChild(efRow('New value', true, null, leafInput));
+        nestedValueWrap._inp = leafInput;
+      }
+
+      pathSel.addEventListener('change', rebuildNestedPickers);
+      // Rebuild when entity picker changes too
+      if (cbPicker) cbPicker.addEventListener('change', rebuildNestedPickers);
+      rebuildNestedPickers();
+
+      const nestedPatchBtn = document.createElement('button');
+      nestedPatchBtn.type      = 'button';
+      nestedPatchBtn.className = 'ef-add-btn';
+      nestedPatchBtn.style.cssText = 'margin-top:6px;';
+      nestedPatchBtn.textContent = '+ Stage nested patch \u2192 bundle';
+      nestedPatchBtn.addEventListener('click', () => {
+        const nf = meta.nestedPatchFields.find(f => f.path === pathSel.value);
+        if (!nf) return;
+        const entityId = cbPicker ? cbPicker.getValue() : '';
+        if (!entityId) return;
+
+        const inp = nestedValueWrap._inp;
+        if (!inp) return;
+        const raw = (inp.getValue ? inp.getValue() : inp.value);
+        if (raw === null || raw === '' || raw === undefined) return;
+        const value = (nf.leaf === 'year') ? parseInt(raw, 10) : raw;
+
+        // Build the concrete path string by substituting selectors
+        let concretePath = nf.path;
+        if (nf.pickerKind === 'sources') {
+          const host = cbNestedElem1 ? (cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value) : '';
+          if (!host) { elemPickerWrap.querySelector('input, select') && elemPickerWrap.querySelector('input, select').focus(); return; }
+          concretePath = `sources[${host}].${nf.leaf}`;
+        } else if (nf.pickerKind === 'youtube') {
+          const vid = cbNestedElem1 ? (cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value) : '';
+          if (!vid) return;
+          concretePath = `youtube[${vid}].${nf.leaf}`;
+        } else if (nf.pickerKind === 'youtube_performer') {
+          const vid  = cbNestedElem1 ? (cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value) : '';
+          const pkey = cbNestedElem2 ? (cbNestedElem2.getValue ? cbNestedElem2.getValue() : cbNestedElem2.value) : '';
+          if (!vid || !pkey) return;
+          concretePath = `youtube[${vid}].performers[${pkey}].${nf.leaf}`;
+        }
+
+        addToBundle(meta.bucket, { op: 'patch', id: entityId, field: concretePath, value });
+        updateStageCount();
+        nestedPatchBtn.textContent = '\u2713 Staged!';
+        setTimeout(() => { nestedPatchBtn.textContent = '+ Stage nested patch \u2192 bundle'; }, 1400);
+      });
+      opsWrap.appendChild(nestedPatchBtn);
     }
 
     // ── APPEND TO ARRAY ────────────────────────────────────────────────────

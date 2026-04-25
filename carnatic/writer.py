@@ -73,11 +73,252 @@ VALID_ERAS = {
 
 VALID_SOURCE_TYPES = {"wikipedia", "pdf", "article", "archive", "other"}
 
-PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani"}
-PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
-PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes"}
-PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language"}
-PATCHABLE_COMPOSER_FIELDS = {"name", "born", "died"}
+# ── patchable field whitelists (ADR-100 §1, §7) ───────────────────────────────
+# Scalar fields patchable via op:"patch" in the bundle.
+# Identity-bearing fields (id, url-as-key, source/target) are NEVER in these sets.
+
+PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "notes_text"}
+PATCHABLE_MUSICIAN_NESTED_PATHS = {
+    "sources[<host>].url", "sources[<host>].label",
+    "youtube[<vid>].label", "youtube[<vid>].year", "youtube[<vid>].version",
+    "youtube[<vid>].tala", "youtube[<vid>].composition_id", "youtube[<vid>].raga_id",
+    "youtube[<vid>].kind",
+    "youtube[<vid>].performers[<key>].role",
+    "youtube[<vid>].performers[<key>].musician_id",
+}
+
+PATCHABLE_RAGA_FIELDS = {
+    "name", "label", "parent_raga", "melakarta", "melakarta_number",
+    "is_melakarta", "cakra", "notes", "mela_id", "arohana", "avarohana",
+}
+PATCHABLE_RAGA_NESTED_PATHS = {"sources[<host>].url", "sources[<host>].label"}
+
+PATCHABLE_COMPOSITION_FIELDS = {
+    "display_title", "title", "composer_id", "raga_id", "tala", "language", "type",
+}
+PATCHABLE_COMPOSITION_NESTED_PATHS = {"sources[<host>].url", "sources[<host>].label"}
+
+PATCHABLE_COMPOSER_FIELDS = {"name", "born", "died", "tradition"}
+PATCHABLE_COMPOSER_NESTED_PATHS = {"sources[<host>].url", "sources[<host>].label"}
+
+PATCHABLE_RECORDING_OUTER_FIELDS = {"title", "date", "venue", "occasion", "short_title"}
+PATCHABLE_RECORDING_NESTED_PATHS = {"sources[<host>].url", "sources[<host>].label"}
+
+PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note", "relation"}
+
+# ── appendable array targets (ADR-100 §2) ─────────────────────────────────────
+APPEND_MUSICIAN_TARGETS = {
+    "sources", "youtube",
+    "youtube[<vid>].performers",
+    "youtube[<vid>].subjects.raga_ids",
+    "youtube[<vid>].subjects.composition_ids",
+    "youtube[<vid>].subjects.musician_ids",
+}
+APPEND_RAGA_TARGETS = {"aliases", "sources"}
+APPEND_COMPOSER_TARGETS = {"sources"}
+APPEND_COMPOSITION_TARGETS = {"sources"}
+
+
+# ── nested-path helpers (ADR-100 §1) ─────────────────────────────────────────
+
+_RE_SOURCES_PATH = re.compile(
+    r'^sources\[([^\]]+)\]\.(url|label)$'
+)
+_RE_YOUTUBE_SCALAR = re.compile(
+    r'^youtube\[([^\]]+)\]\.(label|year|version|tala|composition_id|raga_id|kind)$'
+)
+_RE_YOUTUBE_PERFORMER = re.compile(
+    r'^youtube\[([^\]]+)\]\.performers\[([^\]]+)\]\.(role|musician_id)$'
+)
+
+
+def _normalise_host(raw: str) -> str:
+    """
+    Normalise a URL host (or already-normalised host token) for use as a sources[] key.
+    "https://en.wikipedia.org/wiki/Foo"  →  "en_wikipedia_org"
+    "en.wikipedia.org"                   →  "en_wikipedia_org"
+    "en_wikipedia_org"                   →  "en_wikipedia_org"
+    """
+    from urllib.parse import urlparse
+    parsed = urlparse(raw)
+    host = parsed.netloc or parsed.path.split("/")[0]
+    # strip port, lower, dots→underscores
+    host = host.split(":")[0].strip().lower().replace(".", "_")
+    return host or raw.lower().replace(".", "_")
+
+
+def _extract_vid(url: str) -> str:
+    """
+    Return the 11-char YouTube video id from any common YouTube URL format,
+    or the raw string if it already looks like a video id.
+    """
+    patterns = [
+        re.compile(r'(?:v=|youtu\.be/|embed/|shorts/)([A-Za-z0-9_-]{11})'),
+    ]
+    for p in patterns:
+        m = p.search(url)
+        if m:
+            return m.group(1)
+    if re.fullmatch(r'[A-Za-z0-9_-]{11}', url):
+        return url
+    return url
+
+
+def _performer_key(performer: dict) -> str:
+    """
+    The stable selector key for a performer element.
+    Uses musician_id if set, else slugifies unmatched_name.
+    """
+    if performer.get("musician_id"):
+        return performer["musician_id"]
+    name = performer.get("unmatched_name", "")
+    return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
+
+
+def _parse_nested_path(path: str) -> tuple | None:
+    """
+    Parse a nested-path selector string into typed components.
+
+    Returns one of:
+      ("sources",           host_token,  leaf_field)
+      ("youtube_scalar",    vid,         leaf_field)
+      ("youtube_performer", vid,         performer_key, leaf_field)
+    or None if unrecognised.
+    """
+    m = _RE_SOURCES_PATH.match(path)
+    if m:
+        return ("sources", m.group(1), m.group(2))
+
+    m = _RE_YOUTUBE_SCALAR.match(path)
+    if m:
+        return ("youtube_scalar", m.group(1), m.group(2))
+
+    m = _RE_YOUTUBE_PERFORMER.match(path)
+    if m:
+        return ("youtube_performer", m.group(1), m.group(2), m.group(3))
+
+    return None
+
+
+def _apply_source_patch(
+    entity: dict,
+    host_token: str,
+    leaf: str,
+    value: Any,
+) -> WriteResult | None:
+    """
+    Patch sources[<host>].url or sources[<host>].label in an entity dict in-place.
+    Returns a WriteResult error, or None on success (caller should build the ok result).
+    """
+    sources = entity.get("sources", [])
+    matched = [
+        s for s in sources
+        if _normalise_host(s.get("url", "")) == host_token
+    ]
+    if not matched:
+        return _err(
+            f"sources entry with normalised host \"{host_token}\" not found.\n"
+            f"       Use Append → sources to add a new source, or annotate."
+        )
+    if len(matched) > 1:
+        return _err(
+            f"Multiple sources share host \"{host_token}\" — selector is ambiguous.\n"
+            f"       Use annotate or edit the file by hand to resolve the collision."
+        )
+    src = matched[0]
+    old = src.get(leaf)
+    if leaf == "url":
+        if not isinstance(value, str) or not value.startswith("http"):
+            return _err(f"sources url must be a URL string starting with 'http', got \"{value}\"")
+    src[leaf] = value
+    return None  # success
+
+
+def _apply_youtube_scalar_patch(
+    entity: dict,
+    vid: str,
+    leaf: str,
+    value: Any,
+    valid_raga_ids: set[str] | None = None,
+    valid_composition_ids: set[str] | None = None,
+) -> WriteResult | None:
+    """
+    Patch a scalar field on a youtube[] entry identified by vid.
+    Returns WriteResult error, or None on success.
+    """
+    entries = entity.get("youtube", [])
+    matched = [e for e in entries if _extract_vid(e.get("url", "")) == vid]
+    if not matched:
+        return _err(f"youtube entry with video id \"{vid}\" not found on this musician.")
+    entry = matched[0]
+    if leaf == "year":
+        if value in (None, "null", ""):
+            entry[leaf] = None
+        else:
+            try:
+                entry[leaf] = int(value)
+            except (ValueError, TypeError):
+                return _err(f"youtube[{vid}].year must be an integer, got \"{value}\"")
+    elif leaf == "kind":
+        if value not in VALID_YOUTUBE_KINDS:
+            return _err(
+                f"youtube[{vid}].kind \"{value}\" is not a valid kind.\n"
+                f"       Valid: {', '.join(sorted(VALID_YOUTUBE_KINDS))}"
+            )
+        entry[leaf] = value
+    elif leaf in ("composition_id",) and valid_composition_ids is not None:
+        if value and value not in valid_composition_ids:
+            return _err(f"composition_id \"{value}\" does not exist in compositions[]")
+        entry[leaf] = value or None
+    elif leaf in ("raga_id",) and valid_raga_ids is not None:
+        if value and value not in valid_raga_ids:
+            return _err(f"raga_id \"{value}\" does not exist in ragas[]")
+        entry[leaf] = value or None
+    else:
+        entry[leaf] = value if value not in (None, "null", "") else None
+    return None  # success
+
+
+def _apply_youtube_performer_patch(
+    entity: dict,
+    vid: str,
+    performer_key: str,
+    leaf: str,
+    value: Any,
+    valid_musician_ids: set[str] | None = None,
+) -> WriteResult | None:
+    """
+    Patch role or musician_id on a specific performer in a youtube[] entry.
+    Returns WriteResult error, or None on success.
+    """
+    entries = entity.get("youtube", [])
+    matched = [e for e in entries if _extract_vid(e.get("url", "")) == vid]
+    if not matched:
+        return _err(f"youtube entry with video id \"{vid}\" not found on this musician.")
+    entry = matched[0]
+    performers = entry.get("performers", [])
+    perf_matched = [p for p in performers if _performer_key(p) == performer_key]
+    if not perf_matched:
+        return _err(
+            f"performer with key \"{performer_key}\" not found in "
+            f"youtube[{vid}].performers[]."
+        )
+    perf = perf_matched[0]
+    if leaf == "role":
+        if value not in VALID_ROLES:
+            return _err(
+                f"role \"{value}\" is not a valid role.\n"
+                f"       Valid: {', '.join(sorted(VALID_ROLES))}"
+            )
+        perf[leaf] = value
+    elif leaf == "musician_id":
+        if valid_musician_ids is not None and value and value not in valid_musician_ids:
+            return _err(f"musician_id \"{value}\" does not exist in musicians[]")
+        perf["musician_id"] = value
+        # If we're resolving an unmatched_name, keep it for provenance but mark resolved
+        if value and "unmatched_name" in perf:
+            perf["unmatched_name"] = perf["unmatched_name"]  # retain for provenance
+    return None  # success
 
 
 # ── WriteResult ────────────────────────────────────────────────────────────────
@@ -1094,17 +1335,62 @@ class CarnaticWriter:
         field: str,
         value: Any,
         graph_path: Path | None = None,
+        compositions_path: Path | None = None,
     ) -> WriteResult:
-        """Update a single scalar field on an existing musician node."""
+        """
+        Update a scalar field or nested-path field on an existing musician node.
+        ADR-100 §1: field may be a simple name or a nested-path selector such as
+        'sources[en_wikipedia_org].url', 'youtube[<vid>].label',
+        or 'youtube[<vid>].performers[<key>].role'.
+        """
         if field == "id":
             return _err("id is immutable — cannot be patched")
+
+        nodes = _load_all_nodes(musicians_path)
+        node = next((n for n in nodes if n["id"] == musician_id), None)
+        if node is None:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        # ── Nested-path branch ────────────────────────────────────────────────
+        parsed = _parse_nested_path(field)
+        if parsed is not None:
+            path_type = parsed[0]
+            if path_type == "sources":
+                _, host_token, leaf = parsed
+                err = _apply_source_patch(node, host_token, leaf, value)
+                if err:
+                    return err
+            elif path_type == "youtube_scalar":
+                _, vid, leaf = parsed
+                valid_raga_ids: set[str] | None = None
+                valid_comp_ids: set[str] | None = None
+                if leaf in ("raga_id", "composition_id") and compositions_path:
+                    cp = compositions_path
+                    valid_raga_ids = {r["id"] for r in _load_all_ragas(cp, cp.parent / "ragas" if (cp.parent / "ragas").is_dir() else None)}
+                    valid_comp_ids = {c["id"] for c in _load_all_compositions(cp)}
+                err = _apply_youtube_scalar_patch(node, vid, leaf, value, valid_raga_ids, valid_comp_ids)
+                if err:
+                    return err
+            elif path_type == "youtube_performer":
+                _, vid, perf_key, leaf = parsed
+                valid_musician_ids: set[str] | None = {n["id"] for n in nodes}
+                err = _apply_youtube_performer_patch(node, vid, perf_key, leaf, value, valid_musician_ids)
+                if err:
+                    return err
+            else:
+                return _err(f"unrecognised nested path type: {path_type}")
+
+            _write_node(musicians_path, node)
+            return _ok("[NODE~]", f"patched: {musician_id}  {field} → {value!r}")
+
+        # ── Scalar field branch ───────────────────────────────────────────────
         if field not in PATCHABLE_MUSICIAN_FIELDS:
             return _err(
-                f"field \"{field}\" is not patchable\n"
-                f"       Permitted fields: {', '.join(sorted(PATCHABLE_MUSICIAN_FIELDS))}"
+                f"field \"{field}\" is not patchable on a musician\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_MUSICIAN_FIELDS))}\n"
+                f"       Nested paths: {', '.join(sorted(PATCHABLE_MUSICIAN_NESTED_PATHS))}"
             )
 
-        # Coerce value for typed fields
         coerced: Any = value
         if field == "era":
             if value not in VALID_ERAS:
@@ -1120,12 +1406,6 @@ class CarnaticWriter:
                     coerced = int(value)
                 except (ValueError, TypeError):
                     return _err(f"field \"{field}\" must be an integer or \"null\", got \"{value}\"")
-
-        nodes = _load_all_nodes(musicians_path)
-
-        node = next((n for n in nodes if n["id"] == musician_id), None)
-        if node is None:
-            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
 
         old_value = node.get(field)
         node[field] = coerced
@@ -1143,7 +1423,7 @@ class CarnaticWriter:
         value: Any,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Update a single field on an existing edge."""
+        """Update a single field on an existing edge. ADR-100 §1."""
         if field not in PATCHABLE_EDGE_FIELDS:
             return _err(
                 f"field \"{field}\" is not patchable on an edge\n"
@@ -1158,6 +1438,13 @@ class CarnaticWriter:
                 return _err(f"confidence must be a float, got \"{value}\"")
             if not (0.0 <= coerced <= 1.0):
                 return _err(f"confidence {coerced} is out of range [0.0, 1.0]")
+        elif field == "relation":
+            VALID_RELATIONS = {"guru_shishya", "concert_partner", "family", "disciple", "unknown"}
+            if value not in VALID_RELATIONS:
+                return _err(
+                    f"relation \"{value}\" is not a valid relation\n"
+                    f"       Valid values: {', '.join(sorted(VALID_RELATIONS))}"
+                )
 
         edges = _load_edges(musicians_path)
 
@@ -1366,23 +1653,14 @@ class CarnaticWriter:
         graph_path: Path | None = None,
     ) -> WriteResult:
         """
-        Update a single field on an existing raga.
+        Update a scalar field or nested-path on an existing raga. ADR-100 §1.
 
-        Dir mode:    reads/writes ragas/{raga_id}.json.
-        Legacy mode: reads/writes the monolithic compositions.json.
-
-        Permitted fields: name, parent_raga, melakarta, is_melakarta, cakra, notes
-        id and sources are immutable via this command.
+        Nested paths: sources[<host>].url, sources[<host>].label
+        Permitted scalar fields: name, label, parent_raga, melakarta, melakarta_number,
+          is_melakarta, cakra, notes, mela_id, arohana, avarohana
         """
         if field == "id":
             return _err("id is immutable — cannot be patched")
-        if field == "sources":
-            return _err("sources is immutable via patch-raga — use add-source instead")
-        if field not in PATCHABLE_RAGA_FIELDS:
-            return _err(
-                f"field \"{field}\" is not patchable on a raga\n"
-                f"       Permitted fields: {', '.join(sorted(PATCHABLE_RAGA_FIELDS))}"
-            )
 
         ragas = _load_all_ragas(compositions_path, ragas_path)
         existing_ids = {r["id"] for r in ragas}
@@ -1390,7 +1668,30 @@ class CarnaticWriter:
         if raga_id not in existing_ids:
             return _err(f"raga_id \"{raga_id}\" does not exist in ragas[]")
 
-        # Coerce value for typed fields
+        raga = next(r for r in ragas if r["id"] == raga_id)
+
+        # ── Nested-path branch ────────────────────────────────────────────────
+        parsed = _parse_nested_path(field)
+        if parsed is not None:
+            path_type = parsed[0]
+            if path_type == "sources":
+                _, host_token, leaf = parsed
+                err = _apply_source_patch(raga, host_token, leaf, value)
+                if err:
+                    return err
+            else:
+                return _err(f"nested path type \"{path_type}\" is not supported on ragas")
+            _write_raga(compositions_path, raga, ragas_path)
+            return _ok("[RAGA~]", f"patched: {raga_id}  {field} → {value!r}")
+
+        # ── Scalar field branch ───────────────────────────────────────────────
+        if field not in PATCHABLE_RAGA_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a raga\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_RAGA_FIELDS))}\n"
+                f"       Nested paths: {', '.join(sorted(PATCHABLE_RAGA_NESTED_PATHS))}"
+            )
+
         coerced: Any = value
 
         if field == "parent_raga":
@@ -1424,7 +1725,7 @@ class CarnaticWriter:
                 if not (1 <= coerced <= 12):
                     return _err(f"cakra {coerced} is out of range [1, 12]")
 
-        elif field == "melakarta":
+        elif field in ("melakarta", "melakarta_number"):
             if value in (None, "null", ""):
                 coerced = None
             else:
@@ -1435,12 +1736,9 @@ class CarnaticWriter:
                 if not (1 <= coerced <= 72):
                     return _err(f"melakarta {coerced} is out of range [1, 72]")
 
-        # Apply patch — find the raga object and mutate it
-        raga = next(r for r in ragas if r["id"] == raga_id)
         old_value = raga.get(field)
         raga[field] = coerced
 
-        # Write back: dir mode writes only the one raga file; legacy rewrites all
         _write_raga(compositions_path, raga, ragas_path)
 
         return _ok("[RAGA~]", f"patched: {raga_id}  {field}: {old_value!r} → {coerced!r}")
@@ -1454,20 +1752,60 @@ class CarnaticWriter:
         value: Any,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Update a single field on an existing composition. ADR-097 §3."""
+        """
+        Update a scalar field or nested-path on an existing composition. ADR-100 §1.
+
+        Nested paths: sources[<host>].url, sources[<host>].label
+        Permitted scalar fields: display_title, title, composer_id, raga_id, tala, language, type
+        """
         if field == "id":
             return _err("id is immutable — cannot be patched")
-        if field not in PATCHABLE_COMPOSITION_FIELDS:
-            return _err(
-                f"field \"{field}\" is not patchable on a composition\n"
-                f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSITION_FIELDS))}"
-            )
+
         comps = _load_all_compositions(compositions_path)
         comp = next((c for c in comps if c["id"] == composition_id), None)
         if comp is None:
             return _err(f"composition_id \"{composition_id}\" does not exist in compositions[]")
+
+        # ── Nested-path branch ────────────────────────────────────────────────
+        parsed = _parse_nested_path(field)
+        if parsed is not None:
+            path_type = parsed[0]
+            if path_type == "sources":
+                _, host_token, leaf = parsed
+                err = _apply_source_patch(comp, host_token, leaf, value)
+                if err:
+                    return err
+            else:
+                return _err(f"nested path type \"{path_type}\" is not supported on compositions")
+            _write_composition(compositions_path, comp)
+            return _ok("[COMP~]", f"patched: {composition_id}  {field} → {value!r}")
+
+        # ── Scalar field branch ───────────────────────────────────────────────
+        if field not in PATCHABLE_COMPOSITION_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a composition\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSITION_FIELDS))}\n"
+                f"       Nested paths: {', '.join(sorted(PATCHABLE_COMPOSITION_NESTED_PATHS))}"
+            )
+
+        coerced: Any = value if value not in (None, "null", "") else None
+
+        if field in ("composer_id", "raga_id") and coerced is not None:
+            # Referential integrity check
+            if field == "composer_id":
+                composers = _load_all_composers(compositions_path)
+                valid_ids = {c["id"] for c in composers}
+                if coerced not in valid_ids:
+                    return _err(f"composer_id \"{coerced}\" does not exist in composers[]")
+            else:
+                ragas_dir = compositions_path.parent / "ragas"
+                ragas = _load_all_ragas(compositions_path, ragas_dir if ragas_dir.is_dir() else None)
+                valid_ids = {r["id"] for r in ragas}
+                if coerced not in valid_ids:
+                    return _err(f"raga_id \"{coerced}\" does not exist in ragas[]")
+
         old_value = comp.get(field)
-        comp[field] = value if value not in (None, "null", "") else None
+        comp[field] = coerced
         _write_composition(compositions_path, comp)
         return _ok("[COMP~]", f"patched: {composition_id}  {field}: {old_value!r} → {comp[field]!r}")
 
@@ -1480,18 +1818,41 @@ class CarnaticWriter:
         value: Any,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Update a single field on an existing composer. ADR-097 §3."""
+        """
+        Update a scalar field or nested-path on an existing composer. ADR-100 §1.
+
+        Nested paths: sources[<host>].url, sources[<host>].label
+        Permitted scalar fields: name, born, died, tradition
+        """
         if field == "id":
             return _err("id is immutable — cannot be patched")
-        if field not in PATCHABLE_COMPOSER_FIELDS:
-            return _err(
-                f"field \"{field}\" is not patchable on a composer\n"
-                f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSER_FIELDS))}"
-            )
+
         composers = _load_all_composers(compositions_path)
         composer = next((c for c in composers if c["id"] == composer_id), None)
         if composer is None:
             return _err(f"composer_id \"{composer_id}\" does not exist in composers[]")
+
+        # ── Nested-path branch ────────────────────────────────────────────────
+        parsed = _parse_nested_path(field)
+        if parsed is not None:
+            path_type = parsed[0]
+            if path_type == "sources":
+                _, host_token, leaf = parsed
+                err = _apply_source_patch(composer, host_token, leaf, value)
+                if err:
+                    return err
+            else:
+                return _err(f"nested path type \"{path_type}\" is not supported on composers")
+            _write_composers(compositions_path, composers)
+            return _ok("[CMPSR~]", f"patched: {composer_id}  {field} → {value!r}")
+
+        # ── Scalar field branch ───────────────────────────────────────────────
+        if field not in PATCHABLE_COMPOSER_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a composer\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSER_FIELDS))}\n"
+                f"       Nested paths: {', '.join(sorted(PATCHABLE_COMPOSER_NESTED_PATHS))}"
+            )
         coerced: Any = value
         if field in ("born", "died"):
             if value in (None, "null", ""):
@@ -1505,6 +1866,63 @@ class CarnaticWriter:
         composer[field] = coerced
         _write_composers(compositions_path, composers)
         return _ok("[CMPSR~]", f"patched: {composer_id}  {field}: {old_value!r} → {coerced!r}")
+
+    def patch_recording_outer(
+        self,
+        *,
+        recording_id: str,
+        field: str,
+        value: Any,
+        recordings_path: Path | None = None,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """
+        Update a top-level (non-session) field or nested-path on a recording file.
+        ADR-100 §1: nested sessions[]/performances[] patches are deferred to ADR-101.
+
+        Permitted scalar fields: title, short_title, date, venue, occasion
+        Nested paths: sources[<host>].url, sources[<host>].label
+        """
+        if field in ("id", "video_id", "url"):
+            return _err(f"{field} is immutable — cannot be patched")
+
+        rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+        rec_file = rp / f"{recording_id}.json"
+        if not rec_file.exists():
+            return _err(f"recording_id \"{recording_id}\" does not exist in recordings/")
+
+        rec = json.loads(rec_file.read_text(encoding="utf-8"))
+
+        # ── Nested-path branch ────────────────────────────────────────────────
+        parsed = _parse_nested_path(field)
+        if parsed is not None:
+            path_type = parsed[0]
+            if path_type == "sources":
+                _, host_token, leaf = parsed
+                err = _apply_source_patch(rec, host_token, leaf, value)
+                if err:
+                    return err
+            else:
+                return _err(f"nested path type \"{path_type}\" is not supported on recordings")
+        elif field not in PATCHABLE_RECORDING_OUTER_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a recording\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_RECORDING_OUTER_FIELDS))}\n"
+                f"       Nested paths: {', '.join(sorted(PATCHABLE_RECORDING_NESTED_PATHS))}\n"
+                f"       Session/performance fields: deferred to ADR-101"
+            )
+        else:
+            old_value = rec.get(field)
+            rec[field] = value if value not in (None, "null", "") else None
+
+        text = json.dumps(rec, indent=2, ensure_ascii=False) + "\n"
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=rp, suffix=".tmp", delete=False
+        ) as f:
+            f.write(text)
+            tmp_path = Path(f.name)
+        os.replace(tmp_path, rec_file)
+        return _ok("[REC~]", f"patched: {recording_id}  {field} → {value!r}")
 
     def add_note(
         self,
