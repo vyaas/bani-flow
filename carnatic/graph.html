@@ -3142,6 +3142,127 @@
   .panel-tutorial .pt-view-note + .pt-view-note {
     margin-top: 6px;
   }
+  /* ADR-102: Colophon ──────────────────────────────────────────────────── */
+  .panel-tutorial .pt-colophon {
+    margin-top: 4px;
+  }
+  .panel-tutorial .pt-colophon-section {
+    padding: 12px 0 10px;
+    border-top: 1px solid var(--border-strong);
+  }
+  .panel-tutorial .pt-colophon-head {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin: 0 0 8px;
+    letter-spacing: 0.01em;
+  }
+  .panel-tutorial .pt-colophon-para {
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .panel-tutorial .pt-vision-epigraph {
+    margin: 8px 0 4px 12px;
+    padding-left: 10px;
+    border-left: 2px solid var(--border-strong);
+  }
+  .panel-tutorial .pt-vision-epigraph p {
+    font-size: 0.76rem;
+    font-style: italic;
+    color: var(--fg-muted);
+    margin: 0 0 4px;
+  }
+  .panel-tutorial .pt-epigraph-source {
+    font-size: 0.70rem;
+    font-style: normal;
+    color: var(--fg-faint, var(--fg-muted));
+    display: block;
+  }
+  .panel-tutorial .pt-loop-diagram {
+    font-size: 0.68rem;
+    font-family: monospace;
+    color: var(--fg-muted);
+    background: var(--bg-sub, var(--bg));
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin: 6px 0 8px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .panel-tutorial .pt-quickstart {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+    padding-left: 18px;
+    margin: 6px 0 8px;
+  }
+  .panel-tutorial .pt-quickstart li {
+    margin: 3px 0;
+  }
+  .panel-tutorial .pt-quickstart code {
+    font-family: monospace;
+    font-size: 0.70rem;
+    color: var(--fg);
+  }
+  .panel-tutorial .pt-contribute-repo {
+    margin: 6px 0 8px;
+  }
+  .panel-tutorial .pt-repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .panel-tutorial .pt-repo-link:hover { color: var(--fg); }
+  .panel-tutorial .pt-github-icon {
+    fill: currentColor;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-colophon-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin: 4px 0 2px;
+  }
+  .panel-tutorial .pt-colophon-link {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .panel-tutorial .pt-colophon-link:hover {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+  .panel-tutorial .pt-author-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-author-text { flex: 1; min-width: 0; }
+  .panel-tutorial .pt-author-name {
+    font-size: 0.80rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: 2px;
+  }
+  .panel-tutorial .pt-author-tagline {
+    font-size: 0.70rem;
+    color: var(--fg-muted);
+  }
 </style>
 </head>
 <body>
@@ -75157,7 +75278,7 @@ const lecdemsAboutComposition = {};
 
 // ── Empty-panel tutorial copy (ADR-086) ──────────────────────────────────────
 const helpEmptyPanels = {
-  "schema_version": 3,
+  "schema_version": 4,
   "musician_panel": {
     "chip_catalogue": [
       {
@@ -75432,6 +75553,97 @@ const helpEmptyPanels = {
         }
       ],
       "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
+    }
+  },
+  "colophon": {
+    "vision": {
+      "heading": "What this is",
+      "paragraphs": [
+        "Carnatic music is not a catalogue. It is a living transmission — guru to shishya — across a hundred and fifty years of recorded sound and a thousand years of unrecorded teaching. This site documents that transmission as a graph: nodes are musicians, edges are the relationships through which sound is taught.",
+        "TM Krishna writes that music is not the sounds themselves but what they do to us; that aesthetics is not what you sense but how to sense. This graph is a tool for the second kind of listening. The chips are not records. They are entry-points into a field of relationship.",
+        "The two views — Guru-Shishya and Mela-Janya — are the two organs through which a rasika holds the tradition: the human lineage and the modal world. Switch between them. The same musician sounds different when you hear them inside their bani; the same raga sounds different when you hear it in three different lineages."
+      ],
+      "epigraph": {
+        "text": "The receiver is drawn completely into the world of the art, and there develops a personal relationship with it.",
+        "source": "TM Krishna, A Southern Music, ch. 1"
+      }
+    },
+    "curation_loop": {
+      "heading": "A self-editing graph",
+      "paragraphs": [
+        "Every chip you see was authored by the same surfaces that you can use. The + buttons in each panel open entry forms that produce a bundle file; the bundle file is ingested by a single command (bani-add); the next render of graph.html includes your contribution. The reader and the author are the same person, by construction.",
+        "This shape is named in ADR-085 as the curation loop. It is the constitutional commitment of the project: there is no privileged author, no remote service, no schema enforced only on a server. The data, the schema, the entry forms, the validators, and the render pipeline all live inside a single clone of the repository."
+      ],
+      "diagram_text": "graph.html  →  bundle  →  bani-add  →  writer  →  entity files  →  render  →  graph.html",
+      "ext_links": [
+        {
+          "label": "ADR-085 · the curation loop",
+          "url": "https://github.com/vyaas/bani_flow/blob/main/plans/ADR-085-self-replicating-curation-loop.md"
+        },
+        {
+          "label": "Entry forms (ADR-031)",
+          "url": "https://github.com/vyaas/bani_flow/blob/main/plans/ADR-031-data-entry-forms.md"
+        }
+      ]
+    },
+    "contribute": {
+      "heading": "Contribute",
+      "summary": "Bani Flow is open source. Add a musician, a recording, a lineage edge — clone the repo, run the entry form, submit a pull request.",
+      "repo": {
+        "label": "vyaas/bani_flow",
+        "url": "https://github.com/vyaas/bani_flow",
+        "icon": "github"
+      },
+      "quickstart": [
+        "git clone https://github.com/vyaas/bani_flow",
+        "pip install -e .",
+        "bani-serve  # opens http://localhost:8765/graph.html",
+        "use a + button to author your contribution",
+        "bani-add ~/Downloads/bani_add_bundle.json && bani-render"
+      ],
+      "ext_links": [
+        {
+          "label": "CONTRIBUTING.md",
+          "url": "https://github.com/vyaas/bani_flow/blob/main/CONTRIBUTING.md"
+        },
+        {
+          "label": "Open issues",
+          "url": "https://github.com/vyaas/bani_flow/issues"
+        }
+      ]
+    },
+    "listening_ethic": {
+      "heading": "On listening — and a note about LibRedirect",
+      "paragraphs": [
+        "YouTube is the substrate this site rests on. It is also an attention-extraction machine: every recording opens into a page surrounded by ads, autoplay queues, recommendation rails, and engagement-optimised chrome. This is the opposite of the attention Carnatic music asks for.",
+        "We separate the music from the interface. The floating player on this site embeds the video without the surrounding chrome. For the open-in-new-tab links, install LibRedirect — a browser extension that transparently redirects YouTube URLs to a player of your choosing (Invidious, Piped, FreeTube, mpv). Once installed, every ↗ link from this site opens into a clean, ad-free, algorithmically-quiet player. You read the graph; the music plays. Nothing else is asked of you."
+      ],
+      "ext_links": [
+        {
+          "label": "LibRedirect · install & configure",
+          "url": "https://libredirect.github.io/"
+        },
+        {
+          "label": "Invidious instances",
+          "url": "https://invidious.io/"
+        }
+      ]
+    },
+    "author": {
+      "name": "Vyaas",
+      "tagline": "Curator · maintainer · single human responsible",
+      "avatar_url": "https://0.gravatar.com/avatar/03842f7bd424c71064035f5ac4b8e32626b72d758dc4d73028160a2d0ebe1c5d?size=120&d=initials",
+      "gravatar_profile_url": "https://gravatar.com/vyaas",
+      "ext_links": [
+        {
+          "label": "GitHub · @vyaas",
+          "url": "https://github.com/vyaas"
+        },
+        {
+          "label": "Gravatar profile",
+          "url": "https://gravatar.com/vyaas"
+        }
+      ]
     }
   }
 };
@@ -86836,13 +87048,158 @@ function buildEditForm() {
     return chip;
   }
 
+  // ── ADR-102: Colophon renderer ────────────────────────────────────────────
+  // Renders vision → curation_loop → contribute → listening_ethic → author
+  // beneath the per-panel tutorial. Draws from helpEmptyPanels.colophon
+  // (shared across both panels). No-ops when colophon is absent or empty.
+  // Not affected by tutorial-filter interactivity (institutional content).
+
+  const _GITHUB_SVG = '<svg class="pt-github-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
+
+  function _renderExtLinks(links) {
+    if (!Array.isArray(links) || !links.length) return null;
+    const div = _el('div', 'pt-colophon-links');
+    links.forEach(function (lnk) {
+      if (!lnk.url || !lnk.label) return;
+      const a = document.createElement('a');
+      a.className = 'pt-colophon-link';
+      a.href = lnk.url;
+      a.textContent = lnk.label;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      div.appendChild(a);
+    });
+    return div.children.length ? div : null;
+  }
+
+  function _renderColophon(colophon, container) {
+    if (!colophon || typeof colophon !== 'object') return;
+
+    const wrap = _el('div', 'pt-colophon');
+    const hr = document.createElement('hr');
+    hr.className = 'pt-divider';
+    wrap.appendChild(hr);
+
+    const order = ['vision', 'curation_loop', 'contribute', 'listening_ethic', 'author'];
+    order.forEach(function (key) {
+      const sub = colophon[key];
+      if (!sub || typeof sub !== 'object') return;
+
+      const sec = _el('div', 'pt-colophon-section pt-colophon-' + key.replace('_', '-'));
+      if (_nonEmptyString(sub.heading)) {
+        sec.appendChild(_el('h3', 'pt-colophon-head', sub.heading));
+      }
+
+      if (key === 'vision') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        if (sub.epigraph && _nonEmptyString(sub.epigraph.text)) {
+          const bq = _el('blockquote', 'pt-vision-epigraph');
+          bq.appendChild(_el('p', null, '\u201c' + sub.epigraph.text + '\u201d'));
+          if (_nonEmptyString(sub.epigraph.source)) {
+            bq.appendChild(_el('cite', 'pt-epigraph-source', '\u2014 ' + sub.epigraph.source));
+          }
+          sec.appendChild(bq);
+        }
+
+      } else if (key === 'curation_loop') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        if (_nonEmptyString(sub.diagram_text)) {
+          const pre = document.createElement('pre');
+          pre.className = 'pt-loop-diagram';
+          pre.textContent = sub.diagram_text;
+          sec.appendChild(pre);
+        }
+        const loopLinks = _renderExtLinks(sub.ext_links);
+        if (loopLinks) sec.appendChild(loopLinks);
+
+      } else if (key === 'contribute') {
+        if (_nonEmptyString(sub.summary)) {
+          sec.appendChild(_el('p', 'pt-colophon-para', sub.summary));
+        }
+        if (sub.repo && _nonEmptyString(sub.repo.url) && _nonEmptyString(sub.repo.label)) {
+          const repoRow = _el('div', 'pt-contribute-repo');
+          const repoLink = document.createElement('a');
+          repoLink.className = 'pt-repo-link';
+          repoLink.href = sub.repo.url;
+          repoLink.target = '_blank';
+          repoLink.rel = 'noopener noreferrer';
+          if (sub.repo.icon === 'github') {
+            const iconSpan = document.createElement('span');
+            iconSpan.innerHTML = _GITHUB_SVG;
+            repoLink.appendChild(iconSpan);
+          }
+          repoLink.appendChild(document.createTextNode('\u00a0' + sub.repo.label));
+          repoRow.appendChild(repoLink);
+          sec.appendChild(repoRow);
+        }
+        if (Array.isArray(sub.quickstart) && sub.quickstart.length) {
+          const ol = document.createElement('ol');
+          ol.className = 'pt-quickstart';
+          sub.quickstart.forEach(function (step) {
+            if (!_nonEmptyString(step)) return;
+            const li = document.createElement('li');
+            const code = document.createElement('code');
+            code.textContent = step;
+            li.appendChild(code);
+            ol.appendChild(li);
+          });
+          if (ol.children.length) sec.appendChild(ol);
+        }
+        const contribLinks = _renderExtLinks(sub.ext_links);
+        if (contribLinks) sec.appendChild(contribLinks);
+
+      } else if (key === 'listening_ethic') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        const listenLinks = _renderExtLinks(sub.ext_links);
+        if (listenLinks) sec.appendChild(listenLinks);
+
+      } else if (key === 'author') {
+        if (_nonEmptyString(sub.name)) {
+          const authorRow = _el('div', 'pt-author-row');
+          if (_nonEmptyString(sub.avatar_url)) {
+            const img = document.createElement('img');
+            img.className = 'pt-author-avatar';
+            img.src = sub.avatar_url;
+            img.alt = sub.name;
+            img.loading = 'lazy';
+            img.referrerPolicy = 'no-referrer';
+            img.width = 40;
+            img.height = 40;
+            authorRow.appendChild(img);
+          }
+          const authorText = _el('div', 'pt-author-text');
+          authorText.appendChild(_el('div', 'pt-author-name', sub.name));
+          if (_nonEmptyString(sub.tagline)) {
+            authorText.appendChild(_el('div', 'pt-author-tagline', sub.tagline));
+          }
+          authorRow.appendChild(authorText);
+          sec.appendChild(authorRow);
+        }
+        const authorLinks = _renderExtLinks(sub.ext_links);
+        if (authorLinks) sec.appendChild(authorLinks);
+      }
+
+      wrap.appendChild(sec);
+    });
+
+    if (wrap.children.length > 1) {
+      container.appendChild(wrap);
+    }
+  }
+
   function _renderInto(container, block, slot) {
     container.innerHTML = '';
 
     const schemaVersion = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
       ? (helpEmptyPanels.schema_version || 1)
       : 1;
-    if (schemaVersion > 3) {
+    if (schemaVersion > 4) {
       container.appendChild(_el('p', 'pt-upgrade',
         'Tutorial data schema (' + schemaVersion + ') is newer than this render. Please update.'));
       return;
@@ -87023,6 +87380,11 @@ function buildEditForm() {
       if (seeds.closing_note) cross.appendChild(_el('p', 'pt-closing-note', seeds.closing_note));
       container.appendChild(cross);
     }
+
+    // ── Section D: colophon (ADR-102) ────────────────────────────────────
+    const colophon = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
+      ? (helpEmptyPanels.colophon || null) : null;
+    _renderColophon(colophon, container);
 
   }
 
