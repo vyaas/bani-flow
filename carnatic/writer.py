@@ -76,6 +76,8 @@ VALID_SOURCE_TYPES = {"wikipedia", "pdf", "article", "archive", "other"}
 PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
 PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes"}
+PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language"}
+PATCHABLE_COMPOSER_FIELDS = {"name", "born", "died"}
 
 
 # ── WriteResult ────────────────────────────────────────────────────────────────
@@ -381,6 +383,25 @@ def _append_composition(compositions_path: Path, comp: dict) -> None:
     data = json.loads(compositions_path.read_text(encoding="utf-8"))
     comps: list[dict] = data.get("compositions", [])
     comps.append(comp)
+    data["compositions"] = comps
+    _atomic_write(compositions_path, data)
+
+
+def _write_composition(compositions_path: Path, comp: dict) -> None:
+    """
+    Write a single composition in-place (update mode).
+    Dir mode: overwrites compositions/{id}.json.
+    Legacy mode: rewrites the entire monolithic compositions.json.
+    """
+    if _is_compositions_dir_mode(compositions_path):
+        _atomic_write(_composition_file(compositions_path, comp["id"]), comp)
+        return
+    data = json.loads(compositions_path.read_text(encoding="utf-8"))
+    comps: list[dict] = data.get("compositions", [])
+    for i, c in enumerate(comps):
+        if c["id"] == comp["id"]:
+            comps[i] = comp
+            break
     data["compositions"] = comps
     _atomic_write(compositions_path, data)
 
@@ -1423,3 +1444,163 @@ class CarnaticWriter:
         _write_raga(compositions_path, raga, ragas_path)
 
         return _ok("[RAGA~]", f"patched: {raga_id}  {field}: {old_value!r} → {coerced!r}")
+
+    def patch_composition(
+        self,
+        compositions_path: Path,
+        *,
+        composition_id: str,
+        field: str,
+        value: Any,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """Update a single field on an existing composition. ADR-097 §3."""
+        if field == "id":
+            return _err("id is immutable — cannot be patched")
+        if field not in PATCHABLE_COMPOSITION_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a composition\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSITION_FIELDS))}"
+            )
+        comps = _load_all_compositions(compositions_path)
+        comp = next((c for c in comps if c["id"] == composition_id), None)
+        if comp is None:
+            return _err(f"composition_id \"{composition_id}\" does not exist in compositions[]")
+        old_value = comp.get(field)
+        comp[field] = value if value not in (None, "null", "") else None
+        _write_composition(compositions_path, comp)
+        return _ok("[COMP~]", f"patched: {composition_id}  {field}: {old_value!r} → {comp[field]!r}")
+
+    def patch_composer(
+        self,
+        compositions_path: Path,
+        *,
+        composer_id: str,
+        field: str,
+        value: Any,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """Update a single field on an existing composer. ADR-097 §3."""
+        if field == "id":
+            return _err("id is immutable — cannot be patched")
+        if field not in PATCHABLE_COMPOSER_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a composer\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSER_FIELDS))}"
+            )
+        composers = _load_all_composers(compositions_path)
+        composer = next((c for c in composers if c["id"] == composer_id), None)
+        if composer is None:
+            return _err(f"composer_id \"{composer_id}\" does not exist in composers[]")
+        coerced: Any = value
+        if field in ("born", "died"):
+            if value in (None, "null", ""):
+                coerced = None
+            else:
+                try:
+                    coerced = int(value)
+                except (ValueError, TypeError):
+                    return _err(f"field \"{field}\" must be an integer or \"null\", got \"{value}\"")
+        old_value = composer.get(field)
+        composer[field] = coerced
+        _write_composers(compositions_path, composers)
+        return _ok("[CMPSR~]", f"patched: {composer_id}  {field}: {old_value!r} → {coerced!r}")
+
+    def add_note(
+        self,
+        *,
+        entity_type: str,
+        entity_id: str,
+        note_text: str,
+        source_url: str | None = None,
+        added_at: str | None = None,
+        musicians_path: Path | None = None,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+        recordings_path: Path | None = None,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """
+        Append a note to the notes[] array of any first-class entity. ADR-097 §7.
+
+        entity_type: "musician" | "raga" | "composer" | "composition" | "recording"
+        Note shape: { text, source_url?, added_at (writer-filled if absent) }
+        notes[] is strictly append-only via the bundle loop.
+        """
+        from datetime import datetime, timezone as tz
+
+        VALID_ENTITY_TYPES = {"musician", "raga", "composer", "composition", "recording"}
+        if entity_type not in VALID_ENTITY_TYPES:
+            return _err(
+                f"entity_type \"{entity_type}\" is not supported\n"
+                f"       Supported: {', '.join(sorted(VALID_ENTITY_TYPES))}"
+            )
+        if not note_text or not note_text.strip():
+            return _err("note text cannot be empty")
+
+        note_obj: dict = {
+            "text": note_text.strip(),
+            "added_at": added_at or datetime.now(tz.utc).isoformat(),
+        }
+        if source_url:
+            note_obj["source_url"] = source_url
+
+        if entity_type == "musician":
+            mp = musicians_path or _default_musicians_path()
+            nodes = _load_all_nodes(mp)
+            node = next((n for n in nodes if n["id"] == entity_id), None)
+            if node is None:
+                return _err(f"musician_id \"{entity_id}\" does not exist in nodes[]")
+            node.setdefault("notes", []).append(note_obj)
+            _write_node(mp, node)
+            return _ok("[NOTE+]", f"note added to musician: {entity_id}")
+
+        if entity_type == "raga":
+            cp = compositions_path or _default_compositions_path()
+            rp = ragas_path or (cp.parent / "ragas")
+            ragas_list = _load_all_ragas(cp, rp if rp.is_dir() else None)
+            raga = next((r for r in ragas_list if r["id"] == entity_id), None)
+            if raga is None:
+                return _err(f"raga_id \"{entity_id}\" does not exist in ragas[]")
+            raga.setdefault("notes", []).append(note_obj)
+            _write_raga(cp, raga, rp if rp.is_dir() else None)
+            return _ok("[NOTE+]", f"note added to raga: {entity_id}")
+
+        if entity_type == "composer":
+            cp = compositions_path or _default_compositions_path()
+            composers = _load_all_composers(cp)
+            composer = next((c for c in composers if c["id"] == entity_id), None)
+            if composer is None:
+                return _err(f"composer_id \"{entity_id}\" does not exist in composers[]")
+            composer.setdefault("notes", []).append(note_obj)
+            _write_composers(cp, composers)
+            return _ok("[NOTE+]", f"note added to composer: {entity_id}")
+
+        if entity_type == "composition":
+            cp = compositions_path or _default_compositions_path()
+            comps = _load_all_compositions(cp)
+            comp = next((c for c in comps if c["id"] == entity_id), None)
+            if comp is None:
+                return _err(f"composition_id \"{entity_id}\" does not exist in compositions[]")
+            comp.setdefault("notes", []).append(note_obj)
+            _write_composition(cp, comp)
+            return _ok("[NOTE+]", f"note added to composition: {entity_id}")
+
+        if entity_type == "recording":
+            rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+            rec_file = rp / f"{entity_id}.json"
+            if not rec_file.exists():
+                return _err(f"recording_id \"{entity_id}\" does not exist in recordings/")
+            rec = json.loads(rec_file.read_text(encoding="utf-8"))
+            rec.setdefault("notes", []).append(note_obj)
+            text = json.dumps(rec, indent=2, ensure_ascii=False) + "\n"
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=rp, suffix=".tmp", delete=False
+            ) as f:
+                f.write(text)
+                tmp_path = Path(f.name)
+            os.replace(tmp_path, rec_file)
+            return _ok("[NOTE+]", f"note added to recording: {entity_id}")
+
+        return _err(f"unhandled entity_type: {entity_type}")  # unreachable
+
