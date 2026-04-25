@@ -2886,18 +2886,12 @@ function buildAddYoutubeForm() {
   return win;
 }
 
-// ── buildSegmentForm — ADR-101 §C: Add segment at current time ────────────────
+// ── buildSegmentForm — ADR-101 §C: Add segment ───────────────────────────────
 // Opens a floating form to append a timestamped segment to a recording session
 // or a lecdem youtube entry.
 //
 // target: { kind: "recording" | "lecdem", id: string, vid?: string,
 //           session_index?: number }
-//
-// The form:
-//   1. Shows the current player time for the target vid (if playing).
-//   2. Has an offset_seconds input that can be auto-filled from the player.
-//   3. Has comboboxes for composition, raga, tala, composer, display_title, notes.
-//   4. On "Stage": pushes a delta item into baniBundle.
 
 function buildSegmentForm(target) {
   const kind         = target.kind || 'recording';
@@ -2922,39 +2916,41 @@ function buildSegmentForm(target) {
     : `Recording: ${entityId}  ·  Session: ${sessionIndex}`;
   body.appendChild(idDisp);
 
-  // ── Offset ───────────────────────────────────────────────────────────────
+  // ── Timestamp: H / M / S ─────────────────────────────────────────────────
   body.appendChild(efSection('Timestamp'));
 
-  const offsetWrap = document.createElement('div');
-  offsetWrap.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
+  const hmsWrap = document.createElement('div');
+  hmsWrap.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:6px;';
 
-  const offsetInp = document.createElement('input');
-  offsetInp.type        = 'number';
-  offsetInp.placeholder = 'offset_seconds (e.g. 1394)';
-  offsetInp.min         = '0';
-  offsetInp.style.cssText = 'flex:1;';
-  offsetInp.className   = 'ef-input';
+  function makeHmsInput(placeholder, max) {
+    const inp = document.createElement('input');
+    inp.type        = 'number';
+    inp.placeholder = placeholder;
+    inp.min         = '0';
+    inp.max         = String(max);
+    inp.className   = 'ef-input';
+    inp.style.cssText = 'width:64px;text-align:center;';
+    return inp;
+  }
 
-  const grabBtn = document.createElement('button');
-  grabBtn.type      = 'button';
-  grabBtn.className = 'ef-add-btn';
-  grabBtn.style.fontSize = '0.68rem';
-  grabBtn.textContent = '⏱ Grab from player';
-  grabBtn.title = 'Fill offset from the currently active player (last-seeked position)';
-  grabBtn.addEventListener('click', () => {
-    const t = (typeof getCurrentPlayerTime === 'function') ? getCurrentPlayerTime(vid) : null;
-    if (t !== null) {
-      offsetInp.value = t;
-      offsetInp.dispatchEvent(new Event('input'));
-    } else {
-      grabBtn.textContent = 'No player active — enter manually';
-      setTimeout(() => { grabBtn.textContent = '⏱ Grab from player'; }, 2500);
-    }
-  });
+  const hInp = makeHmsInput('HH', 99);
+  const mInp = makeHmsInput('MM', 59);
+  const sInp = makeHmsInput('SS', 59);
 
-  offsetWrap.appendChild(offsetInp);
-  offsetWrap.appendChild(grabBtn);
-  body.appendChild(efRow('Offset (s)', true, null, offsetWrap));
+  function labelEl(txt) {
+    const s = document.createElement('span');
+    s.textContent = txt;
+    s.style.cssText = 'font-size:0.72rem;color:var(--fg-muted);';
+    return s;
+  }
+
+  hmsWrap.appendChild(hInp);
+  hmsWrap.appendChild(labelEl('h'));
+  hmsWrap.appendChild(mInp);
+  hmsWrap.appendChild(labelEl('m'));
+  hmsWrap.appendChild(sInp);
+  hmsWrap.appendChild(labelEl('s'));
+  body.appendChild(efRow('Time', true, null, hmsWrap));
 
   // ── Composition / Raga / Tala ────────────────────────────────────────────
   body.appendChild(efSection('Segment Details'));
@@ -3019,8 +3015,13 @@ function buildSegmentForm(target) {
   foot.appendChild(stageBtn);
 
   function buildSegmentObj() {
-    const offset = parseInt(offsetInp.value, 10);
-    if (isNaN(offset) || offset < 0) return null;
+    const h = parseInt(hInp.value, 10) || 0;
+    const m = parseInt(mInp.value, 10) || 0;
+    const s = parseInt(sInp.value, 10) || 0;
+    const offset = h * 3600 + m * 60 + s;
+    if (offset < 0) return null;
+    // require at least minutes or seconds to be set
+    if (mInp.value === '' && sInp.value === '') return null;
     const seg = { offset_seconds: offset };
     const comp = cbComp.getValue();
     if (comp) seg.composition_id = comp;
