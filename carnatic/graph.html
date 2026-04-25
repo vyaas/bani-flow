@@ -88143,19 +88143,45 @@ function buildSegmentForm(target) {
   notesInp.placeholder = 'optional notes';
   notesInp.className   = 'ef-input';
 
+  // Fallbacks: capture IDs from new entities / auto-fill so typing into combobox
+  // after creation doesn't lose them (efCombobox clears selectedValue on any keystroke).
+  let _pinnedCompId = null;
+  let _pinnedRagaId = null;
+  let _pinnedComposerId = null;
+
   // Auto-fill raga and composer when a known composition is selected
   wireCompRagaAutofill(cbComp, cbRaga, cbComposer, win);
 
-  // When a NEW composition is created via the mini form, scroll the stage button
-  // into view and pulse it so the rasika knows to fill in remaining fields then click.
+  // When a NEW composition is created via the mini form, pin its ID and pulse the stage button.
   win.addEventListener('efNewEntity', e => {
-    if (e.detail && e.detail.type === 'composition') {
-      // Give the rasika a visual cue — the button is now enabled (validate will have run).
+    if (!e.detail) return;
+    if (e.detail.type === 'composition') {
+      _pinnedCompId = e.detail.item.id;
       stageBtn.scrollIntoView({ block: 'nearest' });
       stageBtn.style.transition = 'box-shadow 0.15s';
       stageBtn.style.boxShadow = '0 0 0 3px var(--accent)';
       setTimeout(() => { stageBtn.style.boxShadow = ''; }, 1200);
+    } else if (e.detail.type === 'raga') {
+      _pinnedRagaId = e.detail.item.id;
+    } else if (e.detail.type === 'composer') {
+      _pinnedComposerId = e.detail.item.id;
     }
+  });
+
+  // Also pin when a value is selected / auto-filled (covers existing-entity auto-fill).
+  // When the × button explicitly clears a field (fires change with empty value), also
+  // clear the pin so we don't resurrect the old ID.
+  cbComp._select.addEventListener('change', () => {
+    const v = cbComp.getValue();
+    _pinnedCompId = v || null;
+  });
+  cbRaga._select.addEventListener('change', () => {
+    const v = cbRaga.getValue();
+    _pinnedRagaId = v || null;
+  });
+  cbComposer._select.addEventListener('change', () => {
+    const v = cbComposer.getValue();
+    _pinnedComposerId = v || null;
   });
 
   body.appendChild(efRow('Composition', false, null, cbComp));
@@ -88183,13 +88209,13 @@ function buildSegmentForm(target) {
     // require at least one time field to be set (not all blank)
     if (hInp.value === '' && mInp.value === '' && sInp.value === '') return null;
     const seg = { offset_seconds: offset };
-    const comp = cbComp.getValue();
+    const comp = cbComp.getValue() || _pinnedCompId;
     if (comp) seg.composition_id = comp;
-    const raga = cbRaga.getValue();
+    const raga = cbRaga.getValue() || _pinnedRagaId;
     if (raga) seg.raga_id = raga;
     const tala = talaSel.value;
     if (tala) seg.tala = tala;
-    const composer = cbComposer.getValue();
+    const composer = cbComposer.getValue() || _pinnedComposerId;
     if (composer) seg.composer_id = composer;
     const kind = kindSel.value;
     if (kind) seg.kind = kind;
@@ -88231,8 +88257,9 @@ function buildSegmentForm(target) {
     }
     const badge = document.createElement('div');
     badge.style.cssText = 'font-size:0.68rem;color:var(--accent);margin-top:6px;';
-    const compLabel = cbComp.getValue()
-      ? ((graphData.compositions || []).find(c => c.id === cbComp.getValue()) || {}).title || cbComp.getValue()
+    const compIdForBadge = cbComp.getValue() || _pinnedCompId;
+    const compLabel = compIdForBadge
+      ? ((graphData.compositions || []).find(c => c.id === compIdForBadge) || {}).title || compIdForBadge
       : null;
     badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s${compLabel ? ' · ' + compLabel : ''}). Download bundle to apply.`;
     foot.appendChild(badge);
@@ -88254,6 +88281,10 @@ function buildSegmentForm(target) {
           cb.dispatchEvent(new Event('change'));
         }
       });
+      // Reset pinned fallback IDs for the next segment
+      _pinnedCompId = null;
+      _pinnedRagaId = null;
+      _pinnedComposerId = null;
       // Reset selects
       talaSel.value = '';
       kindSel.value = '';
