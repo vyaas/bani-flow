@@ -2906,19 +2906,19 @@ function buildSegmentForm(target) {
   const body = win.querySelector('.ew-body');
   const foot = win.querySelector('.ew-footer');
 
-  // ── Target info ──────────────────────────────────────────────────────────
-  body.appendChild(efSection('Target'));
+  // Make window tall enough to show all fields without scrolling
+  win.style.width    = '480px';
+  win.style.minHeight = '520px';
 
+  // ── Target info (subtitle, no section header) ─────────────────────────────
   const idDisp = document.createElement('div');
-  idDisp.style.cssText = 'font-size:0.72rem;color:var(--fg-muted);margin-bottom:6px;';
+  idDisp.style.cssText = 'font-size:0.70rem;color:var(--fg-muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);';
   idDisp.textContent = kind === 'lecdem'
     ? `Musician: ${entityId}  ·  Video: ${vid}`
     : `Recording: ${entityId}  ·  Session: ${sessionIndex}`;
   body.appendChild(idDisp);
 
   // ── Timestamp: H / M / S ─────────────────────────────────────────────────
-  body.appendChild(efSection('Timestamp'));
-
   const hmsWrap = document.createElement('div');
   hmsWrap.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:6px;';
 
@@ -2952,9 +2952,7 @@ function buildSegmentForm(target) {
   hmsWrap.appendChild(labelEl('s'));
   body.appendChild(efRow('Time', true, null, hmsWrap));
 
-  // ── Composition / Raga / Tala ────────────────────────────────────────────
-  body.appendChild(efSection('Segment Details'));
-
+  // ── Segment details (no section header — fields shown directly) ───────────
   const compOpts = () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
   const ragaOpts = () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
   const compOsrOpts = () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id }));
@@ -3006,11 +3004,6 @@ function buildSegmentForm(target) {
   stageBtn.className = 'ef-download-btn';
   stageBtn.textContent = '+ Stage segment';
   stageBtn.disabled = true;
-
-  const previewPre = document.createElement('pre');
-  previewPre.className = 'ef-preview-pre';
-  previewPre.style.display = 'none';
-  body.appendChild(previewPre);
 
   foot.appendChild(stageBtn);
 
