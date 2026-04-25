@@ -3008,6 +3008,11 @@
     line-height: 1.2;
     margin-left: 0;
   }
+  .panel-tutorial .pt-demo-title {
+    color: var(--fg);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
   .panel-tutorial .pt-demo-static {
     cursor: default;
     opacity: 0.92;
@@ -3036,10 +3041,20 @@
   .panel-tutorial .pt-search-note,
   .panel-tutorial .pt-closing-note,
   .panel-tutorial .pt-view-note {
+    font-size: 0.73rem;
     color: var(--fg-muted);
-    font-size: 0.72rem;
-    line-height: 1.4;
-    margin: 0;
+    margin: 4px 0 0;
+    line-height: 1.45;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+  }
+  .panel-tutorial .pt-wheel-note {
+    font-size: 0.68rem;
+    opacity: 0.7;
+    font-style: italic;
+    margin-top: 3px;
   }
   .panel-tutorial .pt-intro-note {
     margin-bottom: 8px;

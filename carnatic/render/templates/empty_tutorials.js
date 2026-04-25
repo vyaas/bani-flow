@@ -184,9 +184,7 @@
   }
 
   function _chipLikeLabel(cls, text) {
-    const el = _el('span', cls + ' pt-demo-static', text);
-    el.style.cursor = 'default';
-    return el;
+    return _el('span', 'pt-demo-title', text);
   }
 
   function _renderDemoRow(slot, entry) {
@@ -252,7 +250,7 @@
 
       block.appendChild(row);
 
-      // Optional performer chips (same era-tint pattern as recording_row)
+      // Performer chips (clickable musician chips)
       const lecdPerformers = Array.isArray(demo.performers) ? demo.performers : [];
       if (lecdPerformers.length) {
         const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
@@ -262,7 +260,7 @@
           const eraId = node ? (node.era || null) : null;
           const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
           const chip = document.createElement('span');
-          chip.className = 'musician-chip chip-secondary';
+          chip.className = 'musician-chip';
           chip.style.setProperty('--chip-era-bg', tint.bg);
           chip.style.setProperty('--chip-era-border', tint.border);
           chip.textContent = pf.label || pf.id;
@@ -355,7 +353,7 @@
       headerRow.appendChild(acts);
       block.appendChild(headerRow);
 
-      // Era-tinted performer chips
+      // Performer chips (clickable musician chips)
       const performers = Array.isArray(demo.performers) ? demo.performers : [];
       if (performers.length) {
         const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
@@ -365,7 +363,7 @@
           const eraId = node ? (node.era || null) : null;
           const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
           const chip = document.createElement('span');
-          chip.className = 'musician-chip chip-secondary';
+          chip.className = 'musician-chip';
           chip.style.setProperty('--chip-era-bg', tint.bg);
           chip.style.setProperty('--chip-era-border', tint.border);
           chip.textContent = pf.label || pf.id;
@@ -421,18 +419,14 @@
       }
 
       if (demo.composer_label) {
-        if (slot === 'bani') {
-          const nodeId = _lookupComposerNodeId(demo.composer_id);
-          if (nodeId) {
-            row.appendChild(_catalogueChip({
-              css_class: 'musician-chip',
-              example_kind: 'musician',
-              example_id: nodeId,
-              example_label: demo.composer_label,
-            }));
-          } else {
-            row.appendChild(_el('span', 'pt-demo-label', demo.composer_label));
-          }
+        const nodeId = _lookupComposerNodeId(demo.composer_id);
+        if (nodeId) {
+          row.appendChild(_catalogueChip({
+            css_class: 'musician-chip',
+            example_kind: 'musician',
+            example_id: nodeId,
+            example_label: demo.composer_label,
+          }));
         } else {
           row.appendChild(_el('span', 'pt-demo-label', demo.composer_label));
         }
@@ -524,7 +518,33 @@
         section.appendChild(_el('p', 'pt-view-note', viewSection.graph_note));
       }
       if (viewSection.raga_note) {
-        section.appendChild(_el('p', 'pt-view-note', viewSection.raga_note));
+        const composers = Array.isArray(viewSection.raga_note_composers)
+          ? viewSection.raga_note_composers : [];
+        if (composers.length) {
+          const noteDiv = _el('div', 'pt-view-note');
+          noteDiv.appendChild(document.createTextNode(viewSection.raga_note + ' — '));
+          composers.forEach(function (c, i) {
+            if (i > 0) noteDiv.appendChild(document.createTextNode(', '));
+            const nodeId = _lookupComposerNodeId(c.id);
+            if (nodeId) {
+              const chip = _el('span', 'musician-chip', c.label || c.id);
+              chip.style.cursor = 'pointer';
+              chip.addEventListener('click', function () { _onMusician(nodeId); });
+              noteDiv.appendChild(chip);
+            } else {
+              noteDiv.appendChild(document.createTextNode(c.label || c.id));
+            }
+          });
+          if (viewSection.raga_note_suffix) {
+            noteDiv.appendChild(document.createTextNode(' — ' + viewSection.raga_note_suffix));
+          }
+          section.appendChild(noteDiv);
+        } else {
+          section.appendChild(_el('p', 'pt-view-note', viewSection.raga_note));
+        }
+      }
+      if (viewSection.wheel_note) {
+        section.appendChild(_el('p', 'pt-view-note pt-wheel-note', viewSection.wheel_note));
       }
       container.appendChild(section);
 
