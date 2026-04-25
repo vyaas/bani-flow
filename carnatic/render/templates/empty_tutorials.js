@@ -531,11 +531,26 @@
     }
 
     // ── Section B: chip catalogue ─────────────────────────────────────────
-    const catalogue = block.chip_catalogue || [];
+    const catalogue = (block.chip_catalogue || []).slice();
     if (catalogue.length) {
       container.appendChild(_el('div', 'pt-catalogue-heading', 'Every chip type in this panel'));
       const catList = _el('div', 'pt-catalogue');
-      catalogue.forEach(function (entry) {
+      const orderedCatalogue = catalogue.sort(function (a, b) {
+        const aIsLecdem = (
+          a.example_kind === 'lecdem_by' ||
+          a.example_kind === 'lecdem_about' ||
+          (a.example_kind === 'demo_row' && a.demo_row && a.demo_row.type === 'lecdem_row')
+        );
+        const bIsLecdem = (
+          b.example_kind === 'lecdem_by' ||
+          b.example_kind === 'lecdem_about' ||
+          (b.example_kind === 'demo_row' && b.demo_row && b.demo_row.type === 'lecdem_row')
+        );
+        if (aIsLecdem === bIsLecdem) return 0;
+        return aIsLecdem ? -1 : 1;
+      });
+
+      orderedCatalogue.forEach(function (entry) {
         const row = _el('div', 'pt-cat-row');
         if (entry.example_kind === 'demo_row' && entry.demo_row) {
           row.appendChild(_renderDemoRow(slot, entry));
