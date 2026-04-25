@@ -3026,10 +3026,28 @@ function buildSegmentForm(target) {
   const cbRaga     = efCombobox('seg_raga',     ragaOpts(),     'raga',        win);
   const cbComposer = efCombobox('seg_composer', compOsrOpts(), 'composer',    win);
 
-  const talaOpts = [
-    'adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other',
-  ];
-  const talaSel = efSelect('seg_tala', talaOpts.map(v => ({ value: v, label: v })), true);
+  // Freeform tala input with datalist suggestions — allows any tala, not just the presets.
+  const talaListId = 'seg_tala_list_' + Math.random().toString(36).slice(2);
+  const talaList = document.createElement('datalist');
+  talaList.id = talaListId;
+  [
+    'ādi','rūpakam','miśra cāpu','khaṇḍa cāpu','tiśra tripuṭa','āṭa','dhruva',
+    'adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva',
+  ].forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    talaList.appendChild(opt);
+  });
+  document.body.appendChild(talaList);
+  const talaSel = document.createElement('input');
+  talaSel.type = 'text';
+  talaSel.id   = 'seg_tala';
+  talaSel.className   = 'ef-input';
+  talaSel.placeholder = 'e.g. ādi, rūpakam, or free-type';
+  talaSel.setAttribute('list', talaListId);
+  talaSel.addEventListener('input', () => win.dispatchEvent(new Event('input')));
+  // expose .value API matching efSelect so build/validate code needs no changes
+  Object.defineProperty(talaSel, 'getValue', { value: () => talaSel.value.trim() });
 
   const kindOpts = [
     { value: 'kriti', label: 'Kriti' },
@@ -3180,6 +3198,12 @@ function buildSegmentForm(target) {
     });
     foot.appendChild(addAnotherBtn);
   });
+
+  // Clean up the datalist when the form closes
+  const closeBtnSeg = win.querySelector('.ew-close');
+  if (closeBtnSeg) {
+    closeBtnSeg.addEventListener('click', () => { talaList.remove(); }, { once: true });
+  }
 
   return win;
 }
