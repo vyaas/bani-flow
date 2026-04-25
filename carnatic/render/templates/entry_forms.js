@@ -617,7 +617,42 @@ function efIdRow(idInputId, sourceInputId, existingIds) {
   return wrap;
 }
 
-// ── Source fields (url / label / type) ───────────────────────────────────────
+// ── Source fields (url-only; label/type inferred from host) ─────────────────
+// ADR-097 §4: contributors paste a URL; label and type are derived by
+// inferSource() at submit time. The historical Source Label / Source Type
+// rows have been removed — the URL host is sufficient signal, and the
+// corpus's existing label vocabulary is the seed for the inference table.
+
+const SOURCE_HOST_LABELS = [
+  // [host-suffix-or-substring, label, type]
+  ['wikipedia.org',         'Wikipedia',         'wikipedia'],
+  ['wikisource.org',        'Wikisource',        'wikipedia'],
+  ['karnatik.com',          'karnatik.com',      'article'],
+  ['sangeethamshare.org',   'sangeethamshare',   'article'],
+  ['archive.org',           'Internet Archive',  'archive'],
+  ['sruti.com',             'Sruti',             'article'],
+  ['carnaticheritage.in',   'Carnatic Heritage', 'article'],
+  ['indiaartreview.com',    'India Art Review',  'article'],
+  ['eambalam.com',          'eambalam',          'article'],
+  ['rasikas.org',           'Rasikas.org',       'article'],
+];
+
+function inferSource(url) {
+  const trimmed = (url || '').trim();
+  if (!trimmed) return { url: '', label: '', type: 'other' };
+  let host = '';
+  try { host = new URL(trimmed).hostname.toLowerCase(); }
+  catch (_e) { host = ''; }
+  for (const [needle, label, type] of SOURCE_HOST_LABELS) {
+    if (host.endsWith(needle) || host.includes(needle)) {
+      return { url: trimmed, label, type };
+    }
+  }
+  if (/\.pdf(\?|#|$)/i.test(trimmed)) {
+    return { url: trimmed, label: 'PDF', type: 'pdf' };
+  }
+  return { url: trimmed, label: host || trimmed, type: 'other' };
+}
 
 function efSourceFields(prefix, defaults) {
   const d = defaults || {};
@@ -625,16 +660,7 @@ function efSourceFields(prefix, defaults) {
 
   const urlInp = efInput(prefix + '_source_url', 'text', 'https://en.wikipedia.org/wiki/…');
   if (d.url) urlInp.value = d.url;
-  frag.appendChild(efRow('Source URL', true, null, urlInp));
-
-  const lblInp = efInput(prefix + '_source_label', 'text', 'Wikipedia');
-  if (d.label) lblInp.value = d.label;
-  frag.appendChild(efRow('Source Label', true, null, lblInp));
-
-  const typeOpts = ['wikipedia', 'pdf', 'article', 'archive', 'other'];
-  const typeSel = efSelect(prefix + '_source_type', typeOpts, false);
-  if (d.type) typeSel.value = d.type;
-  frag.appendChild(efRow('Source Type', true, null, typeSel));
+  frag.appendChild(efRow('Source URL', true, 'label and type inferred from host', urlInp));
 
   return frag;
 }
@@ -738,8 +764,8 @@ function buildMusicianForm() {
   const instrSel = efSelect('ef_mus_instr', instrOpts, false);
   body.appendChild(efRow('Instrument', true, null, instrSel));
 
-  const baniInp = efInput('ef_mus_bani', 'text', 'e.g. semmangudi', null);
-  body.appendChild(efRow('Bani / Gharana', false, null, baniInp));
+  // ADR-097 §5: Bani / Gharana removed from create form — bani is a
+  // librarian-set property, not a contributor-asserted field at intake.
 
   body.appendChild(efSourceFields('ef_mus'));
 
@@ -793,10 +819,8 @@ function buildMusicianForm() {
     const era     = eraSel.value;
     const instr   = instrSel.value;
     const srcUrl  = win.querySelector('#ef_mus_source_url')   ? win.querySelector('#ef_mus_source_url').value.trim()   : '';
-    const srcLbl  = win.querySelector('#ef_mus_source_label') ? win.querySelector('#ef_mus_source_label').value.trim() : '';
-    const srcType = win.querySelector('#ef_mus_source_type')  ? win.querySelector('#ef_mus_source_type').value         : '';
     const dupId   = existingIds.includes(id);
-    const ok = label && id && era && instr && srcUrl && srcLbl && srcType && !dupId;
+    const ok = label && id && era && instr && srcUrl && !dupId;
     dlBtn.disabled = !ok;
     if (previewPre.style.display !== 'none') updatePreview();
   }
@@ -1168,10 +1192,11 @@ function generateMusicianJson(win) {
   const died    = win.querySelector('#ef_mus_died')         ? win.querySelector('#ef_mus_died').value                : '';
   const era     = win.querySelector('#ef_mus_era')          ? win.querySelector('#ef_mus_era').value                 : '';
   const instr   = win.querySelector('#ef_mus_instr')        ? win.querySelector('#ef_mus_instr').value               : '';
-  const bani    = win.querySelector('#ef_mus_bani')         ? win.querySelector('#ef_mus_bani').value.trim()         : '';
   const srcUrl  = win.querySelector('#ef_mus_source_url')   ? win.querySelector('#ef_mus_source_url').value.trim()   : '';
-  const srcLbl  = win.querySelector('#ef_mus_source_label') ? win.querySelector('#ef_mus_source_label').value.trim() : '';
-  const srcType = win.querySelector('#ef_mus_source_type')  ? win.querySelector('#ef_mus_source_type').value         : '';
+  const inferred = inferSource(srcUrl);
+  // ADR-097 §5: bani removed from create form. The field stays in the schema
+  // (set later via patch by a librarian) but is not asked at intake.
+  const bani    = '';
 
   // YouTube entries
   const youtube = [];
@@ -1206,7 +1231,7 @@ function generateMusicianJson(win) {
   const nodeJson = {
     id,
     label,
-    sources: [{ url: srcUrl, label: srcLbl, type: srcType }],
+    sources: [inferred],
     born:  born  ? parseInt(born,  10) : null,
     died:  died  ? parseInt(died,  10) : null,
     era,
@@ -1380,10 +1405,8 @@ function buildRagaForm() {
     const name    = nameInp.value.trim();
     const id      = idRow._idInput.value.trim();
     const srcUrl  = win.querySelector('#ef_raga_source_url')   ? win.querySelector('#ef_raga_source_url').value.trim()   : '';
-    const srcLbl  = win.querySelector('#ef_raga_source_label') ? win.querySelector('#ef_raga_source_label').value.trim() : '';
-    const srcType = win.querySelector('#ef_raga_source_type')  ? win.querySelector('#ef_raga_source_type').value         : '';
     const dupId   = existingIds.includes(id);
-    const ok = name && id && srcUrl && srcLbl && srcType && !dupId;
+    const ok = name && id && srcUrl && !dupId;
     bundleBtn.disabled = !ok;
     dlBtn.disabled     = !ok;
     if (previewPre.style.display !== 'none') updatePreview();
@@ -1430,8 +1453,7 @@ function generateRagaJson(win) {
   const parent  = win.querySelector('#ef_raga_parent')       ? win.querySelector('#ef_raga_parent').value              : '';
   const notes   = win.querySelector('#ef_raga_notes')        ? win.querySelector('#ef_raga_notes').value.trim()        : '';
   const srcUrl  = win.querySelector('#ef_raga_source_url')   ? win.querySelector('#ef_raga_source_url').value.trim()   : '';
-  const srcLbl  = win.querySelector('#ef_raga_source_label') ? win.querySelector('#ef_raga_source_label').value.trim() : '';
-  const srcType = win.querySelector('#ef_raga_source_type')  ? win.querySelector('#ef_raga_source_type').value         : '';
+  // ADR-097 §4: source label/type inferred from URL host.
 
   const aliasArr = aliases
     ? aliases.split(',').map(s => s.trim()).filter(Boolean)
@@ -1445,7 +1467,7 @@ function generateRagaJson(win) {
     is_melakarta: isMela,
     cakra:        isMela && cakra   ? parseInt(cakra,   10) : null,
     parent_raga:  !isMela && parent ? parent : null,
-    sources: [{ url: srcUrl, label: srcLbl, type: srcType }],
+    sources: [inferSource(srcUrl)],
     notes: notes || null,
   };
 }
@@ -1665,14 +1687,13 @@ function buildComposerForm() {
     const born    = bornInp.value;
     const died    = diedInp.value;
     const srcUrl  = win.querySelector('#ef_cmp_source_url')   ? win.querySelector('#ef_cmp_source_url').value.trim()   : '';
-    const srcLbl  = win.querySelector('#ef_cmp_source_label') ? win.querySelector('#ef_cmp_source_label').value.trim() : '';
-    const srcType = win.querySelector('#ef_cmp_source_type')  ? win.querySelector('#ef_cmp_source_type').value         : '';
+    // ADR-097 §4: source label/type inferred from URL host.
     return {
       id, name,
       musician_node_id: null,
       born:    born ? parseInt(born, 10) : null,
       died:    died ? parseInt(died, 10) : null,
-      sources: srcUrl ? [{ url: srcUrl, label: srcLbl, type: srcType }] : [],
+      sources: srcUrl ? [inferSource(srcUrl)] : [],
     };
   }
 
@@ -1829,8 +1850,7 @@ function generateCompositionJson(win) {
   const lang       = win.querySelector('#ef_comp_lang')         ? win.querySelector('#ef_comp_lang').value                : '';
   const notes      = win.querySelector('#ef_comp_notes')        ? win.querySelector('#ef_comp_notes').value.trim()        : '';
   const srcUrl     = win.querySelector('#ef_comp_source_url')   ? win.querySelector('#ef_comp_source_url').value.trim()   : '';
-  const srcLbl     = win.querySelector('#ef_comp_source_label') ? win.querySelector('#ef_comp_source_label').value.trim() : '';
-  const srcType    = win.querySelector('#ef_comp_source_type')  ? win.querySelector('#ef_comp_source_type').value         : '';
+  // ADR-097 §4: source label/type inferred from URL host.
 
   return {
     id,
@@ -1839,7 +1859,7 @@ function generateCompositionJson(win) {
     raga_id:     ragaId     || null,
     tala:        tala       || null,
     language:    lang       || null,
-    sources:     srcUrl ? [{ url: srcUrl, label: srcLbl, type: srcType }] : [],
+    sources:     srcUrl ? [inferSource(srcUrl)] : [],
     notes:       notes  || null,
   };
 }
@@ -1877,9 +1897,7 @@ function buildRecordingForm() {
   const occasionInp = efInput('ef_rec_occasion', 'text', 'e.g. Sangita Kalanidhi award celebration', null);
   body.appendChild(efRow('Occasion', false, null, occasionInp));
 
-  // Source label — type is always 'other' for YouTube
-  const srcLblInp = efInput('ef_rec_source_label', 'text', 'YouTube', 'YouTube');
-  body.appendChild(efRow('Source Label', true, null, srcLblInp));
+  // ADR-097 §4: source label/type inferred from URL host (YouTube here).
 
   // Sessions
   body.appendChild(efSection('Sessions'));
@@ -1914,9 +1932,8 @@ function buildRecordingForm() {
     const title  = titleInp.value.trim();
     const id     = idRow._idInput.value.trim();
     const url    = urlInp.value.trim();
-    const srcLbl = srcLblInp.value.trim();
     const dupId  = existingIds.includes(id);
-    const ok = title && id && url && srcLbl && !dupId;
+    const ok = title && id && url && !dupId;
     dlBtn.disabled = !ok;
     if (previewPre.style.display !== 'none') updatePreview();
   }
@@ -2111,7 +2128,7 @@ function generateRecordingJson(win) {
   const date       = win.querySelector('#ef_rec_date')         ? win.querySelector('#ef_rec_date').value.trim()         : '';
   const venue      = win.querySelector('#ef_rec_venue')        ? win.querySelector('#ef_rec_venue').value.trim()        : '';
   const occasion   = win.querySelector('#ef_rec_occasion')     ? win.querySelector('#ef_rec_occasion').value.trim()     : '';
-  const srcLbl     = win.querySelector('#ef_rec_source_label') ? win.querySelector('#ef_rec_source_label').value.trim() : 'YouTube';
+  // ADR-097 §4: source label/type inferred from URL host (YouTube here).
 
   const videoId = extractVideoId(url);
 
@@ -2179,7 +2196,7 @@ function generateRecordingJson(win) {
     date:        date       || null,
     venue:       venue      || null,
     occasion:    occasion   || null,
-    sources:     url ? [{ url, label: srcLbl, type: 'other' }] : [],
+    sources:     url ? [inferSource(url)] : [],
     sessions,
   };
 }
@@ -2283,8 +2300,8 @@ function buildMusicianRecordingsForm() {
   const instrSel  = efSelect('efmr_instr', instrOpts, false);
   newSection.appendChild(efRow('Instrument', true, null, instrSel));
 
-  const baniInp = efInput('efmr_bani', 'text', 'e.g. semmangudi', null);
-  newSection.appendChild(efRow('Bani / Gharana', false, null, baniInp));
+  // ADR-097 §5: Bani / Gharana removed from create form. The field stays in
+  // the schema (set later via patch by a librarian) but is not asked at intake.
 
   newSection.appendChild(efSourceFields('efmr'));
 
@@ -2451,18 +2468,16 @@ function buildMusicianRecordingsForm() {
       const died    = diedInp.value;
       const era     = eraSel.value;
       const instr   = instrSel.value;
-      const bani    = baniInp.value.trim();
       const srcUrl  = win.querySelector('#efmr_source_url')   ? win.querySelector('#efmr_source_url').value.trim()   : '';
-      const srcLbl  = win.querySelector('#efmr_source_label') ? win.querySelector('#efmr_source_label').value.trim() : '';
-      const srcType = win.querySelector('#efmr_source_type')  ? win.querySelector('#efmr_source_type').value         : '';
+      // ADR-097 §4/§5: source label/type inferred; bani not collected at intake.
       return {
         type:    'new',
         id, label,
-        sources: [{ url: srcUrl, label: srcLbl, type: srcType }],
+        sources: [inferSource(srcUrl)],
         born:    born  ? parseInt(born,  10) : null,
         died:    died  ? parseInt(died,  10) : null,
         era, instrument: instr,
-        bani: bani || null,
+        bani: null,
         youtube: collectYoutube(),
         _edges:  collectEdges(id),   // stored separately, not in musician node
       };
@@ -2505,16 +2520,15 @@ function buildMusicianRecordingsForm() {
     const id      = idRow._idInput.value.trim();
     const label   = labelInp.value.trim();
     const srcUrl  = win.querySelector('#efmr_source_url')   ? win.querySelector('#efmr_source_url').value.trim()   : '';
-    const srcLbl  = win.querySelector('#efmr_source_label') ? win.querySelector('#efmr_source_label').value.trim() : '';
-    const srcType = win.querySelector('#efmr_source_type')  ? win.querySelector('#efmr_source_type').value         : '';
+    // ADR-097 §4/§5: source label/type inferred; bani not collected at intake.
     return {
       id, label,
-      sources:    [{ url: srcUrl, label: srcLbl, type: srcType }],
+      sources:    [inferSource(srcUrl)],
       born:       bornInp.value  ? parseInt(bornInp.value,  10) : null,
       died:       diedInp.value  ? parseInt(diedInp.value,  10) : null,
       era:        eraSel.value,
       instrument: instrSel.value,
-      bani:       baniInp.value.trim() || null,
+      bani:       null,
       youtube:    collectYoutube(),
     };
   }
@@ -2529,10 +2543,8 @@ function buildMusicianRecordingsForm() {
       const era     = eraSel.value;
       const instr   = instrSel.value;
       const srcUrl  = win.querySelector('#efmr_source_url')   ? win.querySelector('#efmr_source_url').value.trim()   : '';
-      const srcLbl  = win.querySelector('#efmr_source_label') ? win.querySelector('#efmr_source_label').value.trim() : '';
-      const srcType = win.querySelector('#efmr_source_type')  ? win.querySelector('#efmr_source_type').value         : '';
       const dupId   = existingIds.includes(id);
-      ok = !!(label && id && era && instr && srcUrl && srcLbl && srcType && !dupId);
+      ok = !!(label && id && era && instr && srcUrl && !dupId);
     } else {
       let lecdemInvalid = false;
       win.querySelectorAll('#efmr_youtube .ef-youtube-block').forEach(b => {
