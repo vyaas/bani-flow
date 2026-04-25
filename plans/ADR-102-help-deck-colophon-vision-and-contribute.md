@@ -1,6 +1,6 @@
 # ADR-102: Help Deck Colophon — Vision, Curation Loop, Contribute, Listening Ethic, Author
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-25
 **Agents**: graph-architect → librarian, carnatic-coder
 **Depends on**: ADR-085 (self-replicating curation loop), ADR-086/087/091 (empty panels), ADR-098 (concept anchoring & Lakshmi Sreeram integration)

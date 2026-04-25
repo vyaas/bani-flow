@@ -3119,6 +3119,127 @@
   .panel-tutorial .pt-view-note + .pt-view-note {
     margin-top: 6px;
   }
+  /* ADR-102: Colophon ──────────────────────────────────────────────────── */
+  .panel-tutorial .pt-colophon {
+    margin-top: 4px;
+  }
+  .panel-tutorial .pt-colophon-section {
+    padding: 12px 0 10px;
+    border-top: 1px solid var(--border-strong);
+  }
+  .panel-tutorial .pt-colophon-head {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin: 0 0 8px;
+    letter-spacing: 0.01em;
+  }
+  .panel-tutorial .pt-colophon-para {
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .panel-tutorial .pt-vision-epigraph {
+    margin: 8px 0 4px 12px;
+    padding-left: 10px;
+    border-left: 2px solid var(--border-strong);
+  }
+  .panel-tutorial .pt-vision-epigraph p {
+    font-size: 0.76rem;
+    font-style: italic;
+    color: var(--fg-muted);
+    margin: 0 0 4px;
+  }
+  .panel-tutorial .pt-epigraph-source {
+    font-size: 0.70rem;
+    font-style: normal;
+    color: var(--fg-faint, var(--fg-muted));
+    display: block;
+  }
+  .panel-tutorial .pt-loop-diagram {
+    font-size: 0.68rem;
+    font-family: monospace;
+    color: var(--fg-muted);
+    background: var(--bg-sub, var(--bg));
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin: 6px 0 8px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .panel-tutorial .pt-quickstart {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+    padding-left: 18px;
+    margin: 6px 0 8px;
+  }
+  .panel-tutorial .pt-quickstart li {
+    margin: 3px 0;
+  }
+  .panel-tutorial .pt-quickstart code {
+    font-family: monospace;
+    font-size: 0.70rem;
+    color: var(--fg);
+  }
+  .panel-tutorial .pt-contribute-repo {
+    margin: 6px 0 8px;
+  }
+  .panel-tutorial .pt-repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .panel-tutorial .pt-repo-link:hover { color: var(--fg); }
+  .panel-tutorial .pt-github-icon {
+    fill: currentColor;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-colophon-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin: 4px 0 2px;
+  }
+  .panel-tutorial .pt-colophon-link {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .panel-tutorial .pt-colophon-link:hover {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+  .panel-tutorial .pt-author-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-author-text { flex: 1; min-width: 0; }
+  .panel-tutorial .pt-author-name {
+    font-size: 0.80rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: 2px;
+  }
+  .panel-tutorial .pt-author-tagline {
+    font-size: 0.70rem;
+    color: var(--fg-muted);
+  }
 </style>
 </head>
 <body>

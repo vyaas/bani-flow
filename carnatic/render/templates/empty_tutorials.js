@@ -461,13 +461,158 @@
     return chip;
   }
 
+  // ── ADR-102: Colophon renderer ────────────────────────────────────────────
+  // Renders vision → curation_loop → contribute → listening_ethic → author
+  // beneath the per-panel tutorial. Draws from helpEmptyPanels.colophon
+  // (shared across both panels). No-ops when colophon is absent or empty.
+  // Not affected by tutorial-filter interactivity (institutional content).
+
+  const _GITHUB_SVG = '<svg class="pt-github-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
+
+  function _renderExtLinks(links) {
+    if (!Array.isArray(links) || !links.length) return null;
+    const div = _el('div', 'pt-colophon-links');
+    links.forEach(function (lnk) {
+      if (!lnk.url || !lnk.label) return;
+      const a = document.createElement('a');
+      a.className = 'pt-colophon-link';
+      a.href = lnk.url;
+      a.textContent = lnk.label;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      div.appendChild(a);
+    });
+    return div.children.length ? div : null;
+  }
+
+  function _renderColophon(colophon, container) {
+    if (!colophon || typeof colophon !== 'object') return;
+
+    const wrap = _el('div', 'pt-colophon');
+    const hr = document.createElement('hr');
+    hr.className = 'pt-divider';
+    wrap.appendChild(hr);
+
+    const order = ['vision', 'curation_loop', 'contribute', 'listening_ethic', 'author'];
+    order.forEach(function (key) {
+      const sub = colophon[key];
+      if (!sub || typeof sub !== 'object') return;
+
+      const sec = _el('div', 'pt-colophon-section pt-colophon-' + key.replace('_', '-'));
+      if (_nonEmptyString(sub.heading)) {
+        sec.appendChild(_el('h3', 'pt-colophon-head', sub.heading));
+      }
+
+      if (key === 'vision') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        if (sub.epigraph && _nonEmptyString(sub.epigraph.text)) {
+          const bq = _el('blockquote', 'pt-vision-epigraph');
+          bq.appendChild(_el('p', null, '\u201c' + sub.epigraph.text + '\u201d'));
+          if (_nonEmptyString(sub.epigraph.source)) {
+            bq.appendChild(_el('cite', 'pt-epigraph-source', '\u2014 ' + sub.epigraph.source));
+          }
+          sec.appendChild(bq);
+        }
+
+      } else if (key === 'curation_loop') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        if (_nonEmptyString(sub.diagram_text)) {
+          const pre = document.createElement('pre');
+          pre.className = 'pt-loop-diagram';
+          pre.textContent = sub.diagram_text;
+          sec.appendChild(pre);
+        }
+        const loopLinks = _renderExtLinks(sub.ext_links);
+        if (loopLinks) sec.appendChild(loopLinks);
+
+      } else if (key === 'contribute') {
+        if (_nonEmptyString(sub.summary)) {
+          sec.appendChild(_el('p', 'pt-colophon-para', sub.summary));
+        }
+        if (sub.repo && _nonEmptyString(sub.repo.url) && _nonEmptyString(sub.repo.label)) {
+          const repoRow = _el('div', 'pt-contribute-repo');
+          const repoLink = document.createElement('a');
+          repoLink.className = 'pt-repo-link';
+          repoLink.href = sub.repo.url;
+          repoLink.target = '_blank';
+          repoLink.rel = 'noopener noreferrer';
+          if (sub.repo.icon === 'github') {
+            const iconSpan = document.createElement('span');
+            iconSpan.innerHTML = _GITHUB_SVG;
+            repoLink.appendChild(iconSpan);
+          }
+          repoLink.appendChild(document.createTextNode('\u00a0' + sub.repo.label));
+          repoRow.appendChild(repoLink);
+          sec.appendChild(repoRow);
+        }
+        if (Array.isArray(sub.quickstart) && sub.quickstart.length) {
+          const ol = document.createElement('ol');
+          ol.className = 'pt-quickstart';
+          sub.quickstart.forEach(function (step) {
+            if (!_nonEmptyString(step)) return;
+            const li = document.createElement('li');
+            const code = document.createElement('code');
+            code.textContent = step;
+            li.appendChild(code);
+            ol.appendChild(li);
+          });
+          if (ol.children.length) sec.appendChild(ol);
+        }
+        const contribLinks = _renderExtLinks(sub.ext_links);
+        if (contribLinks) sec.appendChild(contribLinks);
+
+      } else if (key === 'listening_ethic') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        const listenLinks = _renderExtLinks(sub.ext_links);
+        if (listenLinks) sec.appendChild(listenLinks);
+
+      } else if (key === 'author') {
+        if (_nonEmptyString(sub.name)) {
+          const authorRow = _el('div', 'pt-author-row');
+          if (_nonEmptyString(sub.avatar_url)) {
+            const img = document.createElement('img');
+            img.className = 'pt-author-avatar';
+            img.src = sub.avatar_url;
+            img.alt = sub.name;
+            img.loading = 'lazy';
+            img.referrerPolicy = 'no-referrer';
+            img.width = 40;
+            img.height = 40;
+            authorRow.appendChild(img);
+          }
+          const authorText = _el('div', 'pt-author-text');
+          authorText.appendChild(_el('div', 'pt-author-name', sub.name));
+          if (_nonEmptyString(sub.tagline)) {
+            authorText.appendChild(_el('div', 'pt-author-tagline', sub.tagline));
+          }
+          authorRow.appendChild(authorText);
+          sec.appendChild(authorRow);
+        }
+        const authorLinks = _renderExtLinks(sub.ext_links);
+        if (authorLinks) sec.appendChild(authorLinks);
+      }
+
+      wrap.appendChild(sec);
+    });
+
+    if (wrap.children.length > 1) {
+      container.appendChild(wrap);
+    }
+  }
+
   function _renderInto(container, block, slot) {
     container.innerHTML = '';
 
     const schemaVersion = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
       ? (helpEmptyPanels.schema_version || 1)
       : 1;
-    if (schemaVersion > 3) {
+    if (schemaVersion > 4) {
       container.appendChild(_el('p', 'pt-upgrade',
         'Tutorial data schema (' + schemaVersion + ') is newer than this render. Please update.'));
       return;
@@ -648,6 +793,11 @@
       if (seeds.closing_note) cross.appendChild(_el('p', 'pt-closing-note', seeds.closing_note));
       container.appendChild(cross);
     }
+
+    // ── Section D: colophon (ADR-102) ────────────────────────────────────
+    const colophon = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
+      ? (helpEmptyPanels.colophon || null) : null;
+    _renderColophon(colophon, container);
 
   }
 
