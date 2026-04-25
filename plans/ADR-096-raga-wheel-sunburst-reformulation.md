@@ -1,8 +1,8 @@
 # ADR-096: Raga Wheel — Sunburst Reformulation (Option A)
 
-**Status**: Proposed  
+**Status**: Accepted  
 **Date**: 2026-04-24  
-**Branch**: `feat/sunburst-wheel` (not yet created)  
+**Branch**: `feat/sunburst-wheel`  
 **Supersedes**: ADR-023 (raga wheel as third view), ADR-093 (chip spacing solver)
 
 ---
