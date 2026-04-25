@@ -56,14 +56,6 @@
         "effect": "A concert row opens a scrollable setlist — every piece in that evening's programme, playable in sequence. Ramnad Krishnan at Poonamallee (1965): student of T. Brinda, carrying the Dhanammal bani in full flight. ▶ opens the player; ↗ opens YouTube."
       },
       {
-        "css_class": null,
-        "example_kind": "note",
-        "example_id": null,
-        "example_label": null,
-        "note_text": "Manodharma — Three Lectures on Improvisation (TM Krishna)",
-        "effect": ""
-      },
-      {
         "css_class": "lecdem-chip",
         "example_kind": "demo_row",
         "example_id": null,
@@ -124,7 +116,7 @@
           "kind": "raga",
           "id": "begada",
           "label": "Begada",
-          "note": "rakti · Ramnad Krishnan's calling-card raga"
+          "note": "rakti · the signature mode of the Dhanammal bani"
         },
         {
           "kind": "raga",
@@ -145,9 +137,9 @@
       {
         "css_class": "musician-chip",
         "example_kind": "musician",
-        "example_id": "ramnad_krishnan",
-        "example_label": "Ramnad Krishnan",
-        "effect": "A musician chip opens their full profile in the left panel and focuses the lineage graph on their connections. Ramnad Krishnan — trained under T. Brinda, in the Dhanammal bani — his rakti ragas remain the measure by which others are judged."
+        "example_id": "madurai_mani_iyer",
+        "example_label": "Madurai Mani Iyer",
+        "effect": "A musician chip loads their Bani Flow trail — recordings, lecdems, compositions — into this (right) panel. The Guru-Shishya graph on the left highlights their lineage connections. Madurai Mani Iyer (1912–1968): Sangeetha Kalanidhi 1959, one of the golden age's most fully realised vocal voices — celebrated for kalpana swarams, neraval, and alapana of rare lucidity."
       },
       {
         "css_class": "comp-chip",
@@ -214,7 +206,7 @@
       }
     ],
     "cross_panel_seeds": {
-      "prompt": "Three artists. One bani. The Dhanammal school of sound — transmitted grandmother to granddaughter to shishya across a century:",
+      "prompt": "Three musicians. Load one — their recordings open in this panel, the Guru-Shishya graph on the left highlights their lineage:",
       "search_note": "Use the filter bar above ↑ to narrow recordings by raga or composition name once a subject is loaded — the same bar that navigates you here.",
       "panel_target": "musician",
       "items": [
@@ -232,9 +224,9 @@
         },
         {
           "kind": "musician",
-          "id": "ramnad_krishnan",
-          "label": "Ramnad Krishnan",
-          "note": "1918–1973 · vocal · student of Brinda, master of Begada and Sahana"
+          "id": "madurai_mani_iyer",
+          "label": "Madurai Mani Iyer",
+          "note": "1912–1968 · vocal · Sangeetha Kalanidhi 1959, golden age"
         },
         {
           "kind": "musician",
