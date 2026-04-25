@@ -520,12 +520,15 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
   const titleInp = efInput(null, 'text', 'e.g. Nidhi Chala Sukhama', prefill || null);
   container.appendChild(efRow('Title', true, null, titleInp));
 
+  // efCombobox (not efSelect) so the rasika can add a missing composer or raga inline.
+  // bani_add.py processes ragas → composers → compositions in that order, so a raga
+  // staged here will always exist before the composition that references it.
   const composerOpts = (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id }));
-  const composerSel  = efSelect(null, composerOpts, true);
+  const composerSel  = efCombobox(null, composerOpts, 'composer', null);
   container.appendChild(efRow('Composer', true, null, composerSel));
 
   const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
-  const ragaSel  = efSelect(null, ragaOpts, true);
+  const ragaSel  = efCombobox(null, ragaOpts, 'raga', null);
   container.appendChild(efRow('Raga', true, null, ragaSel));
 
   const btnRow = document.createElement('div');
@@ -542,10 +545,12 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
 
   addBtn.addEventListener('click', () => {
     const title = titleInp.value.trim();
-    if (!title || !composerSel.value || !ragaSel.value) return;
+    const composerId = composerSel.getValue();
+    const ragaId     = ragaSel.getValue();
+    if (!title || !composerId || !ragaId) return;
     const id = toSnakeCase(title);
-    addToBundle('compositions', { id, title, composer_id: composerSel.value,
-      raga_id: ragaSel.value, sources: [], notes: null });
+    addToBundle('compositions', { id, title, composer_id: composerId,
+      raga_id: ragaId, sources: [], notes: null });
     onAdd({ id, title });
   });
   cancelBtn.addEventListener('click', () => onAdd(null));
