@@ -86483,10 +86483,10 @@ function buildSegmentForm(target) {
   notesInp.placeholder = 'optional notes';
   notesInp.className   = 'ef-input';
 
-  body.appendChild(efRow('Composition', false, null, cbComp.el));
-  body.appendChild(efRow('Raga',        false, null, cbRaga.el));
+  body.appendChild(efRow('Composition', false, null, cbComp));
+  body.appendChild(efRow('Raga',        false, null, cbRaga));
   body.appendChild(efRow('Tala',        false, null, talaSel));
-  body.appendChild(efRow('Composer',    false, null, cbComposer.el));
+  body.appendChild(efRow('Composer',    false, null, cbComposer));
   body.appendChild(efRow('Kind',        false, null, kindSel));
   body.appendChild(efRow('Display title', false, null, displayTitleInp));
   body.appendChild(efRow('Notes',       false, null, notesInp));
