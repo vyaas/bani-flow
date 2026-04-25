@@ -744,6 +744,21 @@ const PATCH_METADATA = {
       died: { inputType: 'number', placeholder: 'e.g. 1950', min: 1600, max: 2030 },
     },
   },
+  // Lecdem subject edit — patches subjects arrays on a lecdem youtube[] entry.
+  // Uses add_lecdem_subject ops (one per added id) staged into the musicians bucket.
+  // NOTE: writer.py does not support bulk-replace of subjects via patch op; the
+  // individual add_lecdem_subject writer method (ADR-084 §4) is the correct path.
+  // Each staged item uses op:'append', type:'lecdem_subject' consumed by bani_add.
+  lecdem: {
+    bucket:          'musicians',
+    label:           'Lecdem',
+    pickLabel:       'Pick Musician',
+    pickOpts:        () => (graphData.musicians || []).map(m => ({ value: m.id, label: m.label || m.id })),
+    patchFields:     [],
+    appendArrays:    [],
+    supportsAnnotate: false,
+    fieldMeta:       {},
+  },
 };
 
 // ── Entry window factory ──────────────────────────────────────────────────────
@@ -3393,4 +3408,136 @@ function buildEditForm() {
 
   win._updateStageCount = updateStageCount;
   return win;
+}
+
+// ── buildLecdemSubjectEditForm — floating form to add subjects to a lecdem ────
+// Opens a window pre-filled with current subjects. Each added id is staged as an
+// { op:'append', type:'add_lecdem_subject' } item into the musicians bundle.
+//
+// NOTE: writer.py supports individual subject addition via add_lecdem_subject
+// (ADR-084 §4). Bulk-replace via a generic patch path is not yet supported.
+// TODO: add patch_lecdem_subjects to writer.py if bulk-replace is needed.
+//
+// ref      — LecdemRef ({ video_id, label, subjects, lecturer_id })
+// nodeId   — the musician node id that hosts the lecdem youtube[] entry
+function buildLecdemSubjectEditForm(ref, nodeId) {
+  if (!ref || !ref.video_id) return;
+  const win = createEntryWindow('Edit Lecdem Subjects — ' + (ref.label || ref.video_id));
+  const body = win.querySelector('.ew-body');
+  const foot = win.querySelector('.ew-footer');
+
+  const subjects = ref.subjects || { raga_ids: [], composition_ids: [], musician_ids: [] };
+  const vid = ref.video_id;
+
+  // ── helper: render a removable chip list + combobox for one axis ─────────
+  function buildAxisSection(axisLabel, axis, currentIds, opts) {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-bottom:12px;';
+
+    const heading = document.createElement('div');
+    heading.className = 'ef-section-heading';
+    heading.textContent = axisLabel;
+    wrap.appendChild(heading);
+
+    // Current items as removable chips
+    const chipsWrap = document.createElement('div');
+    chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;';
+    wrap.appendChild(chipsWrap);
+
+    const staged = new Set(currentIds);
+
+    function redrawChips() {
+      chipsWrap.innerHTML = '';
+      staged.forEach(id => {
+        const opt = opts.find(o => o.value === id);
+        const chip = document.createElement('span');
+        chip.className = 'raga-chip';
+        chip.style.cssText = 'cursor:pointer;';
+        chip.textContent = (opt ? opt.label : id) + ' ×';
+        chip.title = 'Remove ' + (opt ? opt.label : id);
+        chip.addEventListener('click', () => {
+          staged.delete(id);
+          redrawChips();
+        });
+        chipsWrap.appendChild(chip);
+      });
+      if (staged.size === 0) {
+        const empty = document.createElement('span');
+        empty.style.cssText = 'opacity:0.4;font-size:0.75rem;';
+        empty.textContent = '(none)';
+        chipsWrap.appendChild(empty);
+      }
+    }
+    redrawChips();
+
+    // Combobox to add more
+    const combo = efCombobox(null, opts, null, win);
+    wrap.appendChild(efRow('Add ' + axisLabel, false, null, combo));
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'ef-add-btn';
+    addBtn.textContent = '+ Add';
+    addBtn.style.cssText = 'margin-top:4px;';
+    addBtn.addEventListener('click', () => {
+      const val = combo.getValue ? combo.getValue() : '';
+      if (!val || staged.has(val)) return;
+      staged.add(val);
+      redrawChips();
+      if (combo.setValue) combo.setValue('');
+    });
+    wrap.appendChild(addBtn);
+
+    // Stage button: one add_lecdem_subject op per newly added id
+    const stageBtn = document.createElement('button');
+    stageBtn.type = 'button';
+    stageBtn.className = 'ef-add-btn';
+    stageBtn.style.cssText = 'margin-top:6px;margin-left:6px;';
+    stageBtn.textContent = '↪ Stage additions → bundle';
+    stageBtn.addEventListener('click', () => {
+      const original = new Set(currentIds);
+      let count = 0;
+      staged.forEach(id => {
+        if (!original.has(id)) {
+          addToBundle('musicians', {
+            op:          'append',
+            id:          nodeId,
+            type:        'add_lecdem_subject',
+            video_id:    vid,
+            axis:        axis,
+            subject_id:  id,
+          });
+          count++;
+        }
+      });
+      if (count > 0) {
+        stageBtn.textContent = `✓ Staged ${count} addition${count > 1 ? 's' : ''}!`;
+        setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1800);
+      } else {
+        stageBtn.textContent = '(no new items)';
+        setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1200);
+      }
+    });
+    wrap.appendChild(stageBtn);
+
+    return wrap;
+  }
+
+  // ── Raga tags ───────────────────────────────────────────────────────────────
+  const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
+  body.appendChild(buildAxisSection('Raga tags', 'raga_ids', subjects.raga_ids || [], ragaOpts));
+
+  // ── Composition tags ────────────────────────────────────────────────────────
+  const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+  body.appendChild(buildAxisSection('Composition tags', 'composition_ids', subjects.composition_ids || [], compOpts));
+
+  // ── Musician tags ───────────────────────────────────────────────────────────
+  const musOpts = (graphData.musicians || []).map(m => ({ value: m.id, label: m.label || m.id }));
+  body.appendChild(buildAxisSection('Musician tags', 'musician_ids', subjects.musician_ids || [], musOpts));
+
+  const closeBtn2 = document.createElement('button');
+  closeBtn2.className = 'ef-preview-btn';
+  closeBtn2.textContent = 'Close';
+  closeBtn2.addEventListener('click', () => win.remove());
+  foot.appendChild(closeBtn2);
 }

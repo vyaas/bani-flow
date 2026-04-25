@@ -28,6 +28,7 @@ def _build_lecdem_ref(node: dict, entry: dict) -> dict:
         "video_id":       yt_video_id(entry.get("url", "")) or "",
         "label":          entry.get("label", ""),
         "year":           entry.get("year"),
+        "segments":       entry.get("segments", []),
         "subjects": {
             "raga_ids":        subjects.get("raga_ids", []),
             "composition_ids": subjects.get("composition_ids", []),

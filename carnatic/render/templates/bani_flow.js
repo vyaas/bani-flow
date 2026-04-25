@@ -1387,18 +1387,6 @@ function _renderBaniFlowLecdemStrip(type, id) {
     const li = document.createElement('li');
     li.className = 'lecdem-row';
 
-    const row = document.createElement('div');
-    row.className = 'trail-row2';
-
-    const chipsDiv = document.createElement('div');
-    chipsDiv.className = 'trail-chips';
-
-    const labelSpan = document.createElement('span');
-    labelSpan.className = 'lecdem-label';
-    labelSpan.textContent = ref.label || 'Lecture-Demo';
-    labelSpan.title = (ref.label || 'Lecture-Demo') + ' \u2014 Watch lecture-demo';
-    chipsDiv.appendChild(labelSpan);
-
     // §5: lecturer + other subjects flow together as a wrapped tag cloud.
     // Lecturer renders as a first-class musician chip (clickable → musician panel).
     const lecturerChip = (typeof _buildLecturerChip === 'function')
@@ -1410,98 +1398,11 @@ function _renderBaniFlowLecdemStrip(type, id) {
       wrap.className = 'lecdem-subjects';
       if (lecturerChip) wrap.appendChild(lecturerChip);
       subjectChips.forEach(function(c) { wrap.appendChild(c); });
-      chipsDiv.appendChild(wrap);
+      li.appendChild(wrap);
     }
 
-    row.appendChild(chipsDiv);
-
-    const actsDiv = document.createElement('div');
-    actsDiv.className = 'trail-acts';
-    const playBtn = document.createElement('button');
-    playBtn.className = 'rec-play-btn play-btn-concert';
-    playBtn.setAttribute('data-vid', ref.video_id);
-    playBtn.title = ref.label || 'Play';
-    playBtn.textContent = '\u25B6';
-    playBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (typeof openOrFocusPlayer === 'function') {
-        openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
-        const instance = (typeof playerRegistry !== 'undefined') ? playerRegistry.get(ref.video_id) : null;
-        if (instance && ref.subjects && typeof _buildLecdemSubjectFooter === 'function') {
-          const subFooter = _buildLecdemSubjectFooter(ref.subjects);
-          if (subFooter) {
-            const existing = instance.el.querySelector('.mp-footer');
-            if (existing) existing.remove();
-            const resize = instance.el.querySelector('.mp-resize');
-            if (resize) instance.el.insertBefore(subFooter, resize);
-            else        instance.el.appendChild(subFooter);
-          }
-        }
-      }
-    });
-    actsDiv.appendChild(playBtn);
-    if (typeof buildYtLink === 'function') {
-      actsDiv.appendChild(buildYtLink(ref.video_id, 0));
-    }
-
-    // ADR-101 §C: Add-segment button in the Bani Flow strip
-    if (typeof openEntryForm === 'function' && ref.lecturer_id) {
-      const addSegBtn = document.createElement('button');
-      addSegBtn.className = 'rec-play-btn';
-      addSegBtn.title = 'Add timestamped segment to this lecdem';
-      addSegBtn.textContent = '＋';
-      addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
-      addSegBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        openEntryForm('segment', { kind: 'lecdem', id: ref.lecturer_id, vid: ref.video_id });
-      });
-      actsDiv.appendChild(addSegBtn);
-    }
-
-    row.appendChild(actsDiv);
-
-    li.appendChild(row);
-
-    // ADR-101 §D: Clickable segment timeline for lecdem
-    if (ref.segments && ref.segments.length > 0) {
-      const segList = document.createElement('ul');
-      segList.className = 'seg-timeline';
-      ref.segments.forEach(function(seg) {
-        const segItem = document.createElement('li');
-        segItem.className = 'seg-timeline-item';
-
-        const ts = seg.timestamp || (function() {
-          const s = seg.offset_seconds || 0;
-          const h = Math.floor(s / 3600);
-          const m = Math.floor((s % 3600) / 60);
-          const ss = s % 60;
-          return h > 0
-            ? h + ':' + String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0')
-            : m + ':' + String(ss).padStart(2,'0');
-        })();
-
-        const segLabel = seg.display_title
-          || (seg.composition_id && seg.raga_id ? seg.composition_id + ' (' + seg.raga_id + ')' : null)
-          || seg.raga_id
-          || seg.composition_id
-          || seg.kind
-          || 'Segment';
-
-        const segBtn = document.createElement('button');
-        segBtn.className = 'seg-timeline-btn';
-        segBtn.title = 'Play from ' + ts;
-        segBtn.innerHTML = '<span class="seg-ts">' + ts + '</span>'
-          + '<span class="seg-label">' + segLabel + '</span>';
-        segBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (typeof openOrFocusPlayer === 'function') {
-            openOrFocusPlayer(ref.video_id, segLabel, '', seg.offset_seconds, ref.label || 'Lecture-Demo', [], {});
-          }
-        });
-        segItem.appendChild(segBtn);
-        segList.appendChild(segItem);
-      });
-      li.appendChild(segList);
+    if (typeof _buildLecdemBracket === 'function') {
+      li.appendChild(_buildLecdemBracket(ref, ref.lecturer_id || '', ''));
     }
 
     list.appendChild(li);

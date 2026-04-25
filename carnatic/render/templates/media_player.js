@@ -783,6 +783,20 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
   headerBody.appendChild(countDiv);
 
+  // ADR-101: ＋ button to add a timestamped segment to this concert recording
+  if (typeof openEntryForm === 'function') {
+    const addConcertSegBtn = document.createElement('button');
+    addConcertSegBtn.className = 'rec-play-btn';
+    addConcertSegBtn.title = 'Add segment to this recording';
+    addConcertSegBtn.textContent = '＋';
+    addConcertSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+    addConcertSegBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openEntryForm('segment', { kind: 'recording', id: concert.recording_id, session_index: 1 });
+    });
+    headerBody.appendChild(addConcertSegBtn);
+  }
+
   header.appendChild(chevron);
   header.appendChild(headerBody);
   bracket.appendChild(header);
@@ -1273,6 +1287,220 @@ function buildRagaTree(perfs, nodeId, artistLabel) {
   return fragment;
 }
 
+// ── _buildLecdemBracket — collapsible lecdem bracket (ADR-101) ────────────────
+// Mirrors buildConcertBracket for lecture-demo entries.
+// • No segments → returns a flat trail-row2 (label + ▶ + YT + ＋).
+// • Has segments → returns a concert-bracket with collapsible segment list.
+function _buildLecdemBracket(ref, nodeId, artistLabel) {
+  const segments = (ref.segments && ref.segments.length > 0) ? ref.segments : null;
+
+  // ── flat row (no segments) ──────────────────────────────────────────────────
+  if (!segments) {
+    const row = document.createElement('div');
+    row.className = 'trail-row2';
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'lecdem-label';
+    labelSpan.textContent = ref.label || 'Lecture-Demo';
+    labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+    row.appendChild(labelSpan);
+
+    const actsDiv = document.createElement('div');
+    actsDiv.className = 'trail-acts';
+
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.setAttribute('data-vid', ref.video_id);
+    playBtn.title = ref.label || 'Play';
+    playBtn.textContent = '\u25B6';
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', [], {});
+      const instance = playerRegistry.get(ref.video_id);
+      if (instance && ref.subjects) {
+        const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+        if (subFooter) {
+          const existing = instance.el.querySelector('.mp-footer');
+          if (existing) existing.remove();
+          const resize = instance.el.querySelector('.mp-resize');
+          if (resize) instance.el.insertBefore(subFooter, resize);
+          else        instance.el.appendChild(subFooter);
+        }
+      }
+    });
+    actsDiv.appendChild(playBtn);
+    actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+
+    if (typeof openEntryForm === 'function') {
+      const addSegBtn = document.createElement('button');
+      addSegBtn.className = 'rec-play-btn';
+      addSegBtn.title = 'Add timestamped segment to this lecdem';
+      addSegBtn.textContent = '＋';
+      addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+      addSegBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
+      });
+      actsDiv.appendChild(addSegBtn);
+    }
+
+    if (typeof buildLecdemSubjectEditForm === 'function') {
+      const editSubjBtn = document.createElement('button');
+      editSubjBtn.className = 'rec-play-btn';
+      editSubjBtn.title = 'Edit lecdem subjects';
+      editSubjBtn.textContent = '✎';
+      editSubjBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+      editSubjBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        buildLecdemSubjectEditForm(ref, nodeId);
+      });
+      actsDiv.appendChild(editSubjBtn);
+    }
+
+    row.appendChild(actsDiv);
+    return row;
+  }
+
+  // ── bracket (has segments) ──────────────────────────────────────────────────
+  // Build allTracks for the in-player selector
+  const allTracks = segments.map(seg => {
+    const ragaObj = seg.raga_id ? ragas.find(r => r.id === seg.raga_id) : null;
+    return {
+      offset_seconds: seg.offset_seconds || 0,
+      display_title:  seg.display_title || seg.raga_id || seg.kind || '',
+      raga_id:        seg.raga_id || null,
+      raga_name:      ragaObj ? ragaObj.name : (seg.raga_id || ''),
+      tala:           seg.tala || null,
+      timestamp:      seg.timestamp || '00:00',
+      composition_id: seg.composition_id || null,
+    };
+  });
+
+  const bracket = document.createElement('div');
+  bracket.className = 'concert-bracket';
+
+  // ── header ──────────────────────────────────────────────────────────────────
+  const header = document.createElement('div');
+  header.className = 'concert-header';
+  header.setAttribute('onclick', 'toggleConcert(this)');
+
+  const chevron = document.createElement('span');
+  chevron.className = 'concert-chevron';
+
+  const headerBody = document.createElement('div');
+  headerBody.className = 'concert-header-body';
+
+  const titleRow = document.createElement('div');
+  titleRow.className = 'concert-title-row';
+
+  const titleSpan = document.createElement('span');
+  titleSpan.className = 'concert-title';
+  titleSpan.textContent = ref.label || 'Lecture-Demo';
+  titleRow.appendChild(titleSpan);
+
+  if (ref.year) {
+    const yearSpan = document.createElement('span');
+    yearSpan.className = 'concert-date';
+    yearSpan.textContent = ref.year;
+    titleRow.appendChild(yearSpan);
+  }
+
+  const countDiv = document.createElement('div');
+  countDiv.className = 'concert-count';
+  countDiv.textContent = segments.length + (segments.length === 1 ? ' segment' : ' segments');
+
+  headerBody.appendChild(titleRow);
+  headerBody.appendChild(countDiv);
+
+  if (typeof openEntryForm === 'function') {
+    const addSegBtn = document.createElement('button');
+    addSegBtn.className = 'rec-play-btn';
+    addSegBtn.title = 'Add timestamped segment to this lecdem';
+    addSegBtn.textContent = '＋';
+    addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+    addSegBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
+    });
+    headerBody.appendChild(addSegBtn);
+  }
+
+  if (typeof buildLecdemSubjectEditForm === 'function') {
+    const editSubjBtn = document.createElement('button');
+    editSubjBtn.className = 'rec-play-btn';
+    editSubjBtn.title = 'Edit lecdem subjects';
+    editSubjBtn.textContent = '✎';
+    editSubjBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+    editSubjBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      buildLecdemSubjectEditForm(ref, nodeId);
+    });
+    headerBody.appendChild(editSubjBtn);
+  }
+
+  header.appendChild(chevron);
+  header.appendChild(headerBody);
+  bracket.appendChild(header);
+
+  // ── segment list ─────────────────────────────────────────────────────────────
+  const segList = document.createElement('ul');
+  segList.className = 'concert-perf-list';
+  segList.style.display = 'none';
+
+  segments.forEach(seg => {
+    const li = document.createElement('li');
+    li.className = 'concert-perf-item';
+    li.dataset.vid = ref.video_id;
+
+    const row1 = document.createElement('div');
+    row1.className = 'rec-row1';
+
+    const ragaObj = seg.raga_id ? ragas.find(r => r.id === seg.raga_id) : null;
+    const segLabel = seg.display_title || (ragaObj ? ragaObj.name : null) || seg.raga_id || seg.kind || 'Segment';
+
+    if (ragaObj) {
+      const ragaChip = document.createElement('span');
+      ragaChip.className = 'raga-chip';
+      ragaChip.textContent = ragaObj.name;
+      ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+      ragaChip.addEventListener('click', e => {
+        e.stopPropagation();
+        ragaChip.classList.add('chip-tapped');
+        setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', seg.raga_id);
+      });
+      row1.appendChild(ragaChip);
+    } else {
+      const titleEl = document.createElement('span');
+      titleEl.className = 'rec-title';
+      titleEl.textContent = seg.display_title || seg.kind || 'Segment';
+      row1.appendChild(titleEl);
+    }
+
+    const tsSpan = document.createElement('span');
+    tsSpan.className = 'seg-ts';
+    tsSpan.textContent = seg.timestamp || '00:00';
+    row1.appendChild(tsSpan);
+
+    const playBtn = document.createElement('button');
+    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.title = 'Play from ' + (seg.timestamp || '00:00');
+    playBtn.textContent = '▶';
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, {});
+    });
+    row1.appendChild(playBtn);
+    row1.appendChild(buildYtLink(ref.video_id, seg.offset_seconds || 0));
+
+    li.appendChild(row1);
+    segList.appendChild(li);
+  });
+
+  bracket.appendChild(segList);
+  return bracket;
+}
+
 // ── buildRecordingsList — concert-bracketed + legacy flat (ADR-018) ───────────
 function buildRecordingsList(nodeId, nodeData) {
   const recPanel  = document.getElementById('recordings-panel');
@@ -1324,76 +1552,15 @@ function buildRecordingsList(nodeId, nodeData) {
         const li = document.createElement('li');
         li.className = 'lecdem-row';
 
-        const row = document.createElement('div');
-        row.className = 'trail-row2';
-
-        const chipsDiv = document.createElement('div');
-        chipsDiv.className = 'trail-chips';
-
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'lecdem-label';
-        labelSpan.textContent = ref.label || 'Lecture-Demo';
-        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
-        chipsDiv.appendChild(labelSpan);
-
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
         if (subjectChips && subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          chipsDiv.appendChild(subjectsWrap);
+          li.appendChild(subjectsWrap);
         }
 
-        row.appendChild(chipsDiv);
-
-        const actsDiv = document.createElement('div');
-        actsDiv.className = 'trail-acts';
-        const playBtn = document.createElement('button');
-        playBtn.className = 'rec-play-btn play-btn-concert';
-        playBtn.setAttribute('data-vid', ref.video_id);
-        playBtn.title = ref.label || 'Play';
-        playBtn.textContent = '\u25B6';
-        playBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
-          const instance = playerRegistry.get(ref.video_id);
-          if (instance && ref.subjects) {
-            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
-            if (subFooter) {
-              const existing = instance.el.querySelector('.mp-footer');
-              if (existing) existing.remove();
-              const resize = instance.el.querySelector('.mp-resize');
-              if (resize) instance.el.insertBefore(subFooter, resize);
-              else        instance.el.appendChild(subFooter);
-            }
-          }
-        });
-        actsDiv.appendChild(playBtn);
-        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
-
-        // ADR-101 §C: Add-segment button on each lecdem row
-        if (typeof openEntryForm === 'function') {
-          const addSegBtn = document.createElement('button');
-          addSegBtn.className = 'rec-play-btn';
-          addSegBtn.title = 'Add timestamped segment to this lecdem';
-          addSegBtn.textContent = '＋';
-          addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
-          addSegBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
-          });
-          actsDiv.appendChild(addSegBtn);
-        }
-
-        row.appendChild(actsDiv);
-
-        li.appendChild(row);
-
-        // ADR-101 §D: Segment timeline for musician panel lecdems
-        if (ref.segments && ref.segments.length > 0) {
-          li.appendChild(_buildSegTimeline(ref));
-        }
-
+        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
         byList.appendChild(li);
       });
 
@@ -1423,18 +1590,6 @@ function buildRecordingsList(nodeId, nodeData) {
         const li = document.createElement('li');
         li.className = 'lecdem-row';
 
-        const row = document.createElement('div');
-        row.className = 'trail-row2';
-
-        const chipsDiv = document.createElement('div');
-        chipsDiv.className = 'trail-chips';
-
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'lecdem-label';
-        labelSpan.textContent = ref.label || 'Lecture-Demo';
-        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
-        chipsDiv.appendChild(labelSpan);
-
         const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
         if (lecturerChip || subjectChips.length > 0) {
@@ -1442,59 +1597,10 @@ function buildRecordingsList(nodeId, nodeData) {
           subjectsWrap.className = 'lecdem-subjects';
           if (lecturerChip) subjectsWrap.appendChild(lecturerChip);
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          chipsDiv.appendChild(subjectsWrap);
+          li.appendChild(subjectsWrap);
         }
 
-        row.appendChild(chipsDiv);
-
-        const actsDiv = document.createElement('div');
-        actsDiv.className = 'trail-acts';
-        const playBtn = document.createElement('button');
-        playBtn.className = 'rec-play-btn play-btn-concert';
-        playBtn.setAttribute('data-vid', ref.video_id);
-        playBtn.title = ref.label || 'Play';
-        playBtn.textContent = '\u25B6';
-        playBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
-          const instance = playerRegistry.get(ref.video_id);
-          if (instance && ref.subjects) {
-            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
-            if (subFooter) {
-              const existing = instance.el.querySelector('.mp-footer');
-              if (existing) existing.remove();
-              const resize = instance.el.querySelector('.mp-resize');
-              if (resize) instance.el.insertBefore(subFooter, resize);
-              else        instance.el.appendChild(subFooter);
-            }
-          }
-        });
-        actsDiv.appendChild(playBtn);
-        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
-
-        // ADR-101 §C: Add-segment button on each lecdem row
-        if (typeof openEntryForm === 'function') {
-          const addSegBtn = document.createElement('button');
-          addSegBtn.className = 'rec-play-btn';
-          addSegBtn.title = 'Add timestamped segment to this lecdem';
-          addSegBtn.textContent = '＋';
-          addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
-          addSegBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
-          });
-          actsDiv.appendChild(addSegBtn);
-        }
-
-        row.appendChild(actsDiv);
-
-        li.appendChild(row);
-
-        // ADR-101 §D: Segment timeline for musician panel lecdems
-        if (ref.segments && ref.segments.length > 0) {
-          li.appendChild(_buildSegTimeline(ref));
-        }
-
+        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
         aboutList.appendChild(li);
       });
 
