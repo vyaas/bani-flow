@@ -3031,6 +3031,11 @@
     line-height: 1.2;
     margin-left: 0;
   }
+  .panel-tutorial .pt-demo-title {
+    color: var(--fg);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
   .panel-tutorial .pt-demo-static {
     cursor: default;
     opacity: 0.92;
@@ -3059,10 +3064,20 @@
   .panel-tutorial .pt-search-note,
   .panel-tutorial .pt-closing-note,
   .panel-tutorial .pt-view-note {
+    font-size: 0.73rem;
     color: var(--fg-muted);
-    font-size: 0.72rem;
-    line-height: 1.4;
-    margin: 0;
+    margin: 4px 0 0;
+    line-height: 1.45;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+  }
+  .panel-tutorial .pt-wheel-note {
+    font-size: 0.68rem;
+    opacity: 0.7;
+    font-style: italic;
+    margin-top: 3px;
   }
   .panel-tutorial .pt-intro-note {
     margin-bottom: 8px;
@@ -75123,14 +75138,6 @@ const helpEmptyPanels = {
         "effect": "Begada is a rakti raga — a mode of deep emotional saturation — central to the Dhanammal bani. Ramnad Krishnan's rendering of Begada is said to be unparalleled. Tapping a raga chip opens its Bani Flow trail: every musician in the graph who has recorded in that raga."
       },
       {
-        "css_class": null,
-        "example_kind": "note",
-        "example_id": null,
-        "example_label": null,
-        "note_text": "In Mela-Janya view, tapping a raga also illuminates it on the 72-mela wheel — you can see which parent mela governs this raga and navigate to its siblings.",
-        "effect": ""
-      },
-      {
         "css_class": "lecdem-chip",
         "example_kind": "demo_row",
         "example_id": null,
@@ -75243,7 +75250,23 @@ const helpEmptyPanels = {
     "view_section": {
       "label": "The tradition lives in two forms:",
       "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
-      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers — Tyagaraja, Dikshitar, Syama Sastri — who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
+      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
+      "raga_note_composers": [
+        {
+          "id": "tyagaraja",
+          "label": "Tyagaraja"
+        },
+        {
+          "id": "muthuswami_dikshitar",
+          "label": "Muthuswami Dikshitar"
+        },
+        {
+          "id": "shyama_shastri",
+          "label": "Shyama Shastri"
+        }
+      ],
+      "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion",
+      "wheel_note": "In Mela-Janya view, tapping a raga also illuminates it on the 72-mela wheel — you can see which parent mela governs this raga and navigate to its siblings."
     }
   },
   "bani_flow_panel": {
@@ -75294,9 +75317,9 @@ const helpEmptyPanels = {
         "example_label": null,
         "demo_row": {
           "type": "action_row",
-          "play_label": "Muripemu Kalige — tutorial sample",
-          "video_id": "AkRGOouMKWQ",
-          "youtube_url": "https://www.youtube.com/watch?v=AkRGOouMKWQ",
+          "play_label": "Muripemu Kalige · Mukhari — TM Krishna, Parallel Lines Bangalore 2020",
+          "video_id": "NfaWuqmljKM",
+          "youtube_url": "https://www.youtube.com/watch?v=NfaWuqmljKM",
           "play_note": "play in the floating player",
           "link_note": "open source"
         },
@@ -75319,7 +75342,7 @@ const helpEmptyPanels = {
       }
     ],
     "cross_panel_seeds": {
-      "prompt": "Three musicians. Load one — their recordings open in this panel, the Guru-Shishya graph on the left highlights their lineage:",
+      "prompt": "Three artists. One bani — the Dhanammal school of sound, transmitted grandmother to granddaughter to shishya across a century:",
       "search_note": "Use the filter bar above ↑ to narrow recordings by raga or composition name once a subject is loaded — the same bar that navigates you here.",
       "panel_target": "musician",
       "items": [
@@ -75337,22 +75360,31 @@ const helpEmptyPanels = {
         },
         {
           "kind": "musician",
-          "id": "madurai_mani_iyer",
-          "label": "Madurai Mani Iyer",
-          "note": "1912–1968 · vocal · Sangeetha Kalanidhi 1959, golden age"
-        },
-        {
-          "kind": "musician",
-          "id": "tyagaraja",
-          "label": "Tyagaraja",
-          "note": "1767–1847 · composer · patron saint of the tradition, ~700 kritis across 100+ ragas"
+          "id": "ramnad_krishnan",
+          "label": "Ramnad Krishnan",
+          "note": "1918–1973 · vocal · student of Brinda, master of Begada and Sahana"
         }
       ]
     },
     "view_section": {
       "label": "The tradition lives in two forms:",
       "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
-      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers — Tyagaraja, Dikshitar, Syama Sastri — who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
+      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
+      "raga_note_composers": [
+        {
+          "id": "tyagaraja",
+          "label": "Tyagaraja"
+        },
+        {
+          "id": "muthuswami_dikshitar",
+          "label": "Muthuswami Dikshitar"
+        },
+        {
+          "id": "shyama_shastri",
+          "label": "Shyama Shastri"
+        }
+      ],
+      "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
     }
   }
 };
@@ -83053,7 +83085,7 @@ function _updateBundleBtn() {
 
 function downloadBundle() {
   const bundle = {
-    schema_version: 1,
+    schema_version: 2,
     generated_at:   new Date().toISOString(),
     items:          baniBundle,
   };
@@ -83681,6 +83713,87 @@ function efSourceFields(prefix, defaults) {
   return frag;
 }
 
+// ── PATCH_METADATA — mirrors writer.py PATCHABLE_*_FIELDS (ADR-097 §6) ────────
+// Drives buildEditForm(): field lists, value-input types, append selectors.
+// MVP entities: musician, raga, edge, composition, composer.
+const PATCH_METADATA = {
+  musician: {
+    bucket:          'musicians',
+    label:           'Musician',
+    pickLabel:       'Pick Musician',
+    pickOpts:        () => (graphData.nodes || []).map(n => ({ value: n.id, label: n.label })),
+    patchFields:     ['label', 'born', 'died', 'era', 'instrument', 'bani'],
+    appendArrays:    ['youtube', 'sources'],
+    supportsAnnotate: true,
+    fieldMeta: {
+      label:      { inputType: 'text',   placeholder: 'Display name' },
+      born:       { inputType: 'number', placeholder: 'e.g. 1908',          min: 1600, max: 2030 },
+      died:       { inputType: 'number', placeholder: 'leave blank if living', min: 1600, max: 2030 },
+      era:        { inputType: 'select', opts: ['trinity','bridge','golden_age','disseminator','living_pillars','contemporary'] },
+      instrument: { inputType: 'select', opts: ['vocal','veena','violin','flute','mridangam','bharatanatyam','ghatam','other'] },
+      bani:       { inputType: 'text',   placeholder: 'e.g. Ariyakudi, Semmangudi' },
+    },
+  },
+  raga: {
+    bucket:          'ragas',
+    label:           'Raga',
+    pickLabel:       'Pick Raga',
+    pickOpts:        () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id })),
+    patchFields:     ['name', 'parent_raga', 'melakarta', 'is_melakarta', 'cakra', 'notes'],
+    appendArrays:    ['aliases'],
+    supportsAnnotate: true,
+    fieldMeta: {
+      name:         { inputType: 'text',     placeholder: 'Raga name' },
+      parent_raga:  { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
+      melakarta:    { inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
+      is_melakarta: { inputType: 'select',   opts: [{ value: 'true', label: 'Yes — Melakarta' }, { value: 'false', label: 'No — Janya' }] },
+      cakra:        { inputType: 'number',   placeholder: '1–12',  min: 1, max: 12 },
+      notes:        { inputType: 'text',     placeholder: 'musicological note' },
+    },
+  },
+  edge: {
+    bucket:          'edges',
+    label:           'Edge (Guru→Shishya)',
+    pickLabel:       null,   // edges use source+target pair; no single-entity pick
+    patchFields:     ['confidence', 'source_url', 'note'],
+    appendArrays:    [],
+    supportsAnnotate: false,
+    fieldMeta: {
+      confidence:  { inputType: 'number', placeholder: '0.0–1.0', min: 0, max: 1, step: 0.01 },
+      source_url:  { inputType: 'text',   placeholder: 'https://…' },
+      note:        { inputType: 'text',   placeholder: 'e.g. principal guru' },
+    },
+  },
+  composition: {
+    bucket:          'compositions',
+    label:           'Composition',
+    pickLabel:       'Pick Composition',
+    pickOpts:        () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id })),
+    patchFields:     ['title', 'tala', 'language'],
+    appendArrays:    [],
+    supportsAnnotate: true,
+    fieldMeta: {
+      title:    { inputType: 'text',   placeholder: 'Composition title' },
+      tala:     { inputType: 'select', opts: ['adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other'] },
+      language: { inputType: 'select', opts: ['Telugu','Sanskrit','Tamil','Kannada','Malayalam','Other'] },
+    },
+  },
+  composer: {
+    bucket:          'composers',
+    label:           'Composer',
+    pickLabel:       'Pick Composer',
+    pickOpts:        () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id })),
+    patchFields:     ['name', 'born', 'died'],
+    appendArrays:    [],
+    supportsAnnotate: true,
+    fieldMeta: {
+      name: { inputType: 'text',   placeholder: 'Composer name' },
+      born: { inputType: 'number', placeholder: 'e.g. 1890', min: 1600, max: 2030 },
+      died: { inputType: 'number', placeholder: 'e.g. 1950', min: 1600, max: 2030 },
+    },
+  },
+};
+
 // ── Entry window factory ──────────────────────────────────────────────────────
 
 function createEntryWindow(title) {
@@ -83741,6 +83854,7 @@ function openEntryForm(type) {
     case 'composition':         buildCompositionForm();        break;
     case 'recording':           buildRecordingForm();          break;
     case 'composer':            buildComposerForm();           break;
+    case 'edit':                buildEditForm();               break;
     // legacy alias — kept for backwards compat
     case 'youtube':             buildMusicianRecordingsForm(); break;
   }
@@ -86004,9 +86118,7 @@ function buildAddYoutubeForm() {
   }
 
   function _chipLikeLabel(cls, text) {
-    const el = _el('span', cls + ' pt-demo-static', text);
-    el.style.cursor = 'default';
-    return el;
+    return _el('span', 'pt-demo-title', text);
   }
 
   function _renderDemoRow(slot, entry) {
@@ -86072,7 +86184,7 @@ function buildAddYoutubeForm() {
 
       block.appendChild(row);
 
-      // Optional performer chips (same era-tint pattern as recording_row)
+      // Performer chips (clickable musician chips)
       const lecdPerformers = Array.isArray(demo.performers) ? demo.performers : [];
       if (lecdPerformers.length) {
         const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
@@ -86082,7 +86194,7 @@ function buildAddYoutubeForm() {
           const eraId = node ? (node.era || null) : null;
           const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
           const chip = document.createElement('span');
-          chip.className = 'musician-chip chip-secondary';
+          chip.className = 'musician-chip';
           chip.style.setProperty('--chip-era-bg', tint.bg);
           chip.style.setProperty('--chip-era-border', tint.border);
           chip.textContent = pf.label || pf.id;
@@ -86175,7 +86287,7 @@ function buildAddYoutubeForm() {
       headerRow.appendChild(acts);
       block.appendChild(headerRow);
 
-      // Era-tinted performer chips
+      // Performer chips (clickable musician chips)
       const performers = Array.isArray(demo.performers) ? demo.performers : [];
       if (performers.length) {
         const pfRow = _el('div', 'pt-demo-tags pt-rec-performers');
@@ -86185,7 +86297,7 @@ function buildAddYoutubeForm() {
           const eraId = node ? (node.era || null) : null;
           const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(eraId) : { bg: 'transparent', border: '#888' };
           const chip = document.createElement('span');
-          chip.className = 'musician-chip chip-secondary';
+          chip.className = 'musician-chip';
           chip.style.setProperty('--chip-era-bg', tint.bg);
           chip.style.setProperty('--chip-era-border', tint.border);
           chip.textContent = pf.label || pf.id;
@@ -86241,18 +86353,14 @@ function buildAddYoutubeForm() {
       }
 
       if (demo.composer_label) {
-        if (slot === 'bani') {
-          const nodeId = _lookupComposerNodeId(demo.composer_id);
-          if (nodeId) {
-            row.appendChild(_catalogueChip({
-              css_class: 'musician-chip',
-              example_kind: 'musician',
-              example_id: nodeId,
-              example_label: demo.composer_label,
-            }));
-          } else {
-            row.appendChild(_el('span', 'pt-demo-label', demo.composer_label));
-          }
+        const nodeId = _lookupComposerNodeId(demo.composer_id);
+        if (nodeId) {
+          row.appendChild(_catalogueChip({
+            css_class: 'musician-chip',
+            example_kind: 'musician',
+            example_id: nodeId,
+            example_label: demo.composer_label,
+          }));
         } else {
           row.appendChild(_el('span', 'pt-demo-label', demo.composer_label));
         }
@@ -86344,7 +86452,33 @@ function buildAddYoutubeForm() {
         section.appendChild(_el('p', 'pt-view-note', viewSection.graph_note));
       }
       if (viewSection.raga_note) {
-        section.appendChild(_el('p', 'pt-view-note', viewSection.raga_note));
+        const composers = Array.isArray(viewSection.raga_note_composers)
+          ? viewSection.raga_note_composers : [];
+        if (composers.length) {
+          const noteDiv = _el('div', 'pt-view-note');
+          noteDiv.appendChild(document.createTextNode(viewSection.raga_note + ' — '));
+          composers.forEach(function (c, i) {
+            if (i > 0) noteDiv.appendChild(document.createTextNode(', '));
+            const nodeId = _lookupComposerNodeId(c.id);
+            if (nodeId) {
+              const chip = _el('span', 'musician-chip', c.label || c.id);
+              chip.style.cursor = 'pointer';
+              chip.addEventListener('click', function () { _onMusician(nodeId); });
+              noteDiv.appendChild(chip);
+            } else {
+              noteDiv.appendChild(document.createTextNode(c.label || c.id));
+            }
+          });
+          if (viewSection.raga_note_suffix) {
+            noteDiv.appendChild(document.createTextNode(' — ' + viewSection.raga_note_suffix));
+          }
+          section.appendChild(noteDiv);
+        } else {
+          section.appendChild(_el('p', 'pt-view-note', viewSection.raga_note));
+        }
+      }
+      if (viewSection.wheel_note) {
+        section.appendChild(_el('p', 'pt-view-note pt-wheel-note', viewSection.wheel_note));
       }
       container.appendChild(section);
 
