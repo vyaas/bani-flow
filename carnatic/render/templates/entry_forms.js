@@ -3127,9 +3127,42 @@ function buildSegmentForm(target) {
     }
     const badge = document.createElement('div');
     badge.style.cssText = 'font-size:0.68rem;color:var(--accent);margin-top:6px;';
-    badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s). Download bundle to apply.`;
+    const compLabel = cbComp.getValue()
+      ? ((graphData.compositions || []).find(c => c.id === cbComp.getValue()) || {}).title || cbComp.getValue()
+      : null;
+    badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s${compLabel ? ' · ' + compLabel : ''}). Download bundle to apply.`;
     foot.appendChild(badge);
     stageBtn.disabled = true;
+
+    // "+ Add another segment" — resets time + all fields, keeps the window open
+    const addAnotherBtn = document.createElement('button');
+    addAnotherBtn.className = 'ef-download-btn';
+    addAnotherBtn.style.marginTop = '6px';
+    addAnotherBtn.textContent = '+ Add another segment';
+    addAnotherBtn.addEventListener('click', () => {
+      // Reset time
+      hInp.value = ''; mInp.value = ''; sInp.value = '';
+      // Reset comboboxes — setValue('', '') resets both hidden select and text input
+      [cbComp, cbRaga, cbComposer].forEach(cb => {
+        if (cb.setValue) {
+          cb.setValue('', '');
+          // also hide the × button by firing a change
+          cb.dispatchEvent(new Event('change'));
+        }
+      });
+      // Reset selects
+      talaSel.value = '';
+      kindSel.value = '';
+      displayTitleInp.value = '';
+      notesInp.value = '';
+      // Remove this button and the badge so the footer stays clean
+      addAnotherBtn.remove();
+      badge.remove();
+      stageBtn.disabled = true;
+      validate();
+      hInp.focus();
+    });
+    foot.appendChild(addAnotherBtn);
   });
 
   return win;
