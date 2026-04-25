@@ -78057,23 +78057,23 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   countDiv.className = 'concert-count';
   countDiv.textContent = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
 
-  headerBody.appendChild(titleRow);
-  if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
-  headerBody.appendChild(countDiv);
-
-  // ADR-101: ＋ button to add a timestamped segment to this concert recording
+  // ADR-101: ＋ button to add a timestamped segment — inline on the title row
   if (typeof openEntryForm === 'function') {
     const addConcertSegBtn = document.createElement('button');
     addConcertSegBtn.className = 'rec-play-btn';
     addConcertSegBtn.title = 'Add segment to this recording';
     addConcertSegBtn.textContent = '＋';
-    addConcertSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+    addConcertSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
     addConcertSegBtn.addEventListener('click', e => {
       e.stopPropagation();
       openEntryForm('segment', { kind: 'recording', id: concert.recording_id, session_index: 1 });
     });
-    headerBody.appendChild(addConcertSegBtn);
+    titleRow.appendChild(addConcertSegBtn);
   }
+
+  headerBody.appendChild(titleRow);
+  if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
+  headerBody.appendChild(countDiv);
 
   header.appendChild(chevron);
   header.appendChild(headerBody);
@@ -78687,20 +78687,18 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   countDiv.className = 'concert-count';
   countDiv.textContent = segments.length + (segments.length === 1 ? ' segment' : ' segments');
 
-  headerBody.appendChild(titleRow);
-  headerBody.appendChild(countDiv);
-
+  // ＋ and ✎ buttons inline on the title row
   if (typeof openEntryForm === 'function') {
     const addSegBtn = document.createElement('button');
     addSegBtn.className = 'rec-play-btn';
     addSegBtn.title = 'Add timestamped segment to this lecdem';
     addSegBtn.textContent = '＋';
-    addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+    addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
     addSegBtn.addEventListener('click', e => {
       e.stopPropagation();
       openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
     });
-    headerBody.appendChild(addSegBtn);
+    titleRow.appendChild(addSegBtn);
   }
 
   if (typeof buildLecdemSubjectEditForm === 'function') {
@@ -78708,13 +78706,16 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     editSubjBtn.className = 'rec-play-btn';
     editSubjBtn.title = 'Edit lecdem subjects';
     editSubjBtn.textContent = '✎';
-    editSubjBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+    editSubjBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
     editSubjBtn.addEventListener('click', e => {
       e.stopPropagation();
       buildLecdemSubjectEditForm(ref, nodeId);
     });
-    headerBody.appendChild(editSubjBtn);
+    titleRow.appendChild(editSubjBtn);
   }
+
+  headerBody.appendChild(titleRow);
+  headerBody.appendChild(countDiv);
 
   header.appendChild(chevron);
   header.appendChild(headerBody);
