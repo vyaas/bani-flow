@@ -35,7 +35,9 @@ schema_version 2 adds an optional "op" field to every item (ADR-097 §2):
 Whitelisted item types: ragas, composers, musicians, compositions, recordings, edges.
 Unknown item types are rejected with a named error — silent drops are forbidden.
 
-Processing order: ragas → composers → musicians → compositions → recordings → edges.
+Processing order: ragas → composers → compositions → musicians → recordings → edges.
+Compositions must precede musicians so that segment composition_id references
+(appended to youtube[vid].segments) resolve correctly during musician processing.
 
 Version contract (§3 of ADR-083):
   - bundles with schema_version > MAX_VERSION are refused immediately.
@@ -808,16 +810,17 @@ def main() -> None:
         a, s, e = _process_composers(composers, writer, comp_path, musicians_path)
         total_added += a; total_skipped += s; total_errors += e
 
+    # ── compositions ─────────────────────────────────────────────────────────
+    # Processed BEFORE musicians so that segment composition_id references resolve.
+    if compositions:
+        print(f"\nCompositions ({len(compositions)}):")
+        a, s, e = _process_compositions(compositions, writer, comp_path, ragas_path)
+        total_added += a; total_skipped += s; total_errors += e
+
     # ── musicians ─────────────────────────────────────────────────────────────
     if musicians:
         print(f"\nMusicians ({len(musicians)}):")
         a, s, e = _process_musicians(musicians, writer, musicians_path, comp_path, ragas_path)
-        total_added += a; total_skipped += s; total_errors += e
-
-    # ── compositions ──────────────────────────────────────────────────────────
-    if compositions:
-        print(f"\nCompositions ({len(compositions)}):")
-        a, s, e = _process_compositions(compositions, writer, comp_path, ragas_path)
         total_added += a; total_skipped += s; total_errors += e
 
     # ── recordings ────────────────────────────────────────────────────────────
