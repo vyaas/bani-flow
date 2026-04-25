@@ -200,7 +200,18 @@ function efCombobox(id, options, type, formWin) {
   textInp.placeholder = 'Type to search…';
   textInp.setAttribute('data-combobox-filter', 'true');
   textInp.autocomplete = 'off';
+  textInp.style.paddingRight = '22px';
   wrap.appendChild(textInp);
+
+  // Clear (×) button — revealed when a value is selected
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.textContent = '×';
+  clearBtn.title = 'Clear selection';
+  clearBtn.style.cssText = 'display:none;position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1rem;line-height:1;padding:0 3px;';
+  clearBtn.addEventListener('mouseover', () => { clearBtn.style.color = 'var(--fg)'; });
+  clearBtn.addEventListener('mouseout',  () => { clearBtn.style.color = 'var(--fg-muted)'; });
+  wrap.appendChild(clearBtn);
 
   // Dropdown: portalled to document.body with position:fixed to escape overflow clipping
   const dropdown = document.createElement('div');
@@ -282,6 +293,7 @@ function efCombobox(id, options, type, formWin) {
     selectedLabel = label;
     hiddenSel.value = value;
     textInp.value = label;
+    clearBtn.style.display = value ? '' : 'none';
     closeDropdown();
     hiddenSel.dispatchEvent(new Event('change', { bubbles: true }));
     wrap.dispatchEvent(new Event('change'));
@@ -326,6 +338,7 @@ function efCombobox(id, options, type, formWin) {
   textInp.addEventListener('input', () => {
     selectedValue = '';
     hiddenSel.value = '';
+    clearBtn.style.display = 'none';
     renderDropdown(textInp.value);
     if (formWin) formWin.dispatchEvent(new Event('input'));
   });
@@ -371,6 +384,18 @@ function efCombobox(id, options, type, formWin) {
   window.addEventListener('scroll', () => {
     if (dropdown.style.display !== 'none') positionDropdown();
   }, true);
+
+  clearBtn.addEventListener('click', () => {
+    selectedValue = '';
+    selectedLabel = '';
+    hiddenSel.value = '';
+    textInp.value = '';
+    clearBtn.style.display = 'none';
+    hiddenSel.dispatchEvent(new Event('change', { bubbles: true }));
+    wrap.dispatchEvent(new Event('change'));
+    if (formWin) formWin.dispatchEvent(new Event('change'));
+    textInp.focus();
+  });
 
   wrap.getValue = () => selectedValue;
   wrap.setValue = (v, label) => {
@@ -455,6 +480,10 @@ function buildComposerMiniForm(container, prefill, onAdd) {
   const eraSel  = efSelect(null, eraOpts, true);
   container.appendChild(efRow('Era', false, null, eraSel));
 
+  const musOpts = (graphData.musicians || []).map(m => ({ value: m.id, label: m.label || m.id }));
+  const musSel  = efCombobox(null, musOpts, null, null);
+  container.appendChild(efRow('Musician node', false, 'links to guru-shishya graph', musSel));
+
   const srcInp = efInput(null, 'text', 'Wikipedia URL', null);
   container.appendChild(efRow('Source URL', false, null, srcInp));
 
@@ -474,8 +503,9 @@ function buildComposerMiniForm(container, prefill, onAdd) {
     const name = nameInp.value.trim();
     if (!name) { nameInp.focus(); return; }
     const id = toSnakeCase(name);
+    const musNodeId = musSel.getValue() || null;
     const item = {
-      id, name, musician_node_id: null, born: null, died: null,
+      id, name, musician_node_id: musNodeId, born: null, died: null,
       sources: srcInp.value.trim()
         ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
     };
@@ -2972,9 +3002,9 @@ function buildSegmentForm(target) {
   const ragaOpts = () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
   const compOsrOpts = () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id }));
 
-  const cbComp     = efCombobox('seg_comp',     compOpts(),  true);
-  const cbRaga     = efCombobox('seg_raga',     ragaOpts(),  true);
-  const cbComposer = efCombobox('seg_composer', compOsrOpts(), true);
+  const cbComp     = efCombobox('seg_comp',     compOpts(),     'composition', win);
+  const cbRaga     = efCombobox('seg_raga',     ragaOpts(),     'raga',        win);
+  const cbComposer = efCombobox('seg_composer', compOsrOpts(), 'composer',    win);
 
   const talaOpts = [
     'adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other',
@@ -3006,10 +3036,13 @@ function buildSegmentForm(target) {
   notesInp.placeholder = 'optional notes';
   notesInp.className   = 'ef-input';
 
+  // Auto-fill raga and composer when a known composition is selected
+  wireCompRagaAutofill(cbComp, cbRaga, cbComposer, win);
+
   body.appendChild(efRow('Composition', false, null, cbComp));
-  body.appendChild(efRow('Raga',        false, null, cbRaga));
+  body.appendChild(efRow('Raga',        false, 'auto-filled from composition', cbRaga));
   body.appendChild(efRow('Tala',        false, null, talaSel));
-  body.appendChild(efRow('Composer',    false, null, cbComposer));
+  body.appendChild(efRow('Composer',    false, 'auto-filled from composition', cbComposer));
   body.appendChild(efRow('Kind',        false, null, kindSel));
   body.appendChild(efRow('Display title', false, null, displayTitleInp));
   body.appendChild(efRow('Notes',       false, null, notesInp));
