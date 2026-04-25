@@ -77,6 +77,26 @@ The workflow at [`.github/workflows/deploy-pages.yml`](./workflows/deploy-pages.
 
 ---
 
+## Parallel agent sessions — workspace isolation
+
+**Local agent mode (Chat → Agent) has NO branch isolation.** All sessions share the same working directory and branch. Running two agents simultaneously in local mode will cause silent file conflicts.
+
+**For parallel autonomous tasks**, use Copilot CLI sessions with Worktree isolation:
+1. Open Chat → `New Chat (+)` → select **Copilot CLI** → choose **Worktree** isolation
+2. Each worktree session gets a `copilot/`-prefixed branch in an isolated directory
+3. Multiple sessions can run in parallel without conflicting
+
+**Git Fiend must always run the workspace isolation check first**:
+```bash
+git branch --show-current   # copilot/* prefix = isolated; anything else = shared workspace
+git worktree list            # reveals any other active agent worktrees
+git status --short           # unexpected changes = stop and confirm provenance
+```
+
+If not in a `copilot/*` branch and multiple worktrees exist: **stop, do not commit until the user confirms which session owns each changed file.**
+
+---
+
 ## Reference docs
 
 | Topic | File |
