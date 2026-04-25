@@ -2754,14 +2754,23 @@
                 "timestamp": "31:45"
               },
               {
-                "offset_seconds": 1905,
-                "raga_id": "vijayashree",
-                "tala": "adi",
+                "offset_seconds": 2940,
+                "composition_id": "aparadhamulanorva",
+                "raga_id": "rasali",
                 "composer_id": "tyagaraja",
-                "display_title": "varanaradha",
-                "kind": "kriti",
                 "segment_index": 4,
-                "timestamp": "31:45"
+                "timestamp": "49:00"
+              },
+              {
+                "offset_seconds": 4350,
+                "composition_id": "edari_sancharintura",
+                "raga_id": "sruti_ranjani",
+                "tala": "deshadi",
+                "composer_id": "tyagaraja",
+                "display_title": "Edari sancharintura",
+                "kind": "kriti",
+                "segment_index": 5,
+                "timestamp": "01:12:30"
               }
             ]
           }
@@ -8201,6 +8210,12 @@
         "notes": "Javali by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā in Khamas; Adi tala; distinct from 'Marubari Talalenu' by the same composer"
       },
       {
+        "id": "aparadhamulanorva",
+        "title": "Aparadhamulanorva",
+        "composer_id": "tyagaraja",
+        "raga_id": "rasali"
+      },
+      {
         "id": "aparama_bhakthi",
         "title": "Aparama Bhakthi",
         "composer_id": "tyagaraja",
@@ -8690,6 +8705,12 @@
           }
         ],
         "notes": "Pancharatna kriti; a self-critical composition in the pathos-laden Ghana raga Gowla"
+      },
+      {
+        "id": "edari_sancharintura",
+        "title": "Edari sancharintura",
+        "composer_id": "tyagaraja",
+        "raga_id": "sruti_ranjani"
       },
       {
         "id": "ee_vasudha_sahana",

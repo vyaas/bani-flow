@@ -3077,14 +3077,15 @@ function buildSegmentForm(target) {
   // Auto-fill raga and composer when a known composition is selected
   wireCompRagaAutofill(cbComp, cbRaga, cbComposer, win);
 
-  // Auto-stage when a NEW composition is created via the mini form AND timestamp is set.
-  // This lets the rasika add raga + composition + segment in one flow without a separate click.
+  // When a NEW composition is created via the mini form, scroll the stage button
+  // into view and pulse it so the rasika knows to fill in remaining fields then click.
   win.addEventListener('efNewEntity', e => {
     if (e.detail && e.detail.type === 'composition') {
-      // wireCompRagaAutofill has already fired synchronously (selectItem triggers it).
-      // buildSegmentObj now sees composition_id + raga_id + time.
-      const seg = buildSegmentObj();
-      if (seg && !stageBtn.disabled) stageBtn.click();
+      // Give the rasika a visual cue — the button is now enabled (validate will have run).
+      stageBtn.scrollIntoView({ block: 'nearest' });
+      stageBtn.style.transition = 'box-shadow 0.15s';
+      stageBtn.style.boxShadow = '0 0 0 3px var(--accent)';
+      setTimeout(() => { stageBtn.style.boxShadow = ''; }, 1200);
     }
   });
 
