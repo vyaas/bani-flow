@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 3,
   "musician_panel": {
     "chip_catalogue": [
       {
@@ -239,73 +239,6 @@
         { "id": "shyama_shastri", "label": "Shyama Shastri" }
       ],
       "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
-    }
-  },
-  "colophon": {
-    "vision": {
-      "heading": "What this is",
-      "paragraphs": [
-        "Carnatic music is not a catalogue. It is a living transmission — guru to shishya — across a hundred and fifty years of recorded sound and a thousand years of unrecorded teaching. This site documents that transmission as a graph: nodes are musicians, edges are the relationships through which sound is taught.",
-        "TM Krishna writes that music is not the sounds themselves but what they do to us; that aesthetics is not what you sense but how to sense. This graph is a tool for the second kind of listening. The chips are not records. They are entry-points into a field of relationship.",
-        "The two views — Guru-Shishya and Mela-Janya — are the two organs through which a rasika holds the tradition: the human lineage and the modal world. Switch between them. The same musician sounds different when you hear them inside their bani; the same raga sounds different when you hear it in three different lineages."
-      ],
-      "epigraph": {
-        "text": "The receiver is drawn completely into the world of the art, and there develops a personal relationship with it.",
-        "source": "TM Krishna, A Southern Music, ch. 1"
-      }
-    },
-    "curation_loop": {
-      "heading": "A self-editing graph",
-      "paragraphs": [
-        "Every chip you see was authored by the same surfaces that you can use. The + buttons in each panel open entry forms that produce a bundle file; the bundle file is ingested by a single command (bani-add); the next render of graph.html includes your contribution. The reader and the author are the same person, by construction.",
-        "This shape is named in ADR-085 as the curation loop. It is the constitutional commitment of the project: there is no privileged author, no remote service, no schema enforced only on a server. The data, the schema, the entry forms, the validators, and the render pipeline all live inside a single clone of the repository."
-      ],
-      "diagram_text": "graph.html  →  bundle  →  bani-add  →  writer  →  entity files  →  render  →  graph.html",
-      "ext_links": [
-        { "label": "ADR-085 · the curation loop", "url": "https://github.com/vyaas/bani_flow/blob/main/plans/ADR-085-self-replicating-curation-loop.md" },
-        { "label": "Entry forms (ADR-031)", "url": "https://github.com/vyaas/bani_flow/blob/main/plans/ADR-031-data-entry-forms.md" }
-      ]
-    },
-    "contribute": {
-      "heading": "Contribute",
-      "summary": "Bani Flow is open source. Add a musician, a recording, a lineage edge — clone the repo, run the entry form, submit a pull request.",
-      "repo": {
-        "label": "vyaas/bani_flow",
-        "url": "https://github.com/vyaas/bani_flow",
-        "icon": "github"
-      },
-      "quickstart": [
-        "git clone https://github.com/vyaas/bani_flow",
-        "pip install -e .",
-        "bani-serve  # opens http://localhost:8765/graph.html",
-        "use a + button to author your contribution",
-        "bani-add ~/Downloads/bani_add_bundle.json && bani-render"
-      ],
-      "ext_links": [
-        { "label": "CONTRIBUTING.md", "url": "https://github.com/vyaas/bani_flow/blob/main/CONTRIBUTING.md" },
-        { "label": "Open issues", "url": "https://github.com/vyaas/bani_flow/issues" }
-      ]
-    },
-    "listening_ethic": {
-      "heading": "On listening — and a note about LibRedirect",
-      "paragraphs": [
-        "YouTube is the substrate this site rests on. It is also an attention-extraction machine: every recording opens into a page surrounded by ads, autoplay queues, recommendation rails, and engagement-optimised chrome. This is the opposite of the attention Carnatic music asks for.",
-        "We separate the music from the interface. The floating player on this site embeds the video without the surrounding chrome. For the open-in-new-tab links, install LibRedirect — a browser extension that transparently redirects YouTube URLs to a player of your choosing (Invidious, Piped, FreeTube, mpv). Once installed, every ↗ link from this site opens into a clean, ad-free, algorithmically-quiet player. You read the graph; the music plays. Nothing else is asked of you."
-      ],
-      "ext_links": [
-        { "label": "LibRedirect · install & configure", "url": "https://libredirect.github.io/" },
-        { "label": "Invidious instances", "url": "https://invidious.io/" }
-      ]
-    },
-    "author": {
-      "name": "Vyaas",
-      "tagline": "Curator · maintainer · single human responsible",
-      "avatar_url": "https://0.gravatar.com/avatar/03842f7bd424c71064035f5ac4b8e32626b72d758dc4d73028160a2d0ebe1c5d?size=120&d=initials",
-      "gravatar_profile_url": "https://gravatar.com/vyaas",
-      "ext_links": [
-        { "label": "GitHub · @vyaas", "url": "https://github.com/vyaas" },
-        { "label": "Gravatar profile", "url": "https://gravatar.com/vyaas" }
-      ]
     }
   }
 }
