@@ -1235,6 +1235,184 @@ function buildRecordingsList(nodeId, nodeData) {
   const legacyTracks    = nd.tracks || [];
   const structuredPerfs = musicianToPerformances[nodeId] || [];
   const artistLabel     = nd.label || '';
+  const lecdemsBy_      = (typeof lecdemsBy !== 'undefined' ? lecdemsBy[nodeId] : null) || [];
+  const lecdemsAbout_   = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician[nodeId] : null) || [];
+
+  // Keep Lecdems at the top of the musician panel while preserving all
+  // existing section ordering below it.
+  if (lecdemsBy_.length > 0 || lecdemsAbout_.length > 0) {
+    const lsSection = document.createElement('section');
+    lsSection.className = 'lecdem-section';
+    lsSection.dataset.section = 'lecdems';
+
+    const lsSectionHdr = document.createElement('div');
+    lsSectionHdr.className = 'lecdem-section-header';
+    lsSectionHdr.textContent = 'Lecdems';
+    lsSection.appendChild(lsSectionHdr);
+
+    // Lecdems by this musician
+    if (lecdemsBy_.length > 0) {
+      const sortedBy = lecdemsBy_.slice().sort((a, b) => {
+        if (a.year != null && b.year != null) return b.year - a.year;
+        if (a.year != null) return -1;
+        if (b.year != null) return 1;
+        return (a.label || '').localeCompare(b.label || '');
+      });
+
+      const bySubsec = document.createElement('div');
+      bySubsec.className = 'lecdem-subsection';
+      bySubsec.dataset.subsection = 'by';
+
+      const byHdr = document.createElement('div');
+      byHdr.className = 'lecdem-subsection-header';
+      byHdr.textContent = `Lecdems by ${artistLabel}`;
+      bySubsec.appendChild(byHdr);
+
+      const byList = document.createElement('ul');
+      byList.className = 'lecdem-list';
+
+      sortedBy.forEach(ref => {
+        const li = document.createElement('li');
+        li.className = 'lecdem-row';
+
+        const row = document.createElement('div');
+        row.className = 'trail-row2';
+
+        const chipsDiv = document.createElement('div');
+        chipsDiv.className = 'trail-chips';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'lecdem-label';
+        labelSpan.textContent = ref.label || 'Lecture-Demo';
+        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+        chipsDiv.appendChild(labelSpan);
+
+        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
+        if (subjectChips && subjectChips.length > 0) {
+          const subjectsWrap = document.createElement('span');
+          subjectsWrap.className = 'lecdem-subjects';
+          subjectChips.forEach(c => subjectsWrap.appendChild(c));
+          chipsDiv.appendChild(subjectsWrap);
+        }
+
+        row.appendChild(chipsDiv);
+
+        const actsDiv = document.createElement('div');
+        actsDiv.className = 'trail-acts';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'rec-play-btn play-btn-concert';
+        playBtn.setAttribute('data-vid', ref.video_id);
+        playBtn.title = ref.label || 'Play';
+        playBtn.textContent = '\u25B6';
+        playBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+          const instance = playerRegistry.get(ref.video_id);
+          if (instance && ref.subjects) {
+            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+            if (subFooter) {
+              const existing = instance.el.querySelector('.mp-footer');
+              if (existing) existing.remove();
+              const resize = instance.el.querySelector('.mp-resize');
+              if (resize) instance.el.insertBefore(subFooter, resize);
+              else        instance.el.appendChild(subFooter);
+            }
+          }
+        });
+        actsDiv.appendChild(playBtn);
+        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+        row.appendChild(actsDiv);
+
+        li.appendChild(row);
+        byList.appendChild(li);
+      });
+
+      bySubsec.appendChild(byList);
+      lsSection.appendChild(bySubsec);
+    }
+
+    // Lecdems about this musician
+    if (lecdemsAbout_.length > 0) {
+      const sortedAbout = lecdemsAbout_.slice().sort((a, b) =>
+        (a.lecturer_label || '').localeCompare(b.lecturer_label || '')
+      );
+
+      const aboutSubsec = document.createElement('div');
+      aboutSubsec.className = 'lecdem-subsection';
+      aboutSubsec.dataset.subsection = 'about';
+
+      const aboutHdr = document.createElement('div');
+      aboutHdr.className = 'lecdem-subsection-header';
+      aboutHdr.textContent = `Lecdems about ${artistLabel}`;
+      aboutSubsec.appendChild(aboutHdr);
+
+      const aboutList = document.createElement('ul');
+      aboutList.className = 'lecdem-list';
+
+      sortedAbout.forEach(ref => {
+        const li = document.createElement('li');
+        li.className = 'lecdem-row';
+
+        const row = document.createElement('div');
+        row.className = 'trail-row2';
+
+        const chipsDiv = document.createElement('div');
+        chipsDiv.className = 'trail-chips';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'lecdem-label';
+        labelSpan.textContent = ref.label || 'Lecture-Demo';
+        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+        chipsDiv.appendChild(labelSpan);
+
+        const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
+        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
+        if (lecturerChip || subjectChips.length > 0) {
+          const subjectsWrap = document.createElement('span');
+          subjectsWrap.className = 'lecdem-subjects';
+          if (lecturerChip) subjectsWrap.appendChild(lecturerChip);
+          subjectChips.forEach(c => subjectsWrap.appendChild(c));
+          chipsDiv.appendChild(subjectsWrap);
+        }
+
+        row.appendChild(chipsDiv);
+
+        const actsDiv = document.createElement('div');
+        actsDiv.className = 'trail-acts';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'rec-play-btn play-btn-concert';
+        playBtn.setAttribute('data-vid', ref.video_id);
+        playBtn.title = ref.label || 'Play';
+        playBtn.textContent = '\u25B6';
+        playBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
+          const instance = playerRegistry.get(ref.video_id);
+          if (instance && ref.subjects) {
+            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+            if (subFooter) {
+              const existing = instance.el.querySelector('.mp-footer');
+              if (existing) existing.remove();
+              const resize = instance.el.querySelector('.mp-resize');
+              if (resize) instance.el.insertBefore(subFooter, resize);
+              else        instance.el.appendChild(subFooter);
+            }
+          }
+        });
+        actsDiv.appendChild(playBtn);
+        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
+        row.appendChild(actsDiv);
+
+        li.appendChild(row);
+        aboutList.appendChild(li);
+      });
+
+      aboutSubsec.appendChild(aboutList);
+      lsSection.appendChild(aboutSubsec);
+    }
+
+    recList.appendChild(lsSection);
+  }
 
   // ── 1. Group structured perfs by recording_id → session_index ────────────
   const concertMap = new Map();
@@ -1416,195 +1594,9 @@ function buildRecordingsList(nodeId, nodeData) {
     recList.appendChild(compSection);
   }
 
-  // ── 5. Lecdems section (ADR-080) ─────────────────────────────────────────
-  // 5a: Lecdems by this musician (lecturer = this node)
-  // 5b: Lecdems about this musician (subject = this node)
-  const lecdemsBy_     = (typeof lecdemsBy !== 'undefined' ? lecdemsBy[nodeId]            : null) || [];
-  const lecdemsAbout_  = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician[nodeId] : null) || [];
-
-  if (lecdemsBy_.length > 0 || lecdemsAbout_.length > 0) {
-    const lsSection = document.createElement('section');
-    lsSection.className = 'lecdem-section';
-    lsSection.dataset.section = 'lecdems';
-
-    const lsSectionHdr = document.createElement('div');
-    lsSectionHdr.className = 'lecdem-section-header';
-    lsSectionHdr.textContent = 'Lecdems';
-    lsSection.appendChild(lsSectionHdr);
-
-    // 5a — Lecdems by this musician
-    if (lecdemsBy_.length > 0) {
-      // Sort: year desc, year-less entries last by label alpha
-      const sortedBy = lecdemsBy_.slice().sort((a, b) => {
-        if (a.year != null && b.year != null) return b.year - a.year;
-        if (a.year != null) return -1;
-        if (b.year != null) return 1;
-        return (a.label || '').localeCompare(b.label || '');
-      });
-
-      const bySubsec = document.createElement('div');
-      bySubsec.className = 'lecdem-subsection';
-      bySubsec.dataset.subsection = 'by';
-
-      const byHdr = document.createElement('div');
-      byHdr.className = 'lecdem-subsection-header';
-      byHdr.textContent = `Lecdems by ${artistLabel}`;
-      bySubsec.appendChild(byHdr);
-
-      const byList = document.createElement('ul');
-      byList.className = 'lecdem-list';
-
-      sortedBy.forEach(ref => {
-        const li = document.createElement('li');
-        li.className = 'lecdem-row';
-
-        const row = document.createElement('div');
-        row.className = 'trail-row2';
-
-        const chipsDiv = document.createElement('div');
-        chipsDiv.className = 'trail-chips';
-
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'lecdem-label';
-        labelSpan.textContent = ref.label || 'Lecture-Demo';
-        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
-        chipsDiv.appendChild(labelSpan);
-
-        // Subject chips (raga, comp, musician), excluding current node
-        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-        if (subjectChips && subjectChips.length > 0) {
-          const subjectsWrap = document.createElement('span');
-          subjectsWrap.className = 'lecdem-subjects';
-          subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          chipsDiv.appendChild(subjectsWrap);
-        }
-
-        row.appendChild(chipsDiv);
-
-        const actsDiv = document.createElement('div');
-        actsDiv.className = 'trail-acts';
-        const playBtn = document.createElement('button');
-        playBtn.className = 'rec-play-btn play-btn-concert';
-        playBtn.setAttribute('data-vid', ref.video_id);
-        playBtn.title = ref.label || 'Play';
-        playBtn.textContent = '\u25B6';
-        playBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
-          const instance = playerRegistry.get(ref.video_id);
-          if (instance && ref.subjects) {
-            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
-            if (subFooter) {
-              const existing = instance.el.querySelector('.mp-footer');
-              if (existing) existing.remove();
-              const resize = instance.el.querySelector('.mp-resize');
-              if (resize) instance.el.insertBefore(subFooter, resize);
-              else        instance.el.appendChild(subFooter);
-            }
-          }
-        });
-        actsDiv.appendChild(playBtn);
-        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
-        row.appendChild(actsDiv);
-
-        li.appendChild(row);
-        byList.appendChild(li);
-      });
-
-      bySubsec.appendChild(byList);
-      lsSection.appendChild(bySubsec);
-    }
-
-    // 5b — Lecdems about this musician
-    if (lecdemsAbout_.length > 0) {
-      // Sort: alphabetical by lecturer label
-      const sortedAbout = lecdemsAbout_.slice().sort((a, b) =>
-        (a.lecturer_label || '').localeCompare(b.lecturer_label || '')
-      );
-
-      const aboutSubsec = document.createElement('div');
-      aboutSubsec.className = 'lecdem-subsection';
-      aboutSubsec.dataset.subsection = 'about';
-
-      const aboutHdr = document.createElement('div');
-      aboutHdr.className = 'lecdem-subsection-header';
-      aboutHdr.textContent = `Lecdems about ${artistLabel}`;
-      aboutSubsec.appendChild(aboutHdr);
-
-      const aboutList = document.createElement('ul');
-      aboutList.className = 'lecdem-list';
-
-      sortedAbout.forEach(ref => {
-        const li = document.createElement('li');
-        li.className = 'lecdem-row';
-
-        const row = document.createElement('div');
-        row.className = 'trail-row2';
-
-        const chipsDiv = document.createElement('div');
-        chipsDiv.className = 'trail-chips';
-
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'lecdem-label';
-        labelSpan.textContent = ref.label || 'Lecture-Demo';
-        labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
-        chipsDiv.appendChild(labelSpan);
-
-        // Tag cloud: lecturer chip + subject cross-link chips, wrapped together
-        const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
-        const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
-        if (lecturerChip || subjectChips.length > 0) {
-          const subjectsWrap = document.createElement('span');
-          subjectsWrap.className = 'lecdem-subjects';
-          if (lecturerChip) subjectsWrap.appendChild(lecturerChip);
-          subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          chipsDiv.appendChild(subjectsWrap);
-        }
-
-        row.appendChild(chipsDiv);
-
-        const actsDiv = document.createElement('div');
-        actsDiv.className = 'trail-acts';
-        const playBtn = document.createElement('button');
-        playBtn.className = 'rec-play-btn play-btn-concert';
-        playBtn.setAttribute('data-vid', ref.video_id);
-        playBtn.title = ref.label || 'Play';
-        playBtn.textContent = '\u25B6';
-        playBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
-          const instance = playerRegistry.get(ref.video_id);
-          if (instance && ref.subjects) {
-            const subFooter = _buildLecdemSubjectFooter(ref.subjects);
-            if (subFooter) {
-              const existing = instance.el.querySelector('.mp-footer');
-              if (existing) existing.remove();
-              const resize = instance.el.querySelector('.mp-resize');
-              if (resize) instance.el.insertBefore(subFooter, resize);
-              else        instance.el.appendChild(subFooter);
-            }
-          }
-        });
-        actsDiv.appendChild(playBtn);
-        actsDiv.appendChild(buildYtLink(ref.video_id, 0));
-        row.appendChild(actsDiv);
-
-        li.appendChild(row);
-        aboutList.appendChild(li);
-      });
-
-      aboutSubsec.appendChild(aboutList);
-      lsSection.appendChild(aboutSubsec);
-    }
-
-    recList.appendChild(lsSection);
-  }
-
   // ── 6. Show/hide panel ────────────────────────────────────────────────────
-  const lecdemsBy__    = (typeof lecdemsBy !== 'undefined' ? lecdemsBy[nodeId]            : null) || [];
-  const lecdemsAbout__ = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician[nodeId] : null) || [];
   const hasContent = concerts.length > 0 || legacyTracks.length > 0 || composerComps.length > 0
-    || lecdemsBy__.length > 0 || lecdemsAbout__.length > 0;
+    || lecdemsBy_.length > 0 || lecdemsAbout_.length > 0;
   recPanel.style.display  = hasContent ? 'block' : 'none';
   recFilter.style.display = hasContent ? 'block' : 'none';
 }
