@@ -783,6 +783,34 @@ document.getElementById('rec-filter').addEventListener('input', function() {
     if (matches) anyVisible = true;
   });
 
+  // ── lecdem sections (ADR-080) ─────────────────────────────────────────────
+  recList.querySelectorAll('.lecdem-section').forEach(section => {
+    let sectionHasMatch = false;
+
+    section.querySelectorAll('.lecdem-subsection').forEach(subsec => {
+      let subsecHasMatch = false;
+
+      subsec.querySelectorAll('li.lecdem-row').forEach(li => {
+        if (!q) {
+          li.style.display = '';
+          subsecHasMatch = true;
+          return;
+        }
+        const labelText    = (li.querySelector('.lecdem-label')    || {}).textContent || '';
+        const subjectsText = (li.querySelector('.lecdem-subjects')  || {}).textContent || '';
+        const matches = [labelText, subjectsText].some(t => t.toLowerCase().includes(q));
+        li.style.display = matches ? '' : 'none';
+        if (matches) subsecHasMatch = true;
+      });
+
+      subsec.style.display = (!q || subsecHasMatch) ? '' : 'none';
+      if (!q || subsecHasMatch) sectionHasMatch = true;
+    });
+
+    section.style.display = (!q || sectionHasMatch) ? '' : 'none';
+    if (!q || sectionHasMatch) anyVisible = true;
+  });
+
   // ── no-match sentinel ─────────────────────────────────────────────────────
   let noMatch = recList.querySelector('.rec-no-match');
   if (!anyVisible && q) {
@@ -804,6 +832,30 @@ document.getElementById('trail-filter').addEventListener('input', function() {
   const q         = this.value.toLowerCase().trim();
   const trailList = document.getElementById('trail-list');
   let anyVisible  = false;
+
+  // ── Lecdem strip (ADR-081): narrow chips within the strip, do not expose
+  // lecdems to global search (discoverability invariant §6a is preserved). ───
+  // Runs unconditionally — the strip is separate from #trail-list and must
+  // respond regardless of whether the trail is in tree or flat mode.
+  const lecdemStrip = document.getElementById('bani-lecdem-strip');
+  if (lecdemStrip) {
+    if (!q) {
+      lecdemStrip.querySelectorAll('.lecdem-chip').forEach(function(chip) {
+        chip.style.display = '';
+      });
+      if (lecdemStrip.querySelectorAll('.lecdem-chip').length > 0) {
+        lecdemStrip.style.display = '';
+      }
+    } else {
+      let stripHasMatch = false;
+      lecdemStrip.querySelectorAll('.lecdem-chip').forEach(function(chip) {
+        const matches = chip.textContent.toLowerCase().includes(q);
+        chip.style.display = matches ? '' : 'none';
+        if (matches) stripHasMatch = true;
+      });
+      lecdemStrip.style.display = stripHasMatch ? '' : 'none';
+    }
+  }
 
   // ── Tree view (raga / comp): filter leaves, show/collapse parent groups ──
   const treeGroups = trailList.querySelectorAll('li.tree-group');
