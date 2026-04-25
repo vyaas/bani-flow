@@ -342,6 +342,7 @@ function efCombobox(id, options, type, formWin) {
 
   textInp.addEventListener('input', () => {
     selectedValue = '';
+    selectedLabel = '';   // clear label too so blur doesn't falsely restore a stale selection
     hiddenSel.value = '';
     clearBtn.style.display = 'none';
     renderDropdown(textInp.value);
