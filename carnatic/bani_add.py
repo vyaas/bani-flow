@@ -254,15 +254,38 @@ def _process_musicians(
         # ── v2: patch a single field on an existing musician ─────────────────
         if op == "patch":
             musician_id = m.get("id")
-            field       = m.get("field")
+            field       = m.get("field", "")
             value       = m.get("value")
             if not musician_id or not field:
                 print(f"  ERROR  musician patch missing 'id' or 'field': {m}")
                 errors += 1
                 continue
-            result = writer.patch_musician(
-                musicians_path, musician_id=musician_id, field=field, value=value,
+
+            # Nested path: youtube[<vid>].segments[<i>].<field> — ADR-101
+            import re as _re
+            _seg_m = _re.match(
+                r"youtube\[([A-Za-z0-9_-]{11})\]\.segments\[(\d+)\]\.(.*)", field
             )
+            if _seg_m:
+                vid            = _seg_m.group(1)
+                seg_index      = int(_seg_m.group(2))
+                seg_field      = _seg_m.group(3)
+                at_offset      = m.get("at_offset_seconds")
+                result = writer.patch_lecdem_segment(
+                    musicians_path,
+                    musician_id=musician_id,
+                    vid=vid,
+                    segment_index=seg_index,
+                    field=seg_field,
+                    value=value,
+                    at_offset_seconds=int(at_offset) if at_offset is not None else None,
+                    compositions_path=comp_path,
+                    ragas_path=ragas_path,
+                )
+            else:
+                result = writer.patch_musician(
+                    musicians_path, musician_id=musician_id, field=field, value=value,
+                )
             _print_result(result)
             if result.ok:       added   += 1
             elif result.skipped: skipped += 1
@@ -332,6 +355,23 @@ def _process_musicians(
                     video_id=vid,
                     subject_key=sub_key,
                     subject_value=value,
+                )
+            elif array_sel.startswith("youtube[") and ".segments" in array_sel:
+                # e.g. "youtube[dQw4w9WgXcQ].segments" — ADR-101
+                import re as _re
+                m_sel = _re.match(r"youtube\[([A-Za-z0-9_-]{11})\]\.segments$", array_sel)
+                if not m_sel:
+                    print(f"  ERROR  malformed append array selector: {array_sel!r}")
+                    errors += 1
+                    continue
+                vid = m_sel.group(1)
+                result = writer.add_lecdem_segment(
+                    musicians_path,
+                    musician_id=musician_id,
+                    vid=vid,
+                    segment_dict=value if isinstance(value, dict) else {},
+                    compositions_path=comp_path,
+                    ragas_path=ragas_path,
                 )
             else:
                 print(f"  ERROR  musician append: unsupported array selector {array_sel!r}.")
@@ -524,6 +564,8 @@ def _process_recordings(
     recordings: list[dict],
     recordings_path: Path,
     writer: CarnaticWriter,
+    comp_path: Path | None = None,
+    ragas_path: Path | None = None,
 ) -> tuple[int, int, int]:
     added = skipped = errors = 0
     if not recordings_path.exists():
@@ -545,8 +587,76 @@ def _process_recordings(
             else:                errors  += 1
             continue
 
+        # ── ADR-101: append a performance to an existing recording session ──
+        if op == "append":
+            import re as _re
+            rec_id    = rec.get("id")
+            array_sel = rec.get("array", "")
+            value     = rec.get("value", {})
+            if not rec_id or not array_sel:
+                print(f"  ERROR  recording append missing 'id' or 'array': {rec}")
+                errors += 1
+                continue
+            m_sel = _re.match(r"sessions\[(\d+)\]\.performances$", array_sel)
+            if not m_sel:
+                print(f"  ERROR  recording append: unsupported array selector {array_sel!r}")
+                errors += 1
+                continue
+            sess_idx = int(m_sel.group(1))
+            result = writer.add_recording_performance(
+                recording_id=rec_id,
+                session_index=sess_idx,
+                performance_dict=value if isinstance(value, dict) else {},
+                recordings_path=recordings_path,
+                compositions_path=comp_path or _default_compositions_path(),
+                ragas_path=ragas_path or _default_ragas_path(),
+            )
+            _print_result(result)
+            if result.ok:       added   += 1
+            elif result.skipped: skipped += 1
+            else:                errors  += 1
+            continue
+
+        # ── ADR-101: patch a field on an existing recording performance ─────
+        if op == "patch":
+            import re as _re
+            rec_id = rec.get("id")
+            field  = rec.get("field", "")
+            value  = rec.get("value")
+            if not rec_id or not field:
+                print(f"  ERROR  recording patch missing 'id' or 'field': {rec}")
+                errors += 1
+                continue
+            m_sel = _re.match(
+                r"sessions\[(\d+)\]\.performances\[(\d+)\]\.(.*)", field
+            )
+            if not m_sel:
+                print(f"  ERROR  recording patch: unsupported field path {field!r}")
+                errors += 1
+                continue
+            sess_idx  = int(m_sel.group(1))
+            perf_idx  = int(m_sel.group(2))
+            perf_field = m_sel.group(3)
+            at_offset  = rec.get("at_offset_seconds")
+            result = writer.patch_recording_performance(
+                recording_id=rec_id,
+                session_index=sess_idx,
+                performance_index=perf_idx,
+                field=perf_field,
+                value=value,
+                at_offset_seconds=int(at_offset) if at_offset is not None else None,
+                recordings_path=recordings_path,
+                compositions_path=comp_path or _default_compositions_path(),
+                ragas_path=ragas_path or _default_ragas_path(),
+            )
+            _print_result(result)
+            if result.ok:       added   += 1
+            elif result.skipped: skipped += 1
+            else:                errors  += 1
+            continue
+
         if op not in ("create", None):  # reject unknown ops
-            print(f"  ERROR  recording item has unknown op '{op}'. Known ops: create, annotate.")
+            print(f"  ERROR  recording item has unknown op '{op}'. Known ops: create, annotate, append, patch.")
             errors += 1
             continue
 
@@ -713,7 +823,7 @@ def main() -> None:
     # ── recordings ────────────────────────────────────────────────────────────
     if recordings:
         print(f"\nRecordings ({len(recordings)}):")
-        a, s, e = _process_recordings(recordings, recordings_path, writer)
+        a, s, e = _process_recordings(recordings, recordings_path, writer, comp_path, ragas_path)
         total_added += a; total_skipped += s; total_errors += e
 
     # ── edges ─────────────────────────────────────────────────────────────────

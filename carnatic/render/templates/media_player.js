@@ -1373,6 +1373,12 @@ function buildRecordingsList(nodeId, nodeData) {
         row.appendChild(actsDiv);
 
         li.appendChild(row);
+
+        // ADR-101 §D: Segment timeline for musician panel lecdems
+        if (ref.segments && ref.segments.length > 0) {
+          li.appendChild(_buildSegTimeline(ref));
+        }
+
         byList.appendChild(li);
       });
 
@@ -1453,6 +1459,12 @@ function buildRecordingsList(nodeId, nodeData) {
         row.appendChild(actsDiv);
 
         li.appendChild(row);
+
+        // ADR-101 §D: Segment timeline for musician panel lecdems
+        if (ref.segments && ref.segments.length > 0) {
+          li.appendChild(_buildSegTimeline(ref));
+        }
+
         aboutList.appendChild(li);
       });
 
@@ -1785,6 +1797,69 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
 // Allows sruti_bar.js to open/close a singleton drone player without
 // interfering with the vid-keyed concert player registry.
 const namedPlayerRegistry = new Map();
+
+/**
+ * getCurrentPlayerTime(vid) → number | null   (ADR-101 §C)
+ *
+ * Returns the last-seeked offset_seconds for the player with the given vid,
+ * or null if no player is active for that vid. This is the currentOffset
+ * recorded when the user last clicked a track — it is an approximation of
+ * the playback position, not the live YouTube playback time (which would
+ * require the YouTube IFrame API).
+ *
+ * Usage: const t = getCurrentPlayerTime('dQw4w9WgXcQ');
+ *        if (t !== null) offsetInput.value = t;
+ *        else offsetInput.placeholder = 'Enter offset manually';
+ */
+function getCurrentPlayerTime(vid) {
+  const inst = playerRegistry.get(vid);
+  return inst ? (inst.currentOffset || 0) : null;
+}
+
+/**
+ * _buildSegTimeline(ref) → <ul.seg-timeline>   (ADR-101 §D)
+ *
+ * Builds a clickable timestamp timeline for a lecdem ref that has segments.
+ * Each button seeks the video player to that segment's offset.
+ */
+function _buildSegTimeline(ref) {
+  const ul = document.createElement('ul');
+  ul.className = 'seg-timeline';
+  ref.segments.forEach(seg => {
+    const ts = seg.timestamp || (() => {
+      const s = seg.offset_seconds || 0;
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const ss = s % 60;
+      return h > 0
+        ? h + ':' + String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0')
+        : m + ':' + String(ss).padStart(2,'0');
+    })();
+
+    const segLabel = seg.display_title
+      || (seg.composition_id && seg.raga_id ? seg.composition_id + ' (' + seg.raga_id + ')' : null)
+      || seg.raga_id
+      || seg.composition_id
+      || seg.kind
+      || 'Segment';
+
+    const li = document.createElement('li');
+    li.className = 'seg-timeline-item';
+
+    const btn = document.createElement('button');
+    btn.className = 'seg-timeline-btn';
+    btn.title = 'Play from ' + ts;
+    btn.innerHTML = '<span class="seg-ts">' + ts + '</span>'
+      + '<span class="seg-label">' + segLabel + '</span>';
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(ref.video_id, segLabel, '', seg.offset_seconds, ref.label || 'Lecture-Demo', [], {});
+    });
+    li.appendChild(btn);
+    ul.appendChild(li);
+  });
+  return ul;
+}
 
 /**
  * openPlayer(videoId, title, playerId)

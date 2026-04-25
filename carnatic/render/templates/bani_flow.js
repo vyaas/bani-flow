@@ -1446,6 +1446,49 @@ function _renderBaniFlowLecdemStrip(type, id) {
     row.appendChild(actsDiv);
 
     li.appendChild(row);
+
+    // ADR-101 §D: Clickable segment timeline for lecdem
+    if (ref.segments && ref.segments.length > 0) {
+      const segList = document.createElement('ul');
+      segList.className = 'seg-timeline';
+      ref.segments.forEach(function(seg) {
+        const segItem = document.createElement('li');
+        segItem.className = 'seg-timeline-item';
+
+        const ts = seg.timestamp || (function() {
+          const s = seg.offset_seconds || 0;
+          const h = Math.floor(s / 3600);
+          const m = Math.floor((s % 3600) / 60);
+          const ss = s % 60;
+          return h > 0
+            ? h + ':' + String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0')
+            : m + ':' + String(ss).padStart(2,'0');
+        })();
+
+        const segLabel = seg.display_title
+          || (seg.composition_id && seg.raga_id ? seg.composition_id + ' (' + seg.raga_id + ')' : null)
+          || seg.raga_id
+          || seg.composition_id
+          || seg.kind
+          || 'Segment';
+
+        const segBtn = document.createElement('button');
+        segBtn.className = 'seg-timeline-btn';
+        segBtn.title = 'Play from ' + ts;
+        segBtn.innerHTML = '<span class="seg-ts">' + ts + '</span>'
+          + '<span class="seg-label">' + segLabel + '</span>';
+        segBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (typeof openOrFocusPlayer === 'function') {
+            openOrFocusPlayer(ref.video_id, segLabel, '', seg.offset_seconds, ref.label || 'Lecture-Demo', [], {});
+          }
+        });
+        segItem.appendChild(segBtn);
+        segList.appendChild(segItem);
+      });
+      li.appendChild(segList);
+    }
+
     list.appendChild(li);
   });
 

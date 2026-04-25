@@ -79,6 +79,15 @@ PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "ca
 PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language"}
 PATCHABLE_COMPOSER_FIELDS = {"name", "born", "died"}
 
+# ADR-101: patchable fields for lecdem segments and recording performances
+PATCHABLE_SEGMENT_FIELDS = {
+    "composition_id", "raga_id", "tala", "composer_id", "display_title",
+    "notes", "kind", "performer_ids", "duration_seconds",
+}
+PATCHABLE_RECORDING_PERFORMANCE_FIELDS = {
+    "composition_id", "raga_id", "tala", "composer_id", "display_title", "notes",
+}
+
 
 # ── WriteResult ────────────────────────────────────────────────────────────────
 
@@ -139,7 +148,62 @@ def _yt_video_id(url: str) -> str | None:
     return m.group(1) if m else None
 
 
-# ── musicians storage helpers ──────────────────────────────────────────────────
+def _offset_to_timestamp(offset_seconds: int) -> str:
+    """Convert integer offset_seconds to HH:MM:SS (or MM:SS when < 1 hour)."""
+    h = offset_seconds // 3600
+    m = (offset_seconds % 3600) // 60
+    s = offset_seconds % 60
+    if h:
+        return f"{h:02d}:{m:02d}:{s:02d}"
+    return f"{m:02d}:{s:02d}"
+
+
+def _validate_segment_dict(
+    seg: dict,
+    *,
+    known_raga_ids: set[str],
+    known_comp_ids: set[str],
+    known_musician_ids: set[str],
+    prev_offset: int | None = None,
+) -> str | None:
+    """Validate a segment/performance dict. Return an error string or None if valid."""
+    if "offset_seconds" not in seg:
+        return "segment missing required field: offset_seconds"
+    try:
+        offset = int(seg["offset_seconds"])
+    except (TypeError, ValueError):
+        return f"offset_seconds must be an integer, got {seg['offset_seconds']!r}"
+    if offset < 0:
+        return f"offset_seconds must be ≥ 0, got {offset}"
+    if prev_offset is not None and offset < prev_offset:
+        return (
+            f"offset_seconds {offset} is before the previous segment's offset "
+            f"{prev_offset}; segments must be monotonically non-decreasing"
+        )
+
+    # At least one meaningful field required
+    if not any(seg.get(f) for f in ("composition_id", "raga_id", "kind", "notes", "display_title")):
+        return (
+            "segment must have at least one of: "
+            "composition_id, raga_id, kind, notes, display_title"
+        )
+
+    if seg.get("composition_id") is not None:
+        if seg["composition_id"] not in known_comp_ids:
+            return f"composition_id \"{seg['composition_id']}\" does not exist in compositions[]"
+
+    if seg.get("raga_id") is not None:
+        if seg["raga_id"] not in known_raga_ids:
+            return f"raga_id \"{seg['raga_id']}\" does not exist in ragas[]"
+
+    if seg.get("performer_ids"):
+        for mid in seg["performer_ids"]:
+            if known_musician_ids and mid not in known_musician_ids:
+                return f"performer_id \"{mid}\" does not exist in nodes[]"
+
+    return None
+
+
 
 def _is_dir_mode(musicians_path: Path) -> bool:
     """Return True if musicians_path is a directory (split-file mode)."""
@@ -950,6 +1014,159 @@ class CarnaticWriter:
             f"added {kind_label} '{subject_id}' to {musician_id}'s lecdem/{video_id}.subjects.{axis}",
         )
 
+    # ── ADR-101: lecdem segment write verbs ───────────────────────────────────
+
+    def add_lecdem_segment(
+        self,
+        musicians_path: Path,
+        *,
+        musician_id: str,
+        vid: str,
+        segment_dict: dict,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+    ) -> WriteResult:
+        """Append a timestamped segment to a lecdem youtube[] entry's segments[] (ADR-101 §A).
+
+        Validates segment_dict, derives timestamp from offset_seconds, assigns a 1-based
+        segment_index, and appends to entry["segments"]. offset_seconds must be
+        monotonically non-decreasing.
+        """
+        nodes = _load_all_nodes(musicians_path)
+        known_musician_ids = {n["id"] for n in nodes}
+        if musician_id not in known_musician_ids:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        node = next(n for n in nodes if n["id"] == musician_id)
+
+        entry = next(
+            (yt for yt in node.get("youtube", []) if _yt_video_id(yt.get("url", "")) == vid),
+            None,
+        )
+        if entry is None:
+            return _err(f"no youtube entry with video_id {vid} on {musician_id}")
+        if entry.get("kind") != "lecdem":
+            return _err(
+                f"youtube entry {vid} on {musician_id} is not a lecdem "
+                "(add_lecdem_segment only applies to lecdem entries)"
+            )
+
+        _cp = compositions_path or _default_compositions_path()
+        _rp = ragas_path or _default_ragas_path()
+        known_comp_ids  = {c["id"] for c in _load_all_compositions(_cp)}
+        known_raga_ids  = {r["id"] for r in _load_all_ragas(_cp, _rp)}
+
+        existing = entry.get("segments") or []
+        prev_offset = existing[-1]["offset_seconds"] if existing else None
+
+        err = _validate_segment_dict(
+            segment_dict,
+            known_raga_ids=known_raga_ids,
+            known_comp_ids=known_comp_ids,
+            known_musician_ids=known_musician_ids,
+            prev_offset=prev_offset,
+        )
+        if err:
+            return _err(err)
+
+        next_index = len(existing) + 1
+        seg: dict[str, Any] = {}
+        for key in (
+            "segment_index", "timestamp", "offset_seconds", "duration_seconds",
+            "composition_id", "raga_id", "tala", "composer_id", "performer_ids",
+            "display_title", "kind", "notes",
+        ):
+            if key in segment_dict:
+                seg[key] = segment_dict[key]
+        for k, v in segment_dict.items():
+            if k not in seg:
+                seg[k] = v
+
+        seg["segment_index"] = next_index
+        seg["timestamp"]     = _offset_to_timestamp(int(seg["offset_seconds"]))
+
+        existing.append(seg)
+        entry["segments"] = existing
+
+        _write_node(musicians_path, node)
+        return _ok(
+            "[SEG+]",
+            f"appended segment {next_index} (offset {seg['offset_seconds']}s) to "
+            f"{musician_id}.youtube[{vid}].segments",
+        )
+
+    def patch_lecdem_segment(
+        self,
+        musicians_path: Path,
+        *,
+        musician_id: str,
+        vid: str,
+        segment_index: int,
+        field: str,
+        value: Any,
+        at_offset_seconds: int | None = None,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+    ) -> WriteResult:
+        """Patch a single field on an existing lecdem segment (ADR-101 §A).
+
+        at_offset_seconds: optional drift-mitigation cross-check — if provided, the
+        writer verifies that segments[segment_index].offset_seconds matches before writing.
+        """
+        if field == "segment_index":
+            return _err("segment_index is immutable — cannot be patched")
+        if field not in PATCHABLE_SEGMENT_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a segment\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_SEGMENT_FIELDS))}"
+            )
+
+        nodes = _load_all_nodes(musicians_path)
+        node = next((n for n in nodes if n["id"] == musician_id), None)
+        if node is None:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        entry = next(
+            (yt for yt in node.get("youtube", []) if _yt_video_id(yt.get("url", "")) == vid),
+            None,
+        )
+        if entry is None:
+            return _err(f"no youtube entry with video_id {vid} on {musician_id}")
+        if entry.get("kind") != "lecdem":
+            return _err(f"youtube entry {vid} on {musician_id} is not a lecdem")
+
+        segments = entry.get("segments") or []
+        seg = next((s for s in segments if s.get("segment_index") == segment_index), None)
+        if seg is None:
+            return _err(
+                f"segment_index {segment_index} not found in "
+                f"{musician_id}.youtube[{vid}].segments"
+            )
+
+        if at_offset_seconds is not None and seg.get("offset_seconds") != at_offset_seconds:
+            return _err(
+                f"drift detected: expected offset_seconds={at_offset_seconds} but "
+                f"segment {segment_index} is at {seg.get('offset_seconds')}; "
+                "re-read segments[] before patching"
+            )
+
+        old_value = seg.get(field)
+        coerced: Any = value if value not in (None, "null", "") else None
+        if field == "offset_seconds" and coerced is not None:
+            try:
+                coerced = int(coerced)
+            except (TypeError, ValueError):
+                return _err(f"offset_seconds must be an integer, got {value!r}")
+            seg["timestamp"] = _offset_to_timestamp(coerced)
+        seg[field] = coerced
+
+        _write_node(musicians_path, node)
+        return _ok(
+            "[SEG~]",
+            f"patched: {musician_id}.youtube[{vid}].segments[{segment_index}]  "
+            f"{field}: {old_value!r} → {seg[field]!r}",
+        )
+
     def add_youtube_performer(
         self,
         musicians_path: Path,
@@ -1505,6 +1722,143 @@ class CarnaticWriter:
         composer[field] = coerced
         _write_composers(compositions_path, composers)
         return _ok("[CMPSR~]", f"patched: {composer_id}  {field}: {old_value!r} → {coerced!r}")
+
+    # ── ADR-101: recording performance write verbs ────────────────────────────
+
+    def add_recording_performance(
+        self,
+        *,
+        recording_id: str,
+        session_index: int,
+        performance_dict: dict,
+        recordings_path: Path | None = None,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+    ) -> WriteResult:
+        """Append a performance to a recording session's performances[] (ADR-101 §B).
+
+        Validates performance_dict against known compositions/ragas, derives timestamp
+        from offset_seconds, assigns a 1-based performance_index, and appends to the
+        session's performances[]. offset_seconds must be monotonically non-decreasing.
+        """
+        rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+        rec_file = rp / f"{recording_id}.json"
+        if not rec_file.exists():
+            return _err(f"recording_id \"{recording_id}\" does not exist in recordings/")
+
+        rec = json.loads(rec_file.read_text(encoding="utf-8"))
+        sessions = rec.get("sessions", [])
+        session = next((s for s in sessions if s.get("session_index") == session_index), None)
+        if session is None:
+            return _err(
+                f"session_index {session_index} not found in recording \"{recording_id}\""
+            )
+
+        _cp = compositions_path or _default_compositions_path()
+        _rp = ragas_path or _default_ragas_path()
+        known_comp_ids = {c["id"] for c in _load_all_compositions(_cp)}
+        known_raga_ids = {r["id"] for r in _load_all_ragas(_cp, _rp)}
+
+        existing = session.get("performances") or []
+        prev_offset = existing[-1]["offset_seconds"] if existing else None
+
+        err = _validate_segment_dict(
+            performance_dict,
+            known_raga_ids=known_raga_ids,
+            known_comp_ids=known_comp_ids,
+            known_musician_ids=set(),  # performer validation is on the session, not per-perf
+            prev_offset=prev_offset,
+        )
+        if err:
+            return _err(err)
+
+        next_index = len(existing) + 1
+        perf: dict[str, Any] = {}
+        for key in (
+            "performance_index", "timestamp", "offset_seconds",
+            "composition_id", "raga_id", "tala", "composer_id", "display_title", "notes",
+        ):
+            if key in performance_dict:
+                perf[key] = performance_dict[key]
+        for k, v in performance_dict.items():
+            if k not in perf:
+                perf[k] = v
+
+        perf["performance_index"] = next_index
+        perf["timestamp"]         = _offset_to_timestamp(int(perf["offset_seconds"]))
+
+        existing.append(perf)
+        session["performances"] = existing
+
+        _atomic_write(rec_file, rec)
+        return _ok(
+            "[PERF+]",
+            f"appended performance {next_index} (offset {perf['offset_seconds']}s) to "
+            f"{recording_id} session {session_index}",
+        )
+
+    def patch_recording_performance(
+        self,
+        *,
+        recording_id: str,
+        session_index: int,
+        performance_index: int,
+        field: str,
+        value: Any,
+        at_offset_seconds: int | None = None,
+        recordings_path: Path | None = None,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+    ) -> WriteResult:
+        """Patch a single field on a recording performance (ADR-101 §B).
+
+        at_offset_seconds: optional drift-mitigation cross-check.
+        """
+        if field == "performance_index":
+            return _err("performance_index is immutable — cannot be patched")
+        if field not in PATCHABLE_RECORDING_PERFORMANCE_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a performance\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_RECORDING_PERFORMANCE_FIELDS))}"
+            )
+
+        rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+        rec_file = rp / f"{recording_id}.json"
+        if not rec_file.exists():
+            return _err(f"recording_id \"{recording_id}\" does not exist in recordings/")
+
+        rec = json.loads(rec_file.read_text(encoding="utf-8"))
+        sessions = rec.get("sessions", [])
+        session = next((s for s in sessions if s.get("session_index") == session_index), None)
+        if session is None:
+            return _err(
+                f"session_index {session_index} not found in recording \"{recording_id}\""
+            )
+
+        perfs = session.get("performances") or []
+        perf = next((p for p in perfs if p.get("performance_index") == performance_index), None)
+        if perf is None:
+            return _err(
+                f"performance_index {performance_index} not found in "
+                f"{recording_id} session {session_index}"
+            )
+
+        if at_offset_seconds is not None and perf.get("offset_seconds") != at_offset_seconds:
+            return _err(
+                f"drift detected: expected offset_seconds={at_offset_seconds} but "
+                f"performance {performance_index} is at {perf.get('offset_seconds')}; "
+                "re-read performances[] before patching"
+            )
+
+        old_value = perf.get(field)
+        perf[field] = value if value not in (None, "null", "") else None
+
+        _atomic_write(rec_file, rec)
+        return _ok(
+            "[PERF~]",
+            f"patched: {recording_id} s{session_index}/p{performance_index}  "
+            f"{field}: {old_value!r} → {perf[field]!r}",
+        )
 
     def add_note(
         self,

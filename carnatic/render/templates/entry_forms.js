@@ -798,7 +798,7 @@ function createEntryWindow(title) {
 
 // ── openEntryForm — public entry point ────────────────────────────────────────
 
-function openEntryForm(type) {
+function openEntryForm(type, target) {
   switch (type) {
     case 'musician_recordings': buildMusicianRecordingsForm(); break;
     case 'musician':            buildMusicianForm();           break;
@@ -807,6 +807,7 @@ function openEntryForm(type) {
     case 'recording':           buildRecordingForm();          break;
     case 'composer':            buildComposerForm();           break;
     case 'edit':                buildEditForm();               break;
+    case 'segment':             buildSegmentForm(target || {}); break;
     // legacy alias — kept for backwards compat
     case 'youtube':             buildMusicianRecordingsForm(); break;
   }
@@ -2880,6 +2881,198 @@ function buildAddYoutubeForm() {
     if (!obj) return;
     downloadJson(obj.id + '.json', obj);
     showGenericSuccess(win, obj.id + '.json', 'carnatic/data/musicians/');
+  });
+
+  return win;
+}
+
+// ── buildSegmentForm — ADR-101 §C: Add segment at current time ────────────────
+// Opens a floating form to append a timestamped segment to a recording session
+// or a lecdem youtube entry.
+//
+// target: { kind: "recording" | "lecdem", id: string, vid?: string,
+//           session_index?: number }
+//
+// The form:
+//   1. Shows the current player time for the target vid (if playing).
+//   2. Has an offset_seconds input that can be auto-filled from the player.
+//   3. Has comboboxes for composition, raga, tala, composer, display_title, notes.
+//   4. On "Stage": pushes a delta item into baniBundle.
+
+function buildSegmentForm(target) {
+  const kind         = target.kind || 'recording';
+  const entityId     = target.id   || '';
+  const vid          = target.vid  || '';
+  const sessionIndex = target.session_index || 1;
+
+  const title = kind === 'lecdem'
+    ? 'Add Lecdem Segment'
+    : 'Add Recording Segment';
+  const win  = createEntryWindow(title);
+  const body = win.querySelector('.ew-body');
+  const foot = win.querySelector('.ew-footer');
+
+  // ── Target info ──────────────────────────────────────────────────────────
+  body.appendChild(efSection('Target'));
+
+  const idDisp = document.createElement('div');
+  idDisp.style.cssText = 'font-size:0.72rem;color:var(--fg-muted);margin-bottom:6px;';
+  idDisp.textContent = kind === 'lecdem'
+    ? `Musician: ${entityId}  ·  Video: ${vid}`
+    : `Recording: ${entityId}  ·  Session: ${sessionIndex}`;
+  body.appendChild(idDisp);
+
+  // ── Offset ───────────────────────────────────────────────────────────────
+  body.appendChild(efSection('Timestamp'));
+
+  const offsetWrap = document.createElement('div');
+  offsetWrap.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
+
+  const offsetInp = document.createElement('input');
+  offsetInp.type        = 'number';
+  offsetInp.placeholder = 'offset_seconds (e.g. 1394)';
+  offsetInp.min         = '0';
+  offsetInp.style.cssText = 'flex:1;';
+  offsetInp.className   = 'ef-input';
+
+  const grabBtn = document.createElement('button');
+  grabBtn.type      = 'button';
+  grabBtn.className = 'ef-add-btn';
+  grabBtn.style.fontSize = '0.68rem';
+  grabBtn.textContent = '⏱ Grab from player';
+  grabBtn.title = 'Fill offset from the currently active player (last-seeked position)';
+  grabBtn.addEventListener('click', () => {
+    const t = (typeof getCurrentPlayerTime === 'function') ? getCurrentPlayerTime(vid) : null;
+    if (t !== null) {
+      offsetInp.value = t;
+      offsetInp.dispatchEvent(new Event('input'));
+    } else {
+      grabBtn.textContent = 'No player active — enter manually';
+      setTimeout(() => { grabBtn.textContent = '⏱ Grab from player'; }, 2500);
+    }
+  });
+
+  offsetWrap.appendChild(offsetInp);
+  offsetWrap.appendChild(grabBtn);
+  body.appendChild(efRow('Offset (s)', true, null, offsetWrap));
+
+  // ── Composition / Raga / Tala ────────────────────────────────────────────
+  body.appendChild(efSection('Segment Details'));
+
+  const compOpts = () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+  const ragaOpts = () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
+  const compOsrOpts = () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id }));
+
+  const cbComp     = efCombobox('seg_comp',     compOpts(),  true);
+  const cbRaga     = efCombobox('seg_raga',     ragaOpts(),  true);
+  const cbComposer = efCombobox('seg_composer', compOsrOpts(), true);
+
+  const talaOpts = [
+    'adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other',
+  ];
+  const talaSel = efSelect('seg_tala', talaOpts.map(v => ({ value: v, label: v })), true);
+
+  const kindOpts = [
+    { value: 'kriti', label: 'Kriti' },
+    { value: 'varnam', label: 'Varnam' },
+    { value: 'padam', label: 'Padam' },
+    { value: 'javali', label: 'Jāvaḷi' },
+    { value: 'tillana', label: 'Tillāna' },
+    { value: 'alapana', label: 'Ālāpana' },
+    { value: 'tanam', label: 'Tānam' },
+    { value: 'niraval', label: 'Nirval' },
+    { value: 'kalpanaswaram', label: 'Kalpanāswaram' },
+    { value: 'tani', label: 'Tani āvartana' },
+    { value: 'other', label: 'Other' },
+  ];
+  const kindSel = efSelect('seg_kind', kindOpts, true);
+
+  const displayTitleInp = document.createElement('input');
+  displayTitleInp.type        = 'text';
+  displayTitleInp.placeholder = 'e.g. evari mātā (optional)';
+  displayTitleInp.className   = 'ef-input';
+
+  const notesInp = document.createElement('input');
+  notesInp.type        = 'text';
+  notesInp.placeholder = 'optional notes';
+  notesInp.className   = 'ef-input';
+
+  body.appendChild(efRow('Composition', false, null, cbComp.el));
+  body.appendChild(efRow('Raga',        false, null, cbRaga.el));
+  body.appendChild(efRow('Tala',        false, null, talaSel));
+  body.appendChild(efRow('Composer',    false, null, cbComposer.el));
+  body.appendChild(efRow('Kind',        false, null, kindSel));
+  body.appendChild(efRow('Display title', false, null, displayTitleInp));
+  body.appendChild(efRow('Notes',       false, null, notesInp));
+
+  // ── Footer: Stage + Download ─────────────────────────────────────────────
+  const stageBtn = document.createElement('button');
+  stageBtn.className = 'ef-download-btn';
+  stageBtn.textContent = '+ Stage segment';
+  stageBtn.disabled = true;
+
+  const previewPre = document.createElement('pre');
+  previewPre.className = 'ef-preview-pre';
+  previewPre.style.display = 'none';
+  body.appendChild(previewPre);
+
+  foot.appendChild(stageBtn);
+
+  function buildSegmentObj() {
+    const offset = parseInt(offsetInp.value, 10);
+    if (isNaN(offset) || offset < 0) return null;
+    const seg = { offset_seconds: offset };
+    const comp = cbComp.getValue();
+    if (comp) seg.composition_id = comp;
+    const raga = cbRaga.getValue();
+    if (raga) seg.raga_id = raga;
+    const tala = talaSel.value;
+    if (tala) seg.tala = tala;
+    const composer = cbComposer.getValue();
+    if (composer) seg.composer_id = composer;
+    const kind = kindSel.value;
+    if (kind) seg.kind = kind;
+    const dt = displayTitleInp.value.trim();
+    if (dt) seg.display_title = dt;
+    const notes = notesInp.value.trim();
+    if (notes) seg.notes = notes;
+    return seg;
+  }
+
+  function validate() {
+    const seg = buildSegmentObj();
+    const meaningful = seg && (
+      seg.composition_id || seg.raga_id || seg.kind || seg.notes || seg.display_title
+    );
+    stageBtn.disabled = !meaningful;
+  }
+
+  win.addEventListener('input', validate);
+  win.addEventListener('change', validate);
+
+  stageBtn.addEventListener('click', () => {
+    const seg = buildSegmentObj();
+    if (!seg) return;
+    if (kind === 'lecdem') {
+      addToBundle('musicians', {
+        op:    'append',
+        id:    entityId,
+        array: `youtube[${vid}].segments`,
+        value: seg,
+      });
+    } else {
+      addToBundle('recordings', {
+        op:    'append',
+        id:    entityId,
+        array: `sessions[${sessionIndex}].performances`,
+        value: seg,
+      });
+    }
+    const badge = document.createElement('div');
+    badge.style.cssText = 'font-size:0.68rem;color:var(--accent);margin-top:6px;';
+    badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s). Download bundle to apply.`;
+    foot.appendChild(badge);
+    stageBtn.disabled = true;
   });
 
   return win;
