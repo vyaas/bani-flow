@@ -1,0 +1,17 @@
+{
+  "id": "rasali",
+  "name": "Rasali",
+  "aliases": [
+    "rasALi"
+  ],
+  "melakarta": null,
+  "parent_raga": "vanaspati",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragasr.shtml#rasaaLi",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Vanaspati (4th melakarta); arohana S R1 M1 P D2 N2 S, avarohana S D2 P M1 R1 S; known composition: aparAdhamula nOrva."
+}

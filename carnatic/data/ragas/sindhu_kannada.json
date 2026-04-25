@@ -1,0 +1,18 @@
+{
+  "id": "sindhu_kannada",
+  "name": "Sindhu Kannada",
+  "aliases": [
+    "Sindhukannada",
+    "Sindhu Kaanada"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://ragaoftheweek.com/raga/11476",
+      "label": "Raga of the Week",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Harikambhoji; vakra prayogas are common; arohana S M1 G3 M1 R2 G3 M1 P D2 P S, avarohana S N2 D2 P M1 G3 R2 S."
+}

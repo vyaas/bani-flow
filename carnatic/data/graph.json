@@ -3539,6 +3539,23 @@
         "is_melakarta": false
       },
       {
+        "id": "bindumalini",
+        "name": "Bindumalini",
+        "aliases": [
+          "Bindu Malini"
+        ],
+        "melakarta": null,
+        "parent_raga": "chakravakam",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/rare-ragas-bindumalini-janya-of-mela-16-raga-chakravakam",
+            "label": "Dr M Radhakrishnan",
+            "type": "article"
+          }
+        ],
+        "notes": "Rare janya of Chakravakam (16th melakarta); often treated as shadava-shadava with vakra sancharas; associated with Tyagaraja's Enta Muddo Enta Sogaso."
+      },
+      {
         "id": "chakravakam",
         "name": "Chakravakam",
         "aliases": [
@@ -4091,7 +4108,7 @@
             "type": "wikipedia"
           }
         ],
-        "notes": "28th melakarta; equivalent to the Western Mixolydian mode; ārohana S R2 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; parent of Kambhoji, Khamas, Surutti, Sahana, Mohanam, Bahudari, Kedaram, Begada, Ravichandrika, and Kapi among others; associated with bhakti and grandeur",
+        "notes": "28th melakarta; equivalent to the Western Mixolydian mode; arohana S R2 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; parent of Kambhoji, Khamas, Surutti, Sahana, Mohanam, Bahudari, Kedaram, Begada, and Ravichandrika among others; associated with bhakti and grandeur",
         "is_melakarta": true,
         "cakra": 5
       },
@@ -4447,7 +4464,7 @@
           "Kaapi"
         ],
         "melakarta": null,
-        "parent_raga": "harikambhoji",
+        "parent_raga": "kharaharapriya",
         "sources": [
           {
             "url": "https://en.wikipedia.org/wiki/Kapi_(raga)",
@@ -4455,7 +4472,7 @@
             "type": "wikipedia"
           }
         ],
-        "notes": "Janya of Harikambhoji (28th melakarta); bhashanga raga admitting both G2 and G3; evokes srngara and karuna; a favourite raga for padams and javalis; associated with the devadasi repertoire",
+        "notes": "Janya of Kharaharapriya (22nd melakarta); bhashanga raga admitting both G2 and G3; evokes srngara and karuna; a favourite raga for padams and javalis; associated with the devadasi repertoire",
         "is_melakarta": false
       },
       {
@@ -4494,9 +4511,11 @@
       {
         "id": "kedaragaula",
         "name": "Kedaragaula",
-        "aliases": [],
+        "aliases": [
+          "Kedaragowla"
+        ],
         "melakarta": null,
-        "parent_raga": null,
+        "parent_raga": "harikambhoji",
         "sources": [
           {
             "url": "https://en.wikipedia.org/wiki/Kedaragaula",
@@ -4575,7 +4594,7 @@
             "type": "wikipedia"
           }
         ],
-        "notes": "22nd melakarta; equivalent to the Dorian mode; parent of many important janya ragas including Reetigowla, Sriraga, Devamritavarshini, Manirangu, and Devagandhari; associated with devotion and grandeur",
+        "notes": "22nd melakarta; equivalent to the Dorian mode; parent of many important janya ragas including Reetigowla, Sriraga, Devamritavarshini, Manirangu, Devagandhari, and Kapi; associated with devotion and grandeur",
         "is_melakarta": true,
         "cakra": 4
       },
@@ -4960,7 +4979,7 @@
           "Narayanagaula"
         ],
         "melakarta": null,
-        "parent_raga": "shankarabharanam",
+        "parent_raga": "harikambhoji",
         "sources": [
           {
             "url": "https://en.wikipedia.org/wiki/Narayanagaula",
@@ -4968,7 +4987,7 @@
             "type": "wikipedia"
           }
         ],
-        "notes": "Janya raga derived from Kharaharapriya (22nd melakarta); arohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; a serious, contemplative raga used by Muthuswami Dikshitar and Tyagaraja",
+        "notes": "Janya raga derived from Harikambhoji (28th melakarta); arohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; a serious, contemplative raga used by Muthuswami Dikshitar and Tyagaraja",
         "is_melakarta": false
       },
       {
@@ -5325,6 +5344,23 @@
           }
         ],
         "notes": "52th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₂ N₂ Ṡ"
+      },
+      {
+        "id": "rasali",
+        "name": "Rasali",
+        "aliases": [
+          "rasALi"
+        ],
+        "melakarta": null,
+        "parent_raga": "vanaspati",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/ragasr.shtml#rasaaLi",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "notes": "Janya of Vanaspati (4th melakarta); arohana S R1 M1 P D2 N2 S, avarohana S D2 P M1 R1 S; known composition: aparAdhamula nOrva."
       },
       {
         "id": "rasikapriya",
@@ -5714,6 +5750,24 @@
         "is_melakarta": false
       },
       {
+        "id": "sindhu_kannada",
+        "name": "Sindhu Kannada",
+        "aliases": [
+          "Sindhukannada",
+          "Sindhu Kaanada"
+        ],
+        "melakarta": null,
+        "parent_raga": "harikambhoji",
+        "sources": [
+          {
+            "url": "https://ragaoftheweek.com/raga/11476",
+            "label": "Raga of the Week",
+            "type": "article"
+          }
+        ],
+        "notes": "Janya of Harikambhoji; vakra prayogas are common; arohana S M1 G3 M1 R2 G3 M1 P D2 P S, avarohana S N2 D2 P M1 G3 R2 S."
+      },
+      {
         "id": "sowrashtram",
         "name": "Sowrashtram",
         "aliases": [
@@ -5772,6 +5826,23 @@
         ],
         "notes": "Janya of Kharaharapriya (22nd melakarta); audava-sampoorna raga (5 notes ascending, 7 descending); ārohana: S R2 G2 M1 D2 S, avarohana: S N2 D2 P M1 G2 R2 S; evokes romance and longing; a favourite raga for padams and javalis; best known for Tyagaraja's 'Brochevarevare'",
         "is_melakarta": false
+      },
+      {
+        "id": "sruti_ranjani",
+        "name": "Sruti Ranjani",
+        "aliases": [
+          "Shruti Ranjani"
+        ],
+        "melakarta": null,
+        "parent_raga": "kantamani",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Kantamani",
+            "label": "Parent raga reference",
+            "type": "other"
+          }
+        ],
+        "notes": "Rare janya traditionally associated with Kantamani (61st melakarta); direct standalone source not yet identified."
       },
       {
         "id": "subhapantuvarali",
@@ -5945,15 +6016,15 @@
           "Umabharanam"
         ],
         "melakarta": null,
-        "parent_raga": "mayamalavagowla",
+        "parent_raga": "harikambhoji",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Umaabharanam",
-            "label": "Wikipedia",
-            "type": "wikipedia"
+            "url": "https://saidvk.blogspot.com/2013/06/selected-ragam-umabharanam.html",
+            "label": "Indian classical music and film songs",
+            "type": "article"
           }
         ],
-        "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-audava raga (6 notes ascending, 5 descending); ārohana S R1 G3 M1 P D1 S, avarohana S N3 P M1 G3 R1 S; evokes devotion and grandeur; associated with Tyagaraja's 'Nijamarmamulanu'",
+        "notes": "Janya of Harikambhoji (28th melakarta); a rare raga with relatively few kritis; popularized in renditions of Tyagaraja's Nijamarmamulanu and known in contemporary concert practice.",
         "is_melakarta": false
       },
       {
@@ -6092,6 +6163,24 @@
         ],
         "notes": "Janya raga of Mechakalyani (65th melakarta); arohana S G3 R2 G3 M2 D2 N3 S, avarohana S N3 D2 M2 G3 R2 S (vakra); evokes spring and devotion; Sri Kamakshi Katakshi attributed to Subbaraya Sastri is set in this raga",
         "is_melakarta": false
+      },
+      {
+        "id": "vijayashri",
+        "name": "Vijayashri",
+        "aliases": [
+          "Vijayasri",
+          "Vijaya Shri"
+        ],
+        "melakarta": null,
+        "parent_raga": "suvarnangi",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-vijayashri-janya-of-mela-47-ragam-suvarnangi",
+            "label": "Dr M Radhakrishnan",
+            "type": "article"
+          }
+        ],
+        "notes": "Rare janya of Suvarnangi (47th melakarta); shadava symmetric scale often represented as S R1 G2 M2 P N2 S // S N2 P M2 G2 R1 S; associated with Tyagaraja's Vara Narada Narayana."
       },
       {
         "id": "visvambari",
