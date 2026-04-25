@@ -3561,6 +3561,36 @@
             "label": "Kamakshi Ni Pada · Yadukula Kambhoji · Svarajathi",
             "composition_id": "kamakshi_ni_pada",
             "raga_id": "yadukulakamboji"
+          },
+          {
+            "url": "https://youtu.be/Va7kZP434LE",
+            "label": "Manodharma - A Lec-Dem Part One",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://youtu.be/iaZJSah3NyE",
+            "label": "Manodharma - A Lec-Dem Part Two",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [],
+              "composition_ids": [],
+              "musician_ids": []
+            }
+          },
+          {
+            "url": "https://youtu.be/6jMvw76Zprw",
+            "label": "Manodharma - A Lec-Dem Part Three",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [],
+              "composition_ids": [],
+              "musician_ids": []
+            }
           }
         ]
       },
