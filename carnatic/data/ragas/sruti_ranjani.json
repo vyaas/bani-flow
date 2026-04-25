@@ -1,0 +1,17 @@
+{
+  "id": "sruti_ranjani",
+  "name": "Sruti Ranjani",
+  "aliases": [
+    "Shruti Ranjani"
+  ],
+  "melakarta": null,
+  "parent_raga": "kantamani",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kantamani",
+      "label": "Parent raga reference",
+      "type": "other"
+    }
+  ],
+  "notes": "Rare janya traditionally associated with Kantamani (61st melakarta); direct standalone source not yet identified."
+}

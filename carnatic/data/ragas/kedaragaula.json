@@ -1,9 +1,11 @@
 {
   "id": "kedaragaula",
   "name": "Kedaragaula",
-  "aliases": [],
+  "aliases": [
+    "Kedaragowla"
+  ],
   "melakarta": null,
-  "parent_raga": null,
+  "parent_raga": "harikambhoji",
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Kedaragaula",

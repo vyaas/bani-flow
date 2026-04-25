@@ -1,0 +1,18 @@
+{
+  "id": "vijayashri",
+  "name": "Vijayashri",
+  "aliases": [
+    "Vijayasri",
+    "Vijaya Shri"
+  ],
+  "melakarta": null,
+  "parent_raga": "suvarnangi",
+  "sources": [
+    {
+      "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-vijayashri-janya-of-mela-47-ragam-suvarnangi",
+      "label": "Dr M Radhakrishnan",
+      "type": "article"
+    }
+  ],
+  "notes": "Rare janya of Suvarnangi (47th melakarta); shadava symmetric scale often represented as S R1 G2 M2 P N2 S // S N2 P M2 G2 R1 S; associated with Tyagaraja's Vara Narada Narayana."
+}
