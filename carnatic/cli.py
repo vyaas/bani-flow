@@ -858,9 +858,9 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
             help_data = None
         if help_data:
             _schema_version = help_data.get("schema_version", 1)
-            if _schema_version > 3:
+            if _schema_version > 4:
                 errors.append(
-                    f"help/empty_panels.json: schema_version {_schema_version} > 3; "
+                    f"help/empty_panels.json: schema_version {_schema_version} > 4; "
                     f"update cli.py to handle the new schema"
                 )
             else:
@@ -1065,6 +1065,125 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                                         f"must be a non-empty string when present"
                                     )
 
+                # ── colophon block (schema_version ≥ 4, ADR-102) ───────────────────────
+                if _schema_version >= 4:
+                    colophon = help_data.get("colophon")
+                    if colophon is not None:
+                        if not isinstance(colophon, dict):
+                            errors.append("help/empty_panels.json: colophon must be an object")
+                        else:
+                            _HTTPS_RE = re.compile(r"^https://")
+                            _GITHUB_REPO_RE = re.compile(r"^https://github\.com/[^/]+/[^/]+/?$")
+
+                            def _validate_ext_links(links, where):
+                                if links is None:
+                                    return
+                                if not isinstance(links, list):
+                                    errors.append(f"{where}.ext_links: must be an array")
+                                    return
+                                for li, lnk in enumerate(links):
+                                    if not isinstance(lnk, dict):
+                                        errors.append(f"{where}.ext_links[{li}]: must be an object")
+                                        continue
+                                    if not _is_non_empty_string(lnk.get("label")):
+                                        errors.append(f"{where}.ext_links[{li}].label: must be a non-empty string")
+                                    url = lnk.get("url", "")
+                                    if not _HTTPS_RE.match(url or ""):
+                                        errors.append(f"{where}.ext_links[{li}].url: must begin with https://")
+
+                            # vision
+                            vision = colophon.get("vision")
+                            if vision is not None:
+                                if not isinstance(vision, dict):
+                                    errors.append("help/empty_panels.json:colophon.vision: must be an object")
+                                else:
+                                    if "heading" in vision and not _is_non_empty_string(vision.get("heading")):
+                                        errors.append("help/empty_panels.json:colophon.vision.heading: must be a non-empty string when present")
+                                    paras = vision.get("paragraphs")
+                                    if paras is not None:
+                                        if not isinstance(paras, list) or not paras or not all(_is_non_empty_string(p) for p in paras):
+                                            errors.append("help/empty_panels.json:colophon.vision.paragraphs: must be a non-empty array of non-empty strings")
+                                    epigraph = vision.get("epigraph")
+                                    if epigraph is not None:
+                                        if not isinstance(epigraph, dict):
+                                            errors.append("help/empty_panels.json:colophon.vision.epigraph: must be an object")
+                                        else:
+                                            for field in ("text", "source"):
+                                                if not _is_non_empty_string(epigraph.get(field)):
+                                                    errors.append(f"help/empty_panels.json:colophon.vision.epigraph.{field}: must be a non-empty string")
+
+                            # curation_loop
+                            curation_loop = colophon.get("curation_loop")
+                            if curation_loop is not None:
+                                if not isinstance(curation_loop, dict):
+                                    errors.append("help/empty_panels.json:colophon.curation_loop: must be an object")
+                                else:
+                                    if "heading" in curation_loop and not _is_non_empty_string(curation_loop.get("heading")):
+                                        errors.append("help/empty_panels.json:colophon.curation_loop.heading: must be a non-empty string when present")
+                                    paras = curation_loop.get("paragraphs")
+                                    if paras is not None:
+                                        if not isinstance(paras, list) or not all(_is_non_empty_string(p) for p in paras):
+                                            errors.append("help/empty_panels.json:colophon.curation_loop.paragraphs: must be an array of non-empty strings")
+                                    dt = curation_loop.get("diagram_text")
+                                    if dt is not None and not _is_non_empty_string(dt):
+                                        errors.append("help/empty_panels.json:colophon.curation_loop.diagram_text: must be a non-empty string when present")
+                                    _validate_ext_links(curation_loop.get("ext_links"), "help/empty_panels.json:colophon.curation_loop")
+
+                            # contribute
+                            contribute = colophon.get("contribute")
+                            if contribute is not None:
+                                if not isinstance(contribute, dict):
+                                    errors.append("help/empty_panels.json:colophon.contribute: must be an object")
+                                else:
+                                    if "heading" in contribute and not _is_non_empty_string(contribute.get("heading")):
+                                        errors.append("help/empty_panels.json:colophon.contribute.heading: must be a non-empty string when present")
+                                    repo = contribute.get("repo")
+                                    if repo is not None:
+                                        if not isinstance(repo, dict):
+                                            errors.append("help/empty_panels.json:colophon.contribute.repo: must be an object")
+                                        else:
+                                            repo_url = repo.get("url", "")
+                                            if not _GITHUB_REPO_RE.match(repo_url or ""):
+                                                errors.append("help/empty_panels.json:colophon.contribute.repo.url: must match ^https://github.com/<owner>/<repo>")
+                                            icon = repo.get("icon")
+                                            if icon is not None and icon not in {"github"}:
+                                                errors.append(f"help/empty_panels.json:colophon.contribute.repo.icon: unknown icon '{icon}' (allowed: github)")
+                                    qs = contribute.get("quickstart")
+                                    if qs is not None:
+                                        if not isinstance(qs, list) or not all(_is_non_empty_string(s) for s in qs):
+                                            errors.append("help/empty_panels.json:colophon.contribute.quickstart: must be an array of non-empty strings")
+                                    _validate_ext_links(contribute.get("ext_links"), "help/empty_panels.json:colophon.contribute")
+
+                            # listening_ethic
+                            listening_ethic = colophon.get("listening_ethic")
+                            if listening_ethic is not None:
+                                if not isinstance(listening_ethic, dict):
+                                    errors.append("help/empty_panels.json:colophon.listening_ethic: must be an object")
+                                else:
+                                    if "heading" in listening_ethic and not _is_non_empty_string(listening_ethic.get("heading")):
+                                        errors.append("help/empty_panels.json:colophon.listening_ethic.heading: must be a non-empty string when present")
+                                    paras = listening_ethic.get("paragraphs")
+                                    if paras is not None:
+                                        if not isinstance(paras, list) or not all(_is_non_empty_string(p) for p in paras):
+                                            errors.append("help/empty_panels.json:colophon.listening_ethic.paragraphs: must be an array of non-empty strings")
+                                    _validate_ext_links(listening_ethic.get("ext_links"), "help/empty_panels.json:colophon.listening_ethic")
+
+                            # author
+                            author = colophon.get("author")
+                            if author is not None:
+                                if not isinstance(author, dict):
+                                    errors.append("help/empty_panels.json:colophon.author: must be an object")
+                                else:
+                                    if not _is_non_empty_string(author.get("name")):
+                                        errors.append("help/empty_panels.json:colophon.author.name: must be a non-empty string")
+                                    avatar_url = author.get("avatar_url")
+                                    if avatar_url is not None and not _HTTPS_RE.match(avatar_url or ""):
+                                        errors.append("help/empty_panels.json:colophon.author.avatar_url: must begin with https://")
+                                    gp_url = author.get("gravatar_profile_url")
+                                    if gp_url is not None and not gp_url.startswith("https://gravatar.com/"):
+                                        errors.append("help/empty_panels.json:colophon.author.gravatar_profile_url: must begin with https://gravatar.com/")
+                                    _validate_ext_links(author.get("ext_links"), "help/empty_panels.json:colophon.author")
+
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
         "All musician_ids in recordings exist in graph",
@@ -1077,7 +1196,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "All composition composer_ids and raga_ids are valid",
         "All youtube performers reference known musicians and roles (ADR-070)",
         "All youtube lecdem entries have valid kind, subjects, and resolvable ids (ADR-077)",
-        "All empty-panel tutorial ids, demo rows, and notes validate (ADR-091)",
+        "All empty-panel tutorial ids, demo rows, and notes validate (ADR-091, ADR-102)",
     ]
 
     if not errors:

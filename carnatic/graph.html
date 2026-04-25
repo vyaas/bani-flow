@@ -3142,6 +3142,127 @@
   .panel-tutorial .pt-view-note + .pt-view-note {
     margin-top: 6px;
   }
+  /* ADR-102: Colophon ──────────────────────────────────────────────────── */
+  .panel-tutorial .pt-colophon {
+    margin-top: 4px;
+  }
+  .panel-tutorial .pt-colophon-section {
+    padding: 12px 0 10px;
+    border-top: 1px solid var(--border-strong);
+  }
+  .panel-tutorial .pt-colophon-head {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin: 0 0 8px;
+    letter-spacing: 0.01em;
+  }
+  .panel-tutorial .pt-colophon-para {
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .panel-tutorial .pt-vision-epigraph {
+    margin: 8px 0 4px 12px;
+    padding-left: 10px;
+    border-left: 2px solid var(--border-strong);
+  }
+  .panel-tutorial .pt-vision-epigraph p {
+    font-size: 0.76rem;
+    font-style: italic;
+    color: var(--fg-muted);
+    margin: 0 0 4px;
+  }
+  .panel-tutorial .pt-epigraph-source {
+    font-size: 0.70rem;
+    font-style: normal;
+    color: var(--fg-faint, var(--fg-muted));
+    display: block;
+  }
+  .panel-tutorial .pt-loop-diagram {
+    font-size: 0.68rem;
+    font-family: monospace;
+    color: var(--fg-muted);
+    background: var(--bg-sub, var(--bg));
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin: 6px 0 8px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .panel-tutorial .pt-quickstart {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+    padding-left: 18px;
+    margin: 6px 0 8px;
+  }
+  .panel-tutorial .pt-quickstart li {
+    margin: 3px 0;
+  }
+  .panel-tutorial .pt-quickstart code {
+    font-family: monospace;
+    font-size: 0.70rem;
+    color: var(--fg);
+  }
+  .panel-tutorial .pt-contribute-repo {
+    margin: 6px 0 8px;
+  }
+  .panel-tutorial .pt-repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .panel-tutorial .pt-repo-link:hover { color: var(--fg); }
+  .panel-tutorial .pt-github-icon {
+    fill: currentColor;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-colophon-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin: 4px 0 2px;
+  }
+  .panel-tutorial .pt-colophon-link {
+    font-size: 0.72rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .panel-tutorial .pt-colophon-link:hover {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+  .panel-tutorial .pt-author-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .panel-tutorial .pt-author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .panel-tutorial .pt-author-text { flex: 1; min-width: 0; }
+  .panel-tutorial .pt-author-name {
+    font-size: 0.80rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: 2px;
+  }
+  .panel-tutorial .pt-author-tagline {
+    font-size: 0.70rem;
+    color: var(--fg-muted);
+  }
 </style>
 </head>
 <body>
@@ -3422,20 +3543,22 @@
     <button id="hd-close" title="Close">&#10005;</button>
   </div>
   <div id="hd-body">
-    <p class="hd-section-title">About Bani Flow</p>
-    <p class="hd-p">Bani Flow maps the <em>guru-shishya</em> (teacher-student) lineage of Carnatic classical music — how ragas, compositions, and performance style pass between generations of musicians. Explore how different artists have rendered the same raga or composition to hear the living variety within a single tradition.</p>
-    <p class="hd-section-title">Guru-Shishya View</p>
-    <p class="hd-p">A directed graph of musicians. Edges flow guru → shishya. Tap a node once to see a brief preview; tap again to open the <strong>Musician</strong> panel. The filter chips at the top narrow the graph by era (colour-coded by period) or instrument (shape-coded by family).</p>
-    <p class="hd-section-title">Mela-Janya View</p>
-    <p class="hd-p">A wheel of the 72 melakarta ragas with their janya (derived) ragas branching outward. Tap a raga once to preview; tap again to open the <strong>Bani Flow</strong> panel, which lists all recordings on that raga. Use <span class="raga-chip" style="pointer-events:none;">raga name</span> links to navigate across ragas.</p>
-    <p class="hd-section-title">Musician Panel</p>
-    <p class="hd-p">Shows the repertoire of a selected musician — concert recordings grouped by performance, each tagged with a <span class="comp-chip" style="pointer-events:none;">composition</span> and <span class="raga-chip" style="pointer-events:none;">raga</span>. Tap the ▶ button on any recording to open it in the YouTube player.</p>
-    <p class="hd-section-title">Bani Flow Panel</p>
-    <p class="hd-p">Search for a raga or composition in the left sidebar to see every musician who has recorded it, in order of recency. Compare how a guru and their students each render <span class="raga-chip" style="pointer-events:none;">Thodi</span> or <span class="raga-chip" style="pointer-events:none;">Bhairavi</span> — this is the heart of the exploration.</p>
-    <p class="hd-section-title">YouTube Player</p>
-    <p class="hd-p">Opens in a floating window (desktop) or a slide-up strip (mobile). Click the <span class="mp-artist-chip" style="pointer-events:none;font-size:0.70rem;">artist</span> chip in the player bar to jump to that musician in the graph. The tracklist button (☰) lets you switch tracks within a concert.</p>
-    <p class="hd-section-title">E-Tanpura</p>
-    <p class="hd-p">The row of note buttons in the header plays an electronic tanpura drone for that <em>sruti</em> (tonic pitch). Use it as a pitch reference while listening or singing along. Click the lit button again — or the ● power indicator — to stop the drone.</p>
+    <p class="hd-section-title">What this is</p>
+    <p class="hd-p">Carnatic music is not a catalogue. It is a living transmission — guru to shishya — across a hundred and fifty years of recorded sound and a thousand years of unrecorded teaching. This site documents that transmission as a graph: nodes are musicians, edges are the relationships through which sound is taught.</p>
+    <p class="hd-p">TM Krishna writes that music is not the sounds themselves but what they do to us; that aesthetics is not what you sense but how to sense. This graph is a tool for the second kind of listening. The chips are not records. They are entry-points into a field of relationship.</p>
+    <p class="hd-p">The two views — Guru-Shishya and Mela-Janya — are the two organs through which a rasika holds the tradition: the human lineage and the modal world. Switch between them. The same musician sounds different when you hear them inside their bani; the same raga sounds different when you hear it in three different lineages.</p>
+    <p class="hd-p"><em>"The receiver is drawn completely into the world of the art, and there develops a personal relationship with it."</em> — TM Krishna, A Southern Music, ch. 1</p>
+    <p class="hd-section-title">A self-editing graph</p>
+    <p class="hd-p">Every chip you see was authored by the same surfaces that you can use. The + buttons at the bottom open entry forms that produce a bundle file; the bundle file is ingested by a single command (bani-add); the next render of graph.html includes your contribution. The reader and the author are the same person, by construction.</p>
+    <p class="hd-p">The data, the schema, the entry forms, the validators, and the render pipeline all live inside a single clone of the repository. There is no privileged author, no remote service, no schema enforced only on a server.</p>
+    <p class="hd-p">`graph.html  →  bundle  →  bani-add  →  writer  →  entity files  →  render  →  graph.html`</p>
+    <p class="hd-section-title">Contribute</p>
+    <p class="hd-p">Bani Flow is open source. Add a musician, a recording, a lineage edge — clone the repo, run the entry form, submit a pull request. Repository: <strong>github.com/vyaas/bani_flow</strong></p>
+    <p class="hd-section-title">On listening — and a note about LibRedirect</p>
+    <p class="hd-p">YouTube is the substrate this site rests on. It is also an attention-extraction machine: every recording opens into a page surrounded by ads, autoplay queues, recommendation rails, and engagement-optimised chrome. This is the opposite of the attention Carnatic music asks for.</p>
+    <p class="hd-p">The floating player on this site embeds the video without the surrounding chrome. For the open-in-new-tab links, install <strong>LibRedirect</strong> (libredirect.github.io) — a browser extension that transparently redirects YouTube URLs to a player of your choosing (Invidious, Piped, FreeTube, mpv). Once installed, every ↗ link from this site opens into a clean, ad-free, algorithmically-quiet player.</p>
+    <p class="hd-section-title">Curator</p>
+    <p class="hd-p"><img src="https://0.gravatar.com/avatar/03842f7bd424c71064035f5ac4b8e32626b72d758dc4d73028160a2d0ebe1c5d?size=120&d=initials" alt="Vyaas" width="48" height="48" style="border-radius:50%;border:1px solid var(--border-strong);vertical-align:middle;margin-right:10px;" loading="lazy" referrerpolicy="no-referrer"><strong>Vyaas</strong> — curator, maintainer, single human responsible. <a href="https://github.com/vyaas" target="_blank" rel="noopener noreferrer">github.com/vyaas</a></p>
   </div>
 </div>
 <script>
@@ -83831,16 +83954,32 @@ function efSourceFields(prefix, defaults) {
   return frag;
 }
 
-// ── PATCH_METADATA — mirrors writer.py PATCHABLE_*_FIELDS (ADR-097 §6) ────────
+// ── PATCH_METADATA — mirrors writer.py PATCHABLE_*_FIELDS (ADR-100 §6) ────────
 // Drives buildEditForm(): field lists, value-input types, append selectors.
-// MVP entities: musician, raga, edge, composition, composer.
+// All entity rows per ADR-100 §1 coverage matrix.
 const PATCH_METADATA = {
   musician: {
     bucket:          'musicians',
     label:           'Musician',
     pickLabel:       'Pick Musician',
     pickOpts:        () => (graphData.nodes || []).map(n => ({ value: n.id, label: n.label })),
-    patchFields:     ['label', 'born', 'died', 'era', 'instrument', 'bani'],
+    patchFields:     ['label', 'born', 'died', 'era', 'instrument', 'bani', 'notes_text'],
+    // Nested-path fields: element-picker required before value input.
+    // Format: { path: 'template', pickerKind: 'sources'|'youtube'|'youtube_performer',
+    //           leaf: 'field', label: 'UI label' }
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources',            leaf: 'url',          label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources',            leaf: 'label',        label: 'Source Label (by host)' },
+      { path: 'youtube[<vid>].label',           pickerKind: 'youtube',   leaf: 'label',        label: 'YouTube entry label' },
+      { path: 'youtube[<vid>].year',            pickerKind: 'youtube',   leaf: 'year',         label: 'YouTube entry year' },
+      { path: 'youtube[<vid>].version',         pickerKind: 'youtube',   leaf: 'version',      label: 'YouTube entry version' },
+      { path: 'youtube[<vid>].tala',            pickerKind: 'youtube',   leaf: 'tala',         label: 'YouTube entry tala' },
+      { path: 'youtube[<vid>].composition_id',  pickerKind: 'youtube',   leaf: 'composition_id', label: 'YouTube composition' },
+      { path: 'youtube[<vid>].raga_id',         pickerKind: 'youtube',   leaf: 'raga_id',      label: 'YouTube raga' },
+      { path: 'youtube[<vid>].kind',            pickerKind: 'youtube',   leaf: 'kind',         label: 'YouTube entry kind' },
+      { path: 'youtube[<vid>].performers[<key>].role',        pickerKind: 'youtube_performer', leaf: 'role',        label: 'Performer role' },
+      { path: 'youtube[<vid>].performers[<key>].musician_id', pickerKind: 'youtube_performer', leaf: 'musician_id', label: 'Performer musician' },
+    ],
     appendArrays:    ['youtube', 'sources'],
     supportsAnnotate: true,
     fieldMeta: {
@@ -83850,6 +83989,7 @@ const PATCH_METADATA = {
       era:        { inputType: 'select', opts: ['trinity','bridge','golden_age','disseminator','living_pillars','contemporary'] },
       instrument: { inputType: 'select', opts: ['vocal','veena','violin','flute','mridangam','bharatanatyam','ghatam','other'] },
       bani:       { inputType: 'text',   placeholder: 'e.g. Ariyakudi, Semmangudi' },
+      notes_text: { inputType: 'text',   placeholder: 'short freeform note on this musician' },
     },
   },
   raga: {
@@ -83857,43 +83997,62 @@ const PATCH_METADATA = {
     label:           'Raga',
     pickLabel:       'Pick Raga',
     pickOpts:        () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id })),
-    patchFields:     ['name', 'parent_raga', 'melakarta', 'is_melakarta', 'cakra', 'notes'],
-    appendArrays:    ['aliases'],
+    patchFields:     ['name', 'label', 'parent_raga', 'melakarta', 'melakarta_number', 'is_melakarta', 'cakra', 'notes', 'mela_id', 'arohana', 'avarohana'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
+    appendArrays:    ['aliases', 'sources'],
     supportsAnnotate: true,
     fieldMeta: {
-      name:         { inputType: 'text',     placeholder: 'Raga name' },
-      parent_raga:  { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
-      melakarta:    { inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
-      is_melakarta: { inputType: 'select',   opts: [{ value: 'true', label: 'Yes — Melakarta' }, { value: 'false', label: 'No — Janya' }] },
-      cakra:        { inputType: 'number',   placeholder: '1–12',  min: 1, max: 12 },
-      notes:        { inputType: 'text',     placeholder: 'musicological note' },
+      name:            { inputType: 'text',     placeholder: 'Raga name' },
+      label:           { inputType: 'text',     placeholder: 'Display label' },
+      parent_raga:     { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
+      melakarta:       { inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
+      melakarta_number:{ inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
+      is_melakarta:    { inputType: 'select',   opts: [{ value: 'true', label: 'Yes — Melakarta' }, { value: 'false', label: 'No — Janya' }] },
+      cakra:           { inputType: 'number',   placeholder: '1–12',  min: 1, max: 12 },
+      notes:           { inputType: 'text',     placeholder: 'musicological note' },
+      mela_id:         { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
+      arohana:         { inputType: 'text',     placeholder: 'ascending scale notes' },
+      avarohana:       { inputType: 'text',     placeholder: 'descending scale notes' },
     },
   },
   edge: {
     bucket:          'edges',
     label:           'Edge (Guru→Shishya)',
     pickLabel:       null,   // edges use source+target pair; no single-entity pick
-    patchFields:     ['confidence', 'source_url', 'note'],
+    patchFields:     ['confidence', 'source_url', 'note', 'relation'],
+    nestedPatchFields: [],
     appendArrays:    [],
     supportsAnnotate: false,
     fieldMeta: {
       confidence:  { inputType: 'number', placeholder: '0.0–1.0', min: 0, max: 1, step: 0.01 },
       source_url:  { inputType: 'text',   placeholder: 'https://…' },
       note:        { inputType: 'text',   placeholder: 'e.g. principal guru' },
+      relation:    { inputType: 'select', opts: ['guru_shishya','concert_partner','family','disciple','unknown'] },
     },
   },
   composition: {
     bucket:          'compositions',
     label:           'Composition',
     pickLabel:       'Pick Composition',
-    pickOpts:        () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id })),
-    patchFields:     ['title', 'tala', 'language'],
-    appendArrays:    [],
+    pickOpts:        () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.display_title || c.id })),
+    patchFields:     ['display_title', 'title', 'composer_id', 'raga_id', 'tala', 'language', 'type'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
+    appendArrays:    ['sources'],
     supportsAnnotate: true,
     fieldMeta: {
-      title:    { inputType: 'text',   placeholder: 'Composition title' },
-      tala:     { inputType: 'select', opts: ['adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other'] },
-      language: { inputType: 'select', opts: ['Telugu','Sanskrit','Tamil','Kannada','Malayalam','Other'] },
+      display_title: { inputType: 'text',     placeholder: 'Display title (with diacritics)' },
+      title:         { inputType: 'text',     placeholder: 'Composition title' },
+      composer_id:   { inputType: 'combobox', optsGetter: () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id })) },
+      raga_id:       { inputType: 'combobox', optsGetter: () => (graphData.ragas    || []).map(r => ({ value: r.id, label: r.name || r.id })) },
+      tala:          { inputType: 'select',   opts: ['adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other'] },
+      language:      { inputType: 'select',   opts: ['Telugu','Sanskrit','Tamil','Kannada','Malayalam','Other'] },
+      type:          { inputType: 'select',   opts: ['kriti','varnam','padam','javali','tillana','svarajati','other'] },
     },
   },
   composer: {
@@ -83901,13 +84060,38 @@ const PATCH_METADATA = {
     label:           'Composer',
     pickLabel:       'Pick Composer',
     pickOpts:        () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id })),
-    patchFields:     ['name', 'born', 'died'],
+    patchFields:     ['name', 'born', 'died', 'tradition'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
+    appendArrays:    ['sources'],
+    supportsAnnotate: true,
+    fieldMeta: {
+      name:      { inputType: 'text',   placeholder: 'Composer name' },
+      born:      { inputType: 'number', placeholder: 'e.g. 1890', min: 1600, max: 2030 },
+      died:      { inputType: 'number', placeholder: 'e.g. 1950', min: 1600, max: 2030 },
+      tradition: { inputType: 'text',   placeholder: 'e.g. Carnatic, Hindustani' },
+    },
+  },
+  recording: {
+    bucket:          'recordings',
+    label:           'Recording',
+    pickLabel:       'Pick Recording',
+    pickOpts:        () => (graphData.recordings || []).map(r => ({ value: r.id, label: r.title || r.short_title || r.id })),
+    patchFields:     ['title', 'short_title', 'date', 'venue', 'occasion'],
+    nestedPatchFields: [
+      { path: 'sources[<host>].url',   pickerKind: 'sources', leaf: 'url',   label: 'Source URL (by host)' },
+      { path: 'sources[<host>].label', pickerKind: 'sources', leaf: 'label', label: 'Source Label (by host)' },
+    ],
     appendArrays:    [],
     supportsAnnotate: true,
     fieldMeta: {
-      name: { inputType: 'text',   placeholder: 'Composer name' },
-      born: { inputType: 'number', placeholder: 'e.g. 1890', min: 1600, max: 2030 },
-      died: { inputType: 'number', placeholder: 'e.g. 1950', min: 1600, max: 2030 },
+      title:     { inputType: 'text', placeholder: 'Full concert title' },
+      short_title: { inputType: 'text', placeholder: 'Short label' },
+      date:      { inputType: 'text', placeholder: 'YYYY-MM-DD' },
+      venue:     { inputType: 'text', placeholder: 'e.g. All India Radio' },
+      occasion:  { inputType: 'text', placeholder: 'Brief occasion note' },
     },
   },
 };
@@ -86222,6 +86406,192 @@ function buildEditForm() {
       opsWrap.appendChild(patchBtn);
     }
 
+    // ── PATCH NESTED FIELD (sources[<host>], youtube[<vid>], performers) ──────
+    if (meta.nestedPatchFields && meta.nestedPatchFields.length > 0) {
+      const sec = document.createElement('div');
+      sec.className = 'ef-section';
+      sec.style.marginTop = '12px';
+      sec.textContent = 'Patch Nested Field';
+      opsWrap.appendChild(sec);
+
+      // Wikipedia URL convenience row (ADR-100 §3) — shown only for musician
+      if (typeKey === 'musician') {
+        const wikiHint = document.createElement('div');
+        wikiHint.style.cssText = 'font-size:0.67rem;color:var(--fg-muted);margin:2px 0 6px 0;';
+        wikiHint.innerHTML = '🔗 <strong>Wikipedia URL</strong>: use <em>sources[en_wikipedia_org].url</em> below to fix a renamed Wikipedia page.';
+        opsWrap.appendChild(wikiHint);
+      }
+
+      const pathSel = efSelect('ef_edit_nested_path',
+        meta.nestedPatchFields.map(nf => ({ value: nf.path, label: nf.label })), true);
+      opsWrap.appendChild(efRow('Nested path', true, null, pathSel));
+
+      // Element-picker: shown when path needs a concrete selector
+      const elemPickerWrap = document.createElement('div');
+      opsWrap.appendChild(elemPickerWrap);
+
+      // Second element-picker for youtube_performer (needs vid then key)
+      const elemPickerWrap2 = document.createElement('div');
+      opsWrap.appendChild(elemPickerWrap2);
+
+      const nestedValueWrap = document.createElement('div');
+      opsWrap.appendChild(nestedValueWrap);
+
+      function _hostOptsFor(entityId) {
+        // Build list of normalised host tokens for sources[] on the selected entity
+        const nodeData = (graphData.nodes || []).find(n => n.id === entityId)
+          || (graphData.ragas || []).find(r => r.id === entityId)
+          || (graphData.compositions || []).find(c => c.id === entityId)
+          || (graphData.composers || []).find(c => c.id === entityId)
+          || (graphData.recordings || []).find(r => r.id === entityId);
+        if (!nodeData || !nodeData.sources) return [];
+        return nodeData.sources.map(s => {
+          const url = s.url || '';
+          let host = url.replace(/^https?:\/\//, '').split('/')[0].split(':')[0].toLowerCase().replace(/\./g, '_');
+          return { value: host, label: `${host}  (${s.label || ''})` };
+        });
+      }
+
+      function _vidOptsFor(entityId) {
+        const node = (graphData.nodes || []).find(n => n.id === entityId);
+        if (!node || !node.youtube) return [];
+        return node.youtube.map(yt => {
+          const url = yt.url || '';
+          const m = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+          const vid = m ? m[1] : url;
+          return { value: vid, label: `${vid}  ${yt.label || ''}` };
+        });
+      }
+
+      function _performerKeyOptsFor(entityId, vid) {
+        const node = (graphData.nodes || []).find(n => n.id === entityId);
+        if (!node || !node.youtube) return [];
+        const entry = node.youtube.find(yt => {
+          const m = (yt.url || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+          return (m ? m[1] : yt.url) === vid;
+        });
+        if (!entry || !entry.performers) return [];
+        return entry.performers.map(p => {
+          const key = p.musician_id || (p.unmatched_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+          return { value: key, label: key + (p.unmatched_name ? ` (${p.unmatched_name})` : '') };
+        });
+      }
+
+      let cbNestedElem1 = null;
+      let cbNestedElem2 = null;
+
+      function rebuildNestedPickers() {
+        elemPickerWrap.innerHTML  = '';
+        elemPickerWrap2.innerHTML = '';
+        nestedValueWrap.innerHTML = '';
+        cbNestedElem1 = null;
+        cbNestedElem2 = null;
+
+        const nf = meta.nestedPatchFields.find(f => f.path === pathSel.value);
+        if (!nf) return;
+
+        const entityId = cbPicker ? cbPicker.getValue() : '';
+        const kind = nf.pickerKind;
+
+        if (kind === 'sources') {
+          const opts = entityId ? _hostOptsFor(entityId) : [];
+          cbNestedElem1 = efCombobox('ef_edit_nested_host', opts, null, win);
+          elemPickerWrap.appendChild(efRow('Host token', true, 'e.g. en_wikipedia_org', cbNestedElem1));
+        } else if (kind === 'youtube') {
+          const opts = entityId ? _vidOptsFor(entityId) : [];
+          cbNestedElem1 = efCombobox('ef_edit_nested_vid', opts, null, win);
+          elemPickerWrap.appendChild(efRow('Video id', true, '11-char YouTube id', cbNestedElem1));
+        } else if (kind === 'youtube_performer') {
+          const vidOpts = entityId ? _vidOptsFor(entityId) : [];
+          cbNestedElem1 = efCombobox('ef_edit_nested_vid2', vidOpts, null, win);
+          elemPickerWrap.appendChild(efRow('Video id', true, null, cbNestedElem1));
+          // Performer key picker depends on vid selection
+          cbNestedElem2 = efCombobox('ef_edit_nested_perf', [], null, win);
+          elemPickerWrap2.appendChild(efRow('Performer key', true, 'musician_id or unmatched slug', cbNestedElem2));
+          cbNestedElem1.addEventListener('change', () => {
+            const vid = cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value;
+            const opts2 = entityId ? _performerKeyOptsFor(entityId, vid) : [];
+            elemPickerWrap2.innerHTML = '';
+            cbNestedElem2 = efCombobox('ef_edit_nested_perf', opts2, null, win);
+            elemPickerWrap2.appendChild(efRow('Performer key', true, null, cbNestedElem2));
+          });
+        }
+
+        // Value input for the leaf field
+        const leafInputType = (nf.leaf === 'year') ? 'number'
+          : (nf.leaf === 'musician_id' || nf.leaf === 'raga_id' || nf.leaf === 'composition_id') ? 'combobox'
+          : (nf.leaf === 'role' || nf.leaf === 'kind') ? 'select'
+          : 'text';
+
+        let leafInput;
+        if (leafInputType === 'combobox') {
+          const leafOpts = nf.leaf === 'musician_id'
+            ? (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }))
+            : nf.leaf === 'raga_id'
+            ? (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }))
+            : (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+          leafInput = efCombobox('ef_edit_nested_val', leafOpts, null, win);
+        } else if (leafInputType === 'select') {
+          const selectOpts = nf.leaf === 'role'
+            ? ['vocal','veena','violin','flute','mridangam','ghatam','tampura','violin_accompaniment','other']
+            : ['concert','lecdem','documentary','interview','other'];
+          leafInput = efSelect('ef_edit_nested_val', selectOpts.map(o => ({ value: o, label: o })), true);
+        } else if (leafInputType === 'number') {
+          leafInput = efInput('ef_edit_nested_val', 'number', 'e.g. 2008');
+        } else {
+          leafInput = efInput('ef_edit_nested_val', 'text', '');
+        }
+        nestedValueWrap.appendChild(efRow('New value', true, null, leafInput));
+        nestedValueWrap._inp = leafInput;
+      }
+
+      pathSel.addEventListener('change', rebuildNestedPickers);
+      // Rebuild when entity picker changes too
+      if (cbPicker) cbPicker.addEventListener('change', rebuildNestedPickers);
+      rebuildNestedPickers();
+
+      const nestedPatchBtn = document.createElement('button');
+      nestedPatchBtn.type      = 'button';
+      nestedPatchBtn.className = 'ef-add-btn';
+      nestedPatchBtn.style.cssText = 'margin-top:6px;';
+      nestedPatchBtn.textContent = '+ Stage nested patch \u2192 bundle';
+      nestedPatchBtn.addEventListener('click', () => {
+        const nf = meta.nestedPatchFields.find(f => f.path === pathSel.value);
+        if (!nf) return;
+        const entityId = cbPicker ? cbPicker.getValue() : '';
+        if (!entityId) return;
+
+        const inp = nestedValueWrap._inp;
+        if (!inp) return;
+        const raw = (inp.getValue ? inp.getValue() : inp.value);
+        if (raw === null || raw === '' || raw === undefined) return;
+        const value = (nf.leaf === 'year') ? parseInt(raw, 10) : raw;
+
+        // Build the concrete path string by substituting selectors
+        let concretePath = nf.path;
+        if (nf.pickerKind === 'sources') {
+          const host = cbNestedElem1 ? (cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value) : '';
+          if (!host) { elemPickerWrap.querySelector('input, select') && elemPickerWrap.querySelector('input, select').focus(); return; }
+          concretePath = `sources[${host}].${nf.leaf}`;
+        } else if (nf.pickerKind === 'youtube') {
+          const vid = cbNestedElem1 ? (cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value) : '';
+          if (!vid) return;
+          concretePath = `youtube[${vid}].${nf.leaf}`;
+        } else if (nf.pickerKind === 'youtube_performer') {
+          const vid  = cbNestedElem1 ? (cbNestedElem1.getValue ? cbNestedElem1.getValue() : cbNestedElem1.value) : '';
+          const pkey = cbNestedElem2 ? (cbNestedElem2.getValue ? cbNestedElem2.getValue() : cbNestedElem2.value) : '';
+          if (!vid || !pkey) return;
+          concretePath = `youtube[${vid}].performers[${pkey}].${nf.leaf}`;
+        }
+
+        addToBundle(meta.bucket, { op: 'patch', id: entityId, field: concretePath, value });
+        updateStageCount();
+        nestedPatchBtn.textContent = '\u2713 Staged!';
+        setTimeout(() => { nestedPatchBtn.textContent = '+ Stage nested patch \u2192 bundle'; }, 1400);
+      });
+      opsWrap.appendChild(nestedPatchBtn);
+    }
+
     // ── APPEND TO ARRAY ────────────────────────────────────────────────────
     if (meta.appendArrays && meta.appendArrays.length > 0) {
       const sec = document.createElement('div');
@@ -86836,13 +87206,158 @@ function buildEditForm() {
     return chip;
   }
 
+  // ── ADR-102: Colophon renderer ────────────────────────────────────────────
+  // Renders vision → curation_loop → contribute → listening_ethic → author
+  // beneath the per-panel tutorial. Draws from helpEmptyPanels.colophon
+  // (shared across both panels). No-ops when colophon is absent or empty.
+  // Not affected by tutorial-filter interactivity (institutional content).
+
+  const _GITHUB_SVG = '<svg class="pt-github-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
+
+  function _renderExtLinks(links) {
+    if (!Array.isArray(links) || !links.length) return null;
+    const div = _el('div', 'pt-colophon-links');
+    links.forEach(function (lnk) {
+      if (!lnk.url || !lnk.label) return;
+      const a = document.createElement('a');
+      a.className = 'pt-colophon-link';
+      a.href = lnk.url;
+      a.textContent = lnk.label;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      div.appendChild(a);
+    });
+    return div.children.length ? div : null;
+  }
+
+  function _renderColophon(colophon, container) {
+    if (!colophon || typeof colophon !== 'object') return;
+
+    const wrap = _el('div', 'pt-colophon');
+    const hr = document.createElement('hr');
+    hr.className = 'pt-divider';
+    wrap.appendChild(hr);
+
+    const order = ['vision', 'curation_loop', 'contribute', 'listening_ethic', 'author'];
+    order.forEach(function (key) {
+      const sub = colophon[key];
+      if (!sub || typeof sub !== 'object') return;
+
+      const sec = _el('div', 'pt-colophon-section pt-colophon-' + key.replace('_', '-'));
+      if (_nonEmptyString(sub.heading)) {
+        sec.appendChild(_el('h3', 'pt-colophon-head', sub.heading));
+      }
+
+      if (key === 'vision') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        if (sub.epigraph && _nonEmptyString(sub.epigraph.text)) {
+          const bq = _el('blockquote', 'pt-vision-epigraph');
+          bq.appendChild(_el('p', null, '\u201c' + sub.epigraph.text + '\u201d'));
+          if (_nonEmptyString(sub.epigraph.source)) {
+            bq.appendChild(_el('cite', 'pt-epigraph-source', '\u2014 ' + sub.epigraph.source));
+          }
+          sec.appendChild(bq);
+        }
+
+      } else if (key === 'curation_loop') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        if (_nonEmptyString(sub.diagram_text)) {
+          const pre = document.createElement('pre');
+          pre.className = 'pt-loop-diagram';
+          pre.textContent = sub.diagram_text;
+          sec.appendChild(pre);
+        }
+        const loopLinks = _renderExtLinks(sub.ext_links);
+        if (loopLinks) sec.appendChild(loopLinks);
+
+      } else if (key === 'contribute') {
+        if (_nonEmptyString(sub.summary)) {
+          sec.appendChild(_el('p', 'pt-colophon-para', sub.summary));
+        }
+        if (sub.repo && _nonEmptyString(sub.repo.url) && _nonEmptyString(sub.repo.label)) {
+          const repoRow = _el('div', 'pt-contribute-repo');
+          const repoLink = document.createElement('a');
+          repoLink.className = 'pt-repo-link';
+          repoLink.href = sub.repo.url;
+          repoLink.target = '_blank';
+          repoLink.rel = 'noopener noreferrer';
+          if (sub.repo.icon === 'github') {
+            const iconSpan = document.createElement('span');
+            iconSpan.innerHTML = _GITHUB_SVG;
+            repoLink.appendChild(iconSpan);
+          }
+          repoLink.appendChild(document.createTextNode('\u00a0' + sub.repo.label));
+          repoRow.appendChild(repoLink);
+          sec.appendChild(repoRow);
+        }
+        if (Array.isArray(sub.quickstart) && sub.quickstart.length) {
+          const ol = document.createElement('ol');
+          ol.className = 'pt-quickstart';
+          sub.quickstart.forEach(function (step) {
+            if (!_nonEmptyString(step)) return;
+            const li = document.createElement('li');
+            const code = document.createElement('code');
+            code.textContent = step;
+            li.appendChild(code);
+            ol.appendChild(li);
+          });
+          if (ol.children.length) sec.appendChild(ol);
+        }
+        const contribLinks = _renderExtLinks(sub.ext_links);
+        if (contribLinks) sec.appendChild(contribLinks);
+
+      } else if (key === 'listening_ethic') {
+        (sub.paragraphs || []).forEach(function (p) {
+          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
+        });
+        const listenLinks = _renderExtLinks(sub.ext_links);
+        if (listenLinks) sec.appendChild(listenLinks);
+
+      } else if (key === 'author') {
+        if (_nonEmptyString(sub.name)) {
+          const authorRow = _el('div', 'pt-author-row');
+          if (_nonEmptyString(sub.avatar_url)) {
+            const img = document.createElement('img');
+            img.className = 'pt-author-avatar';
+            img.src = sub.avatar_url;
+            img.alt = sub.name;
+            img.loading = 'lazy';
+            img.referrerPolicy = 'no-referrer';
+            img.width = 40;
+            img.height = 40;
+            authorRow.appendChild(img);
+          }
+          const authorText = _el('div', 'pt-author-text');
+          authorText.appendChild(_el('div', 'pt-author-name', sub.name));
+          if (_nonEmptyString(sub.tagline)) {
+            authorText.appendChild(_el('div', 'pt-author-tagline', sub.tagline));
+          }
+          authorRow.appendChild(authorText);
+          sec.appendChild(authorRow);
+        }
+        const authorLinks = _renderExtLinks(sub.ext_links);
+        if (authorLinks) sec.appendChild(authorLinks);
+      }
+
+      wrap.appendChild(sec);
+    });
+
+    if (wrap.children.length > 1) {
+      container.appendChild(wrap);
+    }
+  }
+
   function _renderInto(container, block, slot) {
     container.innerHTML = '';
 
     const schemaVersion = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
       ? (helpEmptyPanels.schema_version || 1)
       : 1;
-    if (schemaVersion > 3) {
+    if (schemaVersion > 4) {
       container.appendChild(_el('p', 'pt-upgrade',
         'Tutorial data schema (' + schemaVersion + ') is newer than this render. Please update.'));
       return;
@@ -87023,6 +87538,11 @@ function buildEditForm() {
       if (seeds.closing_note) cross.appendChild(_el('p', 'pt-closing-note', seeds.closing_note));
       container.appendChild(cross);
     }
+
+    // ── Section D: colophon (ADR-102) ────────────────────────────────────
+    const colophon = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
+      ? (helpEmptyPanels.colophon || null) : null;
+    _renderColophon(colophon, container);
 
   }
 

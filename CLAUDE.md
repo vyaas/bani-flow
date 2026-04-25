@@ -165,6 +165,29 @@ This guide documents how Claude, GitHub Copilot, and the project team collaborat
 - Every ADR that is Proposed or Accepted must be represented in the commit that implements it: cite it by number.
 - The render gate (`.venv/bin/bani-render`) must have been run before a Coder commit is accepted. Git Fiend verifies this.
 - Never push to `main` directly if the change touches schema (plans/ADR-*.md) or rewires the curation loop.
+- **Verify workspace isolation before any git operation.** Local agent sessions share the working directory — concurrent sessions can silently overwrite each other's uncommitted work.
+
+**Workspace isolation check** (runs BEFORE the branch decision protocol):
+
+Git Fiend must determine the session type before touching git:
+
+```bash
+# 1. Detect if running in a Copilot CLI worktree-isolated session
+git branch --show-current          # copilot/* prefix → isolated; anything else → shared
+git worktree list                  # shows all active worktrees
+
+# 2. Detect uncommitted changes from another session
+git status --short                 # unexpected files = another agent may be active
+```
+
+| Detected state | Action |
+|---|---|
+| Branch starts with `copilot/` | ✅ Worktree-isolated — safe to proceed |
+| Any other branch, `git worktree list` shows only one worktree | ⚠️ Local agent mode — proceed with caution; warn user against parallel sessions |
+| Any other branch, multiple worktrees detected | 🛑 **STOP** — another agent session is active in a separate worktree. Confirm with user which session owns the current changes before committing |
+| `git status` shows unexpected changes not made in this session | 🛑 **STOP** — do not `git add` anything until the user confirms the provenance of every changed file |
+
+**Running parallel tasks safely**: Local agent sessions (the default VS Code Chat → Agent mode) have **no branch isolation**. All sessions share the same working directory and branch. For parallel autonomous work, the user must switch to **Copilot CLI sessions with Worktree isolation** (Chat `+` → Copilot CLI → Worktree), which creates a `copilot/`-prefixed branch in an isolated working directory. Remind the user of this if they describe concurrent agent work.
 
 **Branch decision protocol**:
 
@@ -204,6 +227,8 @@ Git Fiend then constructs the commit message following the established protocol:
 ```
 
 **Push gate checklist** (Git Fiend runs this before every `git push`):
+- [ ] **Workspace isolation verified**: run `git branch --show-current` and `git worktree list`. If branch is NOT `copilot/*` and multiple worktrees exist, stop and confirm with user before proceeding.
+- [ ] **No foreign changes**: `git status --short` shows only changes made in this session. If unexpected files appear, stop until the user confirms provenance.
 - [ ] Are we on the correct branch for this change?
 - [ ] Has `bani-render` been run (if any data or code changed)?
 - [ ] Has `python3 carnatic/cli.py validate` passed (if data changed)?
@@ -217,6 +242,7 @@ Only when all checked: `git push`.
 **Handoff trigger**: Git Fiend is always the *last* agent in any workflow. The Orchestrator must explicitly hand off to Git Fiend when specialist work is done. Git Fiend does not begin until it receives the handoff.
 
 **What you do**:
+- **Run the workspace isolation check first**: `git branch --show-current` + `git worktree list` + `git status --short`. Warn if not in a `copilot/*` worktree branch.
 - Receive the handoff from Orchestrator with a summary of what agents did.
 - Run the push gate checklist interactively with the user.
 - If branching is warranted, create the branch *before* the commit: `git checkout -b <branch-name>`.
@@ -229,6 +255,7 @@ Only when all checked: `git push`.
 - Accept a commit with only a summary line and no body.
 - Skip the render gate verification.
 - Commit work that spans multiple agent boundaries in a single commit (each agent owns their own commit).
+- `git add` any file that wasn't explicitly produced in this session.
 - Create or edit data files, code files, or ADRs — that is not your domain.
 
 ---
@@ -288,9 +315,12 @@ Only when all checked: `git push`.
 - **NEVER** accept a commit with an empty body
 - **NEVER** skip the push gate checklist
 - **NEVER** create, edit, or delete data files, code files, or ADRs
+- **NEVER** `git add` files whose provenance is uncertain — if `git status` shows unexpected changes, stop and confirm with the user first
+- **MUST** run the workspace isolation check before any git operation
 - **MUST** run the branch decision protocol before every commit
 - **MUST** cite ADR numbers in commit messages when applicable
 - **MUST** verify the render gate before accepting a Coder commit
+- **MUST** warn the user if operating in local agent mode (not `copilot/*` branch) and multiple worktrees are detected
 
 ### All agents
 - **MUST** append dated learning log entries to `carnatic/.clinerules` after every session (format: `- YYYY-MM-DD: <one-sentence observation>`)
@@ -470,6 +500,7 @@ This step is appended to Workflows A–D. After the specialist agent(s) complete
 1. **Orchestrator** → summarizes what was done, identifies which ADRs are implicated, hands off to Git Fiend.
 
 2. **Git Fiend**:
+   - **Runs workspace isolation check first**: `git branch --show-current` + `git worktree list` + `git status --short`. Stops if unexpected changes are present.
    - Runs branch decision protocol → creates branch if warranted.
    - Runs push gate checklist.
    - Constructs commit message with agent input.
