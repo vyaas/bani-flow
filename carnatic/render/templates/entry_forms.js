@@ -308,6 +308,7 @@ function efCombobox(id, options, type, formWin) {
     if      (type === 'raga')        buildRagaMiniForm(miniFormWrap, prefill, onAdd);
     else if (type === 'composer')    buildComposerMiniForm(miniFormWrap, prefill, onAdd);
     else if (type === 'composition') buildCompositionMiniForm(miniFormWrap, prefill, onAdd);
+    else if (type === 'musician')    buildMusicianMiniForm(miniFormWrap, prefill, onAdd);
   }
 
   function closeMiniForm() {
@@ -390,6 +391,52 @@ function efCombobox(id, options, type, formWin) {
 }
 
 // ── Mini inline-creation forms (used by efCombobox "Add missing" option) ─────
+
+function buildMusicianMiniForm(container, prefill, onAdd) {
+  const labelInp = efInput(null, 'text', 'e.g. Sanjay Subrahmanyam', prefill || null);
+  container.appendChild(efRow('Name', true, null, labelInp));
+
+  const instrumentOpts = ['vocal', 'violin', 'mridangam', 'veena', 'flute', 'nadaswaram', 'ghatam', 'kanjira', 'morsing', 'other']
+    .map(v => ({ value: v, label: v }));
+  const instrumentSel = efSelect(null, instrumentOpts, false);
+  instrumentSel.value = 'vocal';
+  container.appendChild(efRow('Instrument', true, null, instrumentSel));
+
+  const eraOpts = ['contemporary', 'classic', 'early'].map(v => ({ value: v, label: v }));
+  const eraSel = efSelect(null, eraOpts, false);
+  eraSel.value = 'contemporary';
+  container.appendChild(efRow('Era', true, null, eraSel));
+
+  const srcInp = efInput(null, 'text', 'https://en.wikipedia.org/wiki/…');
+  container.appendChild(efRow('Wikipedia URL', true, null, srcInp));
+
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:6px;margin-top:6px;';
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button'; addBtn.className = 'ef-download-btn'; addBtn.style.flex = '1';
+  addBtn.textContent = '+ Add musician to bundle';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button'; cancelBtn.className = 'ef-preview-btn';
+  cancelBtn.textContent = 'Cancel';
+  btnRow.appendChild(addBtn);
+  btnRow.appendChild(cancelBtn);
+  container.appendChild(btnRow);
+
+  addBtn.addEventListener('click', () => {
+    const labelVal = labelInp.value.trim();
+    const srcUrl   = srcInp.value.trim();
+    if (!labelVal || !srcUrl) return;
+    const id = toSnakeCase(labelVal);
+    addToBundle('musicians', {
+      id, label: labelVal,
+      instrument: instrumentSel.value,
+      era: eraSel.value,
+      sources: [{ url: srcUrl, label: 'Wikipedia', type: 'wikipedia' }],
+    });
+    onAdd({ id, label: labelVal });
+  });
+  cancelBtn.addEventListener('click', () => onAdd(null));
+}
 
 function buildRagaMiniForm(container, prefill, onAdd) {
   const nameInp = efInput(null, 'text', 'e.g. Suddha Saveri', prefill || null);
@@ -1175,7 +1222,7 @@ function addYoutubePerformerBlock(container, formWin) {
   row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
 
   const musOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
-  const musSel = efCombobox(null, musOpts, null, formWin);
+  const musSel = efCombobox(null, musOpts, 'musician', formWin);
   musSel.style.flex = '2';
   row.appendChild(musSel);
 
@@ -1248,7 +1295,7 @@ function addEdgeBlock(container, direction, formWin) {
     : 'Shishya (this musician is guru of)';
 
   const nodeOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
-  const nodeSel = efCombobox(null, nodeOpts, null, formWin);
+  const nodeSel = efCombobox(null, nodeOpts, 'musician', formWin);
   block.appendChild(efRow(dirLabel, true, null, nodeSel));
 
   const confInp = efInput(null, 'number', '0.90', '0.90');
@@ -2118,7 +2165,7 @@ function addPerformerBlock(container, formWin) {
   block.appendChild(removeBtn);
 
   const nodeOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
-  const nodeSel = efCombobox(null, nodeOpts, null, formWin);
+  const nodeSel = efCombobox(null, nodeOpts, 'musician', formWin);
   block.appendChild(efRow('Musician', false, 'leave blank if unmatched', nodeSel));
 
   const unmatchedInp = efInput(null, 'text', 'Raw name from source (if no musician ID)');

@@ -8,6 +8,7 @@ Usage:
 
 Bundle schema reference: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
 Delta ops (schema_version 2): ADR-097 (plans/ADR-097-bundle-deltas-and-unified-edit-forms.md).
+Dependency resolution: ADR-099 (plans/ADR-099-bundle-dependency-resolution.md).
 
 Bundle envelope (schema_version 1 — still accepted):
 
@@ -35,7 +36,10 @@ schema_version 2 adds an optional "op" field to every item (ADR-097 §2):
 Whitelisted item types: ragas, composers, musicians, compositions, recordings, edges.
 Unknown item types are rejected with a named error — silent drops are forbidden.
 
-Processing order: ragas → composers → musicians → compositions → recordings → edges.
+Processing order (ADR-099): two-pass ingest.
+  Pass 1 (creates): all op=="create" items, topologically sorted by intra-bundle
+    dependency so that referenced entities are created before their dependents.
+  Pass 2 (mutations): all patch/append/annotate items in authored order.
 
 Version contract (§3 of ADR-083):
   - bundles with schema_version > MAX_VERSION are refused immediately.
@@ -50,11 +54,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import tempfile
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import NamedTuple
 
 # Path bootstrap for direct invocation
 if __name__ == "__main__":
@@ -97,12 +103,208 @@ def _atomic_write_recording(recordings_dir: Path, rec: dict) -> None:
 
 
 def _print_result(result: WriteResult) -> None:
-    print(f"  {result.message}")
+    """Print a WriteResult, augmenting unknown-reference errors with bundle context."""
+    msg = result.message
+    if _BUNDLE_CREATE_IDS and not result.ok and not result.skipped:
+        msg = _maybe_augment_error(msg, _BUNDLE_CREATE_IDS)
+    print(f"  {msg}")
 
 
 def _summary_line(added: int, skipped: int, errors: int) -> str:
     parts = [f"Added {added}", f"Skipped {skipped}", f"Errors {errors}"]
     return "  " + " · ".join(parts)
+
+
+# ── dependency resolution (ADR-099) ───────────────────────────────────────────
+
+# Canonical bucket processing order (ADR-083). Used as stable tiebreaker in the
+# topological sort and as the partition key for the create-pass summary.
+BUCKET_ORDER = ["ragas", "composers", "compositions", "musicians", "recordings", "edges"]
+
+# Module-level context set by _run_bundle() before Pass 2 so that _print_result
+# can augment "unknown reference" error messages without changing every processor
+# signature. Reset to frozenset() after _run_bundle() returns.
+_BUNDLE_CREATE_IDS: frozenset[str] = frozenset()
+
+
+class _CreateItem(NamedTuple):
+    bucket: str
+    item: dict
+    item_id: str       # canonical id referenced by other items in the bundle
+    bucket_idx: int    # index in BUCKET_ORDER — stable sort tiebreaker (tier 1)
+    authored_idx: int  # position within the bucket list — stable sort tiebreaker (tier 2)
+
+
+def _maybe_augment_error(message: str, bundle_create_ids: frozenset[str]) -> str:
+    """Append '(also missing in this bundle)' when the unresolved id was a bundle create."""
+    m = re.search(r"unknown \w+ '([^']+)'", message)
+    if m and m.group(1) in bundle_create_ids:
+        return message + " (also missing in this bundle)"
+    return message
+
+
+def _collect_create_items(items: dict) -> list[_CreateItem]:
+    """Return every create item across all buckets, preserving authored order."""
+    result: list[_CreateItem] = []
+    for b_idx, bucket in enumerate(BUCKET_ORDER):
+        for a_idx, item in enumerate(items.get(bucket, [])):
+            op = item.get("op", "create")
+            # v1 compat: musicians with type="youtube_append" are mutations, not creates
+            if bucket == "musicians" and item.get("type") == "youtube_append":
+                continue
+            # patch / append / annotate are mutations — they belong to Pass 2
+            if op not in ("create", None):
+                continue
+            # Synthesise a stable id key for edges (no single "id" field)
+            if bucket == "edges":
+                item_id = f"edges:{item.get('source', '')}:{item.get('target', '')}"
+            else:
+                item_id = item.get("id", "")
+            result.append(_CreateItem(
+                bucket=bucket, item=item, item_id=item_id,
+                bucket_idx=b_idx, authored_idx=a_idx,
+            ))
+    return result
+
+
+def _extract_refs(bucket: str, item: dict) -> set[str]:
+    """Return the set of ids that this create item references (ADR-099 §2 table).
+
+    Only ids that might also be *create* items in the same bundle matter for the
+    topological sort; references to ids that only exist on disk are validated
+    by the writer (unchanged), not by the sort.
+    """
+    refs: set[str] = set()
+
+    if bucket == "ragas":
+        if pr := item.get("parent_raga"):
+            refs.add(pr)
+
+    elif bucket == "composers":
+        pass  # composers reference nothing in the §2 table
+
+    elif bucket == "compositions":
+        if ci := item.get("composer_id"):
+            refs.add(ci)
+        if ri := item.get("raga_id"):
+            refs.add(ri)
+
+    elif bucket == "musicians":
+        for yt in item.get("youtube", []) or []:
+            if ci := yt.get("composition_id"):
+                refs.add(ci)
+            if ri := yt.get("raga_id"):
+                refs.add(ri)
+            for perf in yt.get("performers", []) or []:
+                if mi := perf.get("musician_id"):
+                    refs.add(mi)
+            subj = yt.get("subjects") or {}
+            for id_list in (
+                subj.get("raga_ids") or [],
+                subj.get("composition_ids") or [],
+                subj.get("musician_ids") or [],
+            ):
+                for sid in id_list:
+                    refs.add(sid)
+
+    elif bucket == "recordings":
+        for session in item.get("sessions", []) or []:
+            for perf in session.get("performers", []) or []:
+                if mi := perf.get("musician_id"):
+                    refs.add(mi)
+            for performance in session.get("performances", []) or []:
+                for field in ("composition_id", "raga_id", "composer_id"):
+                    if val := performance.get(field):
+                        refs.add(val)
+
+    elif bucket == "edges":
+        if src := item.get("source"):
+            refs.add(src)
+        if tgt := item.get("target"):
+            refs.add(tgt)
+
+    return refs
+
+
+def _topo_sort_creates(
+    creates: list[_CreateItem],
+) -> tuple[list[_CreateItem], list[_CreateItem]]:
+    """Topological sort of create items by intra-bundle dependency (ADR-099 §2).
+
+    Uses Kahn's algorithm. Stable tiebreaker: bucket order (BUCKET_ORDER index),
+    then authored order within the bucket. This makes the sort deterministic
+    across runs and across contributors authoring the same set of items.
+
+    Returns (sorted_items, cycle_items). cycle_items are nodes that could not be
+    processed due to a dependency cycle; the caller is responsible for logging a
+    WARN and attempting them anyway (ADR-099 §2 cycle-handling).
+    """
+    by_id: dict[str, _CreateItem] = {ci.item_id: ci for ci in creates}
+
+    # deps[id] = set of ids that 'id' depends on (must be created before 'id')
+    # rdeps[id] = set of ids that depend on 'id'
+    deps: dict[str, set[str]] = {ci.item_id: set() for ci in creates}
+    rdeps: dict[str, set[str]] = {ci.item_id: set() for ci in creates}
+
+    for ci in creates:
+        for ref in _extract_refs(ci.bucket, ci.item):
+            if ref in by_id and ref != ci.item_id:
+                deps[ci.item_id].add(ref)
+                rdeps[ref].add(ci.item_id)
+
+    indegree: dict[str, int] = {iid: len(d) for iid, d in deps.items()}
+
+    def _sort_key(iid: str) -> tuple[int, int]:
+        ci = by_id[iid]
+        return (ci.bucket_idx, ci.authored_idx)
+
+    # Seed with zero-indegree nodes in stable order
+    queue: list[str] = sorted(
+        (iid for iid, deg in indegree.items() if deg == 0),
+        key=_sort_key,
+    )
+
+    sorted_items: list[_CreateItem] = []
+    while queue:
+        iid = queue.pop(0)
+        sorted_items.append(by_id[iid])
+        ready: list[str] = []
+        for dep_iid in rdeps.get(iid, set()):
+            indegree[dep_iid] -= 1
+            if indegree[dep_iid] == 0:
+                ready.append(dep_iid)
+        ready.sort(key=_sort_key)
+        queue.extend(ready)
+
+    processed = {ci.item_id for ci in sorted_items}
+    cycle_items = [ci for ci in creates if ci.item_id not in processed]
+    return sorted_items, cycle_items
+
+
+def _process_one_create(
+    ci: _CreateItem,
+    writer: CarnaticWriter,
+    musicians_path: Path,
+    comp_path: Path,
+    ragas_path: Path,
+    recordings_path: Path,
+) -> tuple[int, int, int]:
+    """Dispatch a single create item to the appropriate bucket processor."""
+    bucket = ci.bucket
+    item = ci.item
+    if bucket == "ragas":
+        return _process_ragas([item], writer, comp_path, ragas_path)
+    elif bucket == "composers":
+        return _process_composers([item], writer, comp_path, musicians_path)
+    elif bucket == "musicians":
+        return _process_musicians([item], writer, musicians_path, comp_path, ragas_path)
+    elif bucket == "compositions":
+        return _process_compositions([item], writer, comp_path, ragas_path)
+    elif bucket == "recordings":
+        return _process_recordings([item], recordings_path, writer)
+    elif bucket == "edges":
+        return _process_edges([item], writer, musicians_path)
+    return 0, 0, 1
 
 
 # ── item processors ───────────────────────────────────────────────────────────
@@ -626,6 +828,115 @@ def _process_edges(
 
 # ── main ───────────────────────────────────────────────────────────────────────
 
+def _run_bundle(
+    bundle: dict,
+    writer: CarnaticWriter,
+    musicians_path: Path,
+    comp_path: Path,
+    ragas_path: Path,
+    recordings_path: Path,
+) -> int:
+    """Two-pass bundle ingestion (ADR-099).
+
+    Pass 1 — Creates: every op=='create' item across all buckets, sorted
+      topologically so that referenced entities exist before their dependents.
+    Pass 2 — Mutations: every patch/append/annotate item in authored order,
+      grouped by bucket for log clarity.
+
+    Returns total error count.
+    """
+    global _BUNDLE_CREATE_IDS
+
+    items = bundle.get("items", {})
+
+    # ── Pass 1: collect and sort creates ──────────────────────────────────────
+    all_creates = _collect_create_items(items)
+    sorted_creates, cycle_creates = _topo_sort_creates(all_creates)
+
+    if cycle_creates:
+        cycle_ids = [ci.item_id for ci in cycle_creates]
+        print(f"\nWARN: dependency cycle in create pass: {cycle_ids}")
+        print("  Attempting cycle items in bucket order; unresolvable references will error.")
+        cycle_creates.sort(key=lambda ci: (ci.bucket_idx, ci.authored_idx))
+        sorted_creates.extend(cycle_creates)
+
+    # Expose all bundle create ids so _print_result can augment error messages
+    # in Pass 2 when a mutation references a create that never landed on disk.
+    _BUNDLE_CREATE_IDS = frozenset(ci.item_id for ci in all_creates)
+
+    pass1_counts: dict[str, list[int]] = {b: [0, 0, 0] for b in BUCKET_ORDER}
+
+    if sorted_creates:
+        print("\n[CREATE PASS]")
+        for ci in sorted_creates:
+            a, s, e = _process_one_create(
+                ci, writer, musicians_path, comp_path, ragas_path, recordings_path,
+            )
+            pass1_counts[ci.bucket][0] += a
+            pass1_counts[ci.bucket][1] += s
+            pass1_counts[ci.bucket][2] += e
+        print()
+        for bucket in BUCKET_ORDER:
+            a, s, e = pass1_counts[bucket]
+            if a or s or e:
+                print(f"  {bucket:<14}  +{a}  (skipped {s}, errors {e})" if (s or e) else f"  {bucket:<14}  +{a}")
+
+    # ── Pass 2: collect mutations (authored order, grouped by bucket) ─────────
+    mutations: dict[str, list[dict]] = {b: [] for b in BUCKET_ORDER}
+    for bucket in BUCKET_ORDER:
+        for item in items.get(bucket, []):
+            op = item.get("op", "create")
+            # v1 compat: youtube_append is a mutation
+            if bucket == "musicians" and item.get("type") == "youtube_append":
+                mutations[bucket].append(item)
+                continue
+            if op in ("patch", "append", "annotate"):
+                mutations[bucket].append(item)
+
+    pass2_has_items = any(mutations[b] for b in BUCKET_ORDER)
+    pass2_counts: dict[str, list[int]] = {b: [0, 0, 0] for b in BUCKET_ORDER}
+
+    if pass2_has_items:
+        print("\n[MUTATION PASS]")
+        for bucket in BUCKET_ORDER:
+            if not mutations[bucket]:
+                continue
+            print(f"\n{bucket.capitalize()} ({len(mutations[bucket])}):")
+            if bucket == "ragas":
+                a, s, e = _process_ragas(mutations[bucket], writer, comp_path, ragas_path)
+            elif bucket == "composers":
+                a, s, e = _process_composers(mutations[bucket], writer, comp_path, musicians_path)
+            elif bucket == "musicians":
+                a, s, e = _process_musicians(mutations[bucket], writer, musicians_path, comp_path, ragas_path)
+            elif bucket == "compositions":
+                a, s, e = _process_compositions(mutations[bucket], writer, comp_path, ragas_path)
+            elif bucket == "recordings":
+                a, s, e = _process_recordings(mutations[bucket], recordings_path, writer)
+            elif bucket == "edges":
+                a, s, e = _process_edges(mutations[bucket], writer, musicians_path)
+            else:
+                a = s = e = 0
+            pass2_counts[bucket] = [a, s, e]
+
+    # ── tally ──────────────────────────────────────────────────────────────────
+    total_added = total_skipped = total_errors = 0
+    for bucket in BUCKET_ORDER:
+        for counts in (pass1_counts[bucket], pass2_counts.get(bucket, [0, 0, 0])):
+            total_added   += counts[0]
+            total_skipped += counts[1]
+            total_errors  += counts[2]
+
+    # Reset module-level context
+    _BUNDLE_CREATE_IDS = frozenset()
+
+    print()
+    print(_summary_line(total_added, total_skipped, total_errors))
+    print()
+    print("  Run `bani-render` to update the visualization.")
+
+    return total_errors
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="bani-add",
@@ -671,62 +982,15 @@ def main() -> None:
         )
         sys.exit(1)
 
-    ragas        = items.get("ragas",        [])
-    composers    = items.get("composers",    [])
-    musicians    = items.get("musicians",    [])
-    compositions = items.get("compositions", [])
-    recordings   = items.get("recordings",   [])
-    edges        = items.get("edges",        [])
-
     writer          = CarnaticWriter()
     musicians_path  = _default_musicians_path()
     comp_path       = _default_compositions_path()
     ragas_path      = _default_ragas_path()
     recordings_path = _default_recordings_path()
 
-    total_added = total_skipped = total_errors = 0
-
-    # ── ragas ──────────────────────────────────────────────────────────────────
-    if ragas:
-        print(f"\nRagas ({len(ragas)}):")
-        a, s, e = _process_ragas(ragas, writer, comp_path, ragas_path)
-        total_added += a; total_skipped += s; total_errors += e
-
-    # ── composers ─────────────────────────────────────────────────────────────
-    if composers:
-        print(f"\nComposers ({len(composers)}):")
-        a, s, e = _process_composers(composers, writer, comp_path, musicians_path)
-        total_added += a; total_skipped += s; total_errors += e
-
-    # ── musicians ─────────────────────────────────────────────────────────────
-    if musicians:
-        print(f"\nMusicians ({len(musicians)}):")
-        a, s, e = _process_musicians(musicians, writer, musicians_path, comp_path, ragas_path)
-        total_added += a; total_skipped += s; total_errors += e
-
-    # ── compositions ──────────────────────────────────────────────────────────
-    if compositions:
-        print(f"\nCompositions ({len(compositions)}):")
-        a, s, e = _process_compositions(compositions, writer, comp_path, ragas_path)
-        total_added += a; total_skipped += s; total_errors += e
-
-    # ── recordings ────────────────────────────────────────────────────────────
-    if recordings:
-        print(f"\nRecordings ({len(recordings)}):")
-        a, s, e = _process_recordings(recordings, recordings_path, writer)
-        total_added += a; total_skipped += s; total_errors += e
-
-    # ── edges ─────────────────────────────────────────────────────────────────
-    if edges:
-        print(f"\nEdges ({len(edges)}):")
-        a, s, e = _process_edges(edges, writer, musicians_path)
-        total_added += a; total_skipped += s; total_errors += e
-
-    # ── summary ───────────────────────────────────────────────────────────────
-    print()
-    print(_summary_line(total_added, total_skipped, total_errors))
-    print()
-    print("  Run `bani-render` to update the visualization.")
+    total_errors = _run_bundle(
+        bundle, writer, musicians_path, comp_path, ragas_path, recordings_path,
+    )
 
     if total_errors > 0:
         sys.exit(1)
