@@ -1,3 +1,7 @@
+This project uses a multi-agent protocol defined in CLAUDE.md at the repo root.
+When the user invokes #Librarian, #Architect, #Coder, #Orchestrator, or #GitFiend,
+adopt that agent's persona, constraints, and commit protocol exactly as defined there.
+
 # Bani Flow — Copilot Workspace Instructions
 
 Carnatic guru-shishya knowledge graph. Single-page app rendered from structured JSON into a self-contained `graph.html`. Four specialist agents with strict domain boundaries.
