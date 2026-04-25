@@ -109,6 +109,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   document.getElementById('bani-janyas-panel').style.display = 'none';
   document.getElementById('bani-janyas-list').innerHTML = '';
   document.getElementById('bani-janyas-filter').value = '';
+  // Reset notes row (ADR-097 §7)
+  const _notesRow = document.getElementById('bani-notes-row');
+  if (_notesRow) { _notesRow.innerHTML = ''; _notesRow.style.display = 'none'; }
 
   // Reset subject name chip styling from previous call
   subjectName.className = '';
@@ -127,6 +130,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     if (compSrc) {
       subjectLink.href = compSrc.url;
       subjectLink.style.display = 'inline';
+    }
+    // Notes section (ADR-097 §7)
+    if (_notesRow && comp && Array.isArray(comp.notes) && comp.notes.length > 0) {
+      const notesEl = buildNotesSection(comp.notes);
+      if (notesEl) { _notesRow.appendChild(notesEl); _notesRow.style.display = ''; }
     }
 
     // Row 2: raga (linked) · tala · composer (linked to graph node if available)
@@ -374,6 +382,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     if (raga && raga.aliases && raga.aliases.length > 0) {
       aliasesRow.textContent = 'also: ' + raga.aliases.join(', ');
       aliasesRow.style.display = 'block';
+    }
+    // Notes section (ADR-097 §7) — array-shaped notes only; string notes stay as tooltip
+    if (_notesRow && raga && Array.isArray(raga.notes) && raga.notes.length > 0) {
+      const notesEl = buildNotesSection(raga.notes);
+      if (notesEl) { _notesRow.appendChild(notesEl); _notesRow.style.display = ''; }
     }
 
     // Row 4 (#bani-janyas-row): janyas filter + list (mela ragas only)
