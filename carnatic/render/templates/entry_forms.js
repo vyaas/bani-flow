@@ -37,7 +37,7 @@ function _updateBundleBtn() {
 
 function downloadBundle() {
   const bundle = {
-    schema_version: 1,
+    schema_version: 2,
     generated_at:   new Date().toISOString(),
     items:          baniBundle,
   };
@@ -665,6 +665,87 @@ function efSourceFields(prefix, defaults) {
   return frag;
 }
 
+// ── PATCH_METADATA — mirrors writer.py PATCHABLE_*_FIELDS (ADR-097 §6) ────────
+// Drives buildEditForm(): field lists, value-input types, append selectors.
+// MVP entities: musician, raga, edge, composition, composer.
+const PATCH_METADATA = {
+  musician: {
+    bucket:          'musicians',
+    label:           'Musician',
+    pickLabel:       'Pick Musician',
+    pickOpts:        () => (graphData.nodes || []).map(n => ({ value: n.id, label: n.label })),
+    patchFields:     ['label', 'born', 'died', 'era', 'instrument', 'bani'],
+    appendArrays:    ['youtube', 'sources'],
+    supportsAnnotate: true,
+    fieldMeta: {
+      label:      { inputType: 'text',   placeholder: 'Display name' },
+      born:       { inputType: 'number', placeholder: 'e.g. 1908',          min: 1600, max: 2030 },
+      died:       { inputType: 'number', placeholder: 'leave blank if living', min: 1600, max: 2030 },
+      era:        { inputType: 'select', opts: ['trinity','bridge','golden_age','disseminator','living_pillars','contemporary'] },
+      instrument: { inputType: 'select', opts: ['vocal','veena','violin','flute','mridangam','bharatanatyam','ghatam','other'] },
+      bani:       { inputType: 'text',   placeholder: 'e.g. Ariyakudi, Semmangudi' },
+    },
+  },
+  raga: {
+    bucket:          'ragas',
+    label:           'Raga',
+    pickLabel:       'Pick Raga',
+    pickOpts:        () => (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id })),
+    patchFields:     ['name', 'parent_raga', 'melakarta', 'is_melakarta', 'cakra', 'notes'],
+    appendArrays:    ['aliases'],
+    supportsAnnotate: true,
+    fieldMeta: {
+      name:         { inputType: 'text',     placeholder: 'Raga name' },
+      parent_raga:  { inputType: 'combobox', optsGetter: () => (graphData.ragas || []).filter(r => r.is_melakarta).map(r => ({ value: r.id, label: r.name || r.id })) },
+      melakarta:    { inputType: 'number',   placeholder: '1–72',  min: 1, max: 72 },
+      is_melakarta: { inputType: 'select',   opts: [{ value: 'true', label: 'Yes — Melakarta' }, { value: 'false', label: 'No — Janya' }] },
+      cakra:        { inputType: 'number',   placeholder: '1–12',  min: 1, max: 12 },
+      notes:        { inputType: 'text',     placeholder: 'musicological note' },
+    },
+  },
+  edge: {
+    bucket:          'edges',
+    label:           'Edge (Guru→Shishya)',
+    pickLabel:       null,   // edges use source+target pair; no single-entity pick
+    patchFields:     ['confidence', 'source_url', 'note'],
+    appendArrays:    [],
+    supportsAnnotate: false,
+    fieldMeta: {
+      confidence:  { inputType: 'number', placeholder: '0.0–1.0', min: 0, max: 1, step: 0.01 },
+      source_url:  { inputType: 'text',   placeholder: 'https://…' },
+      note:        { inputType: 'text',   placeholder: 'e.g. principal guru' },
+    },
+  },
+  composition: {
+    bucket:          'compositions',
+    label:           'Composition',
+    pickLabel:       'Pick Composition',
+    pickOpts:        () => (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id })),
+    patchFields:     ['title', 'tala', 'language'],
+    appendArrays:    [],
+    supportsAnnotate: true,
+    fieldMeta: {
+      title:    { inputType: 'text',   placeholder: 'Composition title' },
+      tala:     { inputType: 'select', opts: ['adi','rupakam','misra_capu','khanda_capu','tisra_triputa','ata','dhruva','other'] },
+      language: { inputType: 'select', opts: ['Telugu','Sanskrit','Tamil','Kannada','Malayalam','Other'] },
+    },
+  },
+  composer: {
+    bucket:          'composers',
+    label:           'Composer',
+    pickLabel:       'Pick Composer',
+    pickOpts:        () => (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id })),
+    patchFields:     ['name', 'born', 'died'],
+    appendArrays:    [],
+    supportsAnnotate: true,
+    fieldMeta: {
+      name: { inputType: 'text',   placeholder: 'Composer name' },
+      born: { inputType: 'number', placeholder: 'e.g. 1890', min: 1600, max: 2030 },
+      died: { inputType: 'number', placeholder: 'e.g. 1950', min: 1600, max: 2030 },
+    },
+  },
+};
+
 // ── Entry window factory ──────────────────────────────────────────────────────
 
 function createEntryWindow(title) {
@@ -725,6 +806,7 @@ function openEntryForm(type) {
     case 'composition':         buildCompositionForm();        break;
     case 'recording':           buildRecordingForm();          break;
     case 'composer':            buildComposerForm();           break;
+    case 'edit':                buildEditForm();               break;
     // legacy alias — kept for backwards compat
     case 'youtube':             buildMusicianRecordingsForm(); break;
   }
@@ -2800,5 +2882,328 @@ function buildAddYoutubeForm() {
     showGenericSuccess(win, obj.id + '.json', 'carnatic/data/musicians/');
   });
 
+  return win;
+}
+
+// ── buildEditForm — ADR-097 §6: Unified Edit form (dispatch surface) ───────
+// Lets contributors patch a single field, append to an array, or annotate
+// any first-class entity without leaving the in-browser loop.
+// MVP entities: musician, raga, edge, composition, composer.
+// Each "Stage" button pushes a delta item (op: 'patch'|'append'|'annotate')
+// into the shared baniBundle; download emits schema_version 2.
+
+function buildEditForm() {
+  const win  = createEntryWindow('Edit Entity');
+  const body = win.querySelector('.ew-body');
+  const foot = win.querySelector('.ew-footer');
+
+  // ── Entity type selector ─────────────────────────────────────────────────
+  body.appendChild(efSection('Entity Type'));
+
+  const typeKeys = Object.keys(PATCH_METADATA);
+  const typeSel  = efSelect('ef_edit_type', typeKeys.map(k => ({
+    value: k,
+    label: PATCH_METADATA[k].label,
+  })), false);
+  typeSel.value = 'musician';
+  body.appendChild(efRow('Type', true, null, typeSel));
+
+  // ── Entity picker — dynamic per type ────────────────────────────────────
+  const pickerWrap     = document.createElement('div');
+  pickerWrap.id        = 'ef_edit_picker_wrap';
+  body.appendChild(pickerWrap);
+
+  const edgePickerWrap = document.createElement('div');
+  edgePickerWrap.id    = 'ef_edit_edge_picker';
+  body.appendChild(edgePickerWrap);
+
+  // ── Operations area — rebuilt when type changes ──────────────────────────
+  const opsWrap = document.createElement('div');
+  opsWrap.id    = 'ef_edit_ops';
+  body.appendChild(opsWrap);
+
+  const stageCount = document.createElement('div');
+  stageCount.id = 'ef_edit_stage_count';
+  stageCount.style.cssText = 'font-size:0.68rem;color:var(--accent);margin-top:8px;min-height:1em;';
+  body.appendChild(stageCount);
+
+  function updateStageCount() {
+    const total = Object.values(baniBundle).reduce(
+      (s, arr) => s + arr.filter(i => i.op && i.op !== 'create').length, 0
+    );
+    stageCount.textContent = total > 0
+      ? `${total} delta item${total === 1 ? '' : 's'} staged in bundle`
+      : '';
+  }
+
+  // Current picker comboboxes — set by rebuildPicker()
+  let cbPicker     = null;   // used for all non-edge types
+  let cbEdgeSrc    = null;   // edge source
+  let cbEdgeTgt    = null;   // edge target
+
+  function rebuildPicker() {
+    const typeKey = typeSel.value;
+    const meta    = PATCH_METADATA[typeKey];
+    pickerWrap.innerHTML    = '';
+    edgePickerWrap.innerHTML = '';
+
+    if (typeKey === 'edge') {
+      pickerWrap.style.display    = 'none';
+      edgePickerWrap.style.display = '';
+      const nodeOpts  = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+      cbEdgeSrc = efCombobox('ef_edit_edge_source', nodeOpts, null, win);
+      cbEdgeTgt = efCombobox('ef_edit_edge_target', nodeOpts, null, win);
+      edgePickerWrap.appendChild(efRow('Source (Guru)',    true, null, cbEdgeSrc));
+      edgePickerWrap.appendChild(efRow('Target (Shishya)', true, null, cbEdgeTgt));
+      cbPicker = null;
+    } else {
+      pickerWrap.style.display    = '';
+      edgePickerWrap.style.display = 'none';
+      const pickOpts = meta.pickOpts ? meta.pickOpts() : [];
+      cbPicker = efCombobox('ef_edit_pick', pickOpts, null, win);
+      pickerWrap.appendChild(efRow(meta.pickLabel || 'Pick entity', true, null, cbPicker));
+      cbEdgeSrc = null;
+      cbEdgeTgt = null;
+    }
+  }
+
+  // Helper: build value input appropriate for a field's type metadata
+  function buildValueInput(fieldKey, meta) {
+    const fm = (meta.fieldMeta && meta.fieldMeta[fieldKey]) || { inputType: 'text' };
+    if (fm.inputType === 'select') {
+      const opts = (fm.opts || []).map(o => (typeof o === 'string') ? { value: o, label: o } : o);
+      return efSelect('ef_edit_value', opts, true);
+    }
+    if (fm.inputType === 'combobox') {
+      const opts = fm.optsGetter ? fm.optsGetter() : [];
+      return efCombobox('ef_edit_value', opts, null, win);
+    }
+    const inp = efInput('ef_edit_value', fm.inputType || 'text', fm.placeholder || '', null);
+    if (fm.min  !== undefined) inp.min  = fm.min;
+    if (fm.max  !== undefined) inp.max  = fm.max;
+    if (fm.step !== undefined) inp.step = fm.step;
+    return inp;
+  }
+
+  function buildOpsArea() {
+    opsWrap.innerHTML = '';
+    const typeKey = typeSel.value;
+    const meta    = PATCH_METADATA[typeKey];
+
+    // ── PATCH FIELD ────────────────────────────────────────────────────────
+    {
+      const sec = document.createElement('div');
+      sec.className = 'ef-section';
+      sec.style.marginTop = '12px';
+      sec.textContent = 'Patch Field';
+      opsWrap.appendChild(sec);
+
+      const fieldSel = efSelect('ef_edit_patch_field',
+        meta.patchFields.map(f => ({ value: f, label: f })), true);
+      opsWrap.appendChild(efRow('Field', true, null, fieldSel));
+
+      const valueWrap  = document.createElement('div');
+      opsWrap.appendChild(valueWrap);
+
+      function rebuildValueWrap() {
+        valueWrap.innerHTML  = '';
+        valueWrap._inp = null;
+        const field = fieldSel.value;
+        if (!field) return;
+        const inp = buildValueInput(field, meta);
+        valueWrap.appendChild(efRow('New Value', true, null, inp));
+        valueWrap._inp = inp;
+      }
+      fieldSel.addEventListener('change', rebuildValueWrap);
+      rebuildValueWrap();
+
+      const patchBtn = document.createElement('button');
+      patchBtn.type      = 'button';
+      patchBtn.className = 'ef-add-btn';
+      patchBtn.style.cssText = 'margin-top:6px;';
+      patchBtn.textContent   = '+ Stage patch \u2192 bundle';
+      patchBtn.addEventListener('click', () => {
+        const field = fieldSel.value;
+        if (!field) { fieldSel.focus(); return; }
+        const inp = valueWrap._inp;
+        if (!inp) return;
+        const raw = (inp.getValue ? inp.getValue() : inp.value);
+        if (raw === null || raw === '' || raw === undefined) return;
+
+        const fm = (meta.fieldMeta && meta.fieldMeta[field]) || {};
+        let value = raw;
+        if (fm.inputType === 'number') {
+          value = parseFloat(raw);
+          if (isNaN(value)) return;
+        }
+
+        let item;
+        if (typeKey === 'edge') {
+          const src = cbEdgeSrc ? cbEdgeSrc.getValue() : '';
+          const tgt = cbEdgeTgt ? cbEdgeTgt.getValue() : '';
+          if (!src || !tgt) return;
+          item = { op: 'patch', source: src, target: tgt, field, value };
+        } else {
+          const entityId = cbPicker ? cbPicker.getValue() : '';
+          if (!entityId) return;
+          item = { op: 'patch', id: entityId, field, value };
+        }
+        addToBundle(meta.bucket, item);
+        updateStageCount();
+        patchBtn.textContent = '\u2713 Staged!';
+        setTimeout(() => { patchBtn.textContent = '+ Stage patch \u2192 bundle'; }, 1400);
+      });
+      opsWrap.appendChild(patchBtn);
+    }
+
+    // ── APPEND TO ARRAY ────────────────────────────────────────────────────
+    if (meta.appendArrays && meta.appendArrays.length > 0) {
+      const sec = document.createElement('div');
+      sec.className = 'ef-section';
+      sec.style.marginTop = '12px';
+      sec.textContent = 'Append to Array';
+      opsWrap.appendChild(sec);
+
+      const arraySel = efSelect('ef_edit_array',
+        meta.appendArrays.map(a => ({ value: a, label: a })), true);
+      opsWrap.appendChild(efRow('Array', true, null, arraySel));
+
+      const elemWrap = document.createElement('div');
+      opsWrap.appendChild(elemWrap);
+
+      function rebuildElemWrap() {
+        elemWrap.innerHTML = '';
+        elemWrap._isYoutube = false;
+        const arr = arraySel.value;
+        if (!arr) return;
+
+        if (arr === 'youtube') {
+          // Reuse existing youtube block UI — host-id injection handles performers
+          const hint = document.createElement('div');
+          hint.style.cssText = 'font-size:0.67rem;color:var(--fg-muted);margin:4px 0;';
+          hint.textContent = 'Fill in the entry below, then click Stage.';
+          elemWrap.appendChild(hint);
+          addYoutubeBlock(elemWrap, win);
+          elemWrap._isYoutube = true;
+        } else if (arr === 'sources') {
+          const u = efInput('ef_edit_ap_srcurl', 'text', 'https://en.wikipedia.org/wiki/\u2026');
+          elemWrap.appendChild(efRow('Source URL', true, null, u));
+        } else if (arr === 'aliases') {
+          const a = efInput('ef_edit_ap_alias', 'text', 'one alias at a time');
+          elemWrap.appendChild(efRow('Alias', true, 'one per click', a));
+        }
+      }
+      arraySel.addEventListener('change', rebuildElemWrap);
+      rebuildElemWrap();
+
+      const appendBtn = document.createElement('button');
+      appendBtn.type      = 'button';
+      appendBtn.className = 'ef-add-btn';
+      appendBtn.style.cssText = 'margin-top:6px;';
+      appendBtn.textContent   = '+ Stage append \u2192 bundle';
+      appendBtn.addEventListener('click', () => {
+        const arr      = arraySel.value;
+        if (!arr) { arraySel.focus(); return; }
+        const entityId = cbPicker ? cbPicker.getValue() : '';
+        if (!entityId) return;
+
+        if (elemWrap._isYoutube) {
+          const block   = elemWrap.querySelector('.ef-youtube-block');
+          if (!block) return;
+          const inputs  = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+          const url     = inputs[0] ? inputs[0].value.trim() : '';
+          const lbl     = inputs[1] ? inputs[1].value.trim() : '';
+          const year    = inputs[2] ? inputs[2].value        : '';
+          const version = inputs[3] ? inputs[3].value.trim() : '';
+          const tala    = inputs[4] ? inputs[4].value.trim() : '';
+          const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+          const compId  = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+          const ragaId  = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
+          if (!url) return;
+          const entry = { url, label: lbl };
+          if (compId)  entry.composition_id = compId;
+          if (ragaId)  entry.raga_id        = ragaId;
+          if (year)    entry.year           = parseInt(year, 10);
+          if (version) entry.version        = version;
+          if (tala)    entry.tala           = tala;
+          const node = (graphData.nodes || []).find(n => n.id === entityId);
+          const perfs = collectYoutubePerformers(block, entityId, node ? node.instrument : '');
+          if (perfs) entry.performers = perfs;
+          if (isLecdem) { entry.kind = 'lecdem'; entry.subjects = collectLecdemSubjects(block); }
+          addToBundle('musicians', { op: 'append', id: entityId, array: 'youtube', value: entry });
+        } else if (arr === 'sources') {
+          const u = elemWrap.querySelector('#ef_edit_ap_srcurl');
+          if (!u || !u.value.trim()) return;
+          addToBundle(meta.bucket, { op: 'append', id: entityId, array: 'sources', value: inferSource(u.value.trim()) });
+        } else if (arr === 'aliases') {
+          const a = elemWrap.querySelector('#ef_edit_ap_alias');
+          if (!a || !a.value.trim()) return;
+          addToBundle(meta.bucket, { op: 'append', id: entityId, array: 'aliases', value: a.value.trim() });
+          a.value = '';
+        }
+        updateStageCount();
+        appendBtn.textContent = '\u2713 Staged!';
+        setTimeout(() => { appendBtn.textContent = '+ Stage append \u2192 bundle'; }, 1400);
+      });
+      opsWrap.appendChild(appendBtn);
+    }
+
+    // ── ADD NOTE ──────────────────────────────────────────────────────────
+    if (meta.supportsAnnotate) {
+      const sec = document.createElement('div');
+      sec.className = 'ef-section';
+      sec.style.marginTop = '12px';
+      sec.textContent = 'Add Note';
+      opsWrap.appendChild(sec);
+
+      const ta = document.createElement('textarea');
+      ta.className   = 'ef-input';
+      ta.rows        = 3;
+      ta.placeholder = 'Free-form note about this entity\u2026';
+      ta.style.resize = 'vertical';
+      opsWrap.appendChild(efRow('Note Text', true, null, ta));
+
+      const noteSrcInp = efInput('ef_edit_note_src', 'text', 'https://\u2026 (optional)');
+      opsWrap.appendChild(efRow('Source URL', false, null, noteSrcInp));
+
+      const noteBtn = document.createElement('button');
+      noteBtn.type      = 'button';
+      noteBtn.className = 'ef-add-btn';
+      noteBtn.style.cssText = 'margin-top:6px;';
+      noteBtn.textContent   = '+ Stage note \u2192 bundle';
+      noteBtn.addEventListener('click', () => {
+        const text = ta.value.trim();
+        if (!text) { ta.focus(); return; }
+        const entityId = cbPicker ? cbPicker.getValue() : '';
+        if (!entityId) return;
+        const note = { text };
+        const srcUrl = noteSrcInp.value.trim();
+        if (srcUrl) note.source_url = srcUrl;
+        addToBundle(meta.bucket, { op: 'annotate', id: entityId, note });
+        updateStageCount();
+        ta.value = '';
+        noteSrcInp.value = '';
+        noteBtn.textContent = '\u2713 Staged!';
+        setTimeout(() => { noteBtn.textContent = '+ Stage note \u2192 bundle'; }, 1400);
+      });
+      opsWrap.appendChild(noteBtn);
+    }
+  }
+
+  function rebuildForm() {
+    rebuildPicker();
+    buildOpsArea();
+  }
+
+  typeSel.addEventListener('change', rebuildForm);
+  rebuildForm();
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'ef-preview-btn';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => win.remove());
+  foot.appendChild(closeBtn);
+
+  win._updateStageCount = updateStageCount;
   return win;
 }

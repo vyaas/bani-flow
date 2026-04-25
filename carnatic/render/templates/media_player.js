@@ -104,6 +104,55 @@ function wireResize(el, handle) {
   document.addEventListener('mouseup', () => { resizing = false; });
 }
 
+// ── buildNotesSection — render a notes[] array as a soft footnote block ──────
+// ADR-097 §7: notes[] = [{text, source_url?, added_at?}]. If the entity has
+// string `notes` (legacy raga schema) it is NOT handled here — that is surfaced
+// as a tooltip in bani_flow.js. This helper is for the new array shape only.
+// Returns a <div class="entity-notes-section"> or null when nothing to render.
+function buildNotesSection(notes) {
+  if (!Array.isArray(notes) || notes.length === 0) return null;
+  const wrap = document.createElement('div');
+  wrap.className = 'entity-notes-section';
+
+  const hdr = document.createElement('div');
+  hdr.className   = 'notes-section-header';
+  hdr.textContent = 'Notes';
+  wrap.appendChild(hdr);
+
+  const ul = document.createElement('ul');
+  ul.className = 'notes-list';
+  notes.forEach(n => {
+    if (!n || !n.text) return;
+    const li      = document.createElement('li');
+    li.className  = 'notes-item';
+
+    const textEl  = document.createElement('span');
+    textEl.className  = 'notes-text';
+    textEl.textContent = n.text;
+    li.appendChild(textEl);
+
+    if (n.source_url) {
+      const link = document.createElement('a');
+      link.href    = n.source_url;
+      link.target  = '_blank';
+      link.rel     = 'noopener noreferrer';
+      link.className  = 'notes-source-link';
+      link.textContent = '\u2197';
+      link.title   = n.source_url;
+      li.appendChild(link);
+    }
+    if (n.added_at) {
+      const dt        = document.createElement('span');
+      dt.className    = 'notes-date';
+      dt.textContent  = n.added_at.slice(0, 10);
+      li.appendChild(dt);
+    }
+    ul.appendChild(li);
+  });
+  wrap.appendChild(ul);
+  return wrap;
+}
+
 // ── buildPlayerTrackList — build the <ul> of track items for the in-player selector ──
 function buildPlayerTrackList(vid, tracks, instance) {
   const ul = document.createElement('ul');
@@ -1599,6 +1648,15 @@ function buildRecordingsList(nodeId, nodeData) {
     || lecdemsBy_.length > 0 || lecdemsAbout_.length > 0;
   recPanel.style.display  = hasContent ? 'block' : 'none';
   recFilter.style.display = hasContent ? 'block' : 'none';
+
+  // ── 7. Notes section (ADR-097 §7) ────────────────────────────────────────
+  // If the musician node carries a notes[] array, append it as a soft
+  // footnote below the rest of the recordings panel content.
+  const nodeNotes = nd.notes;
+  if (Array.isArray(nodeNotes) && nodeNotes.length > 0) {
+    const notesEl = buildNotesSection(nodeNotes);
+    if (notesEl) recList.appendChild(notesEl);
+  }
 }
 
 // ── _buildLecdemSubjectChips — subject cross-links for a lecdem row (ADR-080) ──
