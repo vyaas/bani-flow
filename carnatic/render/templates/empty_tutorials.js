@@ -480,6 +480,9 @@
     }
 
     container.appendChild(_el('div', 'pt-label', 'How to use this panel'));
+    container.appendChild(_el('p', 'pt-panel-intro',
+      'Tap any chip below to try it — each one navigates to a subject in this panel or ' +
+      'its neighbour. To return to this guide at any time, tap ? in this panel’s header.'));
 
     // ── Section A: view discovery (ADR-091) ───────────────────────────────
     const viewSection = block.view_section || {};
@@ -533,7 +536,7 @@
     // ── Section B: chip catalogue ─────────────────────────────────────────
     const catalogue = (block.chip_catalogue || []).slice();
     if (catalogue.length) {
-      container.appendChild(_el('div', 'pt-catalogue-heading', 'Every chip type in this panel'));
+      container.appendChild(_el('div', 'pt-catalogue-heading', 'The chip types in this panel — tap one to try it'));
       const catList = _el('div', 'pt-catalogue');
       const orderedCatalogue = catalogue.sort(function (a, b) {
         const aIsLecdem = (
