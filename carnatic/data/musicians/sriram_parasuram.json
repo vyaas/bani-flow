@@ -66,7 +66,38 @@
         "musician_ids": [
           "tyagaraja"
         ]
-      }
+      },
+      "segments": [
+        {
+          "offset_seconds": 0,
+          "composition_id": "raakaa_shashi_vadana",
+          "raga_id": "takka",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "kind": "kriti",
+          "segment_index": 1,
+          "timestamp": "00:00"
+        },
+        {
+          "offset_seconds": 1102,
+          "composition_id": "samukhana_nilva",
+          "raga_id": "kokilavarali",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "samukhana nilva",
+          "kind": "kriti",
+          "segment_index": 2,
+          "timestamp": "18:22"
+        },
+        {
+          "offset_seconds": 1905,
+          "composition_id": "varanaradha",
+          "raga_id": "vijayashree",
+          "composer_id": "tyagaraja",
+          "segment_index": 3,
+          "timestamp": "31:45"
+        }
+      ]
     }
   ]
 }

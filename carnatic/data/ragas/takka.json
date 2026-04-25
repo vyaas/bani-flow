@@ -1,0 +1,14 @@
+{
+  "id": "takka",
+  "name": "takka",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2742.shtml",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

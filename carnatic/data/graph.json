@@ -2722,7 +2722,48 @@
               "musician_ids": [
                 "tyagaraja"
               ]
-            }
+            },
+            "segments": [
+              {
+                "offset_seconds": 0,
+                "composition_id": "raakaa_shashi_vadana",
+                "raga_id": "takka",
+                "tala": "adi",
+                "composer_id": "tyagaraja",
+                "kind": "kriti",
+                "segment_index": 1,
+                "timestamp": "00:00"
+              },
+              {
+                "offset_seconds": 1102,
+                "composition_id": "samukhana_nilva",
+                "raga_id": "kokilavarali",
+                "tala": "deshadi",
+                "composer_id": "tyagaraja",
+                "display_title": "samukhana nilva",
+                "kind": "kriti",
+                "segment_index": 2,
+                "timestamp": "18:22"
+              },
+              {
+                "offset_seconds": 1905,
+                "composition_id": "varanaradha",
+                "raga_id": "vijayashree",
+                "composer_id": "tyagaraja",
+                "segment_index": 3,
+                "timestamp": "31:45"
+              },
+              {
+                "offset_seconds": 1905,
+                "raga_id": "vijayashree",
+                "tala": "adi",
+                "composer_id": "tyagaraja",
+                "display_title": "varanaradha",
+                "kind": "kriti",
+                "segment_index": 4,
+                "timestamp": "31:45"
+              }
+            ]
           }
         ]
       },
@@ -5461,6 +5502,20 @@
         "notes": "11th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₂ N₃ Ṡ"
       },
       {
+        "id": "kokilavarali",
+        "name": "kokilavarali",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "harikambhoji",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2516.shtml",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
         "id": "kosalam",
         "name": "Kōsalam",
         "aliases": [],
@@ -6813,6 +6868,20 @@
         "notes": "47th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₃ Ṡ"
       },
       {
+        "id": "takka",
+        "name": "takka",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "mayamalavagowla",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2742.shtml",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
         "id": "tanarupi",
         "name": "Tanarupi",
         "aliases": [
@@ -7008,6 +7077,20 @@
         ],
         "notes": "Janya raga of Mechakalyani (65th melakarta); arohana S G3 R2 G3 M2 D2 N3 S, avarohana S N3 D2 M2 G3 R2 S (vakra); evokes spring and devotion; Sri Kamakshi Katakshi attributed to Subbaraya Sastri is set in this raga",
         "is_melakarta": false
+      },
+      {
+        "id": "vijayashree",
+        "name": "vijayashree",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "suvarnangi",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-vijayashri-janya-of-mela-47-ragam-suvarnangi",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "vijayashri",
@@ -10601,6 +10684,12 @@
         "notes": "Javali by Govindasvamy Ayya in Todi; Tisra Triputa tala"
       },
       {
+        "id": "raakaa_shashi_vadana",
+        "title": "raakaa shashi vadana",
+        "composer_id": "tyagaraja",
+        "raga_id": "takka"
+      },
+      {
         "id": "raghupate_rama",
         "title": "Raghupate Rama",
         "composer_id": "tyagaraja",
@@ -10740,6 +10829,12 @@
           }
         ],
         "notes": "Varnam by Karur Devudu Iyer in Sri raga; Adi tala; one of the standard Sri raga varnams in the concert repertoire"
+      },
+      {
+        "id": "samukhana_nilva",
+        "title": "samukhana nilva",
+        "composer_id": "tyagaraja",
+        "raga_id": "kokilavarali"
       },
       {
         "id": "saramaina_matalento",
@@ -11499,6 +11594,12 @@
           }
         ],
         "notes": "Muthuswami Dikshitar nottuswara in Shankarabharanam raga. Part of the Nottuswara Sahitya series composed to Western tunes. Dedicated to Meenakshi of Madurai."
+      },
+      {
+        "id": "varanaradha",
+        "title": "varanaradha",
+        "composer_id": "tyagaraja",
+        "raga_id": "vijayashree"
       },
       {
         "id": "vasudevayani",

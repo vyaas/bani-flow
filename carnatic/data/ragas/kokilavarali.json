@@ -1,0 +1,14 @@
+{
+  "id": "kokilavarali",
+  "name": "kokilavarali",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2516.shtml",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}
