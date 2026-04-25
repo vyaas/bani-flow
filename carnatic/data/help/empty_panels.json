@@ -27,14 +27,6 @@
         "effect": "Begada is a rakti raga — a mode of deep emotional saturation — central to the Dhanammal bani. Ramnad Krishnan's rendering of Begada is said to be unparalleled. Tapping a raga chip opens its Bani Flow trail: every musician in the graph who has recorded in that raga."
       },
       {
-        "css_class": null,
-        "example_kind": "note",
-        "example_id": null,
-        "example_label": null,
-        "note_text": "In Mela-Janya view, tapping a raga also illuminates it on the 72-mela wheel — you can see which parent mela governs this raga and navigate to its siblings.",
-        "effect": ""
-      },
-      {
         "css_class": "lecdem-chip",
         "example_kind": "demo_row",
         "example_id": null,
@@ -129,7 +121,14 @@
     "view_section": {
       "label": "The tradition lives in two forms:",
       "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
-      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers — Tyagaraja, Dikshitar, Syama Sastri — who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
+      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
+      "raga_note_composers": [
+        { "id": "tyagaraja", "label": "Tyagaraja" },
+        { "id": "muthuswami_dikshitar", "label": "Muthuswami Dikshitar" },
+        { "id": "shyama_shastri", "label": "Shyama Shastri" }
+      ],
+      "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion",
+      "wheel_note": "In Mela-Janya view, tapping a raga also illuminates it on the 72-mela wheel — you can see which parent mela governs this raga and navigate to its siblings."
     }
   },
   "bani_flow_panel": {
@@ -181,9 +180,9 @@
         "example_label": null,
         "demo_row": {
           "type": "action_row",
-          "play_label": "Muripemu Kalige — tutorial sample",
-          "video_id": "AkRGOouMKWQ",
-          "youtube_url": "https://www.youtube.com/watch?v=AkRGOouMKWQ",
+          "play_label": "Muripemu Kalige · Mukhari — TM Krishna, Parallel Lines Bangalore 2020",
+          "video_id": "NfaWuqmljKM",
+          "youtube_url": "https://www.youtube.com/watch?v=NfaWuqmljKM",
           "play_note": "play in the floating player",
           "link_note": "open source"
         },
@@ -206,7 +205,7 @@
       }
     ],
     "cross_panel_seeds": {
-      "prompt": "Three musicians. Load one — their recordings open in this panel, the Guru-Shishya graph on the left highlights their lineage:",
+      "prompt": "Three artists. One bani — the Dhanammal school of sound, transmitted grandmother to granddaughter to shishya across a century:",
       "search_note": "Use the filter bar above ↑ to narrow recordings by raga or composition name once a subject is loaded — the same bar that navigates you here.",
       "panel_target": "musician",
       "items": [
@@ -224,22 +223,22 @@
         },
         {
           "kind": "musician",
-          "id": "madurai_mani_iyer",
-          "label": "Madurai Mani Iyer",
-          "note": "1912–1968 · vocal · Sangeetha Kalanidhi 1959, golden age"
-        },
-        {
-          "kind": "musician",
-          "id": "tyagaraja",
-          "label": "Tyagaraja",
-          "note": "1767–1847 · composer · patron saint of the tradition, ~700 kritis across 100+ ragas"
+          "id": "ramnad_krishnan",
+          "label": "Ramnad Krishnan",
+          "note": "1918–1973 · vocal · student of Brinda, master of Begada and Sahana"
         }
       ]
     },
     "view_section": {
       "label": "The tradition lives in two forms:",
       "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
-      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers — Tyagaraja, Dikshitar, Syama Sastri — who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
+      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
+      "raga_note_composers": [
+        { "id": "tyagaraja", "label": "Tyagaraja" },
+        { "id": "muthuswami_dikshitar", "label": "Muthuswami Dikshitar" },
+        { "id": "shyama_shastri", "label": "Shyama Shastri" }
+      ],
+      "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
     }
   }
 }
