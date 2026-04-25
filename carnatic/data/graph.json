@@ -2396,6 +2396,12 @@
             "label": "entō prēmatō · Surutti · Adi - Sanjay Subrahmanyan",
             "composition_id": "ento_premato",
             "raga_id": "surutti"
+          },
+          {
+            "url": "https://youtu.be/iuNQ7fAdcUw",
+            "label": "Sanjay Subrahmanyan: Ragam Reetigowla",
+            "composition_id": "janani_ninnuvina",
+            "raga_id": "reetigowla"
           }
         ]
       },
@@ -9219,6 +9225,12 @@
           }
         ],
         "notes": "Muthuswami Dikshitar kriti in Yamuna Kalyani raga. Pancha Bhuta Stalas series (water element)."
+      },
+      {
+        "id": "janani_ninnuvina",
+        "title": "janani ninnuvina",
+        "composer_id": "subbaraya_sastri",
+        "raga_id": "reetigowla"
       },
       {
         "id": "ka_va_va",
