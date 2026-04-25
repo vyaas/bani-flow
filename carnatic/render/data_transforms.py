@@ -65,6 +65,22 @@ def build_lecdem_indexes(musicians: list[dict]) -> dict:
                 about_raga.setdefault(rid, []).append(ref)
             for cid in ref["subjects"]["composition_ids"]:
                 about_composition.setdefault(cid, []).append(ref)
+            # Also index raga/composition tags from individual segments.
+            # Segments carry finer-grained tagging (e.g. a single alapana
+            # segment for one raga inside a multi-topic lecdem). Use identity
+            # comparison to avoid adding the same ref twice when the same id
+            # appears in both subjects and segments.
+            for seg in entry.get("segments", []):
+                rid = seg.get("raga_id")
+                cid = seg.get("composition_id")
+                if rid:
+                    bucket = about_raga.setdefault(rid, [])
+                    if ref not in bucket:
+                        bucket.append(ref)
+                if cid:
+                    bucket = about_composition.setdefault(cid, [])
+                    if ref not in bucket:
+                        bucket.append(ref)
 
     return {
         "lecdems_by":                by,

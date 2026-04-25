@@ -109,12 +109,12 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
 })();
 
 // ── bani flow search ──────────────────────────────────────────────────────────
-// ADR-081 §6a: lecdems are intentionally excluded from this search index.
-// They surface only via the bani-flow lecdem strip (ADR-081) and the musician
-// panel (ADR-080) — never as autonomous search targets. This discoverability
-// invariant is enforced here by design: the index is built from compositions
-// and ragas (via compositionToNodes / ragaToNodes), which already exclude
-// lecdem entries at the Python transform layer (data_transforms.py).
+// ADR-081 §6a: lecdems are not searchable by label — they are never autonomous
+// search targets. However, ragas and compositions tagged as subjects (or via
+// segment-level raga_id) in a lecdem DO appear in the filter because they are
+// the entry points through which the user discovers lecdems. A raga with only
+// lecdem coverage (no direct recordings) still surfaces here and opens the
+// bani-flow lecdem strip when selected.
 (function() {
   const input    = document.getElementById('bani-search-input');
   const dropdown = document.getElementById('bani-search-dropdown');
@@ -125,18 +125,20 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
 
     // Compositions first
     compositions.forEach(c => {
-      const hasNode = compositionToNodes[c.id] && compositionToNodes[c.id].length > 0;
-      const hasPerf = compositionToPerf[c.id]  && compositionToPerf[c.id].length  > 0;
-      if ((hasNode || hasPerf) && c.title.toLowerCase().includes(ql)) {
+      const hasNode   = compositionToNodes[c.id]        && compositionToNodes[c.id].length > 0;
+      const hasPerf   = compositionToPerf[c.id]         && compositionToPerf[c.id].length  > 0;
+      const hasLecdem = lecdemsAboutComposition[c.id]   && lecdemsAboutComposition[c.id].length > 0;
+      if ((hasNode || hasPerf || hasLecdem) && c.title.toLowerCase().includes(ql)) {
         results.push({ type: 'comp', id: c.id, primary: '\u266a ' + c.title, secondary: null });
       }
     });
 
     // Ragas second
     ragas.forEach(r => {
-      const hasNode = ragaToNodes[r.id] && ragaToNodes[r.id].length > 0;
-      const hasPerf = ragaToPerf[r.id]  && ragaToPerf[r.id].length  > 0;
-      if ((hasNode || hasPerf) && r.name.toLowerCase().includes(ql)) {
+      const hasNode   = ragaToNodes[r.id]      && ragaToNodes[r.id].length > 0;
+      const hasPerf   = ragaToPerf[r.id]       && ragaToPerf[r.id].length  > 0;
+      const hasLecdem = lecdemsAboutRaga[r.id] && lecdemsAboutRaga[r.id].length > 0;
+      if ((hasNode || hasPerf || hasLecdem) && r.name.toLowerCase().includes(ql)) {
         results.push({ type: 'raga', id: r.id, primary: '\u25c8 ' + r.name, secondary: null });
       }
     });
