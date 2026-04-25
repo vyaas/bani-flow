@@ -466,6 +466,9 @@ function buildRagaMiniForm(container, prefill, onAdd) {
         ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
       notes: null,
     };
+    // Mirror into graphData so composition lookups (wireCompRagaAutofill) resolve labels
+    graphData.ragas = graphData.ragas || [];
+    if (!graphData.ragas.find(r => r.id === id)) graphData.ragas.push(item);
     addToBundle('ragas', item);
     onAdd(item);
   });
@@ -510,6 +513,9 @@ function buildComposerMiniForm(container, prefill, onAdd) {
         ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
     };
     if (eraSel.value) item.era = eraSel.value;
+    // Mirror into graphData so composition lookups (wireCompRagaAutofill) resolve labels
+    graphData.composers = graphData.composers || [];
+    if (!graphData.composers.find(c => c.id === id)) graphData.composers.push(item);
     addToBundle('composers', item);
     onAdd(item);
   });
@@ -549,8 +555,12 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
     const ragaId     = ragaSel.getValue();
     if (!title || !composerId || !ragaId) return;
     const id = toSnakeCase(title);
-    addToBundle('compositions', { id, title, composer_id: composerId,
-      raga_id: ragaId, sources: [], notes: null });
+    const compItem = { id, title, composer_id: composerId, raga_id: ragaId, sources: [], notes: null };
+    // Mirror into graphData so wireCompRagaAutofill can auto-fill raga/composer
+    // in the parent segment form immediately after this composition is selected.
+    graphData.compositions = graphData.compositions || [];
+    if (!graphData.compositions.find(c => c.id === id)) graphData.compositions.push(compItem);
+    addToBundle('compositions', compItem);
     onAdd({ id, title });
   });
   cancelBtn.addEventListener('click', () => onAdd(null));
