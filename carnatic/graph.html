@@ -11948,6 +11948,20 @@ const ragas        = [
     "notes": "47th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₃ Ṡ"
   },
   {
+    "id": "takka",
+    "name": "takka",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": "mayamalavagowla",
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/c2742.shtml",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
     "id": "tanarupi",
     "name": "Tanarupi",
     "aliases": [
@@ -15734,6 +15748,12 @@ const compositions = [
       }
     ],
     "notes": "Javali by Govindasvamy Ayya in Todi; Tisra Triputa tala"
+  },
+  {
+    "id": "raakaa_shashi_vadana",
+    "title": "raakaa shashi vadana",
+    "composer_id": "tyagaraja",
+    "raga_id": "takka"
   },
   {
     "id": "raghupate_rama",
@@ -83990,7 +84010,12 @@ function efCombobox(id, options, type, formWin) {
     miniFormWrap.appendChild(heading);
     const onAdd = item => {
       closeMiniForm();
-      if (item) wrap.addOption(item.id, item.name || item.title || item.label || item.id);
+      if (item) {
+        wrap.addOption(item.id, item.name || item.title || item.label || item.id);
+        // Notify the host form that a new entity was just created (not just selected)
+        // so e.g. buildSegmentForm can auto-stage when time is already set.
+        if (formWin) formWin.dispatchEvent(new CustomEvent('efNewEntity', { detail: { type, item } }));
+      }
     };
     if      (type === 'raga')        buildRagaMiniForm(miniFormWrap, prefill, onAdd);
     else if (type === 'composer')    buildComposerMiniForm(miniFormWrap, prefill, onAdd);
@@ -84141,6 +84166,9 @@ function buildRagaMiniForm(container, prefill, onAdd) {
         ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
       notes: null,
     };
+    // Mirror into graphData so composition lookups (wireCompRagaAutofill) resolve labels
+    graphData.ragas = graphData.ragas || [];
+    if (!graphData.ragas.find(r => r.id === id)) graphData.ragas.push(item);
     addToBundle('ragas', item);
     onAdd(item);
   });
@@ -84185,6 +84213,9 @@ function buildComposerMiniForm(container, prefill, onAdd) {
         ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
     };
     if (eraSel.value) item.era = eraSel.value;
+    // Mirror into graphData so composition lookups (wireCompRagaAutofill) resolve labels
+    graphData.composers = graphData.composers || [];
+    if (!graphData.composers.find(c => c.id === id)) graphData.composers.push(item);
     addToBundle('composers', item);
     onAdd(item);
   });
@@ -84195,12 +84226,15 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
   const titleInp = efInput(null, 'text', 'e.g. Nidhi Chala Sukhama', prefill || null);
   container.appendChild(efRow('Title', true, null, titleInp));
 
+  // efCombobox (not efSelect) so the rasika can add a missing composer or raga inline.
+  // bani_add.py processes ragas → composers → compositions in that order, so a raga
+  // staged here will always exist before the composition that references it.
   const composerOpts = (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id }));
-  const composerSel  = efSelect(null, composerOpts, true);
+  const composerSel  = efCombobox(null, composerOpts, 'composer', null);
   container.appendChild(efRow('Composer', true, null, composerSel));
 
   const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
-  const ragaSel  = efSelect(null, ragaOpts, true);
+  const ragaSel  = efCombobox(null, ragaOpts, 'raga', null);
   container.appendChild(efRow('Raga', true, null, ragaSel));
 
   const btnRow = document.createElement('div');
@@ -84217,10 +84251,16 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
 
   addBtn.addEventListener('click', () => {
     const title = titleInp.value.trim();
-    if (!title || !composerSel.value || !ragaSel.value) return;
+    const composerId = composerSel.getValue();
+    const ragaId     = ragaSel.getValue();
+    if (!title || !composerId || !ragaId) return;
     const id = toSnakeCase(title);
-    addToBundle('compositions', { id, title, composer_id: composerSel.value,
-      raga_id: ragaSel.value, sources: [], notes: null });
+    const compItem = { id, title, composer_id: composerId, raga_id: ragaId, sources: [], notes: null };
+    // Mirror into graphData so wireCompRagaAutofill can auto-fill raga/composer
+    // in the parent segment form immediately after this composition is selected.
+    graphData.compositions = graphData.compositions || [];
+    if (!graphData.compositions.find(c => c.id === id)) graphData.compositions.push(compItem);
+    addToBundle('compositions', compItem);
     onAdd({ id, title });
   });
   cancelBtn.addEventListener('click', () => onAdd(null));
@@ -86714,6 +86754,17 @@ function buildSegmentForm(target) {
   // Auto-fill raga and composer when a known composition is selected
   wireCompRagaAutofill(cbComp, cbRaga, cbComposer, win);
 
+  // Auto-stage when a NEW composition is created via the mini form AND timestamp is set.
+  // This lets the rasika add raga + composition + segment in one flow without a separate click.
+  win.addEventListener('efNewEntity', e => {
+    if (e.detail && e.detail.type === 'composition') {
+      // wireCompRagaAutofill has already fired synchronously (selectItem triggers it).
+      // buildSegmentObj now sees composition_id + raga_id + time.
+      const seg = buildSegmentObj();
+      if (seg && !stageBtn.disabled) stageBtn.click();
+    }
+  });
+
   body.appendChild(efRow('Composition', false, null, cbComp));
   body.appendChild(efRow('Raga',        false, 'auto-filled from composition', cbRaga));
   body.appendChild(efRow('Tala',        false, null, talaSel));
@@ -86736,8 +86787,8 @@ function buildSegmentForm(target) {
     const s = parseInt(sInp.value, 10) || 0;
     const offset = h * 3600 + m * 60 + s;
     if (offset < 0) return null;
-    // require at least minutes or seconds to be set
-    if (mInp.value === '' && sInp.value === '') return null;
+    // require at least one time field to be set (not all blank)
+    if (hInp.value === '' && mInp.value === '' && sInp.value === '') return null;
     const seg = { offset_seconds: offset };
     const comp = cbComp.getValue();
     if (comp) seg.composition_id = comp;
@@ -86787,9 +86838,42 @@ function buildSegmentForm(target) {
     }
     const badge = document.createElement('div');
     badge.style.cssText = 'font-size:0.68rem;color:var(--accent);margin-top:6px;';
-    badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s). Download bundle to apply.`;
+    const compLabel = cbComp.getValue()
+      ? ((graphData.compositions || []).find(c => c.id === cbComp.getValue()) || {}).title || cbComp.getValue()
+      : null;
+    badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s${compLabel ? ' · ' + compLabel : ''}). Download bundle to apply.`;
     foot.appendChild(badge);
     stageBtn.disabled = true;
+
+    // "+ Add another segment" — resets time + all fields, keeps the window open
+    const addAnotherBtn = document.createElement('button');
+    addAnotherBtn.className = 'ef-download-btn';
+    addAnotherBtn.style.marginTop = '6px';
+    addAnotherBtn.textContent = '+ Add another segment';
+    addAnotherBtn.addEventListener('click', () => {
+      // Reset time
+      hInp.value = ''; mInp.value = ''; sInp.value = '';
+      // Reset comboboxes — setValue('', '') resets both hidden select and text input
+      [cbComp, cbRaga, cbComposer].forEach(cb => {
+        if (cb.setValue) {
+          cb.setValue('', '');
+          // also hide the × button by firing a change
+          cb.dispatchEvent(new Event('change'));
+        }
+      });
+      // Reset selects
+      talaSel.value = '';
+      kindSel.value = '';
+      displayTitleInp.value = '';
+      notesInp.value = '';
+      // Remove this button and the badge so the footer stays clean
+      addAnotherBtn.remove();
+      badge.remove();
+      stageBtn.disabled = true;
+      validate();
+      hInp.focus();
+    });
+    foot.appendChild(addAnotherBtn);
   });
 
   return win;

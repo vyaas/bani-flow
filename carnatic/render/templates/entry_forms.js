@@ -315,7 +315,12 @@ function efCombobox(id, options, type, formWin) {
     miniFormWrap.appendChild(heading);
     const onAdd = item => {
       closeMiniForm();
-      if (item) wrap.addOption(item.id, item.name || item.title || item.label || item.id);
+      if (item) {
+        wrap.addOption(item.id, item.name || item.title || item.label || item.id);
+        // Notify the host form that a new entity was just created (not just selected)
+        // so e.g. buildSegmentForm can auto-stage when time is already set.
+        if (formWin) formWin.dispatchEvent(new CustomEvent('efNewEntity', { detail: { type, item } }));
+      }
     };
     if      (type === 'raga')        buildRagaMiniForm(miniFormWrap, prefill, onAdd);
     else if (type === 'composer')    buildComposerMiniForm(miniFormWrap, prefill, onAdd);
@@ -3054,6 +3059,17 @@ function buildSegmentForm(target) {
   // Auto-fill raga and composer when a known composition is selected
   wireCompRagaAutofill(cbComp, cbRaga, cbComposer, win);
 
+  // Auto-stage when a NEW composition is created via the mini form AND timestamp is set.
+  // This lets the rasika add raga + composition + segment in one flow without a separate click.
+  win.addEventListener('efNewEntity', e => {
+    if (e.detail && e.detail.type === 'composition') {
+      // wireCompRagaAutofill has already fired synchronously (selectItem triggers it).
+      // buildSegmentObj now sees composition_id + raga_id + time.
+      const seg = buildSegmentObj();
+      if (seg && !stageBtn.disabled) stageBtn.click();
+    }
+  });
+
   body.appendChild(efRow('Composition', false, null, cbComp));
   body.appendChild(efRow('Raga',        false, 'auto-filled from composition', cbRaga));
   body.appendChild(efRow('Tala',        false, null, talaSel));
@@ -3076,8 +3092,8 @@ function buildSegmentForm(target) {
     const s = parseInt(sInp.value, 10) || 0;
     const offset = h * 3600 + m * 60 + s;
     if (offset < 0) return null;
-    // require at least minutes or seconds to be set
-    if (mInp.value === '' && sInp.value === '') return null;
+    // require at least one time field to be set (not all blank)
+    if (hInp.value === '' && mInp.value === '' && sInp.value === '') return null;
     const seg = { offset_seconds: offset };
     const comp = cbComp.getValue();
     if (comp) seg.composition_id = comp;
