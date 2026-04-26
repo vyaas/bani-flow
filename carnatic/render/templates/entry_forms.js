@@ -3745,3 +3745,38 @@ function openAddCompositionForm({ composerId } = {}) {
   wrap.setValue(composerId, composerLabel);
   _lockComboboxField(wrap, composerLabel);
 }
+
+// ── ADR-107: Pre-targeted Add Recording form (concert-anchored entry) ─────────
+// Opens the Add Concert Recording form with the musician pre-attached as a
+// performer and their primary instrument inferred as the default role.
+// Called from the + chip on a musician panel's CONCERTS section header.
+function openAddRecordingForm({ musicianId, role } = {}) {
+  const win = buildRecordingForm();
+  if (!musicianId) return;
+  const sessionsContainer = win.querySelector('#ef_rec_sessions');
+  if (!sessionsContainer) return;
+  addSessionBlock(sessionsContainer, win);
+  const sessionBlock = sessionsContainer.querySelector('.ef-session-block');
+  if (!sessionBlock) return;
+  const performersContainer = sessionBlock.querySelector('.ef-performers-container');
+  if (!performersContainer) return;
+  addPerformerBlock(performersContainer, win);
+  const performerBlock = performersContainer.querySelector('.ef-performer-block');
+  if (!performerBlock) return;
+  const musWrap = performerBlock.querySelector('.ef-combobox-wrap');
+  if (!musWrap || typeof musWrap.setValue !== 'function') return;
+  const nodeObj = (graphData.nodes || []).find(n => n.id === musicianId);
+  const musLabel = nodeObj ? (nodeObj.label || musicianId) : musicianId;
+  musWrap.setValue(musicianId, musLabel);
+  _lockComboboxField(musWrap, musLabel);
+  // Pre-fill role from musician's primary instrument (editable — ADR-107 §2)
+  const inferredRole = role || _inferPerformerRole(nodeObj ? (nodeObj.instrument || '') : '');
+  const selects = performerBlock.querySelectorAll('select');
+  if (selects[1]) selects[1].value = inferredRole;
+}
+
+function _inferPerformerRole(instrument) {
+  const ROLE_OPTIONS = ['vocal', 'violin', 'veena', 'flute', 'mridangam', 'ghatam', 'tampura'];
+  const instr = (instrument || '').toLowerCase().trim();
+  return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
+}
