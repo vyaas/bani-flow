@@ -1,6 +1,6 @@
 # ADR-103: Co-Located Edit Affordances and the Deprecation of the Global Edit Bar
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-26
 **Agents**: graph-architect (proposer), carnatic-coder (implementer)
 **Depends on**: ADR-031 (data entry forms), ADR-082 (lecdem entry forms — the model), ADR-085 (self-replicating curation loop), ADR-097 (unified Edit form)

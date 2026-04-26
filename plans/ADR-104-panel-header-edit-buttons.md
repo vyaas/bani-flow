@@ -1,6 +1,6 @@
 # ADR-104: Panel Header Edit Buttons (Musician, Raga, Composition, Composer)
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-26
 **Agents**: graph-architect (proposer), carnatic-coder (implementer)
 **Depends on**: ADR-097 (unified Edit form, esp. §6), ADR-103 (co-located edit affordances)
