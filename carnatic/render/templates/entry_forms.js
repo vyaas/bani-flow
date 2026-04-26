@@ -3781,7 +3781,20 @@ function _inferPerformerRole(instrument) {
   return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
 }
 
-// ADR-106: open Add Raga form pre-filled and locked to a specific melakarta parent.
+// ADR-104 Track A: stub edit form. Opens a "coming soon" notice.
+// Full edit forms will land with ADR-097 Phase C.
+function openEditForm({ entityType, id } = {}) {
+  const LABELS = { musician: 'Musician', raga: 'Raga', comp: 'Composition', composer: 'Composer' };
+  const typeLabel = LABELS[entityType] || 'Entity';
+  const win = createEntryWindow('Edit ' + typeLabel);
+  const body = win.querySelector('.ew-body');
+  const msg = document.createElement('p');
+  msg.style.cssText = 'margin:12px 0; font-size:0.82rem; color:var(--fg-muted); line-height:1.5;';
+  msg.innerHTML = '<strong style="color:var(--fg)">Edit form coming with ADR-097\u00a0Phase\u00a0C.</strong><br>'
+    + 'For now, use the bottom edit bar to make changes.';
+  body.appendChild(msg);
+  return win;
+}
 // Called from the + chip on the Janyas panel header.
 function openAddRagaForm({ parentRagaId, mela } = {}) {
   const win = buildRagaForm();

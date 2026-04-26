@@ -641,6 +641,15 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
+  // ADR-104 Track A: show ✎ stub chip on musician panel header
+  const _editChip = document.getElementById('node-edit-chip');
+  if (_editChip) {
+    _editChip.style.display = 'inline-flex';
+    _editChip.onclick = function(e) {
+      e.stopPropagation();
+      if (typeof openEditForm === 'function') openEditForm({ entityType: 'musician', id: d.id });
+    };
+  }
   // ADR-086: subject loaded → dismiss empty-panel tutorial
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
@@ -1079,6 +1088,8 @@ cy.on('tap', evt => {
   document.getElementById('node-info').style.display        = 'block';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  const _bgTapEditChip = document.getElementById('node-edit-chip');
+  if (_bgTapEditChip) { _bgTapEditChip.style.display = 'none'; _bgTapEditChip.onclick = null; }
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   // NEW: clear chip filters on background tap
@@ -1105,6 +1116,8 @@ window.clearMusicianPanel = function () {
   document.getElementById('node-info').style.display        = 'block';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  const _clearEditChip = document.getElementById('node-edit-chip');
+  if (_clearEditChip) { _clearEditChip.style.display = 'none'; _clearEditChip.onclick = null; }
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   if (typeof clearAllChipFilters === 'function') clearAllChipFilters();
   if (typeof applyZoomLabels === 'function') applyZoomLabels();

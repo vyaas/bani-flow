@@ -3431,6 +3431,9 @@
             <span id="bani-subject-name"></span>
             <a id="bani-subject-link" class="bani-subject-link" href="#"
                target="_blank" style="display:none">&#8599;</a>
+            <!-- ADR-104 Track A: ✎ stub chip — edit form lands with ADR-097 Phase C -->
+            <button id="bani-edit-chip" class="co-edit-chip" title="Edit (coming soon)"
+                    style="display:none">&#9998;</button>
           </div>
           <div id="bani-subject-sub"></div>
           <!-- Row 3: aliases (ADR-022) -->
@@ -3549,6 +3552,9 @@
           <span id="node-lifespan"></span>
           <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
              style="display:none">&#8599;</a>
+          <!-- ADR-104 Track A: ✎ stub chip — edit form lands with ADR-097 Phase C -->
+          <button id="node-edit-chip" class="co-edit-chip" title="Edit musician (coming soon)"
+                  style="display:none; margin-left:auto">&#9998;</button>
         </div>
         <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
                style="display:none" autocomplete="off" spellcheck="false" />
@@ -79659,6 +79665,15 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
+  // ADR-104 Track A: show ✎ stub chip on musician panel header
+  const _editChip = document.getElementById('node-edit-chip');
+  if (_editChip) {
+    _editChip.style.display = 'inline-flex';
+    _editChip.onclick = function(e) {
+      e.stopPropagation();
+      if (typeof openEditForm === 'function') openEditForm({ entityType: 'musician', id: d.id });
+    };
+  }
   // ADR-086: subject loaded → dismiss empty-panel tutorial
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
@@ -80097,6 +80112,8 @@ cy.on('tap', evt => {
   document.getElementById('node-info').style.display        = 'block';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  const _bgTapEditChip = document.getElementById('node-edit-chip');
+  if (_bgTapEditChip) { _bgTapEditChip.style.display = 'none'; _bgTapEditChip.onclick = null; }
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   // NEW: clear chip filters on background tap
@@ -80123,6 +80140,8 @@ window.clearMusicianPanel = function () {
   document.getElementById('node-info').style.display        = 'block';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  const _clearEditChip = document.getElementById('node-edit-chip');
+  if (_clearEditChip) { _clearEditChip.style.display = 'none'; _clearEditChip.onclick = null; }
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   if (typeof clearAllChipFilters === 'function') clearAllChipFilters();
   if (typeof applyZoomLabels === 'function') applyZoomLabels();
@@ -85428,6 +85447,21 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   subjectHeader.style.display = 'block';
 
+  // ADR-104 Track A: show ✎ stub chip on bani-flow subject header (raga + comp only)
+  const _baniEditChip = document.getElementById('bani-edit-chip');
+  if (_baniEditChip) {
+    if (type === 'raga' || type === 'comp') {
+      _baniEditChip.style.display = 'inline-flex';
+      _baniEditChip.onclick = function(e) {
+        e.stopPropagation();
+        if (typeof openEditForm === 'function') openEditForm({ entityType: type, id: id });
+      };
+    } else {
+      _baniEditChip.style.display = 'none';
+      _baniEditChip.onclick = null;
+    }
+  }
+
   // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
   _renderBaniFlowLecdemStrip(type, id);
 
@@ -86211,6 +86245,8 @@ function clearBaniFilter() {
   document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
   document.getElementById('bani-subject-header').style.display = 'none';
+  const _clearBaniEditChip = document.getElementById('bani-edit-chip');
+  if (_clearBaniEditChip) { _clearBaniEditChip.style.display = 'none'; _clearBaniEditChip.onclick = null; }
   const _bfStrip = document.getElementById('bani-lecdem-strip');
   if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
@@ -90414,7 +90450,20 @@ function _inferPerformerRole(instrument) {
   return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
 }
 
-// ADR-106: open Add Raga form pre-filled and locked to a specific melakarta parent.
+// ADR-104 Track A: stub edit form. Opens a "coming soon" notice.
+// Full edit forms will land with ADR-097 Phase C.
+function openEditForm({ entityType, id } = {}) {
+  const LABELS = { musician: 'Musician', raga: 'Raga', comp: 'Composition', composer: 'Composer' };
+  const typeLabel = LABELS[entityType] || 'Entity';
+  const win = createEntryWindow('Edit ' + typeLabel);
+  const body = win.querySelector('.ew-body');
+  const msg = document.createElement('p');
+  msg.style.cssText = 'margin:12px 0; font-size:0.82rem; color:var(--fg-muted); line-height:1.5;';
+  msg.innerHTML = '<strong style="color:var(--fg)">Edit form coming with ADR-097\u00a0Phase\u00a0C.</strong><br>'
+    + 'For now, use the bottom edit bar to make changes.';
+  body.appendChild(msg);
+  return win;
+}
 // Called from the + chip on the Janyas panel header.
 function openAddRagaForm({ parentRagaId, mela } = {}) {
   const win = buildRagaForm();

@@ -476,6 +476,21 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   subjectHeader.style.display = 'block';
 
+  // ADR-104 Track A: show ✎ stub chip on bani-flow subject header (raga + comp only)
+  const _baniEditChip = document.getElementById('bani-edit-chip');
+  if (_baniEditChip) {
+    if (type === 'raga' || type === 'comp') {
+      _baniEditChip.style.display = 'inline-flex';
+      _baniEditChip.onclick = function(e) {
+        e.stopPropagation();
+        if (typeof openEditForm === 'function') openEditForm({ entityType: type, id: id });
+      };
+    } else {
+      _baniEditChip.style.display = 'none';
+      _baniEditChip.onclick = null;
+    }
+  }
+
   // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
   _renderBaniFlowLecdemStrip(type, id);
 
@@ -1259,6 +1274,8 @@ function clearBaniFilter() {
   document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
   document.getElementById('bani-subject-header').style.display = 'none';
+  const _clearBaniEditChip = document.getElementById('bani-edit-chip');
+  if (_clearBaniEditChip) { _clearBaniEditChip.style.display = 'none'; _clearBaniEditChip.onclick = null; }
   const _bfStrip = document.getElementById('bani-lecdem-strip');
   if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
