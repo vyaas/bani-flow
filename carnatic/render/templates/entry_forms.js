@@ -3702,3 +3702,46 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
   closeBtn2.addEventListener('click', () => win.remove());
   foot.appendChild(closeBtn2);
 }
+
+// ── ADR-103 §2: locked-chip helpers for pre-targeted co-located triggers ─────
+// Replaces the combobox's editable input with a read-only chip + "change" link.
+// The "change" link restores the input for manual re-selection.
+function _lockComboboxField(wrap, label) {
+  const textInp  = wrap.querySelector('.ef-combobox-input');
+  const clearBtn = wrap.querySelector('button[title="Clear selection"]');
+  if (!textInp) return;
+  textInp.style.display = 'none';
+  if (clearBtn) clearBtn.style.display = 'none';
+  const chip = document.createElement('span');
+  chip.className = 'ef-locked-chip';
+  chip.textContent = label;
+  const changeLink = document.createElement('button');
+  changeLink.type = 'button';
+  changeLink.className = 'ef-change-link';
+  changeLink.textContent = 'change';
+  changeLink.title = 'Pick a different value';
+  changeLink.addEventListener('click', function() {
+    chip.remove();
+    changeLink.remove();
+    textInp.style.display = '';
+    textInp.focus();
+  });
+  wrap.appendChild(chip);
+  wrap.appendChild(changeLink);
+}
+
+// ── ADR-105: Pre-targeted Add Composition form (composer-mediated entry) ──────
+// Opens the Add Composition form with composer_id pre-filled and locked.
+// Called from the + chip on a composer panel's Compositions (N) header.
+function openAddCompositionForm({ composerId } = {}) {
+  const win = buildCompositionForm();
+  if (!composerId) return;
+  const hiddenSel = win.querySelector('#ef_comp_composer');
+  if (!hiddenSel) return;
+  const wrap = hiddenSel.parentElement;
+  if (!wrap || typeof wrap.setValue !== 'function') return;
+  const composerObj = (graphData.composers || []).find(c => c.id === composerId);
+  const composerLabel = composerObj ? (composerObj.name || composerId) : composerId;
+  wrap.setValue(composerId, composerLabel);
+  _lockComboboxField(wrap, composerLabel);
+}

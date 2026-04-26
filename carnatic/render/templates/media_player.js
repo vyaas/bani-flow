@@ -1745,7 +1745,24 @@ function buildRecordingsList(nodeId, nodeData) {
 
     const compHeader = document.createElement('div');
     compHeader.className = 'comp-section-header';
-    compHeader.textContent = `Compositions (${composerComps.length})`;
+    // ADR-105: label + right-edge + chip for adding a composition by this composer
+    const compHeaderLabel = document.createElement('span');
+    compHeaderLabel.textContent = `Compositions (${composerComps.length})`;
+    compHeader.appendChild(compHeaderLabel);
+    if (composerForNode) {
+      const compAddChip = document.createElement('button');
+      compAddChip.type = 'button';
+      compAddChip.className = 'co-add-chip';
+      compAddChip.textContent = '+';
+      compAddChip.title = 'Add a composition by ' + (composerForNode.name || composerForNode.id);
+      compAddChip.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (typeof openAddCompositionForm === 'function') {
+          openAddCompositionForm({ composerId: composerForNode.id });
+        }
+      });
+      compHeader.appendChild(compAddChip);
+    }
     compSection.appendChild(compHeader);
 
     const compList = document.createElement('ul');
