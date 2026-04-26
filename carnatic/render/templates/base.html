@@ -195,9 +195,10 @@
   }
 
   /* ── left sidebar (global controls: Bani Flow, legends) ── */
-  /* ADR-046: converted to fixed overlay drawer on all breakpoints */
+  /* Desktop: absolute within #main so it cannot overdraw header or bottom bar. */
+  /* Mobile: overridden to position:fixed by the mobile media query.            */
   #left-sidebar {
-    position: fixed; top: 0; left: 0; bottom: 0;
+    position: absolute; top: 0; left: 0; bottom: 0;
     width: 280px; background: var(--bg-panel);
     border-right: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
@@ -221,9 +222,10 @@
   }
 
   /* ── right sidebar (node-specific: selection, recordings, edge) ── */
-  /* ADR-046: converted to fixed overlay drawer on all breakpoints */
+  /* Desktop: absolute within #main so it cannot overdraw header or bottom bar. */
+  /* Mobile: overridden to position:fixed by the mobile media query.            */
   #right-sidebar {
-    position: fixed; top: 0; right: 0; bottom: 0;
+    position: absolute; top: 0; right: 0; bottom: 0;
     width: 280px; background: var(--bg-panel);
     border-left: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
@@ -2461,45 +2463,126 @@
     }
   }
 
-  /* ── ADR-062: Desktop persistent grid layout — no handles, no overlap ── */
+  /* ── Desktop drawer-with-pin layout ─────────────────────────────────── */
+  /* Panels are fixed drawers by default; pinning a panel brings it into the  */
+  /* CSS grid so it holds its 280px column without overlapping the canvas.     */
   @media (min-width: 769px) {
 
-    /* Three-column CSS grid: panels are in-flow, never fixed overlays */
+    /* Grid default: unpinned columns are 0-wide (panels float over canvas) */
     #main {
       display: grid;
-      grid-template-columns: 280px 1fr 280px;
+      grid-template-columns: 0px 1fr 0px;
       grid-template-rows: 1fr;
     }
+    /* Explicitly place each column — sidebars may be position:fixed (out-of-flow)
+       so CSS auto-placement would skip them and land canvas-wrap in col 1 (0px). */
+    #left-sidebar  { grid-column: 1; grid-row: 1; }
+    #canvas-wrap   { grid-column: 2; grid-row: 1; }
+    #right-sidebar { grid-column: 3; grid-row: 1; }
 
-    /* Panels become static grid items — JS translateX is neutralised */
-    #left-sidebar,
-    #right-sidebar {
+    /* Pin-state variants driven by classes set in mobile.js */
+    #main.left-pinned               { grid-template-columns: 280px 1fr 0px; }
+    #main.right-pinned              { grid-template-columns: 0px 1fr 280px; }
+    #main.left-pinned.right-pinned  { grid-template-columns: 280px 1fr 280px; }
+
+    /* Pinned panels become static in-flow grid items */
+    #left-sidebar.panel-pinned,
+    #right-sidebar.panel-pinned {
       position: static;
-      transform: none !important;  /* override JS drawer open/close state */
+      transform: none !important;
       top: auto; bottom: auto; left: auto; right: auto;
       z-index: auto;
       box-shadow: none;
       height: 100%;
       overflow-y: auto;
     }
-    #left-sidebar  { border-right: 2px solid var(--border-strong); }
-    #right-sidebar { border-left:  2px solid var(--border-strong); border-right: none; }
+    #left-sidebar.panel-pinned  { border-right: 2px solid var(--border-strong); }
+    #right-sidebar.panel-pinned { border-left:  2px solid var(--border-strong); border-right: none; }
 
     /* Canvas column must not collapse below a usable width */
     #canvas-wrap {
       min-width: 200px;
     }
 
-    /* Handles are absent on desktop — fully hidden */
-    .desktop-drawer-handle {
-      display: none !important;
-    }
+    /* Floating edge handles replaced by #desktop-panel-bar — keep hidden */
+    .desktop-drawer-handle { display: none !important; }
 
     /* Scrims are absent on desktop — keep hidden */
     #left-drawer-scrim,
     #right-drawer-scrim {
       display: none !important;
     }
+
+    /* ── Desktop panel bar ── */
+    #desktop-panel-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      flex-shrink: 0;
+      background: var(--bg-panel);
+      border-top: 2px solid var(--border-strong);
+    }
+    .dpb-section {
+      width: 280px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+    }
+    .dpb-left   { border-right: 1px solid var(--border-strong); }
+    .dpb-center { flex: 1; width: auto; justify-content: center; }
+    .dpb-right  { border-left: 1px solid var(--border-strong); justify-content: flex-end; }
+    .dpb-bundle {
+      font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--fg-dim); background: none;
+      border: 1px solid var(--border-strong); border-radius: 4px;
+      padding: 4px 10px; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .dpb-bundle:hover:not(:disabled) { color: var(--fg); border-color: var(--fg-dim); background: var(--bg-active); }
+    .dpb-bundle:disabled { opacity: 0.35; cursor: default; }
+    .dpb-toggle {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--fg-dim); background: none; border: none;
+      padding: 4px 8px; border-radius: 4px; cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+    }
+    .dpb-toggle:hover { color: var(--fg); background: var(--bg-active); }
+    .dpb-toggle.dpb-active { color: var(--accent); }
+    .dpb-pin {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; background: none; border: none;
+      padding: 4px; border-radius: 4px; cursor: pointer;
+      opacity: 0.35; transition: opacity 0.15s, color 0.15s;
+    }
+    .dpb-pin:hover { opacity: 0.75; background: var(--bg-active); }
+    .dpb-pin.pin-active { opacity: 1; color: var(--accent); }
+  }
+
+  /* ── Desktop panel bar hidden on mobile ── */
+  #desktop-panel-bar { display: none; }
+  @media (min-width: 769px) {
+    #desktop-panel-bar { display: flex; }
+  }
+
+  /* ── Panel pin button (desktop only) ───────────────────────────────────── */
+  .panel-pin-btn {
+    opacity: 0.35;
+    font-size: 0.72rem;
+    line-height: 1;
+    padding: 0 2px;
+    transition: opacity 0.15s, color 0.15s;
+  }
+  .panel-pin-btn:hover { opacity: 0.75; }
+  .panel-pin-btn.pin-active {
+    opacity: 1;
+    color: var(--accent);
+  }
+  @media (max-width: 768px) {
+    .panel-pin-btn { display: none; }
   }
 
   /* ── ADR-034: new elements — hidden on desktop, activated by mobile query ── */
@@ -3335,10 +3418,7 @@
     <div id="sruti-buttons"></div>
     <button id="sruti-power" class="sruti-power" title="Tanpura on/off" aria-label="Sruti power">&#9211;</button>
   </div>
-  <!-- ADR-111: bundle-download-btn in controls (right column), away from sruti strip -->
   <div class="controls">
-    <button id="bundle-download-btn" class="entry-btn" onclick="downloadBundle()" disabled
-            title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
     <div class="view-selector" id="view-selector">
       <button class="view-btn" id="view-btn-graph"
               onclick="switchView('graph')" title="Guru-shishya parampara"
@@ -3537,6 +3617,26 @@
         aria-label="Open Bani Flow panel">&#9776;&thinsp;Bani Flow</button>
 <button id="desktop-right-handle" class="desktop-drawer-handle desktop-handle-right"
         aria-label="Open Musician panel">Musician&thinsp;&#9835;</button>
+
+<!-- Desktop panel bar: toggle + pin for each side; hidden on mobile -->
+<div id="desktop-panel-bar">
+  <div class="dpb-section dpb-left">
+    <button id="dpb-left-toggle" class="dpb-toggle" title="Open / close Bani Flow panel"
+            onclick="toggleLeftDrawer()">&#9776; Bani Flow</button>
+    <button id="dpb-left-pin" class="dpb-pin" title="Pin panel open" aria-pressed="false"
+            onclick="toggleLeftPin()">&#128204;</button>
+  </div>
+  <div class="dpb-section dpb-center">
+    <button id="bundle-download-btn" class="dpb-bundle" onclick="downloadBundle()" disabled
+            title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
+  </div>
+  <div class="dpb-section dpb-right">
+    <button id="dpb-right-pin" class="dpb-pin" title="Pin panel open" aria-pressed="false"
+            onclick="toggleRightPin()">&#128204;</button>
+    <button id="dpb-right-toggle" class="dpb-toggle" title="Open / close Musician panel"
+            onclick="toggleRightDrawer()">Musician &#9835;</button>
+  </div>
+</div>
 
 <!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
 <div id="left-drawer-scrim" aria-hidden="true"></div>

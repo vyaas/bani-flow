@@ -11,7 +11,10 @@
   // States: IDLE | MUSICIAN | TRAIL
   // ADR-039: PEEK state removed — right sidebar is now a drawer, not a sheet.
   // Mutual exclusion: TRAIL and MUSICIAN are never both active.
-  var panelState = 'IDLE';
+  // Pin flags: a pinned panel is never closed by setPanelState (desktop only).
+  var panelState  = 'IDLE';
+  var leftPinned  = false;
+  var rightPinned = false;
 
   var sidebar        = document.getElementById('left-sidebar');
   var leftScrim      = document.getElementById('left-drawer-scrim');
@@ -21,18 +24,21 @@
   var tabTrail       = document.getElementById('tab-trail');
   var desktopLeftHandle  = document.getElementById('desktop-left-handle');
   var desktopRightHandle = document.getElementById('desktop-right-handle');
+  var dpbLeftToggle  = document.getElementById('dpb-left-toggle');
+  var dpbLeftPin     = document.getElementById('dpb-left-pin');
+  var dpbRightToggle = document.getElementById('dpb-right-toggle');
+  var dpbRightPin    = document.getElementById('dpb-right-pin');
 
-  // ADR-046: Update desktop handle labels to reflect open/close state
+  // Update bottom-bar toggle active state to reflect open/close
   function _updateDesktopHandles(state) {
+    if (dpbLeftToggle)  dpbLeftToggle.classList.toggle('dpb-active', state === 'TRAIL');
+    if (dpbRightToggle) dpbRightToggle.classList.toggle('dpb-active', state === 'MUSICIAN');
+    // Legacy floating handles (hidden via CSS but kept for backwards compat)
     if (desktopLeftHandle) {
       desktopLeftHandle.classList.toggle('handle-panel-open', state === 'TRAIL');
-      desktopLeftHandle.setAttribute('aria-label',
-        state === 'TRAIL' ? 'Close Bani Flow panel' : 'Open Bani Flow panel');
     }
     if (desktopRightHandle) {
       desktopRightHandle.classList.toggle('handle-panel-open', state === 'MUSICIAN');
-      desktopRightHandle.setAttribute('aria-label',
-        state === 'MUSICIAN' ? 'Close Musician panel' : 'Open Musician panel');
     }
   }
 
@@ -77,9 +83,9 @@
 
     panelState = newState;
 
-    // Close everything first
-    _closeLeftDrawer();
-    _closeRightDrawer();
+    // Close everything first — but respect pin locks
+    if (!leftPinned)  _closeLeftDrawer();
+    if (!rightPinned) _closeRightDrawer();
 
     // Open the requested panel
     if (newState === 'TRAIL') {
@@ -179,28 +185,96 @@
   // ADR-039: right drawer scrim closes musician panel
   if (rightScrim) rightScrim.addEventListener('click', function () { setPanelState('IDLE'); });
 
-  // ADR-046: desktop handle tabs wire toggle behaviour
-  // ADR-062: handles are display:none on desktop — guard with isDesktop() for safety
+  // Desktop handle tabs: toggle the corresponding drawer on both mobile and desktop
   function isDesktop() { return window.matchMedia('(min-width: 769px)').matches; }
 
   if (desktopLeftHandle) {
     desktopLeftHandle.addEventListener('click', function () {
-      if (!isDesktop()) toggleLeftDrawer();
+      toggleLeftDrawer();
     });
   }
   if (desktopRightHandle) {
     desktopRightHandle.addEventListener('click', function () {
-      if (!isDesktop()) toggleRightDrawer();
+      toggleRightDrawer();
     });
   }
 
   // ADR-040: filter toggle removed — chips always visible
+
+  // ── Pin state helpers (desktop only) ─────────────────────────────────
+  // A pinned panel is brought into the CSS grid (position:static) and is never
+  // closed by the mutual-exclusion state machine. Unpinning restores it as a
+  // drawer. State is persisted per session via sessionStorage.
+
+  var mainEl         = document.getElementById('main');
+
+  function _applyPinState() {
+    // ─ left sidebar ─────────────────────────────────────────────
+    if (sidebar) sidebar.classList.toggle('panel-pinned', leftPinned);
+    if (mainEl)  mainEl.classList.toggle('left-pinned', leftPinned);
+    if (dpbLeftPin) {
+      dpbLeftPin.classList.toggle('pin-active', leftPinned);
+      dpbLeftPin.setAttribute('aria-pressed', String(leftPinned));
+      dpbLeftPin.title = leftPinned ? 'Unpin panel' : 'Pin panel open';
+    }
+    // When pinned: hide the toggle (panel is always open, no point toggling)
+    if (dpbLeftToggle) dpbLeftToggle.style.display = leftPinned ? 'none' : '';
+    // If just pinned, ensure the drawer is open so it’s immediately visible
+    if (leftPinned) _openLeftDrawer();
+
+    // ─ right sidebar ──────────────────────────────────────────
+    if (rightSidebar) rightSidebar.classList.toggle('panel-pinned', rightPinned);
+    if (mainEl)       mainEl.classList.toggle('right-pinned', rightPinned);
+    if (dpbRightPin) {
+      dpbRightPin.classList.toggle('pin-active', rightPinned);
+      dpbRightPin.setAttribute('aria-pressed', String(rightPinned));
+      dpbRightPin.title = rightPinned ? 'Unpin panel' : 'Pin panel open';
+    }
+    if (dpbRightToggle) dpbRightToggle.style.display = rightPinned ? 'none' : '';
+    if (rightPinned) _openRightDrawer();
+
+    // Persist to session
+    try {
+      sessionStorage.setItem('baniLeftPinned',  String(leftPinned));
+      sessionStorage.setItem('baniRightPinned', String(rightPinned));
+    } catch (e) { /* storage unavailable — ignore */ }
+
+    // Cytoscape must recalculate canvas size after grid change
+    if (typeof cy !== 'undefined') {
+      setTimeout(function () { cy.resize(); }, 50);
+    }
+  }
+
+  function toggleLeftPin() {
+    leftPinned = !leftPinned;
+    _applyPinState();
+  }
+
+  function toggleRightPin() {
+    rightPinned = !rightPinned;
+    _applyPinState();
+  }
+
+  // Restore pin state from previous desktop session
+  if (isDesktop()) {
+    try {
+      var _lp = sessionStorage.getItem('baniLeftPinned');
+      var _rp = sessionStorage.getItem('baniRightPinned');
+      if (_lp !== null || _rp !== null) {
+        leftPinned  = _lp  === 'true';
+        rightPinned = _rp === 'true';
+        _applyPinState();
+      }
+    } catch (e) { /* storage unavailable — ignore */ }
+  }
 
   _setupTabBar();
 
   // ── Public API ───────────────────────────────────────────────────────────
   window.toggleLeftDrawer   = toggleLeftDrawer;
   window.toggleRightDrawer  = toggleRightDrawer;
+  window.toggleLeftPin      = toggleLeftPin;
+  window.toggleRightPin     = toggleRightPin;
   window.peekBottomSheet    = peekBottomSheet;
   window.dismissBottomSheet = dismissBottomSheet;
   window.showBottomSheet    = showBottomSheet;

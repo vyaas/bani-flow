@@ -670,6 +670,21 @@
         "composition_ids": [],
         "musician_ids": []
       }
+    },
+    {
+      "url": "https://youtu.be/fX58a0MM6-k",
+      "label": "Experience of Music",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "mayamalavagowla",
+          "kambhoji",
+          "sahana",
+          "bhairavi"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }
