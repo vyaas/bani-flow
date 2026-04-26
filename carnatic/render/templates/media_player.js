@@ -1481,11 +1481,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
       row1.appendChild(titleEl);
     }
 
-    const tsSpan = document.createElement('span');
-    tsSpan.className = 'seg-ts';
-    tsSpan.textContent = seg.timestamp || '00:00';
-    row1.appendChild(tsSpan);
-
     const playBtn = document.createElement('button');
     playBtn.className = 'rec-play-btn play-btn-concert';
     playBtn.title = 'Play from ' + (seg.timestamp || '00:00');
