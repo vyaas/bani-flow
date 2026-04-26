@@ -54,13 +54,8 @@
       "kind": "lecdem",
       "subjects": {
         "raga_ids": [
-          "sindhu_kannada",
-          "bindumalini",
           "umaabharanam",
-          "sruti_ranjani",
-          "rasali",
-          "vijayashri",
-          "kokilapriya"
+          "sruti_ranjani"
         ],
         "composition_ids": [],
         "musician_ids": [
@@ -126,6 +121,16 @@
           "kind": "kriti",
           "segment_index": 6,
           "timestamp": "01:30:30"
+        },
+        {
+          "offset_seconds": 5930,
+          "composition_id": "enta_muddo",
+          "raga_id": "bindumalini",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "kind": "kriti",
+          "segment_index": 7,
+          "timestamp": "01:38:50"
         }
       ]
     }
