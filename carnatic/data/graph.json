@@ -2877,6 +2877,10 @@
               {
                 "offset_seconds": 8793,
                 "display_title": "Kripalavala kaladhara",
+                "composition_id": "kripalavala_kaladhara",
+                "raga_id": "nadatarangini",
+                "tala": "adi",
+                "composer_id": "tyagaraja",
                 "kind": "kriti",
                 "segment_index": 8,
                 "timestamp": "02:26:33"
