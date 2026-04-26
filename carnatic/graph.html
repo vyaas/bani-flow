@@ -2554,11 +2554,6 @@
 
     header h1 { display: none; }
     #header-left { flex-shrink: 0; gap: 4px; padding: 0 4px; }
-    /* ADR-111: compact bundle button on mobile — icon only */
-    #bundle-download-btn {
-      font-size: 0.6rem;
-      padding: 2px 5px;
-    }
     .stats { display: none; }
     #sruti-strip { display: none; }
     .controls {
@@ -3353,12 +3348,9 @@
 
 <header>
   <!-- ADR-045: header-left wraps help button + title -->
-  <!-- ADR-111: bundle-download-btn relocated here from #footer-bar -->
   <div id="header-left">
     <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
     <h1>Carnatic Explorer</h1>
-    <button id="bundle-download-btn" class="entry-btn" onclick="downloadBundle()" disabled
-            title="Download bundle JSON" style="margin-left:auto;white-space:nowrap">&#x2B07; Bundle (0 items)</button>
   </div>
   <!-- ── Sruti Strip (ADR-076): labeled widget with power button ── -->
   <div id="sruti-strip">
@@ -3366,7 +3358,10 @@
     <div id="sruti-buttons"></div>
     <button id="sruti-power" class="sruti-power" title="Tanpura on/off" aria-label="Sruti power">&#9211;</button>
   </div>
+  <!-- ADR-111: bundle-download-btn in controls (right column), away from sruti strip -->
   <div class="controls">
+    <button id="bundle-download-btn" class="entry-btn" onclick="downloadBundle()" disabled
+            title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
     <div class="view-selector" id="view-selector">
       <button class="view-btn" id="view-btn-graph"
               onclick="switchView('graph')" title="Guru-shishya parampara"
