@@ -121,7 +121,29 @@
         "era": "contemporary",
         "instrument": "vocal",
         "bani": "dhanammal",
-        "youtube": []
+        "youtube": [
+          {
+            "url": "https://youtu.be/Z2noUVoWG78",
+            "label": "Bantureeti Kolu",
+            "composition_id": "bantureeti_kolu",
+            "raga_id": "hamsanadam",
+            "tala": "adi"
+          },
+          {
+            "url": "https://youtu.be/s5nfj4DXCbo",
+            "label": "Manavinaalakincha Raadate",
+            "composition_id": "manavinaalakincha_raadate",
+            "raga_id": "nalinakanthi",
+            "tala": "deshadi"
+          },
+          {
+            "url": "https://youtu.be/7S2pwtGPZSw",
+            "label": "",
+            "composition_id": "rangapura_vihara",
+            "raga_id": "brindavana_saranga",
+            "tala": "rupakam"
+          }
+        ]
       },
       {
         "id": "b_rajam_iyer",
@@ -4564,6 +4586,20 @@
           }
         ],
         "notes": "Rare janya of Chakravakam (16th melakarta); often treated as shadava-shadava with vakra sancharas; associated with Tyagaraja's Enta Muddo Enta Sogaso."
+      },
+      {
+        "id": "brindavana_saranga",
+        "name": "brindavana saranga",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "kharaharapriya",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Brindavani_Sarang",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "chakravakam",
@@ -10940,6 +10976,12 @@
           }
         ],
         "notes": "Kshetrayya padam in Bhairavi."
+      },
+      {
+        "id": "rangapura_vihara",
+        "title": "Rangapura vihara",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "brindavana_saranga"
       },
       {
         "id": "sadhinchane",

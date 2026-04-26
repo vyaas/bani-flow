@@ -4060,8 +4060,39 @@ const elements = [
       "label_tier": 2,
       "font_size": 12,
       "font_weight": "normal",
-      "tracks": [],
-      "is_listenable": 0,
+      "tracks": [
+        {
+          "vid": "Z2noUVoWG78",
+          "label": "Bantureeti Kolu",
+          "composition_id": "bantureeti_kolu",
+          "raga_id": "hamsanadam",
+          "year": null,
+          "version": null,
+          "tala": "adi",
+          "performers": []
+        },
+        {
+          "vid": "s5nfj4DXCbo",
+          "label": "Manavinaalakincha Raadate",
+          "composition_id": "manavinaalakincha_raadate",
+          "raga_id": "nalinakanthi",
+          "year": null,
+          "version": null,
+          "tala": "deshadi",
+          "performers": []
+        },
+        {
+          "vid": "7S2pwtGPZSw",
+          "label": "",
+          "composition_id": "rangapura_vihara",
+          "raga_id": "brindavana_saranga",
+          "year": null,
+          "version": null,
+          "tala": "rupakam",
+          "performers": []
+        }
+      ],
+      "is_listenable": 1,
       "is_composer": 0,
       "composer_id": null
     }
@@ -9452,7 +9483,7 @@ const elements = [
 ];
 
 // ── ADR-055: set of musician node IDs with playable content (recordings or compositions) ─
-const musiciansListenable = new Set(["abhishek_raghuram", "akkarai_subbulakshmi", "alathur_brothers", "ariyakudi_ramanuja_iyengar", "balamuralikrishna", "bombay_jayashri", "coimbatore_n_ramaswamy", "cr_mani_iyer", "dk_pattammal", "gnb", "hyderabad_brothers", "kv_narayanaswamy", "lalgudi_jayaraman", "lalgudi_srimathi_brahmananda", "madurai_mani_iyer", "maharajapuram_santanam", "md_ramanathan", "ml_vasanthakumari", "ms_gopalakrishnan", "ms_subbulakshmi", "musiri_subramania_iyer", "muthuswami_dikshitar", "nityashree_mahadevan", "palghat_mani_iyer", "palghat_raghu", "palghat_rajamani", "patnam_subramanya_iyer", "r_vedavalli", "radha_viswanathan", "ramakrishnan_murthy", "ramnad_krishnan", "ramnad_raghavan", "ranjani_gayatri", "s_sowmya", "sanjay_subrahmanyan", "semmangudi_srinivasa_iyer", "shobhana_rangachari", "shyama_shastri", "subbarama_dikshitar", "subbaraya_sastri", "sudha_ragunathan", "t_brinda", "t_muktha", "t_v_sankaranarayanan", "t_viswanathan", "tm_krishna", "tn_krishnan", "tr_mahalingam", "tyagaraja", "umayalpuram_sivaraman", "vellore_ramabhadran", "vina_dhanammal", "voleti_venkateshwarlu"]);
+const musiciansListenable = new Set(["abhishek_raghuram", "akkarai_subbulakshmi", "alathur_brothers", "ariyakudi_ramanuja_iyengar", "aruna_sairam", "balamuralikrishna", "bombay_jayashri", "coimbatore_n_ramaswamy", "cr_mani_iyer", "dk_pattammal", "gnb", "hyderabad_brothers", "kv_narayanaswamy", "lalgudi_jayaraman", "lalgudi_srimathi_brahmananda", "madurai_mani_iyer", "maharajapuram_santanam", "md_ramanathan", "ml_vasanthakumari", "ms_gopalakrishnan", "ms_subbulakshmi", "musiri_subramania_iyer", "muthuswami_dikshitar", "nityashree_mahadevan", "palghat_mani_iyer", "palghat_raghu", "palghat_rajamani", "patnam_subramanya_iyer", "r_vedavalli", "radha_viswanathan", "ramakrishnan_murthy", "ramnad_krishnan", "ramnad_raghavan", "ranjani_gayatri", "s_sowmya", "sanjay_subrahmanyan", "semmangudi_srinivasa_iyer", "shobhana_rangachari", "shyama_shastri", "subbarama_dikshitar", "subbaraya_sastri", "sudha_ragunathan", "t_brinda", "t_muktha", "t_v_sankaranarayanan", "t_viswanathan", "tm_krishna", "tn_krishnan", "tr_mahalingam", "tyagaraja", "umayalpuram_sivaraman", "vellore_ramabhadran", "vina_dhanammal", "voleti_venkateshwarlu"]);
 
 // ── Compositions data (injected by render.py) ──────────────────────────────
 const ragas        = [
@@ -9699,6 +9730,20 @@ const ragas        = [
       }
     ],
     "notes": "Rare janya of Chakravakam (16th melakarta); often treated as shadava-shadava with vakra sancharas; associated with Tyagaraja's Enta Muddo Enta Sogaso."
+  },
+  {
+    "id": "brindavana_saranga",
+    "name": "brindavana saranga",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": "kharaharapriya",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Brindavani_Sarang",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
   },
   {
     "id": "chakravakam",
@@ -16077,6 +16122,12 @@ const compositions = [
     "notes": "Kshetrayya padam in Bhairavi."
   },
   {
+    "id": "rangapura_vihara",
+    "title": "Rangapura vihara",
+    "composer_id": "muthuswami_dikshitar",
+    "raga_id": "brindavana_saranga"
+  },
+  {
     "id": "sadhinchane",
     "title": "Sadhinchane",
     "composer_id": "tyagaraja",
@@ -17078,6 +17129,18 @@ const compositionToNodes = {
     "umayalpuram_sivaraman",
     "vellore_ramabhadran"
   ],
+  "bantureeti_kolu": [
+    "aruna_sairam",
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "manavinaalakincha_raadate": [
+    "aruna_sairam",
+    "tm_krishna"
+  ],
+  "rangapura_vihara": [
+    "aruna_sairam"
+  ],
   "abhimanamennedu": [
     "balamuralikrishna",
     "hyderabad_brothers",
@@ -17352,9 +17415,6 @@ const compositionToNodes = {
     "t_v_sankaranarayanan"
   ],
   "emaanadicchevo": [
-    "tm_krishna"
-  ],
-  "manavinaalakincha_raadate": [
     "tm_krishna"
   ],
   "gajavadhana": [
@@ -18098,10 +18158,6 @@ const compositionToNodes = {
   "yagnadulu_sukhamanu": [
     "ramnad_krishnan",
     "t_viswanathan"
-  ],
-  "bantureeti_kolu": [
-    "ramnad_krishnan",
-    "t_viswanathan"
   ]
 };
 const ragaToNodes        = {
@@ -18141,6 +18197,18 @@ const ragaToNodes        = {
     "tn_krishnan",
     "lalgudi_jayaraman",
     "vellore_ramabhadran"
+  ],
+  "hamsanadam": [
+    "aruna_sairam",
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "nalinakanthi": [
+    "aruna_sairam",
+    "tm_krishna"
+  ],
+  "brindavana_saranga": [
+    "aruna_sairam"
   ],
   "begada": [
     "balamuralikrishna",
@@ -18485,9 +18553,6 @@ const ragaToNodes        = {
   "valaji": [
     "t_v_sankaranarayanan"
   ],
-  "nalinakanthi": [
-    "tm_krishna"
-  ],
   "kannada_gowla": [
     "tm_krishna"
   ],
@@ -18802,10 +18867,6 @@ const ragaToNodes        = {
     "shobhana_rangachari"
   ],
   "jayamanohari": [
-    "ramnad_krishnan",
-    "t_viswanathan"
-  ],
-  "hamsanadam": [
     "ramnad_krishnan",
     "t_viswanathan"
   ]
@@ -79596,11 +79657,12 @@ document.getElementById('rec-filter').addEventListener('input', function() {
         bracketHasMatch = true;
         return;
       }
-      const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
-      const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
-      const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
-      const metaText     = (li.querySelector('.rec-meta')   || {}).textContent || '';
-      const matches   = [titleText, compChipText, ragaChipText, metaText]
+      const titleText        = (li.querySelector('.rec-title')     || {}).textContent || '';
+      const compChipText     = (li.querySelector('.comp-chip')     || {}).textContent || '';
+      const ragaChipText     = (li.querySelector('.raga-chip')     || {}).textContent || '';
+      const metaText         = (li.querySelector('.rec-meta')      || {}).textContent || '';
+      const composerChipText = (li.querySelector('.composer-chip') || {}).textContent || '';
+      const matches   = [titleText, compChipText, ragaChipText, metaText, composerChipText]
                         .some(t => t.toLowerCase().includes(q));
       li.style.display = matches ? 'flex' : 'none';
       if (matches) bracketHasMatch = true;
@@ -79640,7 +79702,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
       }
       const compText  = (node.querySelector('.comp-chip')     || {}).textContent || '';
       const titleText = (node.querySelector('.rec-title')     || {}).textContent || '';
-      const composerText = (node.querySelector('.composer-label') || {}).textContent || '';
+      const composerText = (node.querySelector('.composer-chip') || {}).textContent || '';
       // Also search inside recording leaves (year / concert title)
       const recText   = node.querySelector('.tree-rec-list')
         ? node.querySelector('.tree-rec-list').textContent : '';
@@ -79666,10 +79728,11 @@ document.getElementById('rec-filter').addEventListener('input', function() {
   // ── legacy flat items (ADR-064: now folded into raga tree; kept for safety) ─
   recList.querySelectorAll('li.rec-legacy').forEach(li => {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
-    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
-    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
-    const matches   = [titleText, compChipText, ragaChipText]
+    const titleText        = (li.querySelector('.rec-title')     || {}).textContent || '';
+    const compChipText     = (li.querySelector('.comp-chip')     || {}).textContent || '';
+    const ragaChipText     = (li.querySelector('.raga-chip')     || {}).textContent || '';
+    const composerChipText = (li.querySelector('.composer-chip') || {}).textContent || '';
+    const matches   = [titleText, compChipText, ragaChipText, composerChipText]
                       .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
@@ -79759,9 +79822,10 @@ document.getElementById('trail-filter').addEventListener('input', function() {
         return;
       }
       // Text to match against: the group header chips + all leaf content
-      const headerComp  = (group.querySelector(':scope > .tree-group-header .comp-chip')     || {}).textContent || '';
-      const headerMusc  = (group.querySelector(':scope > .tree-group-header .musician-chip') || {}).textContent || '';
-      const headerLabel = (group.querySelector(':scope > .tree-group-header .trail-label')   || {}).textContent || '';
+      const headerComp     = (group.querySelector(':scope > .tree-group-header .comp-chip')      || {}).textContent || '';
+      const headerMusc     = (group.querySelector(':scope > .tree-group-header .musician-chip')  || {}).textContent || '';
+      const headerLabel    = (group.querySelector(':scope > .tree-group-header .trail-label')    || {}).textContent || '';
+      const headerComposer = (group.querySelector(':scope > .tree-group-header .composer-chip')  || {}).textContent || '';
       const leaves = group.querySelectorAll('li.tree-leaf');
       let groupMatches = false;
 
@@ -79769,14 +79833,14 @@ document.getElementById('trail-filter').addEventListener('input', function() {
         const primaryText  = (leaf.querySelector('.musician-chip') || {}).textContent || '';
         const coTexts      = [...leaf.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
         const labelText    = (leaf.querySelector('.trail-label')    || {}).textContent || '';
-        const leafMatch = [primaryText, coTexts, headerComp, headerMusc, headerLabel, labelText]
+        const leafMatch = [primaryText, coTexts, headerComp, headerMusc, headerLabel, headerComposer, labelText]
           .some(function(t) { return t.toLowerCase().includes(q); });
         leaf.style.display = leafMatch ? '' : 'none';
         if (leafMatch) groupMatches = true;
       });
 
-      // Header itself matches (e.g. typed composition title) → show all leaves
-      const headerMatch = [headerComp, headerMusc, headerLabel]
+      // Header itself matches (e.g. typed composition title or composer name) → show all leaves
+      const headerMatch = [headerComp, headerMusc, headerLabel, headerComposer]
         .some(function(t) { return t.toLowerCase().includes(q); });
       if (headerMatch) {
         leaves.forEach(function(leaf) { leaf.style.display = ''; });
@@ -79811,12 +79875,13 @@ document.getElementById('trail-filter').addEventListener('input', function() {
   const items = trailList.querySelectorAll('li:not(.trail-no-match)');
   items.forEach(function(li) {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    const primaryText  = (li.querySelector('.trail-artist-primary') || {}).textContent || '';
-    const coTexts      = [...li.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
-    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
-    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
-    const labelText    = (li.querySelector('.trail-label') || {}).textContent || '';
-    const matches      = [primaryText, coTexts, compChipText, ragaChipText, labelText]
+    const primaryText      = (li.querySelector('.trail-artist-primary') || {}).textContent || '';
+    const coTexts          = [...li.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
+    const compChipText     = (li.querySelector('.comp-chip')      || {}).textContent || '';
+    const ragaChipText     = (li.querySelector('.raga-chip')      || {}).textContent || '';
+    const composerChipText = (li.querySelector('.composer-chip')  || {}).textContent || '';
+    const labelText        = (li.querySelector('.trail-label')    || {}).textContent || '';
+    const matches          = [primaryText, coTexts, compChipText, ragaChipText, composerChipText, labelText]
       .some(function(t) { return t.toLowerCase().includes(q); });
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;

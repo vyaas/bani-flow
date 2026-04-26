@@ -704,11 +704,12 @@ document.getElementById('rec-filter').addEventListener('input', function() {
         bracketHasMatch = true;
         return;
       }
-      const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
-      const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
-      const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
-      const metaText     = (li.querySelector('.rec-meta')   || {}).textContent || '';
-      const matches   = [titleText, compChipText, ragaChipText, metaText]
+      const titleText        = (li.querySelector('.rec-title')     || {}).textContent || '';
+      const compChipText     = (li.querySelector('.comp-chip')     || {}).textContent || '';
+      const ragaChipText     = (li.querySelector('.raga-chip')     || {}).textContent || '';
+      const metaText         = (li.querySelector('.rec-meta')      || {}).textContent || '';
+      const composerChipText = (li.querySelector('.composer-chip') || {}).textContent || '';
+      const matches   = [titleText, compChipText, ragaChipText, metaText, composerChipText]
                         .some(t => t.toLowerCase().includes(q));
       li.style.display = matches ? 'flex' : 'none';
       if (matches) bracketHasMatch = true;
@@ -748,7 +749,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
       }
       const compText  = (node.querySelector('.comp-chip')     || {}).textContent || '';
       const titleText = (node.querySelector('.rec-title')     || {}).textContent || '';
-      const composerText = (node.querySelector('.composer-label') || {}).textContent || '';
+      const composerText = (node.querySelector('.composer-chip') || {}).textContent || '';
       // Also search inside recording leaves (year / concert title)
       const recText   = node.querySelector('.tree-rec-list')
         ? node.querySelector('.tree-rec-list').textContent : '';
@@ -774,10 +775,11 @@ document.getElementById('rec-filter').addEventListener('input', function() {
   // ── legacy flat items (ADR-064: now folded into raga tree; kept for safety) ─
   recList.querySelectorAll('li.rec-legacy').forEach(li => {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    const titleText    = (li.querySelector('.rec-title')  || {}).textContent || '';
-    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
-    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
-    const matches   = [titleText, compChipText, ragaChipText]
+    const titleText        = (li.querySelector('.rec-title')     || {}).textContent || '';
+    const compChipText     = (li.querySelector('.comp-chip')     || {}).textContent || '';
+    const ragaChipText     = (li.querySelector('.raga-chip')     || {}).textContent || '';
+    const composerChipText = (li.querySelector('.composer-chip') || {}).textContent || '';
+    const matches   = [titleText, compChipText, ragaChipText, composerChipText]
                       .some(t => t.toLowerCase().includes(q));
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;
@@ -867,9 +869,10 @@ document.getElementById('trail-filter').addEventListener('input', function() {
         return;
       }
       // Text to match against: the group header chips + all leaf content
-      const headerComp  = (group.querySelector(':scope > .tree-group-header .comp-chip')     || {}).textContent || '';
-      const headerMusc  = (group.querySelector(':scope > .tree-group-header .musician-chip') || {}).textContent || '';
-      const headerLabel = (group.querySelector(':scope > .tree-group-header .trail-label')   || {}).textContent || '';
+      const headerComp     = (group.querySelector(':scope > .tree-group-header .comp-chip')      || {}).textContent || '';
+      const headerMusc     = (group.querySelector(':scope > .tree-group-header .musician-chip')  || {}).textContent || '';
+      const headerLabel    = (group.querySelector(':scope > .tree-group-header .trail-label')    || {}).textContent || '';
+      const headerComposer = (group.querySelector(':scope > .tree-group-header .composer-chip')  || {}).textContent || '';
       const leaves = group.querySelectorAll('li.tree-leaf');
       let groupMatches = false;
 
@@ -877,14 +880,14 @@ document.getElementById('trail-filter').addEventListener('input', function() {
         const primaryText  = (leaf.querySelector('.musician-chip') || {}).textContent || '';
         const coTexts      = [...leaf.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
         const labelText    = (leaf.querySelector('.trail-label')    || {}).textContent || '';
-        const leafMatch = [primaryText, coTexts, headerComp, headerMusc, headerLabel, labelText]
+        const leafMatch = [primaryText, coTexts, headerComp, headerMusc, headerLabel, headerComposer, labelText]
           .some(function(t) { return t.toLowerCase().includes(q); });
         leaf.style.display = leafMatch ? '' : 'none';
         if (leafMatch) groupMatches = true;
       });
 
-      // Header itself matches (e.g. typed composition title) → show all leaves
-      const headerMatch = [headerComp, headerMusc, headerLabel]
+      // Header itself matches (e.g. typed composition title or composer name) → show all leaves
+      const headerMatch = [headerComp, headerMusc, headerLabel, headerComposer]
         .some(function(t) { return t.toLowerCase().includes(q); });
       if (headerMatch) {
         leaves.forEach(function(leaf) { leaf.style.display = ''; });
@@ -919,12 +922,13 @@ document.getElementById('trail-filter').addEventListener('input', function() {
   const items = trailList.querySelectorAll('li:not(.trail-no-match)');
   items.forEach(function(li) {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    const primaryText  = (li.querySelector('.trail-artist-primary') || {}).textContent || '';
-    const coTexts      = [...li.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
-    const compChipText = (li.querySelector('.comp-chip')  || {}).textContent || '';
-    const ragaChipText = (li.querySelector('.raga-chip')  || {}).textContent || '';
-    const labelText    = (li.querySelector('.trail-label') || {}).textContent || '';
-    const matches      = [primaryText, coTexts, compChipText, ragaChipText, labelText]
+    const primaryText      = (li.querySelector('.trail-artist-primary') || {}).textContent || '';
+    const coTexts          = [...li.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
+    const compChipText     = (li.querySelector('.comp-chip')      || {}).textContent || '';
+    const ragaChipText     = (li.querySelector('.raga-chip')      || {}).textContent || '';
+    const composerChipText = (li.querySelector('.composer-chip')  || {}).textContent || '';
+    const labelText        = (li.querySelector('.trail-label')    || {}).textContent || '';
+    const matches          = [primaryText, coTexts, compChipText, ragaChipText, composerChipText, labelText]
       .some(function(t) { return t.toLowerCase().includes(q); });
     li.style.display = matches ? 'flex' : 'none';
     if (matches) anyVisible = true;

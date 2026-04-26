@@ -13,5 +13,27 @@
   "era": "contemporary",
   "instrument": "vocal",
   "bani": "dhanammal",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/Z2noUVoWG78",
+      "label": "Bantureeti Kolu",
+      "composition_id": "bantureeti_kolu",
+      "raga_id": "hamsanadam",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/s5nfj4DXCbo",
+      "label": "Manavinaalakincha Raadate",
+      "composition_id": "manavinaalakincha_raadate",
+      "raga_id": "nalinakanthi",
+      "tala": "deshadi"
+    },
+    {
+      "url": "https://youtu.be/7S2pwtGPZSw",
+      "label": "",
+      "composition_id": "rangapura_vihara",
+      "raga_id": "brindavana_saranga",
+      "tala": "rupakam"
+    }
+  ]
 }
