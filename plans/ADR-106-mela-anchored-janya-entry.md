@@ -1,6 +1,6 @@
 # ADR-106: Mela-Anchored Janya Entry and Always-Searchable Melakartas
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-26
 **Agents**: graph-architect (proposer), carnatic-coder (implementer)
 **Depends on**: ADR-021 (melakarta first-class citizens), ADR-022 (raga panel navigability), ADR-023 (raga wheel third view), ADR-031 (data entry forms), ADR-085 (self-replicating curation loop), ADR-103 (co-located edit affordances)

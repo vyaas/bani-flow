@@ -1,6 +1,6 @@
 # ADR-107: Concert-Anchored Recording Entry from the Musician Panel
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-26
 **Agents**: graph-architect (proposer), carnatic-coder (implementer)
 **Depends on**: ADR-018 (concert-bracketed recording groups), ADR-019 (co-performer bracketed trail entries), ADR-026 (concert-anchored player), ADR-031 (data entry forms), ADR-085 (self-replicating curation loop), ADR-103 (co-located edit affordances)

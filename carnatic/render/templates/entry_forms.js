@@ -5,6 +5,13 @@
 // Bundle schema: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
 // addToBundle(type, obj) enforces the whitelist of six item types defined in §4 of
 // that ADR and throws on any unknown type — silent drops are forbidden.
+//
+// ── ADR-103 §3 / ADR-100: global edit bar deprecation ────────────────────────
+// The footer bar (#footer-bar in base.html) is a deprecated fallback. Its buttons
+// have been demoted to secondary-chip dimensions (.entry-btn-deprecated).
+// Co-located triggers on entity panels (ADR-104..107) are the preferred entry
+// points going forward. The bar is removable when ADR-100's coverage matrix is
+// fully green. Do not add new button types here; add co-located triggers instead.
 
 // ── Session bundle state ──────────────────────────────────────────────────────
 // All entry forms can push their output into this shared bundle.
@@ -3694,4 +3701,121 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
   closeBtn2.textContent = 'Close';
   closeBtn2.addEventListener('click', () => win.remove());
   foot.appendChild(closeBtn2);
+}
+
+// ── ADR-103 §2: locked-chip helpers for pre-targeted co-located triggers ─────
+// Replaces the combobox's editable input with a read-only chip + "change" link.
+// The "change" link restores the input for manual re-selection.
+function _lockComboboxField(wrap, label) {
+  const textInp  = wrap.querySelector('.ef-combobox-input');
+  const clearBtn = wrap.querySelector('button[title="Clear selection"]');
+  if (!textInp) return;
+  textInp.style.display = 'none';
+  if (clearBtn) clearBtn.style.display = 'none';
+  const chip = document.createElement('span');
+  chip.className = 'ef-locked-chip';
+  chip.textContent = label;
+  const changeLink = document.createElement('button');
+  changeLink.type = 'button';
+  changeLink.className = 'ef-change-link';
+  changeLink.textContent = 'change';
+  changeLink.title = 'Pick a different value';
+  changeLink.addEventListener('click', function() {
+    chip.remove();
+    changeLink.remove();
+    textInp.style.display = '';
+    textInp.focus();
+  });
+  wrap.appendChild(chip);
+  wrap.appendChild(changeLink);
+}
+
+// ── ADR-105: Pre-targeted Add Composition form (composer-mediated entry) ──────
+// Opens the Add Composition form with composer_id pre-filled and locked.
+// Called from the + chip on a composer panel's Compositions (N) header.
+function openAddCompositionForm({ composerId } = {}) {
+  const win = buildCompositionForm();
+  if (!composerId) return;
+  const hiddenSel = win.querySelector('#ef_comp_composer');
+  if (!hiddenSel) return;
+  const wrap = hiddenSel.parentElement;
+  if (!wrap || typeof wrap.setValue !== 'function') return;
+  const composerObj = (graphData.composers || []).find(c => c.id === composerId);
+  const composerLabel = composerObj ? (composerObj.name || composerId) : composerId;
+  wrap.setValue(composerId, composerLabel);
+  _lockComboboxField(wrap, composerLabel);
+}
+
+// ── ADR-107: Pre-targeted Add Recording form (concert-anchored entry) ─────────
+// Opens the Add Concert Recording form with the musician pre-attached as a
+// performer and their primary instrument inferred as the default role.
+// Called from the + chip on a musician panel's CONCERTS section header.
+function openAddRecordingForm({ musicianId, role } = {}) {
+  const win = buildRecordingForm();
+  if (!musicianId) return;
+  const sessionsContainer = win.querySelector('#ef_rec_sessions');
+  if (!sessionsContainer) return;
+  addSessionBlock(sessionsContainer, win);
+  const sessionBlock = sessionsContainer.querySelector('.ef-session-block');
+  if (!sessionBlock) return;
+  const performersContainer = sessionBlock.querySelector('.ef-performers-container');
+  if (!performersContainer) return;
+  addPerformerBlock(performersContainer, win);
+  const performerBlock = performersContainer.querySelector('.ef-performer-block');
+  if (!performerBlock) return;
+  const musWrap = performerBlock.querySelector('.ef-combobox-wrap');
+  if (!musWrap || typeof musWrap.setValue !== 'function') return;
+  const nodeObj = (graphData.nodes || []).find(n => n.id === musicianId);
+  const musLabel = nodeObj ? (nodeObj.label || musicianId) : musicianId;
+  musWrap.setValue(musicianId, musLabel);
+  _lockComboboxField(musWrap, musLabel);
+  // Pre-fill role from musician's primary instrument (editable — ADR-107 §2)
+  const inferredRole = role || _inferPerformerRole(nodeObj ? (nodeObj.instrument || '') : '');
+  const selects = performerBlock.querySelectorAll('select');
+  if (selects[1]) selects[1].value = inferredRole;
+}
+
+function _inferPerformerRole(instrument) {
+  const ROLE_OPTIONS = ['vocal', 'violin', 'veena', 'flute', 'mridangam', 'ghatam', 'tampura'];
+  const instr = (instrument || '').toLowerCase().trim();
+  return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
+}
+
+// ADR-104 Track A: stub edit form. Opens a "coming soon" notice.
+// Full edit forms will land with ADR-097 Phase C.
+function openEditForm({ entityType, id } = {}) {
+  const LABELS = { musician: 'Musician', raga: 'Raga', comp: 'Composition', composer: 'Composer' };
+  const typeLabel = LABELS[entityType] || 'Entity';
+  const win = createEntryWindow('Edit ' + typeLabel);
+  const body = win.querySelector('.ew-body');
+  const msg = document.createElement('p');
+  msg.style.cssText = 'margin:12px 0; font-size:0.82rem; color:var(--fg-muted); line-height:1.5;';
+  msg.innerHTML = '<strong style="color:var(--fg)">Edit form coming with ADR-097\u00a0Phase\u00a0C.</strong><br>'
+    + 'For now, use the bottom edit bar to make changes.';
+  body.appendChild(msg);
+  return win;
+}
+// Called from the + chip on the Janyas panel header.
+function openAddRagaForm({ parentRagaId, mela } = {}) {
+  const win = buildRagaForm();
+  if (!parentRagaId) return;
+  // Lock "Is Melakarta?" to "No — Janya raga" (non-editable when adding under a mela)
+  const melaSel = win.querySelector('#ef_raga_is_mela');
+  if (melaSel) {
+    melaSel.value = 'false';
+    melaSel.dispatchEvent(new Event('change'));
+    melaSel.disabled = true;
+    melaSel.style.opacity = '0.6';
+  }
+  // Pre-fill + lock the parent_raga combobox
+  const parentSelect = win.querySelector('#ef_raga_parent');
+  if (parentSelect) {
+    const wrap = parentSelect.closest('.ef-combobox-wrap') || parentSelect.parentElement;
+    if (wrap && typeof wrap.setValue === 'function') {
+      const parentRaga = (graphData.ragas || []).find(r => r.id === parentRagaId);
+      const parentLabel = parentRaga ? (parentRaga.name || parentRagaId) : parentRagaId;
+      wrap.setValue(parentRagaId, parentLabel);
+      _lockComboboxField(wrap, parentLabel);
+    }
+  }
 }

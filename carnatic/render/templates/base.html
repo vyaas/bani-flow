@@ -496,6 +496,7 @@
     padding-top: 4px;
   }
   .comp-section-header {
+    display: flex; align-items: center; justify-content: space-between;
     font-size: 0.68rem;
     color: var(--fg-muted);
     padding: 4px 8px 2px;
@@ -535,6 +536,30 @@
   .comp-raga-item:last-child { border-bottom: none; }
   .comp-raga-unknown {
     font-size: 0.72rem; color: var(--fg-muted); font-style: italic;
+  }
+
+  /* ADR-103 §6: co-located add (+) and edit (✎) chips on panel section headers.
+     Used by ADR-104 (✎ on panel headers), ADR-105 (+ on Compositions),
+     ADR-106 (+ on Janyas), ADR-107 (+ on Concerts). */
+  .co-add-chip, .co-edit-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--bg-panel);
+    color: var(--fg-muted); font-size: 0.80rem; line-height: 1;
+    cursor: pointer; user-select: none; flex-shrink: 0;
+    transition: border-color 0.12s, color 0.12s;
+    font-family: inherit; padding: 0;
+  }
+  .co-add-chip:hover, .co-edit-chip:hover {
+    border-color: var(--accent); color: var(--accent);
+  }
+  /* Rec section header with right-edge chip: needs flex layout */
+  .rec-section-header-row {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
   }
 
   /* ── composition list inside bracket ── */
@@ -1007,6 +1032,13 @@
   #bani-janyas-row {
     margin-top: 4px;
     font-size: 0.68rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 4px;
+  }
+  #bani-janyas-panel {
+    flex-basis: 100%;
   }
   .bani-janyas-toggle {
     color: var(--accent-sub); cursor: pointer;
@@ -2110,6 +2142,36 @@
   /* ADR-097: edit button — slightly distinct from add buttons */
   .entry-btn-edit { border-style: dashed; }
   .entry-btn-edit:hover { border-style: solid; }
+  /* ADR-103 §3 / ADR-100: deprecated fallback buttons — secondary-chip dimensions, lowered contrast.
+     The global bar remains as a fallback during the co-located-edits transition window.
+     Removal is gated on ADR-100's coverage matrix being fully green. */
+  .entry-btn-deprecated {
+    font-size: var(--chip-size-secondary);  /* 0.66rem — secondary chip tier */
+    padding: var(--chip-padding-secondary); /* 1px 6px */
+    border-color: var(--border);
+    color: var(--fg-muted);
+    opacity: 0.80;
+  }
+  .entry-btn-deprecated:hover {
+    border-color: var(--fg-sub);
+    color: var(--fg-sub);
+    opacity: 1;
+  }
+  /* ADR-103 §2: locked combobox field chip (pre-targeted form fields) */
+  .ef-locked-chip {
+    display: inline-flex; align-items: center;
+    padding: var(--chip-padding-secondary); border-radius: var(--chip-border-radius);
+    border: 1px solid var(--border); background: var(--bg-input);
+    font-size: var(--chip-size-secondary); color: var(--fg);
+    font-family: inherit; white-space: nowrap;
+  }
+  .ef-change-link {
+    background: none; border: none; padding: 0 4px;
+    font-size: var(--chip-size-secondary); color: var(--accent);
+    cursor: pointer; text-decoration: underline;
+    font-family: inherit;
+  }
+  .ef-change-link:hover { color: var(--fg); }
 
   /* ── ADR-097 \u00a77: entity notes section (soft footnote tier) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
   .entity-notes-section {
@@ -3346,6 +3408,9 @@
             <span id="bani-subject-name"></span>
             <a id="bani-subject-link" class="bani-subject-link" href="#"
                target="_blank" style="display:none">&#8599;</a>
+            <!-- ADR-104 Track A: ✎ stub chip — edit form lands with ADR-097 Phase C -->
+            <button id="bani-edit-chip" class="co-edit-chip" title="Edit (coming soon)"
+                    style="display:none">&#9998;</button>
           </div>
           <div id="bani-subject-sub"></div>
           <!-- Row 3: aliases (ADR-022) -->
@@ -3464,6 +3529,9 @@
           <span id="node-lifespan"></span>
           <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
              style="display:none">&#8599;</a>
+          <!-- ADR-104 Track A: ✎ stub chip — edit form lands with ADR-097 Phase C -->
+          <button id="node-edit-chip" class="co-edit-chip" title="Edit musician (coming soon)"
+                  style="display:none; margin-left:auto">&#9998;</button>
         </div>
         <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
                style="display:none" autocomplete="off" spellcheck="false" />
@@ -3578,15 +3646,18 @@
 }());
 </script>
 
-<!-- ADR-031: footer bar — data entry buttons -->
+<!-- ADR-103 §3 / ADR-100: global edit bar — deprecated fallback.
+     Most edit entry points now live co-located on entity panels (ADR-104..107).
+     This bar persists only until ADR-100's coverage matrix is fully green.
+     Buttons are demoted to secondary-chip dimensions (.entry-btn-deprecated). -->
 <div id="footer-bar">
-  <span style="font-size:0.65rem;color:var(--fg-muted);margin-right:4px;letter-spacing:0.08em;text-transform:uppercase;">Add:</span>
-  <button class="entry-btn" onclick="openEntryForm('musician_recordings')">+ Musician / Recordings</button>
-  <button class="entry-btn" onclick="openEntryForm('composer')">+ Composer</button>
-  <button class="entry-btn" onclick="openEntryForm('raga')">+ Raga</button>
-  <button class="entry-btn" onclick="openEntryForm('composition')">+ Composition</button>
-  <button class="entry-btn" onclick="openEntryForm('recording')">+ Concert Recording</button>
-  <button class="entry-btn entry-btn-edit" onclick="openEntryForm('edit')" title="Patch a field, append to an array, or annotate an entity (ADR-097)">&#9998; Edit</button>
+  <span style="font-size:0.60rem;color:var(--fg-muted);margin-right:2px;font-style:italic;white-space:nowrap;" title="ADR-103: co-located edit affordances replace this bar over time">Most edits now live on the panels. This bar is a fallback.</span>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('musician_recordings')">+ Musician / Recordings</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('composer')">+ Composer</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('raga')">+ Raga</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('composition')">+ Composition</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('recording')">+ Concert Recording</button>
+  <button class="entry-btn entry-btn-edit entry-btn-deprecated" onclick="openEntryForm('edit')" title="Patch a field, append to an array, or annotate an entity (ADR-097)">&#9998; Edit</button>
   <span style="flex:1"></span>
   <button class="entry-btn" id="bundle-download-btn" onclick="downloadBundle()" disabled>&#x2B07; Bundle (0 items)</button>
 </div>

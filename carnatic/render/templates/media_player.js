@@ -1690,12 +1690,26 @@ function buildRecordingsList(nodeId, nodeData) {
     );
   });
 
-  if (concerts.length > 0) {
-    const concertHeader = document.createElement('div');
-    concertHeader.className = 'rec-section-header';
-    concertHeader.textContent = 'Concerts';
-    recList.appendChild(concertHeader);
-  }
+  // ADR-107: CONCERTS section header always rendered (even when empty) so the
+  // + chip is always visible and invites first-concert entry.
+  const concertHeader = document.createElement('div');
+  concertHeader.className = 'rec-section-header-row';
+  const concertHeaderLabel = document.createElement('span');
+  concertHeaderLabel.textContent = 'Concerts';
+  concertHeader.appendChild(concertHeaderLabel);
+  const concertAddChip = document.createElement('button');
+  concertAddChip.type = 'button';
+  concertAddChip.className = 'co-add-chip';
+  concertAddChip.textContent = '+';
+  concertAddChip.title = 'Add a new concert featuring ' + artistLabel;
+  concertAddChip.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (typeof openAddRecordingForm === 'function') {
+      openAddRecordingForm({ musicianId: nodeId });
+    }
+  });
+  concertHeader.appendChild(concertAddChip);
+  recList.appendChild(concertHeader);
 
   concerts.forEach(concert => {
     const bracket = buildConcertBracket(concert, nodeId, artistLabel);
@@ -1745,7 +1759,24 @@ function buildRecordingsList(nodeId, nodeData) {
 
     const compHeader = document.createElement('div');
     compHeader.className = 'comp-section-header';
-    compHeader.textContent = `Compositions (${composerComps.length})`;
+    // ADR-105: label + right-edge + chip for adding a composition by this composer
+    const compHeaderLabel = document.createElement('span');
+    compHeaderLabel.textContent = `Compositions (${composerComps.length})`;
+    compHeader.appendChild(compHeaderLabel);
+    if (composerForNode) {
+      const compAddChip = document.createElement('button');
+      compAddChip.type = 'button';
+      compAddChip.className = 'co-add-chip';
+      compAddChip.textContent = '+';
+      compAddChip.title = 'Add a composition by ' + (composerForNode.name || composerForNode.id);
+      compAddChip.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (typeof openAddCompositionForm === 'function') {
+          openAddCompositionForm({ composerId: composerForNode.id });
+        }
+      });
+      compHeader.appendChild(compAddChip);
+    }
     compSection.appendChild(compHeader);
 
     const compList = document.createElement('ul');
@@ -1840,8 +1871,11 @@ function buildRecordingsList(nodeId, nodeData) {
   }
 
   // ── 6. Show/hide panel ────────────────────────────────────────────────────
+  // ADR-107: always show the panel when a node is selected — even with no
+  // recordings — so the Concerts + chip is always reachable.
   const hasContent = concerts.length > 0 || legacyTracks.length > 0 || composerComps.length > 0
-    || lecdemsBy_.length > 0 || lecdemsAbout_.length > 0;
+    || lecdemsBy_.length > 0 || lecdemsAbout_.length > 0
+    || !!nodeId;  // always true when called from selectNode
   recPanel.style.display  = hasContent ? 'block' : 'none';
   recFilter.style.display = hasContent ? 'block' : 'none';
 

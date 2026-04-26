@@ -1,6 +1,6 @@
 # ADR-100: Edit Coverage Matrix
 
-**Status**: Proposed (index)
+**Status**: Accepted — Track A shipped (ADR-103..107; ADR-104 edit form pending ADR-097 Phase C)
 **Date**: 2026-04-26
 **Agents**: graph-architect (maintainer)
 **Depends on**: ADR-085 (curation loop), ADR-097 (unified Edit form), ADR-103 (co-located edit affordances)
@@ -20,12 +20,12 @@ This file is updated by the Architect every time a new edit affordance ships or 
 
 | Entity type | Create (co-located trigger) | Edit fields (co-located trigger) | Append arrays (co-located trigger) | Notes (co-located trigger) | Global bar (deprecated fallback) |
 |---|---|---|---|---|---|
-| **Musician** | global launcher only* | ADR-104 (`✎` on header) | ADR-104 (via Edit form) | ADR-104 (via Edit form) | ✓ |
-| **Raga (janya)** | ADR-106 (`+` on melakarta panel) | ADR-104 (`✎` on header) | ADR-104 (via Edit form) | ADR-104 (via Edit form) | ✓ |
-| **Raga (melakarta)** | seeded; not user-creatable | ADR-104 (`✎` on header) | ADR-104 (via Edit form) | ADR-104 (via Edit form) | ✓ |
-| **Composition** | ADR-105 (`+` on composer panel) | ADR-104 (`✎` on header) | ADR-104 (via Edit form) | ADR-104 (via Edit form) | ✓ |
-| **Composer** | global launcher only* | ADR-104 (`✎` on header) | ADR-104 (via Edit form) | ADR-104 (via Edit form) | ✓ |
-| **Recording (concert)** | ADR-107 (`+` on musician panel) | (file-shaped, not field-patched) | ADR-101 (segment add on recording panel) | ADR-104-style (via Edit form, future) | ✓ |
+| **Musician** | global launcher only* | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
+| **Raga (janya)** | ✓ ADR-106 (`+` on melakarta panel) | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
+| **Raga (melakarta)** | seeded; not user-creatable | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
+| **Composition** | ✓ ADR-105 (`+` on composer panel) | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
+| **Composer** | global launcher only* | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
+| **Recording (concert)** | ✓ ADR-107 (`+` on musician panel) | (file-shaped, not field-patched) | ADR-101 (segment add on recording panel) | ADR-104-style (via Edit form, future) | ✓ |
 | **Lecdem (youtube entry)** | ADR-082 (`+` on musician panel) | ADR-082 (segment add inline) | ADR-082 (segment add inline) | ADR-082 (via Edit form, future) | ✓ |
 | **Edge (guru-shishya)** | ADR-031 (musician form sub-section) | ADR-104 (via Edit form, when picker supports edges) | — | — | ✓ |
 

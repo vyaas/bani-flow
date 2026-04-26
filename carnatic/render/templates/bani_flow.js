@@ -405,11 +405,27 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       const janyas = ragas.filter(r => r.parent_raga === id);
       janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
+      // ADR-106: always show the row when it's a melakarta (even with 0 janyas, for the + chip)
+      janyasCount.textContent = `(${janyas.length})`;
+      janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
+      janyasRow.style.display = 'block';
+
+      // ADR-106: + chip to add a janya under this melakarta
+      const janyasAddChip = document.createElement('button');
+      janyasAddChip.type = 'button';
+      janyasAddChip.className = 'co-add-chip';
+      janyasAddChip.textContent = '+';
+      janyasAddChip.title = 'Add a janya raga under ' + (raga.name || id);
+      janyasAddChip.style.marginLeft = 'auto';
+      janyasAddChip.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (typeof openAddRagaForm === 'function') {
+          openAddRagaForm({ parentRagaId: id, mela: raga.melakarta });
+        }
+      });
+      janyasRow.insertBefore(janyasAddChip, janyasPanel);
+
       if (janyas.length > 0) {
-        janyasCount.textContent = `(${janyas.length})`;
-        // Toggle label styled like a raga category header: ◈ prefix signals "ragas inside"
-        janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
-        janyasRow.style.display = 'block';
 
         // Render filtered list of janya links — each as a .raga-chip
         function renderJanyaList(filter) {
@@ -459,6 +475,21 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   }
 
   subjectHeader.style.display = 'block';
+
+  // ADR-104 Track A: show ✎ stub chip on bani-flow subject header (raga + comp only)
+  const _baniEditChip = document.getElementById('bani-edit-chip');
+  if (_baniEditChip) {
+    if (type === 'raga' || type === 'comp') {
+      _baniEditChip.style.display = 'inline-flex';
+      _baniEditChip.onclick = function(e) {
+        e.stopPropagation();
+        if (typeof openEditForm === 'function') openEditForm({ entityType: type, id: id });
+      };
+    } else {
+      _baniEditChip.style.display = 'none';
+      _baniEditChip.onclick = null;
+    }
+  }
 
   // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
   _renderBaniFlowLecdemStrip(type, id);
@@ -1243,6 +1274,8 @@ function clearBaniFilter() {
   document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
   document.getElementById('bani-subject-header').style.display = 'none';
+  const _clearBaniEditChip = document.getElementById('bani-edit-chip');
+  if (_clearBaniEditChip) { _clearBaniEditChip.style.display = 'none'; _clearBaniEditChip.onclick = null; }
   const _bfStrip = document.getElementById('bani-lecdem-strip');
   if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';

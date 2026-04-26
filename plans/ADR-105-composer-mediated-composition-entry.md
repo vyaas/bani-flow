@@ -1,6 +1,6 @@
 # ADR-105: Composer-Mediated Composition Entry
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-26
 **Agents**: graph-architect (proposer), carnatic-coder (implementer)
 **Depends on**: ADR-031 (data entry forms), ADR-085 (self-replicating curation loop), ADR-103 (co-located edit affordances)
