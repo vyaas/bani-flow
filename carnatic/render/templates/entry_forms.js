@@ -2397,11 +2397,12 @@ function showGenericSuccess(win, filename, directory) {
   footer.appendChild(closeBtn);
 }
 
-// ── Add/Edit Musician Recordings form ────────────────────────────────────────
-// Merged replacement for the old separate "Add Musician" + "Add YouTube" forms.
-// Toggle between "New Musician" and "Existing Musician" modes at the top.
+// ── Combined Musician/YouTube form (internal — ADR-108 transition) ───────────
+// Preserved as _buildCombinedMusicianYouTubeForm for the YouTube-entry path.
+// The public buildMusicianRecordingsForm() shim now delegates to buildAddMusicianForm().
+// buildAddYouTubeToMusicianForm() wraps this function for co-located YouTube entry.
 
-function buildMusicianRecordingsForm() {
+function _buildCombinedMusicianYouTubeForm() {
   const win = createEntryWindow('Add / Edit Musician Recordings');
   const body = win.querySelector('.ew-body');
 
@@ -3781,9 +3782,14 @@ function _inferPerformerRole(instrument) {
   return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
 }
 
-// ADR-104 Track A: stub edit form. Opens a "coming soon" notice.
-// Full edit forms will land with ADR-097 Phase C.
+// ADR-104 Track A stub / ADR-108 rewire.
+// Musician type is now handled by openEditMusicianForm (ADR-108).
+// Other entity types retain the coming-soon stub until their edit forms ship.
 function openEditForm({ entityType, id } = {}) {
+  if (entityType === 'musician' && id) {
+    openEditMusicianForm(id);
+    return;
+  }
   const LABELS = { musician: 'Musician', raga: 'Raga', comp: 'Composition', composer: 'Composer' };
   const typeLabel = LABELS[entityType] || 'Entity';
   const win = createEntryWindow('Edit ' + typeLabel);
@@ -3791,7 +3797,7 @@ function openEditForm({ entityType, id } = {}) {
   const msg = document.createElement('p');
   msg.style.cssText = 'margin:12px 0; font-size:0.82rem; color:var(--fg-muted); line-height:1.5;';
   msg.innerHTML = '<strong style="color:var(--fg)">Edit form coming with ADR-097\u00a0Phase\u00a0C.</strong><br>'
-    + 'For now, use the bottom edit bar to make changes.';
+    + 'Use the + chips on each panel to add new entries in the meantime.';
   body.appendChild(msg);
   return win;
 }
@@ -3818,4 +3824,304 @@ function openAddRagaForm({ parentRagaId, mela } = {}) {
       _lockComboboxField(wrap, parentLabel);
     }
   }
+}
+
+// ── ADR-108: Add / Edit Musician form (entity fields + edges, no YouTube) ─────
+// Create mode (prefill=null): generates { type:'new', id, label, ... } bundle item.
+// Edit mode (prefill=nodeObj): pre-fills fields, generates { op:'patch', id, fields:{} }.
+// Called by openAddMusicianForm() and openEditMusicianForm(nodeId).
+function buildAddMusicianForm({ prefill = null } = {}) {
+  const isEdit = !!prefill;
+  const win = createEntryWindow(isEdit ? 'Edit Musician' : 'Add Musician');
+  const body = win.querySelector('.ew-body');
+
+  const existingIds = (graphData.nodes || []).map(n => n.id);
+
+  // ── Node fields ───────────────────────────────────────────────────────────
+  body.appendChild(efSection('Musician'));
+
+  const labelInp = efInput('ef_adm_label', 'text', 'e.g. Semmangudi Srinivasa Iyer', null);
+  body.appendChild(efRow('Display Name', true, null, labelInp));
+
+  const idRow = efIdRow('ef_adm_id', 'ef_adm_label', existingIds);
+  body.appendChild(idRow);
+  if (!isEdit) {
+    labelInp.addEventListener('input', idRow._updateId);
+  }
+
+  const bornInp = efInput('ef_adm_born', 'number', 'e.g. 1908', null);
+  bornInp.min = 1600; bornInp.max = 2030;
+  body.appendChild(efRow('Born (year)', false, null, bornInp));
+
+  const diedInp = efInput('ef_adm_died', 'number', 'leave blank if living', null);
+  diedInp.min = 1600; diedInp.max = 2030;
+  body.appendChild(efRow('Died (year)', false, null, diedInp));
+
+  const eraOpts  = ['trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'];
+  const eraSel   = efSelect('ef_adm_era', eraOpts, false);
+  body.appendChild(efRow('Era', true, null, eraSel));
+
+  const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
+  const instrSel  = efSelect('ef_adm_instr', instrOpts, false);
+  body.appendChild(efRow('Instrument', true, null, instrSel));
+
+  // ADR-097 §5: bani not collected at intake — set later via patch by librarian.
+  body.appendChild(efSourceFields('ef_adm'));
+
+  // ── Guru-Shishya Edges ────────────────────────────────────────────────────
+  body.appendChild(efSection('Guru-Shishya Edges'));
+  const edgesContainer = document.createElement('div');
+  edgesContainer.id = 'ef_adm_edges';
+  body.appendChild(edgesContainer);
+
+  const addGuruBtn = efAddBtn('+ Add Guru (this musician is shishya of\u2026)');
+  body.appendChild(addGuruBtn);
+  addGuruBtn.addEventListener('click', () => addEdgeBlock(edgesContainer, 'guru', win));
+
+  const addShishyaBtn = efAddBtn('+ Add Shishya (this musician is guru of\u2026)');
+  body.appendChild(addShishyaBtn);
+  addShishyaBtn.addEventListener('click', () => addEdgeBlock(edgesContainer, 'shishya', win));
+
+  // ── Pre-fill in edit mode ─────────────────────────────────────────────────
+  if (isEdit) {
+    labelInp.value = prefill.label || '';
+    const idInput = idRow._idInput;
+    if (idInput) {
+      idInput.value    = prefill.id;
+      idInput.readOnly = true;
+      idInput.style.opacity = '0.6';
+      // Hide the "Edit" unlock button — node IDs are permanent (CLAUDE.md)
+      const editBtn = idRow.querySelector('.ef-id-edit-btn');
+      if (editBtn) editBtn.style.display = 'none';
+    }
+    if (prefill.born)       bornInp.value  = prefill.born;
+    if (prefill.died)       diedInp.value  = prefill.died;
+    if (prefill.era)        eraSel.value   = prefill.era;
+    if (prefill.instrument) instrSel.value = prefill.instrument;
+    // Pre-fill first source URL
+    const srcUrlInp = win.querySelector('#ef_adm_source_url');
+    if (srcUrlInp && prefill.sources && prefill.sources.length > 0) {
+      const first = prefill.sources[0];
+      srcUrlInp.value = (typeof first === 'string') ? first : (first.url || '');
+    }
+    // Edit-mode note
+    const editNote = document.createElement('p');
+    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+    editNote.textContent = 'Only changed fields are included in the patch bundle item.';
+    body.appendChild(editNote);
+  }
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  const footer = win.querySelector('.ew-footer');
+
+  const bundleBtn = document.createElement('button');
+  bundleBtn.className  = 'ef-download-btn';
+  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.disabled   = true;
+
+  const previewBtn = document.createElement('button');
+  previewBtn.className  = 'ef-preview-btn';
+  previewBtn.textContent = 'Preview JSON';
+
+  const previewPre = document.createElement('pre');
+  previewPre.className = 'ef-preview-pre';
+  body.appendChild(previewPre);
+
+  footer.appendChild(bundleBtn);
+  footer.appendChild(previewBtn);
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function collectEdges(musId) {
+    const edges = [];
+    win.querySelectorAll('#ef_adm_edges .ef-repeat-block').forEach(block => {
+      const direction = block.dataset.direction;
+      const selects   = block.querySelectorAll('select');
+      const inputs    = block.querySelectorAll('input:not([data-combobox-filter])');
+      const otherId   = selects[0] ? selects[0].value          : '';
+      const conf      = inputs[0]  ? parseFloat(inputs[0].value) : 0.90;
+      const edgeSrc   = inputs[1]  ? inputs[1].value.trim()    : '';
+      const note      = inputs[2]  ? inputs[2].value.trim()    : '';
+      if (!otherId) return;
+      const source = direction === 'guru' ? otherId : musId;
+      const target = direction === 'guru' ? musId   : otherId;
+      edges.push({ source, target, confidence: conf, source_url: edgeSrc, note: note || null });
+    });
+    return edges;
+  }
+
+  function getCurrentValues() {
+    return {
+      label: labelInp.value.trim(),
+      born:  bornInp.value ? parseInt(bornInp.value, 10) : null,
+      died:  diedInp.value ? parseInt(diedInp.value, 10) : null,
+      era:   eraSel.value,
+      instr: instrSel.value,
+    };
+  }
+
+  function buildBundleItem() {
+    const id = idRow._idInput ? idRow._idInput.value.trim() : '';
+    const v  = getCurrentValues();
+    const srcUrl = win.querySelector('#ef_adm_source_url') ? win.querySelector('#ef_adm_source_url').value.trim() : '';
+
+    if (isEdit) {
+      // op: patch — only fields that changed from prefill values
+      const fields = {};
+      if (v.label !== (prefill.label || ''))              fields.label      = v.label;
+      if (v.born  !== (prefill.born  || null))            fields.born       = v.born;
+      if (v.died  !== (prefill.died  || null))            fields.died       = v.died;
+      if (v.era   !== (prefill.era   || ''))              fields.era        = v.era;
+      if (v.instr !== (prefill.instrument || ''))         fields.instrument = v.instr;
+      return { op: 'patch', id: prefill.id, fields };
+    }
+
+    return {
+      type:       'new',
+      id,
+      label:      v.label,
+      sources:    [inferSource(srcUrl)],
+      born:       v.born,
+      died:       v.died,
+      era:        v.era,
+      instrument: v.instr,
+      bani:       null,
+      youtube:    [],
+      _edges:     collectEdges(id),
+    };
+  }
+
+  function countChangedFields() {
+    const v = getCurrentValues();
+    let n = 0;
+    if (v.label !== (prefill.label || ''))          n++;
+    if (v.born  !== (prefill.born  || null))        n++;
+    if (v.died  !== (prefill.died  || null))        n++;
+    if (v.era   !== (prefill.era   || ''))          n++;
+    if (v.instr !== (prefill.instrument || ''))     n++;
+    return n;
+  }
+
+  function validate() {
+    let ok = false;
+    if (isEdit) {
+      ok = countChangedFields() > 0;
+    } else {
+      const { label, era, instr } = getCurrentValues();
+      const id     = idRow._idInput ? idRow._idInput.value.trim() : '';
+      const srcUrl = win.querySelector('#ef_adm_source_url') ? win.querySelector('#ef_adm_source_url').value.trim() : '';
+      const dupId  = existingIds.includes(id);
+      ok = !!(label && id && era && instr && srcUrl && !dupId);
+    }
+    bundleBtn.disabled = !ok;
+    if (previewPre.style.display !== 'none') updatePreview();
+  }
+
+  function updatePreview() {
+    try {
+      const item = buildBundleItem();
+      previewPre.textContent = JSON.stringify(item, null, 2);
+    } catch(e) { previewPre.textContent = '(incomplete)'; }
+  }
+
+  win.addEventListener('input',  validate);
+  win.addEventListener('change', validate);
+
+  previewBtn.addEventListener('click', () => {
+    const open = previewPre.style.display !== 'none';
+    previewPre.style.display = open ? 'none' : 'block';
+    previewBtn.textContent   = open ? 'Preview JSON' : 'Hide Preview';
+    if (!open) updatePreview();
+  });
+
+  bundleBtn.addEventListener('click', () => {
+    const item = buildBundleItem();
+    if (!isEdit && item._edges && item._edges.length > 0) {
+      item._edges.forEach(e => addToBundle('edges', e));
+    }
+    const musId = item.id || (isEdit ? prefill.id : '');
+    delete item._edges;
+    addToBundle('musicians', item);
+
+    // Success screen
+    const body2 = win.querySelector('.ew-body');
+    body2.innerHTML = '';
+    const msg = document.createElement('div');
+    msg.className = 'ef-success';
+    msg.innerHTML = isEdit
+      ? `<strong>\u2713 Patch queued for <code>${prefill.id}</code></strong>`
+        + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle to apply the changes.</p>`
+      : `<strong>\u2713 Added to bundle: <code>${musId}</code></strong>`
+        + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle when done adding items.</p>`;
+    body2.appendChild(msg);
+
+    const footer2 = win.querySelector('.ew-footer');
+    footer2.innerHTML = '';
+    if (!isEdit) {
+      const addMoreBtn = document.createElement('button');
+      addMoreBtn.className  = 'ef-preview-btn';
+      addMoreBtn.textContent = 'Add another musician';
+      addMoreBtn.addEventListener('click', () => { win.remove(); buildAddMusicianForm(); });
+      footer2.appendChild(addMoreBtn);
+    }
+    const closeBtn = document.createElement('button');
+    closeBtn.className  = 'ef-preview-btn';
+    closeBtn.textContent = 'Close';
+    closeBtn.addEventListener('click', () => win.remove());
+    footer2.appendChild(closeBtn);
+  });
+
+  validate();
+  return win;
+}
+
+// ── ADR-108: Recordings-only form (YouTube-entry path, musician pre-targetable) ─
+// Switches the combined form to "Existing Musician" mode and optionally
+// pre-selects musicianId. Used by the + chip on panel YouTube section
+// and by the deprecated global bar until ADR-111 removes it.
+function buildAddYouTubeToMusicianForm(musicianId) {
+  const win = _buildCombinedMusicianYouTubeForm();
+  // Switch to "Existing Musician" mode (second .ef-add-btn = existingBtn)
+  const modeBtns = win.querySelectorAll('.ef-add-btn');
+  if (modeBtns[1]) modeBtns[1].click();
+  // Pre-select musician if provided
+  if (musicianId) {
+    const hiddenInp = win.querySelector('#efmr_existing_musician');
+    if (hiddenInp) {
+      const wrap = hiddenInp.parentElement;
+      if (wrap && typeof wrap.setValue === 'function') {
+        const node = (graphData.nodes || []).find(n => n.id === musicianId);
+        if (node) {
+          wrap.setValue(musicianId, node.label || musicianId);
+          wrap.dispatchEvent(new Event('change'));
+          win.dispatchEvent(new Event('input'));
+        }
+      }
+    }
+  }
+  return win;
+}
+
+// ADR-108 transition shim: buildMusicianRecordingsForm → buildAddMusicianForm.
+// Existing call-sites (openEntryForm('musician_recordings'), showBundleSuccess)
+// are preserved. The "Musician / Recordings" global bar button still calls this
+// until ADR-111 removes it.
+function buildMusicianRecordingsForm() { return buildAddMusicianForm(); }
+
+// ── ADR-108: Co-located entry points for musician panel ───────────────────────
+
+// Called from the + chip on the MUSICIAN ♫ panel header.
+function openAddMusicianForm() {
+  buildAddMusicianForm();
+}
+
+// Called from the ✎ chip beside the selected musician's name.
+// Pre-fills the Add Musician form with current node data and switches to patch mode.
+function openEditMusicianForm(nodeId) {
+  const node = (graphData.nodes || []).find(n => n.id === nodeId);
+  if (!node) {
+    // Fallback: open empty add form if node not found
+    buildAddMusicianForm();
+    return;
+  }
+  buildAddMusicianForm({ prefill: node });
 }

@@ -3507,6 +3507,8 @@
         <h3>
           <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
           Musician &#9835;
+          <!-- ADR-108: + chip to add a new musician, always visible -->
+          <button class="co-add-chip" title="Add a new musician" onclick="openAddMusicianForm()" style="margin-left:4px">+</button>
           <span style="display:inline-flex;align-items:center;gap:4px">
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
             <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
@@ -3529,8 +3531,8 @@
           <span id="node-lifespan"></span>
           <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
              style="display:none">&#8599;</a>
-          <!-- ADR-104 Track A: ✎ stub chip — edit form lands with ADR-097 Phase C -->
-          <button id="node-edit-chip" class="co-edit-chip" title="Edit musician (coming soon)"
+          <!-- ADR-104 Track A / ADR-108: ✎ chip rewired to openEditMusicianForm -->
+          <button id="node-edit-chip" class="co-edit-chip" title="Edit this musician"
                   style="display:none; margin-left:auto">&#9998;</button>
         </div>
         <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
