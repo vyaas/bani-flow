@@ -91080,7 +91080,19 @@ function buildAddMusicianForm({ prefill = null } = {}) {
   footer.appendChild(bundleBtn);
   footer.appendChild(previewBtn);
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // In edit mode: provide a direct shortcut to add a YouTube link for this musician.
+  if (isEdit && prefill && prefill.id) {
+    const youtubeBtn = document.createElement('button');
+    youtubeBtn.type = 'button';
+    youtubeBtn.className = 'ef-preview-btn';
+    youtubeBtn.textContent = '+ Add YouTube link';
+    youtubeBtn.title = 'Add a YouTube recording for this musician';
+    youtubeBtn.addEventListener('click', () => {
+      win.remove();
+      buildAddYouTubeToMusicianForm(prefill.id);
+    });
+    footer.appendChild(youtubeBtn);
+  }────────────────────
   function collectEdges(musId) {
     const edges = [];
     win.querySelectorAll('#ef_adm_edges .ef-repeat-block').forEach(block => {
