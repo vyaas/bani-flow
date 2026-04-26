@@ -2133,6 +2133,21 @@
   /* ADR-097: edit button — slightly distinct from add buttons */
   .entry-btn-edit { border-style: dashed; }
   .entry-btn-edit:hover { border-style: solid; }
+  /* ADR-103 §3 / ADR-100: deprecated fallback buttons — secondary-chip dimensions, lowered contrast.
+     The global bar remains as a fallback during the co-located-edits transition window.
+     Removal is gated on ADR-100's coverage matrix being fully green. */
+  .entry-btn-deprecated {
+    font-size: var(--chip-size-secondary);  /* 0.66rem — secondary chip tier */
+    padding: var(--chip-padding-secondary); /* 1px 6px */
+    border-color: var(--border);
+    color: var(--fg-muted);
+    opacity: 0.80;
+  }
+  .entry-btn-deprecated:hover {
+    border-color: var(--fg-sub);
+    color: var(--fg-sub);
+    opacity: 1;
+  }
 
   /* ── ADR-097 \u00a77: entity notes section (soft footnote tier) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
   .entity-notes-section {
@@ -3616,15 +3631,18 @@
 }());
 </script>
 
-<!-- ADR-031: footer bar — data entry buttons -->
+<!-- ADR-103 §3 / ADR-100: global edit bar — deprecated fallback.
+     Most edit entry points now live co-located on entity panels (ADR-104..107).
+     This bar persists only until ADR-100's coverage matrix is fully green.
+     Buttons are demoted to secondary-chip dimensions (.entry-btn-deprecated). -->
 <div id="footer-bar">
-  <span style="font-size:0.65rem;color:var(--fg-muted);margin-right:4px;letter-spacing:0.08em;text-transform:uppercase;">Add:</span>
-  <button class="entry-btn" onclick="openEntryForm('musician_recordings')">+ Musician / Recordings</button>
-  <button class="entry-btn" onclick="openEntryForm('composer')">+ Composer</button>
-  <button class="entry-btn" onclick="openEntryForm('raga')">+ Raga</button>
-  <button class="entry-btn" onclick="openEntryForm('composition')">+ Composition</button>
-  <button class="entry-btn" onclick="openEntryForm('recording')">+ Concert Recording</button>
-  <button class="entry-btn entry-btn-edit" onclick="openEntryForm('edit')" title="Patch a field, append to an array, or annotate an entity (ADR-097)">&#9998; Edit</button>
+  <span style="font-size:0.60rem;color:var(--fg-muted);margin-right:2px;font-style:italic;white-space:nowrap;" title="ADR-103: co-located edit affordances replace this bar over time">Most edits now live on the panels. This bar is a fallback.</span>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('musician_recordings')">+ Musician / Recordings</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('composer')">+ Composer</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('raga')">+ Raga</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('composition')">+ Composition</button>
+  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('recording')">+ Concert Recording</button>
+  <button class="entry-btn entry-btn-edit entry-btn-deprecated" onclick="openEntryForm('edit')" title="Patch a field, append to an array, or annotate an entity (ADR-097)">&#9998; Edit</button>
   <span style="flex:1"></span>
   <button class="entry-btn" id="bundle-download-btn" onclick="downloadBundle()" disabled>&#x2B07; Bundle (0 items)</button>
 </div>
@@ -9733,7 +9751,7 @@ const ragas        = [
   },
   {
     "id": "brindavana_saranga",
-    "name": "brindavana saranga",
+    "name": "Brindavana saranga",
     "aliases": [],
     "melakarta": null,
     "parent_raga": "kharaharapriya",
@@ -86515,6 +86533,13 @@ window.PERFORMER_ROLES = [
 // Bundle schema: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
 // addToBundle(type, obj) enforces the whitelist of six item types defined in §4 of
 // that ADR and throws on any unknown type — silent drops are forbidden.
+//
+// ── ADR-103 §3 / ADR-100: global edit bar deprecation ────────────────────────
+// The footer bar (#footer-bar in base.html) is a deprecated fallback. Its buttons
+// have been demoted to secondary-chip dimensions (.entry-btn-deprecated).
+// Co-located triggers on entity panels (ADR-104..107) are the preferred entry
+// points going forward. The bar is removable when ADR-100's coverage matrix is
+// fully green. Do not add new button types here; add co-located triggers instead.
 
 // ── Session bundle state ──────────────────────────────────────────────────────
 // All entry forms can push their output into this shared bundle.

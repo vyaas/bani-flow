@@ -5,6 +5,13 @@
 // Bundle schema: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
 // addToBundle(type, obj) enforces the whitelist of six item types defined in §4 of
 // that ADR and throws on any unknown type — silent drops are forbidden.
+//
+// ── ADR-103 §3 / ADR-100: global edit bar deprecation ────────────────────────
+// The footer bar (#footer-bar in base.html) is a deprecated fallback. Its buttons
+// have been demoted to secondary-chip dimensions (.entry-btn-deprecated).
+// Co-located triggers on entity panels (ADR-104..107) are the preferred entry
+// points going forward. The bar is removable when ADR-100's coverage matrix is
+// fully green. Do not add new button types here; add co-located triggers instead.
 
 // ── Session bundle state ──────────────────────────────────────────────────────
 // All entry forms can push their output into this shared bundle.
