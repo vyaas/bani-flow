@@ -1,0 +1,118 @@
+{
+  "id": "indian_council_for_cultural_relations_1989",
+  "video_id": "yrk6Utd0Wto",
+  "url": "https://youtu.be/yrk6Utd0Wto",
+  "title": "Indian Council for Cultural Relations 1989",
+  "short_title": "ICCR 1989",
+  "date": "1989",
+  "venue": "Indian Council for Cultural Relations",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/yrk6Utd0Wto",
+      "label": "youtu.be",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ms_gopalakrishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Announcement",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "02:24",
+          "offset_seconds": 144,
+          "composition_id": "pavanathmaja",
+          "raga_id": "nata",
+          "tala": "khanda_capu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Pavanathmaja",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "10:58",
+          "offset_seconds": 658,
+          "composition_id": "raghuvamsa_sudha",
+          "raga_id": "kathanakuthuhalam",
+          "tala": "adi",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": null,
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "18:42",
+          "offset_seconds": 1122,
+          "composition_id": "aparama_bhakthi",
+          "raga_id": "pantuvarali",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Aparama Bhakthi",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "31:25",
+          "offset_seconds": 1885,
+          "composition_id": "brova_bharama",
+          "raga_id": "bahudari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Brova Bharama",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "46:09",
+          "offset_seconds": 2769,
+          "composition_id": null,
+          "raga_id": "sindhu_bhairavi",
+          "tala": "other",
+          "composer_id": null,
+          "display_title": "Tharana",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "49:43",
+          "offset_seconds": 2983,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": null,
+          "notes": null,
+          "type": null
+        }
+      ]
+    }
+  ]
+}

@@ -372,5 +372,23 @@
     "confidence": 1.0,
     "source_url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
     "note": "principal guru"
+  },
+  {
+    "source": "semmangudi_srinivasa_iyer",
+    "target": "vechoor_harihara",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma"
+  },
+  {
+    "source": "vechoor_harihara",
+    "target": "rama_varma",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma"
+  },
+  {
+    "source": "parur_sundaram_iyer",
+    "target": "ms_gopalakrishnan",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Parur_Sundaram_Iyer"
   }
 ]

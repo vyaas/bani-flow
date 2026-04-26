@@ -1,0 +1,14 @@
+{
+  "id": "kathanakuthuhalam",
+  "name": "Kathanakuthuhalam",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kathanakuthuhalam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

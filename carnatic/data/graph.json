@@ -1400,6 +1400,23 @@
         ]
       },
       {
+        "id": "ms_gopalakrishnan",
+        "label": "MS Gopalakrishnan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/M._S._Gopalakrishnan",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1931,
+        "died": 2013,
+        "era": "living_pillars",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "ms_subbulakshmi",
         "label": "MS Subbulakshmi",
         "sources": [
@@ -1586,6 +1603,23 @@
         "youtube": []
       },
       {
+        "id": "parur_sundaram_iyer",
+        "label": "Parur Sundaram Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Parur_Sundaram_Iyer",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1891,
+        "died": 1974,
+        "era": "golden_age",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "patnam_subramanya_iyer",
         "label": "Patnam Subramanya Iyer",
         "sources": [
@@ -1642,6 +1676,36 @@
         "instrument": "vocal",
         "bani": "dhanammal",
         "youtube": []
+      },
+      {
+        "id": "rama_varma",
+        "label": "Rama Varma",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1968,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "veena",
+        "bani": null,
+        "youtube": [
+          {
+            "url": "https://youtu.be/1Ek61jb2G7Q",
+            "label": "On Madurai Mani Iyer",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [],
+              "composition_ids": [],
+              "musician_ids": [
+                "madurai_mani_iyer"
+              ]
+            }
+          }
+        ]
       },
       {
         "id": "ramakrishnan_murthy",
@@ -3780,6 +3844,23 @@
         "youtube": []
       },
       {
+        "id": "vechoor_harihara",
+        "label": "Vechoor Harihara Subramania Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "vellore_ramabhadran",
         "label": "Vellore G. Ramabhadran",
         "sources": [
@@ -4217,6 +4298,24 @@
         "confidence": 1.0,
         "source_url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
         "note": "principal guru"
+      },
+      {
+        "source": "semmangudi_srinivasa_iyer",
+        "target": "vechoor_harihara",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma"
+      },
+      {
+        "source": "vechoor_harihara",
+        "target": "rama_varma",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma"
+      },
+      {
+        "source": "parur_sundaram_iyer",
+        "target": "ms_gopalakrishnan",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/Parur_Sundaram_Iyer"
       }
     ]
   },
@@ -5418,6 +5517,20 @@
         ],
         "notes": "Janya raga distinct from Kapi. Used in padams and varnams. Swati Tirunal's Sumasaayaka is a well-known composition.",
         "is_melakarta": false
+      },
+      {
+        "id": "kathanakuthuhalam",
+        "name": "Kathanakuthuhalam",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "shankarabharanam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Kathanakuthuhalam",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "kedaragaula",
@@ -11848,6 +11961,18 @@
       "venue": "Columbia Records studio session, Chennai",
       "primary_musician_ids": [
         "vina_dhanammal"
+      ]
+    },
+    {
+      "id": "indian_council_for_cultural_relations_1989",
+      "path": "recordings/indian_council_for_cultural_relations_1989.json",
+      "title": "Indian Council for Cultural Relations 1989",
+      "short_title": "ICCR 1989",
+      "date": "1989",
+      "venue": "Indian Council for Cultural Relations",
+      "primary_musician_ids": [
+        "ms_gopalakrishnan",
+        "umayalpuram_sivaraman"
       ]
     },
     {
