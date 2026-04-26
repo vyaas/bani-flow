@@ -2873,6 +2873,13 @@
                 "kind": "kriti",
                 "segment_index": 7,
                 "timestamp": "01:38:50"
+              },
+              {
+                "offset_seconds": 8793,
+                "display_title": "Kripalavala kaladhara",
+                "kind": "kriti",
+                "segment_index": 8,
+                "timestamp": "02:26:33"
               }
             ]
           }
@@ -5992,6 +5999,20 @@
         ],
         "notes": "Janya of Mayamalavagowla (15th melakarta); nishandantya raga (highest note is Nishada); ārohana S R1 G3 M1 P D1 N3, avarohana N3 D1 P M1 G3 R1 S N3; evokes a questioning, yearning, contemplative mood; associated with slow-tempo padams and meditative compositions",
         "is_melakarta": false
+      },
+      {
+        "id": "nadatarangini",
+        "name": "Nadatarangini",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "kharaharapriya",
+        "sources": [
+          {
+            "url": "https://learn.acharyanet.com/programs/krpalavala-nadavarangini",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "naganandini",

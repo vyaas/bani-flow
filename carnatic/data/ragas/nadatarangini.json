@@ -1,0 +1,14 @@
+{
+  "id": "nadatarangini",
+  "name": "Nadatarangini",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://learn.acharyanet.com/programs/krpalavala-nadavarangini",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}
