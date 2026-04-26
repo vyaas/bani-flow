@@ -1055,6 +1055,13 @@
   #bani-janyas-row {
     margin-top: 4px;
     font-size: 0.68rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 4px;
+  }
+  #bani-janyas-panel {
+    flex-basis: 100%;
   }
   .bani-janyas-toggle {
     color: var(--accent-sub); cursor: pointer;
@@ -85350,11 +85357,27 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       const janyas = ragas.filter(r => r.parent_raga === id);
       janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
+      // ADR-106: always show the row when it's a melakarta (even with 0 janyas, for the + chip)
+      janyasCount.textContent = `(${janyas.length})`;
+      janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
+      janyasRow.style.display = 'block';
+
+      // ADR-106: + chip to add a janya under this melakarta
+      const janyasAddChip = document.createElement('button');
+      janyasAddChip.type = 'button';
+      janyasAddChip.className = 'co-add-chip';
+      janyasAddChip.textContent = '+';
+      janyasAddChip.title = 'Add a janya raga under ' + (raga.name || id);
+      janyasAddChip.style.marginLeft = 'auto';
+      janyasAddChip.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (typeof openAddRagaForm === 'function') {
+          openAddRagaForm({ parentRagaId: id, mela: raga.melakarta });
+        }
+      });
+      janyasRow.insertBefore(janyasAddChip, janyasPanel);
+
       if (janyas.length > 0) {
-        janyasCount.textContent = `(${janyas.length})`;
-        // Toggle label styled like a raga category header: ◈ prefix signals "ragas inside"
-        janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
-        janyasRow.style.display = 'block';
 
         // Render filtered list of janya links — each as a .raga-chip
         function renderJanyaList(filter) {
@@ -86563,12 +86586,20 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
     });
 
     // Ragas second
+    // ADR-106: melakartas always appear regardless of coverage; janyas only when covered
     ragas.forEach(r => {
-      const hasNode   = ragaToNodes[r.id]      && ragaToNodes[r.id].length > 0;
-      const hasPerf   = ragaToPerf[r.id]       && ragaToPerf[r.id].length  > 0;
-      const hasLecdem = lecdemsAboutRaga[r.id] && lecdemsAboutRaga[r.id].length > 0;
-      if ((hasNode || hasPerf || hasLecdem) && r.name.toLowerCase().includes(ql)) {
-        results.push({ type: 'raga', id: r.id, primary: '\u25c8 ' + r.name, secondary: null });
+      const hasNode      = ragaToNodes[r.id]      && ragaToNodes[r.id].length > 0;
+      const hasPerf      = ragaToPerf[r.id]       && ragaToPerf[r.id].length  > 0;
+      const hasLecdem    = lecdemsAboutRaga[r.id] && lecdemsAboutRaga[r.id].length > 0;
+      const isMelakarta  = r.is_melakarta === true;
+      const hasCoverage  = hasNode || hasPerf || hasLecdem;
+      if ((isMelakarta || hasCoverage) && r.name.toLowerCase().includes(ql)) {
+        const noCoverage = isMelakarta && !hasCoverage;
+        results.push({
+          type: 'raga', id: r.id,
+          primary: '\u25c8 ' + r.name,
+          secondary: noCoverage ? 'Mela\u00a0' + r.melakarta + '\u00a0\u00b7 no recordings yet\u00a0\u2014 open to add a janya' : null,
+        });
       }
     });
 
@@ -90381,6 +90412,32 @@ function _inferPerformerRole(instrument) {
   const ROLE_OPTIONS = ['vocal', 'violin', 'veena', 'flute', 'mridangam', 'ghatam', 'tampura'];
   const instr = (instrument || '').toLowerCase().trim();
   return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
+}
+
+// ADR-106: open Add Raga form pre-filled and locked to a specific melakarta parent.
+// Called from the + chip on the Janyas panel header.
+function openAddRagaForm({ parentRagaId, mela } = {}) {
+  const win = buildRagaForm();
+  if (!parentRagaId) return;
+  // Lock "Is Melakarta?" to "No — Janya raga" (non-editable when adding under a mela)
+  const melaSel = win.querySelector('#ef_raga_is_mela');
+  if (melaSel) {
+    melaSel.value = 'false';
+    melaSel.dispatchEvent(new Event('change'));
+    melaSel.disabled = true;
+    melaSel.style.opacity = '0.6';
+  }
+  // Pre-fill + lock the parent_raga combobox
+  const parentSelect = win.querySelector('#ef_raga_parent');
+  if (parentSelect) {
+    const wrap = parentSelect.closest('.ef-combobox-wrap') || parentSelect.parentElement;
+    if (wrap && typeof wrap.setValue === 'function') {
+      const parentRaga = (graphData.ragas || []).find(r => r.id === parentRagaId);
+      const parentLabel = parentRaga ? (parentRaga.name || parentRagaId) : parentRagaId;
+      wrap.setValue(parentRagaId, parentLabel);
+      _lockComboboxField(wrap, parentLabel);
+    }
+  }
 }
 // ── empty_tutorials.js (ADR-086) ─────────────────────────────────────────────
 // Renders the null-state tutorial inside the Bani Flow and Musician panels.

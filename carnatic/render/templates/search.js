@@ -134,12 +134,20 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
     });
 
     // Ragas second
+    // ADR-106: melakartas always appear regardless of coverage; janyas only when covered
     ragas.forEach(r => {
-      const hasNode   = ragaToNodes[r.id]      && ragaToNodes[r.id].length > 0;
-      const hasPerf   = ragaToPerf[r.id]       && ragaToPerf[r.id].length  > 0;
-      const hasLecdem = lecdemsAboutRaga[r.id] && lecdemsAboutRaga[r.id].length > 0;
-      if ((hasNode || hasPerf || hasLecdem) && r.name.toLowerCase().includes(ql)) {
-        results.push({ type: 'raga', id: r.id, primary: '\u25c8 ' + r.name, secondary: null });
+      const hasNode      = ragaToNodes[r.id]      && ragaToNodes[r.id].length > 0;
+      const hasPerf      = ragaToPerf[r.id]       && ragaToPerf[r.id].length  > 0;
+      const hasLecdem    = lecdemsAboutRaga[r.id] && lecdemsAboutRaga[r.id].length > 0;
+      const isMelakarta  = r.is_melakarta === true;
+      const hasCoverage  = hasNode || hasPerf || hasLecdem;
+      if ((isMelakarta || hasCoverage) && r.name.toLowerCase().includes(ql)) {
+        const noCoverage = isMelakarta && !hasCoverage;
+        results.push({
+          type: 'raga', id: r.id,
+          primary: '\u25c8 ' + r.name,
+          secondary: noCoverage ? 'Mela\u00a0' + r.melakarta + '\u00a0\u00b7 no recordings yet\u00a0\u2014 open to add a janya' : null,
+        });
       }
     });
 

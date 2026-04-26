@@ -3780,3 +3780,29 @@ function _inferPerformerRole(instrument) {
   const instr = (instrument || '').toLowerCase().trim();
   return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
 }
+
+// ADR-106: open Add Raga form pre-filled and locked to a specific melakarta parent.
+// Called from the + chip on the Janyas panel header.
+function openAddRagaForm({ parentRagaId, mela } = {}) {
+  const win = buildRagaForm();
+  if (!parentRagaId) return;
+  // Lock "Is Melakarta?" to "No — Janya raga" (non-editable when adding under a mela)
+  const melaSel = win.querySelector('#ef_raga_is_mela');
+  if (melaSel) {
+    melaSel.value = 'false';
+    melaSel.dispatchEvent(new Event('change'));
+    melaSel.disabled = true;
+    melaSel.style.opacity = '0.6';
+  }
+  // Pre-fill + lock the parent_raga combobox
+  const parentSelect = win.querySelector('#ef_raga_parent');
+  if (parentSelect) {
+    const wrap = parentSelect.closest('.ef-combobox-wrap') || parentSelect.parentElement;
+    if (wrap && typeof wrap.setValue === 'function') {
+      const parentRaga = (graphData.ragas || []).find(r => r.id === parentRagaId);
+      const parentLabel = parentRaga ? (parentRaga.name || parentRagaId) : parentRagaId;
+      wrap.setValue(parentRagaId, parentLabel);
+      _lockComboboxField(wrap, parentLabel);
+    }
+  }
+}

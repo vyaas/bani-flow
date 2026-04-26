@@ -405,11 +405,27 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       const janyas = ragas.filter(r => r.parent_raga === id);
       janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
+      // ADR-106: always show the row when it's a melakarta (even with 0 janyas, for the + chip)
+      janyasCount.textContent = `(${janyas.length})`;
+      janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
+      janyasRow.style.display = 'block';
+
+      // ADR-106: + chip to add a janya under this melakarta
+      const janyasAddChip = document.createElement('button');
+      janyasAddChip.type = 'button';
+      janyasAddChip.className = 'co-add-chip';
+      janyasAddChip.textContent = '+';
+      janyasAddChip.title = 'Add a janya raga under ' + (raga.name || id);
+      janyasAddChip.style.marginLeft = 'auto';
+      janyasAddChip.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (typeof openAddRagaForm === 'function') {
+          openAddRagaForm({ parentRagaId: id, mela: raga.melakarta });
+        }
+      });
+      janyasRow.insertBefore(janyasAddChip, janyasPanel);
+
       if (janyas.length > 0) {
-        janyasCount.textContent = `(${janyas.length})`;
-        // Toggle label styled like a raga category header: ◈ prefix signals "ragas inside"
-        janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
-        janyasRow.style.display = 'block';
 
         // Render filtered list of janya links — each as a .raga-chip
         function renderJanyaList(filter) {
