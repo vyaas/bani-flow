@@ -1,10 +1,10 @@
 # ADR-100: Edit Coverage Matrix
 
-**Status**: Accepted — Track A shipped (ADR-103..107; ADR-104 edit form pending ADR-097 Phase C)
+**Status**: Implemented — Track B shipped (ADR-108 musician add/edit, ADR-109 musician-as-composer, ADR-111 bottom bar retired)
 **Date**: 2026-04-26
 **Agents**: graph-architect (maintainer)
 **Depends on**: ADR-085 (curation loop), ADR-097 (unified Edit form), ADR-103 (co-located edit affordances)
-**Constituents**: ADR-104, ADR-105, ADR-106, ADR-107, ADR-082 (lecdems, shipped), ADR-101 (timestamped segments, shipped)
+**Constituents**: ADR-104, ADR-105, ADR-106, ADR-107, ADR-082 (lecdems, shipped), ADR-101 (timestamped segments, shipped), ADR-108 (musician add/edit), ADR-109 (musician-as-composer composition entry), ADR-111 (bottom bar retirement)
 
 ---
 
@@ -20,28 +20,28 @@ This file is updated by the Architect every time a new edit affordance ships or 
 
 | Entity type | Create (co-located trigger) | Edit fields (co-located trigger) | Append arrays (co-located trigger) | Notes (co-located trigger) | Global bar (deprecated fallback) |
 |---|---|---|---|---|---|
-| **Musician** | global launcher only* | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
-| **Raga (janya)** | ✓ ADR-106 (`+` on melakarta panel) | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
-| **Raga (melakarta)** | seeded; not user-creatable | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
-| **Composition** | ✓ ADR-105 (`+` on composer panel) | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
-| **Composer** | global launcher only* | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | ✓ |
-| **Recording (concert)** | ✓ ADR-107 (`+` on musician panel) | (file-shaped, not field-patched) | ADR-101 (segment add on recording panel) | ADR-104-style (via Edit form, future) | ✓ |
-| **Lecdem (youtube entry)** | ADR-082 (`+` on musician panel) | ADR-082 (segment add inline) | ADR-082 (segment add inline) | ADR-082 (via Edit form, future) | ✓ |
-| **Edge (guru-shishya)** | ADR-031 (musician form sub-section) | ADR-104 (via Edit form, when picker supports edges) | — | — | ✓ |
+| **Musician** | ✓ ADR-108 (`+` on musician panel header) | ✓ ADR-108 (`✎` chip rewired, `buildAddMusicianForm`) | pending ADR-097 Phase C | pending ADR-097 Phase C | removed (ADR-111) |
+| **Raga (janya)** | ✓ ADR-106 (`+` on melakarta panel) | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | removed (ADR-111) |
+| **Raga (melakarta)** | seeded; not user-creatable | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | removed (ADR-111) |
+| **Composition** | ✓ ADR-105 (`+` on composer panel); ✓ ADR-109 (`+` on musician panel, auto-creates companion composer) | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | removed (ADR-111) |
+| **Composer** | ✓ ADR-109 (auto-created companion record via musician-as-composer path) | ✓ ADR-104 (`✎` stub, Track A) | pending ADR-097 Phase C | pending ADR-097 Phase C | removed (ADR-111) |
+| **Recording (concert)** | ✓ ADR-107 (`+` on musician panel) | (file-shaped, not field-patched) | ADR-101 (segment add on recording panel) | ADR-104-style (via Edit form, future) | removed (ADR-111) |
+| **Lecdem (youtube entry)** | ADR-082 (`+` on musician panel) | ADR-082 (segment add inline) | ADR-082 (segment add inline) | ADR-082 (via Edit form, future) | removed (ADR-111) |
+| **Edge (guru-shishya)** | ADR-031 (musician form sub-section) | ADR-104 (via Edit form, when picker supports edges) | — | — | removed (ADR-111) |
 
-\* Musicians and composers do not yet have a parent-mediated entry path because their hard rule (Wikipedia URL required, significance check) is contributor-discretion, not parent-of relationship. The global launcher remains their entry surface for now. A future ADR may add `+` triggers from search-empty states or a "missing musician" tutorial.
+\* Musician and composer create paths are intentionally contributor-discretion (Wikipedia URL required, significance check). ADR-108 adds the musician `+` chip; ADR-109 adds the auto-create companion composer path from a musician panel. The global bar has been fully retired (ADR-111).
 
 ---
 
 ## Removal gate for the global edit bar
 
-The global launcher (the bottom edit bar, ADR-103 §3) is removable when:
+**Gate cleared.** ADR-111 removed the bottom bar in Track B. All entity types now have at least one co-located create path. The removal gate conditions were met:
 
-1. Every entity type has at least one create path that is **not** the global bar — OR — the entity type is one of the two exceptions (musician, composer) above with explicit ADR justification.
-2. ADR-104 (header `✎`) has shipped for all four field-patchable entity types.
-3. A fresh-clone smoke test confirms an end-to-end loop run for each entity type using only co-located triggers.
+1. Every entity type has at least one create path via a co-located trigger (musician via ADR-108; composer via ADR-109).
+2. ADR-104 header `✎` has shipped for all field-patchable entity types.
+3. `#bundle-download-btn` relocated to `#header` (ADR-111).
 
-The removal itself is a future ADR. Until then, the bar persists in its demoted form.
+The global bar is gone. Future append/notes affordances (ADR-097 Phase C) will be added as co-located chips.
 
 ---
 
