@@ -1457,20 +1457,23 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     row1.className = 'rec-row1';
 
     const ragaObj = seg.raga_id ? ragas.find(r => r.id === seg.raga_id) : null;
+    const talaPart = seg.tala || '';
     const segLabel = seg.display_title || (ragaObj ? ragaObj.name : null) || seg.raga_id || seg.kind || 'Segment';
 
-    if (ragaObj) {
-      const ragaChip = document.createElement('span');
-      ragaChip.className = 'raga-chip';
-      ragaChip.textContent = ragaObj.name;
-      ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
-      ragaChip.addEventListener('click', e => {
+    // Row 1: composition chip (navigable) if tagged, otherwise plain label
+    if (seg.composition_id) {
+      const comp = (typeof compositions !== 'undefined' ? compositions : []).find(c => c.id === seg.composition_id);
+      const compChip = document.createElement('span');
+      compChip.className = 'comp-chip';
+      compChip.textContent = comp ? comp.title : (seg.display_title || '');
+      compChip.title = (comp ? comp.title : (seg.display_title || '')) + ' — Explore in Bani Flow';
+      compChip.addEventListener('click', e => {
         e.stopPropagation();
-        ragaChip.classList.add('chip-tapped');
-        setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
-        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', seg.raga_id);
+        compChip.classList.add('chip-tapped');
+        setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', seg.composition_id);
       });
-      row1.appendChild(ragaChip);
+      row1.appendChild(compChip);
     } else {
       const titleEl = document.createElement('span');
       titleEl.className = 'rec-title';
@@ -1495,6 +1498,48 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     row1.appendChild(buildYtLink(ref.video_id, seg.offset_seconds || 0));
 
     li.appendChild(row1);
+
+    // Row 2: raga chip + tala + composer chip — only when at least one is present
+    if (ragaObj || seg.raga_id || talaPart || seg.composition_id) {
+      const row2 = document.createElement('div');
+      row2.className = 'rec-row2';
+      const metaSpan = document.createElement('span');
+      metaSpan.className = 'rec-meta';
+
+      if (ragaObj) {
+        const ragaChip = document.createElement('span');
+        ragaChip.className = 'raga-chip';
+        ragaChip.textContent = ragaObj.name;
+        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+        ragaChip.addEventListener('click', e => {
+          e.stopPropagation();
+          ragaChip.classList.add('chip-tapped');
+          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+          if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', seg.raga_id);
+        });
+        if (talaPart) {
+          const ragaTalaDiv = document.createElement('div');
+          ragaTalaDiv.className = 'rec-raga-tala';
+          ragaTalaDiv.appendChild(ragaChip);
+          const talaSpan = document.createElement('span');
+          talaSpan.className = 'trail-tala';
+          talaSpan.textContent = formatTala(talaPart);
+          ragaTalaDiv.appendChild(talaSpan);
+          metaSpan.appendChild(ragaTalaDiv);
+        } else {
+          metaSpan.appendChild(ragaChip);
+        }
+      } else if (seg.raga_id || talaPart) {
+        metaSpan.textContent = [(seg.raga_id), formatTala(talaPart)].filter(Boolean).join(' · ');
+      }
+
+      const composerChip = buildComposerChip(seg.composition_id);
+      if (composerChip) metaSpan.appendChild(composerChip);
+
+      row2.appendChild(metaSpan);
+      li.appendChild(row2);
+    }
+
     segList.appendChild(li);
   });
 
@@ -1649,6 +1694,13 @@ function buildRecordingsList(nodeId, nodeData) {
       (a, b) => a.session_index - b.session_index
     );
   });
+
+  if (concerts.length > 0) {
+    const concertHeader = document.createElement('div');
+    concertHeader.className = 'rec-section-header';
+    concertHeader.textContent = 'Concerts';
+    recList.appendChild(concertHeader);
+  }
 
   concerts.forEach(concert => {
     const bracket = buildConcertBracket(concert, nodeId, artistLabel);
