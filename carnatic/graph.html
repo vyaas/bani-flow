@@ -81927,120 +81927,132 @@ function buildRecordingsList(nodeId, nodeData) {
       )
     : [];
 
-  if (composerComps.length > 0) {
+  // ── 4 (ADR-109). Compositions by this musician ─────────────────────────────
+  // + chip always visible regardless of whether a composer record is linked.
+  // Passes { composerId } when found, { musicianId } otherwise — openAddCompositionForm
+  // handles the auto-create companion composer record path (ADR-109 §2).
+  {
     const compSection = document.createElement('div');
     compSection.className = 'comp-section';
 
     const compHeader = document.createElement('div');
     compHeader.className = 'comp-section-header';
-    // ADR-105: label + right-edge + chip for adding a composition by this composer
     const compHeaderLabel = document.createElement('span');
     compHeaderLabel.textContent = `Compositions (${composerComps.length})`;
     compHeader.appendChild(compHeaderLabel);
-    if (composerForNode) {
-      const compAddChip = document.createElement('button');
-      compAddChip.type = 'button';
-      compAddChip.className = 'co-add-chip';
-      compAddChip.textContent = '+';
-      compAddChip.title = 'Add a composition by ' + (composerForNode.name || composerForNode.id);
-      compAddChip.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (typeof openAddCompositionForm === 'function') {
+
+    // + chip — always present (ADR-109 §1)
+    const compAddChip = document.createElement('button');
+    compAddChip.type = 'button';
+    compAddChip.className = 'co-add-chip';
+    compAddChip.textContent = '+';
+    compAddChip.title = composerForNode
+      ? 'Add a composition by ' + (composerForNode.name || composerForNode.id)
+      : 'Add a composition by this musician';
+    compAddChip.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof openAddCompositionForm === 'function') {
+        if (composerForNode) {
           openAddCompositionForm({ composerId: composerForNode.id });
+        } else {
+          openAddCompositionForm({ musicianId: nodeId });
         }
-      });
-      compHeader.appendChild(compAddChip);
-    }
+      }
+    });
+    compHeader.appendChild(compAddChip);
     compSection.appendChild(compHeader);
 
-    const compList = document.createElement('ul');
-    compList.className = 'comp-section-list';
+    if (composerComps.length > 0) {
+      const compList = document.createElement('ul');
+      compList.className = 'comp-section-list';
 
-    // ── Group compositions by raga (raga-first tree) ──────────────────────
-    const ragaList = typeof ragas !== 'undefined' ? ragas : [];
-    const byRaga = {};
-    const ragaOrder = [];
-    composerComps.forEach(comp => {
-      const key = comp.raga_id || '__no_raga__';
-      if (!byRaga[key]) { byRaga[key] = []; ragaOrder.push(key); }
-      byRaga[key].push(comp);
-    });
-    // Sort raga groups alphabetically by raga name
-    ragaOrder.sort((a, b) => {
-      if (a === '__no_raga__') return 1;
-      if (b === '__no_raga__') return -1;
-      const ra = ragaList.find(r => r.id === a);
-      const rb = ragaList.find(r => r.id === b);
-      return (ra ? ra.name : a).localeCompare(rb ? rb.name : b);
-    });
-
-    ragaOrder.forEach(ragaId => {
-      const compsInRaga = byRaga[ragaId]
-        .slice()
-        .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-
-      const groupLi = document.createElement('li');
-      groupLi.className = 'comp-raga-group';
-
-      // Raga header row
-      const groupHeader = document.createElement('div');
-      groupHeader.className = 'comp-raga-header';
-
-      if (ragaId !== '__no_raga__') {
-        const ragaObj = ragaList.find(r => r.id === ragaId);
-        if (ragaObj) {
-          const ragaChip = document.createElement('span');
-          ragaChip.className = 'raga-chip';
-          ragaChip.textContent = ragaObj.name;
-          ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
-          ragaChip.addEventListener('click', e => {
-            e.stopPropagation();
-            ragaChip.classList.add('chip-tapped');
-            setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
-            triggerBaniSearch('raga', ragaId);
-          });
-          groupHeader.appendChild(ragaChip);
-        }
-      } else {
-        const unknownLabel = document.createElement('span');
-        unknownLabel.className = 'comp-raga-unknown';
-        unknownLabel.textContent = 'Unknown raga';
-        groupHeader.appendChild(unknownLabel);
-      }
-
-      const countBadge = document.createElement('span');
-      countBadge.className = 'rec-group-count';
-      countBadge.textContent = `(${compsInRaga.length})`;
-      groupHeader.appendChild(countBadge);
-      groupLi.appendChild(groupHeader);
-
-      // Composition items indented under raga
-      const childList = document.createElement('ul');
-      childList.className = 'comp-raga-children';
-
-      compsInRaga.forEach(comp => {
-        const li = document.createElement('li');
-        li.className = 'comp-raga-item';
-
-        const compChip = document.createElement('span');
-        compChip.className = 'comp-chip';
-        compChip.textContent = comp.title || comp.id;
-        compChip.title = (comp.title || comp.id) + ' — Explore in Bani Flow';
-        compChip.addEventListener('click', e => {
-          e.stopPropagation();
-          compChip.classList.add('chip-tapped');
-          setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
-          triggerBaniSearch('comp', comp.id);
-        });
-        li.appendChild(compChip);
-        childList.appendChild(li);
+      // ── Group compositions by raga (raga-first tree) ──────────────────────
+      const ragaList = typeof ragas !== 'undefined' ? ragas : [];
+      const byRaga = {};
+      const ragaOrder = [];
+      composerComps.forEach(comp => {
+        const key = comp.raga_id || '__no_raga__';
+        if (!byRaga[key]) { byRaga[key] = []; ragaOrder.push(key); }
+        byRaga[key].push(comp);
+      });
+      // Sort raga groups alphabetically by raga name
+      ragaOrder.sort((a, b) => {
+        if (a === '__no_raga__') return 1;
+        if (b === '__no_raga__') return -1;
+        const ra = ragaList.find(r => r.id === a);
+        const rb = ragaList.find(r => r.id === b);
+        return (ra ? ra.name : a).localeCompare(rb ? rb.name : b);
       });
 
-      groupLi.appendChild(childList);
-      compList.appendChild(groupLi);
-    });
+      ragaOrder.forEach(ragaId => {
+        const compsInRaga = byRaga[ragaId]
+          .slice()
+          .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
-    compSection.appendChild(compList);
+        const groupLi = document.createElement('li');
+        groupLi.className = 'comp-raga-group';
+
+        // Raga header row
+        const groupHeader = document.createElement('div');
+        groupHeader.className = 'comp-raga-header';
+
+        if (ragaId !== '__no_raga__') {
+          const ragaObj = ragaList.find(r => r.id === ragaId);
+          if (ragaObj) {
+            const ragaChip = document.createElement('span');
+            ragaChip.className = 'raga-chip';
+            ragaChip.textContent = ragaObj.name;
+            ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+            ragaChip.addEventListener('click', e => {
+              e.stopPropagation();
+              ragaChip.classList.add('chip-tapped');
+              setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+              triggerBaniSearch('raga', ragaId);
+            });
+            groupHeader.appendChild(ragaChip);
+          }
+        } else {
+          const unknownLabel = document.createElement('span');
+          unknownLabel.className = 'comp-raga-unknown';
+          unknownLabel.textContent = 'Unknown raga';
+          groupHeader.appendChild(unknownLabel);
+        }
+
+        const countBadge = document.createElement('span');
+        countBadge.className = 'rec-group-count';
+        countBadge.textContent = `(${compsInRaga.length})`;
+        groupHeader.appendChild(countBadge);
+        groupLi.appendChild(groupHeader);
+
+        // Composition items indented under raga
+        const childList = document.createElement('ul');
+        childList.className = 'comp-raga-children';
+
+        compsInRaga.forEach(comp => {
+          const li = document.createElement('li');
+          li.className = 'comp-raga-item';
+
+          const compChip = document.createElement('span');
+          compChip.className = 'comp-chip';
+          compChip.textContent = comp.title || comp.id;
+          compChip.title = (comp.title || comp.id) + ' \u2014 Explore in Bani Flow';
+          compChip.addEventListener('click', e => {
+            e.stopPropagation();
+            compChip.classList.add('chip-tapped');
+            setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+            triggerBaniSearch('comp', comp.id);
+          });
+          li.appendChild(compChip);
+          childList.appendChild(li);
+        });
+
+        groupLi.appendChild(childList);
+        compList.appendChild(groupLi);
+      });
+
+      compSection.appendChild(compList);
+    }
+
     recList.appendChild(compSection);
   }
 
@@ -90402,20 +90414,125 @@ function _lockComboboxField(wrap, label) {
   wrap.appendChild(changeLink);
 }
 
-// ── ADR-105: Pre-targeted Add Composition form (composer-mediated entry) ──────
-// Opens the Add Composition form with composer_id pre-filled and locked.
-// Called from the + chip on a composer panel's Compositions (N) header.
-function openAddCompositionForm({ composerId } = {}) {
-  const win = buildCompositionForm();
-  if (!composerId) return;
-  const hiddenSel = win.querySelector('#ef_comp_composer');
-  if (!hiddenSel) return;
-  const wrap = hiddenSel.parentElement;
-  if (!wrap || typeof wrap.setValue !== 'function') return;
-  const composerObj = (graphData.composers || []).find(c => c.id === composerId);
-  const composerLabel = composerObj ? (composerObj.name || composerId) : composerId;
-  wrap.setValue(composerId, composerLabel);
-  _lockComboboxField(wrap, composerLabel);
+// ADR-105 / ADR-109: Pre-targeted Add Composition form.
+// Called from the + chip on a Compositions section header.
+// Accepts { composerId } (composer record exists) OR { musicianId }
+// (musician has no composer record yet — musician-as-composer mode).
+function openAddCompositionForm({ composerId, musicianId } = {}) {
+  // If composerId not given but musicianId is, resolve via linked composer record.
+  let resolvedComposerId = composerId;
+  let _musicianNode = null;
+  if (!resolvedComposerId && musicianId) {
+    const linkedComposer = (graphData.composers || []).find(c => c.musician_node_id === musicianId);
+    if (linkedComposer) {
+      resolvedComposerId = linkedComposer.id;
+    } else {
+      // musician-as-composer mode — no linked composer record yet
+      _musicianNode = (graphData.nodes || []).find(n => n.id === musicianId);
+    }
+  }
+
+  if (resolvedComposerId) {
+    // Standard path — composer record exists, lock the composer field.
+    const win = buildCompositionForm();
+    const hiddenSel = win.querySelector('#ef_comp_composer');
+    if (!hiddenSel) return;
+    const wrap = hiddenSel.parentElement;
+    if (!wrap || typeof wrap.setValue !== 'function') return;
+    const composerObj = (graphData.composers || []).find(c => c.id === resolvedComposerId);
+    const composerLabel = composerObj ? (composerObj.name || resolvedComposerId) : resolvedComposerId;
+    wrap.setValue(resolvedComposerId, composerLabel);
+    _lockComboboxField(wrap, composerLabel);
+    return;
+  }
+
+  if (_musicianNode) {
+    // ADR-109 §2–3: musician-as-composer mode.
+    // Opens composition form, locks composer field with a notice.
+    // On bundle submit, emits both a companion composers create item and
+    // the compositions create item.
+    const win = buildCompositionForm();
+    const hiddenSel = win.querySelector('#ef_comp_composer');
+    if (!hiddenSel) return;
+    const wrap = hiddenSel.parentElement;
+    if (!wrap || typeof wrap.setValue !== 'function') return;
+    const companionId    = _musicianNode.id;
+    const companionLabel = _musicianNode.label || _musicianNode.id;
+    wrap.setValue(companionId, companionLabel);
+    _lockComboboxField(wrap, companionLabel + ' (composer record auto-created)');
+
+    // Replace original bundle button to prevent double-submit.
+    const footer = win.querySelector('.ew-footer');
+    const origBundleBtn = footer ? footer.querySelector('.ef-download-btn') : null;
+    if (origBundleBtn) {
+      const newBundleBtn = document.createElement('button');
+      newBundleBtn.type = 'button';
+      newBundleBtn.className = origBundleBtn.className;
+      newBundleBtn.textContent = origBundleBtn.textContent;
+      newBundleBtn.disabled = true;
+      origBundleBtn.parentNode.replaceChild(newBundleBtn, origBundleBtn);
+
+      // Notice shown above the button
+      const notice = document.createElement('p');
+      notice.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:6px 0 2px;';
+      notice.textContent = '\u2139\ufe0f A companion composer record for \u201c'
+        + companionLabel + '\u201d will be added to the bundle automatically.';
+      footer.insertBefore(notice, newBundleBtn);
+
+      // Keep button disabled state in sync with form validity.
+      const existingCompIds = (graphData.compositions || []).map(c => c.id);
+      function syncValidation() {
+        const title  = win.querySelector('#ef_comp_title') ? win.querySelector('#ef_comp_title').value.trim() : '';
+        const compId = win.querySelector('#ef_comp_id')    ? win.querySelector('#ef_comp_id').value.trim()    : '';
+        const ragaId = win.querySelector('#ef_comp_raga')  ? win.querySelector('#ef_comp_raga').value          : '';
+        const dupId  = existingCompIds.includes(compId);
+        newBundleBtn.disabled = !(title && compId && ragaId && !dupId);
+      }
+      win.addEventListener('input',  syncValidation);
+      win.addEventListener('change', syncValidation);
+      syncValidation();
+
+      newBundleBtn.addEventListener('click', () => {
+        const compObj = generateCompositionJson(win);
+        // 1. Companion composer record (ADR-109 §3)
+        addToBundle('composers', {
+          op:               'create',
+          id:               companionId,
+          name:             companionLabel,
+          musician_node_id: _musicianNode.id,
+          born:             _musicianNode.born || null,
+          died:             _musicianNode.died || null,
+          sources:          [],
+        });
+        // 2. Composition
+        addToBundle('compositions', compObj);
+
+        // Success screen
+        const body = win.querySelector('.ew-body');
+        body.innerHTML = '';
+        const msg = document.createElement('div');
+        msg.className = 'ef-success';
+        msg.innerHTML = '<strong>\u2713 Two items added to bundle:</strong>'
+          + '<ul style="margin:6px 0;padding-left:1.2em;font-size:0.72rem;">'
+          + '<li>Composer record: <code>' + companionId + '</code></li>'
+          + '<li>Composition: <code>' + compObj.id + '</code></li>'
+          + '</ul>'
+          + '<p style="margin:4px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle to apply.</p>';
+        body.appendChild(msg);
+        const footer2 = win.querySelector('.ew-footer');
+        footer2.innerHTML = '';
+        const closeBtn = document.createElement('button');
+        closeBtn.className   = 'ef-preview-btn';
+        closeBtn.textContent = 'Close';
+        closeBtn.addEventListener('click', () => win.remove());
+        footer2.appendChild(closeBtn);
+      });
+    }
+    return;
+  }
+
+  // Fallback: no pre-targeting — open plain form.
+  buildCompositionForm();
 }
 
 // ── ADR-107: Pre-targeted Add Recording form (concert-anchored entry) ─────────

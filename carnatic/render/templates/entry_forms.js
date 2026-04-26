@@ -3731,20 +3731,125 @@ function _lockComboboxField(wrap, label) {
   wrap.appendChild(changeLink);
 }
 
-// ── ADR-105: Pre-targeted Add Composition form (composer-mediated entry) ──────
-// Opens the Add Composition form with composer_id pre-filled and locked.
-// Called from the + chip on a composer panel's Compositions (N) header.
-function openAddCompositionForm({ composerId } = {}) {
-  const win = buildCompositionForm();
-  if (!composerId) return;
-  const hiddenSel = win.querySelector('#ef_comp_composer');
-  if (!hiddenSel) return;
-  const wrap = hiddenSel.parentElement;
-  if (!wrap || typeof wrap.setValue !== 'function') return;
-  const composerObj = (graphData.composers || []).find(c => c.id === composerId);
-  const composerLabel = composerObj ? (composerObj.name || composerId) : composerId;
-  wrap.setValue(composerId, composerLabel);
-  _lockComboboxField(wrap, composerLabel);
+// ADR-105 / ADR-109: Pre-targeted Add Composition form.
+// Called from the + chip on a Compositions section header.
+// Accepts { composerId } (composer record exists) OR { musicianId }
+// (musician has no composer record yet — musician-as-composer mode).
+function openAddCompositionForm({ composerId, musicianId } = {}) {
+  // If composerId not given but musicianId is, resolve via linked composer record.
+  let resolvedComposerId = composerId;
+  let _musicianNode = null;
+  if (!resolvedComposerId && musicianId) {
+    const linkedComposer = (graphData.composers || []).find(c => c.musician_node_id === musicianId);
+    if (linkedComposer) {
+      resolvedComposerId = linkedComposer.id;
+    } else {
+      // musician-as-composer mode — no linked composer record yet
+      _musicianNode = (graphData.nodes || []).find(n => n.id === musicianId);
+    }
+  }
+
+  if (resolvedComposerId) {
+    // Standard path — composer record exists, lock the composer field.
+    const win = buildCompositionForm();
+    const hiddenSel = win.querySelector('#ef_comp_composer');
+    if (!hiddenSel) return;
+    const wrap = hiddenSel.parentElement;
+    if (!wrap || typeof wrap.setValue !== 'function') return;
+    const composerObj = (graphData.composers || []).find(c => c.id === resolvedComposerId);
+    const composerLabel = composerObj ? (composerObj.name || resolvedComposerId) : resolvedComposerId;
+    wrap.setValue(resolvedComposerId, composerLabel);
+    _lockComboboxField(wrap, composerLabel);
+    return;
+  }
+
+  if (_musicianNode) {
+    // ADR-109 §2–3: musician-as-composer mode.
+    // Opens composition form, locks composer field with a notice.
+    // On bundle submit, emits both a companion composers create item and
+    // the compositions create item.
+    const win = buildCompositionForm();
+    const hiddenSel = win.querySelector('#ef_comp_composer');
+    if (!hiddenSel) return;
+    const wrap = hiddenSel.parentElement;
+    if (!wrap || typeof wrap.setValue !== 'function') return;
+    const companionId    = _musicianNode.id;
+    const companionLabel = _musicianNode.label || _musicianNode.id;
+    wrap.setValue(companionId, companionLabel);
+    _lockComboboxField(wrap, companionLabel + ' (composer record auto-created)');
+
+    // Replace original bundle button to prevent double-submit.
+    const footer = win.querySelector('.ew-footer');
+    const origBundleBtn = footer ? footer.querySelector('.ef-download-btn') : null;
+    if (origBundleBtn) {
+      const newBundleBtn = document.createElement('button');
+      newBundleBtn.type = 'button';
+      newBundleBtn.className = origBundleBtn.className;
+      newBundleBtn.textContent = origBundleBtn.textContent;
+      newBundleBtn.disabled = true;
+      origBundleBtn.parentNode.replaceChild(newBundleBtn, origBundleBtn);
+
+      // Notice shown above the button
+      const notice = document.createElement('p');
+      notice.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:6px 0 2px;';
+      notice.textContent = '\u2139\ufe0f A companion composer record for \u201c'
+        + companionLabel + '\u201d will be added to the bundle automatically.';
+      footer.insertBefore(notice, newBundleBtn);
+
+      // Keep button disabled state in sync with form validity.
+      const existingCompIds = (graphData.compositions || []).map(c => c.id);
+      function syncValidation() {
+        const title  = win.querySelector('#ef_comp_title') ? win.querySelector('#ef_comp_title').value.trim() : '';
+        const compId = win.querySelector('#ef_comp_id')    ? win.querySelector('#ef_comp_id').value.trim()    : '';
+        const ragaId = win.querySelector('#ef_comp_raga')  ? win.querySelector('#ef_comp_raga').value          : '';
+        const dupId  = existingCompIds.includes(compId);
+        newBundleBtn.disabled = !(title && compId && ragaId && !dupId);
+      }
+      win.addEventListener('input',  syncValidation);
+      win.addEventListener('change', syncValidation);
+      syncValidation();
+
+      newBundleBtn.addEventListener('click', () => {
+        const compObj = generateCompositionJson(win);
+        // 1. Companion composer record (ADR-109 §3)
+        addToBundle('composers', {
+          op:               'create',
+          id:               companionId,
+          name:             companionLabel,
+          musician_node_id: _musicianNode.id,
+          born:             _musicianNode.born || null,
+          died:             _musicianNode.died || null,
+          sources:          [],
+        });
+        // 2. Composition
+        addToBundle('compositions', compObj);
+
+        // Success screen
+        const body = win.querySelector('.ew-body');
+        body.innerHTML = '';
+        const msg = document.createElement('div');
+        msg.className = 'ef-success';
+        msg.innerHTML = '<strong>\u2713 Two items added to bundle:</strong>'
+          + '<ul style="margin:6px 0;padding-left:1.2em;font-size:0.72rem;">'
+          + '<li>Composer record: <code>' + companionId + '</code></li>'
+          + '<li>Composition: <code>' + compObj.id + '</code></li>'
+          + '</ul>'
+          + '<p style="margin:4px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle to apply.</p>';
+        body.appendChild(msg);
+        const footer2 = win.querySelector('.ew-footer');
+        footer2.innerHTML = '';
+        const closeBtn = document.createElement('button');
+        closeBtn.className   = 'ef-preview-btn';
+        closeBtn.textContent = 'Close';
+        closeBtn.addEventListener('click', () => win.remove());
+        footer2.appendChild(closeBtn);
+      });
+    }
+    return;
+  }
+
+  // Fallback: no pre-targeting — open plain form.
+  buildCompositionForm();
 }
 
 // ── ADR-107: Pre-targeted Add Recording form (concert-anchored entry) ─────────
