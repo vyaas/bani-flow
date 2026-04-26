@@ -2109,18 +2109,7 @@
     background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
   }
 
-  /* ── ADR-031: footer bar — data entry entry point ── */
-  #footer-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 16px;
-    height: 36px;
-    background: var(--bg-panel);
-    border-top: 2px solid var(--border-strong);
-    flex-shrink: 0;
-    z-index: 10;
-  }
+  /* ── ADR-031/111: entry button base (footer bar removed in ADR-111) ── */
   .entry-btn {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 10px; border-radius: 10px;
@@ -2142,21 +2131,6 @@
   /* ADR-097: edit button — slightly distinct from add buttons */
   .entry-btn-edit { border-style: dashed; }
   .entry-btn-edit:hover { border-style: solid; }
-  /* ADR-103 §3 / ADR-100: deprecated fallback buttons — secondary-chip dimensions, lowered contrast.
-     The global bar remains as a fallback during the co-located-edits transition window.
-     Removal is gated on ADR-100's coverage matrix being fully green. */
-  .entry-btn-deprecated {
-    font-size: var(--chip-size-secondary);  /* 0.66rem — secondary chip tier */
-    padding: var(--chip-padding-secondary); /* 1px 6px */
-    border-color: var(--border);
-    color: var(--fg-muted);
-    opacity: 0.80;
-  }
-  .entry-btn-deprecated:hover {
-    border-color: var(--fg-sub);
-    color: var(--fg-sub);
-    opacity: 1;
-  }
   /* ADR-103 §2: locked combobox field chip (pre-targeted form fields) */
   .ef-locked-chip {
     display: inline-flex; align-items: center;
@@ -2878,11 +2852,6 @@
       max-height: 60vh;
     }
 
-    /* ── Footer bar: hide on mobile (entry forms not mobile-usable) ── */
-    #footer-bar {
-      display: none;
-    }
-
     /* ── ADR-048: Chip click highlight isolation ── */
     /* Suppress row-level tap flash — only the tapped chip should light up */
     .rec-legacy,
@@ -3366,7 +3335,10 @@
     <div id="sruti-buttons"></div>
     <button id="sruti-power" class="sruti-power" title="Tanpura on/off" aria-label="Sruti power">&#9211;</button>
   </div>
+  <!-- ADR-111: bundle-download-btn in controls (right column), away from sruti strip -->
   <div class="controls">
+    <button id="bundle-download-btn" class="entry-btn" onclick="downloadBundle()" disabled
+            title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
     <div class="view-selector" id="view-selector">
       <button class="view-btn" id="view-btn-graph"
               onclick="switchView('graph')" title="Guru-shishya parampara"
@@ -3507,6 +3479,8 @@
         <h3>
           <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
           Musician &#9835;
+          <!-- ADR-108: + chip to add a new musician, always visible -->
+          <button class="co-add-chip" title="Add a new musician" onclick="openAddMusicianForm()" style="margin-left:4px">+</button>
           <span style="display:inline-flex;align-items:center;gap:4px">
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
             <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
@@ -3529,8 +3503,8 @@
           <span id="node-lifespan"></span>
           <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
              style="display:none">&#8599;</a>
-          <!-- ADR-104 Track A: ✎ stub chip — edit form lands with ADR-097 Phase C -->
-          <button id="node-edit-chip" class="co-edit-chip" title="Edit musician (coming soon)"
+          <!-- ADR-104 Track A / ADR-108: ✎ chip rewired to openEditMusicianForm -->
+          <button id="node-edit-chip" class="co-edit-chip" title="Edit this musician"
                   style="display:none; margin-left:auto">&#9998;</button>
         </div>
         <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
@@ -3646,22 +3620,9 @@
 }());
 </script>
 
-<!-- ADR-103 §3 / ADR-100: global edit bar — deprecated fallback.
-     Most edit entry points now live co-located on entity panels (ADR-104..107).
-     This bar persists only until ADR-100's coverage matrix is fully green.
-     Buttons are demoted to secondary-chip dimensions (.entry-btn-deprecated). -->
-<div id="footer-bar">
-  <span style="font-size:0.60rem;color:var(--fg-muted);margin-right:2px;font-style:italic;white-space:nowrap;" title="ADR-103: co-located edit affordances replace this bar over time">Most edits now live on the panels. This bar is a fallback.</span>
-  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('musician_recordings')">+ Musician / Recordings</button>
-  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('composer')">+ Composer</button>
-  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('raga')">+ Raga</button>
-  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('composition')">+ Composition</button>
-  <button class="entry-btn entry-btn-deprecated" onclick="openEntryForm('recording')">+ Concert Recording</button>
-  <button class="entry-btn entry-btn-edit entry-btn-deprecated" onclick="openEntryForm('edit')" title="Patch a field, append to an array, or annotate an entity (ADR-097)">&#9998; Edit</button>
-  <span style="flex:1"></span>
-  <button class="entry-btn" id="bundle-download-btn" onclick="downloadBundle()" disabled>&#x2B07; Bundle (0 items)</button>
-</div>
 
 <!-- INJECT_SCRIPTS -->
+</body>
+</html>
 </body>
 </html>

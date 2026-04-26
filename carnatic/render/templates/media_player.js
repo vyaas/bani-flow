@@ -1753,120 +1753,132 @@ function buildRecordingsList(nodeId, nodeData) {
       )
     : [];
 
-  if (composerComps.length > 0) {
+  // ── 4 (ADR-109). Compositions by this musician ─────────────────────────────
+  // + chip always visible regardless of whether a composer record is linked.
+  // Passes { composerId } when found, { musicianId } otherwise — openAddCompositionForm
+  // handles the auto-create companion composer record path (ADR-109 §2).
+  {
     const compSection = document.createElement('div');
     compSection.className = 'comp-section';
 
     const compHeader = document.createElement('div');
     compHeader.className = 'comp-section-header';
-    // ADR-105: label + right-edge + chip for adding a composition by this composer
     const compHeaderLabel = document.createElement('span');
     compHeaderLabel.textContent = `Compositions (${composerComps.length})`;
     compHeader.appendChild(compHeaderLabel);
-    if (composerForNode) {
-      const compAddChip = document.createElement('button');
-      compAddChip.type = 'button';
-      compAddChip.className = 'co-add-chip';
-      compAddChip.textContent = '+';
-      compAddChip.title = 'Add a composition by ' + (composerForNode.name || composerForNode.id);
-      compAddChip.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (typeof openAddCompositionForm === 'function') {
+
+    // + chip — always present (ADR-109 §1)
+    const compAddChip = document.createElement('button');
+    compAddChip.type = 'button';
+    compAddChip.className = 'co-add-chip';
+    compAddChip.textContent = '+';
+    compAddChip.title = composerForNode
+      ? 'Add a composition by ' + (composerForNode.name || composerForNode.id)
+      : 'Add a composition by this musician';
+    compAddChip.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof openAddCompositionForm === 'function') {
+        if (composerForNode) {
           openAddCompositionForm({ composerId: composerForNode.id });
+        } else {
+          openAddCompositionForm({ musicianId: nodeId });
         }
-      });
-      compHeader.appendChild(compAddChip);
-    }
+      }
+    });
+    compHeader.appendChild(compAddChip);
     compSection.appendChild(compHeader);
 
-    const compList = document.createElement('ul');
-    compList.className = 'comp-section-list';
+    if (composerComps.length > 0) {
+      const compList = document.createElement('ul');
+      compList.className = 'comp-section-list';
 
-    // ── Group compositions by raga (raga-first tree) ──────────────────────
-    const ragaList = typeof ragas !== 'undefined' ? ragas : [];
-    const byRaga = {};
-    const ragaOrder = [];
-    composerComps.forEach(comp => {
-      const key = comp.raga_id || '__no_raga__';
-      if (!byRaga[key]) { byRaga[key] = []; ragaOrder.push(key); }
-      byRaga[key].push(comp);
-    });
-    // Sort raga groups alphabetically by raga name
-    ragaOrder.sort((a, b) => {
-      if (a === '__no_raga__') return 1;
-      if (b === '__no_raga__') return -1;
-      const ra = ragaList.find(r => r.id === a);
-      const rb = ragaList.find(r => r.id === b);
-      return (ra ? ra.name : a).localeCompare(rb ? rb.name : b);
-    });
-
-    ragaOrder.forEach(ragaId => {
-      const compsInRaga = byRaga[ragaId]
-        .slice()
-        .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-
-      const groupLi = document.createElement('li');
-      groupLi.className = 'comp-raga-group';
-
-      // Raga header row
-      const groupHeader = document.createElement('div');
-      groupHeader.className = 'comp-raga-header';
-
-      if (ragaId !== '__no_raga__') {
-        const ragaObj = ragaList.find(r => r.id === ragaId);
-        if (ragaObj) {
-          const ragaChip = document.createElement('span');
-          ragaChip.className = 'raga-chip';
-          ragaChip.textContent = ragaObj.name;
-          ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
-          ragaChip.addEventListener('click', e => {
-            e.stopPropagation();
-            ragaChip.classList.add('chip-tapped');
-            setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
-            triggerBaniSearch('raga', ragaId);
-          });
-          groupHeader.appendChild(ragaChip);
-        }
-      } else {
-        const unknownLabel = document.createElement('span');
-        unknownLabel.className = 'comp-raga-unknown';
-        unknownLabel.textContent = 'Unknown raga';
-        groupHeader.appendChild(unknownLabel);
-      }
-
-      const countBadge = document.createElement('span');
-      countBadge.className = 'rec-group-count';
-      countBadge.textContent = `(${compsInRaga.length})`;
-      groupHeader.appendChild(countBadge);
-      groupLi.appendChild(groupHeader);
-
-      // Composition items indented under raga
-      const childList = document.createElement('ul');
-      childList.className = 'comp-raga-children';
-
-      compsInRaga.forEach(comp => {
-        const li = document.createElement('li');
-        li.className = 'comp-raga-item';
-
-        const compChip = document.createElement('span');
-        compChip.className = 'comp-chip';
-        compChip.textContent = comp.title || comp.id;
-        compChip.title = (comp.title || comp.id) + ' — Explore in Bani Flow';
-        compChip.addEventListener('click', e => {
-          e.stopPropagation();
-          compChip.classList.add('chip-tapped');
-          setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
-          triggerBaniSearch('comp', comp.id);
-        });
-        li.appendChild(compChip);
-        childList.appendChild(li);
+      // ── Group compositions by raga (raga-first tree) ──────────────────────
+      const ragaList = typeof ragas !== 'undefined' ? ragas : [];
+      const byRaga = {};
+      const ragaOrder = [];
+      composerComps.forEach(comp => {
+        const key = comp.raga_id || '__no_raga__';
+        if (!byRaga[key]) { byRaga[key] = []; ragaOrder.push(key); }
+        byRaga[key].push(comp);
+      });
+      // Sort raga groups alphabetically by raga name
+      ragaOrder.sort((a, b) => {
+        if (a === '__no_raga__') return 1;
+        if (b === '__no_raga__') return -1;
+        const ra = ragaList.find(r => r.id === a);
+        const rb = ragaList.find(r => r.id === b);
+        return (ra ? ra.name : a).localeCompare(rb ? rb.name : b);
       });
 
-      groupLi.appendChild(childList);
-      compList.appendChild(groupLi);
-    });
+      ragaOrder.forEach(ragaId => {
+        const compsInRaga = byRaga[ragaId]
+          .slice()
+          .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
-    compSection.appendChild(compList);
+        const groupLi = document.createElement('li');
+        groupLi.className = 'comp-raga-group';
+
+        // Raga header row
+        const groupHeader = document.createElement('div');
+        groupHeader.className = 'comp-raga-header';
+
+        if (ragaId !== '__no_raga__') {
+          const ragaObj = ragaList.find(r => r.id === ragaId);
+          if (ragaObj) {
+            const ragaChip = document.createElement('span');
+            ragaChip.className = 'raga-chip';
+            ragaChip.textContent = ragaObj.name;
+            ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+            ragaChip.addEventListener('click', e => {
+              e.stopPropagation();
+              ragaChip.classList.add('chip-tapped');
+              setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+              triggerBaniSearch('raga', ragaId);
+            });
+            groupHeader.appendChild(ragaChip);
+          }
+        } else {
+          const unknownLabel = document.createElement('span');
+          unknownLabel.className = 'comp-raga-unknown';
+          unknownLabel.textContent = 'Unknown raga';
+          groupHeader.appendChild(unknownLabel);
+        }
+
+        const countBadge = document.createElement('span');
+        countBadge.className = 'rec-group-count';
+        countBadge.textContent = `(${compsInRaga.length})`;
+        groupHeader.appendChild(countBadge);
+        groupLi.appendChild(groupHeader);
+
+        // Composition items indented under raga
+        const childList = document.createElement('ul');
+        childList.className = 'comp-raga-children';
+
+        compsInRaga.forEach(comp => {
+          const li = document.createElement('li');
+          li.className = 'comp-raga-item';
+
+          const compChip = document.createElement('span');
+          compChip.className = 'comp-chip';
+          compChip.textContent = comp.title || comp.id;
+          compChip.title = (comp.title || comp.id) + ' \u2014 Explore in Bani Flow';
+          compChip.addEventListener('click', e => {
+            e.stopPropagation();
+            compChip.classList.add('chip-tapped');
+            setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
+            triggerBaniSearch('comp', comp.id);
+          });
+          li.appendChild(compChip);
+          childList.appendChild(li);
+        });
+
+        groupLi.appendChild(childList);
+        compList.appendChild(groupLi);
+      });
+
+      compSection.appendChild(compList);
+    }
+
     recList.appendChild(compSection);
   }
 

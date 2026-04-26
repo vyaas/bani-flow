@@ -253,13 +253,40 @@ def _process_musicians(
         op        = m.get("op")          # v2 delta ops (ADR-097 §2)
         item_type = m.get("type", "new") # v1 type discriminator (kept for compat)
 
-        # ── v2: patch a single field on an existing musician ─────────────────
+        # ── v2: patch a single field or multiple fields on an existing musician ──
         if op == "patch":
             musician_id = m.get("id")
+            fields_dict = m.get("fields")   # ADR-108: multi-field patch dict
             field       = m.get("field", "")
             value       = m.get("value")
-            if not musician_id or not field:
-                print(f"  ERROR  musician patch missing 'id' or 'field': {m}")
+
+            if not musician_id:
+                print(f"  ERROR  musician patch missing 'id': {m}")
+                errors += 1
+                continue
+
+            # ADR-108: { op:"patch", id, fields:{ born:1976, instrument:"vocal" } }
+            if fields_dict and isinstance(fields_dict, dict):
+                if not fields_dict:
+                    print(f"  SKIP   musician patch has empty fields dict: {m}")
+                    skipped += 1
+                    continue
+                patch_errors = 0
+                for f_name, f_value in fields_dict.items():
+                    result = writer.patch_musician(
+                        musicians_path, musician_id=musician_id, field=f_name, value=f_value,
+                    )
+                    _print_result(result)
+                    if result.ok:        added   += 1
+                    elif result.skipped: skipped += 1
+                    else:                patch_errors += 1
+                if patch_errors:
+                    errors += 1
+                continue
+
+            # Legacy single-field patch: { op:"patch", id, field, value }
+            if not field:
+                print(f"  ERROR  musician patch missing 'field' or 'fields': {m}")
                 errors += 1
                 continue
 
