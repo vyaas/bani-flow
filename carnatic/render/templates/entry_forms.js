@@ -4047,7 +4047,9 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       buildAddYouTubeToMusicianForm(prefill.id);
     });
     footer.appendChild(youtubeBtn);
-  }────────────────────
+  }
+
+  // ── Helpers ───────────────────────────────────────────
   function collectEdges(musId) {
     const edges = [];
     win.querySelectorAll('#ef_adm_edges .ef-repeat-block').forEach(block => {
