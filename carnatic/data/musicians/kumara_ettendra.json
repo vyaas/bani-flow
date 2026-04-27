@@ -1,0 +1,17 @@
+{
+  "id": "kumara_ettendra",
+  "label": "Kumara Ettendra",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kumara_Ettendra",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

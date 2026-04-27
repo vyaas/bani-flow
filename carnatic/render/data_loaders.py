@@ -70,7 +70,6 @@ def load_compositions(
     Directory mode (preferred):
       - ragas_dir/          → one .json per raga (bare objects); skips '_'-prefixed files
       - compositions_dir/   → one .json per composition (bare objects); skips '_'-prefixed files
-      - compositions_dir/_composers.json → bare array of all composers
 
     Falls back to the legacy monolithic compositions_file if neither directory exists.
 
@@ -92,30 +91,22 @@ def load_compositions(
         else:
             ragas = []
 
-        # ── composers sidecar ──────────────────────────────────────────────
+        # ── compositions ───────────────────────────────────────────────────
         if comps_from_dir:
-            composers_file = compositions_dir / "_composers.json"
-            composers = (
-                json.loads(composers_file.read_text(encoding="utf-8"))
-                if composers_file.exists()
-                else []
-            )
-            # ── compositions ───────────────────────────────────────────────
             comp_files = sorted(
                 f for f in compositions_dir.glob("*.json")
                 if not f.name.startswith("_")
             )
             compositions = [json.loads(f.read_text(encoding="utf-8")) for f in comp_files]
         else:
-            composers    = []
             compositions = []
 
-        return {"ragas": ragas, "composers": composers, "compositions": compositions}
+        return {"ragas": ragas, "compositions": compositions}
 
     # legacy fallback: monolithic compositions.json
     if compositions_file.exists():
         return json.loads(compositions_file.read_text(encoding="utf-8"))
-    return {"ragas": [], "composers": [], "compositions": []}
+    return {"ragas": [], "compositions": []}
 
 
 def load_recordings(recordings_dir: Path, recordings_file: Path) -> dict:

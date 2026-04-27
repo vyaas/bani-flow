@@ -1,0 +1,17 @@
+{
+  "id": "sarangapani",
+  "label": "Sarangapani",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sarangapani_(poet)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": 1724,
+  "era": "golden_age",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

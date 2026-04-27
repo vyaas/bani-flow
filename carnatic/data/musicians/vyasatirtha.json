@@ -1,0 +1,17 @@
+{
+  "id": "vyasatirtha",
+  "label": "Vyasatirtha",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Vyasatirtha",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1460,
+  "died": 1539,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

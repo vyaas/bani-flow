@@ -1,0 +1,17 @@
+{
+  "id": "kanaka_dasa",
+  "label": "Kanaka Dasa",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kanaka_Dasa",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1509,
+  "died": 1609,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

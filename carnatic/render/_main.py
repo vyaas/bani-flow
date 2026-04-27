@@ -59,7 +59,6 @@ def main() -> None:
         }
         comp_data = {
             "ragas":        cg.get_all_ragas(),
-            "composers":    cg.get_all_composers(),
             "compositions": cg.get_all_compositions(),
         }
         recordings_data = {"recordings": cg.get_all_recordings()}
@@ -83,15 +82,14 @@ def main() -> None:
     # ADR-078: lecdem subject-anchored indexes
     lecdem_indexes = build_lecdem_indexes(graph["nodes"])
 
-    # ADR-057: composer_node_map — {musician_node_id: composer_id} for composer chip routing
-    composer_node_map: dict[str, str] = {}
-    for composer in comp_data.get("composers", []):
-        mid = composer.get("musician_node_id")
-        if mid:
-            composer_node_map[mid] = composer["id"]
+    # ADR-110: composer_musician_ids — set of musician IDs that are also composers
+    all_compositions = comp_data.get("compositions", [])
+    composer_musician_ids: set[str] = {
+        c.get("composer_id") for c in all_compositions if c.get("composer_id")
+    }
 
     # Step 3: build Cytoscape elements
-    elements = build_elements(graph, listenable_set, composer_node_map)
+    elements = build_elements(graph, listenable_set, composer_musician_ids)
 
     # Step 3b: load tanpura drone data (ADR-029)
     tanpura_data = load_tanpura(ROOT / "data")

@@ -51,8 +51,8 @@ def test_all_performance_raga_ids_exist(graph: CarnaticGraph) -> None:
 
 
 def test_all_performance_composer_ids_exist(graph: CarnaticGraph) -> None:
-    """Every composer_id in every performance must exist in composers."""
-    known_ids = {c["id"] for c in graph.get_all_composers()}
+    """Every composer_id in every performance must exist in musicians (ADR-110)."""
+    known_ids = {m["id"] for m in graph.get_all_musicians()}
     for rec in graph.get_all_recordings():
         for session in rec.get("sessions", []):
             for perf in session.get("performances", []):
@@ -60,7 +60,7 @@ def test_all_performance_composer_ids_exist(graph: CarnaticGraph) -> None:
                 if cid is not None:
                     assert cid in known_ids, (
                         f"Recording '{rec['id']}' perf {perf['performance_index']}: "
-                        f"composer_id '{cid}' not in composers"
+                        f"composer_id '{cid}' not in musicians"
                     )
 
 
@@ -76,13 +76,13 @@ def test_all_composition_raga_ids_exist(graph: CarnaticGraph) -> None:
 
 
 def test_all_composition_composer_ids_exist(graph: CarnaticGraph) -> None:
-    """Every composer_id on a composition must exist in composers (null is allowed)."""
-    known_ids = {c["id"] for c in graph.get_all_composers()}
+    """Every composer_id on a composition must exist in musicians (ADR-110; null is allowed)."""
+    known_ids = {m["id"] for m in graph.get_all_musicians()}
     for comp in graph.get_all_compositions():
         cid = comp.get("composer_id")
         if cid is not None:
             assert cid in known_ids, (
-                f"Composition '{comp['id']}': composer_id '{cid}' not in composers"
+                f"Composition '{comp['id']}': composer_id '{cid}' not in musicians"
             )
 
 
@@ -117,8 +117,8 @@ def test_recording_refs_match_loaded_recordings(graph: CarnaticGraph) -> None:
 
 
 def test_all_musician_nodes_have_required_fields(graph: CarnaticGraph) -> None:
-    """Every musician node must have id, label, era, instrument."""
-    required = ("id", "label", "era", "instrument")
+    """Every musician node must have id and label; era and instrument are optional (ADR-110)."""
+    required = ("id", "label")
     for node in graph.get_all_musicians():
         for field in required:
             assert field in node and node[field], (

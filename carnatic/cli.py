@@ -143,7 +143,7 @@ def cmd_stats(g: CarnaticGraph, _args: list[str]) -> int:
     print(f"Musicians:    {len(g.get_all_musicians())}")
     print(f"Edges:        {len(g.get_all_edges())}")
     print(f"Ragas:        {len(g.get_all_ragas())}")
-    print(f"Composers:    {len(g.get_all_composers())}")
+    print(f"Composers:    {len(g.get_all_composers())} (derived: musicians with compositions)")
     print(f"Compositions: {len(g.get_all_compositions())}")
     print(f"Recordings:   {len(g.get_all_recording_refs())}")
     return 0
@@ -693,7 +693,8 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
     known_musician_ids = {n["id"] for n in g.get_all_musicians()}
     known_composition_ids = {c["id"] for c in g.get_all_compositions()}
     known_raga_ids = {r["id"] for r in g.get_all_ragas()}
-    known_composer_ids = {c["id"] for c in g.get_all_composers()}
+    # ADR-110: composer_id validates against musician IDs
+    known_composer_ids = known_musician_ids
 
     # ── recording referential integrity ────────────────────────────────────────
     for rec in g.get_all_recordings():
@@ -1005,11 +1006,10 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                                 if (
                                     composer_id is not None
                                     and composer_id not in known_musician_ids
-                                    and composer_id not in known_composer_ids
                                 ):
                                     errors.append(
                                         f"{c_where}.demo_row.composer_id: '{composer_id}' not in "
-                                        f"musicians or composers"
+                                        f"musicians"
                                     )
 
                     # Validate cross_panel_seeds
@@ -1189,7 +1189,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "All musician_ids in recordings exist in graph",
         "All composition_ids in performances exist in compositions",
         "All raga_ids in performances exist in ragas",
-        "All composer_ids in performances exist in composers",
+        "All composer_ids in performances exist in musicians (ADR-110)",
         "No duplicate (source, target) edge pairs",
         "No self-loop edges",
         "All edge endpoints exist in musicians",

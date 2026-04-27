@@ -1,0 +1,17 @@
+{
+  "id": "andal",
+  "label": "Andal",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Andal",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

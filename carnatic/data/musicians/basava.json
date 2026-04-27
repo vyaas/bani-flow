@@ -1,0 +1,17 @@
+{
+  "id": "basava",
+  "label": "Basava",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Basava",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1131,
+  "died": 1167,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

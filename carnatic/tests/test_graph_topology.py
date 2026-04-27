@@ -109,9 +109,9 @@ def test_no_completely_isolated_nodes(graph: CarnaticGraph) -> None:
 
 
 def test_all_eras_are_known(graph: CarnaticGraph) -> None:
-    """Every musician node must use a recognised era value."""
+    """Every musician node must use a recognised era value (null allowed for historical composers, ADR-110)."""
     known_eras = {
-        "trinity", "bridge", "golden_age", "disseminator",
+        None, "trinity", "bridge", "golden_age", "disseminator",
         "living_pillars", "contemporary",
     }
     for node in graph.get_all_musicians():
@@ -122,9 +122,9 @@ def test_all_eras_are_known(graph: CarnaticGraph) -> None:
 
 
 def test_all_instruments_are_known(graph: CarnaticGraph) -> None:
-    """Every musician node must use a recognised instrument value."""
+    """Every musician node must use a recognised instrument value (null allowed for composers, ADR-110)."""
     known_instruments = {
-        "vocal", "veena", "violin", "flute", "mridangam", "bharatanatyam",
+        None, "vocal", "veena", "violin", "flute", "mridangam", "bharatanatyam",
     }
     for node in graph.get_all_musicians():
         instr = node.get("instrument")

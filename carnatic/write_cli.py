@@ -14,8 +14,9 @@ graph.json is a derived artefact — never touched here.
 After any write session, run: python3 carnatic/render.py
 
 Usage:
-    python3 carnatic/write_cli.py add-musician     --id <id> --label <label> --era <era> \\
-                                                    --instrument <inst> --source-url <url> \\
+    python3 carnatic/write_cli.py add-musician     --id <id> --label <label> \\
+                                                    [--era <era>] [--instrument <inst>] \\
+                                                    --source-url <url> \\
                                                     --source-label <label> --source-type <type> \\
                                                     [--born <year>] [--died <year>] [--bani <bani>]
 
@@ -54,17 +55,12 @@ Usage:
     # Permitted fields: name, parent_raga, melakarta, is_melakarta, cakra, notes
     # (id and sources are immutable via this command)
 
-    python3 carnatic/write_cli.py add-composer     --id <id> --name <name> \\
-                                                    --source-url <url> --source-label <label> \\
-                                                    --source-type <type> \\
-                                                    [--musician-node-id <id>] \\
-                                                    [--born <year>] [--died <year>]
-
     python3 carnatic/write_cli.py add-composition  --id <id> --title <title> \\
                                                     --composer-id <id> --raga-id <id> \\
                                                     [--tala <tala>] [--language <lang>] \\
                                                     [--source-url <url>] [--source-label <label>] \\
                                                     [--source-type <type>] [--notes <text>]
+    # Note: add-composer is removed (ADR-110). Use add-musician for all people.
 """
 
 from __future__ import annotations
@@ -293,23 +289,6 @@ def cmd_patch_raga(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
     )
 
 
-def cmd_add_composer(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
-    born = int(args.born) if args.born is not None else None
-    died = int(args.died) if args.died is not None else None
-    return w.add_composer(
-        _compositions_path(),
-        id=args.id,
-        name=args.name,
-        source_url=args.source_url,
-        source_label=args.source_label,
-        source_type=args.source_type,
-        musician_node_id=args.musician_node_id,
-        born=born,
-        died=died,
-        musicians_path=_musicians_path(),
-    )
-
-
 def cmd_add_composition(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
     return w.add_composition(
         _compositions_path(),
@@ -346,9 +325,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("add-musician", help="Add a new musician node to musicians.json")
     p.add_argument("--id",           required=True,  help="snake_case unique id")
     p.add_argument("--label",        required=True,  help="Display name")
-    p.add_argument("--era",          required=True,
-                   help="Era enum: trinity|bridge|golden_age|disseminator|living_pillars|contemporary")
-    p.add_argument("--instrument",   required=True,  help="Instrument (vocal, veena, violin, …)")
+    p.add_argument("--era",          default=None,
+                   help="Era enum: trinity|bridge|golden_age|disseminator|living_pillars|contemporary (optional for historical composers)")
+    p.add_argument("--instrument",   default=None,  help="Instrument (vocal, veena, violin, … ; optional for composers)")
     p.add_argument("--source-url",   required=True,  dest="source_url",  help="Primary source URL")
     p.add_argument("--source-label", required=True,  dest="source_label", help="Source label (e.g. Wikipedia)")
     p.add_argument("--source-type",  required=True,  dest="source_type",
@@ -460,19 +439,6 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--value", required=True,
                    help="New value (use 'null' for nullable fields, 'true'/'false' for is_melakarta)")
 
-    # ── add-composer ──────────────────────────────────────────────────────────
-    p = sub.add_parser("add-composer", help="Add a new composer to compositions.json")
-    p.add_argument("--id",               required=True,              help="snake_case unique id")
-    p.add_argument("--name",             required=True,              help="Canonical composer name")
-    p.add_argument("--source-url",       required=True, dest="source_url",   help="Primary source URL")
-    p.add_argument("--source-label",     required=True, dest="source_label", help="Source label")
-    p.add_argument("--source-type",      required=True, dest="source_type",
-                   help="Source type: wikipedia|pdf|article|archive|other")
-    p.add_argument("--musician-node-id", default=None,  dest="musician_node_id",
-                   help="Musician node id if composer is also a lineage node")
-    p.add_argument("--born",             default=None,  help="Birth year (integer)")
-    p.add_argument("--died",             default=None,  help="Death year (integer)")
-
     # ── add-composition ───────────────────────────────────────────────────────
     p = sub.add_parser("add-composition", help="Add a new composition to compositions.json")
     p.add_argument("--id",           required=True,              help="snake_case unique id")
@@ -504,7 +470,6 @@ HANDLERS = {
     "patch-edge":             cmd_patch_edge,
     "add-raga":               cmd_add_raga,
     "patch-raga":             cmd_patch_raga,
-    "add-composer":           cmd_add_composer,
     "add-composition":        cmd_add_composition,
 }
 

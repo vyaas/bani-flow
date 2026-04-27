@@ -10,7 +10,7 @@ from .data_loaders import yt_video_id
 from .theme import ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES, NODE_SIZES, ERA_FONT_SIZES, TOKENS
 
 def build_elements(graph: dict, listenable_set: set | None = None,
-                   composer_node_map: dict | None = None) -> list[dict]:
+                   composer_musician_ids: set | None = None) -> list[dict]:
     degree: dict[str, int] = defaultdict(int)
     for e in graph["edges"]:
         degree[e["source"]] += 1
@@ -70,14 +70,12 @@ def build_elements(graph: dict, listenable_set: set | None = None,
             raw_sources = [{"url": node["wikipedia"], "label": "Wikipedia", "type": "wikipedia"}]
         primary_url = raw_sources[0]["url"] if raw_sources else ""
 
-        # ADR-055: listenable flag; ADR-057: composer flag and composer_id
+        # ADR-055: listenable flag; ADR-110: composer flag — musician is composer if their id
+        # appears as composer_id on any composition
         node_id_local = node["id"]
         is_listenable = bool(listenable_set is None or node_id_local in listenable_set)
-        # is_composer: this musician node is the canonical node for a composer
-        composer_id_local = None
-        if composer_node_map:
-            composer_id_local = composer_node_map.get(node_id_local)
-        is_composer = bool(composer_id_local)
+        is_composer = bool(composer_musician_ids and node_id_local in composer_musician_ids)
+        composer_id_local = node_id_local if is_composer else None
 
         elements.append({"data": {
             "id":           node_id_local,
