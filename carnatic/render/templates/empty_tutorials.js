@@ -232,9 +232,20 @@
       playBtn.title = 'Play';
       playBtn.addEventListener('click', function (evt) {
         evt.stopPropagation();
-        if (typeof openPlayer === 'function' && demo.video_id) {
-          openPlayer(demo.video_id, demo.play_label || demo.chip_label || 'Lecture-Demo');
-        }
+        if (typeof openOrFocusPlayer !== 'function' || !demo.video_id) return;
+        const _perfs = Array.isArray(demo.performers) ? demo.performers : [];
+        const _first = _perfs[0] || null;
+        const _artistName = _first ? (_first.label || '') : '';
+        const _nodeId = _first ? (_first.id || null) : null;
+        openOrFocusPlayer(
+          demo.video_id,
+          demo.play_label || demo.chip_label || 'Lecture-Demo',
+          _artistName,
+          undefined,
+          undefined,
+          [],
+          _nodeId ? { nodeId: _nodeId } : {}
+        );
       });
       acts.appendChild(playBtn);
 
@@ -332,14 +343,16 @@
           });
         });
         allTracks.sort(function (a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
+        const _mainPerf = Array.isArray(demo.performers) ? (demo.performers[0] || null) : null;
+        const _mainNodeId = _mainPerf ? (_mainPerf.id || null) : null;
         openOrFocusPlayer(
           demo.video_id,
           demo.play_label || rec.title || demo.chip_label || 'Concert',
-          demo.artist_label || '',
+          demo.artist_label || (_mainPerf ? _mainPerf.label : '') || '',
           0,
           rec.short_title || rec.title || '',
           allTracks.length ? allTracks : null,
-          {}
+          _mainNodeId ? { nodeId: _mainNodeId } : {}
         );
       });
       acts.appendChild(playBtn);

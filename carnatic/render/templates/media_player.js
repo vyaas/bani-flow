@@ -1557,15 +1557,16 @@ function buildRecordingsList(nodeId, nodeData) {
   const lecdemsAbout_   = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician[nodeId] : null) || [];
 
   // Keep Lecdems at the top of the musician panel while preserving all
-  // existing section ordering below it.
-  if (lecdemsBy_.length > 0 || lecdemsAbout_.length > 0) {
+  // existing section ordering below it. Header always rendered (per Concerts/
+  // Compositions pattern) so the section is always visible as an anchor.
+  {
     const lsSection = document.createElement('section');
     lsSection.className = 'lecdem-section';
     lsSection.dataset.section = 'lecdems';
 
     const lsSectionHdr = document.createElement('div');
     lsSectionHdr.className = 'lecdem-section-header';
-    lsSectionHdr.textContent = 'Lecdems';
+    lsSectionHdr.textContent = 'Lecdems (' + (lecdemsBy_.length + lecdemsAbout_.length) + ')';
     lsSection.appendChild(lsSectionHdr);
 
     // Lecdems by this musician
@@ -1695,7 +1696,7 @@ function buildRecordingsList(nodeId, nodeData) {
   const concertHeader = document.createElement('div');
   concertHeader.className = 'rec-section-header-row';
   const concertHeaderLabel = document.createElement('span');
-  concertHeaderLabel.textContent = 'Concerts';
+  concertHeaderLabel.textContent = 'Concerts (' + concerts.length + ')';
   concertHeader.appendChild(concertHeaderLabel);
   const concertAddChip = document.createElement('button');
   concertAddChip.type = 'button';
@@ -1732,11 +1733,12 @@ function buildRecordingsList(nodeId, nodeData) {
       offset_seconds: 0,
     }));
   const allPerfs = [...structuredPerfs, ...normalizedLegacy];
+  // Header always rendered so all sections are visible for every musician.
+  const ragaHeader = document.createElement('div');
+  ragaHeader.className = 'rec-section-header';
+  ragaHeader.textContent = 'By raga (' + allPerfs.length + ')';
+  recList.appendChild(ragaHeader);
   if (allPerfs.length > 0) {
-    const ragaHeader = document.createElement('div');
-    ragaHeader.className = 'rec-section-header';
-    ragaHeader.textContent = 'By raga';
-    recList.appendChild(ragaHeader);
     recList.appendChild(buildRagaTree(allPerfs, nodeId, artistLabel));
   }
 

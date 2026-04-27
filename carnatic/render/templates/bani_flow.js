@@ -411,6 +411,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       janyasRow.style.display = 'block';
 
       // ADR-106: + chip to add a janya under this melakarta
+      // Remove any previously-appended + chips (re-entrant navigation accumulates them)
+      janyasRow.querySelectorAll('.co-add-chip').forEach(el => el.remove());
       const janyasAddChip = document.createElement('button');
       janyasAddChip.type = 'button';
       janyasAddChip.className = 'co-add-chip';

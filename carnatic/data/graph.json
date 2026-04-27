@@ -1291,6 +1291,20 @@
             "composition_id": "vinata_suta_vahana",
             "raga_id": "jayantasena",
             "year": 1967
+          },
+          {
+            "url": "https://youtu.be/8xArCVyPM5w",
+            "label": "",
+            "composition_id": "nada_thanumanisam",
+            "raga_id": "chitharanjani",
+            "tala": "adi"
+          },
+          {
+            "url": "https://youtu.be/Zq62F9FcgKI",
+            "label": "Nada thanumanisam",
+            "composition_id": "nada_thanumanisam",
+            "raga_id": "chitharanjani",
+            "tala": "adi"
           }
         ]
       },
@@ -1394,6 +1408,13 @@
                 "role": "mridangam"
               }
             ]
+          },
+          {
+            "url": "https://youtu.be/wSHzbkciA_Q",
+            "label": "janani ninnuvina",
+            "composition_id": "janani_ninnuvina",
+            "raga_id": "reetigowla",
+            "tala": "misra chapu"
           }
         ]
       },
@@ -3784,6 +3805,13 @@
               "composition_ids": [],
               "musician_ids": []
             }
+          },
+          {
+            "url": "https://youtu.be/en819pbBXuE",
+            "label": "janani ninnuvina",
+            "composition_id": "janani_ninnuvina",
+            "raga_id": "reetigowla",
+            "tala": "misra chapu"
           }
         ]
       },
@@ -4680,6 +4708,20 @@
           }
         ],
         "notes": "26th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₁ N₂ Ṡ"
+      },
+      {
+        "id": "chitharanjani",
+        "name": "Chitharanjani",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "kharaharapriya",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-chittha-ranjani-janya-of-mela-22-ragam-kharaharapriya",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "chitrambari",
@@ -10386,6 +10428,12 @@
           }
         ],
         "notes": null
+      },
+      {
+        "id": "nada_thanumanisam",
+        "title": "Nada thanumanisam",
+        "composer_id": "tyagaraja",
+        "raga_id": "chitharanjani"
       },
       {
         "id": "nadha_sudharasam",

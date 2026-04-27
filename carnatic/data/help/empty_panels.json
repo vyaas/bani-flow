@@ -168,7 +168,8 @@
           "play_label": "Gamaka I — Lakshmi Sreeram",
           "video_id": "nBAez2kdElo",
           "youtube_url": "https://www.youtube.com/watch?v=nBAez2kdElo",
-          "raga_tags": []
+          "raga_tags": [],
+          "performers": [{ "id": "lakshmi_sreeram", "label": "Lakshmi Sreeram" }]
         },
         "effect": "Gamaka — the ornamental inflection of a swara — is what makes Carnatic music sound the way it does. Without gamaka, a raga is a scale; with it, a single note becomes an emotion. Lakshmi Sreeram's lecture series covers the grammar of gamaka from first principles: this is where good listening begins."
       },
@@ -199,7 +200,8 @@
           "play_label": "Understanding Raga - Part I — Lakshmi Sreeram",
           "video_id": "C50lNHXE4RY",
           "youtube_url": "https://www.youtube.com/watch?v=C50lNHXE4RY",
-          "raga_tags": []
+          "raga_tags": [],
+          "performers": [{ "id": "lakshmi_sreeram", "label": "Lakshmi Sreeram" }]
         },
         "effect": "The raga chips on a lec-dem are interactive — tapping them focuses that raga on the Mela-Janya wheel. A raga heard and explained in a lecture becomes a navigable node in the modal world. Lakshmi Sreeram's lecture on raga is the clearest available account of what a raga is — not a scale, but a personality; not a set of notes, but a way of moving between them."
       }

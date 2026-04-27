@@ -499,11 +499,10 @@
   }
   .comp-section-header {
     display: flex; align-items: center; justify-content: space-between;
-    font-size: 0.68rem;
-    color: var(--fg-muted);
-    padding: 4px 8px 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
   }
   .comp-section-list {
     list-style: none;
@@ -1563,11 +1562,10 @@
     padding-top: 4px;
   }
   .lecdem-section-header {
-    font-size: 0.68rem;
-    color: var(--fg-muted);
-    padding: 4px 8px 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
   }
   .lecdem-subsection {
     margin-top: 4px;
@@ -2156,8 +2154,10 @@
     border-top: 1px solid var(--border-soft);
   }
   .notes-section-header {
-    font-size: 0.60rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--fg-muted); margin-bottom: 4px;
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
   }
   .notes-list { list-style: none; margin: 0; padding: 0; }
   .notes-item {
@@ -2473,6 +2473,7 @@
       display: grid;
       grid-template-columns: 0px 1fr 0px;
       grid-template-rows: 1fr;
+      transition: grid-template-columns 0.22s ease;
     }
     /* Explicitly place each column — sidebars may be position:fixed (out-of-flow)
        so CSS auto-placement would skip them and land canvas-wrap in col 1 (0px). */
@@ -2502,6 +2503,19 @@
     /* Canvas column must not collapse below a usable width */
     #canvas-wrap {
       min-width: 200px;
+    }
+
+    /* ── Floating-sidebar safety offsets ─────────────────────────────────── */
+    /* When the left sidebar is open but unpinned (floating overlay), the mela  */
+    /* detail panel would spawn underneath it. Shift it right so it's visible.  */
+    #main:not(.left-pinned) #left-sidebar.drawer-open ~ #canvas-wrap #wheel-detail-panel {
+      left: 292px;
+    }
+
+    /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
+    /* Re-layout / Timeline) would be hidden under it. Shift it left.            */
+    #main:not(.right-pinned):has(#right-sidebar.drawer-open) #viewport-toolbar {
+      right: 292px;
     }
 
     /* Floating edge handles replaced by #desktop-panel-bar — keep hidden */
@@ -3726,17 +3740,3 @@
 </html>
 </body>
 </html>
-      transition: grid-template-columns 0.22s ease;
-    /* ── Floating-sidebar safety offsets ─────────────────────────────────── */
-    /* When the left sidebar is open but unpinned (floating overlay), the mela  */
-    /* detail panel would spawn underneath it. Shift it right so it's visible.  */
-    #main:not(.left-pinned) #left-sidebar.drawer-open ~ #canvas-wrap #wheel-detail-panel {
-      left: 292px;
-    }
-
-    /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
-    /* Re-layout / Timeline) would be hidden under it. Shift it left.            */
-    #main:not(.right-pinned):has(#right-sidebar.drawer-open) #viewport-toolbar {
-      right: 292px;
-    }
-
