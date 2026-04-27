@@ -1,0 +1,14 @@
+{
+  "id": "mandari",
+  "name": "Mandari",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Mandari_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

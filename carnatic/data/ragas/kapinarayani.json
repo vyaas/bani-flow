@@ -1,0 +1,16 @@
+{
+  "id": "kapinarayani",
+  "name": "Kapinarayani",
+  "aliases": [
+    "Kapinarayana"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kapinarayani",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

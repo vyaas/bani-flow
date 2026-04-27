@@ -1,0 +1,17 @@
+{
+  "id": "udumalaipettai_narayana_kavi",
+  "label": "Udumalaipettai Narayana Kavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Udumalai_Narayana_Kavi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1899,
+  "died": 1981,
+  "era": "golden_age",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

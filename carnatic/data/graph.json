@@ -387,6 +387,23 @@
         "youtube": []
       },
       {
+        "id": "charumathi_ramachandran",
+        "label": "Charumathi Ramachandran",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Charumathi_Ramachandran",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "chinnaiah_pillai",
         "label": "Chinnaiah Pillai",
         "sources": [
@@ -530,6 +547,23 @@
         "youtube": []
       },
       {
+        "id": "ev_ramakrishna_bhagavatar",
+        "label": "EV Ramakrishna Bhagavatar",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1019.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": null,
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "garbhapurivasa",
         "label": "Garbhapuri Srinivasa",
         "sources": [
@@ -628,6 +662,23 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "hp_ramachar",
+        "label": "HP Ramachar",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/biog182.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "khanjira",
         "bani": null,
         "youtube": []
       },
@@ -786,6 +837,23 @@
         "youtube": []
       },
       {
+        "id": "km_vaidhyanathan",
+        "label": "KM Vaidhyanathan",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/biog179.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "ghatam",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "koteeswara_iyer",
         "label": "Harikesanallur Koteeswara Iyer",
         "sources": [
@@ -797,6 +865,23 @@
         ],
         "born": 1870,
         "died": 1936,
+        "era": "bridge",
+        "instrument": null,
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "kottavasal_venkatarama_iyer",
+        "label": "Kottavasal Venkatarama Iyer",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1126.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
         "era": "bridge",
         "instrument": null,
         "bani": null,
@@ -2008,25 +2093,13 @@
       },
       {
         "id": "muthiah_bhagavatar",
-        "label": "Muthiah Bhagavatar",
+        "label": "Harikesanallur Muthiah Bhagavathar",
         "sources": [
           {
             "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
             "label": "Wikipedia",
             "type": "wikipedia"
-          }
-        ],
-        "born": 1877,
-        "died": 1945,
-        "era": "bridge",
-        "instrument": "vocal",
-        "bani": "muthiah",
-        "youtube": []
-      },
-      {
-        "id": "muthiah_bhagavathar",
-        "label": "Muthiah Bhagavathar",
-        "sources": [
+          },
           {
             "url": "https://en.wikipedia.org/wiki/Harikesanallur_Muthiah_Bhagavathar",
             "label": "Wikipedia",
@@ -2036,8 +2109,8 @@
         "born": 1877,
         "died": 1945,
         "era": "bridge",
-        "instrument": null,
-        "bani": null,
+        "instrument": "vocal",
+        "bani": "muthiah",
         "youtube": []
       },
       {
@@ -2384,6 +2457,23 @@
         "died": 1564,
         "era": null,
         "instrument": null,
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "r_ramesh",
+        "label": "R. Ramesh",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/biog184.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "mridangam",
         "bani": null,
         "youtube": []
       },
@@ -3289,6 +3379,23 @@
         ]
       },
       {
+        "id": "sant_dnyaneshwar",
+        "label": "Sant Dnyaneshwar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Dnyaneshwar",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1275,
+        "died": 1296,
+        "era": null,
+        "instrument": null,
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "sarangapani",
         "label": "Sarangapani",
         "sources": [
@@ -3552,6 +3659,40 @@
         "era": "trinity",
         "instrument": "vocal",
         "bani": "shyama_shastri",
+        "youtube": []
+      },
+      {
+        "id": "soundar_rajan",
+        "label": "Soundar Rajan",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/biog183.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "mridangam",
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "spencer_venugopal",
+        "label": "Spencer Venugopal",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1064.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": null,
+        "bani": null,
         "youtube": []
       },
       {
@@ -3997,6 +4138,23 @@
         ]
       },
       {
+        "id": "tanjavur_krishnamurthy_rao",
+        "label": "Tanjavur S. Krishnamurthy Rao",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/biog178.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "mridangam",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "tarangampadi_panchanada_iyer",
         "label": "Tarangampadi Panchanada Iyer",
         "sources": [
@@ -4044,6 +4202,23 @@
         "died": 1744,
         "era": "golden_age",
         "instrument": null,
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "thiruvallur_subramaniam",
+        "label": "Thiruvallur Subramaniam",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/biog181.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "violin",
         "bani": null,
         "youtube": []
       },
@@ -4779,6 +4954,23 @@
         ]
       },
       {
+        "id": "tm_prabhavathi",
+        "label": "TM Prabhavathi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/biog180.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "tn_krishnan",
         "label": "TN Krishnan",
         "sources": [
@@ -4897,6 +5089,23 @@
         "era": "trinity",
         "instrument": "vocal",
         "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
+        "id": "udumalaipettai_narayana_kavi",
+        "label": "Udumalaipettai Narayana Kavi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Udumalai_Narayana_Kavi",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1899,
+        "died": 1981,
+        "era": "golden_age",
+        "instrument": null,
+        "bani": null,
         "youtube": []
       },
       {
@@ -5500,6 +5709,24 @@
         ],
         "notes": "Janya of Vakulabharanam (14th melakarta); also associated with Hanumatodi (8th melakarta); sampurna raga with vakra swaras in ascending scale; evokes karuna rasa (compassion); considered an early-morning raga; ancient raga mentioned in Sangita Makarandha",
         "is_melakarta": false
+      },
+      {
+        "id": "amritavarshini",
+        "name": "Amritavarshini",
+        "aliases": [
+          "Amrithavarshini",
+          "Amrutavarshini",
+          "Amruthavarshini"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Amritavarshini",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "ananda_bhairavi",
@@ -6660,6 +6887,22 @@
         "is_melakarta": false
       },
       {
+        "id": "kapinarayani",
+        "name": "Kapinarayani",
+        "aliases": [
+          "Kapinarayana"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Kapinarayani",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
         "id": "karnataka_behag",
         "name": "Karnataka Behag",
         "aliases": [
@@ -6984,6 +7227,20 @@
           }
         ],
         "notes": "5th melakarta; Cakra 1 (Indu); arohana: S R₁ G₁ M₁ P D₂ N₃ Ṡ"
+      },
+      {
+        "id": "mandari",
+        "name": "Mandari",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Mandari_(raga)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "manirangu",
@@ -7539,6 +7796,23 @@
         "is_melakarta": false
       },
       {
+        "id": "ragamalika",
+        "name": "Ragamalika",
+        "aliases": [
+          "Ragamala"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ragamalika",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Generic placeholder for compositions spanning multiple ragas"
+      },
+      {
         "id": "ragavardhini",
         "name": "Rāgavardhini",
         "aliases": [],
@@ -7694,6 +7968,22 @@
           }
         ],
         "notes": "62th melakarta; Cakra 11 (Rudra); arohana: S R₂ G₃ M₂ P D₁ N₂ Ṡ"
+      },
+      {
+        "id": "rudrapriya",
+        "name": "Rudrapriya",
+        "aliases": [
+          "Rudhrapriya"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Rudrapriya",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "rupavati",
@@ -8668,6 +8958,20 @@
         "notes": "Tyagaraja kriti in Kalyani."
       },
       {
+        "id": "annapurne_visalakshi",
+        "title": "Annapurne Visalakshi",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "sama",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1728.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
+      },
+      {
         "id": "apadooruku",
         "title": "Apadooruku",
         "composer_id": "pattabhiramayya",
@@ -8712,6 +9016,13 @@
           }
         ],
         "notes": "Tyagaraja kriti in Pantuvarali (Kamavardhini); Rupakam tala; one of the principal compositions defining this raga in the concert repertoire"
+      },
+      {
+        "id": "appan_avatharitha",
+        "title": "Appan Avatharitha",
+        "composer_id": "papanasam_sivan",
+        "raga_id": "kharaharapriya",
+        "tala": "adi"
       },
       {
         "id": "aravinda_padamalar",
@@ -9136,6 +9447,14 @@
         "notes": "Bengali patriotic song by Dwijendralal Roy. Performed by TM Krishna in concert as a tribute to Bengal. Not assigned to a specific Carnatic raga."
       },
       {
+        "id": "dheem_ta_dhuniku",
+        "title": "Dheem Ta Dhuniku",
+        "composer_id": "swati_tirunal",
+        "raga_id": "dhanashree",
+        "tala": "adi",
+        "notes": "Thillana"
+      },
+      {
         "id": "dhyaname_varamaina",
         "title": "Dhyaname Varamaina",
         "composer_id": "tyagaraja",
@@ -9227,6 +9546,13 @@
           }
         ],
         "notes": "Tyagaraja kriti in Sahana raga. Distinct from 'Yee Vasudha' (id: yee_vasudha) which is set in Kanada. Both share the same opening words; the Sahana version is confirmed at karnatik.com c2369."
+      },
+      {
+        "id": "ekadantam_bhajeham",
+        "title": "Ekadantam Bhajeham",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "bilahari",
+        "tala": "misra chapu"
       },
       {
         "id": "ekkalathilum",
@@ -9536,6 +9862,13 @@
         "notes": "Gopalakrishna Bharathi composition in Jonepuri raga. A popular Tamil devotional song."
       },
       {
+        "id": "etavunara",
+        "title": "Etavunara",
+        "composer_id": "tyagaraja",
+        "raga_id": "kalyani",
+        "tala": "adi"
+      },
+      {
         "id": "eti_janmamidi",
         "title": "Ēṭi Janmamidi",
         "composer_id": "tyagaraja",
@@ -9606,6 +9939,20 @@
           }
         ],
         "notes": "Kumara Ettendra composition in Thodi raga. A devotional composition on Ganesha."
+      },
+      {
+        "id": "gananayakam",
+        "title": "Gananayakam",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "rudrapriya",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c5693.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
       },
       {
         "id": "giripai_nelakona",
@@ -9845,6 +10192,13 @@
         "notes": "Varnam by Veenai Kuppayyar in Begada; Adi tala; part of the standard veena varnam repertoire"
       },
       {
+        "id": "intha_kannanandam_emi",
+        "title": "Intha Kannanandam Emi",
+        "composer_id": "tyagaraja",
+        "raga_id": "bilahari",
+        "tala": "rupakam"
+      },
+      {
         "id": "intha_paraku",
         "title": "Intha Paraku",
         "composer_id": "kshetrayya",
@@ -9877,6 +10231,13 @@
           }
         ],
         "notes": "Pancharatna kriti; opens the Pancharatna set; a paean to Rama in the majestic Ghana raga Nata"
+      },
+      {
+        "id": "jagadanandakaraka",
+        "title": "Jagadanandakaraka",
+        "composer_id": "tyagaraja",
+        "raga_id": "nata",
+        "tala": "adi"
       },
       {
         "id": "jagadodharana",
@@ -9961,6 +10322,20 @@
           }
         ],
         "notes": "Muthuswami Dikshitar kriti in Yamuna Kalyani raga. Pancha Bhuta Stalas series (water element)."
+      },
+      {
+        "id": "jambupathe_mam_pahi",
+        "title": "Jambupathe Mam Pahi",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "yamuna_kalyani",
+        "tala": "tisra ekam",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c5725.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
       },
       {
         "id": "janani_ninnuvina",
@@ -10215,6 +10590,13 @@
         "tala": "rupakam",
         "language": "Sanskrit",
         "notes": "Kriti by Subbarama Dikshitar"
+      },
+      {
+        "id": "kapali",
+        "title": "Kapali",
+        "composer_id": "papanasam_sivan",
+        "raga_id": "mohanam",
+        "tala": "adi"
       },
       {
         "id": "karubaru",
@@ -10499,6 +10881,13 @@
           }
         ],
         "notes": "Sanskrit composition by the Kanchi Paramacharya. First performed by MS Subbulakshmi at the UN in 1966."
+      },
+      {
+        "id": "mama_kuleswaram",
+        "title": "Mama Kuleswaram",
+        "composer_id": "gnb",
+        "raga_id": "thodi",
+        "tala": "tisra ekam"
       },
       {
         "id": "mamava_pattabhirama",
@@ -11110,6 +11499,13 @@
         "notes": "Kriti by Patnam Subramanya Iyer in Purnachandrika; listed on the Wikipedia Poornachandrika page as a popular composition"
       },
       {
+        "id": "nee_allal_ini",
+        "title": "Nee Allal Ini",
+        "composer_id": "gnb",
+        "raga_id": "kaanada",
+        "tala": "adi"
+      },
+      {
         "id": "nee_matale_mayanura",
         "title": "Nee Matale Mayanura",
         "composer_id": "pattabhiramayya",
@@ -11169,6 +11565,13 @@
         "notes": "Padam by Kshetrayya"
       },
       {
+        "id": "nenarunchi_nanu",
+        "title": "Nenarunchi Nanu",
+        "composer_id": "tyagaraja",
+        "raga_id": "malavi",
+        "tala": "adi"
+      },
+      {
         "id": "nenarunchinanu",
         "title": "Nenarunchinanu",
         "composer_id": "tyagaraja",
@@ -11224,6 +11627,14 @@
           }
         ],
         "notes": "Mangalam by Tyagaraja in Sowrashtram; Adi tala; traditionally sung to close a concert"
+      },
+      {
+        "id": "ni_nama_rupamulaku",
+        "title": "Ni Nama Rupamulaku",
+        "composer_id": "tyagaraja",
+        "raga_id": "sowrashtram",
+        "tala": "adi",
+        "notes": "Mangalam"
       },
       {
         "id": "ni_padamule",
@@ -11473,6 +11884,27 @@
         "notes": "Swarajathi by Swati Tirunal in Huseni; Rupakam tala; authorship disputed in some scholarly sources; one of the most celebrated swarajathis in the concert repertoire"
       },
       {
+        "id": "pahimam_parvathi",
+        "title": "Pahimam Parvathi",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "mohanam",
+        "tala": "rupakam",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c5832.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
+      },
+      {
+        "id": "palimchu_kamakshi",
+        "title": "Palimchu Kamakshi",
+        "composer_id": "shyama_shastri",
+        "raga_id": "madhyamavati",
+        "tala": "adi"
+      },
+      {
         "id": "palinchu_kamakshi",
         "title": "Palinchu Kamakshi",
         "composer_id": "muthuswami_dikshitar",
@@ -11489,6 +11921,20 @@
         "tala": "adi",
         "language": "Telugu",
         "notes": "Kriti by Kunnakudi Krishna Iyer"
+      },
+      {
+        "id": "panchashat_peeta_roopini",
+        "title": "Panchashat Peeta Roopini",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "devagandhari",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c5841.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
       },
       {
         "id": "paraloka_sadhaname",
@@ -11521,6 +11967,13 @@
           }
         ],
         "notes": "Tyagaraja kriti in Surutti raga, Adi tala."
+      },
+      {
+        "id": "parkadal_alaimele",
+        "title": "Parkadal Alaimele",
+        "composer_id": "udumalaipettai_narayana_kavi",
+        "raga_id": "ragamalika",
+        "tala": "adi"
       },
       {
         "id": "parulanna_matta",
@@ -11649,6 +12102,13 @@
         "notes": "Padam by Kshetrayya"
       },
       {
+        "id": "ramachandram_bhavayami",
+        "title": "Ramachandram Bhavayami",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "vasantha",
+        "tala": "rupakam"
+      },
+      {
         "id": "ramakatha",
         "title": "Ramakatha",
         "composer_id": "tyagaraja",
@@ -11728,6 +12188,15 @@
         "notes": "Javali by Dharmapuri Subbaraya Iyer in Senchurutti"
       },
       {
+        "id": "sakuna_nirguna",
+        "title": "Sakuna Nirguna",
+        "composer_id": "sant_dnyaneshwar",
+        "raga_id": "kapi",
+        "tala": "adi",
+        "language": "marathi",
+        "notes": "Abhang by Sant Dnyaneshwar; performed as Misra Kapi"
+      },
+      {
         "id": "samayamide",
         "title": "Samayamide",
         "composer_id": "patnam_subramanya_iyer",
@@ -11772,6 +12241,14 @@
         "notes": "Varnam by Karur Devudu Iyer in Sri raga; Adi tala; one of the standard Sri raga varnams in the concert repertoire"
       },
       {
+        "id": "sami_ninnekori",
+        "title": "Sami Ninnekori",
+        "composer_id": "kottavasal_venkatarama_iyer",
+        "raga_id": "thodi",
+        "tala": "adi",
+        "notes": "Varnam"
+      },
+      {
         "id": "samukhana_nilva",
         "title": "samukhana nilva",
         "composer_id": "tyagaraja",
@@ -11792,6 +12269,13 @@
           }
         ],
         "notes": "Swati Tirunal kriti in Behag raga."
+      },
+      {
+        "id": "sarasa_samadana",
+        "title": "Sarasa Samadana",
+        "composer_id": "tyagaraja",
+        "raga_id": "kapinarayani",
+        "tala": "adi"
       },
       {
         "id": "sarasaksa_paripalaya",
@@ -12001,6 +12485,20 @@
         "notes": "Padam/Javali by Dharmapuri Subbaraya Iyer in rare raga Paras"
       },
       {
+        "id": "smaramyaham_sada_rahu",
+        "title": "Smaramyaham Sada Rahu",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "ramapriya",
+        "tala": "rupakam",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c5996.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
+      },
+      {
         "id": "sogasu_chooda",
         "title": "Sogasu Chooda",
         "composer_id": "tyagaraja",
@@ -12015,6 +12513,13 @@
           }
         ],
         "notes": "Tyagaraja kriti in Kannada Gowla raga."
+      },
+      {
+        "id": "sogasuga_mridanga",
+        "title": "Sogasuga Mridanga",
+        "composer_id": "tyagaraja",
+        "raga_id": "sriranjini",
+        "tala": "rupakam"
       },
       {
         "id": "solla_vallayo",
@@ -12047,6 +12552,13 @@
           }
         ],
         "notes": "Muthuswami Dikshitar kriti in Shankarabharanam raga."
+      },
+      {
+        "id": "sri_ganapathi",
+        "title": "Sri Ganapathi",
+        "composer_id": "tyagaraja",
+        "raga_id": "sowrashtram",
+        "tala": "adi"
       },
       {
         "id": "sri_kamakshi_katakshi",
@@ -12095,6 +12607,20 @@
         "tala": "khanda_ekam",
         "language": "Sanskrit",
         "notes": "Kamalamba Navavarana kriti by Muthuswami Dikshitar in Sri raga"
+      },
+      {
+        "id": "sri_krishnam_bhaja_manasa",
+        "title": "Sri Krishnam Bhaja Manasa",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "thodi",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c5938.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
       },
       {
         "id": "sri_maha_ganapathim",
@@ -12202,6 +12728,20 @@
         "notes": "Tulsidas bhajan in Yamuna Kalyani raga. A popular devotional composition on Rama."
       },
       {
+        "id": "sri_ramachandro_rakshathumam",
+        "title": "Sri Ramachandro Rakshathumam",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "sriranjini",
+        "tala": "misra chapu",
+        "sources": [
+          {
+            "url": "http://sangeetasudha.org/dikshitar/vol3/D74.html",
+            "label": "Sangeetha Sudha",
+            "type": "article"
+          }
+        ]
+      },
+      {
         "id": "sri_ramam_dikshitar",
         "title": "Sri Ramam",
         "composer_id": "muthuswami_dikshitar",
@@ -12234,6 +12774,13 @@
         "notes": "Kriti by Muthuswami Dikshitar in Shubapantuvarali; Thisra Ekam tala; addressed to Lord Satyanarayana; one of the principal compositions defining raga Shubapantuvarali in the concert repertoire"
       },
       {
+        "id": "sri_valli_devasenapathe",
+        "title": "Sri Valli Devasenapathe",
+        "composer_id": "papanasam_sivan",
+        "raga_id": "natabhairavi",
+        "tala": "adi"
+      },
+      {
         "id": "sri_venkata_girisa",
         "title": "Sri Venkata Girisa",
         "composer_id": "muthuswami_dikshitar",
@@ -12248,6 +12795,42 @@
           }
         ],
         "notes": "Muthuswami Dikshitar kriti in Suruti raga."
+      },
+      {
+        "id": "sri_venugopala",
+        "title": "Sri Venugopala",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "kurinji",
+        "tala": "misra jhampa",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c5983.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
+      },
+      {
+        "id": "sri_viswanatham",
+        "title": "Sri Viswanatham",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "ragamalika",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1419.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ],
+        "notes": "Chaturdasa Ragamalika — a composition spanning fourteen ragas"
+      },
+      {
+        "id": "sudhamayi_sudhanidhi",
+        "title": "Sudhamayi Sudhanidhi",
+        "composer_id": "muthiah_bhagavatar",
+        "raga_id": "amritavarshini",
+        "tala": "rupakam"
       },
       {
         "id": "sugunamule_cheppukonti",
@@ -12305,6 +12888,20 @@
           }
         ],
         "notes": "Kriti by Muthuswami Dikshitar in Sowrashtram; Dhruva tala; addressed to the Sun deity; part of the Navagraha Kritis cycle"
+      },
+      {
+        "id": "swaminatha_paripalayasumam",
+        "title": "Swaminatha Paripalayasumam",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "nata",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1046.shtml",
+            "label": "Karnatik.com",
+            "type": "article"
+          }
+        ]
       },
       {
         "id": "tali_ninnunera",
@@ -12579,6 +13176,13 @@
         "notes": "Padam by Sarangapani in Yadukulakamboji raga"
       },
       {
+        "id": "va_muruga_va",
+        "title": "Va Muruga Va",
+        "composer_id": "spencer_venugopal",
+        "raga_id": "begada",
+        "tala": "rupakam"
+      },
+      {
         "id": "vachamagocharundani",
         "title": "Vachamagocharundani",
         "composer_id": "mysore_sadasiva_rao",
@@ -12636,6 +13240,22 @@
         "tala": "misra_chapu",
         "language": "Telugu",
         "notes": "Padam by Kshetrayya"
+      },
+      {
+        "id": "vanajaksha_ninne_kori",
+        "title": "Vanajaksha Ninne Kori",
+        "composer_id": "mysore_vasudevacharya",
+        "raga_id": "mandari",
+        "tala": "adi",
+        "notes": "Varnam"
+      },
+      {
+        "id": "vanajakshi_ninne_varnam",
+        "title": "Vanajakshi Ninne",
+        "composer_id": "pallavi_gopala_iyer",
+        "raga_id": "kalyani",
+        "tala": "khanda ata",
+        "notes": "Varnam"
       },
       {
         "id": "vanajakshiro",
@@ -12738,6 +13358,13 @@
         "notes": "Tyagaraja kriti in Jayantasena; Adi tala; pallavi 'Vinatā Suta Vāhana Śrī Ramaṇā'; a meditation on the futility of life without the Lord's darshana and the virtue of sat-sangati (company of the pious); one of the principal compositions defining raga Jayantasena in the concert repertoire"
       },
       {
+        "id": "vinayaka_ninuvina",
+        "title": "Vinayaka Ninuvina",
+        "composer_id": "ev_ramakrishna_bhagavatar",
+        "raga_id": "hamsadhwani",
+        "tala": "adi"
+      },
+      {
         "id": "viraja_turaga",
         "title": "Viraja Turaga",
         "composer_id": "tyagaraja",
@@ -12773,6 +13400,28 @@
           }
         ],
         "notes": "Ata-tala varnam by Pacchimiriyam Adiapayya in Bhairavi; one of the most celebrated varnams in the Carnatic repertoire; traditionally placed at the opening of a concert; pallavi 'viriboni bhāvamulanu'"
+      },
+      {
+        "id": "vishveshwar_darshan",
+        "title": "Vishveshwar Darshan",
+        "composer_id": "swati_tirunal",
+        "raga_id": "sindhu_bhairavi",
+        "tala": "rupakam"
+      },
+      {
+        "id": "yadavaraya_kanaka_dasa",
+        "title": "Yadavaraya",
+        "composer_id": "kanaka_dasa",
+        "raga_id": "ragamalika",
+        "tala": "adi",
+        "notes": "Ragamalika spanning Basant, Sindhu Bhairavi, Durga"
+      },
+      {
+        "id": "yadavaraya_purandaradasa",
+        "title": "Yadavaraya",
+        "composer_id": "purandara_dasa",
+        "raga_id": "ragamalika",
+        "tala": "adi"
       },
       {
         "id": "yagnadulu_sukhamanu",
@@ -12964,6 +13613,21 @@
       ]
     },
     {
+      "id": "jamshedpur_25oct1973_mlv",
+      "path": "recordings/jamshedpur_25oct1973_mlv.json",
+      "title": "ML Vasanthakumari — Jamshedpur, 25 October 1973 (Carnatic Trio Series)",
+      "short_title": "Jamshedpur Oct 1973",
+      "date": "1973-10-25",
+      "venue": "Jamshedpur",
+      "primary_musician_ids": [
+        "ml_vasanthakumari",
+        "tm_prabhavathi",
+        "a_kanyakumari",
+        "soundar_rajan",
+        "hp_ramachar"
+      ]
+    },
+    {
       "id": "music_academy_1960_brinda_muktha",
       "path": "recordings/music_academy_1960_brinda_muktha.json",
       "title": "T. Brinda & T. Muktha — Music Academy, Madras, December 1960",
@@ -13053,6 +13717,53 @@
       ]
     },
     {
+      "id": "music_academy_25dec1975_mlv",
+      "path": "recordings/music_academy_25dec1975_mlv.json",
+      "title": "ML Vasanthakumari — December Season, Music Academy, Madras, 25 December 1975 (Dikshitar 250 Tribute)",
+      "short_title": "Music Academy Dec 1975",
+      "date": "1975-12-25",
+      "venue": "Music Academy, Madras",
+      "primary_musician_ids": [
+        "ml_vasanthakumari",
+        "charumathi_ramachandran",
+        "a_kanyakumari",
+        "tanjavur_krishnamurthy_rao",
+        "km_vaidhyanathan"
+      ]
+    },
+    {
+      "id": "music_academy_31dec1970_mlv_v1",
+      "path": "recordings/music_academy_31dec1970_mlv_v1.json",
+      "title": "ML Vasanthakumari — December Season, Music Academy, Madras, 31 December 1970 (97th Birthday Tribute)",
+      "short_title": "Music Academy 31 Dec 1970 (v1)",
+      "date": "1970-12-31",
+      "venue": "TT Krishnamachari Auditorium, Music Academy, Madras",
+      "primary_musician_ids": [
+        "ml_vasanthakumari",
+        "tm_prabhavathi",
+        "thiruvallur_subramaniam",
+        "tanjavur_krishnamurthy_rao",
+        "km_vaidhyanathan",
+        "hp_ramachar"
+      ]
+    },
+    {
+      "id": "music_academy_31dec1970_mlv_v2",
+      "path": "recordings/music_academy_31dec1970_mlv_v2.json",
+      "title": "ML Vasanthakumari — December Season, Music Academy, Madras, 31 December 1970 (96th Birthday Tribute)",
+      "short_title": "Music Academy 31 Dec 1970 (v2)",
+      "date": "1970-12-31",
+      "venue": "TT Krishnamachari Auditorium, Music Academy, Madras",
+      "primary_musician_ids": [
+        "ml_vasanthakumari",
+        "tm_prabhavathi",
+        "thiruvallur_subramaniam",
+        "tanjavur_krishnamurthy_rao",
+        "km_vaidhyanathan",
+        "hp_ramachar"
+      ]
+    },
+    {
       "id": "mylapore_fine_arts_1967",
       "path": "recordings/mylapore_fine_arts_1967.json",
       "title": "Semmangudi R Srinivasa Iyer — Mylapore Fine Arts Club, 26 November 1967",
@@ -13111,6 +13822,20 @@
         "ariyakudi_ramanuja_iyengar",
         "tn_krishnan",
         "palghat_mani_iyer"
+      ]
+    },
+    {
+      "id": "srinivasa_sastri_hall_1975_mlv",
+      "path": "recordings/srinivasa_sastri_hall_1975_mlv.json",
+      "title": "ML Vasanthakumari — Live at Srinivasa Sastri Hall, Madras, 1975",
+      "short_title": "Srinivasa Sastri Hall 1975",
+      "date": "1975",
+      "venue": "Srinivasa Sastri Hall, Madras",
+      "primary_musician_ids": [
+        "ml_vasanthakumari",
+        "charumathi_ramachandran",
+        "a_kanyakumari",
+        "r_ramesh"
       ]
     },
     {

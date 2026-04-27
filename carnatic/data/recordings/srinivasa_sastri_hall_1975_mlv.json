@@ -1,0 +1,176 @@
+{
+  "id": "srinivasa_sastri_hall_1975_mlv",
+  "video_id": "T21CrH_FNKc",
+  "url": "https://www.youtube.com/watch?v=T21CrH_FNKc",
+  "title": "ML Vasanthakumari — Live at Srinivasa Sastri Hall, Madras, 1975",
+  "short_title": "Srinivasa Sastri Hall 1975",
+  "date": "1975",
+  "venue": "Srinivasa Sastri Hall, Madras",
+  "occasion": "Live concert, 1975",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=T21CrH_FNKc",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ml_vasanthakumari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "charumathi_ramachandran",
+          "role": "vocal support"
+        },
+        {
+          "musician_id": "a_kanyakumari",
+          "role": "violin"
+        },
+        {
+          "musician_id": "r_ramesh",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "vanajakshi_ninne_varnam",
+          "raga_id": "kalyani",
+          "tala": "khanda ata",
+          "composer_id": "pallavi_gopala_iyer",
+          "display_title": "Vanajakshi Ninne (Varnam)"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:06:14",
+          "offset_seconds": 374,
+          "composition_id": "ekadantam_bhajeham",
+          "raga_id": "bilahari",
+          "tala": "misra chapu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Ekadantam Bhajeham"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:11:26",
+          "offset_seconds": 686,
+          "composition_id": "sogasuga_mridanga",
+          "raga_id": "sriranjini",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Sogasuga Mridanga"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:33:40",
+          "offset_seconds": 2020,
+          "composition_id": "sudhamayi_sudhanidhi",
+          "raga_id": "amritavarshini",
+          "tala": "rupakam",
+          "composer_id": "muthiah_bhagavatar",
+          "display_title": "Sudhamayi Sudhanidhi"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:53:21",
+          "offset_seconds": 3201,
+          "composition_id": "sri_valli_devasenapathe",
+          "raga_id": "natabhairavi",
+          "tala": "adi",
+          "composer_id": "papanasam_sivan",
+          "display_title": "Sri Valli Devasenapathe"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:07:06",
+          "offset_seconds": 4026,
+          "composition_id": "va_muruga_va",
+          "raga_id": "begada",
+          "tala": "rupakam",
+          "composer_id": "spencer_venugopal",
+          "display_title": "Va Muruga Va"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:12:50",
+          "offset_seconds": 4370,
+          "composition_id": null,
+          "raga_id": "saveri",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Saveri — Ragam",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:35:59",
+          "offset_seconds": 5759,
+          "composition_id": null,
+          "raga_id": "saveri",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Saveri — Thanam",
+          "type": "thanam"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:43:03",
+          "offset_seconds": 6183,
+          "composition_id": null,
+          "raga_id": "saveri",
+          "tala": "misra jhampa",
+          "composer_id": null,
+          "display_title": "Saveri — Pallavi (Neeve Gathiyani Nammithi)",
+          "type": "pallavi"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:57:15",
+          "offset_seconds": 7035,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Tani Avartanam",
+          "type": "tani"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:07:14",
+          "offset_seconds": 7634,
+          "composition_id": "yadavaraya_purandaradasa",
+          "raga_id": "ragamalika",
+          "tala": "adi",
+          "composer_id": "purandara_dasa",
+          "display_title": "Yadavaraya (Ragamalika — Purandara Dasa)"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:13:28",
+          "offset_seconds": 8008,
+          "composition_id": "parkadal_alaimele",
+          "raga_id": "ragamalika",
+          "tala": "adi",
+          "composer_id": "udumalaipettai_narayana_kavi",
+          "display_title": "Parkadal Alaimele (Ragamalika)"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:20:00",
+          "offset_seconds": 8400,
+          "composition_id": "ni_nama_rupamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama (Mangalam)"
+        }
+      ]
+    }
+  ]
+}

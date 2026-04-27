@@ -1,0 +1,17 @@
+{
+  "id": "sant_dnyaneshwar",
+  "label": "Sant Dnyaneshwar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dnyaneshwar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1275,
+  "died": 1296,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

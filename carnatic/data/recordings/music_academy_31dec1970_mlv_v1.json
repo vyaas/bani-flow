@@ -1,0 +1,240 @@
+{
+  "id": "music_academy_31dec1970_mlv_v1",
+  "video_id": "Mt829Rwe3AM",
+  "url": "https://www.youtube.com/watch?v=Mt829Rwe3AM",
+  "title": "ML Vasanthakumari — December Season, Music Academy, Madras, 31 December 1970 (97th Birthday Tribute)",
+  "short_title": "Music Academy 31 Dec 1970 (v1)",
+  "date": "1970-12-31",
+  "venue": "TT Krishnamachari Auditorium, Music Academy, Madras",
+  "occasion": "December Season 1970; uploaded on MLV's 97th birth anniversary",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=Mt829Rwe3AM",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ml_vasanthakumari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tm_prabhavathi",
+          "role": "vocal support"
+        },
+        {
+          "musician_id": "thiruvallur_subramaniam",
+          "role": "violin"
+        },
+        {
+          "musician_id": "tanjavur_krishnamurthy_rao",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "km_vaidhyanathan",
+          "role": "ghatam"
+        },
+        {
+          "musician_id": "hp_ramachar",
+          "role": "khanjira"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "vanajaksha_ninne_kori",
+          "raga_id": "mandari",
+          "tala": "adi",
+          "composer_id": "mysore_vasudevacharya",
+          "display_title": "Vanajaksha Ninne Kori (Varnam)"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:04:37",
+          "offset_seconds": 277,
+          "composition_id": "sri_ganapathi",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Sri Ganapathi"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:11:18",
+          "offset_seconds": 678,
+          "composition_id": null,
+          "raga_id": "bilahari",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Bilahari — Alapana",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:17:21",
+          "offset_seconds": 1041,
+          "composition_id": "intha_kannanandam_emi",
+          "raga_id": "bilahari",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Intha Kannanandam Emi"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:22:33",
+          "offset_seconds": 1353,
+          "composition_id": null,
+          "raga_id": "madhyamavati",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Madhyamavati — Alapana",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:32:10",
+          "offset_seconds": 1930,
+          "composition_id": "palimchu_kamakshi",
+          "raga_id": "madhyamavati",
+          "tala": "adi",
+          "composer_id": "shyama_shastri",
+          "display_title": "Palimchu Kamakshi"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:42:18",
+          "offset_seconds": 2538,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi — Alapana",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:01:35",
+          "offset_seconds": 3695,
+          "composition_id": "sri_krishnam_bhaja_manasa",
+          "raga_id": "thodi",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Sri Krishnam Baja Manasa",
+          "notes": "Disputed attribution; tracklist spells as 'Baja'"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:17:55",
+          "offset_seconds": 4675,
+          "composition_id": "nee_allal_ini",
+          "raga_id": "kaanada",
+          "tala": "adi",
+          "composer_id": "gnb",
+          "display_title": "Nee Allal Ini"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:21:47",
+          "offset_seconds": 4907,
+          "composition_id": "nenarunchi_nanu",
+          "raga_id": "malavi",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nenarunchi Nanu"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:25:36",
+          "offset_seconds": 5136,
+          "composition_id": null,
+          "raga_id": "simhendramadhyamam",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Simhendramadhyamam — Ragam",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:43:05",
+          "offset_seconds": 6185,
+          "composition_id": null,
+          "raga_id": "simhendramadhyamam",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Simhendramadhyamam — Thanam",
+          "type": "thanam"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:48:44",
+          "offset_seconds": 6524,
+          "composition_id": null,
+          "raga_id": "simhendramadhyamam",
+          "tala": "tisra jhampa",
+          "composer_id": null,
+          "display_title": "Simhendramadhyamam — Pallavi (Muruga Kumara Thiru Malmaruga)",
+          "type": "pallavi",
+          "notes": "Ragamalika swaras in Sama, Kapi, Shubhapantuvarali"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:01:00",
+          "offset_seconds": 7260,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "tisra jhampa",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "type": "tani"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:06:55",
+          "offset_seconds": 7615,
+          "composition_id": "yadavaraya_kanaka_dasa",
+          "raga_id": "ragamalika",
+          "tala": "adi",
+          "composer_id": "kanaka_dasa",
+          "display_title": "Yadavaraya (Ragamalika)",
+          "notes": "Ragamalika spanning Basant, Sindhu Bhairavi, Durga"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:13:41",
+          "offset_seconds": 8021,
+          "composition_id": "saramaina_matalento",
+          "raga_id": "behag",
+          "tala": "rupakam",
+          "composer_id": "swati_tirunal",
+          "display_title": "Saramaina (Javali)"
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:17:06",
+          "offset_seconds": 8226,
+          "composition_id": "dheem_ta_dhuniku",
+          "raga_id": "dhanashree",
+          "tala": "adi",
+          "composer_id": "swati_tirunal",
+          "display_title": "Dheem Ta Dhuniku (Thillana)"
+        },
+        {
+          "performance_index": 18,
+          "timestamp": "02:20:14",
+          "offset_seconds": 8414,
+          "composition_id": "ni_nama_rupamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku (Mangalam)"
+        }
+      ]
+    }
+  ]
+}

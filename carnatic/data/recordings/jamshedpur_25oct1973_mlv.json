@@ -1,0 +1,276 @@
+{
+  "id": "jamshedpur_25oct1973_mlv",
+  "video_id": "ic9i5-_MRdY",
+  "url": "https://www.youtube.com/watch?v=ic9i5-_MRdY",
+  "title": "ML Vasanthakumari — Jamshedpur, 25 October 1973 (Carnatic Trio Series)",
+  "short_title": "Jamshedpur Oct 1973",
+  "date": "1973-10-25",
+  "venue": "Jamshedpur",
+  "occasion": "Carnatic Trio series — Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=ic9i5-_MRdY",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ml_vasanthakumari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tm_prabhavathi",
+          "role": "vocal support"
+        },
+        {
+          "musician_id": "a_kanyakumari",
+          "role": "violin"
+        },
+        {
+          "musician_id": "soundar_rajan",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "hp_ramachar",
+          "role": "khanjira"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Announcement",
+          "type": "announcement"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:00:40",
+          "offset_seconds": 40,
+          "composition_id": "sami_ninnekori",
+          "raga_id": "thodi",
+          "tala": "adi",
+          "composer_id": "kottavasal_venkatarama_iyer",
+          "display_title": "Sami Ninnekori (Varnam)"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:05:06",
+          "offset_seconds": 306,
+          "composition_id": "vinayaka_ninuvina",
+          "raga_id": "hamsadhwani",
+          "tala": "adi",
+          "composer_id": "ev_ramakrishna_bhagavatar",
+          "display_title": "Vinayaka Ninuvina"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:10:15",
+          "offset_seconds": 615,
+          "composition_id": "jagadanandakaraka",
+          "raga_id": "nata",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Jagadanandakaraka"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:18:23",
+          "offset_seconds": 1103,
+          "composition_id": "etavunara",
+          "raga_id": "kalyani",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Etavunara (Incomplete)"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:43:51",
+          "offset_seconds": 2631,
+          "composition_id": "mama_kuleswaram",
+          "raga_id": "thodi",
+          "tala": "tisra ekam",
+          "composer_id": "gnb",
+          "display_title": "Mama Kuleswaram"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:51:05",
+          "offset_seconds": 3065,
+          "composition_id": "sarasa_samadana",
+          "raga_id": "kapinarayani",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Sarasa Samadana"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:07:39",
+          "offset_seconds": 3959,
+          "composition_id": "kapali",
+          "raga_id": "mohanam",
+          "tala": "adi",
+          "composer_id": "papanasam_sivan",
+          "display_title": "Kapali"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:24:29",
+          "offset_seconds": 5069,
+          "composition_id": "ramachandram_bhavayami",
+          "raga_id": "vasantha",
+          "tala": "rupakam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Ramachandram Bhavayami"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:27:04",
+          "offset_seconds": 5224,
+          "composition_id": "paramukham_elara",
+          "raga_id": "surutti",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Paramukham Elara"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:30:05",
+          "offset_seconds": 5405,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Bhairavi — Ragam",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:55:29",
+          "offset_seconds": 6929,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Bhairavi — Thanam",
+          "type": "thanam"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:03:18",
+          "offset_seconds": 7398,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Bhairavi — Pallavi (Shastaram Sada Bhajeham)",
+          "type": "pallavi",
+          "notes": "Ragamalika swaras in Behag"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:26:49",
+          "offset_seconds": 8809,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "type": "tani"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:29:38",
+          "offset_seconds": 8978,
+          "composition_id": null,
+          "raga_id": "ragamalika",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ragamalika — Ugabhoga (Viruttam)",
+          "type": "viruttam"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:31:28",
+          "offset_seconds": 9088,
+          "composition_id": "baro_krishnayya",
+          "raga_id": "ragamalika",
+          "tala": "adi",
+          "composer_id": "kanaka_dasa",
+          "display_title": "Baro Krishnayya (Ragamalika)"
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:36:25",
+          "offset_seconds": 9385,
+          "composition_id": "sakuna_nirguna",
+          "raga_id": "kapi",
+          "tala": "adi",
+          "composer_id": "sant_dnyaneshwar",
+          "display_title": "Sakuna Nirguna (Abhang)",
+          "notes": "Performed as Misra Kapi"
+        },
+        {
+          "performance_index": 18,
+          "timestamp": "02:42:16",
+          "offset_seconds": 9736,
+          "composition_id": "appan_avatharitha",
+          "raga_id": "kharaharapriya",
+          "tala": "adi",
+          "composer_id": "papanasam_sivan",
+          "display_title": "Appan Avatharitha"
+        },
+        {
+          "performance_index": 19,
+          "timestamp": "02:46:24",
+          "offset_seconds": 9984,
+          "composition_id": null,
+          "raga_id": "sindhu_bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Sindhubhairavi — Virutham",
+          "type": "viruttam"
+        },
+        {
+          "performance_index": 20,
+          "timestamp": "02:47:17",
+          "offset_seconds": 10037,
+          "composition_id": "vishveshwar_darshan",
+          "raga_id": "sindhu_bhairavi",
+          "tala": "rupakam",
+          "composer_id": "swati_tirunal",
+          "display_title": "Vishveshwar Darshan"
+        },
+        {
+          "performance_index": 21,
+          "timestamp": "02:50:06",
+          "offset_seconds": 10206,
+          "composition_id": null,
+          "raga_id": "ragamalika",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ragamalika Virutham (Kedaragowla, Shanmukhapriya, Neelambari, Madhyamavathi)",
+          "type": "viruttam"
+        },
+        {
+          "performance_index": 22,
+          "timestamp": "02:55:47",
+          "offset_seconds": 10547,
+          "composition_id": "ni_nama_rupamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku (Mangalam)"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "rudrapriya",
+  "name": "Rudrapriya",
+  "aliases": [
+    "Rudhrapriya"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Rudrapriya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

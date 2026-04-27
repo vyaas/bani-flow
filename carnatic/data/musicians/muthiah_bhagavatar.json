@@ -1,9 +1,14 @@
 {
   "id": "muthiah_bhagavatar",
-  "label": "Muthiah Bhagavatar",
+  "label": "Harikesanallur Muthiah Bhagavathar",
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Harikesanallur_Muthiah_Bhagavathar",
       "label": "Wikipedia",
       "type": "wikipedia"
     }
