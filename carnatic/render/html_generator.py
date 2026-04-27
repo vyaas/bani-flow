@@ -150,6 +150,7 @@ def render_html(
         f"  compositions: compositions,\n"
         f"  recordings:   recordings,\n"
         f"}};\n"
+        f"graphData.musicians = graphData.nodes;  // alias: nodes are musician nodes\n"
     )
 
     # ── Load templates ────────────────────────────────────────────────────────

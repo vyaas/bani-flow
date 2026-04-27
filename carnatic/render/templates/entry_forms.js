@@ -3662,12 +3662,10 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
       staged.forEach(id => {
         if (!original.has(id)) {
           addToBundle('musicians', {
-            op:          'append',
-            id:          nodeId,
-            type:        'add_lecdem_subject',
-            video_id:    vid,
-            axis:        axis,
-            subject_id:  id,
+            op:    'append',
+            id:    nodeId,
+            array: `youtube[${vid}].subjects.${axis}`,
+            value: id,
           });
           count++;
         }

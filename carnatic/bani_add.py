@@ -261,6 +261,17 @@ def _process_musicians(
             musician_id = m.get("id")
             array_sel   = m.get("array", "")
             value       = m.get("value", {})
+
+            # ── compat: old entry_forms.js emitted a flat add_lecdem_subject shape
+            # instead of the standard array-selector format. Convert on the fly.
+            if not array_sel and m.get("type") == "add_lecdem_subject":
+                vid_raw = m.get("video_id", "")
+                axis    = m.get("axis", "")
+                subj    = m.get("subject_id", "")
+                if vid_raw and axis and subj:
+                    array_sel = f"youtube[{vid_raw}].subjects.{axis}"
+                    value     = subj
+
             if not musician_id or not array_sel:
                 print(f"  ERROR  musician append missing 'id' or 'array': {m}")
                 errors += 1
@@ -323,9 +334,9 @@ def _process_musicians(
                 result = writer.add_lecdem_subject(
                     musicians_path,
                     musician_id=musician_id,
-                    video_id=vid,
-                    subject_key=sub_key,
-                    subject_value=value,
+                    url=f"https://www.youtube.com/watch?v={vid}",
+                    axis=sub_key,
+                    subject_id=value,
                 )
             elif array_sel.startswith("youtube[") and ".segments" in array_sel:
                 # e.g. "youtube[dQw4w9WgXcQ].segments" — ADR-101
