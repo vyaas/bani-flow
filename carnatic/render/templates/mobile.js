@@ -233,10 +233,10 @@
     if (dpbRightToggle) dpbRightToggle.style.display = rightPinned ? 'none' : '';
     if (rightPinned) _openRightDrawer();
 
-    // Persist to session
+    // Persist across sessions (localStorage survives tab close)
     try {
-      sessionStorage.setItem('baniLeftPinned',  String(leftPinned));
-      sessionStorage.setItem('baniRightPinned', String(rightPinned));
+      localStorage.setItem('baniLeftPinned',  String(leftPinned));
+      localStorage.setItem('baniRightPinned', String(rightPinned));
     } catch (e) { /* storage unavailable — ignore */ }
 
     // Cytoscape must recalculate canvas size after grid change
@@ -255,16 +255,15 @@
     _applyPinState();
   }
 
-  // Restore pin state from previous desktop session
+  // Restore pin state — localStorage persists across sessions.
+  // Default on first desktop visit: left panel pinned, right panel unpinned.
   if (isDesktop()) {
     try {
-      var _lp = sessionStorage.getItem('baniLeftPinned');
-      var _rp = sessionStorage.getItem('baniRightPinned');
-      if (_lp !== null || _rp !== null) {
-        leftPinned  = _lp  === 'true';
-        rightPinned = _rp === 'true';
-        _applyPinState();
-      }
+      var _lp = localStorage.getItem('baniLeftPinned');
+      var _rp = localStorage.getItem('baniRightPinned');
+      leftPinned  = _lp !== null ? _lp  === 'true' : true;
+      rightPinned = _rp !== null ? _rp === 'true' : false;
+      _applyPinState();
     } catch (e) { /* storage unavailable — ignore */ }
   }
 

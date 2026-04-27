@@ -522,11 +522,10 @@
   }
   .comp-section-header {
     display: flex; align-items: center; justify-content: space-between;
-    font-size: 0.68rem;
-    color: var(--fg-muted);
-    padding: 4px 8px 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
   }
   .comp-section-list {
     list-style: none;
@@ -1586,11 +1585,10 @@
     padding-top: 4px;
   }
   .lecdem-section-header {
-    font-size: 0.68rem;
-    color: var(--fg-muted);
-    padding: 4px 8px 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
   }
   .lecdem-subsection {
     margin-top: 4px;
@@ -2179,8 +2177,10 @@
     border-top: 1px solid var(--border-soft);
   }
   .notes-section-header {
-    font-size: 0.60rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--fg-muted); margin-bottom: 4px;
+    font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--fg-muted); text-transform: uppercase;
+    padding: 10px 0 3px; border-bottom: 1px solid var(--border);
+    margin-top: 4px;
   }
   .notes-list { list-style: none; margin: 0; padding: 0; }
   .notes-item {
@@ -2496,6 +2496,7 @@
       display: grid;
       grid-template-columns: 0px 1fr 0px;
       grid-template-rows: 1fr;
+      transition: grid-template-columns 0.22s ease;
     }
     /* Explicitly place each column — sidebars may be position:fixed (out-of-flow)
        so CSS auto-placement would skip them and land canvas-wrap in col 1 (0px). */
@@ -2525,6 +2526,19 @@
     /* Canvas column must not collapse below a usable width */
     #canvas-wrap {
       min-width: 200px;
+    }
+
+    /* ── Floating-sidebar safety offsets ─────────────────────────────────── */
+    /* When the left sidebar is open but unpinned (floating overlay), the mela  */
+    /* detail panel would spawn underneath it. Shift it right so it's visible.  */
+    #main:not(.left-pinned) #left-sidebar.drawer-open ~ #canvas-wrap #wheel-detail-panel {
+      left: 292px;
+    }
+
+    /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
+    /* Re-layout / Timeline) would be hidden under it. Shift it left.            */
+    #main:not(.right-pinned):has(#right-sidebar.drawer-open) #viewport-toolbar {
+      right: 292px;
     }
 
     /* Floating edge handles replaced by #desktop-panel-bar — keep hidden */
@@ -5032,6 +5046,26 @@ const elements = [
           "version": null,
           "tala": null,
           "performers": []
+        },
+        {
+          "vid": "8xArCVyPM5w",
+          "label": "",
+          "composition_id": "nada_thanumanisam",
+          "raga_id": "chitharanjani",
+          "year": null,
+          "version": null,
+          "tala": "adi",
+          "performers": []
+        },
+        {
+          "vid": "Zq62F9FcgKI",
+          "label": "Nada thanumanisam",
+          "composition_id": "nada_thanumanisam",
+          "raga_id": "chitharanjani",
+          "year": null,
+          "version": null,
+          "tala": "adi",
+          "performers": []
         }
       ],
       "is_listenable": 1,
@@ -5209,6 +5243,16 @@ const elements = [
               "role": "mridangam"
             }
           ]
+        },
+        {
+          "vid": "wSHzbkciA_Q",
+          "label": "janani ninnuvina",
+          "composition_id": "janani_ninnuvina",
+          "raga_id": "reetigowla",
+          "year": null,
+          "version": null,
+          "tala": "misra chapu",
+          "performers": []
         }
       ],
       "is_listenable": 1,
@@ -8596,6 +8640,16 @@ const elements = [
           "version": null,
           "tala": null,
           "performers": []
+        },
+        {
+          "vid": "en819pbBXuE",
+          "label": "janani ninnuvina",
+          "composition_id": "janani_ninnuvina",
+          "raga_id": "reetigowla",
+          "year": null,
+          "version": null,
+          "tala": "misra chapu",
+          "performers": []
         }
       ],
       "is_listenable": 1,
@@ -9928,6 +9982,20 @@ const ragas        = [
       }
     ],
     "notes": "26th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₁ N₂ Ṡ"
+  },
+  {
+    "id": "chitharanjani",
+    "name": "Chitharanjani",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": "kharaharapriya",
+    "sources": [
+      {
+        "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-chittha-ranjani-janya-of-mela-22-ragam-kharaharapriya",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ]
   },
   {
     "id": "chitrambari",
@@ -15636,6 +15704,12 @@ const compositions = [
     "notes": null
   },
   {
+    "id": "nada_thanumanisam",
+    "title": "Nada thanumanisam",
+    "composer_id": "tyagaraja",
+    "raga_id": "chitharanjani"
+  },
+  {
     "id": "nadha_sudharasam",
     "title": "Nadha Sudharasam",
     "composer_id": "tyagaraja",
@@ -17339,11 +17413,19 @@ const compositionToNodes = {
   "vinata_suta_vahana": [
     "madurai_mani_iyer"
   ],
+  "nada_thanumanisam": [
+    "madurai_mani_iyer"
+  ],
   "giripai_nelakona": [
     "md_ramanathan",
     "tn_krishnan",
     "palghat_mani_iyer",
     "ramnad_krishnan"
+  ],
+  "janani_ninnuvina": [
+    "md_ramanathan",
+    "sanjay_subrahmanyan",
+    "tm_krishna"
   ],
   "ento_premato": [
     "ms_subbulakshmi",
@@ -17545,9 +17627,6 @@ const compositionToNodes = {
   ],
   "raghupate_rama": [
     "ramnad_krishnan"
-  ],
-  "janani_ninnuvina": [
-    "sanjay_subrahmanyan"
   ],
   "divakara_tanujam": [
     "semmangudi_srinivasa_iyer"
@@ -18442,6 +18521,9 @@ const ragaToNodes        = {
   "jayantasena": [
     "madurai_mani_iyer"
   ],
+  "chitharanjani": [
+    "madurai_mani_iyer"
+  ],
   "sahana": [
     "md_ramanathan",
     "tn_krishnan",
@@ -18453,6 +18535,14 @@ const ragaToNodes        = {
     "coimbatore_n_ramaswamy",
     "t_brinda",
     "t_muktha"
+  ],
+  "reetigowla": [
+    "md_ramanathan",
+    "ramnad_krishnan",
+    "sanjay_subrahmanyan",
+    "tm_krishna",
+    "tn_krishnan",
+    "vellore_ramabhadran"
   ],
   "kapi": [
     "ramnad_krishnan",
@@ -18670,12 +18760,6 @@ const ragaToNodes        = {
     "kv_narayanaswamy",
     "cr_mani_iyer",
     "palghat_raghu"
-  ],
-  "reetigowla": [
-    "ramnad_krishnan",
-    "sanjay_subrahmanyan",
-    "tn_krishnan",
-    "vellore_ramabhadran"
   ],
   "poorvikalyani": [
     "ramnad_krishnan",
@@ -79089,7 +79173,13 @@ const helpEmptyPanels = {
           "play_label": "Gamaka I — Lakshmi Sreeram",
           "video_id": "nBAez2kdElo",
           "youtube_url": "https://www.youtube.com/watch?v=nBAez2kdElo",
-          "raga_tags": []
+          "raga_tags": [],
+          "performers": [
+            {
+              "id": "lakshmi_sreeram",
+              "label": "Lakshmi Sreeram"
+            }
+          ]
         },
         "effect": "Gamaka — the ornamental inflection of a swara — is what makes Carnatic music sound the way it does. Without gamaka, a raga is a scale; with it, a single note becomes an emotion. Lakshmi Sreeram's lecture series covers the grammar of gamaka from first principles: this is where good listening begins."
       },
@@ -79119,7 +79209,13 @@ const helpEmptyPanels = {
           "play_label": "Understanding Raga - Part I — Lakshmi Sreeram",
           "video_id": "C50lNHXE4RY",
           "youtube_url": "https://www.youtube.com/watch?v=C50lNHXE4RY",
-          "raga_tags": []
+          "raga_tags": [],
+          "performers": [
+            {
+              "id": "lakshmi_sreeram",
+              "label": "Lakshmi Sreeram"
+            }
+          ]
         },
         "effect": "The raga chips on a lec-dem are interactive — tapping them focuses that raga on the Mela-Janya wheel. A raga heard and explained in a lecture becomes a navigable node in the modal world. Lakshmi Sreeram's lecture on raga is the clearest available account of what a raga is — not a scale, but a personality; not a set of notes, but a way of moving between them."
       }
@@ -82292,15 +82388,16 @@ function buildRecordingsList(nodeId, nodeData) {
   const lecdemsAbout_   = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician[nodeId] : null) || [];
 
   // Keep Lecdems at the top of the musician panel while preserving all
-  // existing section ordering below it.
-  if (lecdemsBy_.length > 0 || lecdemsAbout_.length > 0) {
+  // existing section ordering below it. Header always rendered (per Concerts/
+  // Compositions pattern) so the section is always visible as an anchor.
+  {
     const lsSection = document.createElement('section');
     lsSection.className = 'lecdem-section';
     lsSection.dataset.section = 'lecdems';
 
     const lsSectionHdr = document.createElement('div');
     lsSectionHdr.className = 'lecdem-section-header';
-    lsSectionHdr.textContent = 'Lecdems';
+    lsSectionHdr.textContent = 'Lecdems (' + (lecdemsBy_.length + lecdemsAbout_.length) + ')';
     lsSection.appendChild(lsSectionHdr);
 
     // Lecdems by this musician
@@ -82430,7 +82527,7 @@ function buildRecordingsList(nodeId, nodeData) {
   const concertHeader = document.createElement('div');
   concertHeader.className = 'rec-section-header-row';
   const concertHeaderLabel = document.createElement('span');
-  concertHeaderLabel.textContent = 'Concerts';
+  concertHeaderLabel.textContent = 'Concerts (' + concerts.length + ')';
   concertHeader.appendChild(concertHeaderLabel);
   const concertAddChip = document.createElement('button');
   concertAddChip.type = 'button';
@@ -82467,11 +82564,12 @@ function buildRecordingsList(nodeId, nodeData) {
       offset_seconds: 0,
     }));
   const allPerfs = [...structuredPerfs, ...normalizedLegacy];
+  // Header always rendered so all sections are visible for every musician.
+  const ragaHeader = document.createElement('div');
+  ragaHeader.className = 'rec-section-header';
+  ragaHeader.textContent = 'By raga (' + allPerfs.length + ')';
+  recList.appendChild(ragaHeader);
   if (allPerfs.length > 0) {
-    const ragaHeader = document.createElement('div');
-    ragaHeader.className = 'rec-section-header';
-    ragaHeader.textContent = 'By raga';
-    recList.appendChild(ragaHeader);
     recList.appendChild(buildRagaTree(allPerfs, nodeId, artistLabel));
   }
 
@@ -85957,6 +86055,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       janyasRow.style.display = 'block';
 
       // ADR-106: + chip to add a janya under this melakarta
+      // Remove any previously-appended + chips (re-entrant navigation accumulates them)
+      janyasRow.querySelectorAll('.co-add-chip').forEach(el => el.remove());
       const janyasAddChip = document.createElement('button');
       janyasAddChip.type = 'button';
       janyasAddChip.className = 'co-add-chip';
@@ -91722,9 +91822,20 @@ function openEditMusicianForm(nodeId) {
       playBtn.title = 'Play';
       playBtn.addEventListener('click', function (evt) {
         evt.stopPropagation();
-        if (typeof openPlayer === 'function' && demo.video_id) {
-          openPlayer(demo.video_id, demo.play_label || demo.chip_label || 'Lecture-Demo');
-        }
+        if (typeof openOrFocusPlayer !== 'function' || !demo.video_id) return;
+        const _perfs = Array.isArray(demo.performers) ? demo.performers : [];
+        const _first = _perfs[0] || null;
+        const _artistName = _first ? (_first.label || '') : '';
+        const _nodeId = _first ? (_first.id || null) : null;
+        openOrFocusPlayer(
+          demo.video_id,
+          demo.play_label || demo.chip_label || 'Lecture-Demo',
+          _artistName,
+          undefined,
+          undefined,
+          [],
+          _nodeId ? { nodeId: _nodeId } : {}
+        );
       });
       acts.appendChild(playBtn);
 
@@ -91822,14 +91933,16 @@ function openEditMusicianForm(nodeId) {
           });
         });
         allTracks.sort(function (a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
+        const _mainPerf = Array.isArray(demo.performers) ? (demo.performers[0] || null) : null;
+        const _mainNodeId = _mainPerf ? (_mainPerf.id || null) : null;
         openOrFocusPlayer(
           demo.video_id,
           demo.play_label || rec.title || demo.chip_label || 'Concert',
-          demo.artist_label || '',
+          demo.artist_label || (_mainPerf ? _mainPerf.label : '') || '',
           0,
           rec.short_title || rec.title || '',
           allTracks.length ? allTracks : null,
-          {}
+          _mainNodeId ? { nodeId: _mainNodeId } : {}
         );
       });
       acts.appendChild(playBtn);
@@ -92624,10 +92737,10 @@ function openEditMusicianForm(nodeId) {
     if (dpbRightToggle) dpbRightToggle.style.display = rightPinned ? 'none' : '';
     if (rightPinned) _openRightDrawer();
 
-    // Persist to session
+    // Persist across sessions (localStorage survives tab close)
     try {
-      sessionStorage.setItem('baniLeftPinned',  String(leftPinned));
-      sessionStorage.setItem('baniRightPinned', String(rightPinned));
+      localStorage.setItem('baniLeftPinned',  String(leftPinned));
+      localStorage.setItem('baniRightPinned', String(rightPinned));
     } catch (e) { /* storage unavailable — ignore */ }
 
     // Cytoscape must recalculate canvas size after grid change
@@ -92646,16 +92759,15 @@ function openEditMusicianForm(nodeId) {
     _applyPinState();
   }
 
-  // Restore pin state from previous desktop session
+  // Restore pin state — localStorage persists across sessions.
+  // Default on first desktop visit: left panel pinned, right panel unpinned.
   if (isDesktop()) {
     try {
-      var _lp = sessionStorage.getItem('baniLeftPinned');
-      var _rp = sessionStorage.getItem('baniRightPinned');
-      if (_lp !== null || _rp !== null) {
-        leftPinned  = _lp  === 'true';
-        rightPinned = _rp === 'true';
-        _applyPinState();
-      }
+      var _lp = localStorage.getItem('baniLeftPinned');
+      var _rp = localStorage.getItem('baniRightPinned');
+      leftPinned  = _lp !== null ? _lp  === 'true' : true;
+      rightPinned = _rp !== null ? _rp === 'true' : false;
+      _applyPinState();
     } catch (e) { /* storage unavailable — ignore */ }
   }
 

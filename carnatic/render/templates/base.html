@@ -3726,3 +3726,17 @@
 </html>
 </body>
 </html>
+      transition: grid-template-columns 0.22s ease;
+    /* ── Floating-sidebar safety offsets ─────────────────────────────────── */
+    /* When the left sidebar is open but unpinned (floating overlay), the mela  */
+    /* detail panel would spawn underneath it. Shift it right so it's visible.  */
+    #main:not(.left-pinned) #left-sidebar.drawer-open ~ #canvas-wrap #wheel-detail-panel {
+      left: 292px;
+    }
+
+    /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
+    /* Re-layout / Timeline) would be hidden under it. Shift it left.            */
+    #main:not(.right-pinned):has(#right-sidebar.drawer-open) #viewport-toolbar {
+      right: 292px;
+    }
+
