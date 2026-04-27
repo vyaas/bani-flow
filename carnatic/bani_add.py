@@ -267,28 +267,35 @@ def _process_musicians(
                 continue
 
             if array_sel == "youtube":
-                # same as youtube_append; value is one YoutubeEntryItem
-                yt = value if isinstance(value, dict) else {}
-                if not yt.get("url"):
-                    print(f"  ERROR  musician append youtube missing 'url' for {musician_id}")
-                    errors += 1
-                    continue
-                result = writer.add_youtube(
-                    musicians_path,
-                    musician_id=musician_id,
-                    url=yt["url"],
-                    label=yt.get("label", ""),
-                    composition_id=yt.get("composition_id"),
-                    raga_id=yt.get("raga_id"),
-                    year=yt.get("year"),
-                    version=yt.get("version"),
-                    tala=yt.get("tala"),
-                    performers=yt.get("performers"),
-                    kind=yt.get("kind"),
-                    subjects=yt.get("subjects"),
-                    compositions_path=comp_path,
-                    ragas_path=ragas_path,
-                )
+                # value may be a single YoutubeEntryItem dict OR a list of them
+                # (the focused YouTube form emits a list; older paths emit a dict)
+                raw_value = m.get("value", {})
+                yt_list = raw_value if isinstance(raw_value, list) else [raw_value]
+                for yt in yt_list:
+                    if not isinstance(yt, dict) or not yt.get("url"):
+                        print(f"  ERROR  musician append youtube missing 'url' for {musician_id}")
+                        errors += 1
+                        continue
+                    result = writer.add_youtube(
+                        musicians_path,
+                        musician_id=musician_id,
+                        url=yt["url"],
+                        label=yt.get("label", ""),
+                        composition_id=yt.get("composition_id"),
+                        raga_id=yt.get("raga_id"),
+                        year=yt.get("year"),
+                        version=yt.get("version"),
+                        tala=yt.get("tala"),
+                        performers=yt.get("performers"),
+                        kind=yt.get("kind"),
+                        subjects=yt.get("subjects"),
+                        compositions_path=comp_path,
+                        ragas_path=ragas_path,
+                    )
+                    _print_result(result)
+                    if result.ok:        added   += 1
+                    elif result.skipped: skipped += 1
+                    else:                errors  += 1
             elif array_sel.startswith("youtube[") and ".performers" in array_sel:
                 # e.g. "youtube[dQw4w9WgXcQ].performers"
                 import re as _re
