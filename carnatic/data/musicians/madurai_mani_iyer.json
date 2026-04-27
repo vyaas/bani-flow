@@ -27,6 +27,20 @@
       "composition_id": "vinata_suta_vahana",
       "raga_id": "jayantasena",
       "year": 1967
+    },
+    {
+      "url": "https://youtu.be/8xArCVyPM5w",
+      "label": "",
+      "composition_id": "nada_thanumanisam",
+      "raga_id": "chitharanjani",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/Zq62F9FcgKI",
+      "label": "Nada thanumanisam",
+      "composition_id": "nada_thanumanisam",
+      "raga_id": "chitharanjani",
+      "tala": "adi"
     }
   ]
 }
