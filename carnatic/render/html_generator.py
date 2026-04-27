@@ -74,7 +74,7 @@ def render_html(
     ragas_json               = json.dumps(comp_data.get("ragas", []), indent=2, ensure_ascii=False)
     # ADR-110: composers are now musician nodes; derive list for JS backward-compat (c.name / c.id)
     _composer_nodes = [e["data"] for e in elements if e["data"].get("is_composer") and not e["data"].get("source")]
-    composers_list  = [{"id": d["id"], "name": d.get("label", d["id"]), "born": d.get("born"), "died": d.get("died")} for d in _composer_nodes]
+    composers_list  = [{"id": d["id"], "name": d.get("label", d["id"]), "born": d.get("born"), "died": d.get("died"), "musician_node_id": d["id"]} for d in _composer_nodes]
     composers_json           = json.dumps(composers_list, indent=2, ensure_ascii=False)
     compositions_json        = json.dumps(comp_data.get("compositions", []), indent=2, ensure_ascii=False)
     comp_to_nodes_json       = json.dumps(composition_to_nodes, indent=2, ensure_ascii=False)
@@ -102,9 +102,6 @@ def render_html(
 
     data_js = (
         f"const elements = {elements_json};\n"
-        f"\n"
-        f"// ── ADR-055: set of musician node IDs with playable content (recordings or compositions) ─\n"
-        f"const musiciansListenable = new Set({listenable_ids_json});\n"
         f"\n"
         f"// ── Compositions data (injected by render.py) ──────────────────────────────\n"
         f"const ragas        = {ragas_json};\n"

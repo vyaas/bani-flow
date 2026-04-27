@@ -11717,9 +11717,6 @@ const elements = [
   }
 ];
 
-// ── ADR-055: set of musician node IDs with playable content (recordings or compositions) ─
-const musiciansListenable = new Set(["abhishek_raghuram", "akkarai_subbulakshmi", "alathur_brothers", "ambujam_krishna", "andal", "annamacharya", "annasami_shastri", "ariyakudi_ramanuja_iyengar", "aruna_sairam", "arunachala_kavi", "arunagirinathar", "balamuralikrishna", "bhadrachala_ramadas", "bombay_jayashri", "chandrasekharendra_saraswati", "chinnaiah_pillai", "coimbatore_n_ramaswamy", "cr_mani_iyer", "dharmapuri_subbaraya_iyer", "dk_pattammal", "dwijendralal_roy", "garbhapurivasa", "ghanam_krishna_iyer", "gnb", "gopalakrishna_bharathi", "govindasvamy_ayya", "hyderabad_brothers", "jayachamarajendra_wadiyar", "kamalesha_vittala_dasa", "kanaka_dasa", "karur_devudu_iyer", "koteeswara_iyer", "kshetrayya", "kumara_ettendra", "kunnakudi_krishna_iyer", "kuppuswami_ayya", "kurainadu_natesa_pillai", "kv_narayanaswamy", "lalgudi_jayaraman", "lalgudi_srimathi_brahmananda", "maanambuchaavadi_venkatasubbaiyer", "madurai_mani_iyer", "maharajapuram_santanam", "md_ramanathan", "ml_vasanthakumari", "ms_gopalakrishnan", "ms_subbulakshmi", "muddu_natesa", "musiri_subramania_iyer", "muthiah_bhagavatar", "muthu_thandavar", "muthuswami_dikshitar", "mysore_sadasiva_rao", "mysore_vasudevacharya", "nagapatnam_veeraswamy_pillai", "nityashree_mahadevan", "oothukadu_venkata_kavi", "pacchimiriyam_adiapayya", "palghat_mani_iyer", "palghat_raghu", "palghat_rajamani", "pallavi_gopala_iyer", "papanasam_sivan", "patnam_subramanya_iyer", "pattabhiramayya", "periyasami_tooran", "purandara_dasa", "r_vedavalli", "rabindranath_tagore", "radha_viswanathan", "ramakrishnan_murthy", "ramnad_krishnan", "ramnad_raghavan", "ramnad_sreenivasa_iyengar", "ranjani_gayatri", "rudrapatnam_venkatramayya", "s_sowmya", "samuel_vedanayagam_pillai", "sanjay_subrahmanyan", "sarangapani", "semmangudi_srinivasa_iyer", "shivanamayogi", "shobhana_rangachari", "shyama_shastri", "subbarama_dikshitar", "subbarama_iyer", "subbaraya_sastri", "subramanya_bharathi", "sudha_ragunathan", "swati_tirunal", "t_brinda", "t_muktha", "t_ramaswami_pillai", "t_v_sankaranarayanan", "t_viswanathan", "tevaram", "tiruvottiyur_tyagayya", "tm_krishna", "tn_krishnan", "tr_mahalingam", "tukaram", "tulsidas", "tyagaraja", "umayalpuram_sivaraman", "veenai_kuppayyar", "vegavahini_vijayaraghavan", "vellore_ramabhadran", "vina_dhanammal", "voleti_venkateshwarlu", "vyasatirtha"]);
-
 // ── Compositions data (injected by render.py) ──────────────────────────────
 const ragas        = [
   {
@@ -14804,379 +14801,442 @@ const composers    = [
     "id": "ambujam_krishna",
     "name": "Ambujam Krishna",
     "born": 1917,
-    "died": null
+    "died": null,
+    "musician_node_id": "ambujam_krishna"
   },
   {
     "id": "andal",
     "name": "Andal",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "andal"
   },
   {
     "id": "annamacharya",
     "name": "Annamacharya",
     "born": 1408,
-    "died": null
+    "died": null,
+    "musician_node_id": "annamacharya"
   },
   {
     "id": "annasami_shastri",
     "name": "Annasami Shastri",
     "born": 1899,
-    "died": null
+    "died": null,
+    "musician_node_id": "annasami_shastri"
   },
   {
     "id": "ariyakudi_ramanuja_iyengar",
     "name": "Ariyakudi Ramanuja Iyengar",
     "born": 1890,
-    "died": null
+    "died": null,
+    "musician_node_id": "ariyakudi_ramanuja_iyengar"
   },
   {
     "id": "arunachala_kavi",
     "name": "Arunachala Kavi",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "arunachala_kavi"
   },
   {
     "id": "arunagirinathar",
     "name": "Arunagirinathar",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "arunagirinathar"
   },
   {
     "id": "bhadrachala_ramadas",
     "name": "Bhadrachala Ramadas",
     "born": 1620,
-    "died": null
+    "died": null,
+    "musician_node_id": "bhadrachala_ramadas"
   },
   {
     "id": "chandrasekharendra_saraswati",
     "name": "Chandrasekharendra Saraswati",
     "born": 1894,
-    "died": null
+    "died": null,
+    "musician_node_id": "chandrasekharendra_saraswati"
   },
   {
     "id": "chinnaiah_pillai",
     "name": "Chinnaiah Pillai",
     "born": 1802,
-    "died": null
+    "died": null,
+    "musician_node_id": "chinnaiah_pillai"
   },
   {
     "id": "dharmapuri_subbaraya_iyer",
     "name": "Dharmapuri Subbaraya Iyer",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "dharmapuri_subbaraya_iyer"
   },
   {
     "id": "dwijendralal_roy",
     "name": "Dwijendralal Roy",
     "born": 1863,
-    "died": null
+    "died": null,
+    "musician_node_id": "dwijendralal_roy"
   },
   {
     "id": "garbhapurivasa",
     "name": "Garbhapuri Srinivasa",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "garbhapurivasa"
   },
   {
     "id": "ghanam_krishna_iyer",
     "name": "Ghanam Krishna Iyer",
     "born": 1781,
-    "died": null
+    "died": null,
+    "musician_node_id": "ghanam_krishna_iyer"
   },
   {
     "id": "gopalakrishna_bharathi",
     "name": "Gopalakrishna Bharathi",
     "born": 1811,
-    "died": null
+    "died": null,
+    "musician_node_id": "gopalakrishna_bharathi"
   },
   {
     "id": "govindasvamy_ayya",
     "name": "Govindasvamy Ayya",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "govindasvamy_ayya"
   },
   {
     "id": "jayachamarajendra_wadiyar",
     "name": "Jayachamarajendra Wadiyar",
     "born": 1919,
-    "died": null
+    "died": null,
+    "musician_node_id": "jayachamarajendra_wadiyar"
   },
   {
     "id": "kamalesha_vittala_dasa",
     "name": "Kamalesha Vittala Dasa",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "kamalesha_vittala_dasa"
   },
   {
     "id": "kanaka_dasa",
     "name": "Kanaka Dasa",
     "born": 1509,
-    "died": null
+    "died": null,
+    "musician_node_id": "kanaka_dasa"
   },
   {
     "id": "karur_devudu_iyer",
     "name": "Karur Devudu Iyer",
     "born": 1861,
-    "died": null
+    "died": null,
+    "musician_node_id": "karur_devudu_iyer"
   },
   {
     "id": "koteeswara_iyer",
     "name": "Harikesanallur Koteeswara Iyer",
     "born": 1870,
-    "died": null
+    "died": null,
+    "musician_node_id": "koteeswara_iyer"
   },
   {
     "id": "kshetrayya",
     "name": "Kshetrayya",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "kshetrayya"
   },
   {
     "id": "kumara_ettendra",
     "name": "Kumara Ettendra",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "kumara_ettendra"
   },
   {
     "id": "kunnakudi_krishna_iyer",
     "name": "Kunnakudi Krishna Iyer",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "kunnakudi_krishna_iyer"
   },
   {
     "id": "kuppuswami_ayya",
     "name": "Kuppuswami Ayya",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "kuppuswami_ayya"
   },
   {
     "id": "kurainadu_natesa_pillai",
     "name": "Kurainadu Natesa Pillai",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "kurainadu_natesa_pillai"
   },
   {
     "id": "lalgudi_jayaraman",
     "name": "Lalgudi Jayaraman",
     "born": 1930,
-    "died": null
+    "died": null,
+    "musician_node_id": "lalgudi_jayaraman"
   },
   {
     "id": "maanambuchaavadi_venkatasubbaiyer",
     "name": "Maanambuchaavadi Venkatasubbaiyer",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "maanambuchaavadi_venkatasubbaiyer"
   },
   {
     "id": "muddu_natesa",
     "name": "Muddu Natesa",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "muddu_natesa"
   },
   {
     "id": "muthiah_bhagavatar",
     "name": "Muthiah Bhagavatar",
     "born": 1877,
-    "died": null
+    "died": null,
+    "musician_node_id": "muthiah_bhagavatar"
   },
   {
     "id": "muthu_thandavar",
     "name": "Muthu Thandavar",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "muthu_thandavar"
   },
   {
     "id": "muthuswami_dikshitar",
     "name": "Muthuswami Dikshitar",
     "born": 1775,
-    "died": null
+    "died": null,
+    "musician_node_id": "muthuswami_dikshitar"
   },
   {
     "id": "mysore_sadasiva_rao",
     "name": "Mysore Sadasiva Rao",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "mysore_sadasiva_rao"
   },
   {
     "id": "mysore_vasudevacharya",
     "name": "Mysore Vasudevacharya",
     "born": 1865,
-    "died": null
+    "died": null,
+    "musician_node_id": "mysore_vasudevacharya"
   },
   {
     "id": "nagapatnam_veeraswamy_pillai",
     "name": "Nagapatnam Veeraswamy Pillai",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "nagapatnam_veeraswamy_pillai"
   },
   {
     "id": "oothukadu_venkata_kavi",
     "name": "Oothukadu Venkata Kavi",
     "born": 1700,
-    "died": null
+    "died": null,
+    "musician_node_id": "oothukadu_venkata_kavi"
   },
   {
     "id": "pacchimiriyam_adiapayya",
     "name": "Pacchimiriyam Adiapayya",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "pacchimiriyam_adiapayya"
   },
   {
     "id": "pallavi_gopala_iyer",
     "name": "Pallavi Gopala Iyer",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "pallavi_gopala_iyer"
   },
   {
     "id": "papanasam_sivan",
     "name": "Papanasam Sivan",
     "born": 1890,
-    "died": null
+    "died": null,
+    "musician_node_id": "papanasam_sivan"
   },
   {
     "id": "patnam_subramanya_iyer",
     "name": "Patnam Subramanya Iyer",
     "born": 1845,
-    "died": null
+    "died": null,
+    "musician_node_id": "patnam_subramanya_iyer"
   },
   {
     "id": "pattabhiramayya",
     "name": "Tiruppaṇandāḷ Paṭṭābhirāmaiyyā",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "pattabhiramayya"
   },
   {
     "id": "periyasami_tooran",
     "name": "Periyasami Tooran",
     "born": 1908,
-    "died": null
+    "died": null,
+    "musician_node_id": "periyasami_tooran"
   },
   {
     "id": "purandara_dasa",
     "name": "Purandara Dasa",
     "born": 1484,
-    "died": null
+    "died": null,
+    "musician_node_id": "purandara_dasa"
   },
   {
     "id": "rabindranath_tagore",
     "name": "Rabindranath Tagore",
     "born": 1861,
-    "died": null
+    "died": null,
+    "musician_node_id": "rabindranath_tagore"
   },
   {
     "id": "ramnad_sreenivasa_iyengar",
     "name": "Ramnad Sreenivasa Iyengar",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "ramnad_sreenivasa_iyengar"
   },
   {
     "id": "rudrapatnam_venkatramayya",
     "name": "Rudrapatnam Venkatramayya",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "rudrapatnam_venkatramayya"
   },
   {
     "id": "samuel_vedanayagam_pillai",
     "name": "Samuel Vedanayagam Pillai",
     "born": 1826,
-    "died": null
+    "died": null,
+    "musician_node_id": "samuel_vedanayagam_pillai"
   },
   {
     "id": "sarangapani",
     "name": "Sarangapani",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "sarangapani"
   },
   {
     "id": "shivanamayogi",
     "name": "Shivanamayogi",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "shivanamayogi"
   },
   {
     "id": "shyama_shastri",
     "name": "Shyama Shastri",
     "born": 1762,
-    "died": null
+    "died": null,
+    "musician_node_id": "shyama_shastri"
   },
   {
     "id": "subbarama_dikshitar",
     "name": "Subbarama Dikshitar",
     "born": 1839,
-    "died": null
+    "died": null,
+    "musician_node_id": "subbarama_dikshitar"
   },
   {
     "id": "subbarama_iyer",
     "name": "Subbarama Iyer",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "subbarama_iyer"
   },
   {
     "id": "subbaraya_sastri",
     "name": "Subbaraya Sastri",
     "born": 1803,
-    "died": null
+    "died": null,
+    "musician_node_id": "subbaraya_sastri"
   },
   {
     "id": "subramanya_bharathi",
     "name": "Subramanya Bharathi",
     "born": 1882,
-    "died": null
+    "died": null,
+    "musician_node_id": "subramanya_bharathi"
   },
   {
     "id": "swati_tirunal",
     "name": "Swati Tirunal",
     "born": 1813,
-    "died": null
+    "died": null,
+    "musician_node_id": "swati_tirunal"
   },
   {
     "id": "t_ramaswami_pillai",
     "name": "T. Ramaswami Pillai",
     "born": 1862,
-    "died": null
+    "died": null,
+    "musician_node_id": "t_ramaswami_pillai"
   },
   {
     "id": "tevaram",
     "name": "Tevaram",
     "born": null,
-    "died": null
+    "died": null,
+    "musician_node_id": "tevaram"
   },
   {
     "id": "tiruvottiyur_tyagayya",
     "name": "Tiruvottiyur Tyagayya",
     "born": 1845,
-    "died": null
+    "died": null,
+    "musician_node_id": "tiruvottiyur_tyagayya"
   },
   {
     "id": "tukaram",
     "name": "Tukaram",
     "born": 1598,
-    "died": null
+    "died": null,
+    "musician_node_id": "tukaram"
   },
   {
     "id": "tulsidas",
     "name": "Tulsidas",
     "born": 1532,
-    "died": null
+    "died": null,
+    "musician_node_id": "tulsidas"
   },
   {
     "id": "tyagaraja",
     "name": "Tyagaraja",
     "born": 1767,
-    "died": null
+    "died": null,
+    "musician_node_id": "tyagaraja"
   },
   {
     "id": "veenai_kuppayyar",
     "name": "Veenai Kuppayyar",
     "born": 1798,
-    "died": null
+    "died": null,
+    "musician_node_id": "veenai_kuppayyar"
   },
   {
     "id": "vyasatirtha",
     "name": "Vyasatirtha",
     "born": 1460,
-    "died": null
+    "died": null,
+    "musician_node_id": "vyasatirtha"
   }
 ];
 const compositions = [
