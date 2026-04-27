@@ -51,7 +51,6 @@ class CarnaticGraph:
         # ── composition data ───────────────────────────────────────────────────
         c = raw.get("compositions", {})
         self._ragas:        list[dict] = c.get("ragas", [])
-        self._composers:    list[dict] = c.get("composers", [])
         self._compositions: list[dict] = c.get("compositions", [])
 
         # ── recording refs (index) ─────────────────────────────────────────────
@@ -66,9 +65,12 @@ class CarnaticGraph:
         # ── pre-build fast-lookup indices ──────────────────────────────────────
         self._musician_by_id:    dict[str, dict] = {n["id"]: n for n in self._musician_nodes}
         self._raga_by_id:        dict[str, dict] = {r["id"]: r for r in self._ragas}
-        self._composer_by_id:    dict[str, dict] = {c["id"]: c for c in self._composers}
         self._composition_by_id: dict[str, dict] = {c["id"]: c for c in self._compositions}
         self._recording_ref_by_id: dict[str, dict] = {r["id"]: r for r in self._recording_refs}
+        # Derived: musician IDs that appear as composer_id on any composition (ADR-110)
+        self._composer_ids: set[str] = {
+            c.get("composer_id") for c in self._compositions if c.get("composer_id")
+        }
 
         # guru→[shishya_ids], shishya→[guru_ids]
         self._shishyas_of: dict[str, list[str]] = defaultdict(list)
@@ -265,12 +267,12 @@ class CarnaticGraph:
         return list(self._ragas)
 
     def get_composer(self, composer_id: str) -> dict | None:
-        """Return the composer dict for the given id, or None."""
-        return self._composer_by_id.get(composer_id)
+        """Return the musician dict for the given composer id, or None (ADR-110)."""
+        return self._musician_by_id.get(composer_id)
 
     def get_all_composers(self) -> list[dict]:
-        """Return all composer dicts."""
-        return list(self._composers)
+        """Return all musician dicts whose id appears as composer_id on a composition (ADR-110)."""
+        return [m for m in self._musician_nodes if m["id"] in self._composer_ids]
 
     def get_compositions_by_raga(self, raga_id: str) -> list[dict]:
         """Return all compositions in the given raga."""
@@ -563,7 +565,7 @@ class CarnaticGraph:
                     **perf,
                     "composition": self._composition_by_id.get(comp_id) if comp_id else None,
                     "raga":        self._raga_by_id.get(raga_id) if raga_id else None,
-                    "composer":    self._composer_by_id.get(composer_id) if composer_id else None,
+                    "composer":    self._musician_by_id.get(composer_id) if composer_id else None,
                 })
             sessions_out.append({
                 "session_index": session["session_index"],

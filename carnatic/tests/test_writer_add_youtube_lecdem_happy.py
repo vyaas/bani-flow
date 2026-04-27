@@ -55,8 +55,21 @@ def _make_sandbox(tmp_path: Path) -> tuple[Path, Path, Path]:
         json.dumps(raga, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
 
-    # One composition
-    (compositions_dir / "_composers.json").write_text(json.dumps([]), encoding="utf-8")
+    # One composition — composer must exist as musician (ADR-110)
+    tyagaraja = {
+        "id": "tyagaraja",
+        "label": "Tyagaraja",
+        "era": "golden_age",
+        "instrument": None,
+        "born": 1767,
+        "died": 1847,
+        "bani": None,
+        "sources": [{"url": "https://en.wikipedia.org/wiki/Tyagaraja", "label": "Wikipedia — Tyagaraja", "type": "wikipedia"}],
+        "youtube": [],
+    }
+    (musicians_dir / "tyagaraja.json").write_text(
+        json.dumps(tyagaraja, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     comp = {
         "id": "inta_saukhyamu",
         "title": "Inta Saukhyamu",

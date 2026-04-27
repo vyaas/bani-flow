@@ -1,0 +1,17 @@
+{
+  "id": "perumal_murugan",
+  "label": "Perumal Murugan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Perumal_Murugan",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1966,
+  "died": null,
+  "era": "living_pillars",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

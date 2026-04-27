@@ -1,0 +1,17 @@
+{
+  "id": "tulsidas",
+  "label": "Tulsidas",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tulsidas",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1532,
+  "died": 1623,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

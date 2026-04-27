@@ -77,7 +77,7 @@ PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
 PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes"}
 PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language"}
-PATCHABLE_COMPOSER_FIELDS = {"name", "born", "died"}
+
 
 # ADR-101: patchable fields for lecdem segments and recording performances
 PATCHABLE_SEGMENT_FIELDS = {
@@ -320,10 +320,6 @@ def _composition_file(compositions_dir: Path, comp_id: str) -> Path:
     return compositions_dir / f"{comp_id}.json"
 
 
-def _composers_file(compositions_dir: Path) -> Path:
-    return compositions_dir / "_composers.json"
-
-
 def _load_all_ragas(compositions_path: Path, ragas_path: Path | None = None) -> list[dict]:
     """
     Load all ragas from either:
@@ -343,23 +339,6 @@ def _load_all_ragas(compositions_path: Path, ragas_path: Path | None = None) -> 
     if compositions_path.is_file() and compositions_path.exists():
         data = json.loads(compositions_path.read_text(encoding="utf-8"))
         return data.get("ragas", [])
-    return []
-
-
-def _load_all_composers(compositions_path: Path) -> list[dict]:
-    """
-    Load all composers from either:
-      - compositions_path/_composers.json (sidecar array), or
-      - monolithic compositions.json file.
-    """
-    if _is_compositions_dir_mode(compositions_path):
-        cf = _composers_file(compositions_path)
-        if cf.exists():
-            return json.loads(cf.read_text(encoding="utf-8"))
-        return []
-    if compositions_path.exists():
-        data = json.loads(compositions_path.read_text(encoding="utf-8"))
-        return data.get("composers", [])
     return []
 
 
@@ -418,20 +397,6 @@ def _append_raga(compositions_path: Path, raga: dict, ragas_path: Path | None = 
     ragas: list[dict] = data.get("ragas", [])
     ragas.append(raga)
     data["ragas"] = ragas
-    _atomic_write(compositions_path, data)
-
-
-def _write_composers(compositions_path: Path, composers: list[dict]) -> None:
-    """
-    Write the full composers list.
-    Dir mode: writes compositions/_composers.json.
-    Legacy mode: rewrites the entire monolithic compositions.json.
-    """
-    if _is_compositions_dir_mode(compositions_path):
-        _atomic_write(_composers_file(compositions_path), composers)
-        return
-    data = json.loads(compositions_path.read_text(encoding="utf-8"))
-    data["composers"] = composers
     _atomic_write(compositions_path, data)
 
 
@@ -669,8 +634,8 @@ class CarnaticWriter:
         *,
         id: str,
         label: str,
-        era: str,
-        instrument: str,
+        era: str | None = None,
+        instrument: str | None = None,
         source_url: str,
         source_label: str,
         source_type: str,
@@ -679,9 +644,9 @@ class CarnaticWriter:
         bani: str | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
-        """Add a new musician node."""
-        # Validate era
-        if era not in VALID_ERAS:
+        """Add a new musician node. era and instrument are optional (null allowed for historical composers)."""
+        # Validate era (only when provided)
+        if era is not None and era not in VALID_ERAS:
             return _err(
                 f"--era \"{era}\" is not a valid era value\n"
                 f"       Valid values: {', '.join(sorted(VALID_ERAS))}"
@@ -1448,61 +1413,6 @@ class CarnaticWriter:
             f"added: {id} — \"{name}\"  melakarta: {melakarta}  parent_raga: {parent_raga}"
         )
 
-    def add_composer(
-        self,
-        compositions_path: Path,
-        *,
-        id: str,
-        name: str,
-        source_url: str,
-        source_label: str,
-        source_type: str,
-        musician_node_id: str | None = None,
-        born: int | None = None,
-        died: int | None = None,
-        musicians_path: Path | None = None,
-    ) -> WriteResult:
-        """
-        Add a new composer.
-
-        Dir mode:    appends to compositions/_composers.json sidecar.
-        Legacy mode: rewrites the monolithic compositions.json.
-        """
-        if source_type not in VALID_SOURCE_TYPES:
-            return _err(
-                f"--source-type \"{source_type}\" is not a valid source type\n"
-                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
-            )
-
-        # Validate musician_node_id directly from musicians/ (ADR-016)
-        if musician_node_id is not None:
-            m_path = musicians_path or _default_musicians_path()
-            known_ids = {n["id"] for n in _load_all_nodes(m_path)}
-            if musician_node_id not in known_ids:
-                return _err(
-                    f"--musician-node-id \"{musician_node_id}\" does not exist in musicians"
-                )
-
-        composers = _load_all_composers(compositions_path)
-        existing_ids = {c["id"] for c in composers}
-
-        if id in existing_ids:
-            return _skip(f"{id} already exists in composers[]")
-
-        composer: dict[str, Any] = {
-            "id":               id,
-            "name":             name,
-            "musician_node_id": musician_node_id,
-            "born":             born,
-            "died":             died,
-            "sources":          [{"url": source_url, "label": source_label, "type": source_type}],
-        }
-
-        composers.append(composer)
-        _write_composers(compositions_path, composers)
-
-        return _ok("[COMPOSER+]", f"added: {id} — \"{name}\"  musician_node_id: {musician_node_id}")
-
     def add_composition(
         self,
         compositions_path: Path,
@@ -1524,7 +1434,7 @@ class CarnaticWriter:
         Add a new composition.
 
         Dir mode:    writes compositions/{id}.json; validates against ragas/ and
-                     compositions/_composers.json.
+                     musicians/ (composer_id is a musician ID per ADR-110).
         Legacy mode: rewrites the monolithic compositions.json.
         """
         if source_type is not None and source_type not in VALID_SOURCE_TYPES:
@@ -1537,9 +1447,9 @@ class CarnaticWriter:
         if id in existing_comp_ids:
             return _skip(f"{id} already exists in compositions[]")
 
-        known_composer_ids = {c["id"] for c in _load_all_composers(compositions_path)}
-        if composer_id not in known_composer_ids:
-            return _err(f"--composer-id \"{composer_id}\" does not exist in composers[]")
+        known_musician_ids = {n["id"] for n in _load_all_nodes(_default_musicians_path())}
+        if composer_id not in known_musician_ids:
+            return _err(f"--composer-id \"{composer_id}\" does not exist in musicians[]")
 
         known_raga_ids = {r["id"] for r in _load_all_ragas(compositions_path, ragas_path)}
         if raga_id not in known_raga_ids:
@@ -1687,41 +1597,6 @@ class CarnaticWriter:
         comp[field] = value if value not in (None, "null", "") else None
         _write_composition(compositions_path, comp)
         return _ok("[COMP~]", f"patched: {composition_id}  {field}: {old_value!r} → {comp[field]!r}")
-
-    def patch_composer(
-        self,
-        compositions_path: Path,
-        *,
-        composer_id: str,
-        field: str,
-        value: Any,
-        graph_path: Path | None = None,
-    ) -> WriteResult:
-        """Update a single field on an existing composer. ADR-097 §3."""
-        if field == "id":
-            return _err("id is immutable — cannot be patched")
-        if field not in PATCHABLE_COMPOSER_FIELDS:
-            return _err(
-                f"field \"{field}\" is not patchable on a composer\n"
-                f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSER_FIELDS))}"
-            )
-        composers = _load_all_composers(compositions_path)
-        composer = next((c for c in composers if c["id"] == composer_id), None)
-        if composer is None:
-            return _err(f"composer_id \"{composer_id}\" does not exist in composers[]")
-        coerced: Any = value
-        if field in ("born", "died"):
-            if value in (None, "null", ""):
-                coerced = None
-            else:
-                try:
-                    coerced = int(value)
-                except (ValueError, TypeError):
-                    return _err(f"field \"{field}\" must be an integer or \"null\", got \"{value}\"")
-        old_value = composer.get(field)
-        composer[field] = coerced
-        _write_composers(compositions_path, composers)
-        return _ok("[CMPSR~]", f"patched: {composer_id}  {field}: {old_value!r} → {coerced!r}")
 
     # ── ADR-101: recording performance write verbs ────────────────────────────
 
@@ -1877,17 +1752,18 @@ class CarnaticWriter:
         """
         Append a note to the notes[] array of any first-class entity. ADR-097 §7.
 
-        entity_type: "musician" | "raga" | "composer" | "composition" | "recording"
+        entity_type: "musician" | "raga" | "composition" | "recording"
         Note shape: { text, source_url?, added_at (writer-filled if absent) }
         notes[] is strictly append-only via the bundle loop.
         """
         from datetime import datetime, timezone as tz
 
-        VALID_ENTITY_TYPES = {"musician", "raga", "composer", "composition", "recording"}
+        VALID_ENTITY_TYPES = {"musician", "raga", "composition", "recording"}
         if entity_type not in VALID_ENTITY_TYPES:
             return _err(
                 f"entity_type \"{entity_type}\" is not supported\n"
-                f"       Supported: {', '.join(sorted(VALID_ENTITY_TYPES))}"
+                f"       Supported: {', '.join(sorted(VALID_ENTITY_TYPES))}\n"
+                f"       Note: use entity_type=\"musician\" for composers (ADR-110)"
             )
         if not note_text or not note_text.strip():
             return _err("note text cannot be empty")
@@ -1919,16 +1795,6 @@ class CarnaticWriter:
             raga.setdefault("notes", []).append(note_obj)
             _write_raga(cp, raga, rp if rp.is_dir() else None)
             return _ok("[NOTE+]", f"note added to raga: {entity_id}")
-
-        if entity_type == "composer":
-            cp = compositions_path or _default_compositions_path()
-            composers = _load_all_composers(cp)
-            composer = next((c for c in composers if c["id"] == entity_id), None)
-            if composer is None:
-                return _err(f"composer_id \"{entity_id}\" does not exist in composers[]")
-            composer.setdefault("notes", []).append(note_obj)
-            _write_composers(cp, composers)
-            return _ok("[NOTE+]", f"note added to composer: {entity_id}")
 
         if entity_type == "composition":
             cp = compositions_path or _default_compositions_path()

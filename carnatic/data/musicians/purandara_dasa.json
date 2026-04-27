@@ -1,0 +1,17 @@
+{
+  "id": "purandara_dasa",
+  "label": "Purandara Dasa",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Purandaradasa",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1484,
+  "died": 1564,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

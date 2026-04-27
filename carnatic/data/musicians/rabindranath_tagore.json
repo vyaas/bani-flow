@@ -1,0 +1,17 @@
+{
+  "id": "rabindranath_tagore",
+  "label": "Rabindranath Tagore",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Rabindranath_Tagore",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1861,
+  "died": 1941,
+  "era": "bridge",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

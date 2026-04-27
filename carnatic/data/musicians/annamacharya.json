@@ -1,0 +1,17 @@
+{
+  "id": "annamacharya",
+  "label": "Annamacharya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Annamacharya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1408,
+  "died": 1503,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

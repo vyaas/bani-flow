@@ -1,0 +1,17 @@
+{
+  "id": "mysore_vasudevacharya",
+  "label": "Mysore Vasudevacharya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Mysore_Vasudevacharya",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1865,
+  "died": 1961,
+  "era": "bridge",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

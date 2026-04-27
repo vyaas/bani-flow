@@ -72,7 +72,10 @@ def render_html(
     # the template JS files can reference them as globals.
     elements_json            = json.dumps(elements, indent=2, ensure_ascii=False)
     ragas_json               = json.dumps(comp_data.get("ragas", []), indent=2, ensure_ascii=False)
-    composers_json           = json.dumps(comp_data.get("composers", []), indent=2, ensure_ascii=False)
+    # ADR-110: composers are now musician nodes; derive list for JS backward-compat (c.name / c.id)
+    _composer_nodes = [e["data"] for e in elements if e["data"].get("is_composer") and not e["data"].get("source")]
+    composers_list  = [{"id": d["id"], "name": d.get("label", d["id"]), "born": d.get("born"), "died": d.get("died")} for d in _composer_nodes]
+    composers_json           = json.dumps(composers_list, indent=2, ensure_ascii=False)
     compositions_json        = json.dumps(comp_data.get("compositions", []), indent=2, ensure_ascii=False)
     comp_to_nodes_json       = json.dumps(composition_to_nodes, indent=2, ensure_ascii=False)
     raga_to_nodes_json       = json.dumps(raga_to_nodes, indent=2, ensure_ascii=False)

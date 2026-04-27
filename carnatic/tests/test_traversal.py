@@ -161,10 +161,10 @@ def test_get_raga_ravichandrika(graph: CarnaticGraph) -> None:
 
 
 def test_get_composer_tyagaraja(graph: CarnaticGraph) -> None:
-    """get_composer returns the Tyagaraja composer node."""
+    """get_composer returns the Tyagaraja musician node (ADR-110: composer IS the musician)."""
     composer = graph.get_composer("tyagaraja")
     assert composer is not None
-    assert composer["musician_node_id"] == "tyagaraja"
+    assert composer["id"] == "tyagaraja"
 
 
 def test_get_compositions_by_raga_surutti(graph: CarnaticGraph) -> None:

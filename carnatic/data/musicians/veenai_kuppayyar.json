@@ -1,0 +1,17 @@
+{
+  "id": "veenai_kuppayyar",
+  "label": "Veenai Kuppayyar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Veenai_Kuppayyar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1798,
+  "died": 1860,
+  "era": "golden_age",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

@@ -16,7 +16,6 @@ Bundle envelope (schema_version 1 — still accepted):
     "generated_at":   "<ISO timestamp>",
     "items": {
       "ragas":        [ { raga fields … } ],
-      "composers":    [ { composer fields … } ],
       "musicians":    [ { "type": "new",            musician fields + "youtube": […] }
                       | { "type": "youtube_append", "musician_id": "…", "youtube": […] } ],
       "compositions": [ { composition fields … } ],
@@ -32,10 +31,12 @@ schema_version 2 adds an optional "op" field to every item (ADR-097 §2):
   op: "append"   — push one element onto an array on an existing entity
   op: "annotate" — append a note to the entity's notes[] vector
 
-Whitelisted item types: ragas, composers, musicians, compositions, recordings, edges.
+Whitelisted item types: ragas, musicians, compositions, recordings, edges.
+(The "composers" key is deprecated as of ADR-110; bundles containing it are
+accepted via a deprecation shim that routes each item through _process_musicians.)
 Unknown item types are rejected with a named error — silent drops are forbidden.
 
-Processing order: ragas → composers → compositions → musicians → recordings → edges.
+Processing order: ragas → compositions → musicians → recordings → edges.
 Compositions must precede musicians so that segment composition_id references
 (appended to youtube[vid].segments) resolve correctly during musician processing.
 
@@ -71,7 +72,6 @@ from carnatic.writer import (
     PATCHABLE_EDGE_FIELDS,
     PATCHABLE_RAGA_FIELDS,
     PATCHABLE_COMPOSITION_FIELDS,
-    PATCHABLE_COMPOSER_FIELDS,
     WriteResult,
 )
 
@@ -163,71 +163,6 @@ def _process_ragas(
 
         else:
             print(f"  ERROR  raga item has unknown op '{op}'. Known ops: create, patch, annotate.")
-            errors += 1
-            continue
-
-        _print_result(result)
-        if result.ok:
-            added += 1
-        elif result.skipped:
-            skipped += 1
-        else:
-            errors += 1
-    return added, skipped, errors
-
-
-def _process_composers(
-    composers: list[dict],
-    writer: CarnaticWriter,
-    comp_path: Path,
-    musicians_path: Path,
-) -> tuple[int, int, int]:
-    added = skipped = errors = 0
-    for c in composers:
-        op = c.get("op", "create")
-
-        if op == "patch":
-            composer_id = c.get("id")
-            field       = c.get("field")
-            value       = c.get("value")
-            if not composer_id or not field:
-                print(f"  ERROR  composer patch missing 'id' or 'field': {c}")
-                errors += 1
-                continue
-            result = writer.patch_composer(
-                comp_path, composer_id=composer_id, field=field, value=value,
-            )
-
-        elif op == "annotate":
-            result = writer.add_note(
-                entity_type="composer", entity_id=c.get("id", ""),
-                note_text=c.get("note", {}).get("text", ""),
-                source_url=c.get("note", {}).get("source_url"),
-                added_at=c.get("note", {}).get("added_at"),
-                compositions_path=comp_path,
-            )
-
-        elif op == "create":
-            if not c.get("id") or not c.get("name"):
-                print(f"  ERROR  composer missing 'id' or 'name': {c}")
-                errors += 1
-                continue
-            src = c.get("sources", [{}])[0] if c.get("sources") else {}
-            result = writer.add_composer(
-                comp_path,
-                id=c["id"],
-                name=c["name"],
-                source_url=src.get("url", ""),
-                source_label=src.get("label", ""),
-                source_type=src.get("type", "other"),
-                musician_node_id=c.get("musician_node_id"),
-                born=c.get("born"),
-                died=c.get("died"),
-                musicians_path=musicians_path,
-            )
-
-        else:
-            print(f"  ERROR  composer item has unknown op '{op}'. Known ops: create, patch, annotate.")
             errors += 1
             continue
 
@@ -831,10 +766,25 @@ def main() -> None:
         a, s, e = _process_ragas(ragas, writer, comp_path, ragas_path)
         total_added += a; total_skipped += s; total_errors += e
 
-    # ── composers ─────────────────────────────────────────────────────────────
+    # ── composers (deprecated shim — ADR-110) ─────────────────────────────────
+    # Bundles generated before ADR-110 may still contain a "composers" key.
+    # Route each item through _process_musicians after mapping name→label.
     if composers:
-        print(f"\nComposers ({len(composers)}):")
-        a, s, e = _process_composers(composers, writer, comp_path, musicians_path)
+        import sys as _sys
+        print(
+            f"\nWARNING: bundle contains deprecated 'composers' key ({len(composers)} items). "
+            f"Routing through musicians (ADR-110). Use 'musicians' in future bundles.",
+            file=_sys.stderr,
+        )
+        _compat_musicians = []
+        for c in composers:
+            m = dict(c)
+            if "name" in m and "label" not in m:
+                m["label"] = m.pop("name")
+            m.pop("musician_node_id", None)
+            _compat_musicians.append(m)
+        print(f"\nComposers→Musicians shim ({len(_compat_musicians)}):")
+        a, s, e = _process_musicians(_compat_musicians, writer, musicians_path, comp_path, ragas_path)
         total_added += a; total_skipped += s; total_errors += e
 
     # ── compositions ─────────────────────────────────────────────────────────

@@ -556,3 +556,8 @@ Entries are terse — this is a log, not an essay.
 - 2025-07-13: janani_ninnuvina (Reetigowla, Subbaraya Sastri) was already in the DB from a prior session; attempting add-composition with wrong attribution (Kalyani, Subbarama Dikshitar) correctly SKIPped as duplicate — always check DB state before bulk-adding shared titles.
 - 2025-07-13: Raga file is `thodi.json` (not `todi.json`) — always check carnatic/data/ragas/ ls output before using a raga-id in add-composition; mismatched IDs surface as ERROR at write time, not silently.
 - 2025-07-13: V4 AIR Trichy 1963 tracklist ends with a Surutti alapana cut; model as composition_id: null + raga_id: surutti + notes: "alapana" rather than dropping the performance entirely.
+- 2026-04-26: ADR-110 migration: muthuthandavar was one of the 19 "already linked" composers but compositions still carried composer_id: "muthuthandavar" (the composer alias, not the musician ID "muthu_thandavar") — always verify that all composer_id values in compositions match the canonical musician IDs after retiring _composers.json, not just that the 19 had musician_node_id set.
+
+### 🎵 Carnatic Coder
+
+- 2026-04-26: ADR-110 (collapse composer into musician): `html_generator.py` injected `composers` as a JS global from `comp_data["composers"]` (now removed); derive it instead from `elements` by filtering nodes where `is_composer` is set and mapping `label → name` for backward-compat with `c.name || c.id` in bani_flow.js / empty_tutorials.js; the `PATCHABLE_COMPOSER_FIELDS` constant exported from writer.py must also be removed from bani_add.py's import statement or the test collection ImportError surfaces before any test runs.

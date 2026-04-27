@@ -254,7 +254,7 @@ def build_listenable_set(
     A musician is listenable if ANY of the following is true:
       • They have ≥1 legacy youtube[] track on their graph node.
       • They appear as a performer in ≥1 recording session.
-      • They are the musician_node_id of a composer who has ≥1 composition.
+      • Their musician ID appears as composer_id on ≥1 composition (ADR-110).
 
     This drives two UI features (ADR-055):
       1. graph_view.js dims non-listenable nodes (opacity 0.25).
@@ -281,22 +281,10 @@ def build_listenable_set(
                 if mid:
                     listenable.add(mid)
 
-    # ── 3. Composers with ≥1 composition whose musician_node_id is set ───────
-    comp_by_composer: dict[str, int] = {}
+    # ── 3. Composers with ≥1 composition — composer_id IS the musician ID (ADR-110) ──
     for comp in comp_data.get("compositions", []):
         cid = comp.get("composer_id")
         if cid:
-            comp_by_composer[cid] = comp_by_composer.get(cid, 0) + 1
-
-    # Map composer_id → musician_node_id
-    composer_to_node: dict[str, str] = {}
-    for composer in comp_data.get("composers", []):
-        mid = composer.get("musician_node_id")
-        if mid:
-            composer_to_node[composer["id"]] = mid
-
-    for composer_id, count in comp_by_composer.items():
-        if count > 0 and composer_id in composer_to_node:
-            listenable.add(composer_to_node[composer_id])
+            listenable.add(cid)
 
     return listenable

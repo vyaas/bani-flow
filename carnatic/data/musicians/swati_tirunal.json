@@ -1,0 +1,17 @@
+{
+  "id": "swati_tirunal",
+  "label": "Swati Tirunal",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Swati_Tirunal",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1813,
+  "died": 1846,
+  "era": "bridge",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "periyasami_tooran",
+  "label": "Periyasami Tooran",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Periyasami_Tooran",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1908,
+  "died": 1975,
+  "era": "living_pillars",
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}

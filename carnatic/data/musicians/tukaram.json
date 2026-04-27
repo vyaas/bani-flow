@@ -1,0 +1,17 @@
+{
+  "id": "tukaram",
+  "label": "Tukaram",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tukaram",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1598,
+  "died": 1650,
+  "era": null,
+  "instrument": null,
+  "bani": null,
+  "youtube": []
+}
