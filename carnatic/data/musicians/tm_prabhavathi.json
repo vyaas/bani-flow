@@ -3,9 +3,9 @@
   "label": "TM Prabhavathi",
   "sources": [
     {
-      "url": "https://www.karnatik.com/biog180.shtml",
-      "label": "Karnatik.com",
-      "type": "article"
+      "url": "http://www.carnaticcorner.com/articles/mlv.html",
+      "label": "Carnatic Corner — MLV article (mentions T. M. Prabhavathi)",
+      "type": "mention"
     }
   ],
   "born": null,

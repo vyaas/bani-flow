@@ -3,9 +3,9 @@
   "label": "Soundar Rajan",
   "sources": [
     {
-      "url": "https://www.karnatik.com/biog183.shtml",
-      "label": "Karnatik.com",
-      "type": "article"
+      "url": "https://en.wikipedia.org/wiki/T._M._Soundararajan",
+      "label": "Wikipedia — T. M. Soundararajan (identity uncertain; confirm subject)",
+      "type": "wikipedia"
     }
   ],
   "born": null,
