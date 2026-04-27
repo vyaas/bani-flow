@@ -4957,6 +4957,23 @@
             "composition_id": "janani_ninnuvina",
             "raga_id": "reetigowla",
             "tala": "misra chapu"
+          },
+          {
+            "url": "https://youtu.be/o8F7uO5Fltc",
+            "label": "Sangeetha Samvada",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "begada",
+                "harikambhoji",
+                "ananda_bhairavi"
+              ],
+              "composition_ids": [],
+              "musician_ids": [
+                "tyagaraja",
+                "madurai_mani_iyer"
+              ]
+            }
           }
         ]
       },
