@@ -1,0 +1,155 @@
+{
+  "id": "air_madras_1964_brinda_muktha",
+  "video_id": "tHzdBspZJ9M",
+  "url": "https://youtu.be/tHzdBspZJ9M",
+  "title": "T. Brinda & T. Muktha \u2014 Madras All India Radio, March 1964",
+  "short_title": "AIR Madras 1964",
+  "date": "1964-03",
+  "venue": "All India Radio, Madras (Akashvani)",
+  "occasion": "AIR studio concert; 29th Remembrance Day tribute broadcast",
+  "sources": [
+    {
+      "url": "https://youtu.be/tHzdBspZJ9M",
+      "label": "YouTube \u2014 Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "RK Venkatarama Sastri"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Coimbatore N Ramaswami"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "intamodi_seya",
+          "raga_id": "saranga",
+          "tala": "adi",
+          "composer_id": "tiruvottiyur_tyagayya",
+          "display_title": "Intamodi Seya",
+          "notes": "varnam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:03:08",
+          "offset_seconds": 188,
+          "composition_id": "nidu_murtini",
+          "raga_id": "nattakurinji",
+          "tala": "adi",
+          "composer_id": "pallavi_gopala_iyer",
+          "display_title": "Nidu Murtini",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:05:30",
+          "offset_seconds": 330,
+          "composition_id": null,
+          "raga_id": "latangi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Lathangi \u2014 Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:11:46",
+          "offset_seconds": 706,
+          "composition_id": "aparadhamulanniyu",
+          "raga_id": "latangi",
+          "tala": "adi",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Aparadhamulanniyu",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:21:55",
+          "offset_seconds": 1315,
+          "composition_id": "brovavamma_tamasame",
+          "raga_id": "manji",
+          "tala": "misra_chapu",
+          "composer_id": "shyama_shastri",
+          "display_title": "Brovavamma Tamasamele",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:30:09",
+          "offset_seconds": 1809,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Thodi \u2014 Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:37:30",
+          "offset_seconds": 2250,
+          "composition_id": "sri_kamalambike",
+          "raga_id": "thodi",
+          "tala": "rupakam",
+          "composer_id": "subbaraya_sastri",
+          "display_title": "Sri Kamalambike",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:43:03",
+          "offset_seconds": 2583,
+          "composition_id": "inta_kante_kavalena",
+          "raga_id": "kannada",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Intha Kante Kavalena",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "00:45:57",
+          "offset_seconds": 2757,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": null,
+          "type": "tani"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "00:50:16",
+          "offset_seconds": 3016,
+          "composition_id": "ninnu_juchi",
+          "raga_id": "punnagavarali",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Ninnu Juchi",
+          "notes": "padam"
+        }
+      ]
+    }
+  ]
+}

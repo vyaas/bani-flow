@@ -390,5 +390,12 @@
     "target": "ms_gopalakrishnan",
     "confidence": 0.9,
     "source_url": "https://en.wikipedia.org/wiki/Parur_Sundaram_Iyer"
+  },
+  {
+    "source": "t_brinda",
+    "target": "vegavahini_vijayaraghavan",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+    "note": "daughter; also shishya of T. Brinda in the Dhanammal vocal tradition"
   }
 ]

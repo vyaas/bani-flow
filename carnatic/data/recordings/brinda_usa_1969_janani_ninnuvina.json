@@ -1,0 +1,50 @@
+{
+  "id": "brinda_usa_1969_janani_ninnuvina",
+  "video_id": "KX-7wM3-anI",
+  "url": "https://youtu.be/KX-7wM3-anI",
+  "title": "T. Brinda \u2014 Janani Ninnuvina, USA 1969",
+  "short_title": "USA 1969",
+  "date": "1969",
+  "venue": "USA (exact venue unknown)",
+  "occasion": "Concert during T. Brinda's USA tour, 1969",
+  "sources": [
+    {
+      "url": "https://youtu.be/KX-7wM3-anI",
+      "label": "YouTube \u2014 Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vegavahini_vijayaraghavan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Guruvayur Dorai"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "janani_ninnuvina",
+          "raga_id": "reetigowla",
+          "tala": "misra_chapu",
+          "composer_id": "subbaraya_sastri",
+          "display_title": "Janani Ninnuvina",
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

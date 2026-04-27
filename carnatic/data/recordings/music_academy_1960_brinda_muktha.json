@@ -1,0 +1,198 @@
+{
+  "id": "music_academy_1960_brinda_muktha",
+  "video_id": "kqxJpJU2Qp8",
+  "url": "https://youtu.be/kqxJpJU2Qp8",
+  "title": "T. Brinda & T. Muktha \u2014 Music Academy, Madras, December 1960",
+  "short_title": "Music Academy 1960",
+  "date": "1960-12-28",
+  "venue": "P.S. High School, Mylapore, Madras (Music Academy)",
+  "occasion": "Music Academy annual December season; 111th Birthday Tribute",
+  "sources": [
+    {
+      "url": "https://youtu.be/kqxJpJU2Qp8",
+      "label": "YouTube \u2014 Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Annavarapu Ramaswamy"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "T. Ranganathan"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "sarasijakshi",
+          "raga_id": "nayaki",
+          "tala": "khanda_triputa",
+          "composer_id": "rudrapatnam_venkatramayya",
+          "display_title": "Sarasijakshi",
+          "notes": "varnam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:02:58",
+          "offset_seconds": 178,
+          "composition_id": "kamalaptakula",
+          "raga_id": "brindavana_saranga",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Kamalaptakula",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:05:37",
+          "offset_seconds": 337,
+          "composition_id": "akshaya_linga_vibho",
+          "raga_id": "shankarabharanam",
+          "tala": "misra_chapu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Akshayalingavibho",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:26:10",
+          "offset_seconds": 1570,
+          "composition_id": "vachamagocharundani",
+          "raga_id": "atana",
+          "tala": "adi",
+          "composer_id": "mysore_sadasiva_rao",
+          "display_title": "Vachamagocharundani",
+          "notes": "2 kalai"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:32:58",
+          "offset_seconds": 1978,
+          "composition_id": "tyagaraja_yoga_vaibhavam",
+          "raga_id": "ananda_bhairavi",
+          "tala": "rupakam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Tyagaraja Yoga Vaibhavam",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:38:50",
+          "offset_seconds": 2330,
+          "composition_id": "yala_padare",
+          "raga_id": "begada",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Yala Padare",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:45:01",
+          "offset_seconds": 2701,
+          "composition_id": "mosamaya",
+          "raga_id": "ahiri",
+          "tala": "misra_chapu",
+          "composer_id": "kshetrayya",
+          "display_title": "Mosamaya",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:54:00",
+          "offset_seconds": 3240,
+          "composition_id": "adiyokka_yugamu",
+          "raga_id": "kambhoji",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Adiyokka Yugamu",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:02:33",
+          "offset_seconds": 3753,
+          "composition_id": "rama_rama_pranasakhi",
+          "raga_id": "bhairavi",
+          "tala": "adi",
+          "composer_id": "kshetrayya",
+          "display_title": "Rama Rama Pranasakhi",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:13:40",
+          "offset_seconds": 4420,
+          "composition_id": "smara_sundaranguni",
+          "raga_id": "paras",
+          "tala": "adi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Smara Sundaranguni",
+          "notes": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:16:50",
+          "offset_seconds": 4610,
+          "composition_id": "sakhi_prana",
+          "raga_id": "senchurutti",
+          "tala": "adi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Sakhi Prana",
+          "notes": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:21:35",
+          "offset_seconds": 4895,
+          "composition_id": "mariyada_teliyakane",
+          "raga_id": "surutti",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Mariyada Teliyakane",
+          "notes": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:23:53",
+          "offset_seconds": 5033,
+          "composition_id": "kurvel_pazhitha",
+          "raga_id": "madhyamavati",
+          "tala": "adi",
+          "composer_id": "arunagirinathar",
+          "display_title": "Kurvel Pazhitha",
+          "notes": "mangalam"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "01:24:50",
+          "offset_seconds": 5090,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku",
+          "notes": "mangalam"
+        }
+      ]
+    }
+  ]
+}

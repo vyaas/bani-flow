@@ -867,5 +867,159 @@
         "type": "archive"
       }
     ]
+  },
+  {
+    "id": "tiruvottiyur_tyagayya",
+    "name": "Tiruvottiyur Tyagayya",
+    "musician_node_id": "tiruvottiyur_tyagayya",
+    "born": 1845,
+    "died": 1917,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tiruvottriyur_Tyagayyar",
+        "label": "Wikipedia — Tiruvottriyur Tyagayyar",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "pallavi_gopala_iyer",
+    "name": "Pallavi Gopala Iyer",
+    "musician_node_id": "pallavi_gopala_iyer",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/co1037.shtml",
+        "label": "Karnatik.com — Pallavi Gopala Iyer",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "muthuthandavar",
+    "name": "Muthu Thandavar",
+    "musician_node_id": "muthu_thandavar",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Muthu_Thandavar",
+        "label": "Wikipedia — Muthu Thandavar",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "nagapatnam_veeraswamy_pillai",
+    "name": "Nagapatnam Veeraswamy Pillai",
+    "musician_node_id": "nagapatnam_veeraswamy_pillai",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://tamilnation.org/culture/music/b_m_raman",
+        "label": "Tamil Nation — via B.M. Raman",
+        "type": "article"
+      }
+    ]
+  },
+  {
+    "id": "kunnakudi_krishna_iyer",
+    "name": "Kunnakudi Krishna Iyer",
+    "musician_node_id": "kunnakudi_krishna_iyer",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/co1229.shtml",
+        "label": "Karnatik.com — Kunnakudi Krishna Iyer",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "muddu_natesa",
+    "name": "Muddu Natesa",
+    "musician_node_id": "muddu_natesa",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/composer.shtml",
+        "label": "No known primary source",
+        "type": "other"
+      }
+    ]
+  },
+  {
+    "id": "kuppuswami_ayya",
+    "name": "Kuppuswami Ayya",
+    "musician_node_id": "kuppuswami_ayya",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/co1230.shtml",
+        "label": "Karnatik.com — Kuppuswami Ayya",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "rudrapatnam_venkatramayya",
+    "name": "Rudrapatnam Venkatramayya",
+    "musician_node_id": "rudrapatnam_venkatramayya",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/co1476.shtml",
+        "label": "Karnatik.com — Rudrapatnam Venkatramayya",
+        "type": "archive"
+      }
+    ]
+  },
+  {
+    "id": "mysore_sadasiva_rao",
+    "name": "Mysore Sadasiva Rao",
+    "musician_node_id": "mysore_sadasiva_rao",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Mysore_Sadashiva_Rao",
+        "label": "Wikipedia — Mysore Sadashiva Rao",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "t_ramaswami_pillai",
+    "name": "T. Ramaswami Pillai",
+    "musician_node_id": "t_ramaswami_pillai",
+    "born": 1862,
+    "died": 1943,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tiruvarur_Ramaswami_Pillai",
+        "label": "Wikipedia — Tiruvarur Ramaswami Pillai",
+        "type": "wikipedia"
+      }
+    ]
+  },
+  {
+    "id": "kurainadu_natesa_pillai",
+    "name": "Kurainadu Natesa Pillai",
+    "musician_node_id": "kurainadu_natesa_pillai",
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://www.karnatik.com/co1381.shtml",
+        "label": "Karnatik.com — Kurainadu Natesa Pillai",
+        "type": "archive"
+      }
+    ]
   }
 ]

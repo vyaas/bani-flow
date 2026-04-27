@@ -429,6 +429,57 @@
         "youtube": []
       },
       {
+        "id": "kunnakudi_krishna_iyer",
+        "label": "Kunnakudi Krishna Iyer",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1229.shtml",
+            "label": "Karnatik.com — Kunnakudi Krishna Iyer",
+            "type": "archive"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "kuppuswami_ayya",
+        "label": "Kuppuswami Ayya",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1230.shtml",
+            "label": "Karnatik.com — Kuppuswami Ayya",
+            "type": "archive"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "kurainadu_natesa_pillai",
+        "label": "Kurainadu Natesa Pillai",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1381.shtml",
+            "label": "Karnatik.com — Kurainadu Natesa Pillai",
+            "type": "archive"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "kv_narayanaswamy",
         "label": "KV Narayanaswamy",
         "sources": [
@@ -1496,6 +1547,17 @@
         ]
       },
       {
+        "id": "muddu_natesa",
+        "label": "Muddu Natesa",
+        "sources": [],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "musiri_subramania_iyer",
         "label": "Musiri Subramania Iyer",
         "sources": [
@@ -1537,6 +1599,23 @@
         "youtube": []
       },
       {
+        "id": "muthu_thandavar",
+        "label": "Muthu Thandavar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Muthu_Thandavar",
+            "label": "Wikipedia — Muthu Thandavar",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "muthuswami_dikshitar",
         "label": "Muthuswami Dikshitar",
         "sources": [
@@ -1554,6 +1633,23 @@
         "youtube": []
       },
       {
+        "id": "mysore_sadasiva_rao",
+        "label": "Mysore Sadasiva Rao",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Mysore_Sadashiva_Rao",
+            "label": "Wikipedia — Mysore Sadashiva Rao",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "n_ramani",
         "label": "N. Ramani",
         "sources": [
@@ -1568,6 +1664,23 @@
         "era": "living_pillars",
         "instrument": "flute",
         "bani": "mali",
+        "youtube": []
+      },
+      {
+        "id": "nagapatnam_veeraswamy_pillai",
+        "label": "Nagapatnam Veeraswamy Pillai",
+        "sources": [
+          {
+            "url": "https://tamilnation.org/culture/music/b_m_raman",
+            "label": "Tamil Nation — Nagapatnam Veeraswamy Pillai (via B.M. Raman)",
+            "type": "article"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
         "youtube": []
       },
       {
@@ -1643,6 +1756,23 @@
         "era": "living_pillars",
         "instrument": "mridangam",
         "bani": "palghat",
+        "youtube": []
+      },
+      {
+        "id": "pallavi_gopala_iyer",
+        "label": "Pallavi Gopala Iyer",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1037.shtml",
+            "label": "Karnatik.com — Pallavi Gopala Iyer",
+            "type": "archive"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
         "youtube": []
       },
       {
@@ -2414,6 +2544,23 @@
         ]
       },
       {
+        "id": "rudrapatnam_venkatramayya",
+        "label": "Rudrapatnam Venkatramayya",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1476.shtml",
+            "label": "Karnatik.com — Rudrapatnam Venkatramayya",
+            "type": "archive"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "s_gopalakrishnan",
         "label": "S Gopalakrishnan",
         "sources": [
@@ -2911,6 +3058,23 @@
         ]
       },
       {
+        "id": "subbarama_dikshitar",
+        "label": "Subbarama Dikshitar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
+            "label": "Wikipedia — Subbarama Dikshitar",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1839,
+        "died": 1906,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "subbaraya_sastri",
         "label": "Subbaraya Sastri",
         "sources": [
@@ -3054,6 +3218,23 @@
         "youtube": []
       },
       {
+        "id": "t_ramaswami_pillai",
+        "label": "T. Ramaswami Pillai",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Tiruvarur_Ramaswami_Pillai",
+            "label": "Wikipedia — Tiruvarur Ramaswami Pillai",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1862,
+        "died": 1943,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "t_v_sankaranarayanan",
         "label": "T. V. Sankaranarayanan",
         "sources": [
@@ -3114,6 +3295,23 @@
         "born": 1876,
         "died": 1950,
         "era": "golden_age",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "tiruvottiyur_tyagayya",
+        "label": "Tiruvottiyur Tyagayya",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Tiruvottriyur_Tyagayyar",
+            "label": "Wikipedia — Tiruvottriyur Tyagayyar",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1845,
+        "died": 1917,
+        "era": "bridge",
         "instrument": "vocal",
         "bani": null,
         "youtube": []
@@ -3937,6 +4135,23 @@
         "youtube": []
       },
       {
+        "id": "vegavahini_vijayaraghavan",
+        "label": "Vegavahini Vijayaraghavan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/T._Brinda",
+            "label": "Wikipedia — T. Brinda (family section)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "dhanammal",
+        "youtube": []
+      },
+      {
         "id": "vellore_ramabhadran",
         "label": "Vellore G. Ramabhadran",
         "sources": [
@@ -4392,6 +4607,13 @@
         "target": "ms_gopalakrishnan",
         "confidence": 0.9,
         "source_url": "https://en.wikipedia.org/wiki/Parur_Sundaram_Iyer"
+      },
+      {
+        "source": "t_brinda",
+        "target": "vegavahini_vijayaraghavan",
+        "confidence": 1.0,
+        "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+        "note": "daughter; also shishya of T. Brinda in the Dhanammal vocal tradition"
       }
     ]
   },
@@ -5075,6 +5297,21 @@
           }
         ],
         "notes": "13th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₁ N₁ Ṡ"
+      },
+      {
+        "id": "ghanta",
+        "name": "Ghanta",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "natabhairavi",
+        "sources": [
+          {
+            "url": "https://guruguha.org/ghanta-raga-era/",
+            "label": "Ghanta Raga — Guruguha.org",
+            "type": "other"
+          }
+        ],
+        "notes": "Rare janya of Natabhairavi (mela 20); associated with the 'ghanta' (bell) timbre; sparse repertoire"
       },
       {
         "id": "gowla",
@@ -6338,6 +6575,24 @@
         "notes": "51st melakarta (Kamavardhini); ārohana S R1 G3 M2 P D1 N3 S, avarohana S N3 D1 P M2 G3 R1 S; evokes pathos and grandeur; associated with Tyagaraja's 'Aparama Bhakthi' and Dikshitar's 'Sri Satyanarayanam'; one of the most expansive melakartas for alapana",
         "is_melakarta": true,
         "cakra": 9
+      },
+      {
+        "id": "paras",
+        "name": "Paras",
+        "aliases": [
+          "Paraju",
+          "Paras Carnatic"
+        ],
+        "melakarta": null,
+        "parent_raga": "mayamalavagowla",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/rare-raga-series-paras-paraju-janya-of-mela-15-ragam-mayamalavagoula",
+            "label": "Rare Raga Series: Paras (Paraju), janya of Mela 15 — Dr. M. Radhakrishnan",
+            "type": "other"
+          }
+        ],
+        "notes": "Rare janya of Mayamalavagowla (mela 15); also known as Paraju; used in padams and javalis of the Dhanammal tradition"
       },
       {
         "id": "pavani",
@@ -8310,6 +8565,160 @@
             "type": "archive"
           }
         ]
+      },
+      {
+        "id": "tiruvottiyur_tyagayya",
+        "name": "Tiruvottiyur Tyagayya",
+        "musician_node_id": "tiruvottiyur_tyagayya",
+        "born": 1845,
+        "died": 1917,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Tiruvottriyur_Tyagayyar",
+            "label": "Wikipedia — Tiruvottriyur Tyagayyar",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "pallavi_gopala_iyer",
+        "name": "Pallavi Gopala Iyer",
+        "musician_node_id": "pallavi_gopala_iyer",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1037.shtml",
+            "label": "Karnatik.com — Pallavi Gopala Iyer",
+            "type": "archive"
+          }
+        ]
+      },
+      {
+        "id": "muthuthandavar",
+        "name": "Muthu Thandavar",
+        "musician_node_id": "muthu_thandavar",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Muthu_Thandavar",
+            "label": "Wikipedia — Muthu Thandavar",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "nagapatnam_veeraswamy_pillai",
+        "name": "Nagapatnam Veeraswamy Pillai",
+        "musician_node_id": "nagapatnam_veeraswamy_pillai",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://tamilnation.org/culture/music/b_m_raman",
+            "label": "Tamil Nation — via B.M. Raman",
+            "type": "article"
+          }
+        ]
+      },
+      {
+        "id": "kunnakudi_krishna_iyer",
+        "name": "Kunnakudi Krishna Iyer",
+        "musician_node_id": "kunnakudi_krishna_iyer",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1229.shtml",
+            "label": "Karnatik.com — Kunnakudi Krishna Iyer",
+            "type": "archive"
+          }
+        ]
+      },
+      {
+        "id": "muddu_natesa",
+        "name": "Muddu Natesa",
+        "musician_node_id": "muddu_natesa",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/composer.shtml",
+            "label": "No known primary source",
+            "type": "other"
+          }
+        ]
+      },
+      {
+        "id": "kuppuswami_ayya",
+        "name": "Kuppuswami Ayya",
+        "musician_node_id": "kuppuswami_ayya",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1230.shtml",
+            "label": "Karnatik.com — Kuppuswami Ayya",
+            "type": "archive"
+          }
+        ]
+      },
+      {
+        "id": "rudrapatnam_venkatramayya",
+        "name": "Rudrapatnam Venkatramayya",
+        "musician_node_id": "rudrapatnam_venkatramayya",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1476.shtml",
+            "label": "Karnatik.com — Rudrapatnam Venkatramayya",
+            "type": "archive"
+          }
+        ]
+      },
+      {
+        "id": "mysore_sadasiva_rao",
+        "name": "Mysore Sadasiva Rao",
+        "musician_node_id": "mysore_sadasiva_rao",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Mysore_Sadashiva_Rao",
+            "label": "Wikipedia — Mysore Sadashiva Rao",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "t_ramaswami_pillai",
+        "name": "T. Ramaswami Pillai",
+        "musician_node_id": "t_ramaswami_pillai",
+        "born": 1862,
+        "died": 1943,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Tiruvarur_Ramaswami_Pillai",
+            "label": "Wikipedia — Tiruvarur Ramaswami Pillai",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "kurainadu_natesa_pillai",
+        "name": "Kurainadu Natesa Pillai",
+        "musician_node_id": "kurainadu_natesa_pillai",
+        "born": null,
+        "died": null,
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/co1381.shtml",
+            "label": "Karnatik.com — Kurainadu Natesa Pillai",
+            "type": "archive"
+          }
+        ]
       }
     ],
     "compositions": [
@@ -8360,6 +8769,15 @@
           }
         ],
         "notes": "Kriti by Patnam Subramanya Iyer in Begada"
+      },
+      {
+        "id": "adhi_nipai_marulu",
+        "title": "Adhi Nipai Marulu",
+        "composer_id": "dharmapuri_subbaraya_iyer",
+        "raga_id": "yamuna_kalyani",
+        "tala": "deshadi",
+        "language": "Telugu",
+        "notes": "Javali/Padam by Dharmapuri Subbaraya Iyer in Yamuna Kalyani"
       },
       {
         "id": "adiyokka_yugamu",
@@ -8455,6 +8873,14 @@
           }
         ],
         "notes": "Javali by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā in Khamas; Adi tala; distinct from 'Marubari Talalenu' by the same composer"
+      },
+      {
+        "id": "aparadhamulanniyu",
+        "title": "Aparadhamulanniyu",
+        "composer_id": "patnam_subramanya_iyer",
+        "raga_id": "latangi",
+        "tala": "adi",
+        "language": "Telugu"
       },
       {
         "id": "aparadhamulanorva",
@@ -8628,6 +9054,15 @@
           }
         ],
         "notes": "Kanaka Dasa composition in Maund raga. Popular devotional song on Krishna."
+      },
+      {
+        "id": "begada_varnam",
+        "title": "Begada Varnam",
+        "composer_id": "veenai_kuppayyar",
+        "raga_id": "begada",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Varnam in Begada by Veenai Kuppayyar"
       },
       {
         "id": "bhajana_parulakela",
@@ -8960,6 +9395,15 @@
         "raga_id": "sruti_ranjani"
       },
       {
+        "id": "ede_thega_mayave",
+        "title": "Ede Thega Mayave",
+        "composer_id": "kurainadu_natesa_pillai",
+        "raga_id": "kapi",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Javali by Kurainadu Natesa Pillai"
+      },
+      {
         "id": "ee_vasudha_sahana",
         "title": "Ee Vasudha",
         "composer_id": "tyagaraja",
@@ -8974,6 +9418,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Sahana raga. Distinct from 'Yee Vasudha' (id: yee_vasudha) which is set in Kanada. Both share the same opening words; the Sahana version is confirmed at karnatik.com c2369."
+      },
+      {
+        "id": "ekkalathilum",
+        "title": "Ekkalathilum",
+        "composer_id": "t_ramaswami_pillai",
+        "raga_id": "poorvikalyani",
+        "tala": "adi",
+        "language": "Tamil",
+        "notes": "Padam by T. Ramaswami Pillai in Poorvikalyani; very long alapana performed"
       },
       {
         "id": "emaanadicchevo",
@@ -9035,6 +9488,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Thodi raga, Misra Chapu tala."
+      },
+      {
+        "id": "emi_seyudunu",
+        "title": "Emi Seyudunu",
+        "composer_id": "kshetrayya",
+        "raga_id": "surutti",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
       },
       {
         "id": "en_manam",
@@ -9133,6 +9595,15 @@
         "notes": "Tyagaraja kriti in Neelambari raga, Adi tala; a lullaby-like kriti often sung as a concert closer"
       },
       {
+        "id": "ennai_petra_taye",
+        "title": "Ennai Petra Taye",
+        "composer_id": "muthuthandavar",
+        "raga_id": "devagandhari",
+        "tala": "adi",
+        "language": "Tamil",
+        "notes": "Padam by Muthu Thandavar"
+      },
+      {
         "id": "enta_muddo",
         "title": "Enta muddo",
         "composer_id": "tyagaraja",
@@ -9169,6 +9640,15 @@
         "notes": null
       },
       {
+        "id": "enthanemi_vethalalo",
+        "title": "Enthanemi Vethalalo",
+        "composer_id": "kshetrayya",
+        "raga_id": "paras",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya in rare raga Paras"
+      },
+      {
         "id": "entharo_mahanubhavulu",
         "title": "Entharo Mahanubhavulu",
         "composer_id": "tyagaraja",
@@ -9183,6 +9663,15 @@
           }
         ],
         "notes": "Pancharatna kriti; considered the crown jewel of the Tyagaraja corpus; a salutation to all great souls; traditionally sung last in the Pancharatna set"
+      },
+      {
+        "id": "entho_premato",
+        "title": "Entho Premato",
+        "composer_id": "rudrapatnam_venkatramayya",
+        "raga_id": "poorvikalyani",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Rudrapatnam Venkatramayya"
       },
       {
         "id": "ento_premato",
@@ -9252,6 +9741,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Varali; misra capu tala"
+      },
+      {
+        "id": "evarani",
+        "title": "Evarani",
+        "composer_id": "tyagaraja",
+        "raga_id": "devamritavarshini",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Tyagaraja kriti in Devamritavarshini"
       },
       {
         "id": "evarani_nirnayancirera",
@@ -9352,6 +9850,15 @@
         "notes": "Tyagaraja kriti in Gowrimanohari raga. On the importance of a guru."
       },
       {
+        "id": "hari_nee",
+        "title": "Hari Nee",
+        "composer_id": "kuppuswami_ayya",
+        "raga_id": "kurinji",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Padam by Kuppuswami Ayya"
+      },
+      {
         "id": "haribhajan_komana",
         "title": "Haribhajan Komana",
         "composer_id": null,
@@ -9446,6 +9953,15 @@
         ]
       },
       {
+        "id": "ilalo_priyudu",
+        "title": "Ilalo Priyudu",
+        "composer_id": "kshetrayya",
+        "raga_id": "huseni",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
+      },
+      {
         "id": "inni_enna_pechu",
         "title": "Inni Enna Pechu",
         "composer_id": "subbarama_iyer",
@@ -9459,6 +9975,33 @@
           }
         ],
         "notes": "Padam in Sahana"
+      },
+      {
+        "id": "inta_kante_kavalena",
+        "title": "Inta Kante Kavalena",
+        "composer_id": "patnam_subramanya_iyer",
+        "raga_id": "kannada",
+        "tala": "rupakam",
+        "language": "Telugu",
+        "notes": "Kriti by Patnam Subramania Iyer"
+      },
+      {
+        "id": "inta_sowkhyamunivvo",
+        "title": "Inta Sowkhyamunivvo",
+        "composer_id": "kshetrayya",
+        "raga_id": "ghanta",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya in rare raga Ghanta"
+      },
+      {
+        "id": "intamodi_seya",
+        "title": "Intamodi Seya",
+        "composer_id": "tiruvottiyur_tyagayya",
+        "raga_id": "saranga",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Varnam in Saranga by Tiruvottiyur Tyagayya"
       },
       {
         "id": "intanuchu_varimpa",
@@ -9491,6 +10034,24 @@
           }
         ],
         "notes": "Varnam by Veenai Kuppayyar in Begada; Adi tala; part of the standard veena varnam repertoire"
+      },
+      {
+        "id": "intha_paraku",
+        "title": "Intha Paraku",
+        "composer_id": "kshetrayya",
+        "raga_id": "kapi",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
+      },
+      {
+        "id": "ithanai_thulambaramai",
+        "title": "Ithanai Thulambaramai",
+        "composer_id": "muthuthandavar",
+        "raga_id": "dhanyasi",
+        "tala": "adi",
+        "language": "Tamil",
+        "notes": "Padam by Muthu Thandavar"
       },
       {
         "id": "jagadananda_karaka",
@@ -9628,6 +10189,15 @@
         "notes": "Tevaram hymn in Bhairavi. Specific author within the Tevaram corpus (Appar, Sundarar, or Thirugnana Sambandar) not identified in this recording."
       },
       {
+        "id": "kalalo_nenu_ninnu",
+        "title": "Kalalo Nenu Ninnu",
+        "composer_id": "muthuthandavar",
+        "raga_id": "saveri",
+        "tala": "adi",
+        "language": "Tamil",
+        "notes": "Padam by Muthu Thandavar"
+      },
+      {
         "id": "kaligiyunte",
         "title": "Kaligiyunte",
         "composer_id": "tyagaraja",
@@ -9708,6 +10278,15 @@
         "notes": "Shyama Shastri kriti in Varali raga. A popular concert piece."
       },
       {
+        "id": "kamalakshi_varnam",
+        "title": "Kamalakshi",
+        "composer_id": "kunnakudi_krishna_iyer",
+        "raga_id": "kambhoji",
+        "tala": "misra_jhampa",
+        "language": "Telugu",
+        "notes": "Varnam in Kambhoji; Misra Jhampa tala"
+      },
+      {
         "id": "kamalambam_bhaja_re",
         "title": "Kamalambam Bhaja Re",
         "composer_id": "muthuswami_dikshitar",
@@ -9738,6 +10317,15 @@
         "notes": "Part of the Kamalamba Navavarana kritis; distinct from Sri Kamalambikayam"
       },
       {
+        "id": "kamalaptakula",
+        "title": "Kamalaptakula",
+        "composer_id": "tyagaraja",
+        "raga_id": "brindavana_saranga",
+        "tala": "deshadi",
+        "language": "Telugu",
+        "notes": "Tyagaraja kriti in Brindavana Saranga"
+      },
+      {
         "id": "kana_kana_ruchira",
         "title": "Kana Kana Ruchira",
         "composer_id": "tyagaraja",
@@ -9752,6 +10340,15 @@
           }
         ],
         "notes": "Pancharatna kriti; set in the auspicious and technically demanding Ghana raga Varali"
+      },
+      {
+        "id": "kana_kanda_pin",
+        "title": "Kana Kanda Pin",
+        "composer_id": "muthuthandavar",
+        "raga_id": "huseni",
+        "tala": "adi",
+        "language": "Tamil",
+        "notes": "Padam by Muthu Thandavar"
       },
       {
         "id": "kanaka_shaila_viharini",
@@ -9802,6 +10399,15 @@
         "notes": "Tyagaraja kriti in Devamanohari raga, Deshadi tala"
       },
       {
+        "id": "kantimati_karuna",
+        "title": "Kantimati Karuna",
+        "composer_id": "subbarama_dikshitar",
+        "raga_id": "kalyani",
+        "tala": "rupakam",
+        "language": "Sanskrit",
+        "notes": "Kriti by Subbarama Dikshitar"
+      },
+      {
         "id": "karubaru",
         "title": "Karubaru",
         "composer_id": "tyagaraja",
@@ -9814,6 +10420,15 @@
             "type": "article"
           }
         ]
+      },
+      {
+        "id": "karuna_joodu",
+        "title": "Karuna Joodu Ninnu",
+        "composer_id": "shyama_shastri",
+        "raga_id": "sriraga",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Shyama Shastri in Sri raga"
       },
       {
         "id": "karuna_samudra",
@@ -9896,6 +10511,15 @@
         "notes": "Kriti by Garbhapuri Srinivasa (ankita: Garbhapurivasa) in Vakulabharanam; Adi tala; one of the principal compositions defining this rare melakarta raga in the concert repertoire"
       },
       {
+        "id": "kontegadu_muvvagopala",
+        "title": "Kontegadu Muvvagopala",
+        "composer_id": "kshetrayya",
+        "raga_id": "surutti",
+        "tala": "tisra_triputa",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
+      },
+      {
         "id": "krishna_nee_begane",
         "title": "Krishna Nee Begane",
         "composer_id": "vyasatirtha",
@@ -9958,6 +10582,15 @@
           }
         ],
         "notes": "Muthuswami Dikshitar kriti in Devagandhari raga."
+      },
+      {
+        "id": "kurvel_pazhitha",
+        "title": "Kurvel Pazhitha",
+        "composer_id": "arunagirinathar",
+        "raga_id": "madhyamavati",
+        "tala": "adi",
+        "language": "Tamil",
+        "notes": "Tamil devotional by Arunagirinathar; sung as mangalam"
       },
       {
         "id": "kuvalayakshiro",
@@ -10075,6 +10708,15 @@
         "notes": "Kriti by Muttusvāmi Dīkṣita in Manirangu; misra capu tala; addressed to Lord Pattabhirama"
       },
       {
+        "id": "maname_maname",
+        "title": "Maname Maname",
+        "composer_id": "mysore_sadasiva_rao",
+        "raga_id": "ananda_bhairavi",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Javali by Mysore Sadasiva Rao"
+      },
+      {
         "id": "manasa_sri_ramachandruni",
         "title": "Manasa Sri Ramachandruni",
         "composer_id": "tyagaraja",
@@ -10104,6 +10746,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Shankarabharanam."
+      },
+      {
+        "id": "manasu_telisi_ra",
+        "title": "Manasu Telisi Ra",
+        "composer_id": "tyagaraja",
+        "raga_id": "latangi",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Tyagaraja kriti in Latangi"
       },
       {
         "id": "manasu_vishaya",
@@ -10136,6 +10787,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Nalinakanthi raga."
+      },
+      {
+        "id": "manninju_brovave",
+        "title": "Manninju Brovave",
+        "composer_id": "patnam_subramanya_iyer",
+        "raga_id": "gowlipantu",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Patnam Subramania Iyer"
       },
       {
         "id": "marakatamanivarna",
@@ -10232,6 +10892,15 @@
         "notes": "Jāvaḷi by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā in Khamas; one of his most popular compositions; mudra: Talavam"
       },
       {
+        "id": "marugelara",
+        "title": "Marugelara",
+        "composer_id": "tyagaraja",
+        "raga_id": "sriraga",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Famous Tyagaraja kriti in Sri/Sriraga"
+      },
+      {
         "id": "mayamma",
         "title": "Mayamma",
         "composer_id": "shyama_shastri",
@@ -10291,6 +10960,15 @@
         ]
       },
       {
+        "id": "merusamana_dharala",
+        "title": "Merusamana Dharala",
+        "composer_id": "muddu_natesa",
+        "raga_id": "sahana",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Padam/kriti by Muddu Natesa"
+      },
+      {
         "id": "modi_jesavelara",
         "title": "Modi Jesavelara",
         "composer_id": "pattabhiramayya",
@@ -10338,6 +11016,15 @@
         "notes": "Padam by Kshetrayya in Sahana; Tisra Triputa tala; part of the Kshetrayya padam tradition"
       },
       {
+        "id": "mosamaya",
+        "title": "Mosamaya",
+        "composer_id": "kshetrayya",
+        "raga_id": "ahiri",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya in Ahiri"
+      },
+      {
         "id": "muddugare_yashoda",
         "title": "Muddugare Yashoda",
         "composer_id": "annamacharya",
@@ -10368,6 +11055,15 @@
         ]
       },
       {
+        "id": "mundu_venaka",
+        "title": "Mundu Venaka",
+        "composer_id": "tyagaraja",
+        "raga_id": "darbar",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Tyagaraja kriti in Darbar"
+      },
+      {
         "id": "muripemu_kalige",
         "title": "Muripemu Kalige",
         "composer_id": "tyagaraja",
@@ -10382,6 +11078,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Mukhari raga."
+      },
+      {
+        "id": "muttavaddura",
+        "title": "Muttavaddura",
+        "composer_id": "chinnaiah_pillai",
+        "raga_id": "behag",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Javali by Chinnaiah Pillai"
       },
       {
         "id": "muttavadura",
@@ -10596,6 +11301,24 @@
         "notes": "Kriti by Patnam Subramanya Iyer in Purnachandrika; listed on the Wikipedia Poornachandrika page as a popular composition"
       },
       {
+        "id": "nee_matale_mayanura",
+        "title": "Nee Matale Mayanura",
+        "composer_id": "pattabhiramayya",
+        "raga_id": "poorvikalyani",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Javali by Pattabhiramayya"
+      },
+      {
+        "id": "neelayathakshi",
+        "title": "Neelayathakshi",
+        "composer_id": "shyama_shastri",
+        "raga_id": "paras",
+        "tala": "tisra_triputa",
+        "language": "Telugu",
+        "notes": "Kriti by Shyama Shastri in rare raga Paras"
+      },
+      {
         "id": "neevaada_ne_gaana",
         "title": "neevaaDa nE gaana",
         "composer_id": "tyagaraja",
@@ -10628,6 +11351,15 @@
         "notes": "Tyagaraja kriti in Simhavahini raga. Rare raga composition."
       },
       {
+        "id": "nenarunchi",
+        "title": "Nenarunchi",
+        "composer_id": "kshetrayya",
+        "raga_id": "kambhoji",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
+      },
+      {
         "id": "nenarunchinanu",
         "title": "Nenarunchinanu",
         "composer_id": "tyagaraja",
@@ -10658,6 +11390,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Karnataka Behag, Adi tala; one of the few canonical kritis in this raga"
+      },
+      {
+        "id": "neyyamuna",
+        "title": "Neyyamuna",
+        "composer_id": "kurainadu_natesa_pillai",
+        "raga_id": "ghanta",
+        "tala": "jhampa",
+        "language": "Telugu",
+        "notes": "Composition in rare raga Ghanta by Kurainadu Natesa Pillai (also spelled Koranadu Natesa Pillai)"
       },
       {
         "id": "ni_nama_roopamulaku",
@@ -10721,6 +11462,15 @@
         "notes": "Tyagaraja kriti in Kalyani; one of the Pancharatna kritis."
       },
       {
+        "id": "nidu_murtini",
+        "title": "Nidu Murtini",
+        "composer_id": "pallavi_gopala_iyer",
+        "raga_id": "nattakurinji",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Pallavi Gopala Iyer"
+      },
+      {
         "id": "nijamarmamulanu",
         "title": "Nijamarmamulanu",
         "composer_id": "tyagaraja",
@@ -10735,6 +11485,15 @@
           }
         ],
         "notes": "Kriti by Tyagaraja in Umaabharanam; Adi tala; one of the principal compositions defining raga Umaabharanam"
+      },
+      {
+        "id": "nilupumu_nerajala",
+        "title": "Nilupumu Nerajala",
+        "composer_id": "kshetrayya",
+        "raga_id": "saveri",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
       },
       {
         "id": "ninnada",
@@ -10807,6 +11566,15 @@
         "notes": "Varnam by Ramnad Sreenivasa Iyengar in Mohanam; Adi tala; pallavi 'ninnu kori yunna nura nikila loka nayaka'; mudra 'Sreenivasa'; one of the standard Mohanam varnams in the concert repertoire; note: the tracklist of the Jamshedpur 1961 concert attributes this to 'Poochi Srinivasa Iyengar' — the shivkumar.org notation source explicitly names Ramnad Sreenivasa Iyengar as composer"
       },
       {
+        "id": "ninnu_vinaga",
+        "title": "Ninnu Vinaga",
+        "composer_id": "tiruvottiyur_tyagayya",
+        "raga_id": "surutti",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Tiruvottiyur Tyagayya"
+      },
+      {
         "id": "o_jagadamba",
         "title": "O Jagadamba",
         "composer_id": "shyama_shastri",
@@ -10855,6 +11623,15 @@
         "notes": "Tamil verse from the Divya Prabandham of the Alvar tradition; attributed to Nammalvar; performed as a slokam in Sindhubhairavi raga; no tala (free rhythm); sung as a devotional invocation before the Sindhubhairavi composition in the Ariyakudi school"
       },
       {
+        "id": "ososi",
+        "title": "Ososi",
+        "composer_id": "muddu_natesa",
+        "raga_id": "mukhari",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Muddu Natesa"
+      },
+      {
         "id": "pahi_mam_ratnacala",
         "title": "pAhi mAM ratnAcala nAyaka",
         "composer_id": "muthuswami_dikshitar",
@@ -10885,6 +11662,24 @@
           }
         ],
         "notes": "Swarajathi by Swati Tirunal in Huseni; Rupakam tala; authorship disputed in some scholarly sources; one of the most celebrated swarajathis in the concert repertoire"
+      },
+      {
+        "id": "palinchu_kamakshi",
+        "title": "Palinchu Kamakshi",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "madhyamavati",
+        "tala": "roopakam",
+        "language": "Telugu",
+        "notes": "Muthuswami Dikshitar mangalam"
+      },
+      {
+        "id": "paliseme_ranganatha",
+        "title": "Paliseme Ranganatha",
+        "composer_id": "kunnakudi_krishna_iyer",
+        "raga_id": "kalyani",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Kunnakudi Krishna Iyer"
       },
       {
         "id": "paraloka_sadhaname",
@@ -11036,6 +11831,15 @@
         "notes": "Kriti by Tyagaraja in Kharaharapriya; Rupakam tala; a declaration that none equals Rama"
       },
       {
+        "id": "rama_rama_pranasakhi",
+        "title": "Rama Rama Pranasakhi",
+        "composer_id": "kshetrayya",
+        "raga_id": "bhairavi",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
+      },
+      {
         "id": "ramakatha",
         "title": "Ramakatha",
         "composer_id": "tyagaraja",
@@ -11066,10 +11870,28 @@
         "notes": "Kshetrayya padam in Bhairavi."
       },
       {
+        "id": "ranganatha_raghu",
+        "title": "Ranganatha Raghu",
+        "composer_id": "pallavi_gopala_iyer",
+        "raga_id": "saranga",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Pallavi Gopala Iyer in Saranga"
+      },
+      {
         "id": "rangapura_vihara",
         "title": "Rangapura vihara",
         "composer_id": "muthuswami_dikshitar",
         "raga_id": "brindavana_saranga"
+      },
+      {
+        "id": "rathamukha_chapala",
+        "title": "Rathamukha Chapala",
+        "composer_id": "kshetrayya",
+        "raga_id": "brindavana_saranga",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya in Brindavana Saranga"
       },
       {
         "id": "sadhinchane",
@@ -11086,6 +11908,24 @@
           }
         ],
         "notes": "Pancharatna kriti; a devotional composition in the majestic Ghana raga Arabhi"
+      },
+      {
+        "id": "sakhi_prana",
+        "title": "Sakhi Prana",
+        "composer_id": "dharmapuri_subbaraya_iyer",
+        "raga_id": "senchurutti",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Javali by Dharmapuri Subbaraya Iyer in Senchurutti"
+      },
+      {
+        "id": "samayamide",
+        "title": "Samayamide",
+        "composer_id": "patnam_subramanya_iyer",
+        "raga_id": "behag",
+        "tala": "rupakam",
+        "language": "Telugu",
+        "notes": "Javali by Patnam Subramania Iyer"
       },
       {
         "id": "samayamide_rara",
@@ -11161,6 +12001,15 @@
         "notes": null
       },
       {
+        "id": "sarasijakshi",
+        "title": "Sarasijakshi",
+        "composer_id": "rudrapatnam_venkatramayya",
+        "raga_id": "nayaki",
+        "tala": "khanda_triputa",
+        "language": "Telugu",
+        "notes": "Varnam in Nayaki by Rudrapatnam Venkatramayya"
+      },
+      {
         "id": "sarasiruhanana",
         "title": "Sarasiruhanana",
         "composer_id": "tyagaraja",
@@ -11220,6 +12069,24 @@
           }
         ],
         "notes": "Shyama Shastri kriti in Shankarabharanam raga."
+      },
+      {
+        "id": "seethavara_sangeetha",
+        "title": "Seethavara Sangeetha",
+        "composer_id": "tyagaraja",
+        "raga_id": "devagandhari",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Tyagaraja kriti in Devagandhari"
+      },
+      {
+        "id": "shakaracharyam",
+        "title": "Shakaracharyam",
+        "composer_id": "subbarama_dikshitar",
+        "raga_id": "shankarabharanam",
+        "tala": "adi",
+        "language": "Sanskrit",
+        "notes": "Kriti by Subbarama Dikshitar in Shankarabharanam"
       },
       {
         "id": "shankari_neeve",
@@ -11316,6 +12183,15 @@
         "notes": "Tyagaraja kriti in Pantuvarali raga. Devotional composition on Shiva."
       },
       {
+        "id": "smara_sundaranguni",
+        "title": "Smara Sundaranguni",
+        "composer_id": "dharmapuri_subbaraya_iyer",
+        "raga_id": "paras",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Padam/Javali by Dharmapuri Subbaraya Iyer in rare raga Paras"
+      },
+      {
         "id": "sogasu_chooda",
         "title": "Sogasu Chooda",
         "composer_id": "tyagaraja",
@@ -11392,6 +12268,24 @@
             "type": "article"
           }
         ]
+      },
+      {
+        "id": "sri_kamalambike",
+        "title": "Sri Kamalambike",
+        "composer_id": "subbaraya_sastri",
+        "raga_id": "thodi",
+        "tala": "rupakam",
+        "language": "Sanskrit",
+        "notes": "Kriti in Thodi by Subbaraya Sastri (Veenai Subbaraya Sastri)"
+      },
+      {
+        "id": "sri_kamalambike_sive",
+        "title": "Sri Kamalambike Sive",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "sriraga",
+        "tala": "khanda_ekam",
+        "language": "Sanskrit",
+        "notes": "Kamalamba Navavarana kriti by Muthuswami Dikshitar in Sri raga"
       },
       {
         "id": "sri_maha_ganapathim",
@@ -11472,6 +12366,15 @@
           }
         ],
         "notes": "Kriti by Tyagaraja in Bhairavi; Adi tala; a devotional composition addressed to Rama"
+      },
+      {
+        "id": "sri_rajagopala",
+        "title": "Sri Rajagopala",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "saveri",
+        "tala": "adi",
+        "language": "Sanskrit",
+        "notes": "Muthuswami Dikshitar composition in Saveri"
       },
       {
         "id": "sri_ramachandra_kripalu",
@@ -11568,6 +12471,15 @@
           }
         ],
         "notes": "Swati Tirunal varnam in Karnataka Kapi raga."
+      },
+      {
+        "id": "sunta_sepu_dani",
+        "title": "Sunta Sepu Dani",
+        "composer_id": "kshetrayya",
+        "raga_id": "shankarabharanam",
+        "tala": "tisra_triputa",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
       },
       {
         "id": "suryamurte",
@@ -11808,6 +12720,15 @@
         ]
       },
       {
+        "id": "tyagaraja_yoga_vaibhavam",
+        "title": "Tyagaraja Yoga Vaibhavam",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "ananda_bhairavi",
+        "tala": "rupakam",
+        "language": "Sanskrit",
+        "notes": "Muthuswami Dikshitar composition in Ananda Bhairavi"
+      },
+      {
         "id": "un_padam_maravenamma",
         "title": "un padam maravEnammA",
         "composer_id": "ambujam_krishna",
@@ -11822,6 +12743,15 @@
           }
         ],
         "notes": null
+      },
+      {
+        "id": "unnai_nambinen",
+        "title": "Unnai Nambinen",
+        "composer_id": "t_ramaswami_pillai",
+        "raga_id": "pantuvarali",
+        "tala": "adi",
+        "language": "Tamil",
+        "notes": "Padam — Tiruvarur Ramaswami Pillai"
       },
       {
         "id": "upamugana",
@@ -11840,6 +12770,15 @@
         "notes": "Padam by Sarangapani in Yadukulakamboji raga"
       },
       {
+        "id": "vachamagocharundani",
+        "title": "Vachamagocharundani",
+        "composer_id": "mysore_sadasiva_rao",
+        "raga_id": "atana",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Mysore Sadasiva Rao in Atana; also spelled Vachama Gocharuduni"
+      },
+      {
         "id": "vadanyeshwaram_bhajeham",
         "title": "Vadanyeshwaram Bhajeham",
         "composer_id": "muthuswami_dikshitar",
@@ -11856,6 +12795,15 @@
         "notes": "Muthuswami Dikshitar kriti in Devagandhari raga, Adi tala; on Vadanyeshwara (Shiva at Vaitheeswaran Koil)"
       },
       {
+        "id": "vaddante_vintiva",
+        "title": "Vaddante Vintiva",
+        "composer_id": "kuppuswami_ayya",
+        "raga_id": "pantuvarali",
+        "tala": "rupakam",
+        "language": "Telugu",
+        "notes": "Padam by Kuppuswami Ayya"
+      },
+      {
         "id": "vadiga_gopaluni",
         "title": "Vadiga Gopaluni",
         "composer_id": "kshetrayya",
@@ -11870,6 +12818,24 @@
           }
         ],
         "notes": "Padam by Kshetrayya in Mohanam; Misra Chapu tala; part of the Kshetrayya padam tradition addressed to Muvvagopala"
+      },
+      {
+        "id": "vanajaksha_ninne",
+        "title": "Vanajaksha Ninne",
+        "composer_id": "kshetrayya",
+        "raga_id": "ananda_bhairavi",
+        "tala": "misra_chapu",
+        "language": "Telugu",
+        "notes": "Padam by Kshetrayya"
+      },
+      {
+        "id": "vanajakshiro",
+        "title": "Vanajakshi Ro",
+        "composer_id": "nagapatnam_veeraswamy_pillai",
+        "raga_id": "thodi",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Varnam in Thodi; composer attribution disputed — Nagapatnam Veeraswamy Pillai listed as per Dhanammal tradition"
       },
       {
         "id": "vande_meenakshi_twam",
@@ -11908,6 +12874,15 @@
           }
         ],
         "notes": "Tyagaraja kriti in Kalyani; Adi tala; a devotional composition addressed to Vasudeva (Krishna); one of the standard Kalyani kritis in the concert repertoire"
+      },
+      {
+        "id": "venkatasaila_vihara",
+        "title": "Venkatasaila Vihara",
+        "composer_id": "subbaraya_sastri",
+        "raga_id": "hamir_kalyani",
+        "tala": "adi",
+        "language": "Telugu",
+        "notes": "Kriti by Subbaraya Sastri"
       },
       {
         "id": "vidulaku_mrokkeda",
@@ -12071,6 +13046,42 @@
       ]
     },
     {
+      "id": "air_madras_1964_brinda_muktha",
+      "path": "recordings/air_madras_1964_brinda_muktha.json",
+      "title": "T. Brinda & T. Muktha — Madras All India Radio, March 1964",
+      "short_title": "AIR Madras 1964",
+      "date": "1964-03",
+      "venue": "All India Radio, Madras (Akashvani)",
+      "primary_musician_ids": [
+        "t_brinda",
+        "t_muktha"
+      ]
+    },
+    {
+      "id": "air_national_1963_brinda_muktha",
+      "path": "recordings/air_national_1963_brinda_muktha.json",
+      "title": "T. Brinda, T. Muktha & T. Abiramasundari — AIR National Programme, 27 April 1963",
+      "short_title": "AIR National 1963",
+      "date": "1963-04-27",
+      "venue": "All India Radio, Delhi (National Programme)",
+      "primary_musician_ids": [
+        "t_brinda",
+        "t_muktha"
+      ]
+    },
+    {
+      "id": "air_trichy_1963_brinda_muktha",
+      "path": "recordings/air_trichy_1963_brinda_muktha.json",
+      "title": "T. Brinda & T. Muktha — All India Radio, Trichy, 1963",
+      "short_title": "AIR Trichy 1963",
+      "date": "1963",
+      "venue": "All India Radio, Trichy (Akashvani)",
+      "primary_musician_ids": [
+        "t_brinda",
+        "t_muktha"
+      ]
+    },
+    {
       "id": "brinda_muktha_air_padams_javalis_1960s",
       "path": "recordings/brinda_muktha_air_padams_javalis_1960s.json",
       "title": "Padams and Javalis — T. Brinda & T. Muktha, Akashvani AIR, 1960s",
@@ -12080,6 +13091,18 @@
       "primary_musician_ids": [
         "t_brinda",
         "t_muktha"
+      ]
+    },
+    {
+      "id": "brinda_usa_1969_janani_ninnuvina",
+      "path": "recordings/brinda_usa_1969_janani_ninnuvina.json",
+      "title": "T. Brinda — Janani Ninnuvina, USA 1969",
+      "short_title": "USA 1969",
+      "date": "1969",
+      "venue": "USA (exact venue unknown)",
+      "primary_musician_ids": [
+        "t_brinda",
+        "vegavahini_vijayaraghavan"
       ]
     },
     {
@@ -12132,6 +13155,30 @@
       ]
     },
     {
+      "id": "music_academy_1960_brinda_muktha",
+      "path": "recordings/music_academy_1960_brinda_muktha.json",
+      "title": "T. Brinda & T. Muktha — Music Academy, Madras, December 1960",
+      "short_title": "Music Academy 1960",
+      "date": "1960-12-28",
+      "venue": "P.S. High School, Mylapore, Madras (Music Academy)",
+      "primary_musician_ids": [
+        "t_brinda",
+        "t_muktha"
+      ]
+    },
+    {
+      "id": "music_academy_1962_brinda_muktha",
+      "path": "recordings/music_academy_1962_brinda_muktha.json",
+      "title": "T. Brinda & T. Muktha — Music Academy, Madras, December 1962",
+      "short_title": "Music Academy 1962",
+      "date": "1962-12-27",
+      "venue": "P.S. High School, Mylapore, Madras (Music Academy)",
+      "primary_musician_ids": [
+        "t_brinda",
+        "t_muktha"
+      ]
+    },
+    {
       "id": "musiri_music_academy_1962",
       "path": "recordings/music_academy_1962_musiri.json",
       "title": "Musiri Subramania Iyer at The Music Academy, Madras, 31.12.1962",
@@ -12168,6 +13215,19 @@
         "semmangudi_srinivasa_iyer",
         "lalgudi_jayaraman",
         "umayalpuram_sivaraman"
+      ]
+    },
+    {
+      "id": "music_academy_1968_brinda_muktha_vegavahini",
+      "path": "recordings/music_academy_1968_brinda_muktha_vegavahini.json",
+      "title": "T. Brinda, T. Muktha & Vegavahini Vijayaraghavan — Music Academy, Madras, December 1968",
+      "short_title": "Music Academy 1968",
+      "date": "1968-12-25",
+      "venue": "Music Academy, Madras",
+      "primary_musician_ids": [
+        "t_brinda",
+        "t_muktha",
+        "vegavahini_vijayaraghavan"
       ]
     },
     {

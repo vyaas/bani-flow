@@ -1,0 +1,144 @@
+{
+  "id": "air_national_1963_brinda_muktha",
+  "video_id": "L-ChUfjXdkw",
+  "url": "https://youtu.be/L-ChUfjXdkw",
+  "title": "T. Brinda, T. Muktha & T. Abiramasundari \u2014 AIR National Programme, 27 April 1963",
+  "short_title": "AIR National 1963",
+  "date": "1963-04-27",
+  "venue": "All India Radio, Delhi (National Programme)",
+  "occasion": "AIR National Programme broadcast; 28th Remembrance Day tribute",
+  "sources": [
+    {
+      "url": "https://youtu.be/L-ChUfjXdkw",
+      "label": "YouTube \u2014 Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "T. Abhiramasundari"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "T. Ranganathan"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "vanajakshiro",
+          "raga_id": "thodi",
+          "tala": "adi",
+          "composer_id": "nagapatnam_veeraswamy_pillai",
+          "display_title": "Vanajakshi Ro",
+          "notes": "varnam; composer attribution disputed"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:03:45",
+          "offset_seconds": 225,
+          "composition_id": "evarani",
+          "raga_id": "devamritavarshini",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Evarani",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:09:39",
+          "offset_seconds": 579,
+          "composition_id": "shakaracharyam",
+          "raga_id": "shankarabharanam",
+          "tala": "adi",
+          "composer_id": "subbarama_dikshitar",
+          "display_title": "Shakaracharyam",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:31:02",
+          "offset_seconds": 1862,
+          "composition_id": "karubaru",
+          "raga_id": "mukhari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Karubaru Seyuvaru",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:46:47",
+          "offset_seconds": 2807,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": null,
+          "type": "tani"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:50:30",
+          "offset_seconds": 3030,
+          "composition_id": "venkatasaila_vihara",
+          "raga_id": "hamir_kalyani",
+          "tala": "adi",
+          "composer_id": "subbaraya_sastri",
+          "display_title": "Venkatasaila Vihara",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:58:28",
+          "offset_seconds": 3508,
+          "composition_id": "adiyokka_yugamu",
+          "raga_id": "kambhoji",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Adiyokka Yugamu",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:10:09",
+          "offset_seconds": 4209,
+          "composition_id": "ninnu_juchi",
+          "raga_id": "punnagavarali",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Ninnu Juchi",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:19:51",
+          "offset_seconds": 4791,
+          "composition_id": "parulanna_matta",
+          "raga_id": "kapi",
+          "tala": "rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Parulanna Matta",
+          "notes": "javali"
+        }
+      ]
+    }
+  ]
+}

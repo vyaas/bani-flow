@@ -1,0 +1,132 @@
+{
+  "id": "air_trichy_1963_brinda_muktha",
+  "video_id": "GKMbJXt4XCk",
+  "url": "https://youtu.be/GKMbJXt4XCk",
+  "title": "T. Brinda & T. Muktha \u2014 All India Radio, Trichy, 1963",
+  "short_title": "AIR Trichy 1963",
+  "date": "1963",
+  "venue": "All India Radio, Trichy (Akashvani)",
+  "occasion": "AIR Trichy concert; first broadcast 20 September 1963",
+  "sources": [
+    {
+      "url": "https://youtu.be/GKMbJXt4XCk",
+      "label": "YouTube \u2014 Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "VL Vedagiri"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Trichy Raghavan"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "kamalakshi_varnam",
+          "raga_id": "kambhoji",
+          "tala": "misra_jhampa",
+          "composer_id": "kunnakudi_krishna_iyer",
+          "display_title": "Kamalakshi",
+          "notes": "varnam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:04:25",
+          "offset_seconds": 265,
+          "composition_id": "mundu_venaka",
+          "raga_id": "darbar",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Mundu Venaka",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:15:14",
+          "offset_seconds": 914,
+          "composition_id": "akshaya_linga_vibho",
+          "raga_id": "shankarabharanam",
+          "tala": "misra_chapu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Akshaya Linga Vibho",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:41:02",
+          "offset_seconds": 2462,
+          "composition_id": "karuna_joodu",
+          "raga_id": "sriraga",
+          "tala": "adi",
+          "composer_id": "shyama_shastri",
+          "display_title": "Karuna Joodu Ninnu",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:44:30",
+          "offset_seconds": 2670,
+          "composition_id": "ososi",
+          "raga_id": "mukhari",
+          "tala": "misra_chapu",
+          "composer_id": "muddu_natesa",
+          "display_title": "Ososi",
+          "notes": "padam; incorrectly announced"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:53:39",
+          "offset_seconds": 3219,
+          "composition_id": "vaddante_vintiva",
+          "raga_id": "pantuvarali",
+          "tala": "rupakam",
+          "composer_id": "kuppuswami_ayya",
+          "display_title": "Vaddante Vintiva",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:02:48",
+          "offset_seconds": 3768,
+          "composition_id": "samayamide",
+          "raga_id": "behag",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Samayamide",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:07:33",
+          "offset_seconds": 4053,
+          "composition_id": null,
+          "raga_id": "surutti",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Surutti \u2014 Alapana",
+          "notes": "alapana"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "id": "music_academy_1968_brinda_muktha_vegavahini",
+  "video_id": "uQSzhP_JLVM",
+  "url": "https://youtu.be/uQSzhP_JLVM",
+  "title": "T. Brinda, T. Muktha & Vegavahini Vijayaraghavan \u2014 Music Academy, Madras, December 1968",
+  "short_title": "Music Academy 1968",
+  "date": "1968-12-25",
+  "venue": "Music Academy, Madras",
+  "occasion": "Music Academy annual December season (Nadopasana series), Christmas evening",
+  "sources": [
+    {
+      "url": "https://youtu.be/uQSzhP_JLVM",
+      "label": "YouTube \u2014 Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vegavahini_vijayaraghavan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": null,
+          "role": "violin",
+          "unmatched_name": "Annavarapu Ramaswami"
+        },
+        {
+          "musician_id": null,
+          "role": "mridangam",
+          "unmatched_name": "Coimbatore Ramaswami"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "begada_varnam",
+          "raga_id": "begada",
+          "tala": "adi",
+          "composer_id": "veenai_kuppayyar",
+          "display_title": "Begada Varnam",
+          "notes": "varnam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:05:18",
+          "offset_seconds": 318,
+          "composition_id": "inta_kante_kavalena",
+          "raga_id": "kannada",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Intha Kante Kavalena",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:07:50",
+          "offset_seconds": 470,
+          "composition_id": "nenendu_vedukudura",
+          "raga_id": "karnataka_behag",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nenendu Vedukudura",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:11:29",
+          "offset_seconds": 689,
+          "composition_id": "neelayathakshi",
+          "raga_id": "paras",
+          "tala": "tisra_triputa",
+          "composer_id": "shyama_shastri",
+          "display_title": "Neelayathakshi",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:25:03",
+          "offset_seconds": 1503,
+          "composition_id": "ekkalathilum",
+          "raga_id": "poorvikalyani",
+          "tala": "adi",
+          "composer_id": "t_ramaswami_pillai",
+          "display_title": "Ekkalathilum",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:50:56",
+          "offset_seconds": 3056,
+          "composition_id": "emani_ne",
+          "raga_id": "mukhari",
+          "tala": "adi",
+          "composer_id": "subbaraya_sastri",
+          "display_title": "Emani Ne",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:07:10",
+          "offset_seconds": 4030,
+          "composition_id": "seethavara_sangeetha",
+          "raga_id": "devagandhari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Seethavara Sangeetha",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:13:30",
+          "offset_seconds": 4410,
+          "composition_id": "sri_rajagopala",
+          "raga_id": "saveri",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Sri Rajagopala",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:28:56",
+          "offset_seconds": 5336,
+          "composition_id": "vachamagocharundani",
+          "raga_id": "atana",
+          "tala": "adi",
+          "composer_id": "mysore_sadasiva_rao",
+          "display_title": "Vachama Gocharuduni",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:35:27",
+          "offset_seconds": 5727,
+          "composition_id": "kuvalayakshiro",
+          "raga_id": "gowlipantu",
+          "tala": "misra_chapu",
+          "composer_id": "kshetrayya",
+          "display_title": "Kuvalayakshiro",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:44:05",
+          "offset_seconds": 6245,
+          "composition_id": "neyyamuna",
+          "raga_id": "ghanta",
+          "tala": "jhampa",
+          "composer_id": "kurainadu_natesa_pillai",
+          "display_title": "Neyyamuna",
+          "notes": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:51:36",
+          "offset_seconds": 6696,
+          "composition_id": "adiyokka_yugamu",
+          "raga_id": "kambhoji",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Adiyokka Yugamu",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:03:57",
+          "offset_seconds": 7437,
+          "composition_id": "adhi_nipai_marulu",
+          "raga_id": "yamuna_kalyani",
+          "tala": "deshadi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Adhi Nipai Marulu",
+          "notes": null
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:07:43",
+          "offset_seconds": 7663,
+          "composition_id": "sakhi_prana",
+          "raga_id": "senchurutti",
+          "tala": "adi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Sakhi Prana",
+          "notes": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:12:27",
+          "offset_seconds": 7947,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Viruttam \u2014 Ragamalika",
+          "notes": "ragamalika; ragas: Varali, Sahana, Neelambari"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:18:35",
+          "offset_seconds": 8315,
+          "composition_id": "mamava_pattabhirama",
+          "raga_id": "manirangu",
+          "tala": "misra_ekam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Mamava Pattabhi Rama",
+          "notes": null
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:23:07",
+          "offset_seconds": 8587,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku",
+          "notes": "mangalam"
+        }
+      ]
+    }
+  ]
+}
