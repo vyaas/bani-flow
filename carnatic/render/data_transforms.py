@@ -269,7 +269,10 @@ def build_listenable_set(
         node_id = node["id"]
         for yt in node.get("youtube", []):
             if yt.get("kind") == "lecdem":
-                continue                  # lecdems do not feed listenable set (ADR-078)
+                # ADR-078: lecdems do NOT propagate listenable to performers/accompanists.
+                # But the lecturer (host node) IS listenable — they have content on their panel.
+                listenable.add(node_id)
+                continue
             for mid in _track_performer_ids(node_id, yt):
                 listenable.add(mid)
 
