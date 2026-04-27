@@ -442,9 +442,9 @@
         "label": "CR Mani Iyer",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/C._R._Mani_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
+            "url": "https://crmaniiyer.weebly.com/",
+            "label": "Tribute site — Palghat C. R. Mani Iyer",
+            "type": "tribute"
           }
         ],
         "born": 1930,
@@ -476,7 +476,7 @@
         "label": "Dharmapuri Subbaraya Iyer",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer",
+            "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbarayar",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -534,7 +534,7 @@
         "label": "Dwijendralal Roy",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Dwijendralal_Roy",
+            "url": "https://en.wikipedia.org/wiki/Dwijendralal_Ray",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -653,9 +653,9 @@
         "label": "Govindasvamy Ayya",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Govindasami_Ayya",
-            "label": "Wikipedia",
-            "type": "wikipedia"
+            "url": "https://www.sruti.com/articles/spotlight/jatiswaram-swarajati-varnam-a-chronological-perspective",
+            "label": "Sruti — Jatiswaram Swarajati Varnam (mentions Govindasamayya)",
+            "type": "article"
           }
         ],
         "born": null,
@@ -670,8 +670,8 @@
         "label": "HP Ramachar",
         "sources": [
           {
-            "url": "https://www.karnatik.com/biog182.shtml",
-            "label": "Karnatik.com",
+            "url": "https://www.sruti.com/artist/morsing-an-uncommon-instrument-and-a-remarkable-legacy1749115747",
+            "label": "Sruti — Morsing: an Uncommon Instrument",
             "type": "article"
           }
         ],
@@ -690,11 +690,6 @@
             "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
             "label": "Wikipedia",
             "type": "wikipedia"
-          },
-          {
-            "url": "https://www.sruti.com/artist/hyderabad-brothers",
-            "label": "Sruti — artist profile",
-            "type": "article"
           }
         ],
         "born": null,
@@ -841,9 +836,9 @@
         "label": "KM Vaidhyanathan",
         "sources": [
           {
-            "url": "https://www.karnatik.com/biog179.shtml",
-            "label": "Karnatik.com",
-            "type": "article"
+            "url": "https://kmvmusic.blogspot.com/2014/12/my-father-ghatam-kmv.html",
+            "label": "Family bio — K. M. Vaidhyanathan (ghatam)",
+            "type": "biographical"
           }
         ],
         "born": null,
@@ -858,7 +853,7 @@
         "label": "Harikesanallur Koteeswara Iyer",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Harikesanallur_Koteeswara_Iyer",
+            "url": "https://en.wikipedia.org/wiki/Koteeswara_Iyer",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -909,9 +904,9 @@
         "label": "Kumara Ettendra",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Kumara_Ettendra",
-            "label": "Wikipedia",
-            "type": "wikipedia"
+            "url": "https://guruguha.org/a-tribute-to-a-munificent-benefactor/",
+            "label": "GuruGuha.org — Tribute to Kumara Ettendra (Ettayapuram)",
+            "type": "scholarly"
           }
         ],
         "born": null,
@@ -1777,9 +1772,9 @@
         "label": "Lalgudi Srimathi Brahmananda",
         "sources": [
           {
-            "url": "https://www.sruti.com/artist/interview",
-            "label": "Sruti — Senior Musician award interview",
-            "type": "article"
+            "url": "https://dhvaniohio.org/wp-content/uploads/2012/12/interview.pdf",
+            "label": "Sruti interview PDF (archived via Dhvani Ohio)",
+            "type": "interview"
           }
         ],
         "born": null,
@@ -1811,7 +1806,7 @@
         "label": "Maanambuchaavadi Venkatasubbaiyer",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Maanambuchaavadi_Venkatasubba_Iyer",
+            "url": "https://en.wikipedia.org/wiki/Manambuchavadi_Venkatasubbayyar",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -2099,11 +2094,6 @@
             "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
             "label": "Wikipedia",
             "type": "wikipedia"
-          },
-          {
-            "url": "https://en.wikipedia.org/wiki/Harikesanallur_Muthiah_Bhagavathar",
-            "label": "Wikipedia",
-            "type": "wikipedia"
           }
         ],
         "born": 1877,
@@ -2261,7 +2251,7 @@
         "label": "Pacchimiriyam Adiapayya",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Pacchimiriyam_Adiyappayya",
+            "url": "https://en.wikipedia.org/wiki/Pacchimiriam_Adiyappa",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -2414,7 +2404,7 @@
         "label": "Periyasami Tooran",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Periyasami_Tooran",
+            "url": "https://en.wikipedia.org/wiki/Periyasaamy_Thooran",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -2465,9 +2455,9 @@
         "label": "R. Ramesh",
         "sources": [
           {
-            "url": "https://www.karnatik.com/biog184.shtml",
-            "label": "Karnatik.com",
-            "type": "article"
+            "url": "https://www.chennaievent.com/artist-view.php?artist_id=1998",
+            "label": "Chennai Events bio — R. Ramesh (mridangist)",
+            "type": "biographical"
           }
         ],
         "born": null,
@@ -2596,11 +2586,6 @@
             "url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
             "label": "Wikipedia",
             "type": "wikipedia"
-          },
-          {
-            "url": "https://dhvaniohio.org/wp-content/uploads/2012/06/Ramnad_Krishnan.pdf",
-            "label": "Dhvani Ohio — biography",
-            "type": "pdf"
           }
         ],
         "born": 1918,
@@ -3304,11 +3289,6 @@
             "url": "https://en.wikipedia.org/wiki/S._Sowmya",
             "label": "Wikipedia",
             "type": "wikipedia"
-          },
-          {
-            "url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
-            "label": "Vaak magazine — profile",
-            "type": "article"
           }
         ],
         "born": 1969,
@@ -3400,7 +3380,7 @@
         "label": "Sarangapani",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Sarangapani_(poet)",
+            "url": "https://en.wikipedia.org/wiki/Sarangapani",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -3666,9 +3646,9 @@
         "label": "Soundar Rajan",
         "sources": [
           {
-            "url": "https://www.karnatik.com/biog183.shtml",
-            "label": "Karnatik.com",
-            "type": "article"
+            "url": "https://en.wikipedia.org/wiki/T._M._Soundararajan",
+            "label": "Wikipedia — T. M. Soundararajan (identity uncertain; confirm subject)",
+            "type": "wikipedia"
           }
         ],
         "born": null,
@@ -3883,9 +3863,9 @@
         "label": "Subbarama Iyer",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Subbarama_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
+            "url": "https://www.karnatik.com/co1056.shtml",
+            "label": "karnatik.com — Vaideeshwarankoyil Subbaraama Aiyyar",
+            "type": "karnatik"
           }
         ],
         "born": null,
@@ -4043,9 +4023,9 @@
         "label": "T Kesavulu",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/T_Kesavulu",
-            "label": "Wikipedia",
-            "type": "wikipedia"
+            "url": "https://www.rasikas.org/forums/viewtopic.php?t=18713",
+            "label": "Rasikas forum — possible Bobbili Kesavayya? (identity unverified)",
+            "type": "forum"
           }
         ],
         "born": null,
@@ -4142,9 +4122,9 @@
         "label": "Tanjavur S. Krishnamurthy Rao",
         "sources": [
           {
-            "url": "https://www.karnatik.com/biog178.shtml",
-            "label": "Karnatik.com",
-            "type": "article"
+            "url": "https://arginase.wordpress.com/2012/03/21/first-post-on-music-palghat-mani-iyer/",
+            "label": "Blog mention — Tanjavur S. Krishnamurthy Rao (Palghat Mani Iyer post)",
+            "type": "mention"
           }
         ],
         "born": null,
@@ -4159,9 +4139,9 @@
         "label": "Tarangampadi Panchanada Iyer",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Tarangambadi_Panchanada_Iyer",
-            "label": "Wikipedia",
-            "type": "wikipedia"
+            "url": "https://www.karnatik.com/co1049.shtml",
+            "label": "karnatik.com — Tarangampadi Panchanada Iyer",
+            "type": "karnatik"
           }
         ],
         "born": null,
@@ -4210,9 +4190,9 @@
         "label": "Thiruvallur Subramaniam",
         "sources": [
           {
-            "url": "https://www.karnatik.com/biog181.shtml",
-            "label": "Karnatik.com",
-            "type": "article"
+            "url": "https://www.parrikar.org/carnatic/kalyani/",
+            "label": "Parrikar — Kalyani essay (mentions Thiruvallur Subramaniam)",
+            "type": "mention"
           }
         ],
         "born": null,
@@ -4958,9 +4938,9 @@
         "label": "TM Prabhavathi",
         "sources": [
           {
-            "url": "https://www.karnatik.com/biog180.shtml",
-            "label": "Karnatik.com",
-            "type": "article"
+            "url": "http://www.carnaticcorner.com/articles/mlv.html",
+            "label": "Carnatic Corner — MLV article (mentions T. M. Prabhavathi)",
+            "type": "mention"
           }
         ],
         "born": null,
@@ -5147,7 +5127,7 @@
         "label": "Veenai Kuppayyar",
         "sources": [
           {
-            "url": "https://en.wikipedia.org/wiki/Veenai_Kuppayyar",
+            "url": "https://en.wikipedia.org/wiki/Veena_Kuppayyar",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -5214,11 +5194,6 @@
         "id": "voleti_venkateshwarlu",
         "label": "Voleti Venkateshwarlu",
         "sources": [
-          {
-            "url": "https://www.carnaticheritage.in/singers/profile/3",
-            "label": "Carnatic Heritage — singer profile",
-            "type": "article"
-          },
           {
             "url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/",
             "label": "eAmbalam — Legends Series no. 3 (compiled by Sashi Kulkarni & T.V. Ramprasadh)",
