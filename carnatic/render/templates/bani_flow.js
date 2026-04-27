@@ -1016,7 +1016,7 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
   }
   if (labelText) {
     const labelDiv = document.createElement('div');
-    labelDiv.className = 'tree-leaf-label';
+    labelDiv.className = 'yt-label-chip';
     labelDiv.textContent = labelText;
     li.appendChild(labelDiv);
   }

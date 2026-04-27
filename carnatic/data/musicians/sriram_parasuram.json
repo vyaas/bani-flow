@@ -144,6 +144,33 @@
           "timestamp": "02:26:33"
         }
       ]
+    },
+    {
+      "url": "https://youtu.be/Cxc1ifILi5Y",
+      "label": "Gamakas re-imagined",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "sriraga",
+          "begada",
+          "gowlipantu",
+          "nata",
+          "bhairavi",
+          "mayamalavagowla"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://youtu.be/J1ifDRJL1Wo",
+      "label": "Raga - A Design Idea",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }

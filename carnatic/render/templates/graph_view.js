@@ -713,7 +713,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
         bracketHasMatch = true;
         return;
       }
-      const titleText        = (li.querySelector('.rec-title')     || {}).textContent || '';
+      const titleText        = (li.querySelector('.yt-label-chip')  || {}).textContent || '';
       const compChipText     = (li.querySelector('.comp-chip')     || {}).textContent || '';
       const ragaChipText     = (li.querySelector('.raga-chip')     || {}).textContent || '';
       const metaText         = (li.querySelector('.rec-meta')      || {}).textContent || '';
@@ -757,7 +757,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
         return;
       }
       const compText  = (node.querySelector('.comp-chip')     || {}).textContent || '';
-      const titleText = (node.querySelector('.rec-title')     || {}).textContent || '';
+      const titleText = (node.querySelector('.yt-label-chip')  || {}).textContent || '';
       const composerText = (node.querySelector('.composer-chip') || {}).textContent || '';
       // Also search inside recording leaves (year / concert title)
       const recText   = node.querySelector('.tree-rec-list')
@@ -784,7 +784,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
   // ── legacy flat items (ADR-064: now folded into raga tree; kept for safety) ─
   recList.querySelectorAll('li.rec-legacy').forEach(li => {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    const titleText        = (li.querySelector('.rec-title')     || {}).textContent || '';
+    const titleText        = (li.querySelector('.yt-label-chip')  || {}).textContent || '';
     const compChipText     = (li.querySelector('.comp-chip')     || {}).textContent || '';
     const ragaChipText     = (li.querySelector('.raga-chip')     || {}).textContent || '';
     const composerChipText = (li.querySelector('.composer-chip') || {}).textContent || '';
@@ -807,7 +807,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
           subsecHasMatch = true;
           return;
         }
-        const labelText    = (li.querySelector('.lecdem-label')    || {}).textContent || '';
+        const labelText    = (li.querySelector('.yt-label-chip')   || {}).textContent || '';
         const subjectsText = (li.querySelector('.lecdem-subjects')  || {}).textContent || '';
         const matches = [labelText, subjectsText].some(t => t.toLowerCase().includes(q));
         li.style.display = matches ? '' : 'none';

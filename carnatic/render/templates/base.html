@@ -36,6 +36,10 @@
     --lecdem-text:     #e8def3;
     --lecdem-glyph:    #c9b6e0;
     --lecdem-hover-bg: #352a40;
+    /* YouTube/recording label chip — neutral, legible, distinct from colored chips */
+    --yt-label-bg:     color-mix(in srgb, var(--border-strong, #555) 10%, transparent);
+    --yt-label-border: var(--border-strong, #666);
+    --yt-label-text:   var(--fg-sub, #bbb);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -576,7 +580,8 @@
     display: flex; flex-direction: column; gap: 2px;
   }
   .concert-perf-item:last-child { border-bottom: none; }
-  .concert-perf-item.playing .rec-title { color: var(--accent-sub); }
+  .concert-perf-item.playing .rec-title,
+  .concert-perf-item.playing .yt-label-chip { color: var(--accent-sub); }
 
   /* ── legacy flat items ── */
   li.rec-legacy {
@@ -587,7 +592,8 @@
     line-height: 1.4;
   }
   li.rec-legacy:last-child { border-bottom: none; }
-  li.rec-legacy.playing .rec-title { color: var(--accent-sub); }
+  li.rec-legacy.playing .rec-title,
+  li.rec-legacy.playing .yt-label-chip { color: var(--accent-sub); }
 
   .rec-row1 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
   .rec-title {
@@ -1619,6 +1625,27 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 4px;
+  }
+
+  /* ── YouTube/recording label chip: neutral bordered chip, distinct from
+     colored raga/comp/musician chips. Used wherever a YouTube video label
+     appears: panel listings, lecdem rows, trail leaves, player footer.  ── */
+  .yt-label-chip {
+    display: inline-block;
+    padding: var(--chip-padding-primary, 2px 8px);
+    font-size: var(--chip-size-primary, 0.74rem);
+    font-weight: normal;
+    border: var(--chip-border-width, 1px) solid var(--yt-label-border);
+    border-radius: var(--chip-border-radius, 4px);
+    background: var(--yt-label-bg);
+    color: var(--yt-label-text);
+    white-space: normal;
+    vertical-align: middle;
+    line-height: 1.35;
+    word-break: break-word;
+    max-width: 100%;
+    align-self: flex-start;   /* don't stretch full width in flex-column containers */
+    margin-top: 5px;          /* visual separation from raga/comp chips above */
   }
 
   /* ── ADR-101: Segment timeline ─────────────────────────────────────── */

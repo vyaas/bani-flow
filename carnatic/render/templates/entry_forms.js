@@ -4035,20 +4035,6 @@ function buildAddMusicianForm({ prefill = null } = {}) {
   footer.appendChild(bundleBtn);
   footer.appendChild(previewBtn);
 
-  // In edit mode: provide a direct shortcut to add a YouTube link for this musician.
-  if (isEdit && prefill && prefill.id) {
-    const youtubeBtn = document.createElement('button');
-    youtubeBtn.type = 'button';
-    youtubeBtn.className = 'ef-preview-btn';
-    youtubeBtn.textContent = '+ Add YouTube link';
-    youtubeBtn.title = 'Add a YouTube recording for this musician';
-    youtubeBtn.addEventListener('click', () => {
-      win.remove();
-      buildAddYouTubeToMusicianForm(prefill.id);
-    });
-    footer.appendChild(youtubeBtn);
-  }
-
   // ── Helpers ───────────────────────────────────────────
   function collectEdges(musId) {
     const edges = [];
@@ -4231,6 +4217,161 @@ function buildMusicianRecordingsForm() { return buildAddMusicianForm(); }
 // Called from the + chip on the MUSICIAN ♫ panel header.
 function openAddMusicianForm() {
   buildAddMusicianForm();
+}
+
+// ── Focused YouTube entry form ─────────────────────────────────────────────────
+// Called from the + chip on the "By Raga" section header. Opens a clean modal
+// pre-locked to a specific musician — no musician-selection step, no new-musician
+// baggage. Reuses addYoutubeBlock() for field composition with full dropdowns,
+// composition→raga auto-fill, year, tala, and accompanists.
+
+function buildFocusedYouTubeForm(musicianId) {
+  const node = (graphData.nodes || []).find(n => n.id === musicianId);
+  const label = node ? (node.label || musicianId) : musicianId;
+
+  const win  = createEntryWindow('Add YouTube Recordings');
+  const body = win.querySelector('.ew-body');
+
+  // ── Musician identity row (read-only) ──────────────────────────────────────
+  const musRow = document.createElement('div');
+  musRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
+  const musLabel = document.createElement('span');
+  musLabel.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
+  musLabel.textContent = 'Musician';
+  const musChip = document.createElement('span');
+  musChip.className = 'musician-chip';
+  if (node) {
+    const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(node.era || null) : { bg: '', border: '' };
+    musChip.style.setProperty('--chip-era-bg', tint.bg);
+    musChip.style.setProperty('--chip-era-border', tint.border);
+    if (node.instrument && typeof makeInstrBadge === 'function') {
+      musChip.appendChild(makeInstrBadge(node.instrument));
+    }
+    musChip.appendChild(document.createTextNode(label));
+  } else {
+    musChip.textContent = label;
+  }
+  musRow.appendChild(musLabel);
+  musRow.appendChild(musChip);
+  body.appendChild(musRow);
+
+  // ── YouTube entries ────────────────────────────────────────────────────────
+  body.appendChild(efSection('YouTube Entries'));
+  const ytContainer = document.createElement('div');
+  ytContainer.id = 'efy_youtube';
+  body.appendChild(ytContainer);
+
+  // Auto-open the first block so the user can start typing immediately.
+  addYoutubeBlock(ytContainer, win);
+
+  const addAnotherBtn = efAddBtn('+ Add another video');
+  addAnotherBtn.addEventListener('click', () => addYoutubeBlock(ytContainer, win));
+  body.appendChild(addAnotherBtn);
+
+  // ── Footer ─────────────────────────────────────────────────────────────────
+  const footer = win.querySelector('.ew-footer');
+
+  const bundleBtn = document.createElement('button');
+  bundleBtn.className  = 'ef-download-btn';
+  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.disabled   = true;
+
+  const dlBtn = document.createElement('button');
+  dlBtn.className  = 'ef-preview-btn';
+  dlBtn.textContent = '⬇ Standalone JSON';
+  dlBtn.disabled   = true;
+
+  const previewBtn = document.createElement('button');
+  previewBtn.className  = 'ef-preview-btn';
+  previewBtn.textContent = 'Preview JSON';
+
+  const previewPre = document.createElement('pre');
+  previewPre.className = 'ef-preview-pre';
+  body.appendChild(previewPre);
+
+  footer.appendChild(bundleBtn);
+  footer.appendChild(dlBtn);
+  footer.appendChild(previewBtn);
+
+  // ── JSON builder ───────────────────────────────────────────────────────────
+  function collectYoutube() {
+    const entries = [];
+    const hostNode_ = (graphData.nodes || []).find(n => n.id === musicianId);
+    const hostInstrument = hostNode_ ? hostNode_.instrument : 'vocal';
+    win.querySelectorAll('#efy_youtube .ef-youtube-block').forEach(block => {
+      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const url      = inputs[0] ? inputs[0].value.trim() : '';
+      const lbl      = inputs[1] ? inputs[1].value.trim() : '';
+      const year     = inputs[2] ? inputs[2].value        : '';
+      const version  = inputs[3] ? inputs[3].value.trim() : '';
+      const tala     = inputs[4] ? inputs[4].value.trim() : '';
+      const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
+      const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
+      const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
+      if (!url) return;
+      const entry = { url, label: lbl };
+      if (compId)  entry.composition_id = compId;
+      if (ragaId)  entry.raga_id        = ragaId;
+      if (year)    entry.year           = parseInt(year, 10);
+      if (version) entry.version        = version;
+      if (tala)    entry.tala           = tala;
+      const performers = (typeof collectYoutubePerformers === 'function')
+        ? collectYoutubePerformers(block, musicianId, hostInstrument)
+        : null;
+      if (performers) entry.performers = performers;
+      if (isLecdem) {
+        entry.kind     = 'lecdem';
+        entry.subjects = (typeof collectLecdemSubjects === 'function') ? collectLecdemSubjects(block) : {};
+      }
+      entries.push(entry);
+    });
+    return entries;
+  }
+
+  function buildBundleItem() {
+    return { type: 'youtube_append', musician_id: musicianId, youtube: collectYoutube() };
+  }
+
+  function updateButtons() {
+    const hasEntries = win.querySelectorAll('#efy_youtube .ef-youtube-block').length > 0;
+    bundleBtn.disabled = !hasEntries;
+    dlBtn.disabled     = !hasEntries;
+  }
+
+  win.addEventListener('input', updateButtons);
+
+  previewBtn.addEventListener('click', () => {
+    previewPre.textContent = JSON.stringify(buildBundleItem(), null, 2);
+  });
+
+  dlBtn.addEventListener('click', () => {
+    const data = buildBundleItem();
+    if (!data.youtube.length) return;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'youtube_' + musicianId + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  bundleBtn.addEventListener('click', () => {
+    const data = buildBundleItem();
+    if (!data.youtube.length) return;
+    if (typeof addToBundle === 'function') {
+      addToBundle('musicians', { op: 'append', id: musicianId, array: 'youtube', value: data.youtube });
+      bundleBtn.disabled = true;
+      bundleBtn.textContent = '✓ Added';
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Bundle'; }, 2000);
+    }
+  });
+
+  return win;
+}
+
+// Called from the + chip on the "By Raga" section header in the musician panel.
+function openAddYouTubeToMusicianForm(musicianId) {
+  buildFocusedYouTubeForm(musicianId);
 }
 
 // Called from the ✎ chip beside the selected musician's name.

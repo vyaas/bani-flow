@@ -346,10 +346,9 @@ function buildPlayerFooter(meta) {
     if (composerChip) footer.appendChild(composerChip);
 
   } else if (displayTitle) {
-    // ── Non-composition fallback label (small font, like rec-title in panels) ──
+    // ── Non-composition fallback label — yt-label-chip style ──
     const lbl = document.createElement('span');
-    lbl.className = 'rec-title';
-    lbl.style.fontSize = '0.68rem';
+    lbl.className = 'yt-label-chip';
     lbl.textContent = displayTitle;
     footer.appendChild(lbl);
   }
@@ -835,7 +834,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         row1.appendChild(compChip);
       } else {
         const titleEl = document.createElement('span');
-        titleEl.className = 'rec-title';
+        titleEl.className = 'yt-label-chip';
         const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[p.type] || '';
         titleEl.textContent = typeIcon + (p.display_title || '');
         row1.appendChild(titleEl);
@@ -970,7 +969,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     compHeader.appendChild(compChip);
   } else {
     const titleSpan = document.createElement('span');
-    titleSpan.className = 'tree-unmatched-title';
+    titleSpan.className = 'yt-label-chip';
     titleSpan.textContent = (sortedPerfs[0] && sortedPerfs[0].display_title) || 'Unknown composition';
     titleSpan.title = (sortedPerfs[0] && sortedPerfs[0].display_title) || '';
     compHeader.appendChild(titleSpan);
@@ -1215,7 +1214,7 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
   } else {
     const labelText = p.display_title || p.short_title || p.title || 'Untitled';
     const labelSpan = document.createElement('span');
-    labelSpan.className = 'tree-unmatched-title';
+    labelSpan.className = 'yt-label-chip';
     labelSpan.textContent = labelText;
     labelSpan.title = labelText;
     chipsDiv.appendChild(labelSpan);
@@ -1300,7 +1299,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     row.className = 'trail-row2';
 
     const labelSpan = document.createElement('span');
-    labelSpan.className = 'lecdem-label';
+    labelSpan.className = 'yt-label-chip';
     labelSpan.textContent = ref.label || 'Lecture-Demo';
     labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
     row.appendChild(labelSpan);
@@ -1476,7 +1475,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
       row1.appendChild(compChip);
     } else {
       const titleEl = document.createElement('span');
-      titleEl.className = 'rec-title';
+      titleEl.className = 'yt-label-chip';
       titleEl.textContent = seg.display_title || seg.kind || 'Segment';
       row1.appendChild(titleEl);
     }
@@ -1735,8 +1734,22 @@ function buildRecordingsList(nodeId, nodeData) {
   const allPerfs = [...structuredPerfs, ...normalizedLegacy];
   // Header always rendered so all sections are visible for every musician.
   const ragaHeader = document.createElement('div');
-  ragaHeader.className = 'rec-section-header';
-  ragaHeader.textContent = 'By raga (' + allPerfs.length + ')';
+  ragaHeader.className = 'rec-section-header-row';
+  const ragaHeaderLabel = document.createElement('span');
+  ragaHeaderLabel.textContent = 'By raga (' + allPerfs.length + ')';
+  ragaHeader.appendChild(ragaHeaderLabel);
+  const ragaAddChip = document.createElement('button');
+  ragaAddChip.type = 'button';
+  ragaAddChip.className = 'co-add-chip';
+  ragaAddChip.textContent = '+';
+  ragaAddChip.title = 'Add YouTube recording for ' + artistLabel;
+  ragaAddChip.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (typeof openAddYouTubeToMusicianForm === 'function') {
+      openAddYouTubeToMusicianForm(nodeId);
+    }
+  });
+  ragaHeader.appendChild(ragaAddChip);
   recList.appendChild(ragaHeader);
   if (allPerfs.length > 0) {
     recList.appendChild(buildRagaTree(allPerfs, nodeId, artistLabel));
