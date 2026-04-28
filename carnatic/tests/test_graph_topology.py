@@ -44,6 +44,11 @@ def test_edge_confidence_in_range(graph: CarnaticGraph) -> None:
 _KNOWN_ISOLATES: frozenset[str] = frozenset({
     "muthuswami_dikshitar",  # Trinity composer-node; no guru-shishya edges yet
     "a_kanyakumari",         # Violinist; no edges or recordings yet
+    # ADR-114 §5: Hindustani musicians intentionally have no guru-shishya edges.
+    # They are isolated until HER recordings are added via add-her-recording.
+    "nikhil_banerjee",       # Sitar; Hindustani; no recordings yet
+    "hariprasad_chaurasia",  # Bansuri; Hindustani; no recordings yet
+    "ajoy_chakrabarty",      # Vocal; Hindustani; no recordings yet
 })
 
 
