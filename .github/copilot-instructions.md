@@ -42,7 +42,9 @@ python3 carnatic/cli.py validate
 python3 carnatic/cli.py stats
 ```
 
-**Render gate**: `bani-render` must run after any data change before CLI queries or the browser reflect it.
+**Render gate**: `bani-render` must run after any data change **and after every `git pull`** before CLI queries or the browser reflect it.
+
+> `carnatic/graph.html` and `carnatic/data/graph.json` are gitignored generated artifacts — they are never committed. CI/CD regenerates them for deployment. Always regenerate locally with `bani-render` after pulling.
 
 ---
 

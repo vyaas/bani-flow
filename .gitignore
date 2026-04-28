@@ -39,9 +39,10 @@ htmlcov/
 # Wikipedia page cache — large, reproducible, not worth tracking
 carnatic/data/cache/
 
-# graph.html is a derived artefact; track it so the repo is self-contained
-# (comment out the line below if you prefer not to commit it)
-# carnatic/graph.html
+# Generated artifacts — rebuilt by bani-render; CI/CD regenerates before deploy.
+# Run `bani-render` after every `git pull` to reconstruct locally.
+carnatic/graph.html
+carnatic/data/graph.json
 carnatic/data/recordings.json.bak
 
 # playlist_meta.py output — generated, not tracked
