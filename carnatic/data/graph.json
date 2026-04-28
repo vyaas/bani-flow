@@ -13260,6 +13260,20 @@
         "notes": "Padam by Sarangapani in Ananda Bhairavi; Rupakam tala; part of the Sarangapani padam tradition"
       },
       {
+        "id": "pavanathmaja",
+        "title": "Pavanathmaja",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "nata",
+        "tala": "khanda_capu",
+        "sources": [
+          {
+            "url": "https://www.shivkumar.org/music/pavanatmaja-nata-dikshitar.htm",
+            "label": "shivkumar.org",
+            "type": "article"
+          }
+        ]
+      },
+      {
         "id": "pusadaramu",
         "title": "Pusadaramu",
         "composer_id": "govindasvamy_ayya",
@@ -13292,6 +13306,20 @@
             "url": "https://www.karnatik.com/c2765.shtml",
             "label": "Karnatik.com",
             "type": "article"
+          }
+        ]
+      },
+      {
+        "id": "raghuvamsa_sudha",
+        "title": "Raghuvamsha Sudha",
+        "composer_id": "patnam_subramanya_iyer",
+        "raga_id": "kathanakuthuhalam",
+        "tala": "adi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Raghuvamsha_Sudha",
+            "label": "Wikipedia",
+            "type": "wikipedia"
           }
         ]
       },

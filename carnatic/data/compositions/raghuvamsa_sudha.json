@@ -1,0 +1,14 @@
+{
+  "id": "raghuvamsa_sudha",
+  "title": "Raghuvamsha Sudha",
+  "composer_id": "patnam_subramanya_iyer",
+  "raga_id": "kathanakuthuhalam",
+  "tala": "adi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Raghuvamsha_Sudha",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}
