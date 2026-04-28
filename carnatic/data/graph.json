@@ -12516,23 +12516,14 @@
             "url": "https://en.wikipedia.org/wiki/Jambu_Pathe_Mam_Pahi",
             "label": "Wikipedia",
             "type": "wikipedia"
-          }
-        ],
-        "notes": "Muthuswami Dikshitar kriti in Yamuna Kalyani raga. Pancha Bhuta Stalas series (water element)."
-      },
-      {
-        "id": "jambupathe_mam_pahi",
-        "title": "Jambupathe Mam Pahi",
-        "composer_id": "muthuswami_dikshitar",
-        "raga_id": "yamuna_kalyani",
-        "tala": "tisra ekam",
-        "sources": [
+          },
           {
             "url": "https://www.karnatik.com/c5725.shtml",
             "label": "Karnatik.com",
             "type": "article"
           }
-        ]
+        ],
+        "notes": "Muthuswami Dikshitar kriti in Yamuna Kalyani raga. Pancha Bhuta Stalas series (water element). Tala listed as tisra ekam in some sources (e.g. Karnatik.com) and Adi in others."
       },
       {
         "id": "janani_ninnuvina",
