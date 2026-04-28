@@ -12,6 +12,9 @@
   "died": null,
   "era": "disseminator",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": null,
   "youtube": []
 }

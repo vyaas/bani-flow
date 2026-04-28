@@ -12,6 +12,9 @@
   "died": 1950,
   "era": "golden_age",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": null,
   "youtube": []
 }

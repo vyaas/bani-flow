@@ -12,6 +12,9 @@
   "died": 1835,
   "era": "trinity",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "dikshitar",
   "youtube": []
 }

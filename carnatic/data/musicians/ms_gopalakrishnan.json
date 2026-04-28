@@ -12,6 +12,9 @@
   "died": 2013,
   "era": "living_pillars",
   "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": null,
   "youtube": []
 }

@@ -12,6 +12,9 @@
   "died": 1908,
   "era": "bridge",
   "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "lalgudi",
   "youtube": []
 }

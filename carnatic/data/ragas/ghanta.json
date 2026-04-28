@@ -1,6 +1,7 @@
 {
   "id": "ghanta",
   "name": "Ghanta",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": null,
   "parent_raga": "natabhairavi",

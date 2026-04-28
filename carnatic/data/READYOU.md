@@ -72,6 +72,15 @@ python3 carnatic/write_cli.py add-musician \
     --id <id> --label <label> --era <era> --instrument <inst> \
     --source-url <url> --source-label <label> --source-type <type> \
     [--born <year>] [--died <year>] [--bani <bani>]
+# traditions defaults to ["carnatic"]; use add-hindustani-musician for Hindustani musicians
+
+# ADR-114: add a Hindustani musician
+python3 carnatic/write_cli.py add-hindustani-musician \
+    --id <id> --label <label> --instrument <instr> \
+    --source-url <url> --source-label <label> --source-type <type> \
+    [--born <year>] [--died <year>] [--era <era>] \
+    [--also-carnatic]   # sets traditions:["carnatic","hindustani"]
+    [--force]           # overwrite existing file
 
 python3 carnatic/write_cli.py patch-musician \
     --id <id> --field <field> --value <value>
@@ -162,8 +171,9 @@ python3 carnatic/write_cli.py add-composition \
 | `sources` | array | ≥1 source object; Wikipedia first |
 | `born` / `died` | int \| null | year only |
 | `era` | enum | `trinity` · `bridge` · `golden_age` · `disseminator` · `living_pillars` · `contemporary` |
-| `instrument` | enum | `vocal` · `veena` · `violin` · `flute` · `mridangam` · `bharatanatyam` · `ghatam` · `other` |
-| `bani` | string \| null | stylistic school / lineage label |
+| `instrument` | enum | Carnatic: `vocal` · `veena` · `violin` · `flute` · `mridangam` · `bharatanatyam` · `ghatam` · `khanjira` · `other`<br>Hindustani (ADR-114): `sitar` · `sarod` · `bansuri` · `tabla` · `sarangi` · `surbahar`<br>Unknown values are accepted with a WARNING. |
+| `traditions` | array | `["carnatic"]` (default for all pre-existing nodes) · `["hindustani"]` · `["carnatic","hindustani"]` (cross-tradition). Absent field is treated as `["carnatic"]` for backward compat. |
+| `bani` | string \| null | stylistic school / lineage label; always `null` for Hindustani-only musicians |
 | `youtube` | array | may be `[]`; `composition_id`, `raga_id`, `year`, `version`, `performers` all optional |
 
 **Source object:** `{ "url": "…", "label": "…", "type": "wikipedia"|"pdf"|"article"|"archive"|"other" }`

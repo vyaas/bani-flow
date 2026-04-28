@@ -7,6 +7,7 @@ Validates: no self-loops, no duplicate edges, no isolated nodes
 
 import pytest
 from carnatic.graph_api import CarnaticGraph
+from carnatic.writer import VALID_INSTRUMENTS
 
 
 def test_no_self_loops(graph: CarnaticGraph) -> None:
@@ -43,6 +44,11 @@ def test_edge_confidence_in_range(graph: CarnaticGraph) -> None:
 _KNOWN_ISOLATES: frozenset[str] = frozenset({
     "muthuswami_dikshitar",  # Trinity composer-node; no guru-shishya edges yet
     "a_kanyakumari",         # Violinist; no edges or recordings yet
+    # ADR-114 §5: Hindustani musicians intentionally have no guru-shishya edges.
+    # They are isolated until HER recordings are added via add-her-recording.
+    "nikhil_banerjee",       # Sitar; Hindustani; no recordings yet
+    "hariprasad_chaurasia",  # Bansuri; Hindustani; no recordings yet
+    "ajoy_chakrabarty",      # Vocal; Hindustani; no recordings yet
 })
 
 
@@ -122,10 +128,10 @@ def test_all_eras_are_known(graph: CarnaticGraph) -> None:
 
 
 def test_all_instruments_are_known(graph: CarnaticGraph) -> None:
-    """Every musician node must use a recognised instrument value (null allowed for composers, ADR-110)."""
-    known_instruments = {
-        None, "vocal", "veena", "violin", "flute", "mridangam", "bharatanatyam",
-    }
+    """Every musician node must use a recognised instrument value (null allowed for composers, ADR-110).
+    ADR-114 expanded the vocabulary — uses VALID_INSTRUMENTS from writer.py as the source of truth.
+    """
+    known_instruments = VALID_INSTRUMENTS | {None}
     for node in graph.get_all_musicians():
         instr = node.get("instrument")
         assert instr in known_instruments, (

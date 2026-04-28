@@ -1,0 +1,22 @@
+{
+  "id": "malkauns",
+  "name": "Malkauns",
+  "tradition": "hindustani",
+  "aliases": [
+    "Malkosh",
+    "Malkoshi"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "bhairavi",
+  "carnatic_equivalents": [],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Malkauns",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "One of the oldest and most revered Hindustani ragas; pentatonic (S g M d n); same swara set as Carnatic Hindolam; typically rendered vilambit with deep meditative character; associated with the Bhairavi thaat."
+}

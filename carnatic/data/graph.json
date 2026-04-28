@@ -16,6 +16,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -33,6 +36,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -49,6 +55,26 @@
         ]
       },
       {
+        "id": "ajoy_chakrabarty",
+        "label": "Ajoy Chakrabarty",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ajoy_Chakrabarty",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1953,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "traditions": [
+          "hindustani"
+        ],
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "akkarai_subbulakshmi",
         "label": "Akkarai Subbulakshmi",
         "sources": [
@@ -62,6 +88,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -79,6 +108,9 @@
         "died": 1980,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": [
           {
@@ -103,6 +135,9 @@
         "died": 1958,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -120,6 +155,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dikshitar",
         "youtube": []
       },
@@ -137,6 +175,9 @@
         "died": 2004,
         "era": "living_pillars",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -154,6 +195,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -171,6 +215,9 @@
         "died": 1503,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -188,6 +235,9 @@
         "died": null,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -205,6 +255,9 @@
         "died": 1967,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "ariyakudi",
         "youtube": []
       },
@@ -222,6 +275,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": [
           {
@@ -261,6 +317,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -278,6 +337,9 @@
         "died": 1500,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -295,6 +357,9 @@
         "died": 2009,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "ariyakudi",
         "youtube": []
       },
@@ -312,6 +377,9 @@
         "died": 2016,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -342,6 +410,9 @@
         "died": 1167,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -359,6 +430,9 @@
         "died": 1688,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -376,6 +450,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -393,6 +470,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": [
           {
@@ -417,6 +497,9 @@
         "died": 1999,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -434,6 +517,9 @@
         "died": 1994,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -451,6 +537,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -468,6 +557,9 @@
         "died": 1856,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -485,6 +577,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palani",
         "youtube": []
       },
@@ -502,6 +597,9 @@
         "died": 2009,
         "era": "living_pillars",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": []
       },
@@ -519,6 +617,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palani",
         "youtube": []
       },
@@ -536,6 +637,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "muthiah",
         "youtube": []
       },
@@ -553,6 +657,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -570,6 +677,9 @@
         "died": 1908,
         "era": "living_pillars",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -587,6 +697,9 @@
         "died": 2014,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -604,6 +717,9 @@
         "died": 2009,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -628,6 +744,9 @@
         "died": 1975,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -645,6 +764,9 @@
         "died": 1913,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -662,6 +784,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -679,6 +804,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -696,6 +824,9 @@
         "died": 1856,
         "era": "golden_age",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -713,6 +844,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": []
       },
@@ -730,6 +864,9 @@
         "died": 1965,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "gnb",
         "youtube": []
       },
@@ -747,6 +884,9 @@
         "died": 1896,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -764,6 +904,29 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "hariprasad_chaurasia",
+        "label": "Hariprasad Chaurasia",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Hariprasad_Chaurasia",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1938,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "bansuri",
+        "traditions": [
+          "hindustani"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -781,6 +944,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "khanjira",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -798,6 +964,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": [
           {
@@ -828,6 +997,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -845,6 +1017,9 @@
         "died": 1974,
         "era": "living_pillars",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -862,6 +1037,9 @@
         "died": 1967,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -879,6 +1057,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -896,6 +1077,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -913,6 +1097,9 @@
         "died": 1609,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -930,6 +1117,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -947,6 +1137,9 @@
         "died": 1945,
         "era": "golden_age",
         "instrument": "bharatanatyam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -964,6 +1157,9 @@
         "died": 1901,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -981,6 +1177,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "ghatam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -998,6 +1197,9 @@
         "died": 1936,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -1015,6 +1217,9 @@
         "died": null,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -1032,6 +1237,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -1049,6 +1257,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -1066,6 +1277,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -1083,6 +1297,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -1100,6 +1317,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -1117,6 +1337,9 @@
         "died": 2002,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "ariyakudi",
         "youtube": [
           {
@@ -1147,6 +1370,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": [
           {
@@ -1875,6 +2101,9 @@
         "died": 1970,
         "era": "bridge",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": []
       },
@@ -1892,6 +2121,9 @@
         "died": 2013,
         "era": "disseminator",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": [
           {
@@ -1934,6 +2166,9 @@
         "died": 1867,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -1951,6 +2186,9 @@
         "died": null,
         "era": "disseminator",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": []
       },
@@ -1968,6 +2206,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": []
       },
@@ -1985,6 +2226,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -2002,6 +2246,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -2019,6 +2266,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2036,6 +2286,9 @@
         "died": 1862,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -2053,6 +2306,9 @@
         "died": 1968,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "madurai",
         "youtube": [
           {
@@ -2099,6 +2355,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2116,6 +2375,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -2133,6 +2395,9 @@
         "died": 1893,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -2150,6 +2415,9 @@
         "died": 1992,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": [
           {
@@ -2174,6 +2442,9 @@
         "died": 1970,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -2191,6 +2462,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "musiri",
         "youtube": []
       },
@@ -2208,6 +2482,9 @@
         "died": 1984,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tiger_varadachariar",
         "youtube": [
           {
@@ -2260,6 +2537,9 @@
         "died": 1990,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "gnb",
         "youtube": [
           {
@@ -2284,6 +2564,9 @@
         "died": 2013,
         "era": "living_pillars",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2301,6 +2584,9 @@
         "died": 2004,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": [
           {
@@ -2331,6 +2617,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2348,6 +2637,9 @@
         "died": 1975,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": [
           {
@@ -2372,6 +2664,9 @@
         "died": 1945,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "muthiah",
         "youtube": []
       },
@@ -2389,6 +2684,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2406,6 +2704,9 @@
         "died": 1835,
         "era": "trinity",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dikshitar",
         "youtube": []
       },
@@ -2423,6 +2724,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2440,6 +2744,9 @@
         "died": 1961,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2457,6 +2764,9 @@
         "died": 2019,
         "era": "living_pillars",
         "instrument": "flute",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mali",
         "youtube": []
       },
@@ -2474,6 +2784,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2491,6 +2804,29 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "nikhil_banerjee",
+        "label": "Nikhil Banerjee",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Nikhil_Banerjee",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1931,
+        "died": 1986,
+        "era": "golden_age",
+        "instrument": "sitar",
+        "traditions": [
+          "hindustani"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2508,6 +2844,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -2532,6 +2871,9 @@
         "died": 1765,
         "era": "golden_age",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2549,6 +2891,9 @@
         "died": 1821,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2566,6 +2911,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -2583,6 +2931,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palani",
         "youtube": []
       },
@@ -2600,6 +2951,9 @@
         "died": 1962,
         "era": "golden_age",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palani",
         "youtube": []
       },
@@ -2617,6 +2971,9 @@
         "died": 1981,
         "era": "living_pillars",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palghat",
         "youtube": []
       },
@@ -2634,6 +2991,9 @@
         "died": 2009,
         "era": "living_pillars",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palghat",
         "youtube": []
       },
@@ -2651,6 +3011,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palghat",
         "youtube": []
       },
@@ -2668,6 +3031,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2685,6 +3051,9 @@
         "died": 1973,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2702,6 +3071,9 @@
         "died": 1946,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -2719,6 +3091,9 @@
         "died": 1974,
         "era": "golden_age",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2736,6 +3111,9 @@
         "died": 1902,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -2753,6 +3131,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2770,6 +3151,9 @@
         "died": 1975,
         "era": "living_pillars",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2787,6 +3171,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2804,6 +3191,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "semmangudi",
         "youtube": []
       },
@@ -2821,6 +3211,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "pudukottai",
         "youtube": []
       },
@@ -2838,6 +3231,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "pudukottai",
         "youtube": []
       },
@@ -2855,6 +3251,9 @@
         "died": 1564,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2872,6 +3271,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2889,6 +3291,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -2913,6 +3318,9 @@
         "died": 1941,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -2930,6 +3338,9 @@
         "died": 2018,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -2947,6 +3358,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "veena",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": [
           {
@@ -2977,6 +3391,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -3000,6 +3417,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -3017,6 +3437,9 @@
         "died": 1973,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "semmangudi",
         "youtube": [
           {
@@ -3581,6 +4004,9 @@
         "died": 2009,
         "era": "disseminator",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -3598,6 +4024,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -3615,6 +4044,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -3645,6 +4077,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "vina_dhanammal",
         "youtube": [
           {
@@ -3675,6 +4110,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -3692,6 +4130,9 @@
         "died": null,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -3709,6 +4150,9 @@
         "died": 2000,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tiger_varadachariar",
         "youtube": []
       },
@@ -3726,6 +4170,9 @@
         "died": 1988,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -3743,6 +4190,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": [
           {
@@ -3767,6 +4217,9 @@
         "died": 1889,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -3784,6 +4237,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "semmangudi",
         "youtube": [
           {
@@ -3825,6 +4281,9 @@
         "died": 1296,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -3842,6 +4301,9 @@
         "died": 1724,
         "era": "golden_age",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -3859,6 +4321,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": [
           {
@@ -3891,6 +4356,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": [
           {
@@ -4053,6 +4521,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -4070,6 +4541,9 @@
         "died": 2003,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "semmangudi",
         "youtube": [
           {
@@ -4106,6 +4580,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4123,6 +4600,9 @@
         "died": 1985,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tiger_varadachariar",
         "youtube": []
       },
@@ -4140,6 +4620,9 @@
         "died": 1827,
         "era": "trinity",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "shyama_shastri",
         "youtube": []
       },
@@ -4157,6 +4640,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4174,6 +4660,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4191,6 +4680,9 @@
         "died": 2013,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -4208,6 +4700,10 @@
         "died": null,
         "era": "contemporary",
         "instrument": "violin",
+        "traditions": [
+          "carnatic",
+          "hindustani"
+        ],
         "bani": null,
         "youtube": [
           {
@@ -4393,6 +4889,9 @@
         "died": 1906,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4410,6 +4909,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4427,6 +4929,9 @@
         "died": 1876,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "shyama_shastri",
         "youtube": []
       },
@@ -4444,6 +4949,9 @@
         "died": 1921,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4461,6 +4969,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "gnb",
         "youtube": [
           {
@@ -4485,6 +4996,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -4502,6 +5016,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4519,6 +5036,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "flute",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "swaminatha_pillai",
         "youtube": []
       },
@@ -4536,6 +5056,9 @@
         "died": 1846,
         "era": "bridge",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4553,6 +5076,9 @@
         "died": 1984,
         "era": "disseminator",
         "instrument": "bharatanatyam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -4570,6 +5096,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": [
           {
@@ -4604,6 +5133,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4621,6 +5153,9 @@
         "died": 2007,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -4638,6 +5173,9 @@
         "died": 1943,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4655,6 +5193,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "Madurai Mani Iyer",
         "youtube": [
           {
@@ -4679,6 +5220,9 @@
         "died": 2002,
         "era": "living_pillars",
         "instrument": "flute",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": [
           {
@@ -4703,6 +5247,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4720,6 +5267,9 @@
         "died": 1947,
         "era": "golden_age",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tanjore",
         "youtube": []
       },
@@ -4737,6 +5287,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4754,6 +5307,9 @@
         "died": null,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4771,6 +5327,9 @@
         "died": 1744,
         "era": "golden_age",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4788,6 +5347,9 @@
         "died": null,
         "era": "golden_age",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4805,6 +5367,9 @@
         "died": 1950,
         "era": "golden_age",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4822,6 +5387,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "gottuvadyam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4839,6 +5407,9 @@
         "died": 1917,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -4856,6 +5427,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "musiri",
         "youtube": []
       },
@@ -4873,6 +5447,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "semmangudi",
         "youtube": [
           {
@@ -5587,6 +6164,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5604,6 +6184,9 @@
         "died": 2023,
         "era": "living_pillars",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "semmangudi",
         "youtube": [
           {
@@ -5634,6 +6217,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "muthiah",
         "youtube": []
       },
@@ -5651,6 +6237,9 @@
         "died": null,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5668,6 +6257,9 @@
         "died": null,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "gnb",
         "youtube": []
       },
@@ -5685,6 +6277,9 @@
         "died": 1986,
         "era": "disseminator",
         "instrument": "flute",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mali",
         "youtube": [
           {
@@ -5708,6 +6303,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -5725,6 +6323,9 @@
         "died": 1650,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5742,6 +6343,9 @@
         "died": 1623,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5759,6 +6363,9 @@
         "died": 1847,
         "era": "trinity",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -5776,6 +6383,9 @@
         "died": 1981,
         "era": "golden_age",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5793,6 +6403,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "palghat",
         "youtube": []
       },
@@ -5810,6 +6423,9 @@
         "died": null,
         "era": "bridge",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "tyagaraja",
         "youtube": []
       },
@@ -5827,6 +6443,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5844,6 +6463,9 @@
         "died": 1908,
         "era": "bridge",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "lalgudi",
         "youtube": []
       },
@@ -5861,6 +6483,9 @@
         "died": null,
         "era": "disseminator",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5878,6 +6503,9 @@
         "died": 1860,
         "era": "golden_age",
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5895,6 +6523,9 @@
         "died": null,
         "era": "contemporary",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -5912,6 +6543,9 @@
         "died": 2012,
         "era": "golden_age",
         "instrument": "mridangam",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "mixed",
         "youtube": []
       },
@@ -5929,6 +6563,9 @@
         "died": 1938,
         "era": "bridge",
         "instrument": "veena",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "dhanammal",
         "youtube": []
       },
@@ -5946,6 +6583,9 @@
         "died": 1989,
         "era": "living_pillars",
         "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": "pinakapani",
         "youtube": [
           {
@@ -5970,6 +6610,9 @@
         "died": null,
         "era": "living_pillars",
         "instrument": "violin",
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       },
@@ -5987,6 +6630,9 @@
         "died": 1539,
         "era": null,
         "instrument": null,
+        "traditions": [
+          "carnatic"
+        ],
         "bani": null,
         "youtube": []
       }
@@ -6865,6 +7511,7 @@
       {
         "id": "abheri",
         "name": "Abheri",
+        "tradition": "carnatic",
         "aliases": [
           "Aberi"
         ],
@@ -6883,6 +7530,7 @@
       {
         "id": "abhogi",
         "name": "Abhogi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "harikambhoji",
@@ -6898,6 +7546,7 @@
       {
         "id": "ahiri",
         "name": "Ahiri",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "natabhairavi",
@@ -6914,6 +7563,7 @@
       {
         "id": "amritavarshini",
         "name": "Amritavarshini",
+        "tradition": "carnatic",
         "aliases": [
           "Amrithavarshini",
           "Amrutavarshini",
@@ -6932,6 +7582,7 @@
       {
         "id": "ananda_bhairavi",
         "name": "Ananda Bhairavi",
+        "tradition": "carnatic",
         "aliases": [
           "Anandabhairavi"
         ],
@@ -6950,6 +7601,7 @@
       {
         "id": "andolika",
         "name": "Andolika",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -6964,6 +7616,7 @@
       {
         "id": "arabhi",
         "name": "Arabhi",
+        "tradition": "carnatic",
         "aliases": [
           "Arabi",
           "Aarabhi"
@@ -6983,6 +7636,7 @@
       {
         "id": "atana",
         "name": "Atana",
+        "tradition": "carnatic",
         "aliases": [
           "Adana"
         ],
@@ -7001,6 +7655,7 @@
       {
         "id": "bageshri",
         "name": "Bageshri",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -7015,6 +7670,7 @@
       {
         "id": "bahudari",
         "name": "Bahudari",
+        "tradition": "carnatic",
         "aliases": [
           "Bahudhāri"
         ],
@@ -7033,6 +7689,7 @@
       {
         "id": "balahamsa",
         "name": "Balahamsa",
+        "tradition": "carnatic",
         "aliases": [
           "Bala Hamsa"
         ],
@@ -7051,6 +7708,7 @@
       {
         "id": "begada",
         "name": "Begada",
+        "tradition": "carnatic",
         "aliases": [
           "Vegada"
         ],
@@ -7069,6 +7727,7 @@
       {
         "id": "behag",
         "name": "Behag",
+        "tradition": "carnatic",
         "aliases": [
           "Bilahari Behag"
         ],
@@ -7087,6 +7746,7 @@
       {
         "id": "bhairavi",
         "name": "Bhairavi",
+        "tradition": "carnatic",
         "aliases": [
           "Carnatic Bhairavi"
         ],
@@ -7105,6 +7765,7 @@
       {
         "id": "bhavapriya",
         "name": "Bhavapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 44,
         "is_melakarta": true,
@@ -7122,6 +7783,7 @@
       {
         "id": "bilahari",
         "name": "Bilahari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "shankarabharanam",
@@ -7138,6 +7800,7 @@
       {
         "id": "bindumalini",
         "name": "Bindumalini",
+        "tradition": "carnatic",
         "aliases": [
           "Bindu Malini"
         ],
@@ -7155,6 +7818,7 @@
       {
         "id": "brindavana_saranga",
         "name": "Brindavana saranga",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -7169,6 +7833,7 @@
       {
         "id": "chakravakam",
         "name": "Chakravakam",
+        "tradition": "carnatic",
         "aliases": [
           "Chakravaham",
           "Chakravaka"
@@ -7189,6 +7854,7 @@
       {
         "id": "chalanata",
         "name": "Chalanāṭa",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 36,
         "is_melakarta": true,
@@ -7206,6 +7872,7 @@
       {
         "id": "charukesi",
         "name": "Chārukesi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 26,
         "is_melakarta": true,
@@ -7223,6 +7890,7 @@
       {
         "id": "chitharanjani",
         "name": "Chitharanjani",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -7237,6 +7905,7 @@
       {
         "id": "chitrambari",
         "name": "Chitrāmbari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 66,
         "is_melakarta": true,
@@ -7254,6 +7923,7 @@
       {
         "id": "darbar",
         "name": "Darbar",
+        "tradition": "carnatic",
         "aliases": [
           "Darbaru",
           "Darbar (Carnatic)"
@@ -7273,6 +7943,7 @@
       {
         "id": "darbari_kanada",
         "name": "Darbari Kanada",
+        "tradition": "carnatic",
         "aliases": [
           "Darbari",
           "Darbari Kannada"
@@ -7292,6 +7963,7 @@
       {
         "id": "devagandhari",
         "name": "Devagandhari",
+        "tradition": "carnatic",
         "aliases": [
           "Deva Gandhari"
         ],
@@ -7310,6 +7982,7 @@
       {
         "id": "devamanohari",
         "name": "Devamanohari",
+        "tradition": "carnatic",
         "aliases": [
           "Deva Manohari"
         ],
@@ -7328,6 +8001,7 @@
       {
         "id": "devamritavarshini",
         "name": "Devamritavarshini",
+        "tradition": "carnatic",
         "aliases": [
           "Deva Amrita Varshini",
           "dEvaamrutavarshani",
@@ -7348,6 +8022,7 @@
       {
         "id": "dhanashree",
         "name": "Dhanashree",
+        "tradition": "carnatic",
         "aliases": [
           "Dhanasri"
         ],
@@ -7365,6 +8040,7 @@
       {
         "id": "dhanyasi",
         "name": "Dhanyasi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "thodi",
@@ -7380,6 +8056,7 @@
       {
         "id": "dharmavati",
         "name": "Dharmavati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 59,
         "is_melakarta": true,
@@ -7397,6 +8074,7 @@
       {
         "id": "dhathuvardhani",
         "name": "Dhāthuvardhani",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 69,
         "is_melakarta": true,
@@ -7414,6 +8092,7 @@
       {
         "id": "dhavalambari",
         "name": "Dhavaḻāmbari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 49,
         "is_melakarta": true,
@@ -7431,6 +8110,7 @@
       {
         "id": "dhenuka",
         "name": "Dhenuka",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 9,
         "parent_raga": null,
@@ -7448,6 +8128,7 @@
       {
         "id": "divyamani",
         "name": "Divyamaṇi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 48,
         "is_melakarta": true,
@@ -7465,6 +8146,7 @@
       {
         "id": "dwijavanthi",
         "name": "Dwijavanthi",
+        "tradition": "carnatic",
         "aliases": [
           "Dvijāvanti",
           "Dwijawanthi"
@@ -7484,6 +8166,7 @@
       {
         "id": "gamanashrama",
         "name": "Gamanashrama",
+        "tradition": "carnatic",
         "aliases": [
           "Gamanasrama",
           "Shyamalangi"
@@ -7504,6 +8187,7 @@
       {
         "id": "gambhira_nattai",
         "name": "Gambhira Nattai",
+        "tradition": "carnatic",
         "aliases": [
           "Gambhiranattai"
         ],
@@ -7522,6 +8206,7 @@
       {
         "id": "ganamurti",
         "name": "Gānamūrti",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 3,
         "is_melakarta": true,
@@ -7539,6 +8224,7 @@
       {
         "id": "gangeyabhusani",
         "name": "Gāngeyabhuśani",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 33,
         "is_melakarta": true,
@@ -7556,6 +8242,7 @@
       {
         "id": "gavambhodi",
         "name": "Gavāmbhodi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 43,
         "is_melakarta": true,
@@ -7573,6 +8260,7 @@
       {
         "id": "gayakapriya",
         "name": "Gāyakapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 13,
         "is_melakarta": true,
@@ -7590,6 +8278,7 @@
       {
         "id": "ghanta",
         "name": "Ghanta",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "natabhairavi",
@@ -7605,6 +8294,7 @@
       {
         "id": "gowla",
         "name": "Gowla",
+        "tradition": "carnatic",
         "aliases": [
           "Gaula"
         ],
@@ -7623,6 +8313,7 @@
       {
         "id": "gowlipantu",
         "name": "Gowlipantu",
+        "tradition": "carnatic",
         "aliases": [
           "Gaulipantu",
           "Goulipantu",
@@ -7643,6 +8334,7 @@
       {
         "id": "gowrimanohari",
         "name": "Gowrimanohari",
+        "tradition": "carnatic",
         "aliases": [
           "Gauri Manohari"
         ],
@@ -7662,6 +8354,7 @@
       {
         "id": "gundakriya",
         "name": "Gundakriya",
+        "tradition": "carnatic",
         "aliases": [
           "Gundakri"
         ],
@@ -7680,6 +8373,7 @@
       {
         "id": "hamir_kalyani",
         "name": "Hamir Kalyani",
+        "tradition": "carnatic",
         "aliases": [
           "Hameer Kalyani",
           "Hamirkalyani"
@@ -7699,6 +8393,7 @@
       {
         "id": "hamsadhwani",
         "name": "Hamsadhwani",
+        "tradition": "carnatic",
         "aliases": [
           "Hansadhwani",
           "Hamsadhvani"
@@ -7718,6 +8413,7 @@
       {
         "id": "hamsanadam",
         "name": "Hamsanadam",
+        "tradition": "carnatic",
         "aliases": [
           "Hamsa Nadam"
         ],
@@ -7736,6 +8432,7 @@
       {
         "id": "harikambhoji",
         "name": "Harikambhoji",
+        "tradition": "carnatic",
         "aliases": [
           "Hari Kambhoji"
         ],
@@ -7755,6 +8452,7 @@
       {
         "id": "hatakambari",
         "name": "Hātakāmbari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 18,
         "is_melakarta": true,
@@ -7772,6 +8470,7 @@
       {
         "id": "hemavati",
         "name": "Hemavati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 58,
         "is_melakarta": true,
@@ -7787,8 +8486,30 @@
         "notes": "58th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₂ N₂ Ṡ"
       },
       {
+        "id": "hindolam",
+        "name": "Hindolam",
+        "tradition": "carnatic",
+        "aliases": [
+          "Hindola"
+        ],
+        "melakarta": null,
+        "parent_raga": "natabhairavi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Hindolam",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Pentatonic janya of Natabhairavi (Mela 20). Swaras: S G2 M1 D1 N2. Shares its swara set with Hindustani Malkauns. Brisk, kriti-driven character in Carnatic performance.",
+        "hindustani_equivalents": [
+          "malkauns"
+        ]
+      },
+      {
         "id": "huseni",
         "name": "Huseni",
+        "tradition": "carnatic",
         "aliases": [
           "Hussaini",
           "Husaini"
@@ -7808,6 +8529,7 @@
       {
         "id": "ishamanohari",
         "name": "Ishamanohari",
+        "tradition": "carnatic",
         "aliases": [
           "Isha Manohari"
         ],
@@ -7826,6 +8548,7 @@
       {
         "id": "jalarnavam",
         "name": "Jalārnavam",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 38,
         "is_melakarta": true,
@@ -7843,6 +8566,7 @@
       {
         "id": "janaranjani",
         "name": "Janaranjani",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "is_melakarta": false,
@@ -7860,6 +8584,7 @@
       {
         "id": "jayamanohari",
         "name": "Jayamanohari",
+        "tradition": "carnatic",
         "aliases": [
           "Jaya Manohari"
         ],
@@ -7878,6 +8603,7 @@
       {
         "id": "jayantasena",
         "name": "Jayantasena",
+        "tradition": "carnatic",
         "aliases": [
           "jayantasEna"
         ],
@@ -7901,6 +8627,7 @@
       {
         "id": "jhalavarali",
         "name": "Jhalavarali",
+        "tradition": "carnatic",
         "aliases": [
           "Jalavarali",
           "Jhālavarāḷi"
@@ -7921,6 +8648,7 @@
       {
         "id": "jhankaradhvani",
         "name": "Jhankāradhvani",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 19,
         "is_melakarta": true,
@@ -7938,6 +8666,7 @@
       {
         "id": "jonepuri",
         "name": "Jonepuri",
+        "tradition": "carnatic",
         "aliases": [
           "Janapuri",
           "Jaunpuri"
@@ -7957,6 +8686,7 @@
       {
         "id": "jyoti_svarupini",
         "name": "Jyoti svarupini",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 68,
         "is_melakarta": true,
@@ -7974,6 +8704,7 @@
       {
         "id": "kaanada",
         "name": "Kaanada",
+        "tradition": "carnatic",
         "aliases": [
           "Kanada",
           "Kānada",
@@ -7994,6 +8725,7 @@
       {
         "id": "kalyani",
         "name": "Kalyani",
+        "tradition": "carnatic",
         "aliases": [
           "Yaman (Hindustani equivalent)"
         ],
@@ -8013,6 +8745,7 @@
       {
         "id": "kambhoji",
         "name": "Kambhoji",
+        "tradition": "carnatic",
         "aliases": [
           "Kambodhi"
         ],
@@ -8031,6 +8764,7 @@
       {
         "id": "kanakangi",
         "name": "Kanakāngi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 1,
         "is_melakarta": true,
@@ -8048,6 +8782,7 @@
       {
         "id": "kannada",
         "name": "Kannada",
+        "tradition": "carnatic",
         "aliases": [
           "Kannaḍā",
           "KaNNaDa"
@@ -8067,6 +8802,7 @@
       {
         "id": "kannada_gowla",
         "name": "Kannada Gowla",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "mayamalavagowla",
@@ -8083,6 +8819,7 @@
       {
         "id": "kantamani",
         "name": "Kāntāmaṇi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 61,
         "is_melakarta": true,
@@ -8100,6 +8837,7 @@
       {
         "id": "kapi",
         "name": "Kapi",
+        "tradition": "carnatic",
         "aliases": [
           "Kaapi"
         ],
@@ -8118,6 +8856,7 @@
       {
         "id": "kapinarayani",
         "name": "Kapinarayani",
+        "tradition": "carnatic",
         "aliases": [
           "Kapinarayana"
         ],
@@ -8134,6 +8873,7 @@
       {
         "id": "karnataka_behag",
         "name": "Karnataka Behag",
+        "tradition": "carnatic",
         "aliases": [
           "Behag"
         ],
@@ -8151,6 +8891,7 @@
       {
         "id": "karnataka_kapi",
         "name": "Karnataka Kapi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "harikambhoji",
@@ -8167,6 +8908,7 @@
       {
         "id": "kathanakuthuhalam",
         "name": "Kathanakuthuhalam",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "shankarabharanam",
@@ -8181,6 +8923,7 @@
       {
         "id": "kedaragaula",
         "name": "Kedaragaula",
+        "tradition": "carnatic",
         "aliases": [
           "Kedaragowla"
         ],
@@ -8198,6 +8941,7 @@
       {
         "id": "kedaram",
         "name": "Kedaram",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "harikambhoji",
@@ -8214,6 +8958,7 @@
       {
         "id": "keeravani",
         "name": "Keeravani",
+        "tradition": "carnatic",
         "aliases": [
           "Kiravani"
         ],
@@ -8233,6 +8978,7 @@
       {
         "id": "khamas",
         "name": "Khamas",
+        "tradition": "carnatic",
         "aliases": [
           "Kamas",
           "Kamaas"
@@ -8252,6 +8998,7 @@
       {
         "id": "kharaharapriya",
         "name": "Kharaharapriya",
+        "tradition": "carnatic",
         "aliases": [
           "Kara Harapriya"
         ],
@@ -8271,6 +9018,7 @@
       {
         "id": "kokilapriya",
         "name": "Kokilapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 11,
         "is_melakarta": true,
@@ -8288,6 +9036,7 @@
       {
         "id": "kokilavarali",
         "name": "kokilavarali",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "harikambhoji",
@@ -8302,6 +9051,7 @@
       {
         "id": "kosalam",
         "name": "Kōsalam",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 71,
         "is_melakarta": true,
@@ -8319,6 +9069,7 @@
       {
         "id": "kuntalavarali",
         "name": "Kuntalavarali",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "is_melakarta": false,
@@ -8336,6 +9087,7 @@
       {
         "id": "kurinji",
         "name": "Kurinji",
+        "tradition": "carnatic",
         "aliases": [
           "Kurinjii"
         ],
@@ -8354,6 +9106,7 @@
       {
         "id": "lalitha",
         "name": "Lalitha",
+        "tradition": "carnatic",
         "aliases": [
           "Lalita"
         ],
@@ -8372,6 +9125,7 @@
       {
         "id": "latangi",
         "name": "Latāngi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 63,
         "is_melakarta": true,
@@ -8389,6 +9143,7 @@
       {
         "id": "madhava_manohari",
         "name": "Madhava Manohari",
+        "tradition": "carnatic",
         "aliases": [
           "Madavamanohari",
           "Madhavamanohari"
@@ -8405,8 +9160,31 @@
         "notes": "Janya of Mela 22 Kharaharapriya (Dikshitar's Asampoorna system: janya of Sriraga mela); vakra-sampoorna shadava raga. Only significant composition is Mahalakshmi Karunarasa Lahari by Dikshitar."
       },
       {
+        "id": "madhumad_sarang",
+        "name": "Madhumad Sarang",
+        "tradition": "hindustani",
+        "aliases": [
+          "Madhyamad Sarang",
+          "Madhusudan Sarang"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "is_melakarta": false,
+        "thaat": "kafi",
+        "carnatic_equivalents": [],
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Madhumad_Sarang",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Hindustani raga of the Sarang family; shares its swara set with Carnatic Madhyamavati; the Carnatic gamaka tradition makes them sound very different in performance."
+      },
+      {
         "id": "madhyamavati",
         "name": "Madhyamavati",
+        "tradition": "carnatic",
         "aliases": [
           "Madhyamavathi"
         ],
@@ -8420,11 +9198,15 @@
           }
         ],
         "notes": "Janya of Kharaharapriya (mela 22). Pentatonic (audava-audava) raga; uses S R2 M1 P N2. One of the most popular ragas in Carnatic music, frequently used for mangalam and tillanas.",
-        "is_melakarta": false
+        "is_melakarta": false,
+        "hindustani_equivalents": [
+          "madhumad_sarang"
+        ]
       },
       {
         "id": "malavi",
         "name": "Malavi",
+        "tradition": "carnatic",
         "aliases": [
           "Malavī"
         ],
@@ -8441,8 +9223,31 @@
         "is_melakarta": false
       },
       {
+        "id": "malkauns",
+        "name": "Malkauns",
+        "tradition": "hindustani",
+        "aliases": [
+          "Malkosh",
+          "Malkoshi"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "is_melakarta": false,
+        "thaat": "bhairavi",
+        "carnatic_equivalents": [],
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Malkauns",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "One of the oldest and most revered Hindustani ragas; pentatonic (S g M d n); same swara set as Carnatic Hindolam; typically rendered vilambit with deep meditative character; associated with the Bhairavi thaat."
+      },
+      {
         "id": "manavati",
         "name": "Mānavati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 5,
         "is_melakarta": true,
@@ -8460,6 +9265,7 @@
       {
         "id": "mandari",
         "name": "Mandari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": null,
@@ -8474,6 +9280,7 @@
       {
         "id": "manirangu",
         "name": "Manirangu",
+        "tradition": "carnatic",
         "aliases": [
           "maNirangu"
         ],
@@ -8492,6 +9299,7 @@
       {
         "id": "manji",
         "name": "Manji",
+        "tradition": "carnatic",
         "aliases": [
           "Maanji"
         ],
@@ -8510,6 +9318,7 @@
       {
         "id": "mararanjani",
         "name": "Māraranjani",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 25,
         "is_melakarta": true,
@@ -8527,6 +9336,7 @@
       {
         "id": "maund",
         "name": "Maund",
+        "tradition": "carnatic",
         "aliases": [
           "Mand"
         ],
@@ -8545,6 +9355,7 @@
       {
         "id": "mayamalavagowla",
         "name": "Mayamalavagowla",
+        "tradition": "carnatic",
         "aliases": [
           "Maya Malava Gowla",
           "Mayamalavagaula"
@@ -8565,6 +9376,7 @@
       {
         "id": "mohanam",
         "name": "Mohanam",
+        "tradition": "carnatic",
         "aliases": [
           "Mohana",
           "Bhupali (Hindustani equivalent)"
@@ -8584,6 +9396,7 @@
       {
         "id": "mukhari",
         "name": "Mukhari",
+        "tradition": "carnatic",
         "aliases": [
           "Moukhari"
         ],
@@ -8602,6 +9415,7 @@
       {
         "id": "nadanamakriya",
         "name": "Nadanamakriya",
+        "tradition": "carnatic",
         "aliases": [
           "Nada Namakriya"
         ],
@@ -8620,6 +9434,7 @@
       {
         "id": "nadatarangini",
         "name": "Nadatarangini",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -8634,6 +9449,7 @@
       {
         "id": "nagagandhari",
         "name": "Nagagandhari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "natabhairavi",
@@ -8649,6 +9465,7 @@
       {
         "id": "naganandini",
         "name": "Nāganandini",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 30,
         "is_melakarta": true,
@@ -8666,6 +9483,7 @@
       {
         "id": "nalinakanthi",
         "name": "Nalinakanthi",
+        "tradition": "carnatic",
         "aliases": [
           "Nalinakanti"
         ],
@@ -8684,6 +9502,7 @@
       {
         "id": "namanarayani",
         "name": "Nāmanārāyaṇi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 50,
         "is_melakarta": true,
@@ -8701,6 +9520,7 @@
       {
         "id": "narayanagowla",
         "name": "Narayanagowla",
+        "tradition": "carnatic",
         "aliases": [
           "Narayana Gowla",
           "Narayanagaula"
@@ -8720,6 +9540,7 @@
       {
         "id": "nasikabhusani",
         "name": "Nāsikābhūśaṇi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 70,
         "is_melakarta": true,
@@ -8737,6 +9558,7 @@
       {
         "id": "nata",
         "name": "Nattai",
+        "tradition": "carnatic",
         "aliases": [
           "Nata",
           "Ghana Nata"
@@ -8756,6 +9578,7 @@
       {
         "id": "natabhairavi",
         "name": "Natabhairavi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 20,
         "parent_raga": null,
@@ -8773,6 +9596,7 @@
       {
         "id": "natakapriya",
         "name": "Nātakapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 10,
         "is_melakarta": true,
@@ -8790,6 +9614,7 @@
       {
         "id": "nattakurinji",
         "name": "Nattakurinji",
+        "tradition": "carnatic",
         "aliases": [
           "Nata Kurinji",
           "Natakuranji"
@@ -8809,6 +9634,7 @@
       {
         "id": "navanitam",
         "name": "Navanītam",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 40,
         "is_melakarta": true,
@@ -8826,6 +9652,7 @@
       {
         "id": "nayaki",
         "name": "Nayaki",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "kharaharapriya",
@@ -8841,6 +9668,7 @@
       {
         "id": "neelambari",
         "name": "Neelambari",
+        "tradition": "carnatic",
         "aliases": [
           "Nilambari"
         ],
@@ -8859,6 +9687,7 @@
       {
         "id": "nitimati",
         "name": "Nītimati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 60,
         "is_melakarta": true,
@@ -8876,6 +9705,7 @@
       {
         "id": "padi",
         "name": "Padi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "mayamalavagowla",
@@ -8892,6 +9722,7 @@
       {
         "id": "pantuvarali",
         "name": "Pantuvarali",
+        "tradition": "carnatic",
         "aliases": [
           "Purvi Kalyani",
           "Kamavardani",
@@ -8913,6 +9744,7 @@
       {
         "id": "paras",
         "name": "Paras",
+        "tradition": "carnatic",
         "aliases": [
           "Paraju",
           "Paras Carnatic"
@@ -8931,6 +9763,7 @@
       {
         "id": "pavani",
         "name": "Pāvani",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 41,
         "is_melakarta": true,
@@ -8948,6 +9781,7 @@
       {
         "id": "poornashadjam",
         "name": "Poorna Shadjam",
+        "tradition": "carnatic",
         "aliases": [
           "Purna Shadja",
           "Purnashadjam",
@@ -8968,6 +9802,7 @@
       {
         "id": "poorvikalyani",
         "name": "Poorvikalyani",
+        "tradition": "carnatic",
         "aliases": [
           "Purvikalyani",
           "Poorvi Kalyani"
@@ -8987,6 +9822,7 @@
       {
         "id": "punnagavarali",
         "name": "Punnaga Varali",
+        "tradition": "carnatic",
         "aliases": [
           "Punnagavarali"
         ],
@@ -9005,6 +9841,7 @@
       {
         "id": "purnachandrika",
         "name": "Purnachandrika",
+        "tradition": "carnatic",
         "aliases": [
           "Poornachandrika",
           "Purna Chandrika"
@@ -9024,6 +9861,7 @@
       {
         "id": "purvi",
         "name": "Purvi",
+        "tradition": "carnatic",
         "aliases": [
           "Poorvi"
         ],
@@ -9042,6 +9880,7 @@
       {
         "id": "ragamalika",
         "name": "Ragamalika",
+        "tradition": "carnatic",
         "aliases": [
           "Ragamala"
         ],
@@ -9059,6 +9898,7 @@
       {
         "id": "ragavardhini",
         "name": "Rāgavardhini",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 32,
         "is_melakarta": true,
@@ -9076,6 +9916,7 @@
       {
         "id": "raghupriya",
         "name": "Raghupriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 42,
         "is_melakarta": true,
@@ -9093,6 +9934,7 @@
       {
         "id": "ramapriya",
         "name": "Rāmapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 52,
         "is_melakarta": true,
@@ -9110,6 +9952,7 @@
       {
         "id": "rasali",
         "name": "Rasali",
+        "tradition": "carnatic",
         "aliases": [
           "rasALi"
         ],
@@ -9127,6 +9970,7 @@
       {
         "id": "rasikapriya",
         "name": "Rasikapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 72,
         "is_melakarta": true,
@@ -9144,6 +9988,7 @@
       {
         "id": "ratnangi",
         "name": "Ratnāngi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 2,
         "is_melakarta": true,
@@ -9161,6 +10006,7 @@
       {
         "id": "ravichandrika",
         "name": "Ravichandrika",
+        "tradition": "carnatic",
         "aliases": [
           "Ravi Chandrika"
         ],
@@ -9179,6 +10025,7 @@
       {
         "id": "reetigowla",
         "name": "Reetigowla",
+        "tradition": "carnatic",
         "aliases": [
           "Ritigaula",
           "Reethigowla",
@@ -9199,6 +10046,7 @@
       {
         "id": "risabhapriya",
         "name": "Riśabhapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 62,
         "is_melakarta": true,
@@ -9216,6 +10064,7 @@
       {
         "id": "rudrapriya",
         "name": "Rudrapriya",
+        "tradition": "carnatic",
         "aliases": [
           "Rudhrapriya"
         ],
@@ -9232,6 +10081,7 @@
       {
         "id": "rupavati",
         "name": "Rūpavati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 12,
         "is_melakarta": true,
@@ -9249,6 +10099,7 @@
       {
         "id": "sahana",
         "name": "Sahana",
+        "tradition": "carnatic",
         "aliases": [
           "Sahanaa"
         ],
@@ -9267,6 +10118,7 @@
       {
         "id": "salagam",
         "name": "Sālagam",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 37,
         "is_melakarta": true,
@@ -9284,6 +10136,7 @@
       {
         "id": "sama",
         "name": "Sama",
+        "tradition": "carnatic",
         "aliases": [
           "Saama"
         ],
@@ -9302,6 +10155,7 @@
       {
         "id": "samalangi",
         "name": "Śāmaḻāngi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 55,
         "is_melakarta": true,
@@ -9319,6 +10173,7 @@
       {
         "id": "sanmukhapriya",
         "name": "Śanmukhapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 56,
         "is_melakarta": true,
@@ -9336,6 +10191,7 @@
       {
         "id": "saranga",
         "name": "Saranga",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "kalyani",
@@ -9351,6 +10207,7 @@
       {
         "id": "sarasangi",
         "name": "Sarasāngi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 27,
         "is_melakarta": true,
@@ -9368,6 +10225,7 @@
       {
         "id": "saveri",
         "name": "Saveri",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "mayamalavagowla",
@@ -9384,6 +10242,7 @@
       {
         "id": "senavati",
         "name": "Senāvati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 7,
         "is_melakarta": true,
@@ -9401,6 +10260,7 @@
       {
         "id": "senchurutti",
         "name": "Senchurutti",
+        "tradition": "carnatic",
         "aliases": [
           "Senjurutti",
           "Senjurutu"
@@ -9420,6 +10280,7 @@
       {
         "id": "shadvidamargini",
         "name": "Shaḍvidamārgini",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 46,
         "is_melakarta": true,
@@ -9437,6 +10298,7 @@
       {
         "id": "shankarabharanam",
         "name": "Shankarabharanam",
+        "tradition": "carnatic",
         "aliases": [
           "Dheerashankarabharanam"
         ],
@@ -9456,6 +10318,7 @@
       {
         "id": "shubapantuvarali",
         "name": "Shubapantuvarali",
+        "tradition": "carnatic",
         "aliases": [
           "Shubha Pantuvarali",
           "Cybele"
@@ -9473,8 +10336,30 @@
         "is_melakarta": false
       },
       {
+        "id": "shudh_bhairavi",
+        "name": "Shudh Bhairavi",
+        "tradition": "hindustani",
+        "aliases": [
+          "Shuddha Bhairavi"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "is_melakarta": false,
+        "thaat": "bhairavi",
+        "carnatic_equivalents": [],
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Bhairavi_(raga)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Hindustani Bhairavi raga; shares its swara set with Carnatic Thodi (Mela 8). One of the most popular Hindustani ragas; traditionally performed at the close of a concert."
+      },
+      {
         "id": "simhavahini",
         "name": "Simhavahini",
+        "tradition": "carnatic",
         "aliases": [
           "Simhavahana"
         ],
@@ -9493,6 +10378,7 @@
       {
         "id": "simhendramadhyamam",
         "name": "Simhendramadhyamam",
+        "tradition": "carnatic",
         "aliases": [
           "Simhendra Madhyamam"
         ],
@@ -9512,6 +10398,7 @@
       {
         "id": "sindhu_bhairavi",
         "name": "Sindhu Bhairavi",
+        "tradition": "carnatic",
         "aliases": [
           "Sindhubhairavi"
         ],
@@ -9530,6 +10417,7 @@
       {
         "id": "sindhu_kannada",
         "name": "Sindhu Kannada",
+        "tradition": "carnatic",
         "aliases": [
           "Sindhukannada",
           "Sindhu Kaanada"
@@ -9548,6 +10436,7 @@
       {
         "id": "sowrashtram",
         "name": "Sowrashtram",
+        "tradition": "carnatic",
         "aliases": [
           "Saurashtra",
           "Saurashtram"
@@ -9567,6 +10456,7 @@
       {
         "id": "sriraga",
         "name": "Sriraga",
+        "tradition": "carnatic",
         "aliases": [
           "Shree",
           "Sri",
@@ -9588,6 +10478,7 @@
       {
         "id": "sriranjini",
         "name": "Sriranjini",
+        "tradition": "carnatic",
         "aliases": [
           "Shree Ranjani",
           "Sreeranjani",
@@ -9608,6 +10499,7 @@
       {
         "id": "sruti_ranjani",
         "name": "Sruti Ranjani",
+        "tradition": "carnatic",
         "aliases": [
           "Shruti Ranjani"
         ],
@@ -9625,6 +10517,7 @@
       {
         "id": "subhapantuvarali",
         "name": "Śubhapantuvarāḷi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 45,
         "is_melakarta": true,
@@ -9642,6 +10535,7 @@
       {
         "id": "sucharitra",
         "name": "Sucharitrā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 67,
         "is_melakarta": true,
@@ -9659,6 +10553,7 @@
       {
         "id": "suddha_saveri",
         "name": "Suddha Saveri",
+        "tradition": "carnatic",
         "aliases": [
           "Sudha Saveri",
           "Shuddha Saveri"
@@ -9678,6 +10573,7 @@
       {
         "id": "sulini",
         "name": "Śūlini",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 35,
         "is_melakarta": true,
@@ -9695,6 +10591,7 @@
       {
         "id": "surutti",
         "name": "Surutti",
+        "tradition": "carnatic",
         "aliases": [
           "Suruti",
           "Surati"
@@ -9714,6 +10611,7 @@
       {
         "id": "suryakantam",
         "name": "Sūryakāntam",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 17,
         "is_melakarta": true,
@@ -9731,6 +10629,7 @@
       {
         "id": "suvarnangi",
         "name": "Suvarnāngi",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 47,
         "is_melakarta": true,
@@ -9748,6 +10647,7 @@
       {
         "id": "takka",
         "name": "takka",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "mayamalavagowla",
@@ -9762,6 +10662,7 @@
       {
         "id": "tanarupi",
         "name": "Tanarupi",
+        "tradition": "carnatic",
         "aliases": [
           "Tanaarupi"
         ],
@@ -9781,6 +10682,7 @@
       {
         "id": "thodi",
         "name": "Thodi",
+        "tradition": "carnatic",
         "aliases": [
           "Shubhapantuvarali",
           "Hanumatodi",
@@ -9798,11 +10700,15 @@
         ],
         "notes": "8th melakarta (Todi group). One of the most important ragas in Carnatic music. Deep emotive character, parent of many janya ragas.",
         "is_melakarta": true,
-        "cakra": 2
+        "cakra": 2,
+        "hindustani_equivalents": [
+          "shudh_bhairavi"
+        ]
       },
       {
         "id": "umaabharanam",
         "name": "Umaabharanam",
+        "tradition": "carnatic",
         "aliases": [
           "Uma Bharanam",
           "Umabharanam"
@@ -9822,6 +10728,7 @@
       {
         "id": "vachaspati",
         "name": "Vāchaspati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 64,
         "is_melakarta": true,
@@ -9839,6 +10746,7 @@
       {
         "id": "vagadhisvari",
         "name": "Vāgadhīśvari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 34,
         "is_melakarta": true,
@@ -9856,6 +10764,7 @@
       {
         "id": "vakulabharanam",
         "name": "Vakulabharanam",
+        "tradition": "carnatic",
         "aliases": [
           "Vakula Bharanam"
         ],
@@ -9875,6 +10784,7 @@
       {
         "id": "valaji",
         "name": "Valaji",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "chakravakam",
@@ -9890,6 +10800,7 @@
       {
         "id": "vanaspati",
         "name": "Vanaspati",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 4,
         "is_melakarta": true,
@@ -9907,6 +10818,7 @@
       {
         "id": "varali",
         "name": "Varali",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "jhalavarali",
@@ -9923,6 +10835,7 @@
       {
         "id": "varunapriya",
         "name": "Varuṇapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 24,
         "is_melakarta": true,
@@ -9940,6 +10853,7 @@
       {
         "id": "vasantha",
         "name": "Vasantha",
+        "tradition": "carnatic",
         "aliases": [
           "Vasanta",
           "Basanta"
@@ -9959,6 +10873,7 @@
       {
         "id": "vijayashree",
         "name": "vijayashree",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": null,
         "parent_raga": "suvarnangi",
@@ -9973,6 +10888,7 @@
       {
         "id": "vijayashri",
         "name": "Vijayashri",
+        "tradition": "carnatic",
         "aliases": [
           "Vijayasri",
           "Vijaya Shri"
@@ -9991,6 +10907,7 @@
       {
         "id": "visvambari",
         "name": "Viśvambari",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 54,
         "is_melakarta": true,
@@ -10008,6 +10925,7 @@
       {
         "id": "yadukulakamboji",
         "name": "Yadukulakamboji",
+        "tradition": "carnatic",
         "aliases": [
           "Yadukula Kambhoji",
           "Yadukulakhamboji",
@@ -10028,6 +10946,7 @@
       {
         "id": "yagapriya",
         "name": "Yāgapriyā",
+        "tradition": "carnatic",
         "aliases": [],
         "melakarta": 31,
         "is_melakarta": true,
@@ -10045,6 +10964,7 @@
       {
         "id": "yamuna_kalyani",
         "name": "Yamuna Kalyani",
+        "tradition": "carnatic",
         "aliases": [
           "Yamunakalyani",
           "Yaman Kalyani",

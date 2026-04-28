@@ -6,4 +6,7 @@
 window.YOUTUBE_KINDS = [
   'recital',
   'lecdem',
+  'raga_alap',
+  'concert',
+  'misc',
 ];

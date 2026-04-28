@@ -1,6 +1,7 @@
 {
   "id": "vanaspati",
   "name": "Vanaspati",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": 4,
   "is_melakarta": true,

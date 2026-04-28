@@ -12,6 +12,9 @@
   "died": null,
   "era": "golden_age",
   "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": null,
   "youtube": []
 }

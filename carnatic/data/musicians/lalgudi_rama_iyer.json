@@ -12,6 +12,9 @@
   "died": 1867,
   "era": "bridge",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "tyagaraja",
   "youtube": []
 }

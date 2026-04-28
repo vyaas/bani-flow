@@ -12,6 +12,9 @@
   "died": 1984,
   "era": "disseminator",
   "instrument": "bharatanatyam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "dhanammal",
   "youtube": []
 }

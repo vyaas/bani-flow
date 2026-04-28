@@ -147,22 +147,59 @@ def _process_ragas(
                 errors += 1
                 continue
             src = r.get("sources", [{}])[0] if r.get("sources") else {}
-            result = writer.add_raga(
-                comp_path,
-                id=r["id"],
-                name=r["name"],
-                source_url=src.get("url", ""),
-                source_label=src.get("label", ""),
-                source_type=src.get("type", "other"),
-                aliases=r.get("aliases"),
-                melakarta=r.get("melakarta"),
-                parent_raga=r.get("parent_raga"),
-                notes=r.get("notes"),
-                ragas_path=ragas_path,
-            )
+            # Route Hindustani ragas through add_her_raga to preserve thaat/HER fields
+            if r.get("tradition") == "hindustani":
+                result = writer.add_her_raga(
+                    comp_path,
+                    id=r["id"],
+                    name=r["name"],
+                    source_url=src.get("url", ""),
+                    source_label=src.get("label", ""),
+                    source_type=src.get("type", "other"),
+                    aliases=r.get("aliases"),
+                    thaat=r.get("thaat"),
+                    notes=r.get("notes"),
+                    ragas_path=ragas_path,
+                )
+            else:
+                result = writer.add_raga(
+                    comp_path,
+                    id=r["id"],
+                    name=r["name"],
+                    source_url=src.get("url", ""),
+                    source_label=src.get("label", ""),
+                    source_type=src.get("type", "other"),
+                    aliases=r.get("aliases"),
+                    melakarta=r.get("melakarta"),
+                    parent_raga=r.get("parent_raga"),
+                    notes=r.get("notes"),
+                    tradition=r.get("tradition", "carnatic"),
+                    ragas_path=ragas_path,
+                )
+
+        elif op == "append":
+            # ADR-115: append a value onto a raga array field (e.g. hindustani_equivalents).
+            raga_id = r.get("id")
+            field   = r.get("field")
+            value   = r.get("value")
+            if not raga_id or not field:
+                print(f"  ERROR  raga append missing 'id' or 'field': {r}")
+                errors += 1
+                continue
+            if field == "hindustani_equivalents":
+                result = writer.link_her(
+                    comp_path,
+                    carnatic_raga_id=raga_id,
+                    her_id=value,
+                    ragas_path=ragas_path,
+                )
+            else:
+                print(f"  ERROR  raga append: unsupported field '{field}'. Supported: hindustani_equivalents")
+                errors += 1
+                continue
 
         else:
-            print(f"  ERROR  raga item has unknown op '{op}'. Known ops: create, patch, annotate.")
+            print(f"  ERROR  raga item has unknown op '{op}'. Known ops: create, patch, annotate, append.")
             errors += 1
             continue
 

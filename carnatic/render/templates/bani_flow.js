@@ -109,6 +109,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   document.getElementById('bani-janyas-panel').style.display = 'none';
   document.getElementById('bani-janyas-list').innerHTML = '';
   document.getElementById('bani-janyas-filter').value = '';
+  // Reset HER row (ADR-113)
+  const _herRow = document.getElementById('bani-her-row');
+  if (_herRow) { _herRow.innerHTML = ''; _herRow.style.display = 'none'; }
+  const _herPrefix = document.getElementById('bani-her-prefix');
+  if (_herPrefix) _herPrefix.style.display = 'none';
   // Reset notes row (ADR-097 §7)
   const _notesRow = document.getElementById('bani-notes-row');
   if (_notesRow) { _notesRow.innerHTML = ''; _notesRow.style.display = 'none'; }
@@ -335,6 +340,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     } else {
       subjectName.title = '';
     }
+    // ADR-113: [Hindustani] prefix tag for HER ragas
+    const _herPrefixEl = document.getElementById('bani-her-prefix');
+    if (_herPrefixEl) {
+      _herPrefixEl.style.display = (raga && raga.tradition === 'hindustani') ? 'inline-flex' : 'none';
+    }
     const ragaSrc = raga && raga.sources && raga.sources[0];
     if (ragaSrc) {
       subjectLink.href = ragaSrc.url;
@@ -372,6 +382,17 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         triggerBaniSearch('raga', raga.parent_raga);
       });
       subjectSub.appendChild(parentLink);
+    } else if (raga && raga.tradition === 'hindustani') {
+      // ADR-113: HER raga — show Thaat (replaces mela/janya-of for Hindustani ragas)
+      if (raga.thaat) {
+        const thaatLabel = document.createElement('span');
+        thaatLabel.textContent = 'Thaat:\u00a0';
+        thaatLabel.style.color = 'var(--fg-muted)';
+        subjectSub.appendChild(thaatLabel);
+        const thaatValue = document.createElement('span');
+        thaatValue.textContent = raga.thaat.charAt(0).toUpperCase() + raga.thaat.slice(1);
+        subjectSub.appendChild(thaatValue);
+      }
     }
     // (if neither: sub-label is empty — graceful degradation)
 
@@ -430,6 +451,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       if (janyas.length > 0) {
 
         // Render filtered list of janya links — each as a .raga-chip
+        // ADR-113: janyas with HERs get a .janya-with-her wrapper + secondary her-chip
         function renderJanyaList(filter) {
           janyasList.innerHTML = '';
           const q = filter.trim().toLowerCase();
@@ -443,15 +465,38 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             visible.forEach(j => {
               const chip = document.createElement('span');
               chip.className = 'raga-chip';
-              chip.style.display = 'inline-flex';
-              chip.style.margin = '2px 3px';
               chip.textContent = j.name || j.id;
               chip.title = 'Explore ' + (j.name || j.id) + ' in Bani Flow';
               chip.addEventListener('click', e => {
                 e.stopPropagation();
                 triggerBaniSearch('raga', j.id);
               });
-              janyasList.appendChild(chip);
+              const herEqs = j.hindustani_equivalents || [];
+              if (herEqs.length > 0) {
+                // Wrap chip + HER chips in a column stack
+                const wrapper = document.createElement('span');
+                wrapper.className = 'janya-with-her';
+                wrapper.appendChild(chip);
+                herEqs.forEach(herId => {
+                  const herRaga = ragas.find(r => r.id === herId);
+                  if (!herRaga) return;
+                  const herChip = document.createElement('span');
+                  herChip.className = 'her-chip her-chip--secondary';
+                  herChip.dataset.ragaId = herId;
+                  herChip.textContent = '\u2194\u00a0' + (herRaga.name || herId);
+                  herChip.title = 'Explore Hindustani equivalent: ' + (herRaga.name || herId);
+                  herChip.addEventListener('click', e => {
+                    e.stopPropagation();
+                    triggerBaniSearch('raga', herId);
+                  });
+                  wrapper.appendChild(herChip);
+                });
+                janyasList.appendChild(wrapper);
+              } else {
+                chip.style.display = 'inline-flex';
+                chip.style.margin = '2px 3px';
+                janyasList.appendChild(chip);
+              }
             });
           }
         }
@@ -472,6 +517,80 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             janyasFilter.focus();
           }
         };
+      }
+    }
+
+    // Row 5 (#bani-her-row): ADR-113 HER row
+    // – For Carnatic ragas: show "Hindustani equivalents" HER chips + + button (ADR-115)
+    // – For HER ragas (tradition:hindustani): show "Carnatic equivalents" chips + + button
+    const herRow = document.getElementById('bani-her-row');
+    if (herRow) {
+      herRow.innerHTML = '';
+      herRow.style.display = 'none';
+      if (raga && raga.tradition !== 'hindustani') {
+        // Carnatic raga — show HER row always (even with 0 equivalents) for + discoverability
+        const herLabel = document.createElement('span');
+        herLabel.className = 'her-label';
+        herLabel.textContent = 'Hindustani equivalents:\u00a0';
+        herRow.appendChild(herLabel);
+        const herEqs = raga.hindustani_equivalents || [];
+        herEqs.forEach(herId => {
+          const herRaga = ragas.find(r => r.id === herId);
+          if (!herRaga) return;
+          const chip = document.createElement('span');
+          chip.className = 'her-chip';
+          chip.dataset.ragaId = herId;
+          chip.textContent = '\u2194\u00a0' + (herRaga.name || herId);
+          chip.title = 'Explore Hindustani equivalent: ' + (herRaga.name || herId);
+          chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', herId); });
+          herRow.appendChild(chip);
+        });
+        // ADR-115 §3a: + button to add a new HER linked to this Carnatic raga
+        herRow.querySelectorAll('.co-add-chip').forEach(el => el.remove());
+        const herAddBtn = document.createElement('button');
+        herAddBtn.type = 'button';
+        herAddBtn.className = 'co-add-chip';
+        herAddBtn.textContent = '+';
+        herAddBtn.title = 'Add a Hindustani equivalent for ' + (raga.name || id);
+        herAddBtn.style.marginLeft = 'auto';
+        herAddBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (typeof openAddRagaFormHER === 'function') openAddRagaFormHER(id);
+        });
+        herRow.appendChild(herAddBtn);
+        herRow.style.display = 'flex';
+        herRow.style.alignItems = 'center';
+      } else if (raga && raga.tradition === 'hindustani') {
+        // HER raga — show Carnatic equivalents row
+        const carnaticEqs = ragas.filter(r => r.hindustani_equivalents && r.hindustani_equivalents.includes(id));
+        const ceLabel = document.createElement('span');
+        ceLabel.className = 'her-label';
+        ceLabel.textContent = 'Carnatic equivalents:\u00a0';
+        herRow.appendChild(ceLabel);
+        carnaticEqs.forEach(cr => {
+          const chip = document.createElement('span');
+          chip.className = 'raga-chip';
+          chip.dataset.ragaId = cr.id;
+          chip.textContent = cr.name || cr.id;
+          chip.title = 'Explore Carnatic equivalent: ' + (cr.name || cr.id);
+          chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', cr.id); });
+          herRow.appendChild(chip);
+        });
+        // ADR-115 §3b: + button to add a new Carnatic raga linked to this HER
+        herRow.querySelectorAll('.co-add-chip').forEach(el => el.remove());
+        const ceAddBtn = document.createElement('button');
+        ceAddBtn.type = 'button';
+        ceAddBtn.className = 'co-add-chip';
+        ceAddBtn.textContent = '+';
+        ceAddBtn.title = 'Add a Carnatic equivalent raga';
+        ceAddBtn.style.marginLeft = 'auto';
+        ceAddBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (typeof openAddRagaFormCarnatic === 'function') openAddRagaFormCarnatic();
+        });
+        herRow.appendChild(ceAddBtn);
+        herRow.style.display = 'flex';
+        herRow.style.alignItems = 'center';
       }
     }
   }
@@ -1286,6 +1405,10 @@ function clearBaniFilter() {
   document.getElementById('bani-janyas-panel').style.display = 'none';
   document.getElementById('bani-janyas-list').innerHTML = '';
   document.getElementById('bani-janyas-filter').value = '';
+  const _clearHerRow = document.getElementById('bani-her-row');
+  if (_clearHerRow) { _clearHerRow.innerHTML = ''; _clearHerRow.style.display = 'none'; }
+  const _clearHerPrefix = document.getElementById('bani-her-prefix');
+  if (_clearHerPrefix) _clearHerPrefix.style.display = 'none';
   applyZoomLabels();
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('bani');

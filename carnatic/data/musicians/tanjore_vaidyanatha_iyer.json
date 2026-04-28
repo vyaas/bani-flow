@@ -12,6 +12,9 @@
   "died": 1947,
   "era": "golden_age",
   "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "tanjore",
   "youtube": []
 }

@@ -15,6 +15,9 @@ from __future__ import annotations
 YOUTUBE_KINDS: tuple[str, ...] = (
     "recital",
     "lecdem",
+    "raga_alap",
+    "concert",
+    "misc",
 )
 
 VALID_YOUTUBE_KINDS: frozenset[str] = frozenset(YOUTUBE_KINDS)

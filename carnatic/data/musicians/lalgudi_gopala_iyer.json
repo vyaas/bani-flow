@@ -12,6 +12,9 @@
   "died": 1970,
   "era": "bridge",
   "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "lalgudi",
   "youtube": []
 }

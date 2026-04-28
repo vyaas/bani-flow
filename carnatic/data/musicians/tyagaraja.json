@@ -12,6 +12,9 @@
   "died": 1847,
   "era": "trinity",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "tyagaraja",
   "youtube": []
 }

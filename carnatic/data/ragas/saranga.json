@@ -1,6 +1,7 @@
 {
   "id": "saranga",
   "name": "Saranga",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": null,
   "parent_raga": "kalyani",

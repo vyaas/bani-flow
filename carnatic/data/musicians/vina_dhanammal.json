@@ -12,6 +12,9 @@
   "died": 1938,
   "era": "bridge",
   "instrument": "veena",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "dhanammal",
   "youtube": []
 }

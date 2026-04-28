@@ -1,6 +1,7 @@
 {
   "id": "ahiri",
   "name": "Ahiri",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": null,
   "parent_raga": "natabhairavi",

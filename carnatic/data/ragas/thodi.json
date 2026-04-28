@@ -1,6 +1,7 @@
 {
   "id": "thodi",
   "name": "Thodi",
+  "tradition": "carnatic",
   "aliases": [
     "Shubhapantuvarali",
     "Hanumatodi",
@@ -18,5 +19,8 @@
   ],
   "notes": "8th melakarta (Todi group). One of the most important ragas in Carnatic music. Deep emotive character, parent of many janya ragas.",
   "is_melakarta": true,
-  "cakra": 2
+  "cakra": 2,
+  "hindustani_equivalents": [
+    "shudh_bhairavi"
+  ]
 }

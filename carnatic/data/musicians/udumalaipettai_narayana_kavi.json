@@ -12,6 +12,9 @@
   "died": 1981,
   "era": "golden_age",
   "instrument": null,
+  "traditions": [
+    "carnatic"
+  ],
   "bani": null,
   "youtube": []
 }

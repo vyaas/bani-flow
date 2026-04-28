@@ -12,6 +12,9 @@
   "died": 2012,
   "era": "golden_age",
   "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "mixed",
   "youtube": []
 }

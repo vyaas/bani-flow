@@ -12,6 +12,10 @@
   "died": null,
   "era": "contemporary",
   "instrument": "violin",
+  "traditions": [
+    "carnatic",
+    "hindustani"
+  ],
   "bani": null,
   "youtube": [
     {

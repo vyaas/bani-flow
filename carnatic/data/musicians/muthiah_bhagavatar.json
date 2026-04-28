@@ -12,6 +12,9 @@
   "died": 1945,
   "era": "bridge",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "muthiah",
   "youtube": []
 }

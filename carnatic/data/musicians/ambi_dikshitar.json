@@ -12,6 +12,9 @@
   "died": null,
   "era": "bridge",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "dikshitar",
   "youtube": []
 }

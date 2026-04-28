@@ -12,6 +12,9 @@
   "died": null,
   "era": "bridge",
   "instrument": "flute",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "swaminatha_pillai",
   "youtube": []
 }

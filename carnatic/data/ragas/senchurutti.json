@@ -1,7 +1,11 @@
 {
   "id": "senchurutti",
   "name": "Senchurutti",
-  "aliases": ["Senjurutti", "Senjurutu"],
+  "tradition": "carnatic",
+  "aliases": [
+    "Senjurutti",
+    "Senjurutu"
+  ],
   "melakarta": null,
   "parent_raga": "harikambhoji",
   "sources": [

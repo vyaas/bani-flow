@@ -64,6 +64,15 @@ const cy = cytoscape({
       selector: 'node.bani-match',
       style: { 'border-color': THEME.nodeBaniMatch, 'border-width': '3.5px' }
     },
+    // ADR-114: Hindustani musician nodes get a cool-colour (slate-blue) border
+    {
+      selector: 'node[is_hindustani = 1]',
+      style: {
+        'border-color': 'var(--her-chip-accent, #8fb4d8)',
+        'border-width': '3px',
+        'border-style': 'dashed',
+      }
+    },
     {
       selector: 'edge',
       style: {
@@ -418,6 +427,11 @@ function _buildOverlayChip(node) {
   chip.className = 'musician-chip cy-overlay-chip';
   chip.style.setProperty('--chip-era-bg', tint.bg);
   chip.style.setProperty('--chip-era-border', tint.border);
+  // ADR-114: visually distinguish Hindustani musician chips with cool-colour border
+  if (d.is_hindustani) {
+    chip.classList.add('hindustani-musician');
+    chip.style.setProperty('--chip-era-border', 'var(--her-chip-accent, #8fb4d8)');
+  }
   if (d.instrument) chip.appendChild(makeInstrBadge(d.instrument));
   chip.appendChild(document.createTextNode(d.label));
   chip.title = d.label + (d.lifespan ? ' · ' + d.lifespan : '');
@@ -616,6 +630,11 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   nameChip.className = 'musician-chip';
   nameChip.style.setProperty('--chip-era-bg', tint.bg);
   nameChip.style.setProperty('--chip-era-border', tint.border);
+  // ADR-114: cool-colour border on panel chip for Hindustani musicians
+  if (d.is_hindustani) {
+    nameChip.classList.add('hindustani-musician');
+    nameChip.style.setProperty('--chip-era-border', 'var(--her-chip-accent, #8fb4d8)');
+  }
   if (d.instrument) nameChip.appendChild(makeInstrBadge(d.instrument));
   nameChip.appendChild(document.createTextNode(d.label));
   nameChip.title = 'Pan to ' + d.label + ' on graph (' + (d.instrument || '') + ')';

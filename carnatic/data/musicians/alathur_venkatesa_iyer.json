@@ -12,6 +12,9 @@
   "died": 1958,
   "era": "golden_age",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "tyagaraja",
   "youtube": []
 }
