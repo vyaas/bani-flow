@@ -852,5 +852,17 @@
     "confidence": 0.9,
     "source_url": "https://lakshmisreeram.com/carnatic/",
     "note": "major vocal guru of Lakshmi Sreeram"
+  },
+  {
+    "source": "tn_krishnan",
+    "target": "sriram_parasuram",
+    "confidence": 0.9,
+    "source_url": "https://anuradhasriram.com/dr-sriram-parasuram/"
+  },
+  {
+    "source": "t_viswanathan",
+    "target": "sriram_parasuram",
+    "confidence": 0.9,
+    "source_url": "https://anuradhasriram.com/dr-sriram-parasuram/"
   }
 ]
