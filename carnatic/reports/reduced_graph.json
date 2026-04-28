@@ -1,0 +1,2899 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-04-28T00:53:17+00:00",
+  "generator": "bani-flow reduced-graph export",
+  "instructions": "Editing rules:\n  1. Never change a musician 'id' — it is the immutable key.\n  2. To add a new musician: append an object to 'musicians' with at least 'id', 'label', and one entry in 'sources' (Wikipedia URL preferred).\n  3. To correct existing data: edit fields in place. Set numeric fields to null if unknown.\n  4. To add a guru→shishya relation: append to 'edges' with 'source' (guru id), 'target' (shishya id), 'confidence' (0.0–1.0), and 'source_url'. Add a 'note' if confidence < 0.70.\n  5. Do not delete musicians or edges — removals are ignored on import.\n  6. 'youtube', 'recordings', and 'compositions' are deliberately out of scope here. This file is artist metadata only.",
+  "musicians": [
+    {
+      "id": "a_kanyakumari",
+      "label": "A. Kanyakumari",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": "mixed"
+    },
+    {
+      "id": "abhishek_raghuram",
+      "label": "Abhishek Raghuram",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1984,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "akkarai_subbulakshmi",
+      "label": "Akkarai Subbulakshmi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Akkarai_Subhalakshmi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": null
+    },
+    {
+      "id": "alathur_brothers",
+      "label": "Alathur Brothers",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Alathur_Brothers",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1911,
+      "died": 1980,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "tyagaraja"
+    },
+    {
+      "id": "ambujam_krishna",
+      "label": "Ambujam Krishna",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ambujam_Krishna",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1917,
+      "died": 2004,
+      "era": "living_pillars",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "andal",
+      "label": "Andal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Andal",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "annamacharya",
+      "label": "Annamacharya",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Annamacharya",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1408,
+      "died": 1503,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "annasami_shastri",
+      "label": "Annasami Shastri",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1124.shtml",
+          "label": "Karnatik.com — composer profile",
+          "type": "archive"
+        }
+      ],
+      "born": 1899,
+      "died": null,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "ariyakudi_ramanuja_iyengar",
+      "label": "Ariyakudi Ramanuja Iyengar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1890,
+      "died": 1967,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "ariyakudi"
+    },
+    {
+      "id": "aruna_sairam",
+      "label": "Aruna Sairam",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Aruna_Sairam",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1952,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "arunachala_kavi",
+      "label": "Arunachala Kavi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Arunachala_Kavi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "arunagirinathar",
+      "label": "Arunagirinathar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Arunagirinathar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": 1500,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "b_rajam_iyer",
+      "label": "B. Rajam Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1922,
+      "died": 2009,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "ariyakudi"
+    },
+    {
+      "id": "balamuralikrishna",
+      "label": "M. Balamuralikrishna",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._Balamuralikrishna",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1930,
+      "died": 2016,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "basava",
+      "label": "Basava",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Basava",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1131,
+      "died": 1167,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "bhadrachala_ramadas",
+      "label": "Bhadrachala Ramadas",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Bhadrachala_Ramadasu",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1620,
+      "died": 1688,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "bombay_jayashri",
+      "label": "Bombay Jayashri",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Bombay_Jayashri",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1964,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "lalgudi"
+    },
+    {
+      "id": "calcutta_ks_krishnamurthi",
+      "label": "Calcutta KS Krishnamurthi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+          "label": "Wikipedia (via Sanjay Subrahmanyan)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": 1999,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "chandrasekharendra_saraswati",
+      "label": "Chandrasekharendra Saraswati",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Chandrasekharendra_Saraswati",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1894,
+      "died": 1994,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "charumathi_ramachandran",
+      "label": "Charumathi Ramachandran",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Charumathi_Ramachandran",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "chinnaiah_pillai",
+      "label": "Chinnaiah Pillai",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+          "label": "Wikipedia — Tanjore Quartet",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1802,
+      "died": 1856,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "coimbatore_n_ramaswamy",
+      "label": "Coimbatore N Ramaswamy",
+      "sources": [
+        {
+          "url": "https://brahmanya.wordpress.com/2012/08/13/my-coimbatore-10/",
+          "label": "Brahmanya blog — Famous Musicians from my City",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "mridangam",
+      "bani": "palani"
+    },
+    {
+      "id": "cr_mani_iyer",
+      "label": "CR Mani Iyer",
+      "sources": [
+        {
+          "url": "https://crmaniiyer.weebly.com/",
+          "label": "Tribute site — Palghat C. R. Mani Iyer",
+          "type": "tribute"
+        }
+      ],
+      "born": 1930,
+      "died": 2009,
+      "era": "living_pillars",
+      "instrument": "violin",
+      "bani": "lalgudi"
+    },
+    {
+      "id": "cs_sankarasivam",
+      "label": "C.S. Sankarasivam",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+          "label": "Wikipedia (via Murugabhoopathy)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "muthiah"
+    },
+    {
+      "id": "dharmapuri_subbaraya_iyer",
+      "label": "Dharmapuri Subbaraya Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbarayar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": 1908,
+      "era": "living_pillars",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "dk_pattammal",
+      "label": "DK Pattammal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1919,
+      "died": 2009,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "dv_gundappa",
+      "label": "DV Gundappa",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/D._V._Gundappa",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1887,
+      "died": 1975,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "dwijendralal_roy",
+      "label": "Dwijendralal Roy",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Dwijendralal_Ray",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1863,
+      "died": 1913,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "ev_ramakrishna_bhagavatar",
+      "label": "EV Ramakrishna Bhagavatar",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1019.shtml",
+          "label": "Karnatik.com",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "garbhapurivasa",
+      "label": "Garbhapuri Srinivasa",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1023.shtml",
+          "label": "Karnatik.com — composer profile (ankita: Garbhapurivasa)",
+          "type": "archive"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "ghanam_krishna_iyer",
+      "label": "Ghanam Krishna Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ghanam_Krishna_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1781,
+      "died": 1856,
+      "era": "golden_age",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "gjr_krishnan",
+      "label": "G.J.R. Krishnan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": "lalgudi"
+    },
+    {
+      "id": "gnb",
+      "label": "GN Balasubramaniam",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1910,
+      "died": 1965,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "gnb"
+    },
+    {
+      "id": "gopalakrishna_bharathi",
+      "label": "Gopalakrishna Bharathi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Gopalakrishna_Bharathi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1811,
+      "died": 1896,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "govindasvamy_ayya",
+      "label": "Govindasvamy Ayya",
+      "sources": [
+        {
+          "url": "https://www.sruti.com/articles/spotlight/jatiswaram-swarajati-varnam-a-chronological-perspective",
+          "label": "Sruti — Jatiswaram Swarajati Varnam (mentions Govindasamayya)",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "hp_ramachar",
+      "label": "HP Ramachar",
+      "sources": [
+        {
+          "url": "https://www.sruti.com/artist/morsing-an-uncommon-instrument-and-a-remarkable-legacy1749115747",
+          "label": "Sruti — Morsing: an Uncommon Instrument",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "khanjira",
+      "bani": null
+    },
+    {
+      "id": "hyderabad_brothers",
+      "label": "Hyderabad Brothers",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "tyagaraja"
+    },
+    {
+      "id": "jayachamarajendra_wadiyar",
+      "label": "Jayachamarajendra Wadiyar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Jayachamarajendra_Wadiyar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1919,
+      "died": 1974,
+      "era": "living_pillars",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "jayammal",
+      "label": "Jayammal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+          "label": "Wikipedia (via Veenai Dhanammal)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1890,
+      "died": 1967,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "kamakshi_dhanammal",
+      "label": "Kamakshi (daughter of Dhanammal)",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+          "label": "Wikipedia (via Veenai Dhanammal)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "kamalesha_vittala_dasa",
+      "label": "Kamalesha Vittala Dasa",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Haridasa",
+          "label": "Wikipedia — Haridasa tradition",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "kanaka_dasa",
+      "label": "Kanaka Dasa",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Kanaka_Dasa",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1509,
+      "died": 1609,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "kanchipuram_naina_pillai",
+      "label": "Kanchipuram Naina Pillai",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Kanchipuram_Naina_Pillai",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "karur_devudu_iyer",
+      "label": "Karur Devudu Iyer",
+      "sources": [
+        {
+          "url": "https://www.oxfordreference.com/display/10.1093/oi/authority.20110803095714787",
+          "label": "Oxford Reference — Karur Brothers entry",
+          "type": "article"
+        }
+      ],
+      "born": 1861,
+      "died": 1901,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "km_vaidhyanathan",
+      "label": "KM Vaidhyanathan",
+      "sources": [
+        {
+          "url": "https://kmvmusic.blogspot.com/2014/12/my-father-ghatam-kmv.html",
+          "label": "Family bio — K. M. Vaidhyanathan (ghatam)",
+          "type": "biographical"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "ghatam",
+      "bani": null
+    },
+    {
+      "id": "koteeswara_iyer",
+      "label": "Harikesanallur Koteeswara Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Koteeswara_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1870,
+      "died": 1936,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "kottavasal_venkatarama_iyer",
+      "label": "Kottavasal Venkatarama Iyer",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1126.shtml",
+          "label": "Karnatik.com",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "kshetrayya",
+      "label": "Kshetrayya",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Kshetrayya",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "kumara_ettendra",
+      "label": "Kumara Ettendra",
+      "sources": [
+        {
+          "url": "https://guruguha.org/a-tribute-to-a-munificent-benefactor/",
+          "label": "GuruGuha.org — Tribute to Kumara Ettendra (Ettayapuram)",
+          "type": "scholarly"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "kunnakudi_krishna_iyer",
+      "label": "Kunnakudi Krishna Iyer",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1229.shtml",
+          "label": "Karnatik.com — Kunnakudi Krishna Iyer",
+          "type": "archive"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "kuppuswami_ayya",
+      "label": "Kuppuswami Ayya",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1230.shtml",
+          "label": "Karnatik.com — Kuppuswami Ayya",
+          "type": "archive"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "kurainadu_natesa_pillai",
+      "label": "Kurainadu Natesa Pillai",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1381.shtml",
+          "label": "Karnatik.com — Kurainadu Natesa Pillai",
+          "type": "archive"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "kv_narayanaswamy",
+      "label": "KV Narayanaswamy",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1923,
+      "died": 2002,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "ariyakudi"
+    },
+    {
+      "id": "lakshmi_sreeram",
+      "label": "Lakshmi Sreeram",
+      "sources": [
+        {
+          "url": "https://lakshmisreeram.com/",
+          "label": "Other",
+          "type": "other"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "trinity",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "lalgudi_jayaraman",
+      "label": "Lalgudi Jayaraman",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1930,
+      "died": 2013,
+      "era": "disseminator",
+      "instrument": "violin",
+      "bani": "lalgudi"
+    },
+    {
+      "id": "lalgudi_srimathi_brahmananda",
+      "label": "Lalgudi Srimathi Brahmananda",
+      "sources": [
+        {
+          "url": "https://dhvaniohio.org/wp-content/uploads/2012/12/interview.pdf",
+          "label": "Sruti interview PDF (archived via Dhvani Ohio)",
+          "type": "interview"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "disseminator",
+      "instrument": "violin",
+      "bani": "lalgudi"
+    },
+    {
+      "id": "lalgudi_vijayalakshmi",
+      "label": "Lalgudi Vijayalakshmi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": "lalgudi"
+    },
+    {
+      "id": "maanambuchaavadi_venkatasubbaiyer",
+      "label": "Maanambuchaavadi Venkatasubbaiyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Manambuchavadi_Venkatasubbayyar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "madurai_mani_iyer",
+      "label": "Madurai Mani Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Madurai_Mani_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1912,
+      "died": 1968,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "madurai"
+    },
+    {
+      "id": "maha_vaidyanatha_sivan",
+      "label": "Maha Vaidyanatha Sivan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1844,
+      "died": 1893,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "maharajapuram_santanam",
+      "label": "Maharajapuram Santanam",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1928,
+      "died": 1992,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "tyagaraja"
+    },
+    {
+      "id": "malladi_brothers",
+      "label": "Malladi Brothers",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Malladi_Brothers",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1962,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "musiri"
+    },
+    {
+      "id": "md_ramanathan",
+      "label": "MD Ramanathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._D._Ramanathan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1923,
+      "died": 1984,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "tiger_varadachariar"
+    },
+    {
+      "id": "ml_vasanthakumari",
+      "label": "ML Vasanthakumari",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1928,
+      "died": 1990,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "gnb"
+    },
+    {
+      "id": "ms_gopalakrishnan",
+      "label": "MS Gopalakrishnan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._S._Gopalakrishnan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1931,
+      "died": 2013,
+      "era": "living_pillars",
+      "instrument": "violin",
+      "bani": null
+    },
+    {
+      "id": "ms_subbulakshmi",
+      "label": "MS Subbulakshmi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1916,
+      "died": 2004,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "muddu_natesa",
+      "label": "Muddu Natesa",
+      "sources": [],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "musiri_subramania_iyer",
+      "label": "Musiri Subramania Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1899,
+      "died": 1975,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "tyagaraja"
+    },
+    {
+      "id": "muthiah_bhagavatar",
+      "label": "Harikesanallur Muthiah Bhagavathar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1877,
+      "died": 1945,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "muthiah"
+    },
+    {
+      "id": "muthu_thandavar",
+      "label": "Muthu Thandavar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Muthu_Thandavar",
+          "label": "Wikipedia — Muthu Thandavar",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "muthuswami_dikshitar",
+      "label": "Muthuswami Dikshitar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1775,
+      "died": 1835,
+      "era": "trinity",
+      "instrument": "vocal",
+      "bani": "dikshitar"
+    },
+    {
+      "id": "mysore_sadasiva_rao",
+      "label": "Mysore Sadasiva Rao",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Mysore_Sadashiva_Rao",
+          "label": "Wikipedia — Mysore Sadashiva Rao",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "mysore_vasudevacharya",
+      "label": "Mysore Vasudevacharya",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Mysore_Vasudevacharya",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1865,
+      "died": 1961,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "n_ramani",
+      "label": "N. Ramani",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/N._Ramani",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1934,
+      "died": 2019,
+      "era": "living_pillars",
+      "instrument": "flute",
+      "bani": "mali"
+    },
+    {
+      "id": "nagapatnam_veeraswamy_pillai",
+      "label": "Nagapatnam Veeraswamy Pillai",
+      "sources": [
+        {
+          "url": "https://tamilnation.org/culture/music/b_m_raman",
+          "label": "Tamil Nation — Nagapatnam Veeraswamy Pillai (via B.M. Raman)",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "nityashree_mahadevan",
+      "label": "Nityashree Mahadevan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1973,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "oothukadu_venkata_kavi",
+      "label": "Oothukadu Venkata Kavi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Oothukkadu_Venkata_Kavi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1700,
+      "died": 1765,
+      "era": "golden_age",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "pacchimiriyam_adiapayya",
+      "label": "Pacchimiriyam Adiapayya",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Pacchimiriam_Adiyappa",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": 1821,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "palghat_mani_iyer",
+      "label": "Palghat Mani Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1912,
+      "died": 1981,
+      "era": "living_pillars",
+      "instrument": "mridangam",
+      "bani": "palghat"
+    },
+    {
+      "id": "palghat_raghu",
+      "label": "Palghat Raghu",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Palghat_Raghu",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1928,
+      "died": 2009,
+      "era": "living_pillars",
+      "instrument": "mridangam",
+      "bani": "palghat"
+    },
+    {
+      "id": "palghat_rajamani",
+      "label": "Palghat Rajamani",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+          "label": "Wikipedia (via Palghat Mani Iyer)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1949,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "mridangam",
+      "bani": "palghat"
+    },
+    {
+      "id": "pallavi_gopala_iyer",
+      "label": "Pallavi Gopala Iyer",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1037.shtml",
+          "label": "Karnatik.com — Pallavi Gopala Iyer",
+          "type": "archive"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "papanasam_sivan",
+      "label": "Papanasam Sivan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Papanasam_Sivan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1890,
+      "died": 1973,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "parur_sundaram_iyer",
+      "label": "Parur Sundaram Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Parur_Sundaram_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1891,
+      "died": 1974,
+      "era": "golden_age",
+      "instrument": "violin",
+      "bani": null
+    },
+    {
+      "id": "patnam_subramanya_iyer",
+      "label": "Patnam Subramanya Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1845,
+      "died": 1902,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "tyagaraja"
+    },
+    {
+      "id": "pattabhiramayya",
+      "label": "Tiruppaṇandāḷ Paṭṭābhirāmaiyyā",
+      "sources": [
+        {
+          "url": "http://www.carnatica.net/composer/pattabhiramayya.htm",
+          "label": "Carnatica.net — composer profile",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "periyasami_tooran",
+      "label": "Periyasami Tooran",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Periyasaamy_Thooran",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1908,
+      "died": 1975,
+      "era": "living_pillars",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "perumal_murugan",
+      "label": "Perumal Murugan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Perumal_Murugan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1966,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "purandara_dasa",
+      "label": "Purandara Dasa",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Purandaradasa",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1484,
+      "died": 1564,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "r_ramesh",
+      "label": "R. Ramesh",
+      "sources": [
+        {
+          "url": "https://www.chennaievent.com/artist-view.php?artist_id=1998",
+          "label": "Chennai Events bio — R. Ramesh (mridangist)",
+          "type": "biographical"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "mridangam",
+      "bani": null
+    },
+    {
+      "id": "r_vedavalli",
+      "label": "R. Vedavalli",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Vedavalli",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1935,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "rabindranath_tagore",
+      "label": "Rabindranath Tagore",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Rabindranath_Tagore",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1861,
+      "died": 1941,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "radha_viswanathan",
+      "label": "Radha Viswanathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Radha_Viswanathan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1934,
+      "died": 2018,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "rama_varma",
+      "label": "Rama Varma",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1968,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "veena",
+      "bani": null
+    },
+    {
+      "id": "ramakrishnan_murthy",
+      "label": "Ramakrishnan Murthy",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ramakrishnan_Murthy",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": null
+    },
+    {
+      "id": "ramnad_krishnan",
+      "label": "Ramnad Krishnan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1918,
+      "died": 1973,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "semmangudi"
+    },
+    {
+      "id": "ramnad_raghavan",
+      "label": "Ramnad Raghavan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ramnad_Raghavan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1927,
+      "died": 2009,
+      "era": "disseminator",
+      "instrument": "mridangam",
+      "bani": "mixed"
+    },
+    {
+      "id": "ramnad_sreenivasa_iyengar",
+      "label": "Ramnad Sreenivasa Iyengar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Poochi_Srinivasa_Iyengar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "ranjani_gayatri",
+      "label": "Ranjani-Gayatri",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Ranjani%E2%80%93Gayatri",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1973,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "ritha_rajan",
+      "label": "Ritha Rajan",
+      "sources": [
+        {
+          "url": "https://concertreviewbyshankarvenkataraman.blogspot.com/2019/12/paramparaa-myth-or-reality.html",
+          "label": "other",
+          "type": "other"
+        }
+      ],
+      "born": 1948,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "vina_dhanammal"
+    },
+    {
+      "id": "rudrapatnam_venkatramayya",
+      "label": "Rudrapatnam Venkatramayya",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1476.shtml",
+          "label": "Karnatik.com — Rudrapatnam Venkatramayya",
+          "type": "archive"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "s_gopalakrishnan",
+      "label": "S Gopalakrishnan",
+      "sources": [
+        {
+          "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+          "label": "India Art Review — Shobhana Rangachari: A Life Sketch of a Lesser-Known Carnatic Vocalist",
+          "type": "article"
+        }
+      ],
+      "born": 1918,
+      "died": 2000,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "tiger_varadachariar"
+    },
+    {
+      "id": "s_ramanathan",
+      "label": "S. Ramanathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/S._Ramanathan_(musician)",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1917,
+      "died": 1988,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "s_sowmya",
+      "label": "S. Sowmya",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/S._Sowmya",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1969,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "samuel_vedanayagam_pillai",
+      "label": "Samuel Vedanayagam Pillai",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Samuel_Vedanayagam_Pillai",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1826,
+      "died": 1889,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "sanjay_subrahmanyan",
+      "label": "Sanjay Subrahmanyan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1968,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "semmangudi"
+    },
+    {
+      "id": "sant_dnyaneshwar",
+      "label": "Sant Dnyaneshwar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Dnyaneshwar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1275,
+      "died": 1296,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "sarangapani",
+      "label": "Sarangapani",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sarangapani",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": 1724,
+      "era": "golden_age",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "savita_narasimhan",
+      "label": "Savita Narasimhan",
+      "sources": [
+        {
+          "url": "https://www.sangeetnatak.gov.in/public/uploads/awardees/docs/1742885767_Savita%20Narasimhan.pdf",
+          "label": "PDF",
+          "type": "pdf"
+        }
+      ],
+      "born": 1974,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "seetha_rajan",
+      "label": "Seetha Rajan",
+      "sources": [
+        {
+          "url": "https://www.nadatarangini.org/artists/seetha-rajan",
+          "label": "Nadatarangini",
+          "type": "other"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "semmangudi_srinivasa_iyer",
+      "label": "Semmangudi Srinivasa Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1908,
+      "died": 2003,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "semmangudi"
+    },
+    {
+      "id": "shivanamayogi",
+      "label": "Shivanamayogi",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/",
+          "label": "Karnatik.com (composer not individually listed; name sourced from Ramnad Krishnan Jamshedpur 1964 concert)",
+          "type": "archive"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "shobhana_rangachari",
+      "label": "Shobhana Rangachari",
+      "sources": [
+        {
+          "url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+          "label": "India Art Review — Shobhana Rangachari: A Life Sketch of a Lesser-Known Carnatic Vocalist",
+          "type": "article"
+        }
+      ],
+      "born": 1954,
+      "died": 1985,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": "tiger_varadachariar"
+    },
+    {
+      "id": "shyama_shastri",
+      "label": "Shyama Shastri",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Shyama_Shastri",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1762,
+      "died": 1827,
+      "era": "trinity",
+      "instrument": "vocal",
+      "bani": "shyama_shastri"
+    },
+    {
+      "id": "soundar_rajan",
+      "label": "Soundar Rajan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._M._Soundararajan",
+          "label": "Wikipedia — T. M. Soundararajan (identity uncertain; confirm subject)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "mridangam",
+      "bani": null
+    },
+    {
+      "id": "spencer_venugopal",
+      "label": "Spencer Venugopal",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1064.shtml",
+          "label": "Karnatik.com",
+          "type": "article"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "sripada_pinakapani",
+      "label": "Sripada Pinakapani",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sripada_Pinakapani",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1913,
+      "died": 2013,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed"
+    },
+    {
+      "id": "sriram_parasuram",
+      "label": "Sriram Parasuram",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sriram_Parasuram",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": null
+    },
+    {
+      "id": "subbarama_dikshitar",
+      "label": "Subbarama Dikshitar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
+          "label": "Wikipedia — Subbarama Dikshitar",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1839,
+      "died": 1906,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "subbarama_iyer",
+      "label": "Subbarama Iyer",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1056.shtml",
+          "label": "karnatik.com — Vaideeshwarankoyil Subbaraama Aiyyar",
+          "type": "karnatik"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "subbaraya_sastri",
+      "label": "Subbaraya Sastri",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1803,
+      "died": 1876,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": "shyama_shastri"
+    },
+    {
+      "id": "subramanya_bharathi",
+      "label": "Subramanya Bharathi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Subramania_Bharati",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1882,
+      "died": 1921,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "sudha_ragunathan",
+      "label": "Sudha Ragunathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1956,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "gnb"
+    },
+    {
+      "id": "swaminatha_pillai",
+      "label": "Tiruppamparam Swaminatha Pillai",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+          "label": "Wikipedia (via T. Viswanathan)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "bridge",
+      "instrument": "flute",
+      "bani": "swaminatha_pillai"
+    },
+    {
+      "id": "swati_tirunal",
+      "label": "Swati Tirunal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Swati_Tirunal",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1813,
+      "died": 1846,
+      "era": "bridge",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "t_balasaraswati",
+      "label": "T. Balasaraswati",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1918,
+      "died": 1984,
+      "era": "disseminator",
+      "instrument": "bharatanatyam",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "t_brinda",
+      "label": "T. Brinda",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Brinda",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1912,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "t_kesavulu",
+      "label": "T Kesavulu",
+      "sources": [
+        {
+          "url": "https://www.rasikas.org/forums/viewtopic.php?t=18713",
+          "label": "Rasikas forum — possible Bobbili Kesavayya? (identity unverified)",
+          "type": "forum"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "violin",
+      "bani": null
+    },
+    {
+      "id": "t_muktha",
+      "label": "T. Muktha",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Muktha",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1914,
+      "died": 2007,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "t_ramaswami_pillai",
+      "label": "T. Ramaswami Pillai",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tiruvarur_Ramaswami_Pillai",
+          "label": "Wikipedia — Tiruvarur Ramaswami Pillai",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1862,
+      "died": 1943,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "t_v_sankaranarayanan",
+      "label": "T. V. Sankaranarayanan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+          "label": "T. V. Sankaranarayanan - Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1945,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "Madurai Mani Iyer"
+    },
+    {
+      "id": "t_viswanathan",
+      "label": "T. Viswanathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1927,
+      "died": 2002,
+      "era": "living_pillars",
+      "instrument": "flute",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "tanjavur_krishnamurthy_rao",
+      "label": "Tanjavur S. Krishnamurthy Rao",
+      "sources": [
+        {
+          "url": "https://arginase.wordpress.com/2012/03/21/first-post-on-music-palghat-mani-iyer/",
+          "label": "Blog mention — Tanjavur S. Krishnamurthy Rao (Palghat Mani Iyer post)",
+          "type": "mention"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "mridangam",
+      "bani": null
+    },
+    {
+      "id": "tarangampadi_panchanada_iyer",
+      "label": "Tarangampadi Panchanada Iyer",
+      "sources": [
+        {
+          "url": "https://www.karnatik.com/co1049.shtml",
+          "label": "karnatik.com — Tarangampadi Panchanada Iyer",
+          "type": "karnatik"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "tevaram",
+      "label": "Tevaram",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tevaram",
+          "label": "Tevaram - Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "thayumanavar",
+      "label": "Thayumanavar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Thayumanavar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1705,
+      "died": 1744,
+      "era": "golden_age",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "thiruvallur_subramaniam",
+      "label": "Thiruvallur Subramaniam",
+      "sources": [
+        {
+          "url": "https://www.parrikar.org/carnatic/kalyani/",
+          "label": "Parrikar — Kalyani essay (mentions Thiruvallur Subramaniam)",
+          "type": "mention"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "golden_age",
+      "instrument": "violin",
+      "bani": null
+    },
+    {
+      "id": "tiger_varadachariar",
+      "label": "Tiger Varadachariar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1876,
+      "died": 1950,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "tiruvottiyur_tyagayya",
+      "label": "Tiruvottiyur Tyagayya",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tiruvottriyur_Tyagayyar",
+          "label": "Wikipedia — Tiruvottriyur Tyagayyar",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1845,
+      "died": 1917,
+      "era": "bridge",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "tm_krishna",
+      "label": "TM Krishna",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._M._Krishna",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1976,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "semmangudi"
+    },
+    {
+      "id": "tm_prabhavathi",
+      "label": "TM Prabhavathi",
+      "sources": [
+        {
+          "url": "http://www.carnaticcorner.com/articles/mlv.html",
+          "label": "Carnatic Corner — MLV article (mentions T. M. Prabhavathi)",
+          "type": "mention"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "tn_krishnan",
+      "label": "TN Krishnan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._N._Krishnan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1928,
+      "died": 2023,
+      "era": "living_pillars",
+      "instrument": "violin",
+      "bani": "semmangudi"
+    },
+    {
+      "id": "tn_seshagopalan",
+      "label": "TN Seshagopalan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1948,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "muthiah"
+    },
+    {
+      "id": "tr_mahalingam",
+      "label": "TR Mahalingam (Mali)",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1926,
+      "died": 1986,
+      "era": "disseminator",
+      "instrument": "flute",
+      "bani": "mali"
+    },
+    {
+      "id": "tukaram",
+      "label": "Tukaram",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tukaram",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1598,
+      "died": 1650,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "tulsidas",
+      "label": "Tulsidas",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tulsidas",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1532,
+      "died": 1623,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "tyagaraja",
+      "label": "Tyagaraja",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Tyagaraja",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1767,
+      "died": 1847,
+      "era": "trinity",
+      "instrument": "vocal",
+      "bani": "tyagaraja"
+    },
+    {
+      "id": "udumalaipettai_narayana_kavi",
+      "label": "Udumalaipettai Narayana Kavi",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Udumalai_Narayana_Kavi",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1899,
+      "died": 1981,
+      "era": "golden_age",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "umayalpuram_sivaraman",
+      "label": "Umayalpuram Sivaraman",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1935,
+      "died": null,
+      "era": "living_pillars",
+      "instrument": "mridangam",
+      "bani": "palghat"
+    },
+    {
+      "id": "vechoor_harihara",
+      "label": "Vechoor Harihara Subramania Iyer",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "disseminator",
+      "instrument": "vocal",
+      "bani": null
+    },
+    {
+      "id": "veenai_kuppayyar",
+      "label": "Veenai Kuppayyar",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Veena_Kuppayyar",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1798,
+      "died": 1860,
+      "era": "golden_age",
+      "instrument": null,
+      "bani": null
+    },
+    {
+      "id": "vegavahini_vijayaraghavan",
+      "label": "Vegavahini Vijayaraghavan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/T._Brinda",
+          "label": "Wikipedia — T. Brinda (family section)",
+          "type": "wikipedia"
+        }
+      ],
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "vellore_ramabhadran",
+      "label": "Vellore G. Ramabhadran",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Vellore_G._Ramabhadran",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1929,
+      "died": 2012,
+      "era": "golden_age",
+      "instrument": "mridangam",
+      "bani": "mixed"
+    },
+    {
+      "id": "vina_dhanammal",
+      "label": "Vina Dhanammal",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1867,
+      "died": 1938,
+      "era": "bridge",
+      "instrument": "veena",
+      "bani": "dhanammal"
+    },
+    {
+      "id": "voleti_venkateshwarlu",
+      "label": "Voleti Venkateshwarlu",
+      "sources": [
+        {
+          "url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/",
+          "label": "eAmbalam — Legends Series no. 3 (compiled by Sashi Kulkarni & T.V. Ramprasadh)",
+          "type": "article"
+        }
+      ],
+      "born": 1928,
+      "died": 1989,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "pinakapani"
+    },
+    {
+      "id": "vyasatirtha",
+      "label": "Vyasatirtha",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Vyasatirtha",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "born": 1460,
+      "died": 1539,
+      "era": null,
+      "instrument": null,
+      "bani": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "ariyakudi_ramanuja_iyengar",
+      "target": "b_rajam_iyer",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/B._Rajam_Iyer",
+      "note": "gurukula training, ~10 years; leading disciple"
+    },
+    {
+      "source": "calcutta_ks_krishnamurthi",
+      "target": "sanjay_subrahmanyan",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+      "note": "principal guru 1989–1999; shaped Sanjay's mature style"
+    },
+    {
+      "source": "cs_sankarasivam",
+      "target": "ramnad_krishnan",
+      "confidence": 0.98,
+      "source_url": "https://dhvaniohio.org/wp-content/uploads/2012/06/Ramnad_Krishnan.pdf",
+      "note": "first guru; Muthiah Bhagavatar lineage stream"
+    },
+    {
+      "source": "cs_sankarasivam",
+      "target": "tn_seshagopalan",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._N._Seshagopalan",
+      "note": "via Ramanathapuram C.S. Sankarasivan"
+    },
+    {
+      "source": "gnb",
+      "target": "ml_vasanthakumari",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari"
+    },
+    {
+      "source": "jayammal",
+      "target": "t_balasaraswati",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Balasaraswati",
+      "note": "mother and accompanist; musical training from infancy"
+    },
+    {
+      "source": "jayammal",
+      "target": "t_viswanathan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "note": "mother; Dhanammal bani transmitted through family"
+    },
+    {
+      "source": "kamakshi_dhanammal",
+      "target": "t_brinda",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "mother; initial training in Dhanammal style"
+    },
+    {
+      "source": "kamakshi_dhanammal",
+      "target": "t_muktha",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "note": "mother; initial training in Dhanammal style"
+    },
+    {
+      "source": "kanchipuram_naina_pillai",
+      "target": "t_brinda",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "substantial training; agility and robustness in laya"
+    },
+    {
+      "source": "kanchipuram_naina_pillai",
+      "target": "t_muktha",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "note": "substantial training alongside Brinda"
+    },
+    {
+      "source": "lalgudi_jayaraman",
+      "target": "bombay_jayashri",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Bombay_Jayashri"
+    },
+    {
+      "source": "lalgudi_jayaraman",
+      "target": "gjr_krishnan",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+      "note": "son and disciple; primary carrier of Lalgudi bani; Sangita Kalanidhi 2022"
+    },
+    {
+      "source": "lalgudi_jayaraman",
+      "target": "lalgudi_vijayalakshmi",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+      "note": "daughter and disciple; trained under father after initial training from grandfather Lalgudi Gopala Iyer; Sangita Kalanidhi 2022"
+    },
+    {
+      "source": "madurai_mani_iyer",
+      "target": "t_v_sankaranarayanan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._V._Sankaranarayanan",
+      "note": "principal guru and maternal uncle"
+    },
+    {
+      "source": "maha_vaidyanatha_sivan",
+      "target": "musiri_subramania_iyer",
+      "confidence": 0.8,
+      "source_url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+      "note": "via T.S. Sabhesha Iyer (2-hop); Wikipedia prose: Sabhesh Iyer disciple of Maha Vaidyanatha Iyer, Musiri disciple of Sabhesh Iyer"
+    },
+    {
+      "source": "ml_vasanthakumari",
+      "target": "sudha_ragunathan",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
+      "note": "principal guru; Sudha Ragunathan trained under MLV from an early age; carries the GNB bani forward"
+    },
+    {
+      "source": "muthiah_bhagavatar",
+      "target": "cs_sankarasivam",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+      "note": "disciple of Muthiah Bhagavatar"
+    },
+    {
+      "source": "muthiah_bhagavatar",
+      "target": "madurai_mani_iyer",
+      "confidence": 0.98,
+      "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "note": "most famous disciple per Wikipedia"
+    },
+    {
+      "source": "muthiah_bhagavatar",
+      "target": "ms_subbulakshmi",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+      "note": "first guru"
+    },
+    {
+      "source": "palghat_mani_iyer",
+      "target": "palghat_raghu",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Palghat_Raghu",
+      "note": "son and primary disciple; inherited the Palghat mridangam school; Sangeetha Kalanidhi 1981"
+    },
+    {
+      "source": "palghat_mani_iyer",
+      "target": "palghat_rajamani",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+      "note": "son and disciple; accompanied his father in double-mridangam concerts; carried the Palghat school forward"
+    },
+    {
+      "source": "palghat_mani_iyer",
+      "target": "umayalpuram_sivaraman",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman"
+    },
+    {
+      "source": "parur_sundaram_iyer",
+      "target": "ms_gopalakrishnan",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Parur_Sundaram_Iyer"
+    },
+    {
+      "source": "patnam_subramanya_iyer",
+      "target": "ariyakudi_ramanuja_iyengar",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Ariyakudi_Ramanuja_Iyengar"
+    },
+    {
+      "source": "patnam_subramanya_iyer",
+      "target": "musiri_subramania_iyer",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer"
+    },
+    {
+      "source": "patnam_subramanya_iyer",
+      "target": "tiger_varadachariar",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+      "note": "Varadachariar studied under Patnam Subramania Iyer for three years from age fourteen; per Wikipedia"
+    },
+    {
+      "source": "ramnad_krishnan",
+      "target": "aruna_sairam",
+      "confidence": 0.8,
+      "source_url": "https://issuu.com/carnaticmusic/docs/vaak_05/s/15033980",
+      "note": "also studied under Ramnad Krishnan"
+    },
+    {
+      "source": "ramnad_krishnan",
+      "target": "ritha_rajan",
+      "confidence": 1.0,
+      "source_url": "https://en.wikipedia.org/wiki/Ramnad_Krishnan",
+      "note": "principal guru"
+    },
+    {
+      "source": "s_gopalakrishnan",
+      "target": "shobhana_rangachari",
+      "confidence": 0.97,
+      "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+      "note": "Shobhana's primary guru; trained under him at AIR Delhi from youth; India Art Review profile"
+    },
+    {
+      "source": "s_ramanathan",
+      "target": "s_sowmya",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/S._Sowmya",
+      "note": "co-teacher with T. Muktha"
+    },
+    {
+      "source": "semmangudi_srinivasa_iyer",
+      "target": "ms_subbulakshmi",
+      "confidence": 0.85,
+      "source_url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+      "note": "second guru"
+    },
+    {
+      "source": "semmangudi_srinivasa_iyer",
+      "target": "tm_krishna",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._M._Krishna"
+    },
+    {
+      "source": "semmangudi_srinivasa_iyer",
+      "target": "tn_krishnan",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._N._Krishnan"
+    },
+    {
+      "source": "semmangudi_srinivasa_iyer",
+      "target": "vechoor_harihara",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma"
+    },
+    {
+      "source": "shyama_shastri",
+      "target": "subbaraya_sastri",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+      "note": "son and primary disciple of Shyama Shastri"
+    },
+    {
+      "source": "sripada_pinakapani",
+      "target": "malladi_brothers",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Malladi_Brothers",
+      "note": "principal guru; Wikipedia infobox lists Sripada Pinakapani as teacher of the Malladi Brothers"
+    },
+    {
+      "source": "sripada_pinakapani",
+      "target": "voleti_venkateshwarlu",
+      "confidence": 0.9,
+      "source_url": "https://www.carnaticheritage.in/singers/profile/3",
+      "note": "polishing guru; Pinakapani called Voleti a genius; sourced from carnaticheritage.in and eambalam.com Legends Series; no Wikipedia page for Voleti — editorial override applied"
+    },
+    {
+      "source": "subbaraya_sastri",
+      "target": "vina_dhanammal",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "note": "Dhanammal's mother trained under Subbaraya Sastri; Trinity lineage enters Dhanammal bani"
+    },
+    {
+      "source": "swaminatha_pillai",
+      "target": "t_viswanathan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "note": "principal guru; ~20 years of study; innovator of 7-hole bamboo flute"
+    },
+    {
+      "source": "t_brinda",
+      "target": "aruna_sairam",
+      "confidence": 0.92,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "full-time student"
+    },
+    {
+      "source": "t_brinda",
+      "target": "ramnad_krishnan",
+      "confidence": 0.98,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "principal guru; Dhanammal bani stream — padams, javalis, gamaka vocabulary"
+    },
+    {
+      "source": "t_brinda",
+      "target": "semmangudi_srinivasa_iyer",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "Semmangudi learnt from Brinda — Dhanammal stream feeding into his style"
+    },
+    {
+      "source": "t_brinda",
+      "target": "vegavahini_vijayaraghavan",
+      "confidence": 1.0,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
+      "note": "daughter; also shishya of T. Brinda in the Dhanammal vocal tradition"
+    },
+    {
+      "source": "t_muktha",
+      "target": "r_vedavalli",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Vedavalli",
+      "note": "Central Government scholarship; Vedavalli received specialised training in padams and javalis under T. Muktha"
+    },
+    {
+      "source": "t_muktha",
+      "target": "s_sowmya",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/S._Sowmya"
+    },
+    {
+      "source": "tiger_varadachariar",
+      "target": "md_ramanathan",
+      "confidence": 0.97,
+      "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+      "note": "M. D. Ramanathan listed as a direct student of Tiger Varadachariar; confirmed by Wikipedia and MDR's bani field"
+    },
+    {
+      "source": "tiger_varadachariar",
+      "target": "s_gopalakrishnan",
+      "confidence": 0.92,
+      "source_url": "https://indiaartreview.com/stories/shobhana-rangachari-a-life-sketch-of-a-lesser-known-carnatic-vocalist/",
+      "note": "Varadachariar was the teacher of S Gopalakrishnan, per India Art Review article on Shobhana Rangachari"
+    },
+    {
+      "source": "tiger_varadachariar",
+      "target": "s_ramanathan",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+      "note": "S. Ramanathan listed as a direct student of Tiger Varadachariar per Wikipedia"
+    },
+    {
+      "source": "tr_mahalingam",
+      "target": "n_ramani",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._R._Mahalingam_(flautist)",
+      "note": "sister's son and primary disciple; carried Mali style forward"
+    },
+    {
+      "source": "tyagaraja",
+      "target": "patnam_subramanya_iyer",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Patnam_Subramanya_Iyer"
+    },
+    {
+      "source": "vechoor_harihara",
+      "target": "rama_varma",
+      "confidence": 0.9,
+      "source_url": "https://en.wikipedia.org/wiki/Aswathi_Thirunal_Rama_Varma"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "jayammal",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "note": "daughter; singer; mother of Balasaraswati, T. Ranganathan, T. Viswanathan"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "kamakshi_dhanammal",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
+      "note": "daughter; mother of T. Brinda, T. Muktha, Abhiramasundari"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "ms_subbulakshmi",
+      "confidence": 0.85,
+      "source_url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "t_brinda",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Brinda"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "t_muktha",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/T._Muktha",
+      "note": "granddaughter via Kamakshi; Dhanammal bani custodian alongside T. Brinda"
+    },
+    {
+      "source": "vina_dhanammal",
+      "target": "t_viswanathan",
+      "confidence": 0.85,
+      "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
+      "note": "grandson via Jayammal; inherited Dhanammal bani; formal guru was Tiruppamparam Swaminatha Pillai"
+    },
+    {
+      "source": "voleti_venkateshwarlu",
+      "target": "malladi_brothers",
+      "confidence": 0.8,
+      "source_url": "https://www.eambalam.com/blog/legends-of-carnatic-music-3/",
+      "note": "Malladi Suri Babu associated with Voleti at AIR Vijayawada for a long time and imbibed his style; stylistic transmission rather than formal gurukula"
+    }
+  ]
+}

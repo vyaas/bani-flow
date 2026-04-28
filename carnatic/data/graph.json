@@ -3803,6 +3803,11 @@
             "label": "Sanjay Subrahmanyan: Ragam Reetigowla",
             "composition_id": "janani_ninnuvina",
             "raga_id": "reetigowla"
+          },
+          {
+            "url": "https://youtu.be/owauee8bXt4",
+            "label": "RTP - Bageshri",
+            "raga_id": "bageshri"
           }
         ]
       },
@@ -6983,6 +6988,20 @@
         ],
         "notes": "Janya of Kharaharapriya (22nd melakarta). Bold heroic character. Frequently used for Tyagaraja kritis.",
         "is_melakarta": false
+      },
+      {
+        "id": "bageshri",
+        "name": "Bageshri",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "kharaharapriya",
+        "sources": [
+          {
+            "url": "",
+            "label": "",
+            "type": "other"
+          }
+        ]
       },
       {
         "id": "bahudari",
