@@ -1,0 +1,16 @@
+{
+  "id": "saraguna_palimpa",
+  "title": "Saraguna Palimpa",
+  "composer_id": "poochi_srinivasa_iyengar",
+  "raga_id": "kedaragaula",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/saragunapalimpa.htm",
+      "label": "shivkumar",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}

@@ -1,0 +1,16 @@
+{
+  "id": "rama_ninne",
+  "title": "Rama Ninne",
+  "composer_id": "tyagaraja",
+  "raga_id": "huseni",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c31310.shtml",
+      "label": "karnatik",
+      "type": "other"
+    }
+  ],
+  "notes": null
+}

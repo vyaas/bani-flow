@@ -876,5 +876,29 @@
     "target": "malladi_suri_babu",
     "confidence": 1.0,
     "source_url": "https://en.wikipedia.org/wiki/Malladi_Suribabu"
+  },
+  {
+    "source": "vv_subrahmanyam",
+    "target": "lakshmi_sreeram",
+    "confidence": 0.9,
+    "source_url": "https://lakshmisreeram.com/"
+  },
+  {
+    "source": "semmangudi_srinivasa_iyer",
+    "target": "vv_subrahmanyam",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/V._V._Subrahmanyam"
+  },
+  {
+    "source": "musiri_subramania_iyer",
+    "target": "vv_subrahmanyam",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/V._V._Subrahmanyam"
+  },
+  {
+    "source": "chembai_vaidyanatha",
+    "target": "vv_subrahmanyam",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Chembai"
   }
 ]

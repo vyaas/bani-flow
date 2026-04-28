@@ -1,0 +1,20 @@
+{
+  "id": "poochi_srinivasa_iyengar",
+  "label": "Poochi Srinivasa Iyengar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Poochi_Srinivasa_Iyengar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1860,
+  "died": 1919,
+  "era": "bridge",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": "mixed",
+  "youtube": []
+}

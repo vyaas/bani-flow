@@ -1,0 +1,166 @@
+{
+  "id": "shanmukhananda_sabha_bombay_1958",
+  "video_id": "7OLQoQ5EDDM",
+  "url": "https://youtu.be/7OLQoQ5EDDM",
+  "title": "Shanmukhananda Sabha, Bombay 1958",
+  "short_title": "Bombay 1958",
+  "date": null,
+  "venue": null,
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/7OLQoQ5EDDM",
+      "label": "youtu.be",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "chembai_vaidyanatha",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:16",
+          "offset_seconds": 16,
+          "composition_id": "endaro_mahanubhavulu",
+          "raga_id": "sriraga",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Endaro Mahanubhavulu",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:11:48",
+          "offset_seconds": 708,
+          "composition_id": "raghuvara_nannu",
+          "raga_id": "pantuvarali",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": null,
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:51:25",
+          "offset_seconds": 3085,
+          "composition_id": "saraguna_palimpa",
+          "raga_id": "kedaragaula",
+          "tala": "adi",
+          "composer_id": "poochi_srinivasa_iyengar",
+          "display_title": "Saraguna Palimpa",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "01:09:54",
+          "offset_seconds": 4194,
+          "composition_id": "rama_ninne",
+          "raga_id": "huseni",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Rama Ninne",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "01:16:31",
+          "offset_seconds": 4591,
+          "composition_id": "nenendu_vedukudura",
+          "raga_id": "karnataka_behag",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nenendu Vedukudura",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:21:58",
+          "offset_seconds": 4918,
+          "composition_id": "paridhana_micchithe",
+          "raga_id": "bilahari",
+          "tala": "khanda_capu",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Paridhana Micchithe",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:46:22",
+          "offset_seconds": 6382,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": "other",
+          "composer_id": null,
+          "display_title": "RTP",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "02:22:46",
+          "offset_seconds": 8566,
+          "composition_id": "karunai_seivan_entu",
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": "irayimman_thampi",
+          "display_title": "Karunai Seivan Entu",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:26:04",
+          "offset_seconds": 8764,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ragamalika",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "02:40:37",
+          "offset_seconds": 9637,
+          "composition_id": null,
+          "raga_id": "kannada",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kanada - Thillana",
+          "notes": null,
+          "type": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:41:43",
+          "offset_seconds": 9703,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": null,
+          "notes": null,
+          "type": null
+        }
+      ]
+    }
+  ]
+}

@@ -95,7 +95,25 @@
         "raga_ids": [],
         "composition_ids": [],
         "musician_ids": []
-      }
+      },
+      "segments": [
+        {
+          "offset_seconds": 945,
+          "raga_id": "mohanam",
+          "kind": "kriti",
+          "notes": "Demo by RS Jayalakshmi",
+          "segment_index": 1,
+          "timestamp": "15:45"
+        },
+        {
+          "offset_seconds": 945,
+          "raga_id": "mohanam",
+          "kind": "kriti",
+          "notes": "Demo by RS Jayalakshmi",
+          "segment_index": 2,
+          "timestamp": "15:45"
+        }
+      ]
     },
     {
       "url": "https://www.youtube.com/watch?v=akIoBdbeX3Q",
