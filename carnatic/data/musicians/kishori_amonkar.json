@@ -1,0 +1,26 @@
+{
+  "id": "kishori_amonkar",
+  "label": "Kishori Amonkar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kishori_Amonkar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1932,
+  "died": 2017,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/hAR2d6KAfQw",
+      "label": "Madhya laya khyal",
+      "raga_id": "madhumad_sarang"
+    }
+  ]
+}

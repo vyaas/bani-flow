@@ -864,5 +864,17 @@
     "target": "sriram_parasuram",
     "confidence": 0.9,
     "source_url": "https://anuradhasriram.com/dr-sriram-parasuram/"
+  },
+  {
+    "source": "voleti_venkateshwarlu",
+    "target": "malladi_suri_babu",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/Malladi_Suribabu"
+  },
+  {
+    "source": "sripada_pinakapani",
+    "target": "malladi_suri_babu",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/Malladi_Suribabu"
   }
 ]

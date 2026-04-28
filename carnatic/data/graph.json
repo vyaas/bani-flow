@@ -1164,6 +1164,32 @@
         "youtube": []
       },
       {
+        "id": "kishori_amonkar",
+        "label": "Kishori Amonkar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Kishori_Amonkar",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1932,
+        "died": 2017,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
+        "bani": null,
+        "youtube": [
+          {
+            "url": "https://youtu.be/hAR2d6KAfQw",
+            "label": "Madhya laya khyal",
+            "raga_id": "madhumad_sarang"
+          }
+        ]
+      },
+      {
         "id": "km_vaidhyanathan",
         "label": "KM Vaidhyanathan",
         "sources": [
@@ -2467,6 +2493,46 @@
         ],
         "bani": "musiri",
         "youtube": []
+      },
+      {
+        "id": "malladi_suri_babu",
+        "label": "Malladi Suri Babu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Malladi_Suribabu",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1945,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "traditions": [
+          "carnatic"
+        ],
+        "bani": null,
+        "youtube": [
+          {
+            "url": "https://youtu.be/j36xMQpMrWI",
+            "label": "Living Legacies l Episode 4",
+            "kind": "lecdem",
+            "subjects": {
+              "raga_ids": [
+                "begada"
+              ],
+              "composition_ids": [],
+              "musician_ids": [
+                "voleti_venkateshwarlu"
+              ]
+            }
+          },
+          {
+            "url": "https://youtu.be/6_2hAY1l-Eg",
+            "label": "Maayaahomam",
+            "raga_id": "jog"
+          }
+        ]
       },
       {
         "id": "md_ramanathan",
@@ -7503,6 +7569,18 @@
         "target": "sriram_parasuram",
         "confidence": 0.9,
         "source_url": "https://anuradhasriram.com/dr-sriram-parasuram/"
+      },
+      {
+        "source": "voleti_venkateshwarlu",
+        "target": "malladi_suri_babu",
+        "confidence": 1.0,
+        "source_url": "https://en.wikipedia.org/wiki/Malladi_Suribabu"
+      },
+      {
+        "source": "sripada_pinakapani",
+        "target": "malladi_suri_babu",
+        "confidence": 1.0,
+        "source_url": "https://en.wikipedia.org/wiki/Malladi_Suribabu"
       }
     ]
   },
@@ -8664,6 +8742,24 @@
         "notes": "19th melakarta; Cakra 4 (Veda); arohana: S R₂ G₂ M₁ P D₁ N₁ Ṡ"
       },
       {
+        "id": "jog",
+        "name": "Jog",
+        "tradition": "hindustani",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": null,
+        "is_melakarta": false,
+        "thaat": "kafi",
+        "carnatic_equivalents": [],
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Jog_(raga)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
         "id": "jonepuri",
         "name": "Jonepuri",
         "tradition": "carnatic",
@@ -9573,7 +9669,10 @@
           }
         ],
         "notes": "Nata (nāṭa), also known as Nattai, is a rāgam in Carnatic music (musical scale of South Indian classical music). It is a janya rāgam (derived scale) from the 36th melakarta scale Chalanata. It is an auspicious raga, which is mostly sung in the early part of the concert.",
-        "is_melakarta": false
+        "is_melakarta": false,
+        "hindustani_equivalents": [
+          "jog"
+        ]
       },
       {
         "id": "natabhairavi",
