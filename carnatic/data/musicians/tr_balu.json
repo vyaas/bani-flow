@@ -1,0 +1,17 @@
+{
+  "id": "tr_balu",
+  "label": "T.R. Balasubramaniam (T.R. Balu)",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+      "label": "Wikipedia (via GN Balasubramaniam)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "bani": "gnb",
+  "youtube": []
+}

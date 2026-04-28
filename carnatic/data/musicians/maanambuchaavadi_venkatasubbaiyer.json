@@ -8,10 +8,10 @@
       "type": "wikipedia"
     }
   ],
-  "born": null,
-  "died": null,
-  "era": null,
-  "instrument": null,
-  "bani": null,
+  "born": 1803,
+  "died": 1862,
+  "era": "bridge",
+  "instrument": "vocal",
+  "bani": "tyagaraja",
   "youtube": []
 }

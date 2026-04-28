@@ -1,0 +1,17 @@
+{
+  "id": "susarla_sivaram",
+  "label": "Susarla Sivaram",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+      "label": "Wikipedia (via Hyderabad Brothers)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "bani": null,
+  "youtube": []
+}

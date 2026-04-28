@@ -1,0 +1,17 @@
+{
+  "id": "dk_jayaraman",
+  "label": "DK Jayaraman",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+      "label": "Wikipedia (via DK Pattammal)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1931,
+  "died": 2014,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": "mixed",
+  "youtube": []
+}

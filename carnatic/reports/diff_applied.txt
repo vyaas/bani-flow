@@ -1,0 +1,128 @@
+========================================================================
+Reduced-graph import diff
+========================================================================
+  musician adds:    38
+  source adds:      0
+  musician patches: 9
+  edge adds:        65
+  edge patches:     0
+  warnings:         0
+
+-- musician adds --
+  + lalgudi_rama_iyer  'Lalgudi Rama Iyer'  (bridge, vocal, 1 source(s))
+  + valadi_radhakrishna_iyer  'Valadi Radhakrishna Iyer'  (bridge, violin, 1 source(s))
+  + lalgudi_gopala_iyer  'Lalgudi V.R. Gopala Iyer'  (bridge, violin, 1 source(s))
+  + susarla_dakshinamoorthy_sastry  'Susarla Dakshinamoorthy Sastry'  (bridge, vocal, 1 source(s))
+  + parupalli_ramakrishnayya_pantulu  'Parupalli Ramakrishnayya Pantulu'  (bridge, vocal, 1 source(s))
+  + padinettan_sambasiva_iyer  'Padinettan Sambasiva Iyer'  (bridge, vocal, 1 source(s))
+  + ts_sabhesa_iyer  'T.S. Sabhesa Iyer'  (bridge, vocal, 1 source(s))
+  + umayalpuram_swaminatha_iyer  'Umayalpuram Swaminatha Iyer'  (bridge, vocal, 1 source(s))
+  + maharajapuram_viswanatha_iyer  'Maharajapuram Viswanatha Iyer'  (golden_age, vocal, 1 source(s))
+  + tiruvidaimarudur_sakharama_rao  'Tiruvidaimarudur Sakharama Rao'  (bridge, gottuvadyam, 1 source(s))
+  + semmangudi_narayanaswami_iyer  'Semmangudi Narayanaswami Iyer'  (bridge, vocal, 1 source(s))
+  + madurai_subramania_iyer  'Madurai Subramania Iyer'  (bridge, vocal, 1 source(s))
+  + alathur_venkatesa_iyer  'Alathur Venkatesa Iyer'  (golden_age, vocal, 1 source(s))
+  + ambi_dikshitar  'Ambi Dikshitar'  (bridge, vocal, 1 source(s))
+  + ps_narayanaswamy  'P.S. Narayanaswamy'  (contemporary, vocal, 1 source(s))
+  + dk_jayaraman  'DK Jayaraman'  (living_pillars, vocal, 1 source(s))
+  + lalitha_sivakumar  'Lalitha Sivakumar'  (living_pillars, vocal, 1 source(s))
+  + lalithangi  'Lalithangi'  (bridge, vocal, 1 source(s))
+  + tr_balu  'T.R. Balasubramaniam (T.R. Balu)'  (disseminator, vocal, 1 source(s))
+  + madurai_srinivasa_iyengar  'Madurai Srinivasa Iyengar'  (golden_age, vocal, 1 source(s))
+  + kandappa_pillai  'Kandappa Pillai'  (golden_age, bharatanatyam, 1 source(s))
+  + pudukottai_manpoondia_pillai  'Pudukottai Manpoondia Pillai'  (bridge, mridangam, 1 source(s))
+  + pudukottai_dakshinamurthy_pillai  'Pudukottai Dakshinamurthy Pillai'  (bridge, mridangam, 1 source(s))
+  + palani_muthiah_pillai  'Palani Muthiah Pillai'  (bridge, mridangam, 1 source(s))
+  + palani_subramania_pillai  'Palani Subramania Pillai'  (golden_age, mridangam, 1 source(s))
+  + tanjore_vaidyanatha_iyer  'Tanjore (Thanjavur) Vaidyanatha Iyer'  (golden_age, mridangam, 1 source(s))
+  + cs_murugabhoopathy  'Ramanathapuram C.S. Murugabhoopathy'  (golden_age, mridangam, 1 source(s))
+  + ramnad_easwaran  'Ramnad Easwaran'  (golden_age, mridangam, 1 source(s))
+  + ivaturi_vijeswara_rao  'Ivaturi Vijeswara Rao'  (golden_age, violin, 1 source(s))
+  + m_chandrasekaran  'M. Chandrasekaran'  (living_pillars, violin, 1 source(s))
+  + tr_balamani  'T.R. Balamani'  (disseminator, vocal, 1 source(s))
+  + rukmini_rajagopalan  'Rukmini Rajagopalan'  (disseminator, vocal, 1 source(s))
+  + v_lakshminarayana_iyer  'V. Lakshminarayana Iyer'  (living_pillars, vocal, 1 source(s))
+  + bhagavathula_seetharama_sarma  'Bhagavathula Seetharama Sarma'  (living_pillars, vocal, 1 source(s))
+  + daroor_ratnamacharyulu  'Daroor Ratnamacharyulu'  (golden_age, vocal, 1 source(s))
+  + susarla_sivaram  'Susarla Sivaram'  (golden_age, vocal, 1 source(s))
+  + n_s_krishnaswamy_iyengar  'N.S. Krishnaswamy Iyengar'  (bridge, vocal, 1 source(s))
+  + tk_govinda_rao  'T.K. Govinda Rao'  (living_pillars, vocal, 1 source(s))
+
+-- musician patches --
+  ~ lakshmi_sreeram  era: 'trinity' → 'contemporary'
+  ~ maanambuchaavadi_venkatasubbaiyer  born: None → 1803
+  ~ maanambuchaavadi_venkatasubbaiyer  died: None → 1862
+  ~ maanambuchaavadi_venkatasubbaiyer  era: None → 'bridge'
+  ~ maanambuchaavadi_venkatasubbaiyer  instrument: None → 'vocal'
+  ~ maanambuchaavadi_venkatasubbaiyer  bani: None → 'tyagaraja'
+  ~ maha_vaidyanatha_sivan  bani: 'mixed' → 'tyagaraja'
+  ~ ramakrishnan_murthy  instrument: 'violin' → 'vocal'
+  ~ ramakrishnan_murthy  bani: None → 'mixed'
+
+-- edge adds --
+  + tyagaraja → maanambuchaavadi_venkatasubbaiyer  (c=0.98)
+  + maanambuchaavadi_venkatasubbaiyer → maha_vaidyanatha_sivan  (c=0.97)
+  + maanambuchaavadi_venkatasubbaiyer → patnam_subramanya_iyer  (c=0.95)
+  + maanambuchaavadi_venkatasubbaiyer → susarla_dakshinamoorthy_sastry  (c=0.92)
+  + susarla_dakshinamoorthy_sastry → parupalli_ramakrishnayya_pantulu  (c=0.92)
+  + parupalli_ramakrishnayya_pantulu → balamuralikrishna  (c=0.98)
+  + maha_vaidyanatha_sivan → ts_sabhesa_iyer  (c=0.95)
+  + maha_vaidyanatha_sivan → umayalpuram_swaminatha_iyer  (c=0.92)
+  + ts_sabhesa_iyer → musiri_subramania_iyer  (c=0.97)
+  + ts_sabhesa_iyer → muthiah_bhagavatar  (c=0.88)
+  + umayalpuram_swaminatha_iyer → maharajapuram_viswanatha_iyer  (c=0.88)
+  + umayalpuram_swaminatha_iyer → semmangudi_srinivasa_iyer  (c=0.9)
+  + padinettan_sambasiva_iyer → muthiah_bhagavatar  (c=0.93)
+  + semmangudi_narayanaswami_iyer → semmangudi_srinivasa_iyer  (c=0.97)
+  + tiruvidaimarudur_sakharama_rao → semmangudi_srinivasa_iyer  (c=0.93)
+  + maharajapuram_viswanatha_iyer → semmangudi_srinivasa_iyer  (c=0.85)
+  + semmangudi_srinivasa_iyer → ps_narayanaswamy  (c=0.97)
+  + maharajapuram_viswanatha_iyer → maharajapuram_santanam  (c=0.99)
+  + tyagaraja → lalgudi_rama_iyer  (c=0.92)
+  + lalgudi_rama_iyer → valadi_radhakrishna_iyer  (c=0.92)
+  + valadi_radhakrishna_iyer → lalgudi_gopala_iyer  (c=0.95)
+  + lalgudi_gopala_iyer → lalgudi_jayaraman  (c=0.99)
+  + lalgudi_gopala_iyer → lalgudi_srimathi_brahmananda  (c=0.99)
+  + lalgudi_gopala_iyer → lalgudi_vijayalakshmi  (c=0.97)
+  + madurai_subramania_iyer → gnb  (c=0.93)
+  + musiri_subramania_iyer → tk_govinda_rao  (c=0.9)
+  + ambi_dikshitar → dk_pattammal  (c=0.9)
+  + papanasam_sivan → dk_pattammal  (c=0.9)
+  + n_s_krishnaswamy_iyengar → dk_pattammal  (c=0.88)
+  + dk_pattammal → dk_jayaraman  (c=0.99)
+  + dk_pattammal → lalitha_sivakumar  (c=0.97)
+  + dk_pattammal → nityashree_mahadevan  (c=0.97)
+  + lalitha_sivakumar → nityashree_mahadevan  (c=0.99)
+  + palghat_mani_iyer → lalitha_sivakumar  (c=0.99)
+  + lalithangi → ml_vasanthakumari  (c=0.97)
+  + ml_vasanthakumari → charumathi_ramachandran  (c=0.97)
+  + ml_vasanthakumari → a_kanyakumari  (c=0.95)
+  + ivaturi_vijeswara_rao → a_kanyakumari  (c=0.9)
+  + m_chandrasekaran → a_kanyakumari  (c=0.9)
+  + ps_narayanaswamy → abhishek_raghuram  (c=0.97)
+  + ps_narayanaswamy → ranjani_gayatri  (c=0.95)
+  + ariyakudi_ramanuja_iyengar → kv_narayanaswamy  (c=0.97)
+  + ms_subbulakshmi → radha_viswanathan  (c=0.97)
+  + semmangudi_srinivasa_iyer → radha_viswanathan  (c=0.88)
+  + t_brinda → radha_viswanathan  (c=0.85)
+  + gnb → tr_balu  (c=0.9)
+  + tr_balu → radha_viswanathan  (c=0.85)
+  + tr_balamani → bombay_jayashri  (c=0.92)
+  + v_lakshminarayana_iyer → sanjay_subrahmanyan  (c=0.9)
+  + rukmini_rajagopalan → sanjay_subrahmanyan  (c=0.92)
+  + bhagavathula_seetharama_sarma → tm_krishna  (c=0.9)
+  + ps_narayanaswamy → tm_krishna  (c=0.85)
+  + daroor_ratnamacharyulu → hyderabad_brothers  (c=0.97)
+  + susarla_sivaram → hyderabad_brothers  (c=0.93)
+  + alathur_venkatesa_iyer → alathur_brothers  (c=0.99)
+  + kandappa_pillai → t_balasaraswati  (c=0.99)
+  + pudukottai_manpoondia_pillai → pudukottai_dakshinamurthy_pillai  (c=0.92)
+  + pudukottai_manpoondia_pillai → palani_muthiah_pillai  (c=0.92)
+  + palani_muthiah_pillai → palani_subramania_pillai  (c=0.99)
+  + tanjore_vaidyanatha_iyer → palghat_mani_iyer  (c=0.97)
+  + tanjore_vaidyanatha_iyer → umayalpuram_sivaraman  (c=0.92)
+  + palani_subramania_pillai → cs_murugabhoopathy  (c=0.92)
+  + cs_sankarasivam → ramnad_easwaran  (c=0.88)
+  + ramnad_easwaran → ramnad_raghavan  (c=0.97)
+  + tk_govinda_rao → lakshmi_sreeram  (c=0.9)
+========================================================================

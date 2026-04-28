@@ -1,0 +1,17 @@
+{
+  "id": "lalgudi_gopala_iyer",
+  "label": "Lalgudi V.R. Gopala Iyer",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+      "label": "Wikipedia (via Lalgudi Jayaraman)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1900,
+  "died": 1970,
+  "era": "bridge",
+  "instrument": "violin",
+  "bani": "lalgudi",
+  "youtube": []
+}

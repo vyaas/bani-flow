@@ -1,0 +1,17 @@
+{
+  "id": "lalithangi",
+  "label": "Lalithangi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+      "label": "Wikipedia (via ML Vasanthakumari)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "bridge",
+  "instrument": "vocal",
+  "bani": "mixed",
+  "youtube": []
+}

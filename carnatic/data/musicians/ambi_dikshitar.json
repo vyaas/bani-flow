@@ -1,0 +1,17 @@
+{
+  "id": "ambi_dikshitar",
+  "label": "Ambi Dikshitar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+      "label": "Wikipedia (via DK Pattammal)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "bridge",
+  "instrument": "vocal",
+  "bani": "dikshitar",
+  "youtube": []
+}
