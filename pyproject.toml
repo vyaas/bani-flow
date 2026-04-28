@@ -45,6 +45,8 @@ bani-crawl   = "carnatic.crawl:main"
 bani-serve   = "carnatic.serve:main"
 bani-add     = "carnatic.bani_add:main"
 bani-export-musicians = "carnatic.reports.musician_summary:main"
+bani-export-reduced   = "carnatic.export_reduced_graph:main"
+bani-import-reduced   = "carnatic.import_reduced_graph:main"
 
 [project.urls]
 Homepage       = "https://github.com/vyaas/bani_flow"
