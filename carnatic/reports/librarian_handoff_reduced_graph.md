@@ -1,0 +1,264 @@
+# Librarian Work Package — Ingest `reduced_graph_patched.json`
+
+> **Owner**: Librarian agent (`#Librarian`)
+> **Source file**: [reduced_graph_patched.json](../../reduced_graph_patched.json)
+> **Goal**: Apply 38 new musicians, 9 metadata patches, and 65 new guru→shishya edges to the live database, on an isolated git branch, with full validation gates.
+> **Estimated change surface**: ~38 new files in `carnatic/data/musicians/`, edits to ~9 existing files, ~65 new entries in `_edges.json`.
+
+---
+
+## Why a separate branch is required
+
+This change touches **38 new node files + 65 new edges in one go**. That is far larger than a routine surgical patch and mixes structural growth (new ancestral chains: Lalgudi lineage 4 generations deep, Pudukottai mridangam school, Susarla→Parupalli→Balamuralikrishna stream) with scalar corrections. If anything misroutes — a bad ID, a wrong era, an edge pointing to a typo — we want to bisect and revert without touching `main`.
+
+**Branch name to create**: `data/reduced-graph-patched-2026-04`
+
+This is a `data/*` branch (not `feature/*`, not `adr/*`) because no schema or code is changing. But it is large enough that it must be reviewed end-to-end before merging.
+
+---
+
+## Pre-flight checklist
+
+Run these in the repo root with the venv activated:
+
+```bash
+source .venv/bin/activate
+
+# 1. Confirm you are on main and clean
+git status --short                       # must be empty
+git branch --show-current                # must be 'main'
+git pull --ff-only
+
+# 2. Capture baseline counts so you can prove the deltas afterwards
+python3 carnatic/cli.py stats > /tmp/stats_before.txt
+cat /tmp/stats_before.txt
+# expect: Musicians: 156   Edges: 59   (or whatever current main holds)
+
+# 3. Confirm the patched file is in place
+ls -lh reduced_graph_patched.json
+
+# 4. Re-run the dry-run to confirm what will change
+bani-import-reduced \
+    --in reduced_graph_patched.json \
+    --dry-run \
+    --out-report /tmp/diff_before_apply.txt
+# Expected summary:
+#   musician adds:    38
+#   source adds:      0
+#   musician patches: 9
+#   edge adds:        65
+#   edge patches:     0
+#   warnings:         0
+# If any of these counts differ, STOP and investigate.
+```
+
+If the dry-run summary above does not match exactly, **do not proceed**. Surface the delta to the user before continuing.
+
+---
+
+## Step-by-step procedure
+
+### Step 1 — Create the isolation branch
+
+```bash
+git checkout -b data/reduced-graph-patched-2026-04
+```
+
+### Step 2 — Apply the import (real run)
+
+```bash
+bani-import-reduced \
+    --in reduced_graph_patched.json \
+    --out-report carnatic/reports/diff_applied.txt
+```
+
+**What you should see**:
+
+- One `[NODE+]` line per new musician (38 lines).
+- One `[NODE~]` line per scalar patch (9 lines).
+- One `[EDGE+]` line per new edge (65 lines).
+- Final tally: `Applied 112 change(s); 0 failure(s).`
+- A reminder to run `bani-render`.
+
+**If any failures appear**: each is printed with a `FAIL [...]:` prefix to stderr. The successful changes are still written. Note each failure verbatim, then jump to the **Failure recovery** section below before going further.
+
+### Step 3 — Validate referential integrity
+
+```bash
+python3 carnatic/cli.py validate
+```
+
+This must pass cleanly. It checks every edge endpoint resolves, every composition has a valid composer/raga, every recording references known musicians, and so on. **If validation fails, do not commit.** Jump to Failure recovery.
+
+### Step 4 — Render
+
+```bash
+bani-render
+```
+
+Must end with `[RENDERED] /home/vyaas/fundae/guru_shishya/carnatic/graph.html (X nodes, Y edges)` where:
+
+- `X = baseline_musicians + 38`  (e.g. `156 + 38 = 194`)
+- `Y = baseline_edges + 65`      (e.g. `59 + 65 = 124`)
+
+If the counts don't match, something silently dropped. Investigate before committing.
+
+### Step 5 — Capture post-state
+
+```bash
+python3 carnatic/cli.py stats > /tmp/stats_after.txt
+diff /tmp/stats_before.txt /tmp/stats_after.txt
+```
+
+Confirm the diff shows only musicians/edges incrementing by the expected amounts.
+
+### Step 6 — Visual smoke test (recommended)
+
+```bash
+bani-serve   # then open http://localhost:8765/graph.html
+```
+
+Spot-check one or two of the newly-added lineage chains in the UI:
+
+- Search for **Lalgudi Jayaraman** → you should now see ancestors `lalgudi_gopala_iyer ← valadi_radhakrishna_iyer ← lalgudi_rama_iyer ← tyagaraja`.
+- Search for **Balamuralikrishna** → you should now see his guru `parupalli_ramakrishnayya_pantulu` and ancestor `susarla_dakshinamoorthy_sastry`.
+- Search for **DK Pattammal** → you should see Ambi Dikshitar, Papanasam Sivan, NS Krishnaswamy Iyengar feeding in, and DK Jayaraman, Lalitha Sivakumar, Nityashree Mahadevan flowing out.
+
+Stop the server (Ctrl+C) when done.
+
+### Step 7 — Inspect git diff before committing
+
+```bash
+git status --short
+# expect: 38 new files in carnatic/data/musicians/
+#         modifications to ~9 existing musician files
+#         modification to carnatic/data/musicians/_edges.json
+#         (graph.json regenerated by bani-render)
+#         (graph.html regenerated by bani-render)
+#         carnatic/reports/diff_applied.txt (new — keep it; it is the audit trail)
+
+git diff --stat
+```
+
+**Sanity checks on the diff**:
+
+- ✅ Only `carnatic/data/musicians/*.json`, `carnatic/data/graph.json`, `carnatic/graph.html`, and `carnatic/reports/diff_applied.txt` should change.
+- ❌ If you see changes under `carnatic/data/recordings/`, `carnatic/data/compositions/`, or `carnatic/data/ragas/`, **stop**. The reduced-graph importer must never touch those — escalate.
+- ❌ If any existing musician file has lost its `youtube` array (or any other non-tracked field), **stop** and escalate. Patches should be field-surgical, not full-file rewrites.
+
+### Step 8 — Commit (two commits, by convention)
+
+The two commits keep data and the rendered artefact separable so a reviewer can read the data change in isolation.
+
+**Commit 1 — the data change**:
+
+```bash
+git add carnatic/data/musicians/ carnatic/reports/diff_applied.txt
+
+git commit -m "data(node): import reduced-graph patch — 38 musicians, 65 edges, 9 corrections
+
+Imports reduced_graph_patched.json (collaborator-supplied) via
+bani-import-reduced. Adds the Lalgudi 4-generation chain
+(rama_iyer → valadi_radhakrishna_iyer → gopala_iyer → jayaraman/
+vijayalakshmi/srimathi_brahmananda), the Susarla → Parupalli
+Ramakrishnayya Pantulu → Balamuralikrishna stream, the Pudukottai
+mridangam school (manpoondia_pillai → dakshinamurthy_pillai /
+palani_muthiah_pillai → palani_subramania_pillai), the Maanambuchaavadi
+hub linking Tyagaraja to Maha Vaidyanatha Sivan and Patnam Subramania
+Iyer, and 35 other ancestral and contemporary nodes. Patches era/born/
+died/instrument/bani on 9 existing nodes (notably Maanambuchaavadi
+Venkatasubbaiyer's full bridge-era profile and Lakshmi Sreeram's
+era correction).
+
+Diff report archived at carnatic/reports/diff_applied.txt.
+[AGENTS: librarian]"
+```
+
+**Commit 2 — the rendered artefact** (Coder territory, but appropriate to do here since the same session produced it):
+
+```bash
+git add carnatic/data/graph.json carnatic/graph.html
+
+git commit -m "render(toolchain): rebuild graph.json and graph.html after reduced-graph import
+
+Regenerated by bani-render after the data import in the previous
+commit. Node count: 156 → 194. Edge count: 59 → 124.
+[AGENTS: carnatic-coder]"
+```
+
+### Step 9 — Push the branch
+
+```bash
+git push -u origin data/reduced-graph-patched-2026-04
+```
+
+**Do not merge to `main`.** Open a PR (GitHub UI or `gh pr create`) and request review. The PR description should include:
+
+- Summary tally (38 / 9 / 65) and a link to `carnatic/reports/diff_applied.txt`.
+- Confirmation that `python3 carnatic/cli.py validate` passed.
+- Note that `reduced_graph_patched.json` is the input artefact and is **not** committed (it lives at repo root and is consumed once).
+
+### Step 10 — Update the learning log
+
+Append one dated line to [carnatic/.clinerules](../../carnatic/.clinerules) under the Librarian section:
+
+```
+- 2026-04-27: First end-to-end use of bani-import-reduced; 38 musicians + 65 edges + 9 patches applied in one branch with zero validation failures; reduced-graph format proven on real curator input.
+```
+
+---
+
+## Failure recovery
+
+### If `bani-import-reduced` reports any `FAIL [...]:`
+
+Do not panic — successful rows were already written. The failed rows are listed verbatim. Common causes:
+
+- **Edge endpoint missing**: collaborator referenced a musician id we don't have *and* didn't include that musician in their `musicians` array. Either add the musician (request a follow-up patch) or skip that edge.
+- **Invalid `era`**: must be one of `trinity, bridge, golden_age, disseminator, living_pillars, contemporary`.
+- **Confidence < 0.70 without note**: writer rejects this. Either raise the confidence (with justification) or supply a `note`.
+
+For each failure, decide manually: amend the file and re-run, or accept the partial import. Re-running `bani-import-reduced` is safe — already-applied changes are skipped (duplicate-detection in the writer).
+
+### If `cli.py validate` fails
+
+```bash
+git diff carnatic/data/musicians/_edges.json | head -100
+# look for the orphan edge it complains about
+```
+
+Fix in place via `python3 carnatic/write_cli.py remove-edge ...` or `patch-edge ...`, then re-validate. Do not commit until validate is clean.
+
+### Hard reset (last resort)
+
+If the import went sideways and you want to start over:
+
+```bash
+git checkout main
+git branch -D data/reduced-graph-patched-2026-04
+# then start from Step 1 again
+```
+
+This is safe because nothing has been pushed yet. Do **not** do this after `git push`.
+
+---
+
+## Quick reference — what each tool does
+
+| Command | Purpose |
+|---|---|
+| `bani-export-reduced` | (already run) emits `carnatic/reports/reduced_graph.json` for collaborators to edit |
+| `bani-import-reduced --in <file> --dry-run` | preview the diff; never writes |
+| `bani-import-reduced --in <file>` | apply the diff via `CarnaticWriter` (atomic, validated, deduped) |
+| `python3 carnatic/cli.py validate` | referential integrity gate — must pass before commit |
+| `bani-render` | regenerate `graph.json` + `graph.html` — must run after any data change |
+| `bani-serve` | local server at `http://localhost:8765/graph.html` for visual smoke test |
+
+---
+
+## Out of scope for this work package
+
+- ❌ Recording / YouTube / lecdem additions — the reduced-graph format intentionally excludes these.
+- ❌ Composition or raga additions — handled separately via `write_cli.py add-composition` / `add-raga`.
+- ❌ Schema changes — none are introduced; if any required, file an ADR first.
+- ❌ Touching the `youtube[]` array on any existing musician — patches are scalar-field-only.

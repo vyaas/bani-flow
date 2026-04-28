@@ -1,0 +1,17 @@
+{
+  "id": "ramnad_easwaran",
+  "label": "Ramnad Easwaran",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ramnad_Raghavan",
+      "label": "Wikipedia (via Ramnad Raghavan)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "golden_age",
+  "instrument": "mridangam",
+  "bani": "mixed",
+  "youtube": []
+}

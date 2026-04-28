@@ -1,0 +1,17 @@
+{
+  "id": "lalgudi_rama_iyer",
+  "label": "Lalgudi Rama Iyer",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+      "label": "Wikipedia (via Lalgudi Jayaraman)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1807,
+  "died": 1867,
+  "era": "bridge",
+  "instrument": "vocal",
+  "bani": "tyagaraja",
+  "youtube": []
+}

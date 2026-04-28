@@ -1,0 +1,17 @@
+{
+  "id": "kandappa_pillai",
+  "label": "Kandappa Pillai",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Balasaraswati",
+      "label": "Wikipedia (via T. Balasaraswati)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1899,
+  "died": 1945,
+  "era": "golden_age",
+  "instrument": "bharatanatyam",
+  "bani": "dhanammal",
+  "youtube": []
+}

@@ -1,15 +1,15 @@
 {
-  "id": "maanambuchaavadi_venkatasubbaiyer",
-  "label": "Maanambuchaavadi Venkatasubbaiyer",
+  "id": "susarla_dakshinamoorthy_sastry",
+  "label": "Susarla Dakshinamoorthy Sastry",
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Manambuchavadi_Venkatasubbayyar",
-      "label": "Wikipedia",
+      "label": "Wikipedia (via Manambuchavadi lineage)",
       "type": "wikipedia"
     }
   ],
-  "born": 1803,
-  "died": 1862,
+  "born": null,
+  "died": null,
   "era": "bridge",
   "instrument": "vocal",
   "bani": "tyagaraja",
