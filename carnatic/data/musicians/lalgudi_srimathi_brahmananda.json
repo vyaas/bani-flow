@@ -12,6 +12,9 @@
   "died": null,
   "era": "disseminator",
   "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "lalgudi",
   "youtube": []
 }

@@ -12,6 +12,9 @@
   "died": 2007,
   "era": "golden_age",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "dhanammal",
   "youtube": []
 }

@@ -12,6 +12,9 @@
   "died": 1902,
   "era": "bridge",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "tyagaraja",
   "youtube": []
 }

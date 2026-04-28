@@ -12,6 +12,9 @@
   "died": 1827,
   "era": "trinity",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "shyama_shastri",
   "youtube": []
 }

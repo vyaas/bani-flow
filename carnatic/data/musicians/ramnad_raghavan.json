@@ -12,6 +12,9 @@
   "died": 2009,
   "era": "disseminator",
   "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "mixed",
   "youtube": []
 }

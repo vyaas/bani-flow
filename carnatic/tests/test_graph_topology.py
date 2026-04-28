@@ -7,6 +7,7 @@ Validates: no self-loops, no duplicate edges, no isolated nodes
 
 import pytest
 from carnatic.graph_api import CarnaticGraph
+from carnatic.writer import VALID_INSTRUMENTS
 
 
 def test_no_self_loops(graph: CarnaticGraph) -> None:
@@ -122,10 +123,10 @@ def test_all_eras_are_known(graph: CarnaticGraph) -> None:
 
 
 def test_all_instruments_are_known(graph: CarnaticGraph) -> None:
-    """Every musician node must use a recognised instrument value (null allowed for composers, ADR-110)."""
-    known_instruments = {
-        None, "vocal", "veena", "violin", "flute", "mridangam", "bharatanatyam",
-    }
+    """Every musician node must use a recognised instrument value (null allowed for composers, ADR-110).
+    ADR-114 expanded the vocabulary — uses VALID_INSTRUMENTS from writer.py as the source of truth.
+    """
+    known_instruments = VALID_INSTRUMENTS | {None}
     for node in graph.get_all_musicians():
         instr = node.get("instrument")
         assert instr in known_instruments, (

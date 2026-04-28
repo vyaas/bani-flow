@@ -12,6 +12,9 @@
   "died": 1967,
   "era": "golden_age",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "ariyakudi",
   "youtube": []
 }

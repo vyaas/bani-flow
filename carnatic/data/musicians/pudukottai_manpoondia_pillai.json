@@ -12,6 +12,9 @@
   "died": null,
   "era": "bridge",
   "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "pudukottai",
   "youtube": []
 }

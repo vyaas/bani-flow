@@ -12,6 +12,9 @@
   "died": 1876,
   "era": "bridge",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "shyama_shastri",
   "youtube": []
 }

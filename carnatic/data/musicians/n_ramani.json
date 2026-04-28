@@ -12,6 +12,9 @@
   "died": 2019,
   "era": "living_pillars",
   "instrument": "flute",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "mali",
   "youtube": []
 }

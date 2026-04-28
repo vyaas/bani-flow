@@ -12,6 +12,9 @@
   "died": 1962,
   "era": "golden_age",
   "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "palani",
   "youtube": []
 }

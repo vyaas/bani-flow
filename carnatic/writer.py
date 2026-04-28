@@ -73,6 +73,18 @@ VALID_ERAS = {
 
 VALID_SOURCE_TYPES = {"wikipedia", "pdf", "article", "archive", "other"}
 
+# ADR-114: expanded instrument vocabulary (Carnatic + Hindustani)
+VALID_INSTRUMENTS = {
+    # Carnatic instruments (pre-existing)
+    "vocal", "veena", "violin", "flute", "mridangam",
+    "bharatanatyam", "ghatam", "khanjira", "gottuvadyam", "other",
+    # Hindustani instruments (new in ADR-114)
+    "sitar", "sarod", "bansuri", "tabla", "sarangi", "surbahar",
+}
+
+# ADR-114: musician tradition values
+VALID_TRADITIONS = {"carnatic", "hindustani"}
+
 PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
 PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes"}
@@ -642,6 +654,7 @@ class CarnaticWriter:
         born: int | None = None,
         died: int | None = None,
         bani: str | None = None,
+        traditions: list[str] | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
         """Add a new musician node. era and instrument are optional (null allowed for historical composers)."""
@@ -656,6 +669,21 @@ class CarnaticWriter:
             return _err(
                 f"--source-type \"{source_type}\" is not a valid source type\n"
                 f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
+            )
+        # Validate traditions (ADR-114)
+        effective_traditions = traditions if traditions is not None else ["carnatic"]
+        for t in effective_traditions:
+            if t not in VALID_TRADITIONS:
+                return _err(
+                    f"traditions value \"{t}\" is not valid\n"
+                    f"       Valid values: {', '.join(sorted(VALID_TRADITIONS))}"
+                )
+        # Warn (not error) on unknown instrument (ADR-114)
+        if instrument is not None and instrument not in VALID_INSTRUMENTS:
+            print(
+                f"WARNING: instrument \"{instrument}\" is not in the known vocabulary. "
+                f"Accepted: {', '.join(sorted(VALID_INSTRUMENTS))}",
+                file=sys.stderr,
             )
 
         nodes = _load_all_nodes(musicians_path)
@@ -673,6 +701,7 @@ class CarnaticWriter:
             "died":       died,
             "era":        era,
             "instrument": instrument,
+            "traditions": effective_traditions,
             "bani":       bani,
             "youtube":    [],
         }
@@ -680,6 +709,85 @@ class CarnaticWriter:
 
         born_str = str(born) if born is not None else "null"
         return _ok("[NODE+]", f"added: {id} — {label} (born {born_str}, {era}, {instrument})")
+
+    def add_hindustani_musician(
+        self,
+        musicians_path: Path,
+        *,
+        id: str,
+        label: str,
+        instrument: str,
+        source_url: str,
+        source_label: str,
+        source_type: str,
+        born: int | None = None,
+        died: int | None = None,
+        era: str | None = None,
+        also_carnatic: bool = False,
+        force: bool = False,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """Add a Hindustani musician node (ADR-114).
+
+        Creates musicians/{id}.json with traditions:["hindustani"] (or
+        ["carnatic","hindustani"] when also_carnatic=True).  Sets bani:null.
+        Warns (does not error) on unknown instrument values.
+        Idempotent: refuses to overwrite unless force=True.
+        """
+        # Validate source_type
+        if source_type not in VALID_SOURCE_TYPES:
+            return _err(
+                f"--source-type \"{source_type}\" is not a valid source type\n"
+                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
+            )
+        # Validate era when provided
+        if era is not None and era not in VALID_ERAS:
+            return _err(
+                f"--era \"{era}\" is not a valid era value\n"
+                f"       Valid values: {', '.join(sorted(VALID_ERAS))}"
+            )
+        # Warn on unknown instrument (ADR-114 §2: warn, not error)
+        if instrument not in VALID_INSTRUMENTS:
+            print(
+                f"WARNING: instrument \"{instrument}\" is not in the known vocabulary. "
+                f"Accepted: {', '.join(sorted(VALID_INSTRUMENTS))}",
+                file=sys.stderr,
+            )
+
+        traditions: list[str] = (
+            ["carnatic", "hindustani"] if also_carnatic else ["hindustani"]
+        )
+
+        # Idempotent check
+        if musicians_path.is_dir():
+            target_file = musicians_path / f"{id}.json"
+            if target_file.exists() and not force:
+                return _skip(f"{id} already exists (use --force to overwrite)")
+        else:
+            nodes = _load_all_nodes(musicians_path)
+            if any(n["id"] == id for n in nodes) and not force:
+                return _skip(f"{id} already exists (use --force to overwrite)")
+
+        node: dict[str, Any] = {
+            "id":         id,
+            "label":      label,
+            "sources":    [{"url": source_url, "label": source_label, "type": source_type}],
+            "born":       born,
+            "died":       died,
+            "era":        era,
+            "instrument": instrument,
+            "traditions": traditions,
+            "bani":       None,
+            "youtube":    [],
+        }
+        if force and musicians_path.is_dir():
+            _atomic_write(musicians_path / f"{id}.json", node)
+        else:
+            _append_node(musicians_path, node)
+
+        born_str = str(born) if born is not None else "null"
+        trad_str = "+".join(traditions)
+        return _ok("[NODE+]", f"added: {id} — {label} ({trad_str}, {instrument}, born {born_str})")
 
     def add_edge(
         self,

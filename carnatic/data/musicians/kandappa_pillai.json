@@ -12,6 +12,9 @@
   "died": 1945,
   "era": "golden_age",
   "instrument": "bharatanatyam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "dhanammal",
   "youtube": []
 }

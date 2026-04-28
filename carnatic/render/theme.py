@@ -197,6 +197,10 @@ def css_vars() -> str:
         "--accent-danger":  TOKENS["accentDanger"],
         "--accent-select":  TOKENS["accentSelect"],
         "--accent-match":   TOKENS["accentMatch"],   # raga chip / bani-match colour
+        # ADR-114: Hindustani musician node border
+        "--her-chip-bg":    "#5a7da3",
+        "--her-chip-accent": "#8fb4d8",
+        "--her-chip-text":  "#ffffff",
         "--font-ui":        TOKENS["fontUi"],
         "--font-mono":      TOKENS["fontMono"],
     }

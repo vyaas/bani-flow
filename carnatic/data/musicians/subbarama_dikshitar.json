@@ -12,6 +12,9 @@
   "died": 1906,
   "era": "bridge",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": null,
   "youtube": []
 }

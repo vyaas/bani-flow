@@ -12,6 +12,9 @@
   "died": 1999,
   "era": "living_pillars",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "mixed",
   "youtube": []
 }

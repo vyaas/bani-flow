@@ -12,6 +12,9 @@
   "died": 1973,
   "era": "bridge",
   "instrument": null,
+  "traditions": [
+    "carnatic"
+  ],
   "bani": null,
   "youtube": []
 }

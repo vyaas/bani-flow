@@ -76,6 +76,9 @@ def build_elements(graph: dict, listenable_set: set | None = None,
         is_listenable = bool(listenable_set is None or node_id_local in listenable_set)
         is_composer = bool(composer_musician_ids and node_id_local in composer_musician_ids)
         composer_id_local = node_id_local if is_composer else None
+        # ADR-114: flag nodes whose traditions include "hindustani"
+        traditions = node.get("traditions", ["carnatic"])
+        is_hindustani = 1 if "hindustani" in traditions else 0
 
         elements.append({"data": {
             "id":           node_id_local,
@@ -98,9 +101,10 @@ def build_elements(graph: dict, listenable_set: set | None = None,
             "font_size":    font_size,
             "font_weight":  font_weight,
             "tracks":       tracks,
-            "is_listenable": 1 if is_listenable else 0,
-            "is_composer":   1 if is_composer else 0,
-            "composer_id":   composer_id_local,
+            "is_listenable":  1 if is_listenable else 0,
+            "is_composer":    1 if is_composer else 0,
+            "composer_id":    composer_id_local,
+            "is_hindustani":  is_hindustani,
         }})
 
     for edge in graph["edges"]:

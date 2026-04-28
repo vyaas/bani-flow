@@ -12,6 +12,9 @@
   "died": 2000,
   "era": "disseminator",
   "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "tiger_varadachariar",
   "youtube": []
 }

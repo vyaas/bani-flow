@@ -12,6 +12,9 @@
   "died": 2009,
   "era": "living_pillars",
   "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
   "bani": "palghat",
   "youtube": []
 }
