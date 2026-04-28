@@ -55,6 +55,26 @@
         ]
       },
       {
+        "id": "ajoy_chakrabarty",
+        "label": "Ajoy Chakrabarty",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ajoy_Chakrabarty",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1953,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "traditions": [
+          "hindustani"
+        ],
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "akkarai_subbulakshmi",
         "label": "Akkarai Subbulakshmi",
         "sources": [
@@ -886,6 +906,26 @@
         "instrument": null,
         "traditions": [
           "carnatic"
+        ],
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "hariprasad_chaurasia",
+        "label": "Hariprasad Chaurasia",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Hariprasad_Chaurasia",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1938,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "bansuri",
+        "traditions": [
+          "hindustani"
         ],
         "bani": null,
         "youtube": []
@@ -2771,6 +2811,26 @@
         "youtube": []
       },
       {
+        "id": "nikhil_banerjee",
+        "label": "Nikhil Banerjee",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Nikhil_Banerjee",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1931,
+        "died": 1986,
+        "era": "golden_age",
+        "instrument": "sitar",
+        "traditions": [
+          "hindustani"
+        ],
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "nityashree_mahadevan",
         "label": "Nityashree Mahadevan",
         "sources": [
@@ -4641,7 +4701,8 @@
         "era": "contemporary",
         "instrument": "violin",
         "traditions": [
-          "carnatic"
+          "carnatic",
+          "hindustani"
         ],
         "bani": null,
         "youtube": [
@@ -8425,6 +8486,27 @@
         "notes": "58th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₂ N₂ Ṡ"
       },
       {
+        "id": "hindolam",
+        "name": "Hindolam",
+        "tradition": "carnatic",
+        "aliases": [
+          "Hindola"
+        ],
+        "melakarta": null,
+        "parent_raga": "natabhairavi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Hindolam",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Pentatonic janya of Natabhairavi (Mela 20). Swaras: S G2 M1 D1 N2. Shares its swara set with Hindustani Malkauns. Brisk, kriti-driven character in Carnatic performance.",
+        "hindustani_equivalents": [
+          "malkauns"
+        ]
+      },
+      {
         "id": "huseni",
         "name": "Huseni",
         "tradition": "carnatic",
@@ -9078,6 +9160,28 @@
         "notes": "Janya of Mela 22 Kharaharapriya (Dikshitar's Asampoorna system: janya of Sriraga mela); vakra-sampoorna shadava raga. Only significant composition is Mahalakshmi Karunarasa Lahari by Dikshitar."
       },
       {
+        "id": "madhumad_sarang",
+        "name": "Madhumad Sarang",
+        "tradition": "hindustani",
+        "aliases": [
+          "Madhyamad Sarang",
+          "Madhusudan Sarang"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "is_melakarta": false,
+        "thaat": "kafi",
+        "carnatic_equivalents": [],
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Madhumad_Sarang",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Hindustani raga of the Sarang family; shares its swara set with Carnatic Madhyamavati; the Carnatic gamaka tradition makes them sound very different in performance."
+      },
+      {
         "id": "madhyamavati",
         "name": "Madhyamavati",
         "tradition": "carnatic",
@@ -9094,7 +9198,10 @@
           }
         ],
         "notes": "Janya of Kharaharapriya (mela 22). Pentatonic (audava-audava) raga; uses S R2 M1 P N2. One of the most popular ragas in Carnatic music, frequently used for mangalam and tillanas.",
-        "is_melakarta": false
+        "is_melakarta": false,
+        "hindustani_equivalents": [
+          "madhumad_sarang"
+        ]
       },
       {
         "id": "malavi",
@@ -9114,6 +9221,28 @@
         ],
         "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P N3 S, avarohana S N3 P M1 R1 S; evokes pathos and longing; associated with Tyagaraja's 'Nenarunchinanu'",
         "is_melakarta": false
+      },
+      {
+        "id": "malkauns",
+        "name": "Malkauns",
+        "tradition": "hindustani",
+        "aliases": [
+          "Malkosh",
+          "Malkoshi"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "is_melakarta": false,
+        "thaat": "bhairavi",
+        "carnatic_equivalents": [],
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Malkauns",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "One of the oldest and most revered Hindustani ragas; pentatonic (S g M d n); same swara set as Carnatic Hindolam; typically rendered vilambit with deep meditative character; associated with the Bhairavi thaat."
       },
       {
         "id": "manavati",
@@ -10207,6 +10336,27 @@
         "is_melakarta": false
       },
       {
+        "id": "shudh_bhairavi",
+        "name": "Shudh Bhairavi",
+        "tradition": "hindustani",
+        "aliases": [
+          "Shuddha Bhairavi"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "is_melakarta": false,
+        "thaat": "bhairavi",
+        "carnatic_equivalents": [],
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Bhairavi_(raga)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Hindustani Bhairavi raga; shares its swara set with Carnatic Thodi (Mela 8). One of the most popular Hindustani ragas; traditionally performed at the close of a concert."
+      },
+      {
         "id": "simhavahini",
         "name": "Simhavahini",
         "tradition": "carnatic",
@@ -10550,7 +10700,10 @@
         ],
         "notes": "8th melakarta (Todi group). One of the most important ragas in Carnatic music. Deep emotive character, parent of many janya ragas.",
         "is_melakarta": true,
-        "cakra": 2
+        "cakra": 2,
+        "hindustani_equivalents": [
+          "shudh_bhairavi"
+        ]
       },
       {
         "id": "umaabharanam",

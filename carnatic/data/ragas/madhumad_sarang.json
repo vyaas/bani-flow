@@ -1,0 +1,22 @@
+{
+  "id": "madhumad_sarang",
+  "name": "Madhumad Sarang",
+  "tradition": "hindustani",
+  "aliases": [
+    "Madhyamad Sarang",
+    "Madhusudan Sarang"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Madhumad_Sarang",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Hindustani raga of the Sarang family; shares its swara set with Carnatic Madhyamavati; the Carnatic gamaka tradition makes them sound very different in performance."
+}

@@ -1,0 +1,21 @@
+{
+  "id": "hindolam",
+  "name": "Hindolam",
+  "tradition": "carnatic",
+  "aliases": [
+    "Hindola"
+  ],
+  "melakarta": null,
+  "parent_raga": "natabhairavi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Hindolam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Pentatonic janya of Natabhairavi (Mela 20). Swaras: S G2 M1 D1 N2. Shares its swara set with Hindustani Malkauns. Brisk, kriti-driven character in Carnatic performance.",
+  "hindustani_equivalents": [
+    "malkauns"
+  ]
+}

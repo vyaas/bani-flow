@@ -1,0 +1,20 @@
+{
+  "id": "nikhil_banerjee",
+  "label": "Nikhil Banerjee",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nikhil_Banerjee",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1931,
+  "died": 1986,
+  "era": "golden_age",
+  "instrument": "sitar",
+  "traditions": [
+    "hindustani"
+  ],
+  "bani": null,
+  "youtube": []
+}

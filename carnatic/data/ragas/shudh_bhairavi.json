@@ -1,0 +1,21 @@
+{
+  "id": "shudh_bhairavi",
+  "name": "Shudh Bhairavi",
+  "tradition": "hindustani",
+  "aliases": [
+    "Shuddha Bhairavi"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "bhairavi",
+  "carnatic_equivalents": [],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Bhairavi_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Hindustani Bhairavi raga; shares its swara set with Carnatic Thodi (Mela 8). One of the most popular Hindustani ragas; traditionally performed at the close of a concert."
+}
