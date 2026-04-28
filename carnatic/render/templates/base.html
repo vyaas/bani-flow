@@ -2452,6 +2452,35 @@
   .ef-row[data-show-if] { display: none; }
   .ef-row[data-show-if].ef-visible { display: flex; }
 
+  /* ADR-115: Tradition segmented control (Add Raga form) */
+  .segmented-control {
+    display: inline-flex; border: 1px solid var(--border-strong);
+    border-radius: 6px; overflow: hidden; gap: 0;
+  }
+  .seg-btn {
+    background: var(--bg-input); color: var(--fg-muted);
+    border: none; border-right: 1px solid var(--border-strong);
+    padding: 4px 12px; font-family: inherit; font-size: 0.72rem;
+    cursor: pointer; transition: background 0.1s, color 0.1s;
+  }
+  .seg-btn:last-child { border-right: none; }
+  .seg-btn.active {
+    background: var(--accent); color: var(--bg);
+  }
+  .seg-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ADR-115: Traditions multi-select chips (Add Musician form) */
+  .tradition-chip {
+    background: var(--bg-input); color: var(--fg-muted);
+    border: 1px solid var(--border-strong);
+    padding: 3px 10px; font-family: inherit; font-size: 0.72rem;
+    border-radius: 12px; cursor: pointer; transition: background 0.1s, color 0.1s;
+  }
+  .tradition-chip.active {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent);
+  }
+
   /* ── Phase 0: Mobile baseline (ADR-032) ── */
   /* Touch targets: all interactive controls ≥ 44px on mobile.
      Filter chip bar: horizontal scroll instead of wrap.

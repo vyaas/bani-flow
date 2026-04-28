@@ -40,9 +40,18 @@
           "video_id": "_rj8fHJiSLA",
           "youtube_url": "https://www.youtube.com/watch?v=_rj8fHJiSLA",
           "performers": [
-            { "id": "ramnad_krishnan", "label": "Ramnad Krishnan" },
-            { "id": "tn_krishnan", "label": "TN Krishnan" },
-            { "id": "vellore_ramabhadran", "label": "Vellore G. Ramabhadran" }
+            {
+              "id": "ramnad_krishnan",
+              "label": "Ramnad Krishnan"
+            },
+            {
+              "id": "tn_krishnan",
+              "label": "TN Krishnan"
+            },
+            {
+              "id": "vellore_ramabhadran",
+              "label": "Vellore G. Ramabhadran"
+            }
           ]
         },
         "effect": "A concert row opens a scrollable setlist — every piece in that evening's programme, playable in sequence. Ramnad Krishnan at Poonamallee (1965): student of T. Brinda, carrying the Dhanammal bani in full flight. ▶ opens the player; ↗ opens YouTube."
@@ -59,7 +68,10 @@
           "video_id": "Va7kZP434LE",
           "youtube_url": "https://www.youtube.com/watch?v=Va7kZP434LE",
           "performers": [
-            { "id": "tm_krishna", "label": "TM Krishna" }
+            {
+              "id": "tm_krishna",
+              "label": "TM Krishna"
+            }
           ]
         },
         "effect": "Lec-dem rows appear at the top of a musician's profile. TM Krishna's Manodharma — three lectures on improvisation — is the finest available introduction to how a performer thinks inside a raga: where the freedom is, what it is constrained by, and why it sounds the way it does. Begin here."
@@ -76,7 +88,10 @@
           "video_id": "iaZJSah3NyE",
           "youtube_url": "https://www.youtube.com/watch?v=iaZJSah3NyE",
           "performers": [
-            { "id": "tm_krishna", "label": "TM Krishna" }
+            {
+              "id": "tm_krishna",
+              "label": "TM Krishna"
+            }
           ]
         },
         "effect": "Part Two: how alapana gives way to the composed kriti, and how kalpana swara — improvised melodic phrases on solmisation syllables — are woven into the performance structure."
@@ -93,7 +108,10 @@
           "video_id": "6jMvw76Zprw",
           "youtube_url": "https://www.youtube.com/watch?v=6jMvw76Zprw",
           "performers": [
-            { "id": "tm_krishna", "label": "TM Krishna" }
+            {
+              "id": "tm_krishna",
+              "label": "TM Krishna"
+            }
           ]
         },
         "effect": "Part Three: the accompanying musicians — violinist and mridangist — and the dialogic improvisation (thani avartanam, svarakalpana) that makes Carnatic music a conversation, not a recitation."
@@ -123,9 +141,18 @@
       "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
       "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
       "raga_note_composers": [
-        { "id": "tyagaraja", "label": "Tyagaraja" },
-        { "id": "muthuswami_dikshitar", "label": "Muthuswami Dikshitar" },
-        { "id": "shyama_shastri", "label": "Shyama Shastri" }
+        {
+          "id": "tyagaraja",
+          "label": "Tyagaraja"
+        },
+        {
+          "id": "muthuswami_dikshitar",
+          "label": "Muthuswami Dikshitar"
+        },
+        {
+          "id": "shyama_shastri",
+          "label": "Shyama Shastri"
+        }
       ],
       "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion",
       "wheel_note": "In Mela-Janya view, tapping a raga also illuminates it on the 72-mela wheel — you can see which parent mela governs this raga and navigate to its siblings."
@@ -169,11 +196,15 @@
           "video_id": "nBAez2kdElo",
           "youtube_url": "https://www.youtube.com/watch?v=nBAez2kdElo",
           "raga_tags": [],
-          "performers": [{ "id": "lakshmi_sreeram", "label": "Lakshmi Sreeram" }]
+          "performers": [
+            {
+              "id": "lakshmi_sreeram",
+              "label": "Lakshmi Sreeram"
+            }
+          ]
         },
         "effect": "Gamaka — the ornamental inflection of a swara — is what makes Carnatic music sound the way it does. Without gamaka, a raga is a scale; with it, a single note becomes an emotion. Lakshmi Sreeram's lecture series covers the grammar of gamaka from first principles: this is where good listening begins."
       },
-
       {
         "css_class": "trail-acts",
         "example_kind": "demo_row",
@@ -201,9 +232,28 @@
           "video_id": "C50lNHXE4RY",
           "youtube_url": "https://www.youtube.com/watch?v=C50lNHXE4RY",
           "raga_tags": [],
-          "performers": [{ "id": "lakshmi_sreeram", "label": "Lakshmi Sreeram" }]
+          "performers": [
+            {
+              "id": "lakshmi_sreeram",
+              "label": "Lakshmi Sreeram"
+            }
+          ]
         },
         "effect": "The raga chips on a lec-dem are interactive — tapping them focuses that raga on the Mela-Janya wheel. A raga heard and explained in a lecture becomes a navigable node in the modal world. Lakshmi Sreeram's lecture on raga is the clearest available account of what a raga is — not a scale, but a personality; not a set of notes, but a way of moving between them."
+      },
+      {
+        "css_class": "her-chip",
+        "example_kind": "demo_row",
+        "example_id": null,
+        "example_label": null,
+        "demo_row": {
+          "type": "her_row",
+          "carnatic_raga_id": "hindolam",
+          "carnatic_label": "Hindolam",
+          "her_id": "malkauns",
+          "her_label": "Malkauns"
+        },
+        "effect": "The cool blue ↔ chip is a Hindustani Equivalent Raga (HER). Hindolam and Malkauns share the same five swaras (S G₂ M₁ D₁ N₂) but inhabit them entirely differently: Hindolam is crisp, composition-driven, built on fast kalpana swaras; Malkauns is deep, raga-alap-first, meditative in vilambit. Click either chip to explore."
       }
     ],
     "cross_panel_seeds": {
@@ -236,9 +286,18 @@
       "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
       "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
       "raga_note_composers": [
-        { "id": "tyagaraja", "label": "Tyagaraja" },
-        { "id": "muthuswami_dikshitar", "label": "Muthuswami Dikshitar" },
-        { "id": "shyama_shastri", "label": "Shyama Shastri" }
+        {
+          "id": "tyagaraja",
+          "label": "Tyagaraja"
+        },
+        {
+          "id": "muthuswami_dikshitar",
+          "label": "Muthuswami Dikshitar"
+        },
+        {
+          "id": "shyama_shastri",
+          "label": "Shyama Shastri"
+        }
       ],
       "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
     }
@@ -247,7 +306,7 @@
     {
       "id": "her_intro",
       "type": "mechanics_bullet",
-      "text": "Cool blue chip with \u2194 is a Hindustani equivalent \u2014 same swaras, different aesthetic. Click to hear the difference."
+      "text": "Cool blue chip with ↔ is a Hindustani equivalent — same swaras, different aesthetic. Click to hear the difference."
     }
   ],
   "help_cards": [
@@ -255,7 +314,7 @@
       "id": "her_card",
       "type": "help_card",
       "title": "Hindustani Equivalent Ragas",
-      "body": "Some Carnatic ragas share their swaras with a Hindustani counterpart that sounds entirely different. Look for the cool blue chip with \u2194 \u2014 click it to hear the same swaras inhabited by another tradition."
+      "body": "Some Carnatic ragas share their swaras with a Hindustani counterpart that sounds entirely different. Look for the cool blue chip with ↔ — click it to hear the same swaras inhabited by another tradition."
     }
   ]
 }

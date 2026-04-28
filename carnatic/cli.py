@@ -886,7 +886,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                     "musician_panel": {"musician"},
                     "bani_flow_panel": {"raga", "composition"},
                 }
-                _DEMO_ROW_ALLOWED_TYPES = {"lecdem_row", "composition_row", "action_row", "recording_row"}
+                _DEMO_ROW_ALLOWED_TYPES = {"lecdem_row", "composition_row", "action_row", "recording_row", "her_row"}
                 _STRICT_VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 
                 def _is_non_empty_string(v: object) -> bool:
@@ -1015,6 +1015,19 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                                     errors.append(
                                         f"{c_where}.demo_row.composer_id: '{composer_id}' not in "
                                         f"musicians"
+                                    )
+
+                            # ADR-115: her_row referential integrity
+                            if demo_type == "her_row":
+                                car_id = demo.get("carnatic_raga_id")
+                                her_id = demo.get("her_id")
+                                if car_id and car_id not in known_raga_ids:
+                                    errors.append(
+                                        f"{c_where}.demo_row.carnatic_raga_id: '{car_id}' not in ragas"
+                                    )
+                                if her_id and her_id not in known_raga_ids:
+                                    errors.append(
+                                        f"{c_where}.demo_row.her_id: '{her_id}' not in ragas"
                                     )
 
                     # Validate cross_panel_seeds

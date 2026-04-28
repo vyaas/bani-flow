@@ -1050,11 +1050,20 @@ function addYoutubeBlock(container, formWin) {
 
   const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
   const compSel = efCombobox(null, compOpts, 'composition', formWin);
-  recitalFields.appendChild(efRow('Composition', false, null, compSel));
+  const compRow = efRow('Composition', false, null, compSel);
+  recitalFields.appendChild(compRow);
 
   const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
   const ragaSel = efCombobox(null, ragaOpts, 'raga', formWin);
-  recitalFields.appendChild(efRow('Raga', false, 'auto-filled from composition', ragaSel));
+  const ragaRow = efRow('Raga', false, 'auto-filled from composition', ragaSel);
+  recitalFields.appendChild(ragaRow);
+
+  // ADR-115: [Hindustani] tag in raga row (hidden until HER raga selected)
+  const herTag = document.createElement('span');
+  herTag.className = 'her-chip her-chip--secondary';
+  herTag.style.cssText = 'display:none;margin-left:6px;font-size:0.62rem;';
+  herTag.textContent = '[Hindustani]';
+  ragaRow.appendChild(herTag);
 
   // Auto-fill raga when composition is selected
   wireCompRagaAutofill(compSel, ragaSel, null, formWin);
@@ -1071,7 +1080,54 @@ function addYoutubeBlock(container, formWin) {
   block.appendChild(efRow('Version', false, null, versionInp));
 
   const talaInp = efInput(null, 'text', 'e.g. adi, rupakam, misra chapu', null);
-  block.appendChild(efRow('Tala', false, null, talaInp));
+  const talaRow = efRow('Tala', false, null, talaInp);
+  block.appendChild(talaRow);
+
+  // ADR-115: HER kind row — shown when a Hindustani raga is selected
+  const herKindOpts = [
+    { value: 'raga_alap', label: 'Raga Alap (default for HER)' },
+    { value: 'lecdem',    label: 'Lec-dem' },
+    { value: 'concert',   label: 'Concert' },
+    { value: 'misc',      label: 'Misc' },
+  ];
+  const herKindSel = efSelect(null, herKindOpts, false);
+  herKindSel.value = 'raga_alap';
+  const herKindRow = efRow('Kind', false, 'HER recording type', herKindSel);
+  herKindRow.style.display = 'none';
+  block.appendChild(herKindRow);
+  block._herKindSel = herKindSel;
+  block._herKindRow = herKindRow;
+
+  // ADR-115: "show composition" expander link for HER mode
+  const compExpander = document.createElement('button');
+  compExpander.type = 'button';
+  compExpander.className = 'ef-add-btn';
+  compExpander.style.cssText = 'display:none;font-size:0.64rem;padding:2px 8px;width:auto;opacity:0.7;';
+  compExpander.textContent = '+ add composition (rare for HER)';
+  compExpander.addEventListener('click', () => {
+    compRow.style.display = '';
+    compExpander.style.display = 'none';
+  });
+  recitalFields.insertBefore(compExpander, compRow.nextSibling);
+
+  // ADR-115: HER mode handler — fires when raga selection changes
+  ragaSel.addEventListener('change', () => {
+    const ragaId = ragaSel.getValue ? ragaSel.getValue() : '';
+    const selectedRaga = ragaId ? (graphData.ragas || []).find(r => r.id === ragaId) : null;
+    const isHer = !!(selectedRaga && selectedRaga.tradition === 'hindustani');
+    block._herMode = isHer;
+    herTag.style.display  = isHer ? '' : 'none';
+    herKindRow.style.display = isHer ? '' : 'none';
+    talaRow.style.display = isHer ? 'none' : '';
+    if (isHer) {
+      compRow.style.display = 'none';
+      compExpander.style.display = '';
+    } else {
+      compRow.style.display = '';
+      compExpander.style.display = 'none';
+    }
+    if (formWin) formWin.dispatchEvent(new Event('input'));
+  });
 
   // ── Accompanists subsection (ADR-070 / ADR-071) ──────────────────────────
   const perfContainer = document.createElement('div');
@@ -1505,6 +1561,26 @@ function buildRagaForm() {
 
   body.appendChild(efSection('Raga Fields'));
 
+  // ADR-115: Tradition segmented control — first field in the form
+  let _tradition = 'carnatic';
+  const tradRow = document.createElement('div');
+  tradRow.className = 'ef-row';
+  const tradLabel = document.createElement('span');
+  tradLabel.className = 'ef-label';
+  tradLabel.textContent = 'Tradition';
+  const tradControl = document.createElement('div');
+  tradControl.id = 'raga-tradition-control';
+  tradControl.className = 'segmented-control';
+  const _carnaticBtn = document.createElement('button');
+  _carnaticBtn.type = 'button'; _carnaticBtn.className = 'seg-btn active';
+  _carnaticBtn.dataset.value = 'carnatic'; _carnaticBtn.textContent = 'Carnatic';
+  const _hindustaniBtn = document.createElement('button');
+  _hindustaniBtn.type = 'button'; _hindustaniBtn.className = 'seg-btn';
+  _hindustaniBtn.dataset.value = 'hindustani'; _hindustaniBtn.textContent = 'Hindustani';
+  tradControl.appendChild(_carnaticBtn); tradControl.appendChild(_hindustaniBtn);
+  tradRow.appendChild(tradLabel); tradRow.appendChild(tradControl);
+  body.appendChild(tradRow);
+
   const nameInp = efInput('ef_raga_name', 'text', 'e.g. Arabhi', null);
   body.appendChild(efRow('Name', true, null, nameInp));
 
@@ -1515,13 +1591,43 @@ function buildRagaForm() {
   const aliasInp = efInput('ef_raga_aliases', 'text', 'Arabi, Aravi (comma-separated)', null);
   body.appendChild(efRow('Aliases', false, 'comma-separated', aliasInp));
 
+  // ADR-115: Hindustani-only — thaat dropdown (hidden by default)
+  const thaatOpts = [
+    { value: '',         label: '— select thaat —' },
+    { value: 'bilawal',  label: 'Bilawal' },
+    { value: 'kalyan',   label: 'Kalyan' },
+    { value: 'khamaj',   label: 'Khamaj' },
+    { value: 'bhairav',  label: 'Bhairav' },
+    { value: 'bhairavi', label: 'Bhairavi' },
+    { value: 'asavari',  label: 'Asavari' },
+    { value: 'todi',     label: 'Todi' },
+    { value: 'purvi',    label: 'Purvi' },
+    { value: 'marwa',    label: 'Marwa' },
+    { value: 'kafi',     label: 'Kafi' },
+    { value: 'unknown',  label: 'Unknown / not assigned' },
+  ];
+  const thaatSel = efSelect('ef_raga_thaat', thaatOpts, false);
+  const thaatRow = efRow('Thaat', false, 'Hindustani parent scale', thaatSel);
+  thaatRow.style.display = 'none';
+  body.appendChild(thaatRow);
+
+  // ADR-115: Hindustani-only — Carnatic equivalent back-link (typeahead, optional)
+  const _carnaticRagaOpts = (graphData.ragas || [])
+    .filter(r => !r.tradition || r.tradition === 'carnatic')
+    .map(r => ({ value: r.id, label: r.name || r.id }));
+  const carnEqSel = efCombobox('ef_raga_carnatic_equiv', _carnaticRagaOpts, null, win);
+  const carnEqRow = efRow('Carnatic Equivalent', false, 'links this HER to a Carnatic raga (optional)', carnEqSel);
+  carnEqRow.style.display = 'none';
+  body.appendChild(carnEqRow);
+
   const melaOpts = [
     { value: 'false', label: 'No — Janya raga' },
     { value: 'true',  label: 'Yes — Melakarta' },
   ];
   const melaSel = efSelect('ef_raga_is_mela', melaOpts, false);
   melaSel.value = 'false';
-  body.appendChild(efRow('Is Melakarta?', true, null, melaSel));
+  const melaSelRow = efRow('Is Melakarta?', true, null, melaSel);
+  body.appendChild(melaSelRow);
 
   // Conditional: melakarta number + cakra (shown only when is_melakarta = true)
   const melaNumInp = efInput('ef_raga_melakarta', 'number', '1–72', null);
@@ -1542,12 +1648,41 @@ function buildRagaForm() {
   parentRow.classList.add('ef-visible'); // default: janya
   body.appendChild(parentRow);
 
-  // Wire conditional display
+  // Wire Carnatic-only conditional display (melakarta ↔ janya)
   melaSel.addEventListener('change', () => {
+    if (_tradition !== 'carnatic') return;
     const isMela = melaSel.value === 'true';
     melaNumRow.classList.toggle('ef-visible', isMela);
     cakraRow.classList.toggle('ef-visible', isMela);
     parentRow.classList.toggle('ef-visible', !isMela);
+  });
+
+  // ADR-115: Show/hide field sets based on tradition selection
+  function _applyRagaTraditionDisplay() {
+    const isCarnatic = _tradition === 'carnatic';
+    melaSelRow.style.display = isCarnatic ? '' : 'none';
+    melaNumRow.style.display = isCarnatic ? '' : 'none';
+    cakraRow.style.display   = isCarnatic ? '' : 'none';
+    parentRow.style.display  = isCarnatic ? '' : 'none';
+    thaatRow.style.display   = isCarnatic ? 'none' : '';
+    carnEqRow.style.display  = isCarnatic ? 'none' : '';
+    // Re-apply class-based mela/janya visibility within Carnatic state
+    if (isCarnatic) {
+      const isMela = melaSel.value === 'true';
+      melaNumRow.classList.toggle('ef-visible', isMela);
+      cakraRow.classList.toggle('ef-visible', isMela);
+      parentRow.classList.toggle('ef-visible', !isMela);
+    }
+  }
+
+  [_carnaticBtn, _hindustaniBtn].forEach(btn => {
+    btn.addEventListener('click', () => {
+      _tradition = btn.dataset.value;
+      _carnaticBtn.classList.toggle('active', _tradition === 'carnatic');
+      _hindustaniBtn.classList.toggle('active', _tradition === 'hindustani');
+      _applyRagaTraditionDisplay();
+      win.dispatchEvent(new Event('input'));
+    });
   });
 
   const notesInp = efInput('ef_raga_notes', 'text', 'Musicological note…', null);
@@ -1608,7 +1743,16 @@ function buildRagaForm() {
 
   bundleBtn.addEventListener('click', () => {
     const obj = generateRagaJson(win);
-    addToBundle('ragas', obj);
+    // ADR-115: dual-emission for HER creation — emit create + append back-link atomically
+    const carnEqVal = win.querySelector('#ef_raga_carnatic_equiv')
+      ? win.querySelector('#ef_raga_carnatic_equiv').value
+      : '';
+    if (obj.tradition === 'hindustani' && carnEqVal) {
+      addToBundle('ragas', obj);
+      addToBundle('ragas', { op: 'append', id: carnEqVal, field: 'hindustani_equivalents', value: obj.id });
+    } else {
+      addToBundle('ragas', obj);
+    }
     showGenericSuccess(win, obj.id, 'bundle');
   });
 
@@ -1631,11 +1775,35 @@ function generateRagaJson(win) {
   const parent  = win.querySelector('#ef_raga_parent')       ? win.querySelector('#ef_raga_parent').value              : '';
   const notes   = win.querySelector('#ef_raga_notes')        ? win.querySelector('#ef_raga_notes').value.trim()        : '';
   const srcUrl  = win.querySelector('#ef_raga_source_url')   ? win.querySelector('#ef_raga_source_url').value.trim()   : '';
+  // ADR-115: tradition, thaat, carnatic_equivalents
+  const tradControl = win.querySelector('#raga-tradition-control');
+  const tradition = tradControl
+    ? (tradControl.querySelector('.seg-btn.active') ? tradControl.querySelector('.seg-btn.active').dataset.value : 'carnatic')
+    : 'carnatic';
+  const thaat   = win.querySelector('#ef_raga_thaat')         ? win.querySelector('#ef_raga_thaat').value || null       : null;
+  const carnEq  = win.querySelector('#ef_raga_carnatic_equiv') ? win.querySelector('#ef_raga_carnatic_equiv').value      : '';
   // ADR-097 §4: source label/type inferred from URL host.
 
   const aliasArr = aliases
     ? aliases.split(',').map(s => s.trim()).filter(Boolean)
     : [];
+
+  if (tradition === 'hindustani') {
+    return {
+      id,
+      name,
+      tradition:            'hindustani',
+      aliases:              aliasArr,
+      melakarta:            null,
+      is_melakarta:         false,
+      cakra:                null,
+      parent_raga:          null,
+      thaat:                thaat,
+      carnatic_equivalents: [],
+      sources: [inferSource(srcUrl)],
+      notes: notes || null,
+    };
+  }
 
   return {
     id,
@@ -3929,6 +4097,14 @@ function openEditForm({ entityType, id } = {}) {
 // Called from the + chip on the Janyas panel header.
 function openAddRagaForm({ parentRagaId, mela } = {}) {
   const win = buildRagaForm();
+  // ADR-115: Lock tradition to Carnatic when adding from a mela panel
+  // (HERs cannot be janyas of melakartas)
+  const _tradHindBtn = win.querySelector('#raga-tradition-control [data-value="hindustani"]');
+  if (_tradHindBtn) {
+    _tradHindBtn.disabled = true;
+    _tradHindBtn.title = 'Janyas of melakartas are always Carnatic. To add a Hindustani raga, start from a Carnatic raga\u2019s panel.';
+    _tradHindBtn.style.opacity = '0.45';
+  }
   if (!parentRagaId) return;
   // Lock "Is Melakarta?" to "No — Janya raga" (non-editable when adding under a mela)
   const melaSel = win.querySelector('#ef_raga_is_mela');
@@ -3949,6 +4125,35 @@ function openAddRagaForm({ parentRagaId, mela } = {}) {
       _lockComboboxField(wrap, parentLabel);
     }
   }
+}
+
+// ADR-115: Opens Add Raga form in Hindustani state with carnatic_equivalents pre-filled.
+// Called from the + button on a Carnatic raga panel's HER row.
+function openAddRagaFormHER(carnaticRagaId) {
+  const win = buildRagaForm();
+  // Switch tradition to Hindustani
+  const _hindBtn = win.querySelector('#raga-tradition-control [data-value="hindustani"]');
+  if (_hindBtn) _hindBtn.click();
+  // Pre-fill + lock carnatic equivalent back-link
+  if (carnaticRagaId) {
+    const carnEqHidden = win.querySelector('#ef_raga_carnatic_equiv');
+    if (carnEqHidden) {
+      const wrap = carnEqHidden.closest('.ef-combobox-wrap') || carnEqHidden.parentElement;
+      if (wrap && typeof wrap.setValue === 'function') {
+        const cr = (graphData.ragas || []).find(r => r.id === carnaticRagaId);
+        const label = cr ? (cr.name || carnaticRagaId) : carnaticRagaId;
+        wrap.setValue(carnaticRagaId, label);
+        _lockComboboxField(wrap, label);
+      }
+    }
+  }
+}
+
+// ADR-115: Opens Add Raga form in Carnatic state.
+// Called from the + button on a HER panel's Carnatic equivalents row.
+function openAddRagaFormCarnatic() {
+  buildRagaForm();
+  // Default state is already Carnatic — no locking needed.
 }
 
 // ── ADR-108: Add / Edit Musician form (entity fields + edges, no YouTube) ─────
@@ -3986,9 +4191,43 @@ function buildAddMusicianForm({ prefill = null } = {}) {
   const eraSel   = efSelect('ef_adm_era', eraOpts, false);
   body.appendChild(efRow('Era', true, null, eraSel));
 
-  const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
+  // ADR-115: All instruments (Carnatic + 6 new Hindustani instruments)
+  const _instrCarnaticOpts  = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
+  const _instrHindustaniOpts = ['sitar', 'sarod', 'bansuri', 'tabla', 'sarangi', 'surbahar'];
+  const instrOpts = [..._instrCarnaticOpts.slice(0, 1), ..._instrHindustaniOpts, ..._instrCarnaticOpts.slice(1)];
   const instrSel  = efSelect('ef_adm_instr', instrOpts, false);
   body.appendChild(efRow('Instrument', true, null, instrSel));
+
+  // ADR-115: Traditions chips (independent toggles — both can be active simultaneously)
+  body.appendChild(efSection('Traditions'));
+  const tradChipsDiv = document.createElement('div');
+  tradChipsDiv.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+  const carnaticChip = document.createElement('button');
+  carnaticChip.type = 'button'; carnaticChip.className = 'tradition-chip active';
+  carnaticChip.dataset.value = 'carnatic'; carnaticChip.textContent = 'Carnatic';
+  const hindustaniChip = document.createElement('button');
+  hindustaniChip.type = 'button'; hindustaniChip.className = 'tradition-chip';
+  hindustaniChip.dataset.value = 'hindustani'; hindustaniChip.textContent = 'Hindustani';
+  tradChipsDiv.appendChild(carnaticChip); tradChipsDiv.appendChild(hindustaniChip);
+  body.appendChild(tradChipsDiv);
+
+  // Grey hint shown only when Hindustani-only tradition selected (no gharana field per ADR-114 §5)
+  const gharanaHint = document.createElement('p');
+  gharanaHint.style.cssText = 'font-size:0.66rem;color:var(--fg-muted);margin:0 0 8px;display:none;';
+  gharanaHint.textContent = '(if Hindustani: gharana / lineage notes go in the Notes field as prose)';
+  body.appendChild(gharanaHint);
+
+  [carnaticChip, hindustaniChip].forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      // Update instrument list ordering when Hindustani is active
+      const hindActive = hindustaniChip.classList.contains('active');
+      const carnActive = carnaticChip.classList.contains('active');
+      // Show gharana hint when Hindustani-only
+      gharanaHint.style.display = (hindActive && !carnActive) ? '' : 'none';
+      win.dispatchEvent(new Event('input'));
+    });
+  });
 
   // ADR-097 §5: bani not collected at intake — set later via patch by librarian.
   body.appendChild(efSourceFields('ef_adm'));
@@ -4104,6 +4343,11 @@ function buildAddMusicianForm({ prefill = null } = {}) {
     const id = idRow._idInput ? idRow._idInput.value.trim() : '';
     const v  = getCurrentValues();
     const srcUrl = win.querySelector('#ef_adm_source_url') ? win.querySelector('#ef_adm_source_url').value.trim() : '';
+    // ADR-115: collect traditions from chips
+    const traditions = [];
+    if (carnaticChip.classList.contains('active'))   traditions.push('carnatic');
+    if (hindustaniChip.classList.contains('active')) traditions.push('hindustani');
+    if (traditions.length === 0) traditions.push('carnatic'); // default
 
     if (isEdit) {
       // op: patch — only fields that changed from prefill values
@@ -4126,6 +4370,7 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       died:       v.died,
       era:        v.era,
       instrument: v.instr,
+      traditions,
       bani:       null,
       youtube:    [],
       _edges:     collectEdges(id),
@@ -4367,6 +4612,10 @@ function buildFocusedYouTubeForm(musicianId) {
       if (year)    entry.year           = parseInt(year, 10);
       if (version) entry.version        = version;
       if (tala)    entry.tala           = tala;
+      // ADR-115: HER mode — emit kind from the HER kind selector
+      if (block._herMode && !isLecdem && block._herKindSel) {
+        entry.kind = block._herKindSel.value || 'raga_alap';
+      }
       const performers = (typeof collectYoutubePerformers === 'function')
         ? collectYoutubePerformers(block, musicianId, hostInstrument)
         : null;

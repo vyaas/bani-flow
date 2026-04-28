@@ -448,6 +448,36 @@
       return row;
     }
 
+    // ADR-115: her_row — shows a Carnatic raga chip ↔ HER chip pair
+    if (type === 'her_row') {
+      const block = _el('div', 'pt-demo-block');
+      const row = _el('div', 'pt-demo-row');
+      if (demo.carnatic_raga_id) {
+        const carnChip = _el('span', 'raga-chip', demo.carnatic_label || demo.carnatic_raga_id);
+        carnChip.style.cursor = 'pointer';
+        carnChip.title = 'Explore Carnatic raga: ' + (demo.carnatic_label || demo.carnatic_raga_id);
+        carnChip.addEventListener('click', function (evt) {
+          evt.stopPropagation();
+          _onRaga(demo.carnatic_raga_id, {});
+        });
+        row.appendChild(carnChip);
+      }
+      if (demo.her_id) {
+        const sep = _el('span', 'her-label', '\u00a0\u2194\u00a0');
+        row.appendChild(sep);
+        const herChip = _el('span', 'her-chip', '\u2194\u00a0' + (demo.her_label || demo.her_id));
+        herChip.style.cursor = 'pointer';
+        herChip.title = 'Explore Hindustani equivalent: ' + (demo.her_label || demo.her_id);
+        herChip.addEventListener('click', function (evt) {
+          evt.stopPropagation();
+          _onRaga(demo.her_id, {});
+        });
+        row.appendChild(herChip);
+      }
+      block.appendChild(row);
+      return block;
+    }
+
     return _el('span', 'pt-demo-label', 'Invalid demo row');
   }
 
