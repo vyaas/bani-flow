@@ -242,5 +242,20 @@
       ],
       "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
     }
-  }
+  },
+  "mechanics_bullets": [
+    {
+      "id": "her_intro",
+      "type": "mechanics_bullet",
+      "text": "Cool blue chip with \u2194 is a Hindustani equivalent \u2014 same swaras, different aesthetic. Click to hear the difference."
+    }
+  ],
+  "help_cards": [
+    {
+      "id": "her_card",
+      "type": "help_card",
+      "title": "Hindustani Equivalent Ragas",
+      "body": "Some Carnatic ragas share their swaras with a Hindustani counterpart that sounds entirely different. Look for the cool blue chip with \u2194 \u2014 click it to hear the same swaras inhabited by another tradition."
+    }
+  ]
 }
