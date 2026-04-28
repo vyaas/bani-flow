@@ -170,7 +170,16 @@
         "raga_ids": [],
         "composition_ids": [],
         "musician_ids": []
-      }
+      },
+      "segments": [
+        {
+          "offset_seconds": 0,
+          "raga_id": "bageshri",
+          "kind": "alapana",
+          "segment_index": 1,
+          "timestamp": "00:00"
+        }
+      ]
     }
   ]
 }
