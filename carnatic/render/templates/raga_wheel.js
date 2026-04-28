@@ -552,6 +552,11 @@ function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
     window._wheelSyncInProgress = true;
     if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
     window._wheelSyncInProgress = false;
+    // On mobile, open the bani-flow panel after loading the trail so the rasika
+    // sees the trail slide in alongside the still-open box (box → panel cascade).
+    if (window.matchMedia('(max-width: 768px)').matches && typeof window.setPanelState === 'function') {
+      setTimeout(function () { window.setPanelState('TRAIL'); }, 50);
+    }
   }
 }
 
@@ -587,6 +592,11 @@ function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
       }
       window._wheelSyncInProgress = false;
       window._wheelOriginatedTrigger = false;
+      // On mobile, close the box so the bani-flow panel (which triggerBaniSearch
+      // opens 50ms later) is the sole focus (box → panel cascade).
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        window._closeWheelDetailPanel();
+      }
     });
     group.appendChild(chip);
   });
@@ -1213,6 +1223,11 @@ window.drawRagaWheel = function() {
           _collapseAll(vp, melaByNum);
         } else {
           _collapseAll(vp, melaByNum);
+          // On mobile, dismiss the bani-flow panel before opening the box so
+          // the rasika only sees one thing at a time (wheel tap → box → panel cascade).
+          if (window.matchMedia('(max-width: 768px)').matches && typeof window.setPanelState === 'function') {
+            window.setPanelState('IDLE');
+          }
           // Option B: show mela→janya→comp in the detail panel instead of SVG fans
           _openWheelDetailPanel(raga);
           circle.setAttribute('stroke', THEME.accentSelect);
