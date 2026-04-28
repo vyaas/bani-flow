@@ -1,6 +1,6 @@
 # ADR-114: Hindustani Musicians and Instrument Vocabulary Expansion
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-27
 
 ---

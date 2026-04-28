@@ -1,6 +1,6 @@
 # ADR-112: Hindustani Equivalent Ragas (HER) as First-Class Raga Citizens
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-27
 
 ---

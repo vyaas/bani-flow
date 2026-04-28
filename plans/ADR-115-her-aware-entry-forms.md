@@ -1,6 +1,6 @@
 # ADR-115: HER-Aware Entry Forms — Tradition-Switched Add Raga, Add Recording, and Add Musician
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-27
 **Agents**: graph-architect (proposer), carnatic-coder (implementer)
 **Depends on**: ADR-031 (data entry forms), ADR-082 (lecdem entry CLI and forms), ADR-085 (self-replicating curation loop), ADR-097 (bundle deltas and unified Edit form), ADR-103 (co-located edit affordances), ADR-105 (composer-mediated composition entry), ADR-106 (mela-anchored janya entry), ADR-107 (concert-anchored recording entry), ADR-112 (HER schema), ADR-114 (HER musicians and instrument expansion)

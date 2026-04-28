@@ -1,6 +1,6 @@
 # ADR-113: Surfacing Hindustani Equivalent Ragas in Search, Bani Flow Panel, and Mela View
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-27
 
 ---
