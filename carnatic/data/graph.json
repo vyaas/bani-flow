@@ -90,6 +90,40 @@
         ]
       },
       {
+        "id": "alathur_venkatesa_iyer",
+        "label": "Alathur Venkatesa Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Alathur_Brothers",
+            "label": "Wikipedia (via Alathur Brothers)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1895,
+        "died": 1958,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
+        "id": "ambi_dikshitar",
+        "label": "Ambi Dikshitar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+            "label": "Wikipedia (via DK Pattammal)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "dikshitar",
+        "youtube": []
+      },
+      {
         "id": "ambujam_krishna",
         "label": "Ambujam Krishna",
         "sources": [
@@ -329,6 +363,23 @@
         "youtube": []
       },
       {
+        "id": "bhagavathula_seetharama_sarma",
+        "label": "Bhagavathula Seetharama Sarma",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/T._M._Krishna",
+            "label": "Wikipedia (via TM Krishna)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "bombay_jayashri",
         "label": "Bombay Jayashri",
         "sources": [
@@ -455,6 +506,23 @@
         "youtube": []
       },
       {
+        "id": "cs_murugabhoopathy",
+        "label": "Ramanathapuram C.S. Murugabhoopathy",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "mridangam",
+        "bani": "palani",
+        "youtube": []
+      },
+      {
         "id": "cs_sankarasivam",
         "label": "C.S. Sankarasivam",
         "sources": [
@@ -472,6 +540,23 @@
         "youtube": []
       },
       {
+        "id": "daroor_ratnamacharyulu",
+        "label": "Daroor Ratnamacharyulu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+            "label": "Wikipedia (via Hyderabad Brothers)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "dharmapuri_subbaraya_iyer",
         "label": "Dharmapuri Subbaraya Iyer",
         "sources": [
@@ -486,6 +571,23 @@
         "era": "living_pillars",
         "instrument": null,
         "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "dk_jayaraman",
+        "label": "DK Jayaraman",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+            "label": "Wikipedia (via DK Pattammal)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1931,
+        "died": 2014,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "mixed",
         "youtube": []
       },
       {
@@ -713,6 +815,23 @@
         ]
       },
       {
+        "id": "ivaturi_vijeswara_rao",
+        "label": "Ivaturi Vijeswara Rao",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+            "label": "Wikipedia (via A. Kanyakumari)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "jayachamarajendra_wadiyar",
         "label": "Jayachamarajendra Wadiyar",
         "sources": [
@@ -812,6 +931,23 @@
         "era": "bridge",
         "instrument": "vocal",
         "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "kandappa_pillai",
+        "label": "Kandappa Pillai",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Balasaraswati",
+            "label": "Wikipedia (via T. Balasaraswati)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1899,
+        "died": 1945,
+        "era": "golden_age",
+        "instrument": "bharatanatyam",
+        "bani": "dhanammal",
         "youtube": []
       },
       {
@@ -1009,7 +1145,7 @@
         ],
         "born": null,
         "died": null,
-        "era": "trinity",
+        "era": "contemporary",
         "instrument": "vocal",
         "bani": null,
         "youtube": [
@@ -1726,6 +1862,23 @@
         ]
       },
       {
+        "id": "lalgudi_gopala_iyer",
+        "label": "Lalgudi V.R. Gopala Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+            "label": "Wikipedia (via Lalgudi Jayaraman)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1900,
+        "died": 1970,
+        "era": "bridge",
+        "instrument": "violin",
+        "bani": "lalgudi",
+        "youtube": []
+      },
+      {
         "id": "lalgudi_jayaraman",
         "label": "Lalgudi Jayaraman",
         "sources": [
@@ -1768,6 +1921,23 @@
         ]
       },
       {
+        "id": "lalgudi_rama_iyer",
+        "label": "Lalgudi Rama Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+            "label": "Wikipedia (via Lalgudi Jayaraman)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1807,
+        "died": 1867,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
         "id": "lalgudi_srimathi_brahmananda",
         "label": "Lalgudi Srimathi Brahmananda",
         "sources": [
@@ -1802,6 +1972,57 @@
         "youtube": []
       },
       {
+        "id": "lalitha_sivakumar",
+        "label": "Lalitha Sivakumar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
+            "label": "Wikipedia (via Nithyashree Mahadevan)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "lalithangi",
+        "label": "Lalithangi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+            "label": "Wikipedia (via ML Vasanthakumari)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "mixed",
+        "youtube": []
+      },
+      {
+        "id": "m_chandrasekaran",
+        "label": "M. Chandrasekaran",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+            "label": "Wikipedia (via A. Kanyakumari)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "maanambuchaavadi_venkatasubbaiyer",
         "label": "Maanambuchaavadi Venkatasubbaiyer",
         "sources": [
@@ -1811,11 +2032,11 @@
             "type": "wikipedia"
           }
         ],
-        "born": null,
-        "died": null,
-        "era": null,
-        "instrument": null,
-        "bani": null,
+        "born": 1803,
+        "died": 1862,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
         "youtube": []
       },
       {
@@ -1865,6 +2086,40 @@
         ]
       },
       {
+        "id": "madurai_srinivasa_iyengar",
+        "label": "Madurai Srinivasa Iyengar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/M._S._Subbulakshmi",
+            "label": "Wikipedia (via MS Subbulakshmi)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "madurai_subramania_iyer",
+        "label": "Madurai Subramania Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+            "label": "Wikipedia (via GN Balasubramaniam)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
         "id": "maha_vaidyanatha_sivan",
         "label": "Maha Vaidyanatha Sivan",
         "sources": [
@@ -1878,7 +2133,7 @@
         "died": 1893,
         "era": "bridge",
         "instrument": "vocal",
-        "bani": "mixed",
+        "bani": "tyagaraja",
         "youtube": []
       },
       {
@@ -1904,6 +2159,23 @@
             "raga_id": "nata"
           }
         ]
+      },
+      {
+        "id": "maharajapuram_viswanatha_iyer",
+        "label": "Maharajapuram Viswanatha Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam",
+            "label": "Wikipedia (via Maharajapuram Santanam)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1896,
+        "died": 1970,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
       },
       {
         "id": "malladi_brothers",
@@ -2189,6 +2461,23 @@
         "youtube": []
       },
       {
+        "id": "n_s_krishnaswamy_iyengar",
+        "label": "N.S. Krishnaswamy Iyengar",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+            "label": "Wikipedia (via DK Pattammal)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "nagapatnam_veeraswamy_pillai",
         "label": "Nagapatnam Veeraswamy Pillai",
         "sources": [
@@ -2261,6 +2550,57 @@
         "era": "bridge",
         "instrument": null,
         "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "padinettan_sambasiva_iyer",
+        "label": "Padinettan Sambasiva Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+            "label": "Wikipedia (via Muthiah Bhagavatar)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
+        "id": "palani_muthiah_pillai",
+        "label": "Palani Muthiah Pillai",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palani_Subramania_Pillai",
+            "label": "Wikipedia (via Palani Subramania Pillai)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "mridangam",
+        "bani": "palani",
+        "youtube": []
+      },
+      {
+        "id": "palani_subramania_pillai",
+        "label": "Palani Subramania Pillai",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palani_Subramania_Pillai",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1908,
+        "died": 1962,
+        "era": "golden_age",
+        "instrument": "mridangam",
+        "bani": "palani",
         "youtube": []
       },
       {
@@ -2349,6 +2689,23 @@
         "youtube": []
       },
       {
+        "id": "parupalli_ramakrishnayya_pantulu",
+        "label": "Parupalli Ramakrishnayya Pantulu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Parupalli_Ramakrishnayya_Pantulu",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1878,
+        "died": 1946,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
         "id": "parur_sundaram_iyer",
         "label": "Parur Sundaram Iyer",
         "sources": [
@@ -2431,6 +2788,57 @@
         "era": "living_pillars",
         "instrument": null,
         "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "ps_narayanaswamy",
+        "label": "P.S. Narayanaswamy",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+            "label": "Wikipedia (via Semmangudi Srinivasa Iyer)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "vocal",
+        "bani": "semmangudi",
+        "youtube": []
+      },
+      {
+        "id": "pudukottai_dakshinamurthy_pillai",
+        "label": "Pudukottai Dakshinamurthy Pillai",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palani_Subramania_Pillai",
+            "label": "Wikipedia (via Palani Subramania Pillai)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1875,
+        "died": null,
+        "era": "bridge",
+        "instrument": "mridangam",
+        "bani": "pudukottai",
+        "youtube": []
+      },
+      {
+        "id": "pudukottai_manpoondia_pillai",
+        "label": "Pudukottai Manpoondia Pillai",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palani_Subramania_Pillai",
+            "label": "Wikipedia (via Palani Subramania Pillai)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "mridangam",
+        "bani": "pudukottai",
         "youtube": []
       },
       {
@@ -2568,8 +2976,8 @@
         "born": null,
         "died": null,
         "era": "contemporary",
-        "instrument": "violin",
-        "bani": null,
+        "instrument": "vocal",
+        "bani": "mixed",
         "youtube": [
           {
             "url": "https://youtu.be/8-kheimrCqg",
@@ -2577,6 +2985,23 @@
             "raga_id": "yadukulakamboji"
           }
         ]
+      },
+      {
+        "id": "ramnad_easwaran",
+        "label": "Ramnad Easwaran",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Ramnad_Raghavan",
+            "label": "Wikipedia (via Ramnad Raghavan)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "mridangam",
+        "bani": "mixed",
+        "youtube": []
       },
       {
         "id": "ramnad_krishnan",
@@ -3254,6 +3679,23 @@
         "youtube": []
       },
       {
+        "id": "rukmini_rajagopalan",
+        "label": "Rukmini Rajagopalan",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+            "label": "Wikipedia (via Sanjay Subrahmanyan)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "s_gopalakrishnan",
         "label": "S Gopalakrishnan",
         "sources": [
@@ -3591,6 +4033,23 @@
             }
           }
         ]
+      },
+      {
+        "id": "semmangudi_narayanaswami_iyer",
+        "label": "Semmangudi Narayanaswami Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+            "label": "Wikipedia (via Semmangudi Srinivasa Iyer)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
       },
       {
         "id": "semmangudi_srinivasa_iyer",
@@ -3999,6 +4458,40 @@
         ]
       },
       {
+        "id": "susarla_dakshinamoorthy_sastry",
+        "label": "Susarla Dakshinamoorthy Sastry",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Manambuchavadi_Venkatasubbayyar",
+            "label": "Wikipedia (via Manambuchavadi lineage)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
+        "id": "susarla_sivaram",
+        "label": "Susarla Sivaram",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+            "label": "Wikipedia (via Hyderabad Brothers)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "golden_age",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "swaminatha_pillai",
         "label": "Tiruppamparam Swaminatha Pillai",
         "sources": [
@@ -4200,6 +4693,23 @@
         "youtube": []
       },
       {
+        "id": "tanjore_vaidyanatha_iyer",
+        "label": "Tanjore (Thanjavur) Vaidyanatha Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+            "label": "Wikipedia (via Palghat Mani Iyer)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1897,
+        "died": 1947,
+        "era": "golden_age",
+        "instrument": "mridangam",
+        "bani": "tanjore",
+        "youtube": []
+      },
+      {
         "id": "tarangampadi_panchanada_iyer",
         "label": "Tarangampadi Panchanada Iyer",
         "sources": [
@@ -4285,6 +4795,23 @@
         "youtube": []
       },
       {
+        "id": "tiruvidaimarudur_sakharama_rao",
+        "label": "Tiruvidaimarudur Sakharama Rao",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+            "label": "Wikipedia (via Semmangudi Srinivasa Iyer)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "gottuvadyam",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "tiruvottiyur_tyagayya",
         "label": "Tiruvottiyur Tyagayya",
         "sources": [
@@ -4299,6 +4826,23 @@
         "era": "bridge",
         "instrument": "vocal",
         "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "tk_govinda_rao",
+        "label": "T.K. Govinda Rao",
+        "sources": [
+          {
+            "url": "https://lakshmisreeram.com/carnatic/",
+            "label": "Lakshmi Sreeram official site",
+            "type": "other"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": "musiri",
         "youtube": []
       },
       {
@@ -5080,6 +5624,40 @@
         "youtube": []
       },
       {
+        "id": "tr_balamani",
+        "label": "T.R. Balamani",
+        "sources": [
+          {
+            "url": "https://bombayjayashri.com/profile.html",
+            "label": "Official site — Bombay Jayashri profile",
+            "type": "other"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "tr_balu",
+        "label": "T.R. Balasubramaniam (T.R. Balu)",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+            "label": "Wikipedia (via GN Balasubramaniam)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "disseminator",
+        "instrument": "vocal",
+        "bani": "gnb",
+        "youtube": []
+      },
+      {
         "id": "tr_mahalingam",
         "label": "TR Mahalingam (Mali)",
         "sources": [
@@ -5101,6 +5679,23 @@
             "raga_id": "yadukulakamboji"
           }
         ]
+      },
+      {
+        "id": "ts_sabhesa_iyer",
+        "label": "T.S. Sabhesa Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+            "label": "Wikipedia (via Musiri Subramania Iyer)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
       },
       {
         "id": "tukaram",
@@ -5185,6 +5780,57 @@
         "era": "living_pillars",
         "instrument": "mridangam",
         "bani": "palghat",
+        "youtube": []
+      },
+      {
+        "id": "umayalpuram_swaminatha_iyer",
+        "label": "Umayalpuram Swaminatha Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+            "label": "Wikipedia (via Semmangudi Srinivasa Iyer)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "bridge",
+        "instrument": "vocal",
+        "bani": "tyagaraja",
+        "youtube": []
+      },
+      {
+        "id": "v_lakshminarayana_iyer",
+        "label": "V. Lakshminarayana Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+            "label": "Wikipedia (via Sanjay Subrahmanyan)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "vocal",
+        "bani": null,
+        "youtube": []
+      },
+      {
+        "id": "valadi_radhakrishna_iyer",
+        "label": "Valadi Radhakrishna Iyer",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+            "label": "Wikipedia (via Lalgudi Jayaraman family)",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1849,
+        "died": 1908,
+        "era": "bridge",
+        "instrument": "violin",
+        "bani": "lalgudi",
         "youtube": []
       },
       {
@@ -5713,6 +6359,461 @@
         "confidence": 1.0,
         "source_url": "https://en.wikipedia.org/wiki/T._Brinda",
         "note": "daughter; also shishya of T. Brinda in the Dhanammal vocal tradition"
+      },
+      {
+        "source": "tyagaraja",
+        "target": "maanambuchaavadi_venkatasubbaiyer",
+        "confidence": 0.98,
+        "source_url": "https://en.wikipedia.org/wiki/Manambuchavadi_Venkatasubbayyar",
+        "note": "cousin and direct disciple; received the pancharatnam kritis; most important single bridge in the lineage graph"
+      },
+      {
+        "source": "maanambuchaavadi_venkatasubbaiyer",
+        "target": "maha_vaidyanatha_sivan",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+        "note": "principal guru; Maha Vaidyanatha Sivan traced directly from Tyagaraja through Manambuchavadi"
+      },
+      {
+        "source": "maanambuchaavadi_venkatasubbaiyer",
+        "target": "patnam_subramanya_iyer",
+        "confidence": 0.95,
+        "source_url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+        "note": "one of Manambuchavadi's primary disciples; Tyagaraja lineage"
+      },
+      {
+        "source": "maanambuchaavadi_venkatasubbaiyer",
+        "target": "susarla_dakshinamoorthy_sastry",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/M._Balamuralikrishna",
+        "note": "key disciple; bridges to Parupalli Ramakrishnayya Pantulu and thus to BMK"
+      },
+      {
+        "source": "susarla_dakshinamoorthy_sastry",
+        "target": "parupalli_ramakrishnayya_pantulu",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Parupalli_Ramakrishnayya_Pantulu",
+        "note": "principal guru of Parupalli; Tyagaraja lineage chain to BMK"
+      },
+      {
+        "source": "parupalli_ramakrishnayya_pantulu",
+        "target": "balamuralikrishna",
+        "confidence": 0.98,
+        "source_url": "https://en.wikipedia.org/wiki/M._Balamuralikrishna",
+        "note": "principal guru from age 8; BMK trained under him for years in gurukulavasam"
+      },
+      {
+        "source": "maha_vaidyanatha_sivan",
+        "target": "ts_sabhesa_iyer",
+        "confidence": 0.95,
+        "source_url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+        "note": "T.S. Sabhesa Iyer was a principal disciple; Sangita Kalanidhi 1934"
+      },
+      {
+        "source": "maha_vaidyanatha_sivan",
+        "target": "umayalpuram_swaminatha_iyer",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+        "note": "another key disciple bridging to Semmangudi's circle"
+      },
+      {
+        "source": "ts_sabhesa_iyer",
+        "target": "musiri_subramania_iyer",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+        "note": "primary guru; ~9 years of training — replaces the erroneous direct Maha Vaidyanatha Sivan link"
+      },
+      {
+        "source": "ts_sabhesa_iyer",
+        "target": "muthiah_bhagavatar",
+        "confidence": 0.88,
+        "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+        "note": "taught lakshana gitams and theoretical grounding to Muthiah Bhagavatar"
+      },
+      {
+        "source": "umayalpuram_swaminatha_iyer",
+        "target": "maharajapuram_viswanatha_iyer",
+        "confidence": 0.88,
+        "source_url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam",
+        "note": "key guru in Maharajapuram Viswanatha Iyer's training"
+      },
+      {
+        "source": "umayalpuram_swaminatha_iyer",
+        "target": "semmangudi_srinivasa_iyer",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+        "note": "one of Semmangudi's formative gurus"
+      },
+      {
+        "source": "padinettan_sambasiva_iyer",
+        "target": "muthiah_bhagavatar",
+        "confidence": 0.93,
+        "source_url": "https://en.wikipedia.org/wiki/Muthiah_Bhagavatar",
+        "note": "primary guru; 9 years training; in Pallavi Doraiswami Iyer lineage"
+      },
+      {
+        "source": "semmangudi_narayanaswami_iyer",
+        "target": "semmangudi_srinivasa_iyer",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+        "note": "cousin-brother; first guru from 1917; gave Semmangudi his foundational training"
+      },
+      {
+        "source": "tiruvidaimarudur_sakharama_rao",
+        "target": "semmangudi_srinivasa_iyer",
+        "confidence": 0.93,
+        "source_url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+        "note": "key guru; gurukulavasam period; gottuvadyam and manodharma shaping"
+      },
+      {
+        "source": "maharajapuram_viswanatha_iyer",
+        "target": "semmangudi_srinivasa_iyer",
+        "confidence": 0.85,
+        "source_url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+        "note": "concert apprenticeship under Maharajapuram Viswanatha Iyer"
+      },
+      {
+        "source": "semmangudi_srinivasa_iyer",
+        "target": "ps_narayanaswamy",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Semmangudi_Srinivasa_Iyer",
+        "note": "senior disciple; Semmangudi school's most prolific teacher of the next generation"
+      },
+      {
+        "source": "maharajapuram_viswanatha_iyer",
+        "target": "maharajapuram_santanam",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam",
+        "note": "father and primary guru"
+      },
+      {
+        "source": "tyagaraja",
+        "target": "lalgudi_rama_iyer",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+        "note": "direct disciple; received the Lalgudi Pancharatnam; founder of Lalgudi violin lineage"
+      },
+      {
+        "source": "lalgudi_rama_iyer",
+        "target": "valadi_radhakrishna_iyer",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+        "note": "son; first violinist in the Lalgudi family"
+      },
+      {
+        "source": "valadi_radhakrishna_iyer",
+        "target": "lalgudi_gopala_iyer",
+        "confidence": 0.95,
+        "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+        "note": "Lalgudi violin school lineage, father-to-son"
+      },
+      {
+        "source": "lalgudi_gopala_iyer",
+        "target": "lalgudi_jayaraman",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Jayaraman",
+        "note": "father and primary guru; sole formal guru"
+      },
+      {
+        "source": "lalgudi_gopala_iyer",
+        "target": "lalgudi_srimathi_brahmananda",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+        "note": "father and primary guru from age 6"
+      },
+      {
+        "source": "lalgudi_gopala_iyer",
+        "target": "lalgudi_vijayalakshmi",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+        "note": "grandfather; early grooming before she came under Lalgudi Jayaraman"
+      },
+      {
+        "source": "madurai_subramania_iyer",
+        "target": "gnb",
+        "confidence": 0.93,
+        "source_url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+        "note": "main formal vocal guru of GNB"
+      },
+      {
+        "source": "ambi_dikshitar",
+        "target": "dk_pattammal",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+        "note": "grandson of Muthuswami Dikshitar; taught DKP the Dikshitar compositional tradition"
+      },
+      {
+        "source": "papanasam_sivan",
+        "target": "dk_pattammal",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+        "note": "direct guru; DKP studied under Papanasam Sivan"
+      },
+      {
+        "source": "n_s_krishnaswamy_iyengar",
+        "target": "dk_pattammal",
+        "confidence": 0.88,
+        "source_url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+        "note": "Naina Pillai lineage conduit; taught DKP Kanchipuram school repertoire"
+      },
+      {
+        "source": "dk_pattammal",
+        "target": "dk_jayaraman",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/D._K._Pattammal",
+        "note": "brother and principal disciple; carried DKP bani forward"
+      },
+      {
+        "source": "dk_pattammal",
+        "target": "lalitha_sivakumar",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
+        "note": "daughter of Palghat Mani Iyer; trained under DK Pattammal"
+      },
+      {
+        "source": "dk_pattammal",
+        "target": "nityashree_mahadevan",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
+        "note": "paternal grandmother and primary guru of Nithyashree"
+      },
+      {
+        "source": "lalitha_sivakumar",
+        "target": "nityashree_mahadevan",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
+        "note": "mother and foundational guru; daughter of Palghat Mani Iyer"
+      },
+      {
+        "source": "palghat_mani_iyer",
+        "target": "lalitha_sivakumar",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan",
+        "note": "father; informal transmission of Palghat mridangam aesthetics to daughter"
+      },
+      {
+        "source": "lalithangi",
+        "target": "ml_vasanthakumari",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/M._L._Vasanthakumari",
+        "note": "mother and foundational guru; herself a disciple of Coimbatore Thayi, Flute Subba Rao, and Vina Dhanammal"
+      },
+      {
+        "source": "ml_vasanthakumari",
+        "target": "charumathi_ramachandran",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Charumathi_Ramachandran",
+        "note": "primary guru; Charumathi is considered MLV's senior-most disciple"
+      },
+      {
+        "source": "ml_vasanthakumari",
+        "target": "a_kanyakumari",
+        "confidence": 0.95,
+        "source_url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+        "note": "mentor 1971–1990; Kanyakumari accompanied MLV for ~19 years"
+      },
+      {
+        "source": "ivaturi_vijeswara_rao",
+        "target": "a_kanyakumari",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+        "note": "first violin teacher, Dwaram school, Vizianagaram"
+      },
+      {
+        "source": "m_chandrasekaran",
+        "target": "a_kanyakumari",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+        "note": "violin guru at Queen Mary's College, Chennai"
+      },
+      {
+        "source": "ps_narayanaswamy",
+        "target": "abhishek_raghuram",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Abhishek_Raghuram",
+        "note": "primary vocal guru since 1994"
+      },
+      {
+        "source": "ps_narayanaswamy",
+        "target": "ranjani_gayatri",
+        "confidence": 0.95,
+        "source_url": "https://en.wikipedia.org/wiki/Ranjani%E2%80%93Gayatri",
+        "note": "primary vocal guru since 1997"
+      },
+      {
+        "source": "ariyakudi_ramanuja_iyengar",
+        "target": "kv_narayanaswamy",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/K._V._Narayanaswamy",
+        "note": "primary guru 1942–1967; gurukulavasam; KVN is Ariyakudi's most distinguished disciple"
+      },
+      {
+        "source": "ms_subbulakshmi",
+        "target": "radha_viswanathan",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Radha_Viswanathan",
+        "note": "stepmother and primary guru; lifelong musical relationship"
+      },
+      {
+        "source": "semmangudi_srinivasa_iyer",
+        "target": "radha_viswanathan",
+        "confidence": 0.88,
+        "source_url": "https://en.wikipedia.org/wiki/Radha_Viswanathan",
+        "note": "one of Radha Viswanathan's major gurus"
+      },
+      {
+        "source": "t_brinda",
+        "target": "radha_viswanathan",
+        "confidence": 0.85,
+        "source_url": "https://en.wikipedia.org/wiki/Radha_Viswanathan",
+        "note": "padams and javalis training"
+      },
+      {
+        "source": "gnb",
+        "target": "tr_balu",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/G._N._Balasubramaniam",
+        "note": "prominent disciple; carried GNB bani; taught Radha Viswanathan"
+      },
+      {
+        "source": "tr_balu",
+        "target": "radha_viswanathan",
+        "confidence": 0.85,
+        "source_url": "https://en.wikipedia.org/wiki/Radha_Viswanathan",
+        "note": "one of her vocal gurus"
+      },
+      {
+        "source": "v_lakshminarayana_iyer",
+        "target": "sanjay_subrahmanyan",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+        "note": "first vocal guru from age 7"
+      },
+      {
+        "source": "rukmini_rajagopalan",
+        "target": "sanjay_subrahmanyan",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
+        "note": "grand-aunt; ~8 years training until 1988"
+      },
+      {
+        "source": "bhagavathula_seetharama_sarma",
+        "target": "tm_krishna",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/T._M._Krishna",
+        "note": "primary initial guru before Semmangudi"
+      },
+      {
+        "source": "ps_narayanaswamy",
+        "target": "tm_krishna",
+        "confidence": 0.85,
+        "source_url": "https://en.wikipedia.org/wiki/T._M._Krishna",
+        "note": "TM Krishna also trained under PSN alongside his Semmangudi training"
+      },
+      {
+        "source": "daroor_ratnamacharyulu",
+        "target": "hyderabad_brothers",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+        "note": "father; primary guru"
+      },
+      {
+        "source": "susarla_sivaram",
+        "target": "hyderabad_brothers",
+        "confidence": 0.93,
+        "source_url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+        "note": "teacher at Government College of Music and Dance, Hyderabad"
+      },
+      {
+        "source": "alathur_venkatesa_iyer",
+        "target": "alathur_brothers",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Alathur_Brothers",
+        "note": "father and sole formal guru of both Alathur Brothers; Tyagaraja school"
+      },
+      {
+        "source": "kandappa_pillai",
+        "target": "t_balasaraswati",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Balasaraswati",
+        "note": "primary nattuvanar from age 4; canonical dance guru of Balasaraswati"
+      },
+      {
+        "source": "pudukottai_manpoondia_pillai",
+        "target": "pudukottai_dakshinamurthy_pillai",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Palani_Subramania_Pillai",
+        "note": "founder of Pudukottai school; primary guru"
+      },
+      {
+        "source": "pudukottai_manpoondia_pillai",
+        "target": "palani_muthiah_pillai",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Palani_Subramania_Pillai",
+        "note": "primary guru of Palani Muthiah Pillai"
+      },
+      {
+        "source": "palani_muthiah_pillai",
+        "target": "palani_subramania_pillai",
+        "confidence": 0.99,
+        "source_url": "https://en.wikipedia.org/wiki/Palani_Subramania_Pillai",
+        "note": "father and primary guru"
+      },
+      {
+        "source": "tanjore_vaidyanatha_iyer",
+        "target": "palghat_mani_iyer",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Palghat_Mani_Iyer",
+        "note": "primary mridangam guru of Palghat Mani Iyer"
+      },
+      {
+        "source": "tanjore_vaidyanatha_iyer",
+        "target": "umayalpuram_sivaraman",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Umayalpuram_K._Sivaraman",
+        "note": "one of Umayalpuram Sivaraman's four gurus"
+      },
+      {
+        "source": "palani_subramania_pillai",
+        "target": "cs_murugabhoopathy",
+        "confidence": 0.92,
+        "source_url": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
+        "note": "principal guru of CS Murugabhoopathy; Palani school"
+      },
+      {
+        "source": "cs_sankarasivam",
+        "target": "ramnad_easwaran",
+        "confidence": 0.88,
+        "source_url": "https://en.wikipedia.org/wiki/Ramnad_Raghavan",
+        "note": "Ramnad Easwaran trained under C.S. Sankarasivam"
+      },
+      {
+        "source": "ramnad_easwaran",
+        "target": "ramnad_raghavan",
+        "confidence": 0.97,
+        "source_url": "https://en.wikipedia.org/wiki/Ramnad_Raghavan",
+        "note": "elder brother and primary guru; not Palghat Mani Iyer as sometimes claimed"
+      },
+      {
+        "source": "musiri_subramania_iyer",
+        "target": "tk_govinda_rao",
+        "confidence": 0.9,
+        "source_url": "https://en.wikipedia.org/wiki/Musiri_Subramania_Iyer",
+        "note": "senior disciple; carried Musiri bani forward"
+      },
+      {
+        "source": "tr_balamani",
+        "target": "bombay_jayashri",
+        "confidence": 0.92,
+        "source_url": "https://bombayjayashri.com/profile.html",
+        "note": "~12 years of training in Mumbai before studying under Lalgudi Jayaraman"
+      },
+      {
+        "source": "tk_govinda_rao",
+        "target": "lakshmi_sreeram",
+        "confidence": 0.9,
+        "source_url": "https://lakshmisreeram.com/carnatic/",
+        "note": "major vocal guru of Lakshmi Sreeram"
       }
     ]
   },
