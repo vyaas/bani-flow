@@ -1,0 +1,15 @@
+{
+  "id": "tyagarajaya_namaste",
+  "title": "Tyagarajaya Namaste",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "begada",
+  "tala": "tisra_ekam",
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "label": "Wikipedia — Muthuswami Dikshitar",
+      "type": "wikipedia"
+    }
+  ]
+}

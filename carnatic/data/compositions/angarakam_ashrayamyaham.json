@@ -1,0 +1,16 @@
+{
+  "id": "angarakam_ashrayamyaham",
+  "title": "Angarakam Ashrayamyaham",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "surutti",
+  "tala": "tisra_ekam",
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Navagraha_Kritis",
+      "label": "Wikipedia — Navagraha Kritis",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Navagraha kriti for Angaraka (Mars); one of Dikshitar's nine planetary compositions"
+}

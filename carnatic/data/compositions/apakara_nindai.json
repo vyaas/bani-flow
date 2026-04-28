@@ -1,0 +1,15 @@
+{
+  "id": "apakara_nindai",
+  "title": "Apakara Nindai",
+  "composer_id": "arunagirinathar",
+  "raga_id": "chakravakam",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tiruppugazh",
+      "label": "Wikipedia — Tiruppugazh",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Thirupugazh hymn by Arunagirinathar in Chakravakam (spelled 'Chakravaham' in the concert listing); tala unspecified"
+}

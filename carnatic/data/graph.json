@@ -5943,6 +5943,23 @@
         ]
       },
       {
+        "id": "vv_subramaniam",
+        "label": "V.V. Subrahmanyam",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/V._V._Subrahmanyam",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": 1944,
+        "died": null,
+        "era": "living_pillars",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": []
+      },
+      {
         "id": "vyasatirtha",
         "label": "Vyasatirtha",
         "sources": [
@@ -8587,6 +8604,21 @@
         ]
       },
       {
+        "id": "nagagandhari",
+        "name": "Nagagandhari",
+        "aliases": [],
+        "melakarta": null,
+        "parent_raga": "natabhairavi",
+        "sources": [
+          {
+            "url": "https://www.drmradhakrishnan.com/post/rare-raga-series-ragam-nagagandhari-janya-of-mela-20-ragam-natabhairavi",
+            "label": "Dr M Radhakrishnan — Rare Raga Series",
+            "type": "article"
+          }
+        ],
+        "notes": "Janya of Natabhairavi (20th melakarta); appears in Muthuswami Dikshitar's Navagraha kriti corpus (Sarasijanabha Sodari)"
+      },
+      {
         "id": "naganandini",
         "name": "Nāganandini",
         "aliases": [],
@@ -10142,6 +10174,22 @@
         "notes": "Tyagaraja kriti in Kalyani."
       },
       {
+        "id": "angarakam_ashrayamyaham",
+        "title": "Angarakam Ashrayamyaham",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "surutti",
+        "tala": "tisra_ekam",
+        "language": "sanskrit",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Navagraha_Kritis",
+            "label": "Wikipedia — Navagraha Kritis",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Navagraha kriti for Angaraka (Mars); one of Dikshitar's nine planetary compositions"
+      },
+      {
         "id": "annapurne_visalakshi",
         "title": "Annapurne Visalakshi",
         "composer_id": "muthuswami_dikshitar",
@@ -10170,6 +10218,21 @@
           }
         ],
         "notes": "Javali by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā in Khamas; Adi tala; distinct from 'Marubari Talalenu' by the same composer"
+      },
+      {
+        "id": "apakara_nindai",
+        "title": "Apakara Nindai",
+        "composer_id": "arunagirinathar",
+        "raga_id": "chakravakam",
+        "language": "tamil",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Tiruppugazh",
+            "label": "Wikipedia — Tiruppugazh",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Thirupugazh hymn by Arunagirinathar in Chakravakam (spelled 'Chakravaham' in the concert listing); tala unspecified"
       },
       {
         "id": "aparadhamulanniyu",
@@ -10285,6 +10348,15 @@
           }
         ],
         "notes": "Verse from the Thiruppavai of Andal (Āṇṭāḷ); set to Varali raga and Adi tala by Ariyakudi Ramanuja Iyengar; the Thiruppavai is a collection of 30 Tamil verses addressed to Vishnu; this musical setting is Ariyakudi's own composition"
+      },
+      {
+        "id": "balagopala",
+        "title": "Balagopala",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "bhairavi",
+        "tala": "adi",
+        "language": "sanskrit",
+        "notes": "Dikshitar kriti in Bhairavi; performed in Adi 2 Kalai in KVN's 1975 Music Academy concert"
       },
       {
         "id": "bale_balendu_bhushani",
@@ -13480,6 +13552,24 @@
         "notes": "Varnam in Nayaki by Rudrapatnam Venkatramayya"
       },
       {
+        "id": "sarasijanabha_sodari",
+        "title": "Sarasijanabha Sodari",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "nagagandhari",
+        "tala": "rupakam",
+        "language": "sanskrit",
+        "notes": "Dikshitar kriti in the rare raga Nagagandhari (janya of Natabhairavi)"
+      },
+      {
+        "id": "sarasijanabha_varnam",
+        "title": "Sarasijanabha",
+        "composer_id": "swati_tirunal",
+        "raga_id": "mayamalavagowla",
+        "tala": "adi",
+        "language": "sanskrit",
+        "notes": "Adi-tala varnam; concert opener in the 1975 Music Academy concert"
+      },
+      {
         "id": "sarasiruhanana",
         "title": "Sarasiruhanana",
         "composer_id": "tyagaraja",
@@ -13887,6 +13977,14 @@
         "tala": "adi",
         "language": "Sanskrit",
         "notes": "Muthuswami Dikshitar composition in Saveri"
+      },
+      {
+        "id": "sri_rama_jayarama",
+        "title": "Sri Rama Jayarama",
+        "composer_id": "tyagaraja",
+        "raga_id": "yadukulakamboji",
+        "tala": "rupakam",
+        "language": "telugu"
       },
       {
         "id": "sri_ramachandra_kripalu",
@@ -14310,6 +14408,21 @@
         "tala": "rupakam",
         "language": "Sanskrit",
         "notes": "Muthuswami Dikshitar composition in Ananda Bhairavi"
+      },
+      {
+        "id": "tyagarajaya_namaste",
+        "title": "Tyagarajaya Namaste",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "begada",
+        "tala": "tisra_ekam",
+        "language": "sanskrit",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+            "label": "Wikipedia — Muthuswami Dikshitar",
+            "type": "wikipedia"
+          }
+        ]
       },
       {
         "id": "un_padam_maravenamma",
@@ -14891,6 +15004,19 @@
         "kv_narayanaswamy",
         "cr_mani_iyer",
         "palghat_raghu"
+      ]
+    },
+    {
+      "id": "music_academy_1975_kvn",
+      "path": "recordings/music_academy_1975_kvn.json",
+      "title": "KV Narayanaswamy — Music Academy Concert, December Season 1975",
+      "short_title": "Music Academy 1975 (KVN)",
+      "date": "1975-12-30",
+      "venue": "Music Academy, Madras",
+      "primary_musician_ids": [
+        "kv_narayanaswamy",
+        "vv_subramaniam",
+        "umayalpuram_sivaraman"
       ]
     },
     {
