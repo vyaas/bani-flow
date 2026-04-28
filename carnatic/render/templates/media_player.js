@@ -165,8 +165,11 @@ function buildPlayerTrackList(vid, tracks, instance) {
 
     const labelSpan = document.createElement('span');
     labelSpan.className = 'mp-track-label';
-    labelSpan.textContent = t.display_title;
-    labelSpan.title = t.display_title;
+    const _trackLabel = t.display_title
+      || (() => { const c = (typeof compositions !== 'undefined' ? compositions : []).find(x => x.id === t.composition_id); return c ? c.title : null; })()
+      || t.composition_id || '';
+    labelSpan.textContent = _trackLabel;
+    labelSpan.title = _trackLabel;
 
     const metaSpan = document.createElement('span');
     metaSpan.className = 'mp-track-meta';
