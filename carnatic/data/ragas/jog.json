@@ -1,0 +1,18 @@
+{
+  "id": "jog",
+  "name": "Jog",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Jog_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}
