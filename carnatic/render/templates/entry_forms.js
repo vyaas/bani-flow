@@ -1302,19 +1302,28 @@ function collectYoutubePerformers(block, hostId, hostInstrument) {
 
 // ── Edge block (repeating) ────────────────────────────────────────────────────
 
-function addEdgeBlock(container, direction, formWin) {
+function addEdgeBlock(container, direction, formWin, prefillData = null) {
   const block = document.createElement('div');
   block.className = 'ef-repeat-block';
   block.dataset.direction = direction;
+  if (prefillData) {
+    block.dataset.prefilled = 'true';
+    block.style.opacity = '0.65';
+  }
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.className = 'ef-repeat-remove';
   removeBtn.textContent = '×';
-  removeBtn.addEventListener('click', () => {
-    block.remove();
-    formWin.dispatchEvent(new Event('input'));
-  });
+  if (prefillData) {
+    // Prefilled blocks are read-only display — hide the remove button
+    removeBtn.style.display = 'none';
+  } else {
+    removeBtn.addEventListener('click', () => {
+      block.remove();
+      formWin.dispatchEvent(new Event('input'));
+    });
+  }
   block.appendChild(removeBtn);
 
   const dirLabel = direction === 'guru'
@@ -1336,7 +1345,20 @@ function addEdgeBlock(container, direction, formWin) {
   block.appendChild(efRow('Note', false, null, noteInp));
 
   container.appendChild(block);
-  formWin.dispatchEvent(new Event('input'));
+
+  if (prefillData) {
+    // Set values after block is in DOM so combobox layout is stable
+    if (nodeSel && typeof nodeSel.setValue === 'function') {
+      nodeSel.setValue(prefillData.otherId, prefillData.otherLabel || prefillData.otherId);
+    }
+    if (prefillData.confidence != null) confInp.value = prefillData.confidence;
+    if (prefillData.source_url)        srcInp.value  = prefillData.source_url;
+    if (prefillData.note)              noteInp.value = prefillData.note;
+    // Disable all inputs so user can't accidentally edit prefilled edges
+    [confInp, srcInp, noteInp].forEach(el => { el.disabled = true; el.style.opacity = '0.65'; });
+  } else {
+    formWin.dispatchEvent(new Event('input'));
+  }
 }
 
 // ── generateMusicianJson ──────────────────────────────────────────────────────
@@ -4007,6 +4029,22 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       const first = prefill.sources[0];
       srcUrlInp.value = (typeof first === 'string') ? first : (first.url || '');
     }
+    // Pre-fill existing edges as read-only display rows
+    const existingEdges = (graphData.edges || []).filter(
+      e => e.source === prefill.id || e.target === prefill.id
+    );
+    existingEdges.forEach(e => {
+      const direction  = e.target === prefill.id ? 'guru' : 'shishya';
+      const otherId    = direction === 'guru' ? e.source : e.target;
+      const otherNode  = (graphData.nodes || []).find(n => n.id === otherId);
+      const otherLabel = otherNode ? otherNode.label : otherId;
+      addEdgeBlock(edgesContainer, direction, win, {
+        otherId, otherLabel,
+        confidence: e.confidence,
+        source_url: e.source_url,
+        note:       e.note,
+      });
+    });
     // Edit-mode note
     const editNote = document.createElement('p');
     editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
@@ -4036,7 +4074,7 @@ function buildAddMusicianForm({ prefill = null } = {}) {
   // ── Helpers ───────────────────────────────────────────
   function collectEdges(musId) {
     const edges = [];
-    win.querySelectorAll('#ef_adm_edges .ef-repeat-block').forEach(block => {
+    win.querySelectorAll('#ef_adm_edges .ef-repeat-block:not([data-prefilled])').forEach(block => {
       const direction = block.dataset.direction;
       const selects   = block.querySelectorAll('select');
       const inputs    = block.querySelectorAll('input:not([data-combobox-filter])');
@@ -4075,7 +4113,8 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       if (v.died  !== (prefill.died  || null))            fields.died       = v.died;
       if (v.era   !== (prefill.era   || ''))              fields.era        = v.era;
       if (v.instr !== (prefill.instrument || ''))         fields.instrument = v.instr;
-      return { op: 'patch', id: prefill.id, fields };
+      const _edges = collectEdges(prefill.id);
+      return { op: 'patch', id: prefill.id, fields, _edges };
     }
 
     return {
@@ -4101,6 +4140,11 @@ function buildAddMusicianForm({ prefill = null } = {}) {
     if (v.died  !== (prefill.died  || null))        n++;
     if (v.era   !== (prefill.era   || ''))          n++;
     if (v.instr !== (prefill.instrument || ''))     n++;
+    // Count new (non-prefilled) edge rows that have a musician selected
+    win.querySelectorAll('#ef_adm_edges .ef-repeat-block:not([data-prefilled])').forEach(block => {
+      const sel = block.querySelectorAll('select')[0];
+      if (sel && sel.value) n++;
+    });
     return n;
   }
 
@@ -4137,21 +4181,31 @@ function buildAddMusicianForm({ prefill = null } = {}) {
   });
 
   bundleBtn.addEventListener('click', () => {
-    const item = buildBundleItem();
-    if (!isEdit && item._edges && item._edges.length > 0) {
-      item._edges.forEach(e => addToBundle('edges', e));
-    }
-    const musId = item.id || (isEdit ? prefill.id : '');
+    const item     = buildBundleItem();
+    const newEdges = item._edges || [];
     delete item._edges;
-    addToBundle('musicians', item);
+
+    // Always route new edges to bundle.items.edges (works for both new and edit)
+    newEdges.forEach(e => addToBundle('edges', e));
+
+    const musId = item.id || (isEdit ? prefill.id : '');
+    // For edit mode: only add musician patch item if scalar fields actually changed
+    if (!isEdit || Object.keys(item.fields || {}).length > 0) {
+      addToBundle('musicians', item);
+    }
 
     // Success screen
     const body2 = win.querySelector('.ew-body');
     body2.innerHTML = '';
     const msg = document.createElement('div');
     msg.className = 'ef-success';
+    const editSummary = isEdit
+      ? (newEdges.length > 0 && Object.keys(item.fields || {}).length === 0
+          ? `${newEdges.length} edge${newEdges.length > 1 ? 's' : ''} queued for <code>${prefill.id}</code>`
+          : `Patch queued for <code>${prefill.id}</code>`)
+      : null;
     msg.innerHTML = isEdit
-      ? `<strong>\u2713 Patch queued for <code>${prefill.id}</code></strong>`
+      ? `<strong>\u2713 Added to bundle: ${editSummary}</strong>`
         + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle to apply the changes.</p>`
       : `<strong>\u2713 Added to bundle: <code>${musId}</code></strong>`
         + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle when done adding items.</p>`;
