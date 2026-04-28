@@ -1,0 +1,32 @@
+{
+  "id": "savita_narasimhan",
+  "label": "Savita Narasimhan",
+  "sources": [
+    {
+      "url": "https://www.sangeetnatak.gov.in/public/uploads/awardees/docs/1742885767_Savita%20Narasimhan.pdf",
+      "label": "PDF",
+      "type": "pdf"
+    }
+  ],
+  "born": 1974,
+  "died": null,
+  "era": "living_pillars",
+  "instrument": "vocal",
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/taMZcVu0fh8",
+      "label": "On Ramnad Krishnan",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "devagandhari"
+        ],
+        "composition_ids": [],
+        "musician_ids": [
+          "ramnad_krishnan"
+        ]
+      }
+    }
+  ]
+}
