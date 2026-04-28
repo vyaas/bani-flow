@@ -777,7 +777,7 @@ class CarnaticWriter:
             return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
 
         # ── path-specific validation ───────────────────────────────────────────
-        if kind in (None, "recital"):
+        if kind in (None, "recital", "raga_alap", "concert", "misc"):
             if subjects is not None:
                 return _err("subjects field is only valid on lecdem entries")
             # Validate composition_id / raga_id directly from source files (ADR-016)
@@ -1368,6 +1368,7 @@ class CarnaticWriter:
         melakarta: int | None = None,
         parent_raga: str | None = None,
         notes: str | None = None,
+        tradition: str = "carnatic",
         ragas_path: Path | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
@@ -1377,6 +1378,11 @@ class CarnaticWriter:
         Dir mode:    writes ragas/{id}.json (ragas_path or compositions_path.parent/ragas).
         Legacy mode: rewrites the monolithic compositions.json.
         """
+        if tradition not in ("carnatic", "hindustani"):
+            return _err(
+                f"--tradition \"{tradition}\" is not valid\n"
+                f"       Valid values: carnatic, hindustani"
+            )
         if source_type not in VALID_SOURCE_TYPES:
             return _err(
                 f"--source-type \"{source_type}\" is not a valid source type\n"
@@ -1398,6 +1404,7 @@ class CarnaticWriter:
         raga: dict[str, Any] = {
             "id":          id,
             "name":        name,
+            "tradition":   tradition,
             "aliases":     aliases or [],
             "melakarta":   melakarta,
             "parent_raga": parent_raga,
@@ -1410,7 +1417,7 @@ class CarnaticWriter:
 
         return _ok(
             "[RAGA+]",
-            f"added: {id} — \"{name}\"  melakarta: {melakarta}  parent_raga: {parent_raga}"
+            f"added: {id} — \"{name}\"  tradition: {tradition}  melakarta: {melakarta}  parent_raga: {parent_raga}"
         )
 
     def add_composition(
@@ -1823,4 +1830,206 @@ class CarnaticWriter:
             return _ok("[NOTE+]", f"note added to recording: {entity_id}")
 
         return _err(f"unhandled entity_type: {entity_type}")  # unreachable
+
+    # ── ADR-112: Hindustani Equivalent Raga (HER) write verbs ────────────────
+
+    _HER_VALID_KINDS: frozenset[str] = frozenset({"raga_alap", "lecdem", "concert", "misc"})
+    _ID_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+
+    def add_her_raga(
+        self,
+        compositions_path: Path,
+        *,
+        id: str,
+        name: str,
+        source_url: str,
+        source_label: str,
+        source_type: str,
+        aliases: list[str] | None = None,
+        thaat: str | None = None,
+        notes: str | None = None,
+        force: bool = False,
+        ragas_path: Path | None = None,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """Create a Hindustani Equivalent Raga (HER) node (ADR-112).
+
+        Writes ragas/<id>.json with tradition: "hindustani". The carnatic_equivalents
+        field is set to [] here — the render pipeline derives it at build time.
+        """
+        if not self._ID_RE.match(id):
+            return _err(
+                f"--id \"{id}\" is not valid: must be lowercase letters, digits, underscore "
+                "(no spaces, no uppercase)"
+            )
+        if not source_url:
+            return _err("--source-url is required for HER ragas")
+        if source_type not in VALID_SOURCE_TYPES:
+            return _err(
+                f"--source-type \"{source_type}\" is not a valid source type\n"
+                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
+            )
+
+        ragas = _load_all_ragas(compositions_path, ragas_path)
+        existing_ids = {r["id"] for r in ragas}
+
+        if id in existing_ids:
+            if not force:
+                return _skip(f"{id} already exists in ragas[]")
+            # force mode: overwrite
+            _rp = ragas_path or _default_ragas_path()
+            raga_file = _raga_file(_rp, id) if _rp.is_dir() else None
+            if raga_file and raga_file.exists():
+                existing = json.loads(raga_file.read_text(encoding="utf-8"))
+                if existing.get("tradition") != "hindustani":
+                    return _err(
+                        f"{id} already exists with tradition \"{existing.get('tradition')}\"; "
+                        "--force only overwrites existing HER entries"
+                    )
+
+        raga: dict[str, Any] = {
+            "id":                   id,
+            "name":                 name,
+            "tradition":            "hindustani",
+            "aliases":              aliases or [],
+            "melakarta":            None,
+            "parent_raga":          None,
+            "is_melakarta":         False,
+            "thaat":                thaat,
+            "carnatic_equivalents": [],
+            "sources":              [{"url": source_url, "label": source_label, "type": source_type}],
+        }
+        if notes is not None:
+            raga["notes"] = notes
+
+        if id in existing_ids:
+            _write_raga(compositions_path, raga, ragas_path)
+        else:
+            _append_raga(compositions_path, raga, ragas_path)
+
+        return _ok(
+            "[HER+]",
+            f"added HER: {id} — \"{name}\"  tradition: hindustani  thaat: {thaat}"
+        )
+
+    def link_her(
+        self,
+        compositions_path: Path,
+        *,
+        carnatic_raga_id: str,
+        her_id: str,
+        ragas_path: Path | None = None,
+        graph_path: Path | None = None,
+    ) -> WriteResult:
+        """Append her_id to a Carnatic raga's hindustani_equivalents array (ADR-112).
+
+        Idempotent: does nothing if her_id is already listed.
+        Validates: both raga ids must exist; her_id must be tradition == "hindustani".
+        """
+        ragas = _load_all_ragas(compositions_path, ragas_path)
+        raga_by_id = {r["id"]: r for r in ragas}
+
+        if carnatic_raga_id not in raga_by_id:
+            return _err(f"--carnatic-raga \"{carnatic_raga_id}\" does not exist in ragas[]")
+        if her_id not in raga_by_id:
+            return _err(f"--her \"{her_id}\" does not exist in ragas[]")
+
+        her_raga = raga_by_id[her_id]
+        if her_raga.get("tradition") != "hindustani":
+            return _err(
+                f"--her \"{her_id}\" has tradition \"{her_raga.get('tradition', 'carnatic')}\"; "
+                "only ragas with tradition == \"hindustani\" can be linked as HERs"
+            )
+
+        car_raga = raga_by_id[carnatic_raga_id]
+        equivalents: list[str] = car_raga.setdefault("hindustani_equivalents", [])
+
+        if her_id in equivalents:
+            return _skip(f"{her_id} is already in {carnatic_raga_id}.hindustani_equivalents")
+
+        equivalents.append(her_id)
+        _write_raga(compositions_path, car_raga, ragas_path)
+
+        return _ok(
+            "[HER-LINK+]",
+            f"linked: {carnatic_raga_id}.hindustani_equivalents ← {her_id}"
+        )
+
+    def add_her_recording(
+        self,
+        musicians_path: Path,
+        *,
+        musician_id: str,
+        url: str,
+        label: str,
+        raga_id: str,
+        kind: str,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+    ) -> WriteResult:
+        """Add an HER YouTube recording to a musician's youtube[] array (ADR-112).
+
+        Bypasses the composition requirement. raga_id must resolve to a raga with
+        tradition == "hindustani". kind must be one of: raga_alap, lecdem, concert, misc.
+        """
+        if kind not in self._HER_VALID_KINDS:
+            return _err(
+                f"kind must be one of {tuple(sorted(self._HER_VALID_KINDS))} for HER recordings; "
+                f"got '{kind}'"
+            )
+
+        video_id = _yt_video_id(url)
+        if not video_id:
+            return _err(f"could not extract 11-char video ID from URL: {url}")
+
+        nodes = _load_all_nodes(musicians_path)
+        known_musician_ids = {n["id"] for n in nodes}
+
+        if musician_id not in known_musician_ids:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        # Validate raga_id resolves to a hindustani raga
+        _cp = compositions_path or _default_compositions_path()
+        _rp = ragas_path or _default_ragas_path()
+        all_ragas = _load_all_ragas(_cp, _rp)
+        raga_by_id = {r["id"]: r for r in all_ragas}
+
+        if raga_id not in raga_by_id:
+            return _err(
+                f"--raga-id \"{raga_id}\" does not exist in ragas[]\n"
+                f"       Run add-her before referencing it here."
+            )
+        her_raga = raga_by_id[raga_id]
+        if her_raga.get("tradition") != "hindustani":
+            return _err(
+                f"--raga-id \"{raga_id}\" has tradition "
+                f"\"{her_raga.get('tradition', 'carnatic')}\"; "
+                "add-her-recording requires a raga with tradition == \"hindustani\""
+            )
+
+        node = next((n for n in nodes if n["id"] == musician_id), None)
+        if node is None:
+            return _err(f"musician_id \"{musician_id}\" not found in musicians")
+
+        # Duplicate detection
+        for yt in node.get("youtube", []):
+            if _yt_video_id(yt.get("url", "")) == video_id:
+                return _skip(f"video_id {video_id} already in {musician_id}.youtube[]")
+
+        entry: dict[str, Any] = {
+            "url":     url,
+            "label":   label,
+            "raga_id": raga_id,
+            "kind":    kind,
+        }
+
+        if "youtube" not in node:
+            node["youtube"] = []
+        node["youtube"].append(entry)
+
+        _write_node(musicians_path, node)
+        return _ok(
+            "[HER-YT+]",
+            f"appended to {musician_id}: \"{label}\"  raga: {raga_id}  kind: {kind}"
+        )
 

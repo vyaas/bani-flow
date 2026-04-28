@@ -1,6 +1,7 @@
 {
   "id": "dharmavati",
   "name": "Dharmavati",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": 59,
   "is_melakarta": true,

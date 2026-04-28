@@ -241,6 +241,31 @@ def build_composition_lookups(
     return dict(composition_to_nodes), dict(raga_to_nodes)
 
 
+def derive_carnatic_equivalents(ragas: list[dict]) -> None:
+    """Derive carnatic_equivalents on HER raga objects at render time (ADR-112).
+
+    For each Carnatic raga that declares hindustani_equivalents, finds those HER
+    raga objects and sets their carnatic_equivalents list to include the Carnatic
+    raga's id. This is a derived field — it is computed here and never authored.
+
+    Modifies the raga dicts in-place.
+    """
+    raga_by_id = {r["id"]: r for r in ragas}
+
+    # Build the derived mapping: her_id → [carnatic_raga_id, ...]
+    her_to_carnatic: dict[str, list[str]] = {}
+    for raga in ragas:
+        if raga.get("tradition") == "carnatic" or "tradition" not in raga:
+            for her_id in raga.get("hindustani_equivalents", []):
+                her_to_carnatic.setdefault(her_id, []).append(raga["id"])
+
+    # Write derived carnatic_equivalents onto each HER object
+    for her_id, carnatic_ids in her_to_carnatic.items():
+        her = raga_by_id.get(her_id)
+        if her is not None:
+            her["carnatic_equivalents"] = carnatic_ids
+
+
 def build_listenable_set(
     graph: dict,
     recordings_data: dict,

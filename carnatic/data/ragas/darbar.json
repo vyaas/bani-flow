@@ -1,7 +1,11 @@
 {
   "id": "darbar",
   "name": "Darbar",
-  "aliases": ["Darbaru", "Darbar (Carnatic)"],
+  "tradition": "carnatic",
+  "aliases": [
+    "Darbaru",
+    "Darbar (Carnatic)"
+  ],
   "melakarta": null,
   "parent_raga": "kharaharapriya",
   "sources": [

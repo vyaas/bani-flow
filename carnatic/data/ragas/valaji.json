@@ -1,6 +1,7 @@
 {
   "id": "valaji",
   "name": "Valaji",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": null,
   "parent_raga": "chakravakam",

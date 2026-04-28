@@ -39,7 +39,7 @@ if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:
 
 from carnatic.render.sync import sync_graph_json
 from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura, load_help_empty_panels
-from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set, build_lecdem_indexes
+from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set, build_lecdem_indexes, derive_carnatic_equivalents
 from carnatic.render.graph_builder import build_elements
 from carnatic.render.html_generator import render_html
 
@@ -72,6 +72,8 @@ def main() -> None:
         print(f"[LOAD] {source_label}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
 
     # Step 2: build lookup tables
+    # ADR-112: derive carnatic_equivalents on HER raga objects (must run before lookups)
+    derive_carnatic_equivalents(comp_data.get("ragas", []))
     composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data, recordings_data)
     musician_to_performances, composition_to_performances, raga_to_performances, perf_to_performances = \
         build_recording_lookups(recordings_data, comp_data)

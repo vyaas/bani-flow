@@ -1,6 +1,7 @@
 {
   "id": "nitimati",
   "name": "Nītimati",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": 60,
   "is_melakarta": true,

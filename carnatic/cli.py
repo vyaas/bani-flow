@@ -32,6 +32,11 @@ Usage:
     python3 carnatic/cli.py mela-of          <janya_raga_id>
     python3 carnatic/cli.py cakra-of         <raga_id>
     python3 carnatic/cli.py melas-in-cakra   <cakra_number>
+
+    # Hindustani Equivalent Ragas (ADR-112)
+    python3 carnatic/cli.py her-of           <carnatic_raga_id>
+    python3 carnatic/cli.py carnatic-twin-of <her_id>
+    python3 carnatic/cli.py her-list
 """
 
 from __future__ import annotations
@@ -1211,6 +1216,69 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         return 1
 
 
+# ── Hindustani Equivalent Raga traversal commands (ADR-112) ──────────────────
+
+def cmd_her_of(g: CarnaticGraph, args: list[str]) -> int:
+    """Print HER ids declared in a Carnatic raga's hindustani_equivalents field."""
+    if not args:
+        print("Usage: her-of <carnatic_raga_id>", file=sys.stderr)
+        return 1
+    raga_id = args[0]
+    raga = g.get_raga(raga_id)
+    if raga is None:
+        print(f"NOT FOUND  raga \"{raga_id}\"")
+        return 1
+    hers = raga.get("hindustani_equivalents", [])
+    if not hers:
+        print(f"No Hindustani equivalents declared for \"{raga_id}\"")
+        return 0
+    print(f"Hindustani equivalents of {raga_id}:")
+    for her_id in hers:
+        her = g.get_raga(her_id)
+        name = her.get("name", her_id) if her else her_id
+        print(f"  {her_id:<40} \"{name}\"")
+    return 0
+
+
+def cmd_carnatic_twin_of(g: CarnaticGraph, args: list[str]) -> int:
+    """Print Carnatic raga ids that declare the given HER in their hindustani_equivalents."""
+    if not args:
+        print("Usage: carnatic-twin-of <her_id>", file=sys.stderr)
+        return 1
+    her_id = args[0]
+    twins = [
+        r for r in g.get_all_ragas()
+        if her_id in r.get("hindustani_equivalents", [])
+    ]
+    if not twins:
+        print(f"No Carnatic ragas declare \"{her_id}\" as a Hindustani equivalent")
+        return 0
+    print(f"Carnatic twins of {her_id}:")
+    for raga in twins:
+        print(f"  {raga['id']:<40} \"{raga.get('name', '')}\"")
+    return 0
+
+
+def cmd_her_list(g: CarnaticGraph, _args: list[str]) -> int:
+    """Print all ragas with tradition == hindustani and their Carnatic twins."""
+    her_ragas = [r for r in g.get_all_ragas() if r.get("tradition") == "hindustani"]
+    if not her_ragas:
+        print("No Hindustani ragas found in graph (schema lands dark — run add-her to add them)")
+        return 0
+    # Build reverse index: her_id → [carnatic_raga_id, ...]
+    twins_of: dict[str, list[str]] = {}
+    for raga in g.get_all_ragas():
+        for her_id in raga.get("hindustani_equivalents", []):
+            twins_of.setdefault(her_id, []).append(raga["id"])
+
+    print(f"Hindustani Equivalent Ragas ({len(her_ragas)}):")
+    for her in sorted(her_ragas, key=lambda r: r.get("name", "").lower()):
+        twins = twins_of.get(her["id"], [])
+        twins_str = ", ".join(twins) if twins else "(no Carnatic twins declared)"
+        print(f"  {her['id']:<40} \"{her.get('name', '')}\"  ← {twins_str}")
+    return 0
+
+
 # ── dispatch ───────────────────────────────────────────────────────────────────
 
 COMMANDS: dict[str, object] = {
@@ -1239,6 +1307,10 @@ COMMANDS: dict[str, object] = {
     "mela-of":              cmd_mela_of,
     "cakra-of":             cmd_cakra_of,
     "melas-in-cakra":       cmd_melas_in_cakra,
+    # Hindustani Equivalent Ragas (ADR-112)
+    "her-of":               cmd_her_of,
+    "carnatic-twin-of":     cmd_carnatic_twin_of,
+    "her-list":             cmd_her_list,
 }
 
 

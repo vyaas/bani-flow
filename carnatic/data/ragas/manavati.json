@@ -1,6 +1,7 @@
 {
   "id": "manavati",
   "name": "Mānavati",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": 5,
   "is_melakarta": true,

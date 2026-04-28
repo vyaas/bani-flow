@@ -61,6 +61,19 @@ Usage:
                                                     [--source-url <url>] [--source-label <label>] \\
                                                     [--source-type <type>] [--notes <text>]
     # Note: add-composer is removed (ADR-110). Use add-musician for all people.
+
+    python3 carnatic/write_cli.py add-her          --id <id> --name <name> \\
+                                                    --source-url <url> --source-label <label> \\
+                                                    --source-type <type> \\
+                                                    [--thaat <thaat>] [--aliases <csv>] \\
+                                                    [--notes <text>] [--force]
+
+    python3 carnatic/write_cli.py link-her         --carnatic-raga <car_id> --her <her_id>
+
+    python3 carnatic/write_cli.py add-her-recording --musician-id <id> --url <url> \\
+                                                     --raga-id <her_id> --label <label> \\
+                                                     --kind <kind>
+    # kind must be one of: raga_alap, lecdem, concert, misc
 """
 
 from __future__ import annotations
@@ -307,6 +320,47 @@ def cmd_add_composition(w: CarnaticWriter, args: argparse.Namespace) -> WriteRes
     )
 
 
+def cmd_add_her(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
+    aliases = [a.strip() for a in args.aliases.split(",")] if args.aliases else None
+    return w.add_her_raga(
+        _compositions_path(),
+        id=args.id,
+        name=args.name,
+        source_url=args.source_url,
+        source_label=args.source_label,
+        source_type=args.source_type,
+        aliases=aliases,
+        thaat=args.thaat,
+        notes=args.notes,
+        force=args.force,
+        ragas_path=_ragas_path(),
+        graph_path=_graph_path(),
+    )
+
+
+def cmd_link_her(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
+    return w.link_her(
+        _compositions_path(),
+        carnatic_raga_id=args.carnatic_raga,
+        her_id=args.her,
+        ragas_path=_ragas_path(),
+        graph_path=_graph_path(),
+    )
+
+
+def cmd_add_her_recording(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
+    return w.add_her_recording(
+        _musicians_path(),
+        musician_id=args.musician_id,
+        url=args.url,
+        label=args.label,
+        raga_id=args.raga_id,
+        kind=args.kind,
+        compositions_path=_compositions_path(),
+        ragas_path=_ragas_path(),
+    )
+
+
 # ── argument parser ────────────────────────────────────────────────────────────
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -453,6 +507,39 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="Source type: wikipedia|pdf|article|archive|other")
     p.add_argument("--notes",        default=None,  help="Free-text notes")
 
+    # ── add-her ───────────────────────────────────────────────────────────────
+    p = sub.add_parser("add-her", help="Add a Hindustani Equivalent Raga (ADR-112)")
+    p.add_argument("--id",           required=True,              help="snake_case unique id (lowercase)")
+    p.add_argument("--name",         required=True,              help="Canonical raga name")
+    p.add_argument("--source-url",   required=True, dest="source_url",   help="Primary source URL (Wikipedia required)")
+    p.add_argument("--source-label", required=True, dest="source_label", help="Source label")
+    p.add_argument("--source-type",  required=True, dest="source_type",
+                   help="Source type: wikipedia|pdf|article|archive|other")
+    p.add_argument("--thaat",        default=None,  help="Thaat (Hindustani parent scale, optional)")
+    p.add_argument("--aliases",      default=None,  help="Comma-separated alias names")
+    p.add_argument("--notes",        default=None,  help="Free-text musicological notes")
+    p.add_argument("--force",        action="store_true", default=False,
+                   help="Overwrite if already exists (idempotent)")
+
+    # ── link-her ──────────────────────────────────────────────────────────────
+    p = sub.add_parser("link-her", help="Link a Carnatic raga to a Hindustani Equivalent Raga (ADR-112)")
+    p.add_argument("--carnatic-raga", required=True, dest="carnatic_raga",
+                   help="Carnatic raga id (must exist; its hindustani_equivalents will be extended)")
+    p.add_argument("--her",           required=True,
+                   help="Hindustani raga id (must exist with tradition == hindustani)")
+
+    # ── add-her-recording ─────────────────────────────────────────────────────
+    p = sub.add_parser("add-her-recording",
+                       help="Add an HER YouTube recording bypassing composition requirement (ADR-112)")
+    p.add_argument("--musician-id", required=True, dest="musician_id",  help="Musician node id")
+    p.add_argument("--url",         required=True,                      help="YouTube URL")
+    p.add_argument("--raga-id",     required=True, dest="raga_id",
+                   help="HER raga id (must have tradition == hindustani)")
+    p.add_argument("--label",       required=True,                      help="Display label")
+    p.add_argument("--kind",        required=True,
+                   choices=("raga_alap", "lecdem", "concert", "misc"),
+                   help="Recording kind: raga_alap|lecdem|concert|misc")
+
     return parser
 
 
@@ -471,6 +558,10 @@ HANDLERS = {
     "add-raga":               cmd_add_raga,
     "patch-raga":             cmd_patch_raga,
     "add-composition":        cmd_add_composition,
+    # ADR-112: Hindustani Equivalent Ragas
+    "add-her":                cmd_add_her,
+    "link-her":               cmd_link_her,
+    "add-her-recording":      cmd_add_her_recording,
 }
 
 

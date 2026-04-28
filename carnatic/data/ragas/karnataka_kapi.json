@@ -1,6 +1,7 @@
 {
   "id": "karnataka_kapi",
   "name": "Karnataka Kapi",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": null,
   "parent_raga": "harikambhoji",

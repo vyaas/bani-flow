@@ -1,6 +1,7 @@
 {
   "id": "padi",
   "name": "Padi",
+  "tradition": "carnatic",
   "aliases": [],
   "melakarta": null,
   "parent_raga": "mayamalavagowla",

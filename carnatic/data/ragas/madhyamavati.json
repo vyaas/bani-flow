@@ -1,7 +1,10 @@
 {
   "id": "madhyamavati",
   "name": "Madhyamavati",
-  "aliases": ["Madhyamavathi"],
+  "tradition": "carnatic",
+  "aliases": [
+    "Madhyamavathi"
+  ],
   "melakarta": null,
   "parent_raga": "kharaharapriya",
   "sources": [

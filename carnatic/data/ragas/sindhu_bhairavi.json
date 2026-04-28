@@ -1,7 +1,10 @@
 {
   "id": "sindhu_bhairavi",
   "name": "Sindhu Bhairavi",
-  "aliases": ["Sindhubhairavi"],
+  "tradition": "carnatic",
+  "aliases": [
+    "Sindhubhairavi"
+  ],
   "melakarta": null,
   "parent_raga": "natabhairavi",
   "sources": [
