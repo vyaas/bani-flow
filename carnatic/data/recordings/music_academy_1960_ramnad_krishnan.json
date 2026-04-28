@@ -1,0 +1,195 @@
+{
+  "id": "music_academy_1960_ramnad_krishnan",
+  "video_id": "u49U8KEmcq0",
+  "url": "https://youtu.be/u49U8KEmcq0",
+  "title": "Ramnad Krishnan — Music Academy Annual Conference 1959 (4 Jan 1960)",
+  "short_title": "Music Academy 1959 Annual (Ramnad Krishnan)",
+  "date": "1960-01-04",
+  "venue": "PS High School, Mylapore",
+  "occasion": "Music Academy Annual Conference 1959 concert, evening of 4 January 1960. Part of the Nadopasana series; archived and uploaded by Vaak.",
+  "sources": [
+    {
+      "url": "https://youtu.be/u49U8KEmcq0",
+      "label": "YouTube — Vaak / Nadopasana",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "ramnad_krishnan", "role": "vocal" },
+        { "musician_id": null, "unmatched_name": "Mayavaram V R Govindaraja Pillai", "role": "violin" },
+        { "musician_id": null, "unmatched_name": "Ramanathapuram C S Murugabhoopathi", "role": "mridangam" },
+        { "musician_id": null, "unmatched_name": "T S Vilavadri Iyer", "role": "ghatam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "sarasijakshi",
+          "raga_id": "nayaki",
+          "tala": "khanda_triputa",
+          "composer_id": "rudrapatnam_venkatramayya",
+          "display_title": "Sarasijaaksha (Varnam)",
+          "notes": "Varnam in Nayaki by Rudrapatnam Venkataramanayya"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:02:38",
+          "offset_seconds": 158,
+          "composition_id": "paraloka_bhayamu",
+          "raga_id": "mandari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Paraloka Bhayamu",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:12:07",
+          "offset_seconds": 727,
+          "composition_id": "rama_ika_nannu",
+          "raga_id": "sahana",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Raama Ika Nannubrova Raadaa",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:19:36",
+          "offset_seconds": 1176,
+          "composition_id": "yagnadulu_sukhamanu",
+          "raga_id": "jayamanohari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Yajnaadulu",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:26:01",
+          "offset_seconds": 1561,
+          "composition_id": "enduku_nirdaya",
+          "raga_id": "harikambhoji",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Enduku Nirdaya",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:49:03",
+          "offset_seconds": 2943,
+          "composition_id": "karubaru",
+          "raga_id": "mukhari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Kaarubaaru",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:13:27",
+          "offset_seconds": 4407,
+          "composition_id": "marakatamanivarna",
+          "raga_id": "varali",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Marakatamanivarna",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:28:12",
+          "offset_seconds": 5292,
+          "composition_id": "nadupai",
+          "raga_id": "madhyamavati",
+          "tala": "khanda_chapu",
+          "composer_id": "tyagaraja",
+          "display_title": "Naadupai",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:37:01",
+          "offset_seconds": 5821,
+          "composition_id": "abhimanamennedu",
+          "raga_id": "begada",
+          "tala": "adi",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Abhimaanamennadu",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:54:04",
+          "offset_seconds": 6844,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": "Percussion solo"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:08:42",
+          "offset_seconds": 7722,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ragam Tanam — Bhairavi",
+          "notes": "Ragam Tanam"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:29:16",
+          "offset_seconds": 8956,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": "jhampa",
+          "composer_id": null,
+          "display_title": "Pallavi — Mamadhura Meenakshi Amba Devi (Bhairavi)",
+          "notes": "Chatusra Jathi Jhampa, 4 kalai"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:40:47",
+          "offset_seconds": 9647,
+          "composition_id": "modi_jesavelara",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "composer_id": "pattabhiramayya",
+          "display_title": "Modijesevelaraa",
+          "notes": null
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:42:29",
+          "offset_seconds": 9749,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Slokam (Viruttam)",
+          "notes": "Slokam spanning Saveri, Sahana, Shree Raga"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:53:16",
+          "offset_seconds": 10396,
+          "composition_id": "maayanai",
+          "raga_id": "sriraga",
+          "tala": "adi",
+          "composer_id": "andal",
+          "display_title": "Maayanai (Andal)",
+          "notes": "Incomplete"
+        }
+      ]
+    }
+  ]
+}
