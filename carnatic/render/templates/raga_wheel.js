@@ -521,6 +521,11 @@ function _openWheelDetailPanel(raga) {
   }
 
   panel.classList.add('wdp-open');
+  // Ghost-click guard: record the time the panel opens so that comp chip
+  // click handlers can ignore native ghost clicks that land on the freshly
+  // rendered WDP (mobile browsers fire a delayed isTrusted click at the
+  // original touch coordinates after pointerup, which now points at the WDP).
+  window._wdpOpenTime = Date.now();
 }
 
 // suppressFilter=true: visual-only selection — do NOT override the active bani filter.
@@ -572,6 +577,10 @@ function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
     chip.textContent = '\u266a ' + (item.title || item.id || '');
     chip.addEventListener('click', (e) => {
       e.stopPropagation();
+      // Ghost-click guard: ignore native ghost clicks that arrive within 300 ms of
+      // the panel opening (mobile browsers can fire a delayed isTrusted click at
+      // the original touch coordinates, which now points at this freshly rendered chip).
+      if (Date.now() - (window._wdpOpenTime || 0) < 300) return;
       // Mark this chip active immediately — wdp-active cannot be set via the normal
       // syncRagaWheelToFilter path because _wheelSyncInProgress=true blocks it.
       const panel = document.getElementById('wheel-detail-panel');
