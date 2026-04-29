@@ -34,6 +34,19 @@
       "label": "entō prēmatō · Surutti · Adi - MS Subbulakshmi",
       "composition_id": "ento_premato",
       "raga_id": "surutti"
+    },
+    {
+      "url": "https://youtu.be/pNcm7EKmTYY",
+      "label": "RTP",
+      "raga_id": "mayamalavagowla",
+      "year": 1970,
+      "tala": "khanda_jati_triputa_tala"
+    },
+    {
+      "url": "https://youtu.be/3uixsfIPtxo",
+      "label": "RTP",
+      "raga_id": "dharmavati",
+      "tala": "adi"
     }
   ]
 }

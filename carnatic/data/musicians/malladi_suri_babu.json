@@ -35,6 +35,18 @@
       "url": "https://youtu.be/6_2hAY1l-Eg",
       "label": "Maayaahomam",
       "raga_id": "jog"
+    },
+    {
+      "url": "https://youtu.be/Xlx2WZYoR8s",
+      "label": "Class session",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "voleti_venkateshwarlu"
+        ]
+      }
     }
   ]
 }
