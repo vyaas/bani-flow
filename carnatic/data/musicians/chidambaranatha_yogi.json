@@ -1,0 +1,20 @@
+{
+  "id": "chidambaranatha_yogi",
+  "label": "Chidambaranatha Yogi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "label": "Wikipedia (via Muthuswami Dikshitar — guru section)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "bridge",
+  "instrument": null,
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

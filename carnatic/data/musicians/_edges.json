@@ -900,5 +900,103 @@
     "target": "vv_subrahmanyam",
     "confidence": 0.9,
     "source_url": "https://en.wikipedia.org/wiki/Chembai"
+  },
+  {
+    "source": "ramaswami_dikshitar",
+    "target": "muthuswami_dikshitar",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+    "note": "Father and primary first guru; taught Vedas, Sanskrit, poetry and music; himself trained in the Govinda Dikshita / Venkatamakhin lineage. Documented in Subbarama Dikshitar's Sangita Sampradaya Pradarshini (1904)."
+  },
+  {
+    "source": "ramaswami_dikshitar",
+    "target": "balaswami_dikshitar",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+    "note": "Father; provided foundational training before Balaswami came under Muthuswami."
+  },
+  {
+    "source": "ramaswami_dikshitar",
+    "target": "chinnaswami_dikshitar",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+    "note": "Father; foundational training of the middle brother."
+  },
+  {
+    "source": "chidambaranatha_yogi",
+    "target": "muthuswami_dikshitar",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+    "note": "Primary spiritual and musical guru; took Muthuswami on pilgrimage from Manali to Kashi for 4-7 years; initiated him into Sri Vidya (diksha name Chidanandanatha); exposed him to Hindustani/Dhrupad music; gifted the 'Sri Rama' inscribed veena. The mudra 'Guruguha' in Dikshitar's compositions refers simultaneously to Lord Subrahmanya and to this Yogi. Documented in Sangita Sampradaya Pradarshini (Subbarama Dikshitar, 1904)."
+  },
+  {
+    "source": "upanishad_brahmendra",
+    "target": "muthuswami_dikshitar",
+    "confidence": 0.85,
+    "source_url": "https://en.wikipedia.org/wiki/Upanishad_Brahmam",
+    "note": "Late-life shiksha-guru (instructional, not diksha); Dikshitar studied Vedanta under him at Kanchipuram (~1809); set the Guru's Rama Ashtapadi to music (now lost). V. Raghavan documented shared Advaita vocabulary between the two authors. Confidence 0.85: attested in Raghavan scholarship and Mutt tradition but not corroborated by a second independent primary source."
+  },
+  {
+    "source": "muthuswami_dikshitar",
+    "target": "balaswami_dikshitar",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+    "note": "Younger brother and shishya; Muthuswami taught him compositions and veena; also arranged European violin instruction for him at Fort St. George — Balaswami became the pioneer of violin in Carnatic music. Recorded in Sangita Sampradaya Pradarshini."
+  },
+  {
+    "source": "muthuswami_dikshitar",
+    "target": "chinnaswami_dikshitar",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+    "note": "Middle brother and shishya; Chinnaswami and Balaswami performed as a vocal duo presenting Muthuswami's compositions. Named in Vaggeyakarula Charitramu (Subbarama Dikshitar, 1904)."
+  },
+  {
+    "source": "muthuswami_dikshitar",
+    "target": "tambiyappa",
+    "confidence": 0.88,
+    "source_url": "http://carnatica.net/special/dikshitarsishyas.htm",
+    "note": "Named direct shishya; mridangam player who accompanied Dikshitar's performing group. Listed in Carnatica.net Dikshitar Sishya Parampara (Dr. V.V. Srivatsa) and Wikipedia disciples section."
+  },
+  {
+    "source": "muthuswami_dikshitar",
+    "target": "tanjore_ponnayya",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+    "note": "Member of the Tanjore Quartet (sons of Subbaraya Nattuvanar); explicitly names Dikshitar as guru in composed kritis (e.g. Mayateeta swaroopini, Satileni). Documented in SSP and Wikipedia: Tanjore Quartet."
+  },
+  {
+    "source": "muthuswami_dikshitar",
+    "target": "chinnaiah_pillai",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+    "note": "Member of the Tanjore Quartet (sons of Subbaraya Nattuvanar); named direct shishya."
+  },
+  {
+    "source": "muthuswami_dikshitar",
+    "target": "tanjore_vadivelu",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+    "note": "Member of the Tanjore Quartet; carried Dikshitar's training to Swati Tirunal's Travancore court and is credited with introducing violin there."
+  },
+  {
+    "source": "muthuswami_dikshitar",
+    "target": "subbaraya_sastri",
+    "confidence": 0.97,
+    "source_url": "https://en.wikipedia.org/wiki/Subbaraya_Sastri",
+    "note": "Son of Shyama Sastri; the only musician known to have studied under all three Trinity composers — his father Shyama Sastri, Tyagaraja, and Muthuswami Dikshitar. Critical cross-Trinity bridge."
+  },
+  {
+    "source": "balaswami_dikshitar",
+    "target": "subbarama_dikshitar",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
+    "note": "Grandfather and adoptive father; Subbarama was the son of Balaswami's daughter; Balaswami formally adopted him and provided musical training in the Dikshitar kritis. Subbarama became Ettayapuram court musician at age 19 and authored Sangita Sampradaya Pradarshini (1904). Wikipedia notes 'sources differ on exact relationship.'"
+  },
+  {
+    "source": "subbarama_dikshitar",
+    "target": "ambi_dikshitar",
+    "confidence": 0.99,
+    "source_url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
+    "note": "Father and primary guru; Ambi Dikshitar (given name also Muthuswami Dikshitar) was Subbarama's son; trained under him; succeeded him as Ettayapuram court musician; later moved to Madras where he taught the modern propagators of Dikshitar repertoire."
   }
 ]

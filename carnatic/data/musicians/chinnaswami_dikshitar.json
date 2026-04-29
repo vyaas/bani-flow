@@ -1,0 +1,20 @@
+{
+  "id": "chinnaswami_dikshitar",
+  "label": "Chinnaswami Dikshitar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "label": "Wikipedia — Muthuswami Dikshitar (family section)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1778,
+  "died": null,
+  "era": "bridge",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": "dikshitar",
+  "youtube": []
+}

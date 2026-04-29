@@ -1,0 +1,20 @@
+{
+  "id": "tanjore_ponnayya",
+  "label": "Tanjore Ponnayya Pillai",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+      "label": "Wikipedia — Tanjore Quartet",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1804,
+  "died": 1864,
+  "era": "bridge",
+  "instrument": "bharatanatyam",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": "dikshitar",
+  "youtube": []
+}

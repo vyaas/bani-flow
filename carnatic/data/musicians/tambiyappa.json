@@ -1,0 +1,20 @@
+{
+  "id": "tambiyappa",
+  "label": "Tambiyappa (Tiruvarur Tambiyappan)",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "label": "Wikipedia — Muthuswami Dikshitar (disciples section)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "bridge",
+  "instrument": "mridangam",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": "dikshitar",
+  "youtube": []
+}

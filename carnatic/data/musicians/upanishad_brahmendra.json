@@ -1,0 +1,20 @@
+{
+  "id": "upanishad_brahmendra",
+  "label": "Upanishad Brahmendra",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Upanishad_Brahmam",
+      "label": "Wikipedia — Upanishad Brahmam",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1747,
+  "died": 1810,
+  "era": "bridge",
+  "instrument": null,
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

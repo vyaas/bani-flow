@@ -1,0 +1,20 @@
+{
+  "id": "balaswami_dikshitar",
+  "label": "Balaswami Dikshitar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
+      "label": "Wikipedia — Subbarama Dikshitar (family section)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1786,
+  "died": 1858,
+  "era": "bridge",
+  "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": "dikshitar",
+  "youtube": []
+}

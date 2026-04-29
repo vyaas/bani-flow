@@ -1,0 +1,20 @@
+{
+  "id": "tanjore_vadivelu",
+  "label": "Tanjore Vadivelu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tanjore_Quartet",
+      "label": "Wikipedia — Tanjore Quartet",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1810,
+  "died": 1845,
+  "era": "bridge",
+  "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": "dikshitar",
+  "youtube": []
+}

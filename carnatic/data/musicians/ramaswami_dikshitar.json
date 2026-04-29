@@ -1,0 +1,20 @@
+{
+  "id": "ramaswami_dikshitar",
+  "label": "Ramaswami Dikshitar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Muthuswami_Dikshitar",
+      "label": "Wikipedia (via Muthuswami Dikshitar — father section)",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1735,
+  "died": 1817,
+  "era": "bridge",
+  "instrument": "veena",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": "dikshitar",
+  "youtube": []
+}
