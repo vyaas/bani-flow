@@ -1,0 +1,101 @@
+{
+  "id": "kaccheri_1971",
+  "video_id": "bqkECouFq_w",
+  "url": "https://youtu.be/bqkECouFq_w",
+  "title": "Ramnad Krishnan: Kaccheri — A Concert of South Indian Classical Music (Nonesuch Explorer Series, 1971)",
+  "short_title": "Kaccheri 1971",
+  "date": "1971",
+  "venue": null,
+  "occasion": "LP studio recording for Nonesuch Records (Explorer Series, WPCS-10722). Program notes by Robert E. Brown and T. Viswanathan. Originally released 1971; reissued on CD 2002 (Japan).",
+  "sources": [
+    {
+      "url": "https://searchworks.stanford.edu/view/6061533",
+      "label": "Stanford Libraries catalogue",
+      "type": "archive"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "v_thyagarajan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "t_ranganathan",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "v_nagarajan",
+          "role": "khanjira"
+        },
+        {
+          "musician_id": "p_srinivasan",
+          "role": "tampura"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "bantureeti_kolu",
+          "raga_id": "hamsanadam",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Bantureeti Kolu",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "04:08",
+          "offset_seconds": 248,
+          "composition_id": "akshaya_linga_vibho",
+          "raga_id": "shankarabharanam",
+          "tala": "misra_capu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Akshaya Linga Vibho",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "20:46",
+          "offset_seconds": 1246,
+          "composition_id": "merusamana",
+          "raga_id": "mayamalavagowla",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Merusamana",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "31:02",
+          "offset_seconds": 1862,
+          "composition_id": "inni_enna_pechu",
+          "raga_id": "sahana",
+          "tala": null,
+          "composer_id": "subbarama_iyer",
+          "display_title": "Ini Enna Pechu",
+          "notes": "Padam in Sahana"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "39:19",
+          "offset_seconds": 2359,
+          "composition_id": "modi_jesavelara",
+          "raga_id": "khamas",
+          "tala": null,
+          "composer_id": "pattabhiramayya",
+          "display_title": "Modi Jesavelara",
+          "notes": "Javali"
+        }
+      ]
+    }
+  ]
+}

@@ -3,12 +3,14 @@
   "title": "Merusamana",
   "composer_id": "tyagaraja",
   "raga_id": "mayamalavagowla",
+  "tala": "adi",
   "language": "Telugu",
   "sources": [
     {
-      "url": "https://www.karnatik.com/c2765.shtml",
+      "url": "https://karnatik.com/c2560.shtml",
       "label": "Karnatik.com",
       "type": "article"
     }
-  ]
+  ],
+  "notes": "Tyagaraja kriti in Mayamalavagowla raga."
 }

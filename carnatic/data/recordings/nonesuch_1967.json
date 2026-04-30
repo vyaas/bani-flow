@@ -1,0 +1,106 @@
+{
+  "id": "nonesuch_1967",
+  "video_id": "M-_MV5d0c_A",
+  "url": "https://youtu.be/M-_MV5d0c_A",
+  "title": "Music of South India: Songs in the Carnatic Tradition (Nonesuch H-72023, 1967)",
+  "short_title": "Nonesuch 1967",
+  "date": "1967-12",
+  "venue": "Manhattan Towers Hotel, New York",
+  "occasion": "LP studio recording for Nonesuch Records (H-72023). Produced by Peter K. Siegel. Recording engineer: David B. Jones. Mastering: Robert C. Ludwig (Masterdisk Corp.).",
+  "sources": [
+    {
+      "url": "https://www.nonesuch.com/albums/music-south-india-songs-carnatic-tradition",
+      "label": "Nonesuch Records",
+      "type": "other"
+    },
+    {
+      "url": "https://dn721502.ca.archive.org/0/items/cd_vidwan-music-of-south-india-songs-of-the_ramnad-krishnan/cd_vidwan-music-of-south-india-songs-of-the_ramnad-krishnan.pdf",
+      "label": "Album liner notes (Archive.org)",
+      "type": "pdf"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "v_thyagarajan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "t_ranganathan",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "v_nagarajan",
+          "role": "khanjira"
+        },
+        {
+          "musician_id": "p_srinivasan",
+          "role": "tampura"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "ninnada",
+          "raga_id": "kannada",
+          "tala": null,
+          "composer_id": "tyagaraja",
+          "display_title": "Ninnada Nela",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "04:08",
+          "offset_seconds": 248,
+          "composition_id": "palimchu_kamakshi",
+          "raga_id": "madhyamavati",
+          "tala": "adi",
+          "composer_id": "shyama_shastri",
+          "display_title": "Palinchu Kamakshi",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "19:39",
+          "offset_seconds": 1179,
+          "composition_id": "abhimanamennedu",
+          "raga_id": "begada",
+          "tala": "adi",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Abhimanamennedu",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "32:47",
+          "offset_seconds": 1967,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ragam Tanam Pallavi — Bhairavi",
+          "notes": "Alapana 32:47 (11:30) → Tanam 44:17 (7:17) → Pallavi theme 51:34 (1:31) → Pallavi niraval 53:05 (5:57) → Svara kalpana 59:02 (2:37)"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "01:01:39",
+          "offset_seconds": 3699,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Tani Avartam",
+          "notes": "Drum solo: T. Ranganathan (mridangam), V. Nagarajan (khanjira)"
+        }
+      ]
+    }
+  ]
+}
