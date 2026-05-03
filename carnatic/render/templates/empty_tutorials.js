@@ -33,6 +33,19 @@
     return e;
   }
 
+  // ── Era-tint helper: applies --chip-era-bg / --chip-era-border by musician id ──
+  // Looks up the musician in graphData.nodes, derives era, calls THEME.eraTintCss.
+  function _applyEraTint(chip, musicianId) {
+    const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+    const node  = nodes.find(function (n) { return n.id === musicianId; });
+    const eraId = node ? (node.era || null) : null;
+    const tint  = (typeof THEME !== 'undefined')
+      ? THEME.eraTintCss(eraId)
+      : { bg: 'transparent', border: 'var(--border-strong)' };
+    chip.style.setProperty('--chip-era-bg',     tint.bg);
+    chip.style.setProperty('--chip-era-border', tint.border);
+  }
+
   // ── Click resolvers for try_these items ──────────────────────────────────
   // Each kind navigates the app the same way the user would by hand.
 
@@ -500,6 +513,7 @@
     }
     const chip = _el('span', cls, item.label || kind);
     chip.style.cursor = 'pointer';
+    if (kind === 'musician' && item.id) _applyEraTint(chip, item.id);
     if (onClick) chip.addEventListener('click', onClick);
     return chip;
   }
@@ -716,6 +730,7 @@
             const nodeId = _lookupComposerNodeId(c.id);
             if (nodeId) {
               const chip = _el('span', 'musician-chip', c.label || c.id);
+              _applyEraTint(chip, nodeId);
               chip.style.cursor = 'pointer';
               chip.addEventListener('click', function () { _onMusician(nodeId); });
               noteDiv.appendChild(chip);

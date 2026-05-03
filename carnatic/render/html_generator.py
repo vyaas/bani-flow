@@ -59,18 +59,36 @@ def _render_help_md(md_text: str) -> str:
         elif _is_fence(block):
             # Fenced code block: strip opening ```(lang) and closing ``` lines
             raw_lines = block.splitlines()
+            lang = raw_lines[0][3:].strip()  # text after the opening ```
             code_lines = [l for l in raw_lines[1:] if not _is_fence(l.strip())]
             escaped = '\n'.join(
                 l.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
                 for l in code_lines
             )
-            parts.append(f'<pre class="hd-pre"><code>{escaped}</code></pre>')
+            if lang == 'bani-formula':
+                _cls = {
+                    '+': 'hd-cf-op', '=': 'hd-cf-op', '\u2192': 'hd-cf-arrow',
+                    'Experiences': 'hd-cf-common', 'Music': 'hd-cf-common', 'Feelings': 'hd-cf-common',
+                }
+                def _fmt(m: re.Match) -> str:
+                    t = m.group(0)
+                    c = _cls.get(t, 'hd-cf-label')
+                    return f'<span class="{c}">{t}</span>'
+                _pat = r'\([^)]+\)|[+=]|\u2192|\bExperiences\b|\bMusic\b|\bFeelings\b'
+                escaped = re.sub(_pat, _fmt, escaped)
+                parts.append(f'<pre class="hd-pre hd-pre-formula"><code>{escaped}</code></pre>')
+            else:
+                parts.append(f'<pre class="hd-pre"><code>{escaped}</code></pre>')
         else:
             raw_lines = [l.strip() for l in block.splitlines() if l.strip()]
             is_major = raw_lines and any(raw_lines[0].startswith(op) for op in _MAJOR_OPENERS)
             css_class = 'hd-p hd-p-major' if is_major else 'hd-p'
             line_html = []
             for raw in raw_lines:
+                if raw.startswith('> '):
+                    processed = _inline(raw[2:])
+                    line_html.append(f'<span class="hd-quote">{processed}</span>')
+                    continue
                 processed = _inline(raw)
                 if _is_quote(raw):
                     line_html.append(f'<span class="hd-quote">{processed}</span>')

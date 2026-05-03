@@ -564,6 +564,7 @@ Entries are terse — this is a log, not an essay.
 - 2025-07-13: Raga file is `thodi.json` (not `todi.json`) — always check carnatic/data/ragas/ ls output before using a raga-id in add-composition; mismatched IDs surface as ERROR at write time, not silently.
 - 2025-07-13: V4 AIR Trichy 1963 tracklist ends with a Surutti alapana cut; model as composition_id: null + raga_id: surutti + notes: "alapana" rather than dropping the performance entirely.
 - 2026-04-26: ADR-110 migration: muthuthandavar was one of the 19 "already linked" composers but compositions still carried composer_id: "muthuthandavar" (the composer alias, not the musician ID "muthu_thandavar") — always verify that all composer_id values in compositions match the canonical musician IDs after retiring _composers.json, not just that the 19 had musician_node_id set.
+- 2026-04-30: Nonesuch 1967 LP (Ramnad Krishnan): two compositions share the title "Palinchu Kamakshi" — `palinchu_kamakshi` (Dikshitar, Madhyamavati, mangalam) and `palimchu_kamakshi` (Shyama Shastri, Madhyamavati, kriti); the Dikshitar version had no recording references so was deleted; always grep all of carnatic/data/ before deleting a composition file. Archive.org PDF liner notes (source-type: pdf) are an accepted source for musicians without Wikipedia pages when explicitly authorised by the project owner. The `kanjira` instrument ID is not in the write_cli vocabulary — use `khanjira`; `tampura` is also not accepted — use `other`.
 
 ### 🎵 Carnatic Coder
 
