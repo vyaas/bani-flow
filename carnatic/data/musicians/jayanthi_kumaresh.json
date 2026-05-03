@@ -1,0 +1,36 @@
+{
+  "id": "jayanthi_kumaresh",
+  "label": "Jayanthi Kumaresh",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Jayanthi_Kumaresh",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1969,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "veena",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/h_RrCIwbnQ4",
+      "label": "RTP",
+      "raga_id": "charukesi",
+      "performers": [
+        {
+          "musician_id": "jayanthi_kumaresh",
+          "role": "veena"
+        },
+        {
+          "musician_id": "kumaresh_rajagopalan",
+          "role": "violin"
+        }
+      ]
+    }
+  ]
+}

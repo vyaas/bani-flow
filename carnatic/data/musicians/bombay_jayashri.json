@@ -22,6 +22,18 @@
       "label": "entō prēmatōnu · Bahudari · Adi - Bombay Jayashri",
       "composition_id": "ento_prematonu",
       "raga_id": "bahudari"
+    },
+    {
+      "url": "https://youtu.be/eBhYBx76_KY",
+      "label": "RTP",
+      "raga_id": "charukesi"
+    },
+    {
+      "url": "https://youtu.be/o4qRGPCT-KE",
+      "label": "",
+      "composition_id": "adamodi_galade",
+      "raga_id": "charukesi",
+      "tala": "adi"
     }
   ]
 }

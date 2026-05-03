@@ -998,5 +998,17 @@
     "confidence": 0.99,
     "source_url": "https://en.wikipedia.org/wiki/Subbarama_Dikshitar",
     "note": "Father and primary guru; Ambi Dikshitar (given name also Muthuswami Dikshitar) was Subbarama's son; trained under him; succeeded him as Ettayapuram court musician; later moved to Madras where he taught the modern propagators of Dikshitar repertoire."
+  },
+  {
+    "source": "s_balachander",
+    "target": "jayanthi_kumaresh",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/Jayanthi_Kumaresh"
+  },
+  {
+    "source": "lalgudi_jayaraman",
+    "target": "jayanthi_kumaresh",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/Jayanthi_Kumaresh"
   }
 ]
