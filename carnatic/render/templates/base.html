@@ -1906,7 +1906,7 @@
   #sruti-strip {
     display: flex; align-items: center; gap: 4px;
     flex: 0 0 auto; width: fit-content; max-width: 600px;
-    justify-self: start;            /* flush with right edge of left header column */
+    justify-self: center;           /* centred in middle header column */
     background: var(--bg-input);
     border: 1px solid var(--border-strong);
     border-radius: 6px;
@@ -3588,10 +3588,10 @@
 </svg>
 
 <header>
-  <!-- ADR-045: header-left wraps help button + title -->
+  <!-- ADR-045: header-left wraps title + help button -->
   <div id="header-left">
-    <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
     <h1>Carnatic Music Explorer</h1>
+    <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
   </div>
   <!-- ── Sruti Strip (ADR-076): labeled widget with power button ── -->
   <div id="sruti-strip">

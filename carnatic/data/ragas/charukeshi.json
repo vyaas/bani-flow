@@ -1,0 +1,19 @@
+{
+  "id": "charukeshi",
+  "name": "Charukeshi",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "unknown",
+  "carnatic_equivalents": [],
+  "sources": [
+    {
+      "url": "https://tanarang.com/raag-charukeshi/",
+      "label": "tanarang.com",
+      "type": "other"
+    }
+  ],
+  "notes": "Adapted from Carnatic"
+}

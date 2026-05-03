@@ -16,5 +16,11 @@
     "hindustani"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/tcX0pE0hLNE",
+      "label": "Alap",
+      "raga_id": "charukeshi"
+    }
+  ]
 }
