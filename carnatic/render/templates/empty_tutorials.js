@@ -934,10 +934,84 @@
     if (_helpState[slot]) _exitHelp(slot);
   };
 
+  // ── Wire preface chips: era tint + background navigation ─────────────────
+  // Preface chips are static HTML with data-preface-* attributes set at render
+  // time. This function applies era tints and wires click handlers so that
+  // clicking a chip triggers the corresponding panel action in the background
+  // without closing the help dialog.
+  function _tintPrefaceChips() {
+    const hdBody = document.getElementById('hd-body');
+    if (!hdBody) return;
+    const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+
+    // ── Helper: brief visual tap feedback ──────────────────────────────────
+    function _flash(chip) {
+      chip.classList.add('chip-tapped');
+      setTimeout(function () { chip.classList.remove('chip-tapped'); }, 220);
+    }
+
+    // ── Musician chips ──────────────────────────────────────────────────────
+    hdBody.querySelectorAll('[data-preface-label]').forEach(function (chip) {
+      const label = chip.dataset.prefaceLabel || '';
+      const node = nodes.find(function (n) {
+        return n.label && n.label.toLowerCase() === label.toLowerCase();
+      });
+      const eraId = node ? (node.era || null) : null;
+      const tint = (typeof THEME !== 'undefined')
+        ? THEME.eraTintCss(eraId)
+        : { bg: 'transparent', border: 'var(--border-strong)' };
+      chip.style.setProperty('--chip-era-bg', tint.bg);
+      chip.style.setProperty('--chip-era-border', tint.border);
+      if (node && typeof cy !== 'undefined' && typeof selectNode === 'function') {
+        const cyNode = cy.getElementById(node.id);
+        if (cyNode && cyNode.length) {
+          chip.addEventListener('click', function (e) {
+            e.stopPropagation();
+            _flash(chip);
+            selectNode(cyNode);
+          });
+        }
+      }
+    });
+
+    // ── Raga chips ──────────────────────────────────────────────────────────
+    const ragaList = (typeof ragas !== 'undefined') ? ragas : [];
+    hdBody.querySelectorAll('[data-preface-raga]').forEach(function (chip) {
+      const label = chip.dataset.prefaceRaga || '';
+      const raga = ragaList.find(function (r) {
+        return (r.name || '').toLowerCase() === label.toLowerCase();
+      });
+      if (raga && typeof applyBaniFilter === 'function') {
+        chip.addEventListener('click', function (e) {
+          e.stopPropagation();
+          _flash(chip);
+          applyBaniFilter('raga', raga.id);
+        });
+      }
+    });
+
+    // ── Composition chips ───────────────────────────────────────────────────
+    const compList = (typeof compositions !== 'undefined') ? compositions : [];
+    hdBody.querySelectorAll('[data-preface-comp]').forEach(function (chip) {
+      const label = chip.dataset.prefaceComp || '';
+      const comp = compList.find(function (c) {
+        return (c.title || c.name || '').toLowerCase() === label.toLowerCase();
+      });
+      if (comp && typeof applyBaniFilter === 'function') {
+        chip.addEventListener('click', function (e) {
+          e.stopPropagation();
+          _flash(chip);
+          applyBaniFilter('comp', comp.id);
+        });
+      }
+    });
+  }
+
   // ── Initial paint: both panels are empty on first load ───────────────────
   document.addEventListener('DOMContentLoaded', () => {
     if (!helpEmptyPanels) return;
     window.showPanelTutorial('bani');
     window.showPanelTutorial('musician');
+    _tintPrefaceChips();
   });
 })();

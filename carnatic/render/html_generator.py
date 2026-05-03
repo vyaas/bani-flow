@@ -16,32 +16,71 @@ from .theme import css_vars
 
 
 def _render_help_md(md_text: str) -> str:
-    """Convert help.md (simple markdown) to #hd-body HTML.
+    """Convert preface.md to #hd-body HTML.
 
     Supports:
-      - ## Section Title  →  <p class="hd-section-title">…</p>
-      - Blank-line-separated paragraph blocks  →  <p class="hd-p">…</p>
-      - **bold** and *italic* inline markers
-      - Inline HTML tags are passed through verbatim
+      - # Heading  →  <p class="hd-section-title">…</p>
+      - Blank-line-separated stanzas  →  <p class="hd-p">…</p>
+        Each line within a stanza becomes a display:block <span>.
+      - Lines starting with '"…' containing ' - '  →  <span class="hd-quote">
+      - Lines starting with '(My)', '(Your)', 'Art ->'  →  <code class="hd-code">
+      - Stanzas starting with 'For this is', 'So I invite', 'Just '  →  hd-p-major
+      - <cm>text<cm>  →  <span class="musician-chip">text</span>
+      - <cr>text<cr>  →  <span class="raga-chip">text</span>
+      - <cc>text<cc>  →  <span class="comp-chip">text</span>
+      - **bold** and _italic_ inline markers
     """
+    _MAJOR_OPENERS = ('For this is', 'So I invite', 'Just ')
+
+    def _is_quote(line: str) -> bool:
+        return line.startswith('"') and ' - ' in line
+
+    def _is_fence(line: str) -> bool:
+        return line.startswith('```')
+
+    def _inline(text: str) -> str:
+        # Chip tags first (before bold/italic so e.g. **<cr>X<cr>Y** parses cleanly)
+        text = re.sub(r'<cm>(.*?)<cm>', r'<span class="musician-chip" data-preface-label="\1">\1</span>', text)
+        text = re.sub(r'<cr>(.*?)<cr>', r'<span class="raga-chip" data-preface-raga="\1">\1</span>', text)
+        text = re.sub(r'<cc>(.*?)<cc>', r'<span class="comp-chip" data-preface-comp="\1">\1</span>', text)
+        text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+        text = re.sub(r'_(.+?)_', r'<em>\1</em>', text)
+        return text
+
     blocks = re.split(r'\n{2,}', md_text.strip())
     parts: list[str] = []
     for block in blocks:
         block = block.strip()
         if not block:
             continue
-        if block.startswith('## '):
-            title = block[3:].strip()
+        if block.startswith('# '):
+            title = _inline(block[2:].strip())
             parts.append(f'<p class="hd-section-title">{title}</p>')
+        elif _is_fence(block):
+            # Fenced code block: strip opening ```(lang) and closing ``` lines
+            raw_lines = block.splitlines()
+            code_lines = [l for l in raw_lines[1:] if not _is_fence(l.strip())]
+            escaped = '\n'.join(
+                l.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                for l in code_lines
+            )
+            parts.append(f'<pre class="hd-pre"><code>{escaped}</code></pre>')
         else:
-            # Join wrapped lines into one paragraph
-            text = ' '.join(line.strip() for line in block.splitlines() if line.strip())
-            text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
-            text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
-            parts.append(f'<p class="hd-p">{text}</p>')
+            raw_lines = [l.strip() for l in block.splitlines() if l.strip()]
+            is_major = raw_lines and any(raw_lines[0].startswith(op) for op in _MAJOR_OPENERS)
+            css_class = 'hd-p hd-p-major' if is_major else 'hd-p'
+            line_html = []
+            for raw in raw_lines:
+                processed = _inline(raw)
+                if _is_quote(raw):
+                    line_html.append(f'<span class="hd-quote">{processed}</span>')
+                else:
+                    line_html.append(f'<span>{processed}</span>')
+            parts.append(f'<p class="{css_class}">\n' + '\n'.join(line_html) + '\n</p>')
     return '\n    '.join(parts)
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
+DATA_DIR = Path(__file__).parent.parent / "data"
 
 
 def _load(name: str) -> str:
@@ -155,7 +194,7 @@ def render_html(
 
     # ── Load templates ────────────────────────────────────────────────────────
     base         = _load("base.html")
-    help_html    = _render_help_md(_load("help.md"))
+    help_html    = _render_help_md((DATA_DIR / "help" / "preface.md").read_text(encoding="utf-8"))
     theme_js     = _load("theme.js")
     graph_view   = _load("graph_view.js")
     media_player = _load("media_player.js")
