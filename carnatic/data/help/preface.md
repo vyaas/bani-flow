@@ -32,18 +32,19 @@ From Guru to Shishya to Guru
 This is how _Bani_ flows
 Mutated by aesthetic preferences
 Survived by the test of Time
-Bejewlled by the Trinity
-Carnatic Music's own Cambrian Explosion
-That brought forth <cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, and <cm>Shyama Shastri<cm>
+Bejewlled by the Trinity of Geniuses
+ -- Carnatic Music's own Cambrian Explosion --
+<cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, and <cm>Shyama Shastri<cm>
 
 For this is a **Anti-notation Music**
-Reading notation to grasp its essence
-Is like reading Fluid Mechanics in order to swim!
-You could read hundreds of pages
+Whose essence cannot be grasped textually
+It would be like reading Fluid Mechanics 
+To learn how to swim!
+You could read a hundred of pages
 On the descriptive and prescriptive aesthetics of <cr>Thodi<cr>
 And still not know what it sounds like
 
-So I invite you to browse this self-contained library of links
+So I invite you to browse this library of youtube links
 Along the principle axes of Carnatic Music
 By <cm>Musician<cm>, <cc>Composition<cc>, and <cr>Raga<cr>
 Resonate in the Sruti soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Brinda<cm>
