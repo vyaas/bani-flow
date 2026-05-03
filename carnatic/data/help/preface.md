@@ -58,7 +58,7 @@ Bani-flow's mission statement is simple:
 > Provide a no nonsense navigable interface to explore Carnatic Music
 > Enable frictionless immersion in its abstractions
 So you (and I) can simply _listen_
-And that the only remaining friction
+So the only remaining friction
 Is that which originates from our minds
 Which I can do nothing about
 Except remind you (and I) to just _listen_
