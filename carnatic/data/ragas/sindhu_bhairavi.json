@@ -6,14 +6,14 @@
     "Sindhubhairavi"
   ],
   "melakarta": null,
-  "parent_raga": "natabhairavi",
+  "parent_raga": "thodi",
   "sources": [
     {
-      "url": "https://en.wikipedia.org/wiki/Sindhu_Bhairavi",
+      "url": "https://en.wikipedia.org/wiki/Sindhu_Bhairavi_(raga)",
       "label": "Wikipedia",
       "type": "wikipedia"
     }
   ],
-  "notes": "Distinct from Bhairavi; janya of Natabhairavi (20th melakarta); popularised in the 20th century; lighter emotional register than Bhairavi; widely used in film music",
+  "notes": "Janya of Thodi (8th Melakarta); widely used in film music",
   "is_melakarta": false
 }
