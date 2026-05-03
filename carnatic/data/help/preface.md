@@ -10,8 +10,8 @@ For this is **<cr>Raga<cr> Music**
 Whose forms are myriad
 Revealing an Oceanic Infinity
 Only to those who _listen_
-O listening! Have you any hope in this tyranny of images?
-Even in Mylapore?
+(O listening! Have you any hope in this tyranny of images?
+Even in Mylapore?)
 
 For this is **Art Music**
 > _Art is a way to make feelings happen_ - Brian Eno
@@ -54,11 +54,13 @@ Draw inspiration from the passionate lecture-demonstrations of <cm>TM Krishna<cm
 Make no mistake: Singing, playing, performing will all thrive
 Carnatic Music is _not_ endangered
 But listening _is_
+
 Bani-flow's mission statement is simple:
 > Provide a no nonsense navigable interface to explore Carnatic Music
 > Enable frictionless immersion in its abstractions
+
 So you (and I) can simply _listen_
-So the only remaining friction
+Then the only remaining friction
 Is that which originates from our minds
 Which I can do nothing about
 Except remind you (and I) to just _listen_
@@ -66,3 +68,18 @@ Except remind you (and I) to just _listen_
 Just _listen_
 Just _listen_ my friend
 Just _listen_
+
+<div class="hd-about-meta">
+	<a class="hd-author-card" href="https://gravatar.com/vyaas" target="_blank" rel="noopener noreferrer">
+		<img class="hd-author-avatar" src="https://0.gravatar.com/avatar/03842f7bd424c71064035f5ac4b8e32626b72d758dc4d73028160a2d0ebe1c5d?size=256&d=initials" alt="Vyaas" loading="lazy" referrerpolicy="no-referrer" />
+		<span class="hd-author-copy">
+			<span class="hd-author-name">Vyaas</span>
+			<span class="hd-author-tagline">Curator · maintainer · single human responsible</span>
+		</span>
+	</a>
+	<div class="hd-project-box">
+		<span class="hd-project-kicker">Project</span>
+		<a class="hd-project-link" href="https://github.com/vyaas/bani_flow" target="_blank" rel="noopener noreferrer">github.com/vyaas/bani_flow</a>
+		<span class="hd-project-note">Source, issues, and the contribution path live here.</span>
+	</div>
+</div>

@@ -2062,6 +2062,12 @@
     scrollbar-width: thin;
     scrollbar-color: var(--bg-active) var(--bg-panel);
   }
+  #hd-body a {
+    color: var(--fg);
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.14em;
+  }
+  #hd-body a:hover { color: var(--accent); }
   #hd-body::-webkit-scrollbar { width: 6px; }
   #hd-body::-webkit-scrollbar-track { background: var(--bg-panel); }
   #hd-body::-webkit-scrollbar-thumb { background: var(--bg-active); border-radius: 3px; }
@@ -2120,6 +2126,79 @@
   }
   #hd-body .raga-chip,
   #hd-body .comp-chip { white-space: normal; }
+  #hd-body .hd-about-meta {
+    display: grid;
+    gap: 12px;
+    margin: 16px 0 10px;
+  }
+  #hd-body .hd-author-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--bg-active) 74%, transparent);
+    text-decoration: none;
+  }
+  #hd-body .hd-author-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  #hd-body .hd-author-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.35;
+  }
+  #hd-body .hd-author-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--fg);
+  }
+  #hd-body .hd-author-tagline {
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+    margin-top: 2px;
+  }
+  #hd-body .hd-project-box {
+    display: grid;
+    gap: 4px;
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--accent) 58%, var(--border-strong));
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent) 12%, var(--bg-active));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+  #hd-body .hd-project-kicker {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    line-height: 1.2;
+  }
+  #hd-body .hd-project-link {
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--fg);
+    text-decoration-thickness: 1.5px;
+    word-break: break-word;
+  }
+  #hd-body .hd-project-note {
+    font-size: 0.74rem;
+    line-height: 1.45;
+    color: var(--fg-muted);
+  }
+  @media (max-width: 520px) {
+    #hd-body .hd-author-card {
+      align-items: flex-start;
+    }
+  }
 
   /* ── ADR-027: reflective metadata inspector — monospace retained for JSON data ── */
   /* ADR-044: click-again affordance nudge */

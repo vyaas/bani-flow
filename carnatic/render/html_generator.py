@@ -79,6 +79,8 @@ def _render_help_md(md_text: str) -> str:
                 parts.append(f'<pre class="hd-pre hd-pre-formula"><code>{escaped}</code></pre>')
             else:
                 parts.append(f'<pre class="hd-pre"><code>{escaped}</code></pre>')
+        elif block.startswith('<'):
+            parts.append(block)
         else:
             raw_lines = [l.strip() for l in block.splitlines() if l.strip()]
             is_major = raw_lines and any(raw_lines[0].startswith(op) for op in _MAJOR_OPENERS)
