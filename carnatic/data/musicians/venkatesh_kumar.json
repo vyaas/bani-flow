@@ -1,0 +1,27 @@
+{
+  "id": "venkatesh_kumar",
+  "label": "Venkatesh Kumar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Venkatesh_Kumar",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1970,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/-EtiRwtqL_Y",
+      "label": "Malkauns Alap",
+      "raga_id": "malkauns",
+      "year": 2018
+    }
+  ]
+}

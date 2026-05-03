@@ -1,30 +1,33 @@
 #  What this is
 
-This is a substantive and forever incomplete curation
+This is a substantive yet forever incomplete curation
 That aims to enable an immersion
 Otherwise impossible outside Mylapore
 Of a Music whose name literally translates to
-"Haunting of the ear"
+_Haunting of the ear_
 
 For this is **<cr>Raga<cr>Music**
 Whose forms are myriad
 Revealing an Oceanic Infinity
 Only to those who _listen_
-O listening! Have you any hope in this present tyranny of images?
+O listening! Have you any hope in this tyranny of images?
 Even in Mylapore?
 
 For this is **Art Music**
-"Art is a way to make feelings happen" - Brian Eno
-<cr>Reetigowla<cr> makes me feel like something terrible yet hopeful has happened in a world remote from mine
-<cr>Surutti<cr> feels like a heron curving its frame into an orange sunrise
-<cr>Khamas<cr> evokes pure sky blue joy
-And <cr>Begada<cr> invites Beauty and Reconciliation into a meaningless world
-(My) Bundle of life experiences + (Carnatic) Art Music = (My) Unique feelings
-(Your) Bundle of life experiences + (Carnatic) Art Music = (Your) Unique feelings
-Art -> feelings -> self-realization(s)
+_Art is a way to make feelings happen_ - Brian Eno
+<cr>Reetigowla<cr> summons a terrible yet hopeful event in a world remote from mine
+<cr>Surutti<cr> reveals a heron disappearing its frame into an orange sunrise
+<cr>Khamas<cr> evokes deep and enduring sky blue joy
+<cr>Begada<cr> invites Beauty and Reconciliation unconditionally
+
+```bash
+(My life)   Experiences + (Carnatic) Music = (My unique)  Feelings
+(Your life) Experiences + (Carnatic) Music = (Your uniqe) Feelings
+Art -> Feelings -> Self-realization(s)
+```
 
 For this is **Genealogical Music**
-The DNA of <cr>Ragas<cr> passed down
+The DNA of <cr>Raga<cr>s passed down
 From Guru to Shishya to Guru
 Mutated by aesthetic preferences
 Survived by the test of Time
@@ -42,7 +45,7 @@ And still not know what it sounds like
 So I invite you to browse this self-contained library of links
 Along the principle axes of Carnatic Music
 By <cm>Musician<cm>, <cc>Composition<cc>, and <cr>Raga<cr>
-Resonate in the Sruti-soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Brinda<cm>
+Resonate in the Sruti soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Brinda<cm>
 Revel in the profound and subtle differences between <cr>Kalyani<cr> and <cr>Shankarabharanam<cr>
 And learn how to listen from the lecture-demonstrations of <cm>TM Krishna<cm> and <cm>Sriram Parasuram<cm>
 
@@ -50,7 +53,7 @@ Make no mistake: Singing, playing, performing will all thrive
 Carnatic Music is _not_ endangered
 But listening _is_
 This effort's mission statement is simple:
-Provide a no-nonsense navigable data structure to traverse the sonicscape of Carnatic Music
+Provide a no nonsense navigable data structure to traverse the sonicscape of Carnatic Music
 To provide frictionless immersion in its abstractions
 So you (and I) can simply _listen_
 And that the only remaining friction

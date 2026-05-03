@@ -34,6 +34,44 @@
       "label": "Divakara Tanujam · Yadukula Kambhoji · Muthuswami Dikshitar",
       "composition_id": "divakara_tanujam",
       "raga_id": "yadukulakamboji"
+    },
+    {
+      "url": "https://youtu.be/dVdMYm2hXz0",
+      "label": "Sri Satyanarayanam",
+      "composition_id": "sri_satyanarayanam",
+      "raga_id": "shubapantuvarali",
+      "year": 1950,
+      "tala": "rupakam",
+      "performers": [
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://youtu.be/AzbfKngAHEc",
+      "label": "Moulou Ganga (Sloka) followed by Swati Tirunal's Jagadeesha Pancha, 1964",
+      "year": 1964,
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        }
+      ]
     }
   ]
 }
