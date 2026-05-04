@@ -8,13 +8,14 @@ _Haunting of the ear_
 
 For this is **<cr>Raga<cr> Music**
 Whose forms are myriad
-Revealing an Oceanic Infinity
-Only to those who _listen_
+An Oceanic Infinity revealed
+But only to those who _listen_
 (O listening! Have you any hope in this tyranny of images?
 Even in Mylapore?)
 
 For this is **Art Music**
-> _Art is a way to make feelings happen_ - Brian Eno
+> _Art is a way to make feelings happen_ 
+> - Brian Eno
 <cr>Reetigowla<cr> summons a terrible yet hopeful event in a world remote from mine
 <cr>Surutti<cr> reveals a heron disappearing its frame into an orange sunrise
 <cr>Khamas<cr> evokes deep and enduring sky blue joy
@@ -27,7 +28,7 @@ Art → Feelings → Self-realization(s)
 ```
 
 For this is **Genealogical Music**
-The DNA of <cr>Raga<cr>s passed down
+The DNA of its sound propagated
 From Guru to Shishya to Guru 
 This is how _Bani_ flows
 Mutated by aesthetic preferences
@@ -36,11 +37,11 @@ Bejewlled by the Trinity of Geniuses
  -- Carnatic Music's own Cambrian Explosion --
 <cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, and <cm>Shyama Shastri<cm>
 
-For this is a **Anti-notation Music**
+For this is a **sparsely notated Music**
 Whose essence cannot be grasped textually
 It would be like reading Fluid Mechanics 
 To learn how to swim!
-You could read a hundred of pages
+You could read a hundred pages
 On the descriptive and prescriptive aesthetics of <cr>Thodi<cr>
 And still not know what it sounds like
 
@@ -51,7 +52,8 @@ Resonate in the Sruti soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Br
 Revel in the profound and subtle differences between <cr>Kalyani<cr> and <cr>Shankarabharanam<cr>
 Draw inspiration from the passionate lecture-demonstrations of <cm>TM Krishna<cm> and <cm>Sriram Parasuram<cm>
 
-Make no mistake: Singing, playing, performing will all thrive
+This is not an evangalism
+Singing, playing, performing will all thrive
 Carnatic Music is _not_ endangered
 But listening _is_
 
@@ -59,7 +61,7 @@ Bani-flow's mission statement is simple:
 > Provide a no nonsense navigable interface to explore Carnatic Music
 > Enable frictionless immersion in its abstractions
 
-So you (and I) can simply _listen_
+So that you (and I) can simply _listen_
 Then the only remaining friction
 Is that which originates from our minds
 Which I can do nothing about
