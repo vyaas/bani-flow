@@ -296,8 +296,10 @@
     font-size: 0.875rem;
     cursor: pointer;
     flex-shrink: 0;
+    position: relative;
     transition: opacity 0.15s, border-color 0.15s, color 0.15s;
   }
+  .panel-nav-btn::after { content: ''; position: absolute; inset: -8px; }
   .panel-nav-btn:disabled {
     opacity: 0.25;
     cursor: default;
@@ -315,14 +317,18 @@
 
   /* ── node header (collapsed single-line) ── */
   #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  #node-header { display: flex; align-items: center; gap: 5px; }
+  #node-header { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px; }
   /* #node-name is now a transparent wrapper — the .musician-chip inside it carries all styles */
-  #node-name { display: inline-flex; align-items: center; }
+  #node-name { display: inline-flex; align-items: center; min-width: 0; flex: 0 1 auto; }
   /* ADR-072: search-subject prominence — match left-sidebar bani-subject sizing */
   #node-header .musician-chip,
   #node-header .composer-chip {
     font-size: var(--subject-size);
     padding: var(--subject-padding);
+    white-space: normal;
+    word-break: break-word;
+    overflow: visible;
+    text-overflow: unset;
   }
   #node-lifespan { font-size: 0.78rem; color: var(--fg-muted); margin-left: 4px; }
   .node-wiki-link {
@@ -366,16 +372,18 @@
   /* ── ADR-064: raga tree — raga-level groups in musician panel ── */
   #recordings-list li.tree-group {
     padding: 0; border-bottom: none; gap: 0; list-style: none;
+    border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin: 4px 0;
   }
-  /* Clear visual separator between raga groups in musician panel */
+  /* Spacing between boxed raga groups — box margin handles separation */
   #recordings-list li.tree-group + li.tree-group {
-    margin-top: 6px;
-    padding-top: 4px;
-    border-top: 1px solid var(--border-strong);
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: none;
   }
   #recordings-list .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
-    padding: 5px 0; border-bottom: 1px solid var(--border);
+    padding: 6px 8px; border-bottom: 1px solid var(--border);
+    background: var(--bg-input);
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
@@ -548,16 +556,17 @@
      ADR-106 (+ on Janyas), ADR-107 (+ on Concerts). */
   .co-add-chip, .co-edit-chip {
     display: inline-flex; align-items: center; justify-content: center;
-    min-width: 18px; height: 18px; border-radius: 50%;
+    width: 28px; height: 28px; border-radius: 50%;
     border: 1px solid var(--border); background: var(--bg-panel);
-    color: var(--fg-muted); font-size: 0.80rem; line-height: 1;
+    color: var(--fg-muted); font-size: 0.875rem; line-height: 1;
     cursor: pointer; user-select: none; flex-shrink: 0;
     transition: border-color 0.12s, color 0.12s;
-    font-family: inherit; padding: 0;
+    font-family: inherit; padding: 0; position: relative;
   }
   .co-add-chip:hover, .co-edit-chip:hover {
     border-color: var(--accent); color: var(--accent);
   }
+  .co-add-chip::after, .co-edit-chip::after { content: ''; position: absolute; inset: -8px; }
   /* Rec section header with right-edge chip: needs flex layout */
   .rec-section-header-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -570,7 +579,7 @@
   /* ── composition list inside bracket ── */
   .concert-perf-list {
     list-style: none;
-    padding-left: 16px;
+    padding-left: var(--hier-indent-step);
     margin-bottom: 4px;
   }
   .concert-perf-item {
@@ -978,12 +987,12 @@
     flex-shrink: 0;
   }
   #bani-subject-name-row {
-    display: flex; align-items: center; gap: 5px;
+    display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px;
   }
   #bani-subject-name {
     font-size: 0.85rem; color: var(--accent); font-weight: bold;
     flex: 1; min-width: 0;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    white-space: normal; word-break: break-word; overflow: visible;
   }
   /* When subject name is rendered as a chip, let the chip control its own sizing
      and colour — override the ID-level accent/bold defaults */
@@ -1095,22 +1104,24 @@
   #trail-list li.playing { color: var(--accent-sub); }
 
   /* ── ADR-061: tree-structured trail ──────────────────────────────── */
-  /* .tree-group is the outer wrapper <li> — no padding/border of its own */
+  /* .tree-group is a boxed container with visible border */
   #trail-list li.tree-group {
     padding: 0; border-bottom: none; gap: 0;
+    border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin: 4px 0;
   }
   /* Reset :last-child override so the last group still has no border */
   #trail-list li.tree-group:last-child { border-bottom: none; }
-  /* Clear visual separator between composition groups so each is unambiguous */
+  /* Spacing between boxed composition groups */
   #trail-list li.tree-group + li.tree-group {
-    margin-top: 6px;
-    padding-top: 4px;
-    border-top: 1px solid var(--border-strong);
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: none;
   }
   /* Group header — flex row: chevron + primary chip + secondary info */
   .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
-    padding: 5px 0; border-bottom: 1px solid var(--border);
+    padding: 6px 8px; border-bottom: 1px solid var(--border);
+    background: var(--bg-input);
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
@@ -1163,8 +1174,10 @@
   .tree-leaf-primary > .composer-chip {
     flex: 0 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: unset;
+    white-space: normal;
+    word-break: break-word;
   }
   /* Co-performers tag cloud — wrappable, below primary row.
      ADR-072 (revised): no border rail — only the composition chip itself
@@ -2004,17 +2017,20 @@
     background: none;
     border: 1px solid var(--border-strong);
     color: var(--fg);
-    border-radius: 6px;
-    width: 30px; height: 30px;
+    border-radius: 50%;
+    width: 28px; height: 28px;
     padding: 0;
     font-size: 0.9rem; font-weight: bold;
     cursor: pointer;
     line-height: 1;
     flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    position: relative;
     transition: border-color 0.15s, color 0.15s;
     margin-right: 0;
   }
   .help-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .help-btn::after { content: ''; position: absolute; inset: -8px; }
 
   /* ── ADR-045: Help dialog ── */
   #help-scrim {
@@ -2616,8 +2632,8 @@
       --subject-size:     1.0rem;
       --hier-indent-step: 10px;
     }
-    /* Exclude circular buttons and inline tree toggles — they size themselves */
-    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.filter-dropdown-btn):not(.filter-clear) {
+    /* Exclude circular icon buttons and inline tree toggles — they size themselves */
+    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn) {
       min-height: 44px;
     }
     .view-btn {
@@ -3726,9 +3742,6 @@
             <span id="bani-subject-name"></span>
             <a id="bani-subject-link" class="bani-subject-link" href="#"
                target="_blank" style="display:none">&#8599;</a>
-            <!-- ADR-104 Track A: ✎ stub chip — edit form lands with ADR-097 Phase C -->
-            <button id="bani-edit-chip" class="co-edit-chip" title="Edit (coming soon)"
-                    style="display:none">&#9998;</button>
           </div>
           <div id="bani-subject-sub"></div>
           <!-- Row 3: aliases (ADR-022) -->

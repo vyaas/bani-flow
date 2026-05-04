@@ -15,7 +15,8 @@ Even in Mylapore?)
 
 For this is **Art Music**
 > _Art is a way to make feelings happen_ 
-> - Brian Eno
+- Brian Eno
+Every rendition is an Art object
 <cr>Reetigowla<cr> summons a terrible yet hopeful event in a world remote from mine
 <cr>Surutti<cr> reveals a heron disappearing its frame into an orange sunrise
 <cr>Khamas<cr> evokes deep and enduring sky blue joy
@@ -76,7 +77,7 @@ Just _listen_
 		<img class="hd-author-avatar" src="https://0.gravatar.com/avatar/03842f7bd424c71064035f5ac4b8e32626b72d758dc4d73028160a2d0ebe1c5d?size=256&d=initials" alt="Vyaas" loading="lazy" referrerpolicy="no-referrer" />
 		<span class="hd-author-copy">
 			<span class="hd-author-name">Vyaas</span>
-			<span class="hd-author-tagline">Curator · maintainer · single human responsible</span>
+			<span class="hd-author-tagline">Curator · Maintainer</span>
 		</span>
 	</a>
 	<div class="hd-project-box">
