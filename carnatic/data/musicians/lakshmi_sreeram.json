@@ -495,7 +495,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "tyagaraja"
+        ]
       }
     },
     {
@@ -505,7 +507,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "tyagaraja"
+        ]
       }
     },
     {
@@ -515,7 +519,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "tyagaraja"
+        ]
       }
     },
     {
@@ -525,7 +531,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "muthuswami_dikshitar"
+        ]
       }
     },
     {
@@ -535,7 +543,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "muthuswami_dikshitar"
+        ]
       }
     },
     {
@@ -545,7 +555,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "muthuswami_dikshitar"
+        ]
       }
     },
     {
@@ -555,7 +567,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "shyama_shastri"
+        ]
       }
     },
     {
@@ -585,7 +599,9 @@
       "subjects": {
         "raga_ids": [],
         "composition_ids": [],
-        "musician_ids": []
+        "musician_ids": [
+          "swati_tirunal"
+        ]
       }
     },
     {
@@ -653,7 +669,9 @@
       "label": "An expostion of Balagopala,a kriti in the rega Bhairavi with alapana",
       "kind": "lecdem",
       "subjects": {
-        "raga_ids": [],
+        "raga_ids": [
+          "bhairavi"
+        ],
         "composition_ids": [],
         "musician_ids": []
       }
