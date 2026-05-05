@@ -1,3 +1,8 @@
+// Normalize text for diacritic-insensitive search: lowercase + NFD + strip combining marks.
+function normText(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 // ── shared dropdown helper ────────────────────────────────────────────────────
 function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
   let activeIdx = -1;
@@ -83,11 +88,11 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
   const dropdown = document.getElementById('musician-search-dropdown');
 
   function getItems(q) {
-    const ql = q.toLowerCase();
+    const ql = normText(q);
     const results = [];
     cy.nodes().forEach(n => {
       const d = n.data();
-      if (d.label.toLowerCase().includes(ql)) {
+      if (normText(d.label).includes(ql) || d.id.toLowerCase().includes(ql)) {
         results.push({
           id:           d.id,
           primary:      d.label,
@@ -127,7 +132,7 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
   const TIER_EXACT = 0, TIER_ALIAS = 1, TIER_SUBSTR = 2;
 
   function getItems(q) {
-    const ql = q.toLowerCase();
+    const ql = normText(q);
     const results = [];
 
     // Compositions — no tier ranking, appear before ragas at top
@@ -135,7 +140,7 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
       const hasNode   = compositionToNodes[c.id]        && compositionToNodes[c.id].length > 0;
       const hasPerf   = compositionToPerf[c.id]         && compositionToPerf[c.id].length  > 0;
       const hasLecdem = lecdemsAboutComposition[c.id]   && lecdemsAboutComposition[c.id].length > 0;
-      if ((hasNode || hasPerf || hasLecdem) && c.title.toLowerCase().includes(ql)) {
+      if ((hasNode || hasPerf || hasLecdem) && (normText(c.title).includes(ql) || c.id.toLowerCase().includes(ql))) {
         results.push({ type: 'comp', id: c.id, tier: TIER_SUBSTR,
           primary: '\u266a ' + c.title, secondary: null });
       }
@@ -155,15 +160,15 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
       const eligible = isHindustani ? true : (isMelakarta || hasCoverage);
       if (!eligible) return;
 
-      const nameLower = (r.name || '').toLowerCase();
+      const nameLower = normText(r.name || '');
       const aliases   = r.aliases || [];
       let tier = null;
 
-      if (nameLower === ql) {
+      if (nameLower === ql || r.id === ql) {
         tier = TIER_EXACT;
-      } else if (aliases.some(a => a.toLowerCase() === ql)) {
+      } else if (aliases.some(a => normText(a) === ql)) {
         tier = TIER_ALIAS;
-      } else if (nameLower.includes(ql) || aliases.some(a => a.toLowerCase().includes(ql))) {
+      } else if (nameLower.includes(ql) || r.id.includes(ql) || aliases.some(a => normText(a).includes(ql))) {
         tier = TIER_SUBSTR;
       }
 

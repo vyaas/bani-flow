@@ -63,6 +63,12 @@ function toSnakeCase(str) {
     .replace(/\s+/g, '_');
 }
 
+// Normalize text for diacritic-insensitive search: lowercase + NFD + strip combining marks.
+// Allows typing "ragavardhini" to match "Rāgavardhini", etc.
+function normText(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function timestampToSeconds(ts) {
   const parts = ts.split(':').map(Number);
   if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
@@ -267,8 +273,9 @@ function efCombobox(id, options, type, formWin) {
     dropdown.innerHTML = '';
     activeIdx = -1;
     const q        = (filter || '').toLowerCase().trim();
+    const nq       = normText(q);
     const filtered = q
-      ? allOptions.filter(o => o.label.toLowerCase().includes(q))
+      ? allOptions.filter(o => normText(o.label).includes(nq) || o.value.toLowerCase().includes(nq))
       : allOptions;
 
     for (const o of filtered) {
