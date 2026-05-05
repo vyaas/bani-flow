@@ -1,0 +1,209 @@
+{
+  "id": "air_madras_1965_papa_ks_venkataramaiah",
+  "video_id": "q_jKJ22uI-w",
+  "url": "https://youtu.be/q_jKJ22uI-w",
+  "title": "Papa KS Venkataramaiah | AIR Madras | 26 June 1965 | Family Archives of V Thyagarajan",
+  "short_title": "AIR Madras 1965",
+  "date": "1965-06-26",
+  "venue": "All India Radio, Madras",
+  "occasion": "AIR studio concert, 26 June 1965; part of the Family Archives of V Thyagarajan, presented by Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://youtu.be/q_jKJ22uI-w",
+      "label": "YouTube — Vaak Foundation (Family Archives of V Thyagarajan)",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "papa_ks_venkataramaiah", "role": "violin" },
+        { "musician_id": "v_thyagarajan", "role": "violin" },
+        { "musician_id": null, "unmatched_name": "V Nagarajan", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "type": "varnam",
+          "raga_id": "sahana",
+          "composition_id": "karunimpa",
+          "composer_id": "tiruvottiyur_tyagayya",
+          "tala": "adi",
+          "display_title": "Karunimpa",
+          "notes": ""
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:05:29",
+          "offset_seconds": 329,
+          "type": "kriti",
+          "raga_id": "gowlipantu",
+          "composition_id": "teratiyagarada",
+          "composer_id": "tyagaraja",
+          "tala": "adi",
+          "display_title": "Teratiyagarada",
+          "notes": ""
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:10:50",
+          "offset_seconds": 650,
+          "type": "alapana",
+          "raga_id": "begada",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Begada Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:15:42",
+          "offset_seconds": 942,
+          "type": "kriti",
+          "raga_id": "begada",
+          "composition_id": "abhimanamennedu",
+          "composer_id": "patnam_subramanya_iyer",
+          "tala": "adi",
+          "display_title": "Abhimanamennedu",
+          "notes": ""
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:23:50",
+          "offset_seconds": 1430,
+          "type": "alapana",
+          "raga_id": "ananda_bhairavi",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Anandabhairavi Ragam",
+          "notes": "ragam"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:26:42",
+          "offset_seconds": 1602,
+          "type": "kriti",
+          "raga_id": "ananda_bhairavi",
+          "composition_id": "marivere_gathi",
+          "composer_id": "shyama_shastri",
+          "tala": "misra_chapu",
+          "display_title": "Marivere Gathi",
+          "notes": ""
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:35:24",
+          "offset_seconds": 2124,
+          "type": "kriti",
+          "raga_id": "hamir_kalyani",
+          "composition_id": "manamu_leda",
+          "composer_id": "tyagaraja",
+          "tala": "adi",
+          "display_title": "Manamu Leda",
+          "notes": ""
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:41:35",
+          "offset_seconds": 2495,
+          "type": "kriti",
+          "raga_id": "hindolam",
+          "composition_id": "manasuloni",
+          "composer_id": "tyagaraja",
+          "tala": "rupakam",
+          "display_title": "Manasuloni",
+          "notes": ""
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "00:46:19",
+          "offset_seconds": 2779,
+          "type": "alapana",
+          "raga_id": "senchurutti",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Senchurutti Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "00:49:25",
+          "offset_seconds": 2965,
+          "type": "kriti",
+          "raga_id": "senchurutti",
+          "composition_id": "sharanu_sharanu",
+          "composer_id": "anai_ayya_brothers",
+          "tala": "rupakam",
+          "display_title": "Sharanu Sharanu",
+          "notes": ""
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "00:55:43",
+          "offset_seconds": 3343,
+          "type": "javali",
+          "raga_id": "mukhari",
+          "composition_id": "emandune_muddu_balamani",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "tala": "adi",
+          "display_title": "Emandune Muddu Balamani",
+          "notes": ""
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "00:58:57",
+          "offset_seconds": 3537,
+          "type": "alapana",
+          "raga_id": "bilahari",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Bilahari Alapana",
+          "notes": "alapana"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:02:20",
+          "offset_seconds": 3740,
+          "type": "javali",
+          "raga_id": "bilahari",
+          "composition_id": "paripovalera",
+          "composer_id": "pattabhiramayya",
+          "tala": "rupakam",
+          "display_title": "Paripovalera",
+          "notes": ""
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "01:05:16",
+          "offset_seconds": 3916,
+          "type": "kriti",
+          "raga_id": "hamsanandi",
+          "composition_id": "thullumada_vetkai",
+          "composer_id": "arunagirinathar",
+          "tala": "khanda_jhampa",
+          "display_title": "Thullumada Vetkai",
+          "notes": "Thirupugazh"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "01:06:51",
+          "offset_seconds": 4011,
+          "type": "alapana",
+          "raga_id": "surutti",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Surutti Alapana",
+          "notes": "alapana — no composition follows in tracklist"
+        }
+      ]
+    }
+  ]
+}

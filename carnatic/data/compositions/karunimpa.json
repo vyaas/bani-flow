@@ -1,0 +1,16 @@
+{
+  "id": "karunimpa",
+  "title": "Karunimpa",
+  "composer_id": "tiruvottiyur_tyagayya",
+  "raga_id": "sahana",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c3007.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Varnam by Tiruvottiyur Tyagayya in Sahana"
+}

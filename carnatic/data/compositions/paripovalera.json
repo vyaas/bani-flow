@@ -1,0 +1,16 @@
+{
+  "id": "paripovalera",
+  "title": "Paripovalera",
+  "composer_id": "pattabhiramayya",
+  "raga_id": "bilahari",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1511.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Javali by Tiruppaṇandāḷ Paṭṭābhirāmaiyyā"
+}

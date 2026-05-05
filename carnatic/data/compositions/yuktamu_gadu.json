@@ -1,0 +1,15 @@
+{
+  "id": "yuktamu_gadu",
+  "title": "Yuktamu Gadu",
+  "composer_id": "tyagaraja",
+  "raga_id": "sriraga",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2801.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}

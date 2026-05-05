@@ -1,0 +1,16 @@
+{
+  "id": "karunai_deivame",
+  "title": "Karunai Deivame",
+  "composer_id": "madurai_shrinivasan",
+  "raga_id": "sindhu_bhairavi",
+  "tala": "adi",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1415.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Popularized by DK Jayaraman"
+}

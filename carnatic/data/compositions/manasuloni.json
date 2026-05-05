@@ -1,0 +1,15 @@
+{
+  "id": "manasuloni",
+  "title": "Manasuloni",
+  "composer_id": "tyagaraja",
+  "raga_id": "hindolam",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1116.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}

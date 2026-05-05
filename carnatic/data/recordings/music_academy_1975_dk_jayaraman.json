@@ -1,0 +1,246 @@
+{
+  "id": "music_academy_1975_dk_jayaraman",
+  "video_id": "3nMYqgJOE_o",
+  "url": "https://youtu.be/3nMYqgJOE_o",
+  "title": "DK Jayaraman \u2014 Music Academy, Madras, December 29, 1975",
+  "short_title": "Music Academy 1975",
+  "date": "1975-12-29",
+  "venue": "Music Academy, Madras",
+  "occasion": "Dikshitar 250 series; Music Academy December season 1975",
+  "sources": [
+    {
+      "url": "https://youtu.be/3nMYqgJOE_o",
+      "label": "YouTube \u2014 Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "dk_jayaraman", "role": "vocal" },
+        { "musician_id": null, "unmatched_name": "Unknown", "role": "vocal_support" },
+        { "musician_id": "ms_gopalakrishnan", "role": "violin" },
+        { "musician_id": "karaikudi_mani", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "type": "kriti",
+          "raga_id": "mayamalavagowla",
+          "composition_id": "sri_nathadi_guruguho",
+          "composer_id": "muthuswami_dikshitar",
+          "tala": "adi",
+          "display_title": "Sri Nathadi Guruguho",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:08:54",
+          "offset_seconds": 534,
+          "type": "kriti",
+          "raga_id": "natanarayani",
+          "composition_id": "mahaganapathe_palayasumam",
+          "composer_id": "muthuswami_dikshitar",
+          "tala": "adi",
+          "display_title": "Mahaganapathe Palayasumam",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:12:53",
+          "offset_seconds": 773,
+          "type": "kriti",
+          "raga_id": "gurjari",
+          "composition_id": "guni_janadi_nuta",
+          "composer_id": "muthuswami_dikshitar",
+          "tala": "adi",
+          "display_title": "Guni Janadi Nuta",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:21:13",
+          "offset_seconds": 1273,
+          "type": "alapana",
+          "raga_id": "bilahari",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Bilahari \u2014 Alapana",
+          "notes": "Kriti unavailable"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:26:14",
+          "offset_seconds": 1574,
+          "type": "kriti",
+          "raga_id": "ahiri",
+          "composition_id": "mayamma",
+          "composer_id": "shyama_shastri",
+          "tala": "adi",
+          "display_title": "Mayamma",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:32:55",
+          "offset_seconds": 1975,
+          "type": "alapana",
+          "raga_id": "kalyani",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Kalyani \u2014 Alapana",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:43:21",
+          "offset_seconds": 2601,
+          "type": "kriti",
+          "raga_id": "kalyani",
+          "composition_id": "unai_allal",
+          "composer_id": "papanasam_sivan",
+          "tala": "adi",
+          "display_title": "Unai Allal",
+          "notes": "2 kalai"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:56:07",
+          "offset_seconds": 3367,
+          "type": "kriti",
+          "raga_id": "sriraga",
+          "composition_id": "yuktamu_gadu",
+          "composer_id": "tyagaraja",
+          "tala": "adi",
+          "display_title": "Yuktamu Gadu",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:02:41",
+          "offset_seconds": 3761,
+          "type": "kriti",
+          "raga_id": "suddha_vasantha",
+          "composition_id": "somasundaram_bhajeham",
+          "composer_id": "muthuswami_dikshitar",
+          "tala": "adi",
+          "display_title": "Somasundaram Bhajeham",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:08:59",
+          "offset_seconds": 4139,
+          "type": "alapana",
+          "raga_id": "thodi",
+          "composition_id": null,
+          "composer_id": null,
+          "tala": null,
+          "display_title": "Thodi \u2014 Alapana",
+          "notes": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:18:40",
+          "offset_seconds": 4720,
+          "type": "kriti",
+          "raga_id": "thodi",
+          "composition_id": "sri_subramanyayo",
+          "composer_id": "muthuswami_dikshitar",
+          "tala": "adi",
+          "display_title": "Sri Subramanyayo",
+          "notes": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:35:14",
+          "offset_seconds": 5714,
+          "type": "tani",
+          "raga_id": null,
+          "composition_id": null,
+          "composer_id": null,
+          "tala": "adi",
+          "display_title": "Tani Avarthanam",
+          "notes": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:46:23",
+          "offset_seconds": 6383,
+          "type": "kriti",
+          "raga_id": "sriranjini",
+          "composition_id": "sri_ramachandro_rakshathumam",
+          "composer_id": "muthuswami_dikshitar",
+          "tala": "misra_chapu",
+          "display_title": "Sri Ramachandro Rakshathumam",
+          "notes": null
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "01:59:39",
+          "offset_seconds": 7179,
+          "type": "kriti",
+          "raga_id": "mukhari",
+          "composition_id": "dayai_puriya_tarunamide",
+          "composer_id": "rukmini_ramani",
+          "tala": "adi",
+          "display_title": "Dayai Puriya Tarunamide",
+          "notes": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:03:58",
+          "offset_seconds": 7438,
+          "type": "kriti",
+          "raga_id": "sindhu_bhairavi",
+          "composition_id": "karunai_deivame",
+          "composer_id": "madurai_shrinivasan",
+          "tala": "adi",
+          "display_title": "Karunai Deivame",
+          "notes": null
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:08:38",
+          "offset_seconds": 7718,
+          "type": "ragamalika",
+          "raga_id": "ragamalika",
+          "composition_id": "ranjani_mridu_pankaja",
+          "composer_id": "tanjavur_sankara_iyer",
+          "tala": "adi",
+          "display_title": "Ranjani Mridu Pankaja (Ragamalika)",
+          "notes": null
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:15:15",
+          "offset_seconds": 8115,
+          "type": "kriti",
+          "raga_id": "hamsanandi",
+          "composition_id": "niraimadhi_mugam",
+          "composer_id": "arunagirinathar",
+          "tala": "adi",
+          "display_title": "Niraimadhi Mugam",
+          "notes": "Thirupugazh"
+        },
+        {
+          "performance_index": 18,
+          "timestamp": "02:17:04",
+          "offset_seconds": 8224,
+          "type": "kriti",
+          "raga_id": "sowrashtram",
+          "composition_id": "ni_nama_rupamulaku",
+          "composer_id": "tyagaraja",
+          "tala": "adi",
+          "display_title": "Ni Nama Rupamulaku (Mangalam)",
+          "notes": "Mangalam"
+        }
+      ]
+    }
+  ]
+}

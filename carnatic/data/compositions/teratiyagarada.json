@@ -1,0 +1,15 @@
+{
+  "id": "teratiyagarada",
+  "title": "Teratiyagarada",
+  "composer_id": "tyagaraja",
+  "raga_id": "gowlipantu",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2896.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}

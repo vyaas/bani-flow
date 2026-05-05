@@ -1,0 +1,16 @@
+{
+  "id": "hamsanandi",
+  "name": "Hamsanandi",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "gamanashrama",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Hamsanandi",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Gamanashrama (53rd melakarta); shadava-shadava (hexatonic); evening ragam; S R1 G3 M2 D2 N3 S"
+}

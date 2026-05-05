@@ -712,6 +712,51 @@
           "madurai_mani_iyer"
         ]
       }
+    },
+    {
+      "url": "https://youtu.be/zDi6s4Q3sEo",
+      "label": "In The Classroom - Part 1",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "reetigowla"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://youtu.be/FQwyN9V6Y48",
+      "label": "In The Classroom - Part 2",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "reetigowla",
+          "jayantasena"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://youtu.be/1-OdcOmp_Xs",
+      "label": "In The Classroom - Part 3",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://youtu.be/qDZnXoh92Zc",
+      "label": "In The Classroom - Part 4",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }

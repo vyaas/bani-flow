@@ -1,0 +1,20 @@
+{
+  "id": "anai_ayya_brothers",
+  "label": "Anai Ayya Brothers",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Anai_Ayya_brothers",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1776,
+  "died": 1857,
+  "era": "bridge",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

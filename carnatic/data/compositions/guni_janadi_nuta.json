@@ -1,0 +1,15 @@
+{
+  "id": "guni_janadi_nuta",
+  "title": "Guni Janadi Nuta",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "gurjari",
+  "tala": "adi",
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/gunijanadi-gurjari.pdf",
+      "label": "shivkumar.org",
+      "type": "archive"
+    }
+  ]
+}

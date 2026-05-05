@@ -1,0 +1,16 @@
+{
+  "id": "thullumada_vetkai",
+  "title": "Thullumada Vetkai",
+  "composer_id": "arunagirinathar",
+  "raga_id": "hamsanandi",
+  "tala": "khanda_jhampa",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c15510.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Thirupugazh by Arunagirinathar in Hamsanandi"
+}

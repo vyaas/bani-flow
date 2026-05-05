@@ -1,0 +1,16 @@
+{
+  "id": "natanarayani",
+  "name": "Natanarayani",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://guruguha.org/natanarayani-melody-lost-forest-time/",
+      "label": "Guruguha.org",
+      "type": "archive"
+    }
+  ],
+  "notes": "Janya of Shankarabharanam (melakarta 29); rare Dikshitar raga"
+}

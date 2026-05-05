@@ -16,5 +16,13 @@
     "carnatic"
   ],
   "bani": "mixed",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/gCJA66btlzM",
+      "label": "Vinatā Suta Vāhana",
+      "composition_id": "vinata_suta_vahana",
+      "raga_id": "jayantasena",
+      "tala": "adi"
+    }
+  ]
 }

@@ -1010,5 +1010,25 @@
     "target": "jayanthi_kumaresh",
     "confidence": 1.0,
     "source_url": "https://en.wikipedia.org/wiki/Jayanthi_Kumaresh"
+  },
+  {
+    "source": "papa_ks_venkataramaiah",
+    "target": "t_abhiramasundari",
+    "confidence": 0.92,
+    "source_url": "https://en.wikipedia.org/wiki/Papa_Venkataramaiah"
+  },
+  {
+    "source": "vina_dhanammal",
+    "target": "t_abhiramasundari",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Papa_Venkataramaiah",
+    "note": "Abhiramasundari is granddaughter of Dhanammal (sister of T. Brinda and T. Muktha, daughters of Kamakshi/Jayammal)"
+  },
+  {
+    "source": "dk_pattammal",
+    "target": "karaikudi_mani",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/Karaikudi_Mani",
+    "note": "Mother and musical mentor; Karaikudi Mani (born Ganapathy Subramanyam) is the son of DK Pattammal"
   }
 ]

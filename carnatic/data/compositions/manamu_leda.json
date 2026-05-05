@@ -1,0 +1,15 @@
+{
+  "id": "manamu_leda",
+  "title": "Manamu Leda",
+  "composer_id": "tyagaraja",
+  "raga_id": "hamir_kalyani",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1802.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}
