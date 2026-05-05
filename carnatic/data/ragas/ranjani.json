@@ -1,0 +1,15 @@
+{
+  "id": "ranjani",
+  "name": "Ranjani",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "dharmavati",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ranjani",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

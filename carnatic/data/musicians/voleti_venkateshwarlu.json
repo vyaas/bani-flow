@@ -22,6 +22,83 @@
       "label": "abhimānamenneḍu · Begada · Adi - Voleti Venkateshwarlu",
       "composition_id": "abhimanamennedu",
       "raga_id": "begada"
+    },
+    {
+      "url": "https://youtu.be/jWk9SBC3jqw",
+      "label": "Intha Chalamu",
+      "composition_id": "intha_chalamu",
+      "raga_id": "begada",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/-wYZH_8dDjQ",
+      "label": "Śaṅkarī Nīvē",
+      "composition_id": "shankari_neeve",
+      "raga_id": "begada",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/5BKKa8nK7Do",
+      "label": "Natajana paripala",
+      "composition_id": "natajana_paripala",
+      "raga_id": "simhendramadhyamam",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/s8BDu4VJXw4",
+      "label": "",
+      "composition_id": "ninnu_vinaga_mari",
+      "raga_id": "poorvikalyani",
+      "tala": "misra chapu"
+    },
+    {
+      "url": "https://youtu.be/4Cu9mM0NClU",
+      "label": "Himagiri kumari",
+      "composition_id": "himagiri_kumari",
+      "raga_id": "raghupriya",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/tvJA-CEX644",
+      "label": "Sankalpam ettido",
+      "composition_id": "sankalpam_ettido",
+      "raga_id": "kharaharapriya",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/-bw6MPrGdcc",
+      "label": "",
+      "composition_id": "durmarga_charadhamula",
+      "raga_id": "ranjani",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/7ReTjVmOWD4",
+      "label": "Enduku Peddala",
+      "composition_id": "enduku_peddala",
+      "raga_id": "shankarabharanam",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/EHUoI10otsE",
+      "label": "",
+      "composition_id": "karuna_joodu",
+      "raga_id": "sriraga",
+      "tala": "misra chapu"
+    },
+    {
+      "url": "https://youtu.be/GIcnK47y44g",
+      "label": "Lalitē Kāñci Nagara Nivāsinī",
+      "composition_id": "lalite_kanci_nagara",
+      "raga_id": "bhairavi",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/GnwjHksD9U8",
+      "label": "",
+      "composition_id": "chinthaya_ma_kanda",
+      "raga_id": "bhairavi",
+      "tala": "rupakam"
     }
   ]
 }

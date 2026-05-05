@@ -310,7 +310,10 @@
       "label": "Vivadi – I",
       "kind": "lecdem",
       "subjects": {
-        "raga_ids": [],
+        "raga_ids": [
+          "ganamurti",
+          "nata"
+        ],
         "composition_ids": [],
         "musician_ids": []
       }

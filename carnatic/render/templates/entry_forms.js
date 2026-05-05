@@ -3788,109 +3788,111 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
   const subjects = ref.subjects || { raga_ids: [], composition_ids: [], musician_ids: [] };
   const vid = ref.video_id;
 
-  // ── helper: render a removable chip list + combobox for one axis ─────────
-  function buildAxisSection(axisLabel, axis, currentIds, opts) {
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'margin-bottom:12px;';
+  // ── Build per-axis option lists ───────────────────────────────────────────
+  const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
+  const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+  const musOpts  = (graphData.musicians || []).map(m => ({ value: m.id, label: m.label || m.id }));
 
-    const heading = document.createElement('div');
-    heading.className = 'ef-section-heading';
-    heading.textContent = axisLabel;
-    wrap.appendChild(heading);
+  // Merged list; composite value = "axis::id" to prevent cross-axis collisions
+  const allOpts = [
+    ...ragaOpts.map(o => ({ value: `raga_ids::${o.value}`,        label: `${o.label} (Raga)` })),
+    ...compOpts.map(o => ({ value: `composition_ids::${o.value}`,  label: `${o.label} (Comp)` })),
+    ...musOpts.map(o  => ({ value: `musician_ids::${o.value}`,     label: `${o.label} (Musician)` })),
+  ];
 
-    // Current items as removable chips
-    const chipsWrap = document.createElement('div');
-    chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;';
-    wrap.appendChild(chipsWrap);
+  // staged: compositeKey → { axis, id, chipClass, label }
+  const staged = new Map();
+  const originalKeys = new Set();
 
-    const staged = new Set(currentIds);
-
-    function redrawChips() {
-      chipsWrap.innerHTML = '';
-      staged.forEach(id => {
-        const opt = opts.find(o => o.value === id);
-        const chip = document.createElement('span');
-        chip.className = 'raga-chip';
-        chip.style.cssText = 'cursor:pointer;';
-        chip.textContent = (opt ? opt.label : id) + ' ×';
-        chip.title = 'Remove ' + (opt ? opt.label : id);
-        chip.addEventListener('click', () => {
-          staged.delete(id);
-          redrawChips();
-        });
-        chipsWrap.appendChild(chip);
-      });
-      if (staged.size === 0) {
-        const empty = document.createElement('span');
-        empty.style.cssText = 'opacity:0.4;font-size:0.75rem;';
-        empty.textContent = '(none)';
-        chipsWrap.appendChild(empty);
-      }
-    }
-    redrawChips();
-
-    // Combobox to add more
-    const combo = efCombobox(null, opts, null, win);
-    wrap.appendChild(efRow('Add ' + axisLabel, false, null, combo));
-
-    const addBtn = document.createElement('button');
-    addBtn.type = 'button';
-    addBtn.className = 'ef-add-btn';
-    addBtn.textContent = '+ Add';
-    addBtn.style.cssText = 'margin-top:4px;';
-    addBtn.addEventListener('click', () => {
-      const val = combo.getValue ? combo.getValue() : '';
-      if (!val || staged.has(val)) return;
-      staged.add(val);
-      redrawChips();
-      if (combo.setValue) combo.setValue('');
-    });
-    wrap.appendChild(addBtn);
-
-    // Stage button: one add_lecdem_subject op per newly added id
-    const stageBtn = document.createElement('button');
-    stageBtn.type = 'button';
-    stageBtn.className = 'ef-add-btn';
-    stageBtn.style.cssText = 'margin-top:6px;margin-left:6px;';
-    stageBtn.textContent = '↪ Stage additions → bundle';
-    stageBtn.addEventListener('click', () => {
-      const original = new Set(currentIds);
-      let count = 0;
-      staged.forEach(id => {
-        if (!original.has(id)) {
-          addToBundle('musicians', {
-            op:    'append',
-            id:    nodeId,
-            array: `youtube[${vid}].subjects.${axis}`,
-            value: id,
-          });
-          count++;
-        }
-      });
-      if (count > 0) {
-        stageBtn.textContent = `✓ Staged ${count} addition${count > 1 ? 's' : ''}!`;
-        setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1800);
-      } else {
-        stageBtn.textContent = '(no new items)';
-        setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1200);
-      }
-    });
-    wrap.appendChild(stageBtn);
-
-    return wrap;
+  function _stageEntry(axis, id, chipClass, optList) {
+    const key = `${axis}::${id}`;
+    const opt = optList.find(o => o.value === id);
+    staged.set(key, { axis, id, chipClass, label: opt ? opt.label : id });
   }
 
-  // ── Raga tags ───────────────────────────────────────────────────────────────
-  const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
-  body.appendChild(buildAxisSection('Raga tags', 'raga_ids', subjects.raga_ids || [], ragaOpts));
+  (subjects.raga_ids        || []).forEach(id => { _stageEntry('raga_ids',        id, 'raga-chip',     ragaOpts); originalKeys.add(`raga_ids::${id}`); });
+  (subjects.composition_ids || []).forEach(id => { _stageEntry('composition_ids', id, 'comp-chip',     compOpts); originalKeys.add(`composition_ids::${id}`); });
+  (subjects.musician_ids    || []).forEach(id => { _stageEntry('musician_ids',    id, 'musician-chip', musOpts);  originalKeys.add(`musician_ids::${id}`); });
 
-  // ── Composition tags ────────────────────────────────────────────────────────
-  const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
-  body.appendChild(buildAxisSection('Composition tags', 'composition_ids', subjects.composition_ids || [], compOpts));
+  // ── Chips area ────────────────────────────────────────────────────────────
+  const chipsWrap = document.createElement('div');
+  chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;min-height:24px;';
+  body.appendChild(chipsWrap);
 
-  // ── Musician tags ───────────────────────────────────────────────────────────
-  const musOpts = (graphData.musicians || []).map(m => ({ value: m.id, label: m.label || m.id }));
-  body.appendChild(buildAxisSection('Musician tags', 'musician_ids', subjects.musician_ids || [], musOpts));
+  function redrawChips() {
+    chipsWrap.innerHTML = '';
+    if (staged.size === 0) {
+      const empty = document.createElement('span');
+      empty.style.cssText = 'opacity:0.4;font-size:0.75rem;';
+      empty.textContent = '(none)';
+      chipsWrap.appendChild(empty);
+      return;
+    }
+    staged.forEach(({ axis, id, chipClass, label }, key) => {
+      const chip = document.createElement('span');
+      chip.className = chipClass;
+      chip.style.cssText = 'cursor:pointer;';
+      chip.textContent = label + ' ×';
+      chip.title = 'Remove ' + label;
+      chip.addEventListener('click', () => { staged.delete(key); redrawChips(); });
+      chipsWrap.appendChild(chip);
+    });
+  }
+  redrawChips();
+
+  // ── Single combobox + Add button ──────────────────────────────────────────
+  const combo = efCombobox(null, allOpts, null, win);
+  body.appendChild(efRow('Add subject', false, null, combo));
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'ef-add-btn';
+  addBtn.textContent = '+ Add';
+  addBtn.style.cssText = 'margin-top:4px;';
+  addBtn.addEventListener('click', () => {
+    const compositeVal = combo.getValue ? combo.getValue() : '';
+    if (!compositeVal || staged.has(compositeVal)) return;
+    const sep   = compositeVal.indexOf('::');
+    if (sep < 0) return;
+    const axis  = compositeVal.slice(0, sep);
+    const id    = compositeVal.slice(sep + 2);
+    const chipClassMap = { raga_ids: 'raga-chip', composition_ids: 'comp-chip', musician_ids: 'musician-chip' };
+    const optListMap   = { raga_ids: ragaOpts, composition_ids: compOpts, musician_ids: musOpts };
+    const opt = (optListMap[axis] || []).find(o => o.value === id);
+    staged.set(compositeVal, { axis, id, chipClass: chipClassMap[axis] || 'raga-chip', label: opt ? opt.label : id });
+    redrawChips();
+    if (combo.setValue) combo.setValue('');
+  });
+  body.appendChild(addBtn);
+
+  // ── Single Stage → bundle button ──────────────────────────────────────────
+  const stageBtn = document.createElement('button');
+  stageBtn.type = 'button';
+  stageBtn.className = 'ef-add-btn';
+  stageBtn.style.cssText = 'margin-top:6px;margin-left:6px;';
+  stageBtn.textContent = '↪ Stage additions → bundle';
+  stageBtn.addEventListener('click', () => {
+    let count = 0;
+    staged.forEach(({ axis, id }, key) => {
+      if (!originalKeys.has(key)) {
+        addToBundle('musicians', {
+          op:    'append',
+          id:    nodeId,
+          array: `youtube[${vid}].subjects.${axis}`,
+          value: id,
+        });
+        count++;
+      }
+    });
+    if (count > 0) {
+      stageBtn.textContent = `✓ Staged ${count} addition${count > 1 ? 's' : ''}!`;
+      setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1800);
+    } else {
+      stageBtn.textContent = '(no new items)';
+      setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1200);
+    }
+  });
+  body.appendChild(stageBtn);
 
   const closeBtn2 = document.createElement('button');
   closeBtn2.className = 'ef-preview-btn';

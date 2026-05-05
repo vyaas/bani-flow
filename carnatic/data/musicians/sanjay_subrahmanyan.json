@@ -50,6 +50,13 @@
       "url": "https://youtu.be/o0YjX1JYgyo",
       "label": "RTP",
       "raga_id": "charukesi"
+    },
+    {
+      "url": "https://youtu.be/X2UORRf8xoU",
+      "label": "",
+      "composition_id": "ganamurte",
+      "raga_id": "ganamurti",
+      "tala": "adi"
     }
   ]
 }
