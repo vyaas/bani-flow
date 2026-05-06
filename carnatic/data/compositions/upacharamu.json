@@ -1,0 +1,15 @@
+{
+  "id": "upacharamu",
+  "title": "Upacharamu",
+  "composer_id": "tyagaraja",
+  "raga_id": "bhairavi",
+  "tala": "rupakam",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://karnatik.com/c2903.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ]
+}

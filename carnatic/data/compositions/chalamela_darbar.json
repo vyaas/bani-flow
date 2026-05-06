@@ -1,0 +1,16 @@
+{
+  "id": "chalamela_darbar",
+  "title": "Chalamela",
+  "composer_id": "tiruvottiyur_tyagayya",
+  "raga_id": "darbar",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2979.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Varnam"
+}

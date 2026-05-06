@@ -1,0 +1,15 @@
+{
+  "id": "kori_sevimpa",
+  "title": "Kori Sevimpa",
+  "composer_id": "tyagaraja",
+  "raga_id": "kharaharapriya",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2407.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ]
+}

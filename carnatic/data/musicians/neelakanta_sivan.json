@@ -1,0 +1,20 @@
+{
+  "id": "neelakanta_sivan",
+  "label": "Neelakanta Sivan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Neelakanta_Sivan",
+      "label": "Wikipedia — Neelakanta Sivan",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1828,
+  "died": 1898,
+  "era": "bridge",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

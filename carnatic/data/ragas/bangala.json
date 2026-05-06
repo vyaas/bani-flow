@@ -1,0 +1,18 @@
+{
+  "id": "bangala",
+  "name": "Bangala",
+  "tradition": "carnatic",
+  "aliases": [
+    "Bangaala"
+  ],
+  "melakarta": null,
+  "parent_raga": "shankarabharanam",
+  "sources": [
+    {
+      "url": "https://www.drmradhakrishnan.com/post/rare-raga-series-bangala-janya-of-mela-29-raga-sankarabharanam",
+      "label": "Dr M Radhakrishnan — Rare Raga Series: Bangala",
+      "type": "article"
+    }
+  ],
+  "notes": "Rare janya of Shankarabharanam (melakarta 29); features prominent use of Ri2 Ga3 Ma1 Pa Dha2 Ni3"
+}

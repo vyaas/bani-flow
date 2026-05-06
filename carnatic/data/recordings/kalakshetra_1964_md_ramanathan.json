@@ -1,0 +1,137 @@
+{
+  "id": "kalakshetra_1964_md_ramanathan",
+  "video_id": "xBlAyKvH3uM",
+  "url": "https://www.youtube.com/watch?v=xBlAyKvH3uM",
+  "title": "MD Ramanathan — Live at Kalakshetra, 1964",
+  "short_title": "Kalakshetra 1964",
+  "date": "1964",
+  "venue": "Kalakshetra, Madras",
+  "occasion": "Concert at Kalakshetra premises, 1964; uploaded by Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=xBlAyKvH3uM",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "md_ramanathan", "role": "vocal" },
+        { "musician_id": "tn_krishnan", "role": "violin" },
+        { "musician_id": "vellore_ramabhadran", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "type": "varnam",
+          "raga_id": "darbar",
+          "composition_id": "chalamela_darbar",
+          "tala": "adi",
+          "composer_id": "tiruvottiyur_tyagayya",
+          "display_title": "Chalamela",
+          "notes": "Varnam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:05:48",
+          "offset_seconds": 348,
+          "type": "kriti",
+          "raga_id": "hamsadhwani",
+          "composition_id": "vatapi_ganapathim",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Vatapi Ganapathim",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:41:16",
+          "offset_seconds": 2476,
+          "type": "kriti",
+          "raga_id": "poorvikalyani",
+          "composition_id": "ananda_natam_aduvar",
+          "tala": "rupakam",
+          "composer_id": "neelakanta_sivan",
+          "display_title": "Ananda Natam Aduvar",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:49:29",
+          "offset_seconds": 2969,
+          "type": "kriti",
+          "raga_id": "purnachandrika",
+          "composition_id": "palukavemi_na",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Palukavemi Na",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:56:45",
+          "offset_seconds": 3405,
+          "type": "swarajathi",
+          "raga_id": "bhairavi",
+          "composition_id": "amba_kamakshi_bhairavi",
+          "tala": "misra_chapu",
+          "composer_id": "shyama_shastri",
+          "display_title": "Amba Kamakshi (Swarajathi)",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:50:23",
+          "offset_seconds": 6623,
+          "type": "tani",
+          "raga_id": null,
+          "composition_id": null,
+          "tala": "misra_chapu",
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:54:45",
+          "offset_seconds": 6885,
+          "type": "kriti",
+          "raga_id": "kapi",
+          "composition_id": "vihara_manasa_rame",
+          "tala": "misra_chapu",
+          "composer_id": "swati_tirunal",
+          "display_title": "Vihara Manasa Rame",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "02:00:10",
+          "offset_seconds": 7210,
+          "type": "thillana",
+          "raga_id": "shankarabharanam",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": "md_ramanathan",
+          "display_title": "Thillana in Shankarabharanam",
+          "notes": "MD Ramanathan own composition; unnamed thillana"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:03:27",
+          "offset_seconds": 7407,
+          "type": "kriti",
+          "raga_id": "sowrashtram",
+          "composition_id": "ni_nama_rupamulaku",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku (Mangalam)",
+          "notes": "Mangalam"
+        }
+      ]
+    }
+  ]
+}

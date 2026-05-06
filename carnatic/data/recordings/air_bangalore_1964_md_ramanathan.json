@@ -1,0 +1,161 @@
+{
+  "id": "air_bangalore_1964_md_ramanathan",
+  "video_id": "fXTv1tSQrGw",
+  "url": "https://www.youtube.com/watch?v=fXTv1tSQrGw",
+  "title": "MD Ramanathan — All India Radio, Bangalore, 23 April 1964",
+  "short_title": "AIR Bangalore 1964",
+  "date": "1964-04-23",
+  "venue": "All India Radio, Bangalore",
+  "occasion": "AIR studio concert, Bangalore; uploaded by Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=fXTv1tSQrGw",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "md_ramanathan", "role": "vocal" },
+        { "musician_id": null, "unmatched_name": "T Gururajappa", "role": "violin" },
+        { "musician_id": null, "unmatched_name": "ML Veerabhadraiah", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "type": "alapana",
+          "raga_id": "reetigowla",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Reetigowla \u2014 Alapana Sketch",
+          "notes": "alapana sketch"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:01:29",
+          "offset_seconds": 89,
+          "type": "kriti",
+          "raga_id": "reetigowla",
+          "composition_id": "raga_ratna_malikache",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Raga Ratna Malikache",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:11:25",
+          "offset_seconds": 685,
+          "type": "alapana",
+          "raga_id": "kedaragaula",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kedaragaula \u2014 Alapana",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:19:07",
+          "offset_seconds": 1147,
+          "type": "kriti",
+          "raga_id": "kedaragaula",
+          "composition_id": "tulasi_bilva",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Tulasi Bilva",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:29:05",
+          "offset_seconds": 1745,
+          "type": "alapana",
+          "raga_id": "mohanam",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Mohanam \u2014 Alapana",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:37:10",
+          "offset_seconds": 2230,
+          "type": "kriti",
+          "raga_id": "mohanam",
+          "composition_id": "nannu_palimpa",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nannu Palimpa",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:47:20",
+          "offset_seconds": 2840,
+          "type": "alapana",
+          "raga_id": "kaanada",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Kanada \u2014 Alapana",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "00:49:06",
+          "offset_seconds": 2946,
+          "type": "kriti",
+          "raga_id": "kaanada",
+          "composition_id": "srikantha_enagishtu",
+          "tala": "misra_chapu",
+          "composer_id": "purandara_dasa",
+          "display_title": "Srikantha Enagishtu",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "00:54:07",
+          "offset_seconds": 3247,
+          "type": "kriti",
+          "raga_id": "neelambari",
+          "composition_id": "rama_rama_rama_neelambari",
+          "tala": "adi",
+          "composer_id": "md_ramanathan",
+          "display_title": "Rama Rama Rama",
+          "notes": "MD Ramanathan own composition"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "00:58:03",
+          "offset_seconds": 3483,
+          "type": "alapana",
+          "raga_id": "surutti",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Surutti \u2014 Alapana",
+          "notes": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:00:14",
+          "offset_seconds": 3614,
+          "type": "kriti",
+          "raga_id": "surutti",
+          "composition_id": "angarakam_ashrayamyaham",
+          "tala": "rupakam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Angarakam",
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

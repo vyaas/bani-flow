@@ -1,0 +1,15 @@
+{
+  "id": "tulasi_bilva",
+  "title": "Tulasi Bilva",
+  "composer_id": "tyagaraja",
+  "raga_id": "kedaragaula",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2900.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ]
+}

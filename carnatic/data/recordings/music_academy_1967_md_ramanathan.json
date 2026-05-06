@@ -1,0 +1,209 @@
+{
+  "id": "music_academy_1967_md_ramanathan",
+  "video_id": "FsjMHHmA1cY",
+  "url": "https://www.youtube.com/watch?v=FsjMHHmA1cY",
+  "title": "MD Ramanathan — The Music Academy, Madras, 1967",
+  "short_title": "Music Academy 1967",
+  "date": "1967",
+  "venue": "The Music Academy, Madras",
+  "occasion": "Bicentennial celebration of Tyagaraja; uploaded by Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=FsjMHHmA1cY",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "md_ramanathan", "role": "vocal" },
+        { "musician_id": "lalgudi_jayaraman", "role": "violin" },
+        { "musician_id": "palghat_mani_iyer", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "type": "kriti",
+          "raga_id": "bangala",
+          "composition_id": "giriraja_suta_tanaya",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Giriraja Suta Tanaya",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:04:10",
+          "offset_seconds": 250,
+          "type": "kriti",
+          "raga_id": "mayamalavagowla",
+          "composition_id": "vidhulaku_mrokkeda",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Vidhulaku Mrokkeda",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:12:07",
+          "offset_seconds": 727,
+          "type": "kriti",
+          "raga_id": "mukhari",
+          "composition_id": "entani_ne_mukhari",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Entani Ne",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:23:29",
+          "offset_seconds": 1409,
+          "type": "kriti",
+          "raga_id": "nayaki",
+          "composition_id": "nee_bhajana_gana",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Nee Bhajana Gana",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:31:04",
+          "offset_seconds": 1864,
+          "type": "kriti",
+          "raga_id": "suddha_saveri",
+          "composition_id": "dharini_telusukonti",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Dharini Telusukonti",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:47:44",
+          "offset_seconds": 2864,
+          "type": "kriti",
+          "raga_id": "thodi",
+          "composition_id": "koluvamarakatha",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Koluvamarakatha",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:26:38",
+          "offset_seconds": 5198,
+          "type": "tani",
+          "raga_id": null,
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Tani Avartanam",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:35:59",
+          "offset_seconds": 5759,
+          "type": "kriti",
+          "raga_id": "kharaharapriya",
+          "composition_id": "kori_sevimpa",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Kori Sevimpa",
+          "notes": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:42:23",
+          "offset_seconds": 6143,
+          "type": "alapana",
+          "raga_id": "begada",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Begada \u2014 Ragam",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:57:24",
+          "offset_seconds": 7044,
+          "type": "alapana",
+          "raga_id": "begada",
+          "composition_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Begada \u2014 Tanam",
+          "notes": "Tanam"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:04:38",
+          "offset_seconds": 7478,
+          "type": "pallavi",
+          "raga_id": "begada",
+          "composition_id": null,
+          "tala": "tisra_triputa",
+          "composer_id": "tyagaraja",
+          "display_title": "Begada \u2014 Pallavi (Lokavana Chatura, Pahimam)",
+          "notes": "Manodharma pallavi; pallavi line by Tyagaraja"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:14:27",
+          "offset_seconds": 8067,
+          "type": "kriti",
+          "raga_id": "reetigowla",
+          "composition_id": "paripalaya_paripalaya",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Paripalaya Paripalaya",
+          "notes": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:18:42",
+          "offset_seconds": 8322,
+          "type": "kriti",
+          "raga_id": "yadukulakamboji",
+          "composition_id": "hecharikaga",
+          "tala": "khanda_chapu",
+          "composer_id": "tyagaraja",
+          "display_title": "Hecharikaga Rara",
+          "notes": null
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:24:07",
+          "offset_seconds": 8647,
+          "type": "kriti",
+          "raga_id": "bhairavi",
+          "composition_id": "upacharamu",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Upacharamu",
+          "notes": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:27:55",
+          "offset_seconds": 8875,
+          "type": "kriti",
+          "raga_id": "sowrashtram",
+          "composition_id": "ni_nama_rupamulaku",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Rupamulaku (Mangalam)",
+          "notes": "Mangalam"
+        }
+      ]
+    }
+  ]
+}

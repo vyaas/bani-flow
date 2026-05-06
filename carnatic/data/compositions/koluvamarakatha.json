@@ -1,0 +1,16 @@
+{
+  "id": "koluvamarakatha",
+  "title": "Koluvamarakatha",
+  "composer_id": "tyagaraja",
+  "raga_id": "thodi",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2405.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Distinct from koluvaiyunnade (Bhairavi)"
+}

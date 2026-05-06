@@ -184,6 +184,19 @@
           "timestamp": "00:00"
         }
       ]
+    },
+    {
+      "url": "https://youtu.be/3DQK7cOT7gE",
+      "label": "The Art of Raga Alapana -  Pathways in the Wilderness",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "nata",
+          "reetigowla"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }

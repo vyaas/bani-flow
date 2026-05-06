@@ -1,0 +1,15 @@
+{
+  "id": "vatapi_ganapathim",
+  "title": "Vatapi Ganapathim",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "hamsadhwani",
+  "tala": "adi",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1048.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ]
+}

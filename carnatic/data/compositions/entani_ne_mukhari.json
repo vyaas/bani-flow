@@ -1,0 +1,16 @@
+{
+  "id": "entani_ne_mukhari",
+  "title": "Entani Ne",
+  "composer_id": "tyagaraja",
+  "raga_id": "mukhari",
+  "tala": "rupakam",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2304.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Distinct from entani_ne_delupudura (Khamas, Subbarama Dikshitar)"
+}
