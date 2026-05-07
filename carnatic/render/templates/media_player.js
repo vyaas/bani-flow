@@ -1599,14 +1599,15 @@ function buildRecordingsList(nodeId, nodeData) {
         li.className = 'lecdem-row';
 
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
+
+        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
+
         if (subjectChips && subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
           li.appendChild(subjectsWrap);
         }
-
-        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
         byList.appendChild(li);
       });
 
@@ -1638,6 +1639,9 @@ function buildRecordingsList(nodeId, nodeData) {
 
         const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
+
+        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
+
         if (lecturerChip || subjectChips.length > 0) {
           const subjectsWrap = document.createElement('span');
           subjectsWrap.className = 'lecdem-subjects';
@@ -1645,8 +1649,6 @@ function buildRecordingsList(nodeId, nodeData) {
           subjectChips.forEach(c => subjectsWrap.appendChild(c));
           li.appendChild(subjectsWrap);
         }
-
-        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
         aboutList.appendChild(li);
       });
 
