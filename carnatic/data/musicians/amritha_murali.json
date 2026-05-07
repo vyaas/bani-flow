@@ -16,5 +16,20 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/cbvb35OVJxI",
+      "label": "Sukhi Evvaro · Kaanada · adi",
+      "composition_id": "sukhi_evvaro",
+      "raga_id": "kaanada",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/5RIchb_VMfw",
+      "label": "Bālē Bālēndu Bhūṣaṇi · Reetigowla · adi",
+      "composition_id": "bale_balendu_bhushani",
+      "raga_id": "reetigowla",
+      "tala": "adi"
+    }
+  ]
 }
