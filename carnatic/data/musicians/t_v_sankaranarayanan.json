@@ -22,6 +22,20 @@
       "label": "jAlandhara supIThastitE · Valaji · Rupaka - T. V. Sankaranarayanan",
       "composition_id": "jalandhara_supithasite",
       "raga_id": "valaji"
+    },
+    {
+      "url": "https://youtu.be/ySoLe-raRJk",
+      "label": "Ma ramanan · Hindolam · rupakam",
+      "composition_id": "ma_ramanan",
+      "raga_id": "hindolam",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/kSCu-0ZtiJw",
+      "label": "Jaya Jaya Swamin · Nattai · adi",
+      "composition_id": "jaya_jaya_swamin",
+      "raga_id": "nata",
+      "tala": "adi"
     }
   ]
 }
