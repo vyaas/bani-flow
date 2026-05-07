@@ -453,9 +453,22 @@ function _openWheelDetailPanel(raga) {
   const cakra = raga.melakarta ? Math.ceil(raga.melakarta / 6) : null;
   const header = document.createElement('div');
   header.className = 'wdp-header';
-  const titleEl = document.createElement('span');
+  const titleEl = document.createElement('div');
   titleEl.className = 'wdp-title';
-  titleEl.textContent = raga.name;
+  const nameChip = document.createElement('span');
+  nameChip.className = 'wdp-chip wdp-raga';
+  nameChip.textContent = '\u25c8 ' + raga.name;
+  nameChip.title = 'Open ' + raga.name + ' in BaniFlow panel';
+  nameChip.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window._wheelOriginatedTrigger = true;
+    if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', raga.id);
+    window._wheelOriginatedTrigger = false;
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      _closeWheelDetailPanel();
+    }
+  });
+  titleEl.appendChild(nameChip);
   if (cakra) {
     const sub = document.createElement('span');
     sub.className = 'wdp-subtitle';

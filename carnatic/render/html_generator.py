@@ -119,6 +119,7 @@ def render_html(
     raga_to_performances: dict,
     perf_to_performances: dict,
     tanpura_data: list | None = None,
+    tala_data: list | None = None,
     listenable_set: set | None = None,
     lecdem_indexes: dict | None = None,
     help_empty_panels: dict | None = None,
@@ -144,6 +145,7 @@ def render_html(
     raga_to_perf_json        = json.dumps(raga_to_performances, indent=2, ensure_ascii=False)
     perf_to_perf_json        = json.dumps(perf_to_performances, indent=2, ensure_ascii=False)
     tanpura_json             = json.dumps(tanpura_data or [], indent=2, ensure_ascii=False)
+    tala_json                = json.dumps(tala_data or [], indent=2, ensure_ascii=False)
     edges_json               = json.dumps(graph["edges"], indent=2, ensure_ascii=False)
 
     # ADR-055: listenable musician node IDs (as JS Set)
@@ -180,6 +182,9 @@ def render_html(
         f"\n"
         f"// ── Tanpura drone data (ADR-029) ─────────────────────────────────────────────\n"
         f"const tanpuraData = {tanpura_json};\n"
+        f"\n"
+        f"// ── Tala inventory ──────────────────────────────────────────────────────────────\n"
+        f"const talaData = {tala_json};\n"
         f"\n"
         f"// ── Lecdem indexes (ADR-078) ─────────────────────────────────────────────────\n"
         f"const lecdemsBy               = {lecdems_by_json};\n"

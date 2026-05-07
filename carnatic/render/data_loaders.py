@@ -154,3 +154,16 @@ def load_help_empty_panels(data_dir: Path) -> dict | None:
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return None
+
+
+def load_talas(data_dir: Path) -> list:
+    """Load carnatic/data/talas.json. Returns list of tala objects.
+
+    Each object has: id, label, searchTerms (optional).
+    Returns empty list if the file is absent.
+    """
+    path = data_dir / "talas.json"
+    if path.exists():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data.get("talas", [])
+    return []

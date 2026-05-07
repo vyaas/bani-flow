@@ -916,8 +916,8 @@
     display: flex; align-items: flex-start; justify-content: space-between; gap: 6px;
     border-bottom: 1px solid var(--border-strong); padding-bottom: 6px;
   }
-  .wdp-title { font-size: 0.88rem; font-weight: bold; color: var(--fg); flex: 1; line-height: 1.3; }
-  .wdp-subtitle { display: block; font-size: 0.68rem; font-weight: normal; color: var(--fg-sub); margin-top: 2px; }
+  .wdp-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .wdp-subtitle { font-size: 0.68rem; font-weight: normal; color: var(--fg-sub); padding-left: 2px; }
   .wdp-close { background: none; border: none; cursor: pointer; color: var(--fg-dim); font-size: 1.1rem; line-height: 1; padding: 0 2px; flex-shrink: 0; }
   .wdp-close:hover { color: var(--fg); }
   .wdp-section-label { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--fg-sub); margin-top: 2px; }
@@ -1652,6 +1652,7 @@
     padding-top: 4px;
   }
   .lecdem-section-header {
+    display: flex; align-items: center; justify-content: space-between;
     font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
     color: var(--fg-muted); text-transform: uppercase;
     padding: 10px 0 3px; border-bottom: 1px solid var(--border);
@@ -2384,6 +2385,27 @@
     font-family: inherit;
   }
   .ef-change-link:hover { color: var(--fg); }
+
+  /* solidified combobox chip — appears when user selects a value, hides the input */
+  .ef-solidified-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 6px 2px 8px; border-radius: var(--chip-border-radius);
+    border: 1px solid var(--border); background: var(--bg-input);
+    font-size: var(--chip-size-secondary); color: var(--fg);
+    white-space: nowrap; max-width: 100%;
+  }
+  .ef-chip-clear {
+    background: none; border: none; padding: 0;
+    font-size: 0.85rem; line-height: 1; color: var(--fg-muted);
+    cursor: pointer; font-family: inherit; flex-shrink: 0;
+  }
+  .ef-chip-clear:hover { color: var(--fg); }
+
+  /* group separator between primary and secondary fields in YouTube block */
+  .ef-group-sep {
+    border: none; border-top: 1px dashed var(--border-soft);
+    margin: 8px 0 4px;
+  }
 
   /* ── ADR-097 \u00a77: entity notes section (soft footnote tier) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
   .entity-notes-section {

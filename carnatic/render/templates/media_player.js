@@ -1568,7 +1568,21 @@ function buildRecordingsList(nodeId, nodeData) {
 
     const lsSectionHdr = document.createElement('div');
     lsSectionHdr.className = 'lecdem-section-header';
-    lsSectionHdr.textContent = 'Lecdems (' + (lecdemsBy_.length + lecdemsAbout_.length) + ')';
+    const lsHdrText = document.createElement('span');
+    lsHdrText.textContent = 'Lecdems (' + (lecdemsBy_.length + lecdemsAbout_.length) + ')';
+    lsSectionHdr.appendChild(lsHdrText);
+    const lsAddChip = document.createElement('button');
+    lsAddChip.type = 'button';
+    lsAddChip.className = 'co-add-chip';
+    lsAddChip.textContent = '+';
+    lsAddChip.title = 'Add lecdem recording for ' + artistLabel;
+    lsAddChip.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof openAddLecdemToMusicianForm === 'function') {
+        openAddLecdemToMusicianForm(nodeId);
+      }
+    });
+    lsSectionHdr.appendChild(lsAddChip);
     lsSection.appendChild(lsSectionHdr);
 
     // Lecdems by this musician
@@ -1739,7 +1753,7 @@ function buildRecordingsList(nodeId, nodeData) {
   const ragaHeader = document.createElement('div');
   ragaHeader.className = 'rec-section-header-row';
   const ragaHeaderLabel = document.createElement('span');
-  ragaHeaderLabel.textContent = 'By raga (' + allPerfs.length + ')';
+  ragaHeaderLabel.textContent = 'Recordings by Raga (' + allPerfs.length + ')';
   ragaHeader.appendChild(ragaHeaderLabel);
   const ragaAddChip = document.createElement('button');
   ragaAddChip.type = 'button';

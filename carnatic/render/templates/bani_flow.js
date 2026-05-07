@@ -1160,7 +1160,11 @@ function buildTreeRaga(rows, trailList, multiVersionKeys) {
     return aBorn - bBorn;
   });
 
-  sortedGroups.forEach(function(group, idx) {
+  // Partition into named compositions vs. untagged bucket
+  const compGroups  = sortedGroups.filter(function(g) { return g.cid !== 'no-comp'; });
+  const otherGroups = sortedGroups.filter(function(g) { return g.cid === 'no-comp'; });
+
+  function _renderGroup(group) {
     const isSingle = group.rows.length === 1;
 
     const li = document.createElement('li');
@@ -1223,7 +1227,29 @@ function buildTreeRaga(rows, trailList, multiVersionKeys) {
     li.appendChild(childrenUl);
 
     trailList.appendChild(li);
-  });
+  }
+
+  // ── Compositions section ──────────────────────────────────────────────────
+  if (compGroups.length > 0) {
+    const compSecHdr = document.createElement('div');
+    compSecHdr.className = 'rec-section-header-row';
+    const compSecLabel = document.createElement('span');
+    compSecLabel.textContent = 'Compositions (' + compGroups.length + ')';
+    compSecHdr.appendChild(compSecLabel);
+    trailList.appendChild(compSecHdr);
+    compGroups.forEach(_renderGroup);
+  }
+
+  // ── Other recordings section ──────────────────────────────────────────────
+  if (otherGroups.length > 0) {
+    const otherSecHdr = document.createElement('div');
+    otherSecHdr.className = 'rec-section-header-row';
+    const otherSecLabel = document.createElement('span');
+    otherSecLabel.textContent = 'Other recordings (' + otherGroups[0].rows.length + ')';
+    otherSecHdr.appendChild(otherSecLabel);
+    trailList.appendChild(otherSecHdr);
+    otherGroups.forEach(_renderGroup);
+  }
 }
 
 // buildTreeComp: comp-view trail — group rows by primary artist, one collapsible
@@ -1515,8 +1541,10 @@ function _renderBaniFlowLecdemStrip(type, id) {
     subjectName = comp ? comp.title : id;
   }
   const hdr = document.createElement('div');
-  hdr.className = 'lecdem-section-header';
-  hdr.textContent = 'Lecdems on ' + subjectName;
+  hdr.className = 'rec-section-header-row';
+  const hdrLabel = document.createElement('span');
+  hdrLabel.textContent = 'Lecdems on ' + subjectName + ' (' + refs.length + ')';
+  hdr.appendChild(hdrLabel);
   section.appendChild(hdr);
 
   // §3: one row per lecdem ref

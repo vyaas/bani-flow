@@ -1,0 +1,22 @@
+{
+  "talas": [
+    { "id": "adi",             "label": "Ādi",              "searchTerms": "adi" },
+    { "id": "rupakam",         "label": "Rupakam",          "searchTerms": "rupakam rupaka" },
+    { "id": "misra_capu",      "label": "Miśra Cāpu",       "searchTerms": "misra_capu misra_chapu misra chapu" },
+    { "id": "khanda_capu",     "label": "Khanda Cāpu",      "searchTerms": "khanda_capu khanda_chapu khanda chapu" },
+    { "id": "tisra_triputa",   "label": "Tiśra Tripuṭa",    "searchTerms": "tisra_triputa tisra triputa" },
+    { "id": "ata",             "label": "Āṭa",              "searchTerms": "ata" },
+    { "id": "dhruva",          "label": "Dhruva",           "searchTerms": "dhruva catusra_dhruva" },
+    { "id": "deshadi",         "label": "Dēśādi",           "searchTerms": "deshadi desadi" },
+    { "id": "jhampa",          "label": "Jhampa",           "searchTerms": "jhampa" },
+    { "id": "misra_jhampa",    "label": "Miśra Jhampa",     "searchTerms": "misra_jhampa misra jhampa" },
+    { "id": "khanda_ekam",     "label": "Khanda Ekam",      "searchTerms": "khanda_ekam khanda ekam" },
+    { "id": "khanda_triputa",  "label": "Khanda Tripuṭa",   "searchTerms": "khanda_triputa khanda triputa" },
+    { "id": "khanda_jhampa",   "label": "Khanda Jhampa",    "searchTerms": "khanda_jhampa khanda jhampa" },
+    { "id": "misra_ekam",      "label": "Miśra Ekam",       "searchTerms": "misra_ekam misra ekam" },
+    { "id": "tisra_ekam",      "label": "Tiśra Ekam",       "searchTerms": "tisra_ekam thisra_ekam tisra ekam" },
+    { "id": "tisra_jhampa",    "label": "Tiśra Jhampa",     "searchTerms": "tisra_jhampa tisra jhampa" },
+    { "id": "misra_jathi_ata", "label": "Miśra Jāti Āṭa",  "searchTerms": "misra_jathi_ata misra jathi ata" },
+    { "id": "other",           "label": "Other",            "searchTerms": "other" }
+  ]
+}
