@@ -1300,8 +1300,8 @@ window.drawRagaWheel = function() {
     const lp = polarRad(cx, cy, labelR, angleRad);
     const normAngle = ((angleDeg % 360) + 360) % 360;
     let melaRotDeg, anchor;
-    if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = 0;             anchor = 'middle'; }
-    else if (Math.abs(normAngle - 180) < 1e-6) { melaRotDeg = 0;             anchor = 'middle'; }
+    if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = -90;           anchor = 'middle'; }
+    else if (Math.abs(normAngle - 180) < 1e-6) { melaRotDeg = 90;            anchor = 'middle'; }
     else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
