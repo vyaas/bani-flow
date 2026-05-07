@@ -757,6 +757,13 @@
         "composition_ids": [],
         "musician_ids": []
       }
+    },
+    {
+      "url": "https://youtu.be/dqsgKUXpblU",
+      "label": "Marubalka · Sriranjini · adi",
+      "composition_id": "marubalka",
+      "raga_id": "sriranjini",
+      "tala": "adi"
     }
   ]
 }

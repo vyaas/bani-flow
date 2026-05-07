@@ -1,0 +1,28 @@
+{
+  "id": "vignesh_ishwar",
+  "label": "Vignesh Ishwar",
+  "sources": [
+    {
+      "url": "https://lakshmianand.com/music/musicians/vignesh-ishwar/",
+      "label": "lakshmianand.com",
+      "type": "other"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/yHPv6PxXaE0",
+      "label": "Marubalka · Sriranjini · adi",
+      "composition_id": "marubalka",
+      "raga_id": "sriranjini",
+      "tala": "adi"
+    }
+  ]
+}

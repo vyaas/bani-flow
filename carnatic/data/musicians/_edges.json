@@ -1054,5 +1054,11 @@
     "target": "r_vedavalli",
     "confidence": 0.9,
     "source_url": "https://sangeetnatak.gov.in/public/uploads/awardees/docs/1740985597_MRS%20Iyengar.pdf"
+  },
+  {
+    "source": "tm_krishna",
+    "target": "vignesh_ishwar",
+    "confidence": 1.0,
+    "source_url": "https://lakshmianand.com/music/musicians/vignesh-ishwar/"
   }
 ]
