@@ -184,7 +184,7 @@ def render_html(
         f"const tanpuraData = {tanpura_json};\n"
         f"\n"
         f"// ── Tala inventory ──────────────────────────────────────────────────────────────\n"
-        f"const talaData = {tala_json};\n"
+        f"window.talaData = {tala_json};\n"
         f"\n"
         f"// ── Lecdem indexes (ADR-078) ─────────────────────────────────────────────────\n"
         f"const lecdemsBy               = {lecdems_by_json};\n"
