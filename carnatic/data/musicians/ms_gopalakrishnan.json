@@ -16,5 +16,26 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=_xGbDUytf6o",
+      "label": "Alapana",
+      "raga_id": "bhairavi",
+      "performers": [
+        {
+          "musician_id": "ms_gopalakrishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=JDuMY0STBfw",
+      "label": "Alapana",
+      "raga_id": "kambhoji"
+    }
+  ]
 }

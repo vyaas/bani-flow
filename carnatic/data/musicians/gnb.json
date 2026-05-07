@@ -16,5 +16,86 @@
     "carnatic"
   ],
   "bani": "gnb",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=Dwuxwf91Cvo",
+      "label": "Alapana",
+      "raga_id": "sahana",
+      "performers": [
+        {
+          "musician_id": "gnb",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=opz5hX901dI",
+      "label": "Alapana",
+      "raga_id": "yadukulakamboji",
+      "performers": [
+        {
+          "musician_id": "gnb",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=I9HT5wSqvys",
+      "label": "Alapana",
+      "raga_id": "kharaharapriya",
+      "performers": [
+        {
+          "musician_id": "gnb",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=3dw3wm36Mlk",
+      "label": "Alapana",
+      "raga_id": "shankarabharanam",
+      "performers": [
+        {
+          "musician_id": "gnb",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=VPxgEvudkPk",
+      "label": "Alapana",
+      "raga_id": "atana",
+      "performers": [
+        {
+          "musician_id": "gnb",
+          "role": "vocal"
+        },
+        {
+          "role": "violin",
+          "musician_id": null,
+          "unmatched_name": "Chalakudi Narayanaswamy"
+        }
+      ]
+    }
+  ]
 }

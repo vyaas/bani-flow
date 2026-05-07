@@ -562,6 +562,38 @@
       "label": "Raghupate Rama · Sahana · Tyagaraja — Ramnad Krishnan",
       "composition_id": "raghupate_rama",
       "raga_id": "sahana"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=g7RoyNRTKSQ",
+      "label": "Alapana",
+      "raga_id": "atana",
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "role": "violin",
+          "musician_id": null,
+          "unmatched_name": "V. Sethuramaiah"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=m3exFPOUVrw",
+      "label": "Alapana",
+      "raga_id": "kaanada",
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "role": "violin",
+          "musician_id": null,
+          "unmatched_name": "V. Sethuramaiah"
+        }
+      ]
     }
   ]
 }

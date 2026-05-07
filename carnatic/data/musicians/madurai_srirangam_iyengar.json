@@ -1,0 +1,36 @@
+{
+  "id": "madurai_srirangam_iyengar",
+  "label": "Madurai Srirangam Iyengar",
+  "sources": [
+    {
+      "url": "https://sangeetnatak.gov.in/public/uploads/awardees/docs/1740985597_MRS%20Iyengar.pdf",
+      "label": "Sangeet Natak Akademi",
+      "type": "pdf"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "bridge",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=rVQVKw-1E3g",
+      "label": "Alapana",
+      "raga_id": "nayaki",
+      "performers": [
+        {
+          "musician_id": "madurai_srirangam_iyengar",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        }
+      ]
+    }
+  ]
+}

@@ -1048,5 +1048,11 @@
     "target": "amritha_murali",
     "confidence": 1.0,
     "source_url": "https://carnatictimes.wordpress.com/portfolio/where-passion-and-talent-run-deep-amritha-murali/"
+  },
+  {
+    "source": "madurai_srirangam_iyengar",
+    "target": "r_vedavalli",
+    "confidence": 0.9,
+    "source_url": "https://sangeetnatak.gov.in/public/uploads/awardees/docs/1740985597_MRS%20Iyengar.pdf"
   }
 ]
