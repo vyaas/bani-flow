@@ -467,7 +467,12 @@ function attachSolidifyBehavior(wrap, formWin) {
       wrap.style.display = '';
       return;
     }
-    // Value selected — hide input, show chip
+    // Value selected — remove any stale chip, then show new chip
+    const existingChip = wrap._solidChip;
+    if (existingChip && existingChip.parentNode) {
+      existingChip.parentNode.removeChild(existingChip);
+    }
+    wrap._solidChip = null;
     const lbl = wrap.getLabel ? wrap.getLabel() : val;
     const chip = document.createElement('span');
     chip.className = 'ef-solidified-chip';
@@ -5402,4 +5407,340 @@ function openEditMusicianForm(nodeId) {
     return;
   }
   buildAddMusicianForm({ prefill: node });
+}
+
+// ── Add YouTube Recording for a specific Composition ─────────────────────────
+// Called from the + button next to the composition chip at the top of Bani Flow.
+// Composition and raga are pre-filled and locked. User enters musician + URL(s).
+
+function openAddYouTubeFormForComposition({ compositionId, ragaId, compositionTitle, ragaLabel } = {}) {
+  const win  = createEntryWindow('Add Recording — ' + (compositionTitle || compositionId || ''));
+  const body = win.querySelector('.ew-body');
+
+  // ── Locked identity: composition + raga ───────────────────────────────────
+  const idRow = document.createElement('div');
+  idRow.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
+  if (compositionTitle) {
+    const compChip = document.createElement('span');
+    compChip.className = 'comp-chip';
+    compChip.style.cursor = 'default';
+    compChip.textContent = compositionTitle;
+    idRow.appendChild(compChip);
+  }
+  if (ragaLabel) {
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.style.cursor = 'default';
+    ragaChip.textContent = ragaLabel;
+    idRow.appendChild(ragaChip);
+  }
+  body.appendChild(idRow);
+
+  // ── YouTube entries (each block has its own musician field) ──────────────
+  body.appendChild(efSection('YouTube Entries'));
+  const ytContainer = document.createElement('div');
+  ytContainer.id = 'efy_youtube';
+  body.appendChild(ytContainer);
+
+  function addBlockAndLock() {
+    addYoutubeBlock(ytContainer, win);
+    const block = ytContainer.lastElementChild;
+    // Prepend per-block musician field (after the × remove button)
+    const musOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+    const leadMusSel = efCombobox(null, musOpts, null, win);
+    const musRow = efRow('Musician', true, 'the lead performer', leadMusSel);
+    block.insertBefore(musRow, block.firstElementChild.nextElementSibling);
+    block._leadMusicianSel = leadMusSel;
+    // Set composition first — wireCompRagaAutofill will auto-fill the raga
+    if (compositionId && block._compSel) {
+      block._compSel.setValue(compositionId, compositionTitle || compositionId);
+    }
+    // Set raga only if not already filled by autofill
+    if (ragaId && block._ragaSel && !block._ragaSel.getValue()) {
+      block._ragaSel.setValue(ragaId, ragaLabel || ragaId);
+    }
+  }
+  addBlockAndLock();
+
+  const addAnotherBtn = efAddBtn('+ Add another video');
+  addAnotherBtn.addEventListener('click', addBlockAndLock);
+  body.appendChild(addAnotherBtn);
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  const footer = win.querySelector('.ew-footer');
+
+  const bundleBtn = document.createElement('button');
+  bundleBtn.className  = 'ef-download-btn';
+  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.disabled   = true;
+
+  const dlBtn = document.createElement('button');
+  dlBtn.className  = 'ef-preview-btn';
+  dlBtn.textContent = '⬇ Standalone JSON';
+  dlBtn.disabled   = true;
+
+  const previewBtn = document.createElement('button');
+  previewBtn.className  = 'ef-preview-btn';
+  previewBtn.textContent = 'Preview JSON';
+
+  const previewPre = document.createElement('pre');
+  previewPre.className = 'ef-preview-pre';
+  body.appendChild(previewPre);
+
+  footer.appendChild(bundleBtn);
+  footer.appendChild(dlBtn);
+  footer.appendChild(previewBtn);
+
+  // ── JSON builder — groups entries by musician ─────────────────────────────
+  function collectYoutube() {
+    const byMusician = new Map(); // musicianId → entries[]
+    win.querySelectorAll('#efy_youtube .ef-youtube-block').forEach(block => {
+      const musicianId = block._leadMusicianSel ? block._leadMusicianSel.getValue() : '';
+      const hostNode_ = (graphData.nodes || []).find(n => n.id === musicianId);
+      const hostInstrument = hostNode_ ? hostNode_.instrument : 'vocal';
+      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const url      = inputs[0] ? inputs[0].value.trim() : '';
+      const year     = inputs[1] ? inputs[1].value        : '';
+      const version  = inputs[2] ? inputs[2].value.trim() : '';
+      let   lbl      = inputs[3] ? inputs[3].value.trim() : '';
+      const cId      = block._compSel ? block._compSel.getValue() : (compositionId || '');
+      const rId      = block._ragaSel ? block._ragaSel.getValue() : (ragaId || '');
+      const tala     = block._talaSel ? block._talaSel.getValue() : '';
+      if (!url) return;
+      if (!lbl) {
+        const parts = [
+          block._compSel ? block._compSel.getLabel() : (compositionTitle || ''),
+          block._ragaSel ? block._ragaSel.getLabel() : (ragaLabel || ''),
+          tala,
+        ].filter(Boolean);
+        lbl = parts.join(' · ');
+      }
+      const entry = { url, label: lbl };
+      if (cId)     entry.composition_id = cId;
+      if (rId)     entry.raga_id        = rId;
+      if (year)    entry.year           = parseInt(year, 10);
+      if (version) entry.version        = version;
+      if (tala)    entry.tala           = tala;
+      if (block._herMode && block._herKindSel) entry.kind = block._herKindSel.value || 'raga_alap';
+      const performers = (typeof collectYoutubePerformers === 'function')
+        ? collectYoutubePerformers(block, musicianId, hostInstrument)
+        : null;
+      if (performers) entry.performers = performers;
+      if (!byMusician.has(musicianId)) byMusician.set(musicianId, []);
+      byMusician.get(musicianId).push(entry);
+    });
+    return byMusician;
+  }
+
+  function bundleItems() {
+    const items = [];
+    collectYoutube().forEach((entries, musicianId) => {
+      if (musicianId && entries.length) items.push({ type: 'youtube_append', musician_id: musicianId, youtube: entries });
+    });
+    return items;
+  }
+
+  function updateButtons() {
+    const hasReady = Array.from(win.querySelectorAll('#efy_youtube .ef-youtube-block')).some(b => {
+      const musId = b._leadMusicianSel ? b._leadMusicianSel.getValue() : '';
+      const urlInps = b.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      return musId && urlInps[0] && urlInps[0].value.trim();
+    });
+    bundleBtn.disabled = !hasReady;
+    dlBtn.disabled     = !hasReady;
+  }
+  win.addEventListener('input', updateButtons);
+  win.addEventListener('change', updateButtons);
+
+  previewBtn.addEventListener('click', () => {
+    const items = bundleItems();
+    previewPre.textContent = JSON.stringify(items.length === 1 ? items[0] : items, null, 2);
+  });
+
+  dlBtn.addEventListener('click', () => {
+    const items = bundleItems();
+    if (!items.length) return;
+    const data = items.length === 1 ? items[0] : items;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'youtube_' + (compositionId || 'recording') + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  bundleBtn.addEventListener('click', () => {
+    const items = bundleItems();
+    if (!items.length) return;
+    if (typeof addToBundle === 'function') {
+      items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
+      bundleBtn.textContent = '✓ Added';
+      bundleBtn.disabled = true;
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Bundle'; }, 2000);
+    }
+  });
+
+  return win;
+}
+
+// ── Add YouTube Recording for a specific Raga ─────────────────────────────────
+// Called from the + button next to the raga chip at the top of Bani Flow.
+// Raga is pre-filled and locked. User enters musician, URL(s), and optionally composition.
+
+function openAddYouTubeFormForRaga({ ragaId, ragaLabel } = {}) {
+  const win  = createEntryWindow('Add Recording — ' + (ragaLabel || ragaId || ''));
+  const body = win.querySelector('.ew-body');
+
+  // ── Locked identity: raga ─────────────────────────────────────────────────
+  const idRow = document.createElement('div');
+  idRow.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
+  if (ragaLabel || ragaId) {
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.style.cursor = 'default';
+    ragaChip.textContent = ragaLabel || ragaId;
+    idRow.appendChild(ragaChip);
+  }
+  body.appendChild(idRow);
+
+  // ── YouTube entries (each block has its own musician field) ──────────────
+  body.appendChild(efSection('YouTube Entries'));
+  const ytContainer = document.createElement('div');
+  ytContainer.id = 'efy_youtube';
+  body.appendChild(ytContainer);
+
+  function addBlockAndLock() {
+    addYoutubeBlock(ytContainer, win);
+    const block = ytContainer.lastElementChild;
+    // Prepend per-block musician field (after the × remove button)
+    const musOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+    const leadMusSel = efCombobox(null, musOpts, null, win);
+    const musRow = efRow('Musician', true, 'the lead performer', leadMusSel);
+    block.insertBefore(musRow, block.firstElementChild.nextElementSibling);
+    block._leadMusicianSel = leadMusSel;
+    if (ragaId && block._ragaSel) {
+      block._ragaSel.setValue(ragaId, ragaLabel || ragaId);
+    }
+  }
+  addBlockAndLock();
+
+  const addAnotherBtn = efAddBtn('+ Add another video');
+  addAnotherBtn.addEventListener('click', addBlockAndLock);
+  body.appendChild(addAnotherBtn);
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  const footer = win.querySelector('.ew-footer');
+
+  const bundleBtn = document.createElement('button');
+  bundleBtn.className  = 'ef-download-btn';
+  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.disabled   = true;
+
+  const dlBtn = document.createElement('button');
+  dlBtn.className  = 'ef-preview-btn';
+  dlBtn.textContent = '⬇ Standalone JSON';
+  dlBtn.disabled   = true;
+
+  const previewBtn = document.createElement('button');
+  previewBtn.className  = 'ef-preview-btn';
+  previewBtn.textContent = 'Preview JSON';
+
+  const previewPre = document.createElement('pre');
+  previewPre.className = 'ef-preview-pre';
+  body.appendChild(previewPre);
+
+  footer.appendChild(bundleBtn);
+  footer.appendChild(dlBtn);
+  footer.appendChild(previewBtn);
+
+  // ── JSON builder — groups entries by musician ─────────────────────────────
+  function collectYoutube() {
+    const byMusician = new Map(); // musicianId → entries[]
+    win.querySelectorAll('#efy_youtube .ef-youtube-block').forEach(block => {
+      const musicianId = block._leadMusicianSel ? block._leadMusicianSel.getValue() : '';
+      const hostNode_ = (graphData.nodes || []).find(n => n.id === musicianId);
+      const hostInstrument = hostNode_ ? hostNode_.instrument : 'vocal';
+      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      const url      = inputs[0] ? inputs[0].value.trim() : '';
+      const year     = inputs[1] ? inputs[1].value        : '';
+      const version  = inputs[2] ? inputs[2].value.trim() : '';
+      let   lbl      = inputs[3] ? inputs[3].value.trim() : '';
+      const cId      = block._compSel ? block._compSel.getValue() : '';
+      const rId      = block._ragaSel ? block._ragaSel.getValue() : (ragaId || '');
+      const tala     = block._talaSel ? block._talaSel.getValue() : '';
+      if (!url) return;
+      if (!lbl) {
+        const parts = [
+          block._compSel ? block._compSel.getLabel() : '',
+          block._ragaSel ? block._ragaSel.getLabel() : (ragaLabel || ''),
+          tala,
+        ].filter(Boolean);
+        lbl = parts.join(' · ');
+      }
+      const entry = { url, label: lbl };
+      if (cId)     entry.composition_id = cId;
+      if (rId)     entry.raga_id        = rId;
+      if (year)    entry.year           = parseInt(year, 10);
+      if (version) entry.version        = version;
+      if (tala)    entry.tala           = tala;
+      if (block._herMode && block._herKindSel) entry.kind = block._herKindSel.value || 'raga_alap';
+      const performers = (typeof collectYoutubePerformers === 'function')
+        ? collectYoutubePerformers(block, musicianId, hostInstrument)
+        : null;
+      if (performers) entry.performers = performers;
+      if (!byMusician.has(musicianId)) byMusician.set(musicianId, []);
+      byMusician.get(musicianId).push(entry);
+    });
+    return byMusician;
+  }
+
+  function bundleItems() {
+    const items = [];
+    collectYoutube().forEach((entries, musicianId) => {
+      if (musicianId && entries.length) items.push({ type: 'youtube_append', musician_id: musicianId, youtube: entries });
+    });
+    return items;
+  }
+
+  function updateButtons() {
+    const hasReady = Array.from(win.querySelectorAll('#efy_youtube .ef-youtube-block')).some(b => {
+      const musId = b._leadMusicianSel ? b._leadMusicianSel.getValue() : '';
+      const urlInps = b.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
+      return musId && urlInps[0] && urlInps[0].value.trim();
+    });
+    bundleBtn.disabled = !hasReady;
+    dlBtn.disabled     = !hasReady;
+  }
+  win.addEventListener('input', updateButtons);
+  win.addEventListener('change', updateButtons);
+
+  previewBtn.addEventListener('click', () => {
+    const items = bundleItems();
+    previewPre.textContent = JSON.stringify(items.length === 1 ? items[0] : items, null, 2);
+  });
+
+  dlBtn.addEventListener('click', () => {
+    const items = bundleItems();
+    if (!items.length) return;
+    const data = items.length === 1 ? items[0] : items;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'youtube_' + (ragaId || 'recording') + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  bundleBtn.addEventListener('click', () => {
+    const items = bundleItems();
+    if (!items.length) return;
+    if (typeof addToBundle === 'function') {
+      items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
+      bundleBtn.textContent = '✓ Added';
+      bundleBtn.disabled = true;
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Bundle'; }, 2000);
+    }
+  });
+
+  return win;
 }

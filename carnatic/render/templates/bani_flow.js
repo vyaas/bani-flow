@@ -103,6 +103,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   subjectSub.innerHTML = '';
   subjectLink.style.display = 'none';
   subjectLink.href = '#';
+  const subjectAddBtn = document.getElementById('bani-subject-add-btn');
+  if (subjectAddBtn) { subjectAddBtn.style.display = 'none'; subjectAddBtn.onclick = null; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
@@ -135,6 +137,18 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     if (compSrc) {
       subjectLink.href = compSrc.url;
       subjectLink.style.display = 'inline';
+    }
+    if (subjectAddBtn && typeof openAddYouTubeFormForComposition === 'function') {
+      subjectAddBtn.style.display = '';
+      subjectAddBtn.title = 'Add a recording for ' + (comp ? comp.title : id);
+      subjectAddBtn.onclick = function() {
+        openAddYouTubeFormForComposition({
+          compositionId: id,
+          ragaId: raga ? raga.id : null,
+          compositionTitle: comp ? comp.title : id,
+          ragaLabel: raga ? raga.name : null,
+        });
+      };
     }
     // Notes section (ADR-097 §7)
     if (_notesRow && comp && Array.isArray(comp.notes) && comp.notes.length > 0) {
@@ -335,6 +349,13 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     subjectName.className = 'raga-chip';
     subjectIcon.style.display = 'none';  // chip ::before provides the ◈ icon
     subjectName.textContent = raga ? raga.name : id;
+    if (subjectAddBtn && typeof openAddYouTubeFormForRaga === 'function') {
+      subjectAddBtn.style.display = '';
+      subjectAddBtn.title = 'Add a recording for ' + (raga ? raga.name : id);
+      subjectAddBtn.onclick = function() {
+        openAddYouTubeFormForRaga({ ragaId: id, ragaLabel: raga ? raga.name : id });
+      };
+    }
     if (raga && raga.notes) {
       subjectName.title = raga.notes;          // hover tooltip
     } else {
@@ -801,7 +822,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   // ── 5. Render trail — tree for raga/comp, flat list for perf/yt ──────────
   if (type === 'raga') {
-    buildTreeRaga(rows, trailList, multiVersionKeys);
+    buildTreeRaga(rows, trailList, multiVersionKeys, id);
   } else if (type === 'comp') {
     buildTreeComp(rows, trailList, multiVersionKeys);
   } else {
@@ -1139,7 +1160,7 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
 
 // buildTreeRaga: raga-view trail — group rows by composition, one collapsible
 // .tree-group per composition; leaves show artist + version badge + ▶ + ↗.
-function buildTreeRaga(rows, trailList, multiVersionKeys) {
+function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
   // Group by composition_id (null → 'no-comp' sentinel)
   const groups = new Map();
   rows.forEach(function(row) {
@@ -1179,7 +1200,7 @@ function buildTreeRaga(rows, trailList, multiVersionKeys) {
     header.className = 'tree-group-header';
 
     if (group.comp) {
-      // Comp title + composer chip stacked vertically; each navigates independently
+      // Inline row: composition chip + add button side by side (no wrapping collision)
       const textDiv = document.createElement('div');
       textDiv.className = 'tree-header-text';
       const compChip = document.createElement('span');
@@ -1196,12 +1217,8 @@ function buildTreeRaga(rows, trailList, multiVersionKeys) {
         if (cc) textDiv.appendChild(cc);
       }
       header.appendChild(textDiv);
-    } else {
-      const label = document.createElement('span');
-      label.className = 'trail-label';
-      label.textContent = 'Other recordings';
-      header.appendChild(label);
     }
+    // no-comp: section header already says "Other recordings (N)" — no label needed
 
     // For multi-child groups the whole header bar is the toggle target.
     // Chip clicks (comp chip, composer chip) already stopPropagation independently.
@@ -1216,7 +1233,10 @@ function buildTreeRaga(rows, trailList, multiVersionKeys) {
       });
     }
 
-    li.appendChild(header);
+    // Only append header for comp groups or multi-child no-comp groups (chevron toggle)
+    if (group.comp || !isSingle) {
+      li.appendChild(header);
+    }
 
     // ── Children ──────────────────────────────────────────────────────────────
     const childrenUl = document.createElement('ul');
