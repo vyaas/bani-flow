@@ -32,6 +32,67 @@
       "label": "Emaatalaadina · Yadukula Kambhoji · Adi",
       "composition_id": "emaatalaadina",
       "raga_id": "yadukulakamboji"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=J6q5JPCMItk",
+      "label": "Alapana",
+      "raga_id": "kharaharapriya",
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_kesavulu",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=N6YOYCvCTWI",
+      "label": "Alapana",
+      "raga_id": "kalyani",
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "role": "violin",
+          "musician_id": null,
+          "unmatched_name": "Annavarapu Ramaswamy"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=nnrA8jM6XDY",
+      "label": "Alapana",
+      "raga_id": "varali",
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_abhiramasundari",
+          "role": "vocal"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Vo7BzJGOG1c",
+      "label": "Alapana",
+      "raga_id": "keeravani",
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_viswanathan",
+          "role": "flute"
+        }
+      ]
     }
   ]
 }

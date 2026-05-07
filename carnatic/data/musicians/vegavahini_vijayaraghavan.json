@@ -16,5 +16,21 @@
     "carnatic"
   ],
   "bani": "dhanammal",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=S9qHnV4jSMY",
+      "label": "Alapana",
+      "raga_id": "thodi",
+      "performers": [
+        {
+          "musician_id": "vegavahini_vijayaraghavan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_kesavulu",
+          "role": "violin"
+        }
+      ]
+    }
+  ]
 }

@@ -16,5 +16,22 @@
     "carnatic"
   ],
   "bani": "dhanammal",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=F39gLxmxu40",
+      "label": "Alapana",
+      "raga_id": "begada",
+      "performers": [
+        {
+          "musician_id": "t_muktha",
+          "role": "vocal"
+        },
+        {
+          "role": "veena",
+          "musician_id": null,
+          "unmatched_name": "Savitri Rajan"
+        }
+      ]
+    }
+  ]
 }

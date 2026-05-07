@@ -16,5 +16,30 @@
     "carnatic"
   ],
   "bani": "dhanammal",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=Qv1uN0r9wog",
+      "label": "Alapana",
+      "raga_id": "sriranjini",
+      "performers": [
+        {
+          "musician_id": "t_balasaraswati",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "t_viswanathan",
+          "role": "flute"
+        },
+        {
+          "musician_id": "v_thyagarajan",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=clxg3f1MqbM",
+      "label": "Alapana",
+      "raga_id": "sindhu_bhairavi"
+    }
+  ]
 }

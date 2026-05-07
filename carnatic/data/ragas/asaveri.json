@@ -1,0 +1,15 @@
+{
+  "id": "asaveri",
+  "name": "Asaveri",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "thodi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Asaveri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

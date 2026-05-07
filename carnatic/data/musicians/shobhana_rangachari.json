@@ -16,5 +16,22 @@
     "carnatic"
   ],
   "bani": "tiger_varadachariar",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://www.youtube.com/watch?v=mwIO7Amjdnw",
+      "label": "Alapana",
+      "raga_id": "asaveri",
+      "performers": [
+        {
+          "musician_id": "shobhana_rangachari",
+          "role": "vocal"
+        },
+        {
+          "role": "violin",
+          "musician_id": null,
+          "unmatched_name": "VV Ravi"
+        }
+      ]
+    }
+  ]
 }

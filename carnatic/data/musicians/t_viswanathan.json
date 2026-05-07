@@ -22,6 +22,21 @@
       "label": "Kaligiyunte Gada · Keeravani · Tyagaraja — Ramnad Krishnan, T. Viswanathan",
       "composition_id": "kaligiyunte",
       "raga_id": "keeravani"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=XMCRe0EvG0k",
+      "label": "Alapana",
+      "raga_id": "kambhoji",
+      "performers": [
+        {
+          "musician_id": "t_viswanathan",
+          "role": "flute"
+        },
+        {
+          "musician_id": "v_thyagarajan",
+          "role": "violin"
+        }
+      ]
     }
   ]
 }
