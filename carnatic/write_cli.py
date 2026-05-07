@@ -342,6 +342,14 @@ def cmd_add_composition(w: CarnaticWriter, args: argparse.Namespace) -> WriteRes
     )
 
 
+def cmd_add_tala(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
+    return w.add_tala(
+        id=args.id,
+        label=args.label,
+        search_terms=args.search_terms,
+    )
+
+
 def cmd_add_her(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
     aliases = [a.strip() for a in args.aliases.split(",")] if args.aliases else None
     return w.add_her_raga(
@@ -552,6 +560,13 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="Source type: wikipedia|pdf|article|archive|other")
     p.add_argument("--notes",        default=None,  help="Free-text notes")
 
+    # ── add-tala ──────────────────────────────────────────────────────────────
+    p = sub.add_parser("add-tala", help="Register a new tala in carnatic/data/talas.json")
+    p.add_argument("--id",           required=True,  help="snake_case unique id (e.g. sankirna_chapu)")
+    p.add_argument("--label",        required=True,  help="Display label (e.g. Sa\u1e43k\u012br\u1e47a C\u0101pu)")
+    p.add_argument("--search-terms", default=None,   dest="search_terms",
+                   help="Space-separated search terms (defaults to id)")
+
     # ── add-her ───────────────────────────────────────────────────────────────
     p = sub.add_parser("add-her", help="Add a Hindustani Equivalent Raga (ADR-112)")
     p.add_argument("--id",           required=True,              help="snake_case unique id (lowercase)")
@@ -604,6 +619,7 @@ HANDLERS = {
     "add-raga":               cmd_add_raga,
     "patch-raga":             cmd_patch_raga,
     "add-composition":        cmd_add_composition,
+    "add-tala":               cmd_add_tala,
     # ADR-112: Hindustani Equivalent Ragas
     "add-her":                cmd_add_her,
     "link-her":               cmd_link_her,

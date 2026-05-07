@@ -344,6 +344,7 @@ function efCombobox(id, options, type, formWin, opts) {
     if      (type === 'raga')        buildRagaMiniForm(miniFormWrap, prefill, onAdd);
     else if (type === 'composer')    buildComposerMiniForm(miniFormWrap, prefill, onAdd);
     else if (type === 'composition') buildCompositionMiniForm(miniFormWrap, prefill, onAdd);
+    else if (type === 'tala')        buildTalaMiniForm(miniFormWrap, prefill, onAdd);
   }
 
   function closeMiniForm() {
@@ -547,8 +548,7 @@ function buildRagaMiniForm(container, prefill, onAdd) {
       id, name, aliases: [], melakarta: null,
       is_melakarta: isMela, cakra: null,
       parent_raga: !isMela && parentSel.value ? parentSel.value : null,
-      sources: srcInp.value.trim()
-        ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
+      sources: srcInp.value.trim() ? [inferSource(srcInp.value.trim())] : [],
       notes: null,
     };
     // Mirror into graphData so composition lookups (wireCompRagaAutofill) resolve labels
@@ -594,14 +594,53 @@ function buildComposerMiniForm(container, prefill, onAdd) {
     const musNodeId = musSel.getValue() || null;
     const item = {
       id, name, musician_node_id: musNodeId, born: null, died: null,
-      sources: srcInp.value.trim()
-        ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
+      sources: srcInp.value.trim() ? [inferSource(srcInp.value.trim())] : [],
     };
     if (eraSel.value) item.era = eraSel.value;
     // Mirror into graphData so composition lookups (wireCompRagaAutofill) resolve labels
     graphData.composers = graphData.composers || [];
     if (!graphData.composers.find(c => c.id === id)) graphData.composers.push(item);
     addToBundle('composers', item);
+    onAdd(item);
+  });
+  cancelBtn.addEventListener('click', () => onAdd(null));
+}
+
+function buildTalaMiniForm(container, prefill, onAdd) {
+  const labelInp = efInput(null, 'text', 'e.g. Saṃkīrṇa Cāpu', prefill || null);
+  container.appendChild(efRow('Label', true, null, labelInp));
+
+  const idHint = document.createElement('div');
+  idHint.style.cssText = 'font-size:0.7rem;color:var(--muted);margin:-4px 0 6px 0;padding-left:4px;';
+  container.appendChild(idHint);
+
+  labelInp.addEventListener('input', () => {
+    const id = toSnakeCase(labelInp.value.trim());
+    idHint.textContent = id ? 'id: ' + id : '';
+  });
+
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:6px;margin-top:6px;';
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button'; addBtn.className = 'ef-download-btn'; addBtn.style.flex = '1';
+  addBtn.textContent = '+ Register tala';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button'; cancelBtn.className = 'ef-preview-btn';
+  cancelBtn.textContent = 'Cancel';
+  btnRow.appendChild(addBtn);
+  btnRow.appendChild(cancelBtn);
+  container.appendChild(btnRow);
+
+  addBtn.addEventListener('click', () => {
+    const label = labelInp.value.trim();
+    if (!label) { labelInp.focus(); return; }
+    const id = toSnakeCase(label);
+    const searchTerms = id + ' ' + label.toLowerCase();
+    const item = { id, label, searchTerms };
+    // Register into window.talaData so subsequent comboboxes in this session see it
+    window.talaData = window.talaData || [];
+    if (!window.talaData.find(t => t.id === id)) window.talaData.push(item);
+    addToBundle('talas', item);
     onAdd(item);
   });
   cancelBtn.addEventListener('click', () => onAdd(null));
@@ -622,6 +661,9 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
   const ragaSel  = efCombobox(null, ragaOpts, 'raga', null);
   container.appendChild(efRow('Raga', true, null, ragaSel));
 
+  const srcInp = efInput(null, 'text', 'https://…', null);
+  container.appendChild(efRow('Source URL', false, 'label and type inferred from host', srcInp));
+
   const btnRow = document.createElement('div');
   btnRow.style.cssText = 'display:flex;gap:6px;margin-top:6px;';
   const addBtn = document.createElement('button');
@@ -640,7 +682,7 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
     const ragaId     = ragaSel.getValue();
     if (!title || !composerId || !ragaId) return;
     const id = toSnakeCase(title);
-    const compItem = { id, title, composer_id: composerId, raga_id: ragaId, sources: [], notes: null };
+    const compItem = { id, title, composer_id: composerId, raga_id: ragaId, sources: srcInp.value.trim() ? [inferSource(srcInp.value.trim())] : [], notes: null };
     // Mirror into graphData so wireCompRagaAutofill can auto-fill raga/composer
     // in the parent segment form immediately after this composition is selected.
     graphData.compositions = graphData.compositions || [];
@@ -1131,7 +1173,7 @@ function addYoutubeBlock(container, formWin) {
   const talaOpts = (window.talaData || []).map(t => ({
     value: t.id, label: t.label, searchTerms: t.searchTerms || '',
   }));
-  const talaSel = efCombobox(null, talaOpts, null, formWin, { freeText: true });
+  const talaSel = efCombobox(null, talaOpts, 'tala', formWin, { freeText: true });
   const talaRow = efRow('Tala', false, null, talaSel);
   block.appendChild(talaRow);
   attachSolidifyBehavior(talaSel, formWin);
@@ -2102,7 +2144,7 @@ function buildCompositionForm() {
   body.appendChild(efRow('Raga', true, null, ragaSel));
 
   const talaOpts = (window.talaData || []).map(t => ({ value: t.id, label: t.label, searchTerms: t.searchTerms || '' }));
-  const talaSel = efCombobox('ef_comp_tala', talaOpts, null, win, { freeText: true });
+  const talaSel = efCombobox('ef_comp_tala', talaOpts, 'tala', win, { freeText: true });
   body.appendChild(efRow('Tala', false, null, talaSel));
 
   const langOpts = ['Telugu', 'Sanskrit', 'Tamil', 'Kannada', 'Malayalam', 'Other'];
@@ -2434,7 +2476,7 @@ function addPerformanceBlock(container, formWin) {
   block.appendChild(efRow('Raga', false, 'auto-filled from composition', ragaSel));
 
   const talaOpts = (window.talaData || []).map(t => ({ value: t.id, label: t.label, searchTerms: t.searchTerms || '' }));
-  const talaSel = efCombobox(null, talaOpts, null, formWin, { freeText: true });
+  const talaSel = efCombobox(null, talaOpts, 'tala', formWin, { freeText: true });
   block.appendChild(efRow('Tala', false, null, talaSel));
 
   const composerOpts = (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id }));

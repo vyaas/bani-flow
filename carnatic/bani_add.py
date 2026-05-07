@@ -31,7 +31,7 @@ schema_version 2 adds an optional "op" field to every item (ADR-097 §2):
   op: "append"   — push one element onto an array on an existing entity
   op: "annotate" — append a note to the entity's notes[] vector
 
-Whitelisted item types: ragas, musicians, compositions, recordings, edges.
+Whitelisted item types: ragas, musicians, compositions, recordings, edges, talas.
 (The "composers" key is deprecated as of ADR-110; bundles containing it are
 accepted via a deprecation shim that routes each item through _process_musicians.)
 Unknown item types are rejected with a named error — silent drops are forbidden.
@@ -511,6 +511,30 @@ def _process_musicians(
     return added, skipped, errors
 
 
+def _process_talas(
+    talas: list[dict],
+    writer: CarnaticWriter,
+) -> tuple[int, int, int]:
+    added = skipped = errors = 0
+    for t in talas:
+        if not t.get("id") or not t.get("label"):
+            print(f"  ERROR  tala missing 'id' or 'label': {t}")
+            errors += 1
+            continue
+        result = writer.add_tala(
+            id=t["id"],
+            label=t["label"],
+            search_terms=t.get("searchTerms"),
+        )
+        _print_result(result)
+        if result.ok:
+            added += 1
+        elif result.skipped:
+            skipped += 1
+        else:
+            errors += 1
+    return added, skipped, errors
+
 
 def _process_compositions(
     compositions: list[dict],
@@ -779,7 +803,7 @@ def main() -> None:
         sys.exit(1)
 
     MAX_VERSION = 2
-    KNOWN_ITEM_TYPES = {"ragas", "composers", "musicians", "compositions", "recordings", "edges"}
+    KNOWN_ITEM_TYPES = {"ragas", "composers", "musicians", "compositions", "recordings", "edges", "talas"}
 
     schema_version = bundle.get("schema_version", 1)
     if schema_version > MAX_VERSION:
@@ -806,6 +830,7 @@ def main() -> None:
     compositions = items.get("compositions", [])
     recordings   = items.get("recordings",   [])
     edges        = items.get("edges",        [])
+    talas        = items.get("talas",        [])
 
     writer          = CarnaticWriter()
     musicians_path  = _default_musicians_path()
@@ -865,6 +890,12 @@ def main() -> None:
     if edges:
         print(f"\nEdges ({len(edges)}):")
         a, s, e = _process_edges(edges, writer, musicians_path)
+        total_added += a; total_skipped += s; total_errors += e
+
+    # ── talas ─────────────────────────────────────────────────────────────────
+    if talas:
+        print(f"\nTalas ({len(talas)}):")
+        a, s, e = _process_talas(talas, writer)
         total_added += a; total_skipped += s; total_errors += e
 
     # ── summary ───────────────────────────────────────────────────────────────

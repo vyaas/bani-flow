@@ -1030,5 +1030,23 @@
     "confidence": 1.0,
     "source_url": "https://en.wikipedia.org/wiki/Karaikudi_Mani",
     "note": "Mother and musical mentor; Karaikudi Mani (born Ganapathy Subramanyam) is the son of DK Pattammal"
+  },
+  {
+    "source": "dk_jayaraman",
+    "target": "rk_shriramkumar",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/R._K._Shriramkumar"
+  },
+  {
+    "source": "vv_subrahmanyam",
+    "target": "rk_shriramkumar",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/R._K._Shriramkumar"
+  },
+  {
+    "source": "rk_shriramkumar",
+    "target": "amritha_murali",
+    "confidence": 1.0,
+    "source_url": "https://carnatictimes.wordpress.com/portfolio/where-passion-and-talent-run-deep-amritha-murali/"
   }
 ]

@@ -1597,6 +1597,42 @@ class CarnaticWriter:
             f"added: {id} — \"{title}\"  raga: {raga_id}  composer: {composer_id}"
         )
 
+    def add_tala(
+        self,
+        *,
+        id: str,
+        label: str,
+        search_terms: str | None = None,
+        talas_path: Path | None = None,
+    ) -> WriteResult:
+        """Append a new tala to carnatic/data/talas.json (idempotent)."""
+        path = talas_path or (Path(__file__).parent / "data" / "talas.json")
+        data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"talas": []}
+        talas: list[dict] = data.get("talas", [])
+
+        if any(t["id"] == id for t in talas):
+            return _skip(f"tala '{id}' already exists in talas.json")
+
+        entry: dict = {
+            "id": id,
+            "label": label,
+            "searchTerms": search_terms if search_terms is not None else id,
+        }
+        talas.append(entry)
+        data["talas"] = talas
+
+        text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+        import tempfile, os as _os
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent,
+            suffix=".tmp", delete=False
+        ) as f:
+            f.write(text)
+            tmp = Path(f.name)
+        _os.replace(tmp, path)
+
+        return _ok("[TALA+]", f"added: {id} — \"{label}\"")
+
     def patch_raga(
         self,
         compositions_path: Path,
