@@ -52,6 +52,13 @@
       "url": "https://youtu.be/kd18HHHjYdg",
       "label": "Thodi Alapana",
       "raga_id": "thodi"
+    },
+    {
+      "url": "https://youtu.be/p_NfRHr3H34",
+      "label": "Marugelara · Sriraga · adi",
+      "composition_id": "marugelara",
+      "raga_id": "sriraga",
+      "tala": "adi"
     }
   ]
 }
