@@ -36,6 +36,20 @@
       "composition_id": "jaya_jaya_swamin",
       "raga_id": "nata",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/X5NCvYvPrxw",
+      "label": "Venkatasaila Vihara · Hamir Kalyani · adi",
+      "composition_id": "venkatasaila_vihara",
+      "raga_id": "hamir_kalyani",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/Wg-JrMSEc78",
+      "label": "Sukhi Evvaro · Kaanada · adi",
+      "composition_id": "sukhi_evvaro",
+      "raga_id": "kaanada",
+      "tala": "adi"
     }
   ]
 }
