@@ -1333,30 +1333,17 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     actsDiv.appendChild(playBtn);
     actsDiv.appendChild(buildYtLink(ref.video_id, 0));
 
-    if (typeof openEntryForm === 'function') {
-      const addSegBtn = document.createElement('button');
-      addSegBtn.className = 'rec-play-btn';
-      addSegBtn.title = 'Add timestamped segment to this lecdem';
-      addSegBtn.textContent = '＋';
-      addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
-      addSegBtn.addEventListener('click', e => {
+    if (typeof buildLecdemEditForm === 'function') {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'rec-play-btn';
+      editBtn.title = 'Edit lecdem';
+      editBtn.textContent = '✎';
+      editBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
+      editBtn.addEventListener('click', e => {
         e.stopPropagation();
-        openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
+        buildLecdemEditForm(ref, nodeId);
       });
-      actsDiv.appendChild(addSegBtn);
-    }
-
-    if (typeof buildLecdemSubjectEditForm === 'function') {
-      const editSubjBtn = document.createElement('button');
-      editSubjBtn.className = 'rec-play-btn';
-      editSubjBtn.title = 'Edit lecdem subjects';
-      editSubjBtn.textContent = '✎';
-      editSubjBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
-      editSubjBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        buildLecdemSubjectEditForm(ref, nodeId);
-      });
-      actsDiv.appendChild(editSubjBtn);
+      actsDiv.appendChild(editBtn);
     }
 
     row.appendChild(actsDiv);
@@ -1412,30 +1399,17 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   countDiv.textContent = segments.length + (segments.length === 1 ? ' segment' : ' segments');
 
   // ＋ and ✎ buttons inline on the title row
-  if (typeof openEntryForm === 'function') {
-    const addSegBtn = document.createElement('button');
-    addSegBtn.className = 'rec-play-btn';
-    addSegBtn.title = 'Add timestamped segment to this lecdem';
-    addSegBtn.textContent = '＋';
-    addSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
-    addSegBtn.addEventListener('click', e => {
+  if (typeof buildLecdemEditForm === 'function') {
+    const editBtn = document.createElement('button');
+    editBtn.className = 'rec-play-btn';
+    editBtn.title = 'Edit lecdem';
+    editBtn.textContent = '✎';
+    editBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
+    editBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openEntryForm('segment', { kind: 'lecdem', id: nodeId, vid: ref.video_id });
+      buildLecdemEditForm(ref, nodeId);
     });
-    titleRow.appendChild(addSegBtn);
-  }
-
-  if (typeof buildLecdemSubjectEditForm === 'function') {
-    const editSubjBtn = document.createElement('button');
-    editSubjBtn.className = 'rec-play-btn';
-    editSubjBtn.title = 'Edit lecdem subjects';
-    editSubjBtn.textContent = '✎';
-    editSubjBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
-    editSubjBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      buildLecdemSubjectEditForm(ref, nodeId);
-    });
-    titleRow.appendChild(editSubjBtn);
+    titleRow.appendChild(editBtn);
   }
 
   headerBody.appendChild(titleRow);
@@ -1568,6 +1542,12 @@ function buildRecordingsList(nodeId, nodeData) {
 
     const lsSectionHdr = document.createElement('div');
     lsSectionHdr.className = 'lecdem-section-header';
+    const lsCollapseBtn = document.createElement('button');
+    lsCollapseBtn.type = 'button';
+    lsCollapseBtn.className = 'section-collapse-btn';
+    lsCollapseBtn.textContent = '▼';
+    lsCollapseBtn.title = 'Collapse / expand';
+    lsSectionHdr.appendChild(lsCollapseBtn);
     const lsHdrText = document.createElement('span');
     lsHdrText.textContent = 'Lecdems (' + (lecdemsBy_.length + lecdemsAbout_.length) + ')';
     lsSectionHdr.appendChild(lsHdrText);
@@ -1584,6 +1564,14 @@ function buildRecordingsList(nodeId, nodeData) {
     });
     lsSectionHdr.appendChild(lsAddChip);
     lsSection.appendChild(lsSectionHdr);
+
+    const lsBody = document.createElement('div');
+    lsBody.className = 'section-body';
+    lsCollapseBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      lsBody.hidden = !lsBody.hidden;
+      lsCollapseBtn.textContent = lsBody.hidden ? '▶' : '▼';
+    });
 
     // Lecdems by this musician
     if (lecdemsBy_.length > 0) {
@@ -1623,7 +1611,7 @@ function buildRecordingsList(nodeId, nodeData) {
       });
 
       bySubsec.appendChild(byList);
-      lsSection.appendChild(bySubsec);
+      lsBody.appendChild(bySubsec);
     }
 
     // Lecdems about this musician
@@ -1663,9 +1651,10 @@ function buildRecordingsList(nodeId, nodeData) {
       });
 
       aboutSubsec.appendChild(aboutList);
-      lsSection.appendChild(aboutSubsec);
+      lsBody.appendChild(aboutSubsec);
     }
 
+    lsSection.appendChild(lsBody);
     recList.appendChild(lsSection);
   }
 
@@ -1709,8 +1698,16 @@ function buildRecordingsList(nodeId, nodeData) {
 
   // ADR-107: CONCERTS section header always rendered (even when empty) so the
   // + chip is always visible and invites first-concert entry.
+  const concertSection = document.createElement('section');
+  concertSection.dataset.section = 'concerts';
   const concertHeader = document.createElement('div');
   concertHeader.className = 'rec-section-header-row';
+  const concertCollapseBtn = document.createElement('button');
+  concertCollapseBtn.type = 'button';
+  concertCollapseBtn.className = 'section-collapse-btn';
+  concertCollapseBtn.textContent = '▼';
+  concertCollapseBtn.title = 'Collapse / expand';
+  concertHeader.appendChild(concertCollapseBtn);
   const concertHeaderLabel = document.createElement('span');
   concertHeaderLabel.textContent = 'Concerts (' + concerts.length + ')';
   concertHeader.appendChild(concertHeaderLabel);
@@ -1726,12 +1723,21 @@ function buildRecordingsList(nodeId, nodeData) {
     }
   });
   concertHeader.appendChild(concertAddChip);
-  recList.appendChild(concertHeader);
+  concertSection.appendChild(concertHeader);
 
+  const concertBody = document.createElement('div');
+  concertBody.className = 'section-body';
+  concertCollapseBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    concertBody.hidden = !concertBody.hidden;
+    concertCollapseBtn.textContent = concertBody.hidden ? '▶' : '▼';
+  });
   concerts.forEach(concert => {
     const bracket = buildConcertBracket(concert, nodeId, artistLabel);
-    recList.appendChild(bracket);
+    concertBody.appendChild(bracket);
   });
+  concertSection.appendChild(concertBody);
+  recList.appendChild(concertSection);
 
   // ── 2. Raga tree — structured perfs + normalized legacy, all grouped by raga ──
   // Deduplicate: legacy entries whose video_id is already in structured_perfs are skipped.
@@ -1750,8 +1756,16 @@ function buildRecordingsList(nodeId, nodeData) {
     }));
   const allPerfs = [...structuredPerfs, ...normalizedLegacy];
   // Header always rendered so all sections are visible for every musician.
+  const ragaSection = document.createElement('section');
+  ragaSection.dataset.section = 'raga-recordings';
   const ragaHeader = document.createElement('div');
   ragaHeader.className = 'rec-section-header-row';
+  const ragaCollapseBtn = document.createElement('button');
+  ragaCollapseBtn.type = 'button';
+  ragaCollapseBtn.className = 'section-collapse-btn';
+  ragaCollapseBtn.textContent = '▼';
+  ragaCollapseBtn.title = 'Collapse / expand';
+  ragaHeader.appendChild(ragaCollapseBtn);
   const ragaHeaderLabel = document.createElement('span');
   ragaHeaderLabel.textContent = 'Recordings by Raga (' + allPerfs.length + ')';
   ragaHeader.appendChild(ragaHeaderLabel);
@@ -1767,10 +1781,20 @@ function buildRecordingsList(nodeId, nodeData) {
     }
   });
   ragaHeader.appendChild(ragaAddChip);
-  recList.appendChild(ragaHeader);
+  ragaSection.appendChild(ragaHeader);
+
+  const ragaBody = document.createElement('div');
+  ragaBody.className = 'section-body';
+  ragaCollapseBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    ragaBody.hidden = !ragaBody.hidden;
+    ragaCollapseBtn.textContent = ragaBody.hidden ? '▶' : '▼';
+  });
   if (allPerfs.length > 0) {
-    recList.appendChild(buildRagaTree(allPerfs, nodeId, artistLabel));
+    ragaBody.appendChild(buildRagaTree(allPerfs, nodeId, artistLabel));
   }
+  ragaSection.appendChild(ragaBody);
+  recList.appendChild(ragaSection);
 
   // ── 4. Compositions by this musician (ADR-057) ───────────────────────────
   // Find any composer whose musician_node_id matches this nodeId.
@@ -1795,6 +1819,12 @@ function buildRecordingsList(nodeId, nodeData) {
 
     const compHeader = document.createElement('div');
     compHeader.className = 'comp-section-header';
+    const compCollapseBtn = document.createElement('button');
+    compCollapseBtn.type = 'button';
+    compCollapseBtn.className = 'section-collapse-btn';
+    compCollapseBtn.textContent = '▼';
+    compCollapseBtn.title = 'Collapse / expand';
+    compHeader.appendChild(compCollapseBtn);
     const compHeaderLabel = document.createElement('span');
     compHeaderLabel.textContent = `Compositions (${composerComps.length})`;
     compHeader.appendChild(compHeaderLabel);
@@ -1819,6 +1849,14 @@ function buildRecordingsList(nodeId, nodeData) {
     });
     compHeader.appendChild(compAddChip);
     compSection.appendChild(compHeader);
+
+    const compBody = document.createElement('div');
+    compBody.className = 'section-body';
+    compCollapseBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      compBody.hidden = !compBody.hidden;
+      compCollapseBtn.textContent = compBody.hidden ? '▶' : '▼';
+    });
 
     if (composerComps.length > 0) {
       const compList = document.createElement('ul');
@@ -1908,9 +1946,10 @@ function buildRecordingsList(nodeId, nodeData) {
         compList.appendChild(groupLi);
       });
 
-      compSection.appendChild(compList);
+      compBody.appendChild(compList);
     }
 
+    compSection.appendChild(compBody);
     recList.appendChild(compSection);
   }
 

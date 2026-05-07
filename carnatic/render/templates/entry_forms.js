@@ -3883,6 +3883,366 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
   foot.appendChild(closeBtn2);
 }
 
+// ── buildLecdemEditForm — unified edit form: subjects + time segments ─────────
+// Pre-fills with existing ref data.  New subjects and new segments are staged
+// as append operations into the bundle.  Does not support deleting existing
+// subjects (writer.py add_lecdem_subject is append-only by design).
+//
+// ref    — LecdemRef ({ video_id, label, year, subjects, segments })
+// nodeId — the musician node id that hosts this lecdem
+function buildLecdemEditForm(ref, nodeId) {
+  if (!ref || !ref.video_id) return;
+  const vid = ref.video_id;
+  const win = createEntryWindow('Edit Lecdem — ' + (ref.label || vid));
+  const body = win.querySelector('.ew-body');
+  const foot = win.querySelector('.ew-footer');
+
+  // ── URL (read-only — video_id is the stable key) ──────────────────────────
+  const urlInp = efInput(null, 'text', '');
+  urlInp.value = 'https://www.youtube.com/watch?v=' + vid;
+  urlInp.readOnly = true;
+  urlInp.style.cssText = (urlInp.style.cssText || '') + ';opacity:0.6;cursor:default;';
+  body.appendChild(efRow('YouTube URL', false, 'read-only', urlInp));
+
+  // ── Subjects ──────────────────────────────────────────────────────────────
+  const subjectSep = document.createElement('hr');
+  subjectSep.className = 'ef-group-sep';
+  body.appendChild(subjectSep);
+
+  const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
+  const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+  const musOpts  = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+  const allSubjectOpts = [
+    ...ragaOpts.map(o => ({ value: `raga_ids::${o.value}`,        label: `${o.label} (Raga)` })),
+    ...compOpts.map(o => ({ value: `composition_ids::${o.value}`,  label: `${o.label} (Comp)` })),
+    ...musOpts.map(o  => ({ value: `musician_ids::${o.value}`,     label: `${o.label} (Musician)` })),
+  ];
+  const chipClassMap = { raga_ids: 'raga-chip', composition_ids: 'comp-chip', musician_ids: 'musician-chip' };
+  const optListMap   = { raga_ids: ragaOpts, composition_ids: compOpts, musician_ids: musOpts };
+
+  const staged = new Map();
+  const originalKeys = new Set();
+
+  const existingSubjects = ref.subjects || { raga_ids: [], composition_ids: [], musician_ids: [] };
+  (existingSubjects.raga_ids        || []).forEach(id => {
+    const key = `raga_ids::${id}`;
+    const opt = ragaOpts.find(o => o.value === id);
+    staged.set(key, { axis: 'raga_ids', id, label: opt ? opt.label : id });
+    originalKeys.add(key);
+  });
+  (existingSubjects.composition_ids || []).forEach(id => {
+    const key = `composition_ids::${id}`;
+    const opt = compOpts.find(o => o.value === id);
+    staged.set(key, { axis: 'composition_ids', id, label: opt ? opt.label : id });
+    originalKeys.add(key);
+  });
+  (existingSubjects.musician_ids    || []).forEach(id => {
+    const key = `musician_ids::${id}`;
+    const opt = musOpts.find(o => o.value === id);
+    staged.set(key, { axis: 'musician_ids', id, label: opt ? opt.label : id });
+    originalKeys.add(key);
+  });
+
+  const subjectsHeading = document.createElement('div');
+  subjectsHeading.style.cssText = 'font-size:0.68rem;color:var(--fg-sub);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;';
+  subjectsHeading.textContent = 'Subjects';
+  body.appendChild(subjectsHeading);
+
+  const chipsWrap = document.createElement('div');
+  chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;min-height:22px;';
+  body.appendChild(chipsWrap);
+
+  function redrawSubjectChips() {
+    chipsWrap.innerHTML = '';
+    if (staged.size === 0) {
+      const empty = document.createElement('span');
+      empty.style.cssText = 'opacity:0.4;font-size:0.75rem;';
+      empty.textContent = '(none)';
+      chipsWrap.appendChild(empty);
+      return;
+    }
+    staged.forEach(({ axis, id, label }, key) => {
+      const chip = document.createElement('span');
+      chip.className = (chipClassMap[axis] || 'raga-chip');
+      const isOriginal = originalKeys.has(key);
+      chip.style.cssText = isOriginal ? 'opacity:0.6;' : 'cursor:pointer;';
+      chip.textContent = label + (isOriginal ? '' : ' ×');
+      chip.title = isOriginal ? label + ' (existing)' : 'Remove ' + label;
+      if (!isOriginal) {
+        chip.addEventListener('click', () => { staged.delete(key); redrawSubjectChips(); });
+      }
+      chipsWrap.appendChild(chip);
+    });
+  }
+  redrawSubjectChips();
+
+  const subjectCombo = efCombobox(null, allSubjectOpts, null, win);
+  body.appendChild(efRow('Add subject', false, null, subjectCombo));
+
+  const addSubjectBtn = efAddBtn('+ Add');
+  addSubjectBtn.style.marginTop = '4px';
+  addSubjectBtn.addEventListener('click', () => {
+    const compositeVal = subjectCombo.getValue ? subjectCombo.getValue() : '';
+    if (!compositeVal || staged.has(compositeVal)) return;
+    const sep  = compositeVal.indexOf('::');
+    if (sep < 0) return;
+    const axis = compositeVal.slice(0, sep);
+    const id   = compositeVal.slice(sep + 2);
+    const opt  = (optListMap[axis] || []).find(o => o.value === id);
+    staged.set(compositeVal, { axis, id, label: opt ? opt.label : id });
+    redrawSubjectChips();
+    if (subjectCombo.setValue) subjectCombo.setValue('');
+  });
+  body.appendChild(addSubjectBtn);
+
+  // ── Time segments ─────────────────────────────────────────────────────────
+  const segmentSep = document.createElement('hr');
+  segmentSep.className = 'ef-group-sep';
+  body.appendChild(segmentSep);
+
+  const addSegBtn = efAddBtn('+ Add time segment');
+  addSegBtn.style.marginBottom = '6px';
+  body.appendChild(addSegBtn);
+
+  const segRows = document.createElement('div');
+  segRows.className = 'ef-lecdem-seg-rows';
+  body.appendChild(segRows);
+
+  function addSegCard(prefill) {
+    const card = document.createElement('div');
+    card.className = 'ef-seg-card';
+    card.style.cssText = 'border:1px solid var(--border-soft);border-radius:4px;padding:8px 10px;margin-bottom:8px;background:var(--bg-input);';
+
+    function makeNum(ph, maxVal) {
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.min = '0'; inp.max = String(maxVal);
+      inp.placeholder = ph; inp.className = 'ef-input';
+      inp.style.cssText = 'width:56px;text-align:center;';
+      return inp;
+    }
+    function segLbl(t) {
+      const s = document.createElement('span');
+      s.textContent = t;
+      s.style.cssText = 'font-size:0.72rem;color:var(--fg-muted);';
+      return s;
+    }
+    const hInp = makeNum('HH', 99);
+    const mInp = makeNum('MM', 59);
+    const sInp = makeNum('SS', 59);
+
+    if (prefill) {
+      const total = prefill.offset_seconds || 0;
+      hInp.value = Math.floor(total / 3600);
+      mInp.value = Math.floor((total % 3600) / 60);
+      sInp.value = total % 60;
+    }
+
+    const remBtn = document.createElement('button');
+    remBtn.type = 'button'; remBtn.title = 'Remove segment';
+    remBtn.style.cssText = 'margin-left:auto;flex-shrink:0;background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1rem;padding:0 4px;line-height:1;';
+    remBtn.textContent = '×';
+    remBtn.addEventListener('mouseover', () => { remBtn.style.color = 'var(--accent-danger)'; });
+    remBtn.addEventListener('mouseout',  () => { remBtn.style.color = 'var(--fg-muted)'; });
+    remBtn.addEventListener('click', () => card.remove());
+
+    const timeRow = document.createElement('div');
+    timeRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;';
+    timeRow.appendChild(hInp); timeRow.appendChild(segLbl('h'));
+    timeRow.appendChild(mInp); timeRow.appendChild(segLbl('m'));
+    timeRow.appendChild(sInp); timeRow.appendChild(segLbl('s'));
+    timeRow.appendChild(remBtn);
+    card.appendChild(timeRow);
+
+    // Subject tags for this segment
+    const segStaged = new Map();
+    const segChipsWrap = document.createElement('div');
+    segChipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;min-height:20px;margin-bottom:6px;';
+    function redrawSegChips() {
+      segChipsWrap.innerHTML = '';
+      if (segStaged.size === 0) {
+        const em = document.createElement('span');
+        em.style.cssText = 'opacity:0.4;font-size:0.72rem;';
+        em.textContent = '(none)';
+        segChipsWrap.appendChild(em);
+        return;
+      }
+      segStaged.forEach(({ axis, id, label }, key) => {
+        const chip = document.createElement('span');
+        chip.className = chipClassMap[axis] || 'raga-chip';
+        chip.style.cssText = 'cursor:pointer;font-size:0.72rem;';
+        chip.textContent = label + ' ×';
+        chip.addEventListener('click', () => { segStaged.delete(key); redrawSegChips(); });
+        segChipsWrap.appendChild(chip);
+      });
+    }
+
+    if (prefill) {
+      if (prefill.raga_id) {
+        const opt = ragaOpts.find(o => o.value === prefill.raga_id);
+        segStaged.set('raga_ids::' + prefill.raga_id, { axis: 'raga_ids', id: prefill.raga_id, label: opt ? opt.label : prefill.raga_id });
+      }
+      if (prefill.composition_id) {
+        const opt = compOpts.find(o => o.value === prefill.composition_id);
+        segStaged.set('composition_ids::' + prefill.composition_id, { axis: 'composition_ids', id: prefill.composition_id, label: opt ? opt.label : prefill.composition_id });
+      }
+    }
+    redrawSegChips();
+    card.appendChild(segChipsWrap);
+
+    const segSubjCombo = efCombobox(null, allSubjectOpts, null, win);
+    segSubjCombo.style.flex = '1';
+    const segTagBtn = document.createElement('button');
+    segTagBtn.type = 'button'; segTagBtn.textContent = '+ Tag';
+    segTagBtn.className = 'ef-add-btn';
+    segTagBtn.addEventListener('click', () => {
+      const compositeVal = segSubjCombo.getValue ? segSubjCombo.getValue() : '';
+      if (!compositeVal || segStaged.has(compositeVal)) return;
+      const sep = compositeVal.indexOf('::');
+      if (sep < 0) return;
+      const axis = compositeVal.slice(0, sep);
+      const id   = compositeVal.slice(sep + 2);
+      const opt  = (optListMap[axis] || []).find(o => o.value === id);
+      segStaged.set(compositeVal, { axis, id, label: opt ? opt.label : id });
+      redrawSegChips();
+      if (segSubjCombo.setValue) segSubjCombo.setValue('');
+    });
+    card.appendChild(efRow('Add tag', false, null, segSubjCombo));
+    card.appendChild(segTagBtn);
+
+    // Tala + Kind
+    const talaInp = document.createElement('input');
+    talaInp.type = 'text'; talaInp.className = 'ef-input';
+    talaInp.placeholder = 'tala (e.g. ādi)';
+    talaInp.style.flex = '1';
+    if (prefill && prefill.tala) talaInp.value = prefill.tala;
+    const kindSel = document.createElement('select');
+    kindSel.className = 'ef-select'; kindSel.style.flex = '1';
+    [
+      ['', '— kind —'], ['kriti', 'Kriti'], ['varnam', 'Varnam'],
+      ['padam', 'Padam'], ['javali', 'Jāvaḷi'], ['tillana', 'Tillāna'],
+      ['alapana', 'Ālāpana'], ['tanam', 'Tānam'], ['niraval', 'Nirval'],
+      ['kalpanaswaram', 'Kalpanāswaram'], ['tani', 'Tani āvartana'],
+      ['other', 'Other'],
+    ].forEach(([v, l]) => {
+      const opt = document.createElement('option');
+      opt.value = v; opt.textContent = l;
+      kindSel.appendChild(opt);
+    });
+    if (prefill && prefill.kind) kindSel.value = prefill.kind;
+    const tkRow = document.createElement('div');
+    tkRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;';
+    tkRow.appendChild(talaInp); tkRow.appendChild(kindSel);
+    card.appendChild(tkRow);
+
+    const notesInp = document.createElement('input');
+    notesInp.type = 'text'; notesInp.className = 'ef-input';
+    notesInp.placeholder = 'notes (optional)';
+    if (prefill && prefill.notes) notesInp.value = prefill.notes;
+    card.appendChild(notesInp);
+
+    card._hInp   = hInp;
+    card._mInp   = mInp;
+    card._sInp   = sInp;
+    card._staged = segStaged;
+    card._tala   = talaInp;
+    card._kind   = kindSel;
+    card._notes  = notesInp;
+
+    segRows.appendChild(card);
+    hInp.focus();
+  }
+
+  // Pre-fill existing segments as display cards
+  (ref.segments || []).forEach(seg => addSegCard(seg));
+
+  addSegBtn.addEventListener('click', () => addSegCard(null));
+
+  // ── Secondary fields ──────────────────────────────────────────────────────
+  const secondarySep = document.createElement('hr');
+  secondarySep.className = 'ef-group-sep';
+  body.appendChild(secondarySep);
+
+  const yearInp = efInput(null, 'number', 'e.g. 1965', null);
+  yearInp.min = 1900; yearInp.max = 2030;
+  if (ref.year) yearInp.value = ref.year;
+  body.appendChild(efRow('Year', false, null, yearInp));
+
+  const lblInp = efInput(null, 'text', 'label', null);
+  if (ref.label) lblInp.value = ref.label;
+  body.appendChild(efRow('Label', false, 'optional', lblInp));
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  function collectNewSegments() {
+    const segs = [];
+    segRows.querySelectorAll('.ef-seg-card').forEach(card => {
+      const h = parseInt(card._hInp.value, 10) || 0;
+      const m = parseInt(card._mInp.value, 10) || 0;
+      const s = parseInt(card._sInp.value, 10) || 0;
+      if (card._hInp.value === '' && card._mInp.value === '' && card._sInp.value === '') return;
+      const offset = h * 3600 + m * 60 + s;
+      const seg = { offset_seconds: offset };
+      card._staged.forEach(({ axis, id }) => {
+        if (axis === 'raga_ids')             seg.raga_id = id;
+        else if (axis === 'composition_ids') seg.composition_id = id;
+        else if (axis === 'musician_ids')    seg.musician_id = id;
+      });
+      const tala = card._tala.value.trim();
+      if (tala) seg.tala = tala;
+      const kind = card._kind.value;
+      if (kind) seg.kind = kind;
+      const notes = card._notes.value.trim();
+      if (notes) seg.notes = notes;
+      segs.push(seg);
+    });
+    return segs;
+  }
+
+  const stageBtn = document.createElement('button');
+  stageBtn.type = 'button';
+  stageBtn.className = 'ef-download-btn';
+  stageBtn.textContent = '↪ Stage changes → bundle';
+  stageBtn.addEventListener('click', () => {
+    let count = 0;
+    // Stage new subjects (skip originals)
+    staged.forEach(({ axis, id }, key) => {
+      if (!originalKeys.has(key)) {
+        addToBundle('musicians', {
+          op:    'append',
+          id:    nodeId,
+          array: `youtube[${vid}].subjects.${axis}`,
+          value: id,
+        });
+        count++;
+      }
+    });
+    // Stage all segments in the form as new appends
+    const segs = collectNewSegments();
+    segs.forEach(seg => {
+      addToBundle('musicians', {
+        op:    'append',
+        id:    nodeId,
+        array: `youtube[${vid}].segments`,
+        value: seg,
+      });
+      count++;
+    });
+    if (count > 0) {
+      stageBtn.textContent = `✓ Staged ${count} item${count > 1 ? 's' : ''}!`;
+      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → bundle'; }, 1800);
+    } else {
+      stageBtn.textContent = '(no new items)';
+      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → bundle'; }, 1200);
+    }
+  });
+  foot.appendChild(stageBtn);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'ef-preview-btn';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => win.remove());
+  foot.appendChild(closeBtn);
+}
+
 // ── ADR-103 §2: locked-chip helpers for pre-targeted co-located triggers ─────
 // Replaces the combobox's editable input with a read-only chip + "change" link.
 // The "change" link restores the input for manual re-selection.
