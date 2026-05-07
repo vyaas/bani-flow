@@ -16,5 +16,11 @@
     "carnatic"
   ],
   "bani": "dhanammal",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/N0_Qbv57pRs",
+      "label": "Alapana",
+      "raga_id": "shankarabharanam"
+    }
+  ]
 }

@@ -28,6 +28,13 @@
       "label": "Heccarikaga Rara · Yadukula Kambhoji · Thyagaraja",
       "composition_id": "hecharikaga",
       "raga_id": "yadukulakamboji"
+    },
+    {
+      "url": "https://youtu.be/ojRpYvknlWY",
+      "label": "Sukhi Evvaro · Kaanada · adi",
+      "composition_id": "sukhi_evvaro",
+      "raga_id": "kaanada",
+      "tala": "adi"
     }
   ]
 }

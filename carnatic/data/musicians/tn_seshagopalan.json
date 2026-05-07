@@ -16,5 +16,13 @@
     "carnatic"
   ],
   "bani": "muthiah",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/8zwfSsGUZD4",
+      "label": "Sukhi Evvaro · Kaanada · adi",
+      "composition_id": "sukhi_evvaro",
+      "raga_id": "kaanada",
+      "tala": "adi"
+    }
+  ]
 }
