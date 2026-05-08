@@ -7,7 +7,7 @@
   "parent_raga": null,
   "is_melakarta": false,
   "thaat": "asavari",
-  "carnatic_equivalents": [],
+  "carnatic_equivalents": ["darbari_kanada"],
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Darbari_Kanada",

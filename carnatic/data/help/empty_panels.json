@@ -248,12 +248,12 @@
         "example_label": null,
         "demo_row": {
           "type": "her_row",
-          "carnatic_raga_id": "hindolam",
-          "carnatic_label": "Hindolam",
-          "her_id": "malkauns",
-          "her_label": "Malkauns"
+          "carnatic_raga_id": "darbari_kanada",
+          "carnatic_label": "Darbari Kanada",
+          "her_id": "darbari",
+          "her_label": "Darbari"
         },
-        "effect": "The cool blue ↔ chip is a Hindustani Equivalent Raga (HER). Hindolam and Malkauns share the same five swaras (S G₂ M₁ D₁ N₂) but inhabit them entirely differently: Hindolam is crisp, composition-driven, built on fast kalpana swaras; Malkauns is deep, raga-alap-first, meditative in vilambit. Click either chip to explore."
+        "effect": "The cool blue ↔ chip is a Hindustani Equivalent Raga (HER). Darbari Kanada and Darbari share the same swaras and the same signature — a heavy oscillation on Ga that is audible to any ear as the common root — yet the two traditions inhabit them entirely differently. The fairest comparison is free-form: Sanjay Subrahmanyan's Ragam Tanam Pallavi in Darbari Kanada and Bhimsen Joshi's Alap in Darbari each set aside the composed scaffold, leaving only the musician's unmediated relationship with the raga. The Carnatic RTP builds architecturally — alapana lays the raga's geography, tanam drives it rhythmically forward, pallavi anchors it in a composed phrase. The Hindustani alap is a single meditation: the raga breathes slowly outward from the lower registers, each swara dwelt in at length. Same swaras. Entirely different sense of musical time."
       }
     ],
     "cross_panel_seeds": {

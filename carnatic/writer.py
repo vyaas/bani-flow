@@ -2094,9 +2094,18 @@ class CarnaticWriter:
         equivalents.append(her_id)
         _write_raga(compositions_path, car_raga, ragas_path)
 
+        # Back-fill the reverse link on the HER raga so source files are bidirectionally
+        # consistent without requiring a render cycle (render-time derive_carnatic_equivalents
+        # remains a safety net for any files created before this fix).
+        car_equivalents: list[str] = her_raga.setdefault("carnatic_equivalents", [])
+        if carnatic_raga_id not in car_equivalents:
+            car_equivalents.append(carnatic_raga_id)
+            _write_raga(compositions_path, her_raga, ragas_path)
+
         return _ok(
             "[HER-LINK+]",
-            f"linked: {carnatic_raga_id}.hindustani_equivalents ← {her_id}"
+            f"linked: {carnatic_raga_id}.hindustani_equivalents ← {her_id}  "
+            f"(back-filled: {her_id}.carnatic_equivalents ← {carnatic_raga_id})"
         )
 
     def add_her_recording(
