@@ -10,7 +10,7 @@
   "parent_raga": null,
   "is_melakarta": false,
   "thaat": "bhairavi",
-  "carnatic_equivalents": [],
+  "carnatic_equivalents": ["hindolam"],
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Malkauns",
