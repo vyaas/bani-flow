@@ -16,5 +16,8 @@
     }
   ],
   "notes": "Corresponds to Hindustani Darbari Kanada. Janya of Natabhairavi (20th melakarta). Deep, serious, late-night raga. Used in Carnatic music for devotional and Shiva-related compositions.",
-  "is_melakarta": false
+  "is_melakarta": false,
+  "hindustani_equivalents": [
+    "darbari"
+  ]
 }

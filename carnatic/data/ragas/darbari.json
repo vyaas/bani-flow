@@ -1,0 +1,18 @@
+{
+  "id": "darbari",
+  "name": "Darbari",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "asavari",
+  "carnatic_equivalents": [],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Darbari_Kanada",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

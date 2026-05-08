@@ -1,0 +1,27 @@
+{
+  "id": "ali_akbar_khan",
+  "label": "Ali Akbar Khan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ali_Akbar_Khan",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1922,
+  "died": 2009,
+  "era": "living_pillars",
+  "instrument": "sarod",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/eGpqTbPUIwc",
+      "label": "Darbari",
+      "raga_id": "darbari",
+      "year": 1967
+    }
+  ]
+}
