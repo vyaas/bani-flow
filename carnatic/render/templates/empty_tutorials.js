@@ -200,6 +200,53 @@
     return _el('span', 'pt-demo-title', text);
   }
 
+  // _renderEffectParts: builds an inline pt-effect span from a structured parts array.
+  // Each part is one of:
+  //   {type:'text',        text:'...'}
+  //   {type:'musician_play', artist_id, artist_label, chip_class, video_id, play_label}
+  //   {type:'raga_chip',   raga_id, raga_label}
+  function _renderEffectParts(parts) {
+    const span = _el('span', 'pt-effect pt-effect--inline');
+    span.appendChild(document.createTextNode('\u00b7 '));
+    (parts || []).forEach(function (part) {
+      if (part.type === 'text') {
+        span.appendChild(document.createTextNode(part.text));
+      } else if (part.type === 'musician_play') {
+        const chip = _el('span', part.chip_class || 'musician-chip', part.artist_label || '');
+        if (part.artist_id) {
+          chip.style.cursor = 'pointer';
+          _applyEraTint(chip, part.artist_id);
+          chip.addEventListener('click', function (evt) {
+            evt.stopPropagation();
+            _onMusician(part.artist_id);
+          });
+        }
+        span.appendChild(chip);
+        if (part.video_id) {
+          const btn = _el('button', 'tree-play-btn rec-play-btn play-btn-concert', '\u25b6');
+          btn.type  = 'button';
+          btn.title = 'Play';
+          btn.addEventListener('click', function (evt) {
+            evt.stopPropagation();
+            if (typeof openPlayer === 'function') {
+              openPlayer(part.video_id, part.play_label || part.artist_label || '');
+            }
+          });
+          span.appendChild(btn);
+        }
+      } else if (part.type === 'raga_chip') {
+        const chip = _el('span', 'raga-chip', part.raga_label || part.raga_id || '');
+        chip.style.cursor = 'pointer';
+        chip.addEventListener('click', function (evt) {
+          evt.stopPropagation();
+          _onRaga(part.raga_id, {});
+        });
+        span.appendChild(chip);
+      }
+    });
+    return span;
+  }
+
   function _renderDemoRow(slot, entry) {
     const demo = entry.demo_row || {};
     const type = demo.type;
@@ -794,8 +841,10 @@
               : null
           ));
         }
-        // Effect statement — view-sensitive or single
-        if (entry.effect_graph && entry.effect_raga) {
+        // Effect statement — effect_parts (inline chips) > view-sensitive > plain
+        if (entry.effect_parts && entry.effect_parts.length) {
+          row.appendChild(_renderEffectParts(entry.effect_parts));
+        } else if (entry.effect_graph && entry.effect_raga) {
           const eff = _el('span', 'pt-effect');
           const graphLine = _el('span', 'pt-effect-line');
           graphLine.appendChild(_el('span', 'pt-nowrap', '(Guru-Shishya)'));

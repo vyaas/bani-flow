@@ -253,7 +253,13 @@
           "her_id": "darbari",
           "her_label": "Darbari"
         },
-        "effect": "The cool blue ↔ chip is a Hindustani Equivalent Raga (HER). Darbari Kanada and Darbari share the same swaras and the same signature — a heavy oscillation on Ga that is audible to any ear as the common root — yet the two traditions inhabit them entirely differently. The fairest comparison is free-form: Sanjay Subrahmanyan's Ragam Tanam Pallavi in Darbari Kanada and Bhimsen Joshi's Alap in Darbari each set aside the composed scaffold, leaving only the musician's unmediated relationship with the raga. The Carnatic RTP builds architecturally — alapana lays the raga's geography, tanam drives it rhythmically forward, pallavi anchors it in a composed phrase. The Hindustani alap is a single meditation: the raga breathes slowly outward from the lower registers, each swara dwelt in at length. Same swaras. Entirely different sense of musical time."
+        "effect_parts": [
+          {"type": "text", "text": "The cool blue ↔ chip marks a Hindustani Equivalent Raga — same swaras, different musical world. The most direct comparison is free-form: "},
+          {"type": "musician_play", "artist_id": "sanjay_subrahmanyan", "artist_label": "Sanjay Subrahmanyan", "chip_class": "raga-chip", "video_id": "Sdx2JhC5yrg", "play_label": "Sanjay Subrahmanyan — Ragam Tanam Pallavi · Darbari Kanada"},
+          {"type": "text", "text": " in Darbari Kanada moves architecturally — alapana, tanam, pallavi — each stage building on the last. "},
+          {"type": "musician_play", "artist_id": "bhimsen_joshi", "artist_label": "Bhimsen Joshi", "chip_class": "her-chip", "video_id": "1aRdlGtxj0g", "play_label": "Bhimsen Joshi — Alap · Darbari"},
+          {"type": "text", "text": " in Darbari is a single inward arc — the raga breathes slowly outward, each swara dwelt in. Same swaras. Entirely different sense of time."}
+        ]
       }
     ],
     "cross_panel_seeds": {

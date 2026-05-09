@@ -1029,6 +1029,27 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                                     errors.append(
                                         f"{c_where}.demo_row.her_id: '{her_id}' not in ragas"
                                     )
+                                for rec_key in ("carnatic_recording", "hindustani_recording"):
+                                    rec = demo.get(rec_key) or {}
+                                    artist_id = rec.get("artist_id")
+                                    if artist_id and artist_id not in known_musician_ids:
+                                        errors.append(
+                                            f"{c_where}.demo_row.{rec_key}.artist_id: "
+                                            f"'{artist_id}' not in musicians"
+                                        )
+
+                    # Validate effect_parts inline chip references
+                    for pi, part in enumerate(entry.get("effect_parts") or []):
+                        p_where = f"{c_where}.effect_parts[{pi}]"
+                        ptype = part.get("type")
+                        if ptype == "musician_play":
+                            aid = part.get("artist_id")
+                            if aid and aid not in known_musician_ids:
+                                errors.append(f"{p_where}.artist_id: '{aid}' not in musicians")
+                        elif ptype == "raga_chip":
+                            rid = part.get("raga_id")
+                            if rid and rid not in known_raga_ids:
+                                errors.append(f"{p_where}.raga_id: '{rid}' not in ragas")
 
                     # Validate cross_panel_seeds
                     seeds = block.get("cross_panel_seeds") or {}
