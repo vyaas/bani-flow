@@ -287,3 +287,69 @@
   });
 
 }());
+
+// ── Mobile Edit Block ─────────────────────────────────────────────────────────
+// Shown when a mobile user taps any add/edit button. Editing requires the
+// desktop bundle workflow (bani-render, bani-add) and is not available on mobile.
+function showMobileEditBlockedMessage() {
+  if (document.getElementById('mobile-edit-block-overlay')) return;
+
+  var overlay = document.createElement('div');
+  overlay.id = 'mobile-edit-block-overlay';
+  overlay.style.cssText = [
+    'position:fixed', 'inset:0', 'z-index:99999',
+    'background:rgba(0,0,0,0.55)',
+    'display:flex', 'align-items:center', 'justify-content:center',
+    'padding:1rem'
+  ].join(';');
+
+  var card = document.createElement('div');
+  card.style.cssText = [
+    'background:var(--bg-panel)',
+    'border:1px solid var(--border-strong)',
+    'border-radius:8px',
+    'padding:1.25rem 1.5rem',
+    'max-width:min(340px,90vw)',
+    'width:100%',
+    'color:var(--fg)',
+    'font-size:0.88rem',
+    'line-height:1.5',
+    'box-sizing:border-box'
+  ].join(';');
+
+  var title = document.createElement('p');
+  title.style.cssText = 'margin:0 0 0.6rem;font-weight:bold;font-size:0.95rem;color:var(--accent)';
+  title.textContent = 'Editing not available on mobile';
+
+  var msg = document.createElement('p');
+  msg.style.cssText = 'margin:0 0 1.1rem;color:var(--fg-muted)';
+  msg.textContent = 'Adding and editing entries requires desktop mode. Open this page on a desktop browser and use the bundle workflow to make changes.';
+
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = 'Got it';
+  btn.style.cssText = [
+    'display:block', 'width:100%',
+    'padding:0.55rem 0',
+    'background:var(--bg-input)',
+    'border:1px solid var(--border-strong)',
+    'border-radius:5px',
+    'color:var(--fg)',
+    'font-size:0.88rem',
+    'cursor:pointer',
+    'box-sizing:border-box'
+  ].join(';');
+
+  card.appendChild(title);
+  card.appendChild(msg);
+  card.appendChild(btn);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+
+  function dismiss() { overlay.remove(); }
+  btn.addEventListener('click', dismiss);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) dismiss(); });
+  document.addEventListener('keydown', function onKey(e) {
+    if (e.key === 'Escape') { dismiss(); document.removeEventListener('keydown', onKey); }
+  });
+}

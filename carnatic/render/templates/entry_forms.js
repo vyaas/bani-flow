@@ -936,6 +936,10 @@ const PATCH_METADATA = {
 // ── Entry window factory ──────────────────────────────────────────────────────
 
 function createEntryWindow(title) {
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    if (typeof showMobileEditBlockedMessage === 'function') showMobileEditBlockedMessage();
+    return null;
+  }
   const win = document.createElement('div');
   win.className = 'entry-window';
 
@@ -1004,6 +1008,7 @@ function openEntryForm(type, target) {
 
 function buildMusicianForm() {
   const win = createEntryWindow('Add Musician');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   const existingIds = (graphData.nodes || []).map(n => n.id);
@@ -1591,6 +1596,7 @@ function showMusicianSuccess(win, id, hasEdges) {
 
 function buildRagaForm() {
   const win = createEntryWindow('Add Raga');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   const existingIds = (graphData.ragas || []).map(r => r.id);
@@ -2009,6 +2015,7 @@ function createInlineAddSection(containerEl, type, selectEl, formWin, onAdd) {
 
 function buildComposerForm() {
   const win  = createEntryWindow('Add Composer');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   const existingIds = (graphData.composers || []).map(c => c.id);
@@ -2122,6 +2129,7 @@ function buildComposerForm() {
 
 function buildCompositionForm() {
   const win = createEntryWindow('Add Composition');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   const existingIds = (graphData.compositions || []).map(c => c.id);
@@ -2250,6 +2258,7 @@ function generateCompositionJson(win) {
 
 function buildRecordingForm() {
   const win = createEntryWindow('Add Concert Recording');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   const existingIds = (graphData.recordings || []).map(r => r.id);
@@ -2630,6 +2639,7 @@ function showGenericSuccess(win, filename, directory) {
 
 function _buildCombinedMusicianYouTubeForm() {
   const win = createEntryWindow('Add / Edit Musician Recordings');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   // ── Mode toggle ───────────────────────────────────────────────────────────
@@ -3026,6 +3036,7 @@ function showBundleSuccess(win, id, mode) {
 
 function buildAddYoutubeForm() {
   const win = createEntryWindow('Add YouTube to Musician');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   body.appendChild(efSection('Select Musician'));
@@ -3203,6 +3214,7 @@ function buildSegmentForm(target) {
     ? 'Add Lecdem Segment'
     : 'Add Recording Segment';
   const win  = createEntryWindow(title);
+  if (!win) return;
   const body = win.querySelector('.ew-body');
   const foot = win.querySelector('.ew-footer');
 
@@ -3484,6 +3496,7 @@ function buildSegmentForm(target) {
 
 function buildEditForm() {
   const win  = createEntryWindow('Edit Entity');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
   const foot = win.querySelector('.ew-footer');
 
@@ -3811,6 +3824,7 @@ function buildEditForm() {
 function buildLecdemSubjectEditForm(ref, nodeId) {
   if (!ref || !ref.video_id) return;
   const win = createEntryWindow('Edit Lecdem Subjects — ' + (ref.label || ref.video_id));
+  if (!win) return;
   const body = win.querySelector('.ew-body');
   const foot = win.querySelector('.ew-footer');
 
@@ -3941,6 +3955,7 @@ function buildLecdemEditForm(ref, nodeId) {
   if (!ref || !ref.video_id) return;
   const vid = ref.video_id;
   const win = createEntryWindow('Edit Lecdem — ' + (ref.label || vid));
+  if (!win) return;
   const body = win.querySelector('.ew-body');
   const foot = win.querySelector('.ew-footer');
 
@@ -4484,6 +4499,7 @@ function openEditForm({ entityType, id } = {}) {
   const LABELS = { musician: 'Musician', raga: 'Raga', comp: 'Composition', composer: 'Composer' };
   const typeLabel = LABELS[entityType] || 'Entity';
   const win = createEntryWindow('Edit ' + typeLabel);
+  if (!win) return null;
   const body = win.querySelector('.ew-body');
   const msg = document.createElement('p');
   msg.style.cssText = 'margin:12px 0; font-size:0.82rem; color:var(--fg-muted); line-height:1.5;';
@@ -4561,6 +4577,7 @@ function openAddRagaFormCarnatic() {
 function buildAddMusicianForm({ prefill = null } = {}) {
   const isEdit = !!prefill;
   const win = createEntryWindow(isEdit ? 'Edit Musician' : 'Add Musician');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   const existingIds = (graphData.nodes || []).map(n => n.id);
@@ -4925,6 +4942,7 @@ function buildFocusedYouTubeForm(musicianId) {
   const label = node ? (node.label || musicianId) : musicianId;
 
   const win  = createEntryWindow('Add YouTube Recordings');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   // ── Musician identity row (read-only) ──────────────────────────────────────
@@ -5081,6 +5099,7 @@ function openAddYouTubeToMusicianForm(musicianId) {
 
 function buildFocusedLecdemForm(musicianId) {
   const win = createEntryWindow('Add Lecdem Recording');
+  if (!win) return;
   const body = win.querySelector('.ew-body');
   const node = (graphData.nodes || []).find(n => n.id === musicianId);
 
@@ -5457,6 +5476,7 @@ function openEditMusicianForm(nodeId) {
 
 function openAddYouTubeFormForComposition({ compositionId, ragaId, compositionTitle, ragaLabel } = {}) {
   const win  = createEntryWindow('Add Recording — ' + (compositionTitle || compositionId || ''));
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   // ── Locked identity: composition + raga ───────────────────────────────────
@@ -5631,6 +5651,7 @@ function openAddYouTubeFormForComposition({ compositionId, ragaId, compositionTi
 
 function openAddYouTubeFormForRaga({ ragaId, ragaLabel } = {}) {
   const win  = createEntryWindow('Add Recording — ' + (ragaLabel || ragaId || ''));
+  if (!win) return;
   const body = win.querySelector('.ew-body');
 
   // ── Locked identity: raga ─────────────────────────────────────────────────
