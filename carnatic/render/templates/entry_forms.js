@@ -4683,6 +4683,11 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       const first = prefill.sources[0];
       srcUrlInp.value = (typeof first === 'string') ? first : (first.url || '');
     }
+    // Pre-fill traditions chips from prefill.traditions
+    const prefillTrad = prefill.traditions || ['carnatic'];
+    carnaticChip.classList.toggle('active', prefillTrad.includes('carnatic'));
+    hindustaniChip.classList.toggle('active', prefillTrad.includes('hindustani'));
+
     // Pre-fill existing edges as read-only display rows
     const existingEdges = (graphData.edges || []).filter(
       e => e.source === prefill.id || e.target === prefill.id
@@ -4772,6 +4777,8 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       if (v.died  !== (prefill.died  || null))            fields.died       = v.died;
       if (v.era   !== (prefill.era   || ''))              fields.era        = v.era;
       if (v.instr !== (prefill.instrument || ''))         fields.instrument = v.instr;
+      const preTrad = (prefill.traditions || ['carnatic']).slice().sort().join(',');
+      if (traditions.slice().sort().join(',') !== preTrad) fields.traditions = traditions;
       const _edges = collectEdges(prefill.id);
       return { op: 'patch', id: prefill.id, fields, _edges };
     }
@@ -4805,6 +4812,13 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       const sel = block.querySelectorAll('select')[0];
       if (sel && sel.value) n++;
     });
+    // Count traditions change
+    const preTrad = (prefill.traditions || ['carnatic']).slice().sort().join(',');
+    const curTrad = [
+      ...(carnaticChip.classList.contains('active')   ? ['carnatic']   : []),
+      ...(hindustaniChip.classList.contains('active') ? ['hindustani'] : []),
+    ].sort().join(',');
+    if (curTrad !== preTrad) n++;
     return n;
   }
 
