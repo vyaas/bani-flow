@@ -344,6 +344,7 @@ def _process_musicians(
                     if result.ok:        added   += 1
                     elif result.skipped: skipped += 1
                     else:                errors  += 1
+                continue
             elif array_sel.startswith("youtube[") and ".performers" in array_sel:
                 # e.g. "youtube[dQw4w9WgXcQ].performers"
                 import re as _re

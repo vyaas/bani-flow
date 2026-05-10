@@ -16,5 +16,21 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/yjbAbMu8mzY",
+      "label": "How to Put Together a Goddess out of Musical Scales",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "reetigowla",
+          "mayamalavagowla"
+        ],
+        "composition_ids": [],
+        "musician_ids": [
+          "muthuswami_dikshitar"
+        ]
+      }
+    }
+  ]
 }

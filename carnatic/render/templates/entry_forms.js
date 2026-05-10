@@ -5440,8 +5440,9 @@ function buildFocusedLecdemForm(musicianId) {
   }
 
   previewBtn.addEventListener('click', () => {
-    previewPre.style.display = '';
-    previewPre.textContent = JSON.stringify(buildItem(), null, 2);
+    const open = previewPre.style.display !== 'none';
+    previewPre.style.display = open ? 'none' : 'block';
+    if (!open) previewPre.textContent = JSON.stringify(buildItem(), null, 2);
   });
 
   dlBtn.addEventListener('click', () => {
@@ -5454,14 +5455,9 @@ function buildFocusedLecdemForm(musicianId) {
   });
 
   bundleBtn.addEventListener('click', () => {
-    const data = buildItem();
-    if (!data.lecdem.url) { alert('YouTube URL is required.'); return; }
-    if (typeof addToBundle === 'function') {
-      addToBundle(data);
-    } else {
-      window._pendingBundle = window._pendingBundle || [];
-      window._pendingBundle.push(data);
-    }
+    const lecdem = collectLecdem();
+    if (!lecdem.url) { alert('YouTube URL is required.'); return; }
+    addToBundle('musicians', { op: 'append', id: musicianId, array: 'youtube', value: lecdem });
     alert('Added to bundle.');
   });
 }
