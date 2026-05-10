@@ -1060,5 +1060,11 @@
     "target": "vignesh_ishwar",
     "confidence": 1.0,
     "source_url": "https://lakshmianand.com/music/musicians/vignesh-ishwar/"
+  },
+  {
+    "source": "gnb",
+    "target": "thanjavur_kalyanaraman",
+    "confidence": 1.0,
+    "source_url": "https://en.wikipedia.org/wiki/S._Kalyanaraman"
   }
 ]

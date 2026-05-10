@@ -1,0 +1,20 @@
+{
+  "id": "thanjavur_kalyanaraman",
+  "label": "Thanjavur Kalyanaraman",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/S._Kalyanaraman",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}
