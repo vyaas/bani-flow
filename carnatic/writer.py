@@ -85,7 +85,7 @@ VALID_INSTRUMENTS = {
 # ADR-114: musician tradition values
 VALID_TRADITIONS = {"carnatic", "hindustani"}
 
-PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani"}
+PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "traditions"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
 PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes"}
 PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language"}
@@ -1410,6 +1410,16 @@ class CarnaticWriter:
                     coerced = int(value)
                 except (ValueError, TypeError):
                     return _err(f"field \"{field}\" must be an integer or \"null\", got \"{value}\"")
+        elif field == "traditions":
+            if not isinstance(value, list) or len(value) == 0:
+                return _err("traditions must be a non-empty list")
+            invalid = [t for t in value if t not in VALID_TRADITIONS]
+            if invalid:
+                return _err(
+                    f"unknown tradition(s): {', '.join(invalid)}\n"
+                    f"       Valid values: {', '.join(sorted(VALID_TRADITIONS))}"
+                )
+            coerced = value
 
         nodes = _load_all_nodes(musicians_path)
 
