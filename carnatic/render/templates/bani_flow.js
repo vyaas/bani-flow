@@ -1575,22 +1575,28 @@ function _renderBaniFlowLecdemStrip(type, id) {
     const li = document.createElement('li');
     li.className = 'lecdem-row';
 
-    // §5: lecturer + other subjects flow together as a wrapped tag cloud.
-    // Lecturer renders as a first-class musician chip (clickable → musician panel).
+    // §5: label first (with play buttons), then lecturer, then other subjects.
+    // Order mirrors the Musician Panel: label bracket → musician → subjects.
+    if (typeof _buildLecdemBracket === 'function') {
+      li.appendChild(_buildLecdemBracket(ref, ref.lecturer_id || '', ''));
+    }
+
     const lecturerChip = (typeof _buildLecturerChip === 'function')
       ? _buildLecturerChip(ref.lecturer_id, ref.lecturer_label)
       : null;
-    const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
-    if (lecturerChip || subjectChips.length > 0) {
-      const wrap = document.createElement('span');
-      wrap.className = 'lecdem-subjects';
-      if (lecturerChip) wrap.appendChild(lecturerChip);
-      subjectChips.forEach(function(c) { wrap.appendChild(c); });
-      li.appendChild(wrap);
+    if (lecturerChip) {
+      const musicianWrap = document.createElement('span');
+      musicianWrap.className = 'lecdem-musician';
+      musicianWrap.appendChild(lecturerChip);
+      li.appendChild(musicianWrap);
     }
 
-    if (typeof _buildLecdemBracket === 'function') {
-      li.appendChild(_buildLecdemBracket(ref, ref.lecturer_id || '', ''));
+    const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
+    if (subjectChips.length > 0) {
+      const wrap = document.createElement('span');
+      wrap.className = 'lecdem-subjects';
+      subjectChips.forEach(function(c) { wrap.appendChild(c); });
+      li.appendChild(wrap);
     }
 
     list.appendChild(li);
