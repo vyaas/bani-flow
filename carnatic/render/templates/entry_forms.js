@@ -4868,6 +4868,26 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       addToBundle('musicians', item);
     }
 
+    // Mirror new musician into graphData so subsequent forms (guru/shishya dropdowns,
+    // accompanist selectors, existing-musician picker) see this entry immediately —
+    // matching the established pattern for compositions (line 688), ragas (line 555),
+    // and composers (line 601). No page refresh needed to add more entries.
+    if (!isEdit) {
+      const ghost = {
+        id:         musId,
+        label:      item.label,
+        era:        item.era,
+        instrument: item.instrument,
+        born:       item.born,
+        died:       item.died,
+        traditions: item.traditions,
+      };
+      graphData.nodes     = graphData.nodes     || [];
+      graphData.musicians = graphData.musicians || [];
+      if (!graphData.nodes.find(n => n.id === musId))     graphData.nodes.push(ghost);
+      if (!graphData.musicians.find(m => m.id === musId)) graphData.musicians.push(ghost);
+    }
+
     // Success screen
     const body2 = win.querySelector('.ew-body');
     body2.innerHTML = '';
@@ -4882,7 +4902,7 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       ? `<strong>\u2713 Added to bundle: ${editSummary}</strong>`
         + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle to apply the changes.</p>`
       : `<strong>\u2713 Added to bundle: <code>${musId}</code></strong>`
-        + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle when done adding items.</p>`;
+        + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);"><code>${musId}</code> is now available in all dropdowns — add more musicians, videos, or edges without refreshing. Download \u2B07 Bundle when done.</p>`;
     body2.appendChild(msg);
 
     const footer2 = win.querySelector('.ew-footer');

@@ -67,6 +67,31 @@
       "raga_id": "kharaharapriya",
       "year": 1984,
       "tala": "misra_capu"
+    },
+    {
+      "url": "https://youtu.be/pVbV2JnQe9s",
+      "label": "O Rangasayi · Kambhoji · adi",
+      "composition_id": "o_rangasayi",
+      "raga_id": "kambhoji",
+      "year": 1987,
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/v2-UhC4uvtk",
+      "label": "O Rangasayi · Kambhoji · adi",
+      "composition_id": "o_rangasayi",
+      "raga_id": "kambhoji",
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "ms_subbulakshmi",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vv_subramaniam",
+          "role": "violin"
+        }
+      ]
     }
   ]
 }
