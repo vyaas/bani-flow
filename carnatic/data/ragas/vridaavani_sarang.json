@@ -1,0 +1,20 @@
+{
+  "id": "vridaavani_sarang",
+  "name": "Vridaavani Sarang",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [
+    "brindavana_saranga"
+  ],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Brindavani_Sarang",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

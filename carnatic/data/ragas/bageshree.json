@@ -1,0 +1,20 @@
+{
+  "id": "bageshree",
+  "name": "Bageshree",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [
+    "bageshri"
+  ],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Bageshri",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

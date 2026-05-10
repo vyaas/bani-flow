@@ -62,6 +62,13 @@
       "url": "https://youtu.be/Sdx2JhC5yrg",
       "label": "RTP - Govinda Alarmelmanga",
       "raga_id": "darbari_kanada"
+    },
+    {
+      "url": "https://youtu.be/jGJZBHtS4SU",
+      "label": "Soundara Rajam Ashraye · Brindavana saranga · rupakam",
+      "composition_id": "soundara_rajam_ashraye",
+      "raga_id": "brindavana_saranga",
+      "tala": "rupakam"
     }
   ]
 }
