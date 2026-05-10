@@ -27,6 +27,18 @@
       "label": "Brochevaravarura - Khamas - Adi",
       "composition_id": "brocevarevarura",
       "raga_id": "khamas"
+    },
+    {
+      "url": "https://youtu.be/t9LMPLA1Stw",
+      "label": "Kapali · Mohanam · adi",
+      "composition_id": "kapali",
+      "raga_id": "mohanam",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/-MJ06Vu688k",
+      "label": "Neraval in Sanmukhapriya",
+      "raga_id": "sanmukhapriya"
     }
   ]
 }

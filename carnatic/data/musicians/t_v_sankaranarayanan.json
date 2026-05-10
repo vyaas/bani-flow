@@ -50,6 +50,27 @@
       "composition_id": "sukhi_evvaro",
       "raga_id": "kaanada",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/wGqFsbpb9po",
+      "label": "Vallee Nayaka · Śanmukhapriyā · adi",
+      "composition_id": "vallee_nayaka",
+      "raga_id": "sanmukhapriya",
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "t_v_sankaranarayanan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "ms_gopalakrishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ]
     }
   ]
 }
