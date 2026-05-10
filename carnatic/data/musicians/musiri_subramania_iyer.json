@@ -33,6 +33,13 @@
       "url": "https://youtu.be/B2ARhMWFnS4",
       "label": "Reetigowla Alapana",
       "raga_id": "reetigowla"
+    },
+    {
+      "url": "https://youtu.be/QelO2f_54X0",
+      "label": "Nagumomu Ganaleni · Abheri · adi",
+      "composition_id": "nagumomu_ganaleni",
+      "raga_id": "abheri",
+      "tala": "adi"
     }
   ]
 }
