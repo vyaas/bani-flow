@@ -1,0 +1,16 @@
+{
+  "id": "ethanai_sonnalum",
+  "title": "Ethanai Sonnalum",
+  "composer_id": "subbarama_iyer",
+  "raga_id": "saveri",
+  "tala": "adi",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2438.shtml",
+      "label": "karnatik.com — Ethanai Sonnalum",
+      "type": "other"
+    }
+  ],
+  "notes": "padam"
+}

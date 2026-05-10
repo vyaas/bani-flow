@@ -1,0 +1,20 @@
+{
+  "id": "marimuthu_pillai",
+  "label": "Marimuthu Pillai",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Marimutha_Pillai",
+      "label": "Wikipedia — Marimutha Pillai",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1712,
+  "died": 1787,
+  "era": "bridge",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

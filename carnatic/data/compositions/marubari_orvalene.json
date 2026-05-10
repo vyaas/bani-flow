@@ -1,0 +1,16 @@
+{
+  "id": "marubari_orvalene",
+  "title": "Marubari Orvalene",
+  "composer_id": "dharmapuri_subbaraya_iyer",
+  "raga_id": "senchurutti",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c16939.shtml",
+      "label": "karnatik.com — Marubari Orvalene",
+      "type": "other"
+    }
+  ],
+  "notes": "javali"
+}

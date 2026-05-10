@@ -1,0 +1,85 @@
+{
+  "id": "musiri_padams_javalis_78rpm",
+  "video_id": "esKodGeRK_0",
+  "url": "https://youtu.be/esKodGeRK_0",
+  "title": "Padams and Javalis — Musiri Subramania Iyer, 78 rpm compilation",
+  "short_title": "Musiri 78rpm Padams & Javalis",
+  "date": null,
+  "venue": "78 rpm studio recording",
+  "occasion": "Compilation of padams and javalis from 78 rpm records released by Musiri Subramania Iyer",
+  "sources": [
+    {
+      "url": "https://youtu.be/esKodGeRK_0",
+      "label": "YouTube",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "musiri_subramania_iyer",
+          "role": "vocal"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "ethanai_sonnalum",
+          "raga_id": "saveri",
+          "tala": "adi",
+          "composer_id": "subbarama_iyer",
+          "display_title": "Ethanai Sonnalum",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:03:21",
+          "offset_seconds": 201,
+          "composition_id": "nirupamana_sami",
+          "raga_id": "behag",
+          "tala": "rupakam",
+          "composer_id": "poochi_srinivasa_iyengar",
+          "display_title": "Nirupamana Sami",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:06:40",
+          "offset_seconds": 400,
+          "composition_id": "mora_topu",
+          "raga_id": "sahana",
+          "tala": "tisra_triputa",
+          "composer_id": "kshetrayya",
+          "display_title": "Mora Topu",
+          "notes": "padam"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:13:15",
+          "offset_seconds": 795,
+          "composition_id": "marubari_orvalene",
+          "raga_id": "senchurutti",
+          "tala": "rupakam",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Marubari Orvalene",
+          "notes": "javali"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:16:40",
+          "offset_seconds": 1000,
+          "composition_id": "kaalai_thooki",
+          "raga_id": "yadukulakamboji",
+          "tala": "adi",
+          "composer_id": "marimuthu_pillai",
+          "display_title": "Kaalai Thooki",
+          "notes": "padam"
+        }
+      ]
+    }
+  ]
+}

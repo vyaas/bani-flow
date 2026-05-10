@@ -1,0 +1,16 @@
+{
+  "id": "kaalai_thooki",
+  "title": "Kaalai Thooki",
+  "composer_id": "marimuthu_pillai",
+  "raga_id": "yadukulakamboji",
+  "tala": "adi",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1228.shtml",
+      "label": "karnatik.com — Kaalai Thooki",
+      "type": "other"
+    }
+  ],
+  "notes": "padam"
+}

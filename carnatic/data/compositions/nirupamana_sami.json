@@ -1,0 +1,16 @@
+{
+  "id": "nirupamana_sami",
+  "title": "Nirupamana Sami",
+  "composer_id": "poochi_srinivasa_iyengar",
+  "raga_id": "behag",
+  "tala": "rupakam",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1222.shtml",
+      "label": "karnatik.com — Nirupamana Sami",
+      "type": "other"
+    }
+  ],
+  "notes": "padam"
+}
