@@ -105,6 +105,7 @@ def build_elements(graph: dict, listenable_set: set | None = None,
             "is_composer":    1 if is_composer else 0,
             "composer_id":    composer_id_local,
             "is_hindustani":  is_hindustani,
+            "traditions":     traditions,
         }})
 
     for edge in graph["edges"]:
