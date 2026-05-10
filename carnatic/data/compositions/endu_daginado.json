@@ -1,0 +1,15 @@
+{
+  "id": "endu_daginado",
+  "title": "Endu Daginado",
+  "composer_id": "tyagaraja",
+  "raga_id": "thodi",
+  "tala": "misra_chapu",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2286.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ]
+}
