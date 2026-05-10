@@ -214,7 +214,7 @@ function efCombobox(id, options, type, formWin, opts) {
   textInp.placeholder = 'Type to search…';
   textInp.setAttribute('data-combobox-filter', 'true');
   textInp.autocomplete = 'off';
-  textInp.style.paddingRight = '22px';
+  textInp.style.paddingRight = '30px';
   wrap.appendChild(textInp);
 
   // Clear (×) button — revealed when a value is selected
@@ -222,7 +222,7 @@ function efCombobox(id, options, type, formWin, opts) {
   clearBtn.type = 'button';
   clearBtn.textContent = '×';
   clearBtn.title = 'Clear selection';
-  clearBtn.style.cssText = 'display:none;position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1rem;line-height:1;padding:0 3px;';
+  clearBtn.style.cssText = 'display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1.25rem;line-height:1;padding:2px 6px;';
   clearBtn.addEventListener('mouseover', () => { clearBtn.style.color = 'var(--fg)'; });
   clearBtn.addEventListener('mouseout',  () => { clearBtn.style.color = 'var(--fg-muted)'; });
   wrap.appendChild(clearBtn);
