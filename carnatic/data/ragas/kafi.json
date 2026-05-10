@@ -1,0 +1,20 @@
+{
+  "id": "kafi",
+  "name": "Kafi",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [
+    "kapi"
+  ],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kafi_(raga)",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}

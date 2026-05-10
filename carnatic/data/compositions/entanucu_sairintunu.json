@@ -1,0 +1,15 @@
+{
+  "id": "entanucu_sairintunu",
+  "title": "Entanucu Sairintunu",
+  "composer_id": "tyagaraja",
+  "raga_id": "yadukulakamboji",
+  "tala": "adi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2305.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}
