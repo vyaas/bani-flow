@@ -206,6 +206,7 @@ def render_html(
         f"                  era:        e.data.era        || '',\n"
         f"                  instrument: e.data.instrument || '',\n"
         f"                  bani:       e.data.bani       || null,\n"
+        f"                  traditions: e.data.traditions || ['carnatic'],\n"
         f"                  youtube:    e.data.tracks     || []\n"
         f"                }})),\n"
         f"  edges:        {edges_json},\n"
