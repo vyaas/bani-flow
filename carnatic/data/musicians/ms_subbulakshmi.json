@@ -59,6 +59,14 @@
       "composition_id": "marugelara",
       "raga_id": "sriraga",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/TSugj_EqgRU",
+      "label": "Pakkala Nilabadi · Kharaharapriya · misra_capu",
+      "composition_id": "pakkala_nilabadi",
+      "raga_id": "kharaharapriya",
+      "year": 1984,
+      "tala": "misra_capu"
     }
   ]
 }
