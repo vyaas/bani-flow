@@ -87,7 +87,7 @@ VALID_TRADITIONS = {"carnatic", "hindustani"}
 
 PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "traditions"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
-PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes"}
+PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes", "katapayadi"}
 PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language"}
 
 

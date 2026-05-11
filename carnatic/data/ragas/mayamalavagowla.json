@@ -17,5 +17,12 @@
   ],
   "notes": "15th melakarta; one of the first ragas taught to beginners; evokes pathos and devotion; parent of Nadanamakriya and Gowlipantu among others",
   "is_melakarta": true,
-  "cakra": 3
+  "cakra": 3,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 1,
+    "ga": 3,
+    "da": 1,
+    "ni": 3
+  }
 }

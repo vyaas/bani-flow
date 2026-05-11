@@ -16,5 +16,12 @@
   ],
   "notes": "65th melakarta (Mechakalyani); all sharp notes except natural Sa and Pa; associated with brightness, auspiciousness, and devotion",
   "is_melakarta": true,
-  "cakra": 11
+  "cakra": 11,
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 2,
+    "ga": 3,
+    "da": 2,
+    "ni": 3
+  }
 }

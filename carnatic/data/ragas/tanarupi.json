@@ -16,5 +16,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "6th melakarta raga, 6th raga of the 1st cakra (Indu). Parent mela of Punnaga Varali (parentage contested — some sources cite Natabhairavi as bhashanga parent)."
+  "notes": "6th melakarta raga, 6th raga of the 1st cakra (Indu). Parent mela of Punnaga Varali (parentage contested — some sources cite Natabhairavi as bhashanga parent).",
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 1,
+    "ga": 1,
+    "da": 3,
+    "ni": 3
+  }
 }

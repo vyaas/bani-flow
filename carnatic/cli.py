@@ -1223,6 +1223,78 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                                         errors.append("help/empty_panels.json:colophon.author.gravatar_profile_url: must begin with https://gravatar.com/")
                                     _validate_ext_links(author.get("ext_links"), "help/empty_panels.json:colophon.author")
 
+    # ── melakarta katapayadi integrity (ADR-122) ──────────────────────────────
+    from carnatic.melakarta_math import katapayadi_from_mela as _kata_from_mela
+    _KATA_FIELDS = ("madhyama", "ri", "ga", "da", "ni")
+    _KATA_DOMAINS = {"madhyama": {1, 2}, "ri": {1, 2, 3}, "ga": {1, 2, 3},
+                     "da": {1, 2, 3}, "ni": {1, 2, 3}}
+    all_ragas = g.get_all_ragas()
+    mela_nodes = [r for r in all_ragas if r.get("is_melakarta")]
+    present_mela_numbers: set[int] = set()
+    for raga in mela_nodes:
+        rid = raga.get("id", "?")
+        mela_num = raga.get("melakarta")
+        if mela_num is not None:
+            present_mela_numbers.add(int(mela_num))
+        kata = raga.get("katapayadi")
+        if kata is None:
+            errors.append(
+                f"Mela {rid} (mela {mela_num}): missing katapayadi object (ADR-122)"
+            )
+            continue
+        if not isinstance(kata, dict):
+            errors.append(
+                f"Mela {rid}: katapayadi must be an object, got {type(kata).__name__} (ADR-122)"
+            )
+            continue
+        # Check all five fields exist and are in domain
+        for fld in _KATA_FIELDS:
+            val = kata.get(fld)
+            if val is None:
+                errors.append(
+                    f"Mela {rid}: katapayadi.{fld} is missing (ADR-122)"
+                )
+            elif val not in _KATA_DOMAINS[fld]:
+                errors.append(
+                    f"Mela {rid}: katapayadi.{fld}={val!r} out of domain "
+                    f"{sorted(_KATA_DOMAINS[fld])} (ADR-122)"
+                )
+        # ga >= ri and ni >= da constraints
+        ri_val = kata.get("ri", 0)
+        ga_val = kata.get("ga", 0)
+        da_val = kata.get("da", 0)
+        ni_val = kata.get("ni", 0)
+        if ga_val < ri_val:
+            errors.append(
+                f"Mela {rid}: katapayadi ga ({ga_val}) < ri ({ri_val}) — "
+                f"violates upper-triangular constraint (ADR-122)"
+            )
+        if ni_val < da_val:
+            errors.append(
+                f"Mela {rid}: katapayadi ni ({ni_val}) < da ({da_val}) — "
+                f"violates upper-triangular constraint (ADR-122)"
+            )
+        # Tuple must equal the canonical formula
+        if mela_num is not None:
+            try:
+                expected = _kata_from_mela(int(mela_num))
+                actual = {k: kata.get(k) for k in _KATA_FIELDS}
+                if actual != expected:
+                    errors.append(
+                        f"Mela {rid} (mela {mela_num}): katapayadi {actual!r} "
+                        f"disagrees with canonical formula {expected!r} (ADR-122)"
+                    )
+            except ValueError:
+                pass  # out-of-range melakarta already caught above
+
+    # All 72 mela numbers must be present
+    missing_melas = sorted(set(range(1, 73)) - present_mela_numbers)
+    if missing_melas:
+        errors.append(
+            f"Missing {len(missing_melas)}/72 melakarta entries: "
+            f"{missing_melas} (ADR-122)"
+        )
+
     # ── report ─────────────────────────────────────────────────────────────────
     checks = [
         "All musician_ids in recordings exist in graph",
@@ -1236,6 +1308,7 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
         "All youtube performers reference known musicians and roles (ADR-070)",
         "All youtube lecdem entries have valid kind, subjects, and resolvable ids (ADR-077)",
         "All empty-panel tutorial ids, demo rows, and notes validate (ADR-091, ADR-102)",
+        "All 72 melakarta present with correct katapayadi tuples (ADR-122)",
     ]
 
     if not errors:

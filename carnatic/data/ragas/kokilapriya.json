@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "11th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₂ N₃ Ṡ"
+  "notes": "11th melakarta; Cakra 2 (Netra); arohana: S R₁ G₂ M₁ P D₂ N₃ Ṡ",
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 1,
+    "ga": 2,
+    "da": 2,
+    "ni": 3
+  }
 }

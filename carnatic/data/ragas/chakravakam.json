@@ -17,5 +17,12 @@
   ],
   "notes": "16th melakarta raga; arohana S R1 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R1 S; evokes pathos and devotion; a favourite of Tyagaraja who composed several kritis in this raga",
   "is_melakarta": true,
-  "cakra": 3
+  "cakra": 3,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 1,
+    "ga": 3,
+    "da": 2,
+    "ni": 2
+  }
 }

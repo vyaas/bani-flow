@@ -16,5 +16,12 @@
   ],
   "notes": "14th melakarta; ārohana S R1 G2 M1 P D1 N2 S, avarohana S N2 D1 P M1 G2 R1 S; evokes pathos and devotion; a rare melakarta raga; best known for the composition 'Konniyada Tharama' attributed to Garbhapurivasa",
   "is_melakarta": true,
-  "cakra": 3
+  "cakra": 3,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 1,
+    "ga": 3,
+    "da": 1,
+    "ni": 2
+  }
 }

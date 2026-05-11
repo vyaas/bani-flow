@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "13th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₁ N₁ Ṡ"
+  "notes": "13th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₁ N₁ Ṡ",
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 1,
+    "ga": 3,
+    "da": 1,
+    "ni": 1
+  }
 }

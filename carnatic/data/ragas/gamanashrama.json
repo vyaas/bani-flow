@@ -17,5 +17,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "53rd melakarta raga, 5th raga of the 9th cakra (Brahma). S R1 G3 M2 P D1 N3."
+  "notes": "53rd melakarta raga, 5th raga of the 9th cakra (Brahma). S R1 G3 M2 P D1 N3.",
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 1,
+    "ga": 3,
+    "da": 2,
+    "ni": 3
+  }
 }

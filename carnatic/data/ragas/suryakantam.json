@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "17th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₂ N₃ Ṡ"
+  "notes": "17th melakarta; Cakra 3 (Agni); arohana: S R₁ G₃ M₁ P D₂ N₃ Ṡ",
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 1,
+    "ga": 3,
+    "da": 2,
+    "ni": 3
+  }
 }

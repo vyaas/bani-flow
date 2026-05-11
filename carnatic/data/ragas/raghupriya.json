@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "42th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₃ N₃ Ṡ"
+  "notes": "42th melakarta; Cakra 7 (Rishi); arohana: S R₁ G₁ M₂ P D₃ N₃ Ṡ",
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 1,
+    "ga": 1,
+    "da": 3,
+    "ni": 3
+  }
 }

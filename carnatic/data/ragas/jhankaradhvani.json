@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "19th melakarta; Cakra 4 (Veda); arohana: S R₂ G₂ M₁ P D₁ N₁ Ṡ"
+  "notes": "19th melakarta; Cakra 4 (Veda); arohana: S R₂ G₂ M₁ P D₁ N₁ Ṡ",
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 2,
+    "ga": 2,
+    "da": 1,
+    "ni": 1
+  }
 }

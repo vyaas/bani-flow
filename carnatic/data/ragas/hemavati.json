@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "58th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₂ N₂ Ṡ"
+  "notes": "58th melakarta; Cakra 10 (Disi); arohana: S R₂ G₂ M₂ P D₂ N₂ Ṡ",
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 2,
+    "ga": 2,
+    "da": 2,
+    "ni": 2
+  }
 }

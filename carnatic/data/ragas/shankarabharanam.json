@@ -16,5 +16,12 @@
   ],
   "notes": "29th melakarta; equivalent to the Western major scale; considered the most complete and balanced raga; parent of Nata and Arabhi",
   "is_melakarta": true,
-  "cakra": 5
+  "cakra": 5,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 2,
+    "ga": 3,
+    "da": 2,
+    "ni": 3
+  }
 }

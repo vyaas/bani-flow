@@ -16,5 +16,12 @@
   ],
   "notes": "22nd melakarta; equivalent to the Dorian mode; parent of many important janya ragas including Reetigowla, Sriraga, Devamritavarshini, Manirangu, Devagandhari, and Kapi; associated with devotion and grandeur",
   "is_melakarta": true,
-  "cakra": 4
+  "cakra": 4,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 2,
+    "ga": 2,
+    "da": 2,
+    "ni": 2
+  }
 }

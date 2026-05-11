@@ -16,5 +16,12 @@
   ],
   "notes": "57th melakarta; ārohana S R1 G1 M2 P D1 N3 S, avarohana S N3 D1 P M2 G1 R1 S; evokes pathos and devotion; a favourite raga of Papanasam Sivan; best known for his composition 'En Manam'",
   "is_melakarta": true,
-  "cakra": 10
+  "cakra": 10,
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 2,
+    "ga": 2,
+    "da": 1,
+    "ni": 3
+  }
 }

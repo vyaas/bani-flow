@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "49th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₁ N₁ Ṡ"
+  "notes": "49th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₁ N₁ Ṡ",
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 1,
+    "ga": 3,
+    "da": 1,
+    "ni": 1
+  }
 }

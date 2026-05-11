@@ -16,5 +16,12 @@
   ],
   "notes": "28th melakarta; equivalent to the Western Mixolydian mode; arohana S R2 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; parent of Kambhoji, Khamas, Surutti, Sahana, Mohanam, Bahudari, Kedaram, Begada, and Ravichandrika among others; associated with bhakti and grandeur",
   "is_melakarta": true,
-  "cakra": 5
+  "cakra": 5,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 2,
+    "ga": 3,
+    "da": 2,
+    "ni": 2
+  }
 }

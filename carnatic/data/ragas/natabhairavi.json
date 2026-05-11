@@ -14,5 +14,12 @@
   ],
   "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours",
   "is_melakarta": true,
-  "cakra": 4
+  "cakra": 4,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 2,
+    "ga": 2,
+    "da": 1,
+    "ni": 2
+  }
 }

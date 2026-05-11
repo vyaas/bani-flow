@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "72th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₃ N₃ Ṡ"
+  "notes": "72th melakarta; Cakra 12 (Aditya); arohana: S R₃ G₃ M₂ P D₃ N₃ Ṡ",
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 3,
+    "ga": 3,
+    "da": 3,
+    "ni": 3
+  }
 }

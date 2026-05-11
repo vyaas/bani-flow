@@ -17,5 +17,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "39th melakarta raga, 3rd raga of the 7th cakra (Rishi). Parent mela of Varali."
+  "notes": "39th melakarta raga, 3rd raga of the 7th cakra (Rishi). Parent mela of Varali.",
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 1,
+    "ga": 1,
+    "da": 1,
+    "ni": 3
+  }
 }

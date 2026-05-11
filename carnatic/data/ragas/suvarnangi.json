@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "47th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₃ Ṡ"
+  "notes": "47th melakarta; Cakra 8 (Vasu); arohana: S R₁ G₂ M₂ P D₂ N₃ Ṡ",
+  "katapayadi": {
+    "madhyama": 2,
+    "ri": 1,
+    "ga": 2,
+    "da": 2,
+    "ni": 3
+  }
 }

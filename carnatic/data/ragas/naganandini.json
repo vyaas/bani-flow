@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "30th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₃ N₃ Ṡ"
+  "notes": "30th melakarta; Cakra 5 (Bana); arohana: S R₂ G₃ M₁ P D₃ N₃ Ṡ",
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 2,
+    "ga": 3,
+    "da": 3,
+    "ni": 3
+  }
 }

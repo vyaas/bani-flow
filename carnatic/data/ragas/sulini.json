@@ -14,5 +14,12 @@
       "type": "wikipedia"
     }
   ],
-  "notes": "35th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₂ N₃ Ṡ"
+  "notes": "35th melakarta; Cakra 6 (Rutu); arohana: S R₃ G₃ M₁ P D₂ N₃ Ṡ",
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 3,
+    "ga": 3,
+    "da": 2,
+    "ni": 3
+  }
 }

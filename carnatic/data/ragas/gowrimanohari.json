@@ -16,5 +16,12 @@
   ],
   "notes": "23rd melakarta (Kanakangi group). Sampurna raga, serene majestic character.",
   "is_melakarta": true,
-  "cakra": 4
+  "cakra": 4,
+  "katapayadi": {
+    "madhyama": 1,
+    "ri": 2,
+    "ga": 2,
+    "da": 2,
+    "ni": 3
+  }
 }
