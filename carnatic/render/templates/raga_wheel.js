@@ -820,16 +820,22 @@ window.drawRagaWheel = function() {
   const cx = W / 2, cy = H / 2;
   const minDim = Math.min(W, H);
 
-  const R_INNER = minDim * 0.08;
-  const R_CAKRA = minDim * 0.155;
-  const R_MELA_BASE  = minDim * 0.38;
-  const R_JANYA = minDim * 0.56;
-  const R_COMP  = minDim * 0.72;
-  const R_MUSC  = minDim * 0.88;
-  const NR_MELA  = Math.max(6,  minDim * 0.018);
-  const NR_JANYA = Math.max(5,  minDim * 0.013);
-  const NR_COMP  = Math.max(5,  minDim * 0.013);
-  const NR_MUSC  = Math.max(4,  minDim * 0.010);
+  // ADR-123: Katapayadi decoding ring radii
+  const R_MADHYAMA = minDim * 0.10;   // centre disk outer edge (madhyama split)
+  const R_CAKRA    = minDim * 0.18;   // cakra wedge ring outer edge (12 wedges, 30°)
+  const R_RIGA     = minDim * 0.26;   // ri-ga arc ring outer edge (12 arcs)
+  const R_DANI     = minDim * 0.34;   // da-ni cell ring outer edge (72 cells, 5°)
+  const R_MELA     = minDim * 0.42;   // mela arc slot ring outer edge
+  // Gap between the outer edge of the mela arc ring and the inner edge of the name chip.
+  // Increase MELA_LABEL_GAP to add breathing room; decrease toward 0 for tight pack.
+  const MELA_LABEL_GAP = minDim * 0.005;
+  const R_JANYA    = minDim * 0.62;   // janya satellite chips
+  const R_COMP     = minDim * 0.78;   // composition satellite chips
+  const R_MUSC     = minDim * 0.92;   // musician chips
+  const NR_MELA    = Math.max(6,  minDim * 0.018);  // kept for _expandMela compat
+  const NR_JANYA   = Math.max(5,  minDim * 0.013);
+  const NR_COMP    = Math.max(5,  minDim * 0.013);
+  const NR_MUSC    = Math.max(4,  minDim * 0.010);
 
   RagaWheel._geometry.cx = cx;
   RagaWheel._geometry.cy = cy;
@@ -845,12 +851,10 @@ window.drawRagaWheel = function() {
   });
 
   const melaFontSize = Math.max(10, minDim * 0.022);
-  // Mela nodes: 72 evenly-spaced fixed at R_MELA_BASE. solveRingLayout is not used
-  // here because mela chips are radially rotated — their tangential footprint is the
-  // chip HEIGHT (fontSize+3px), not width, which can't be expressed via maxLabelChars.
-  // Evenly-spaced angles are always correct for a closed 72-node ring.
-  const R_MELA = R_MELA_BASE;
-  const melaAngles = Array.from({ length: 72 }, (_, i) => i * 2 * Math.PI / 72);
+  // ADR-123: 72 evenly-spaced angles (5° each) for the mela arc ring.
+  // Mela n occupies arc (n-1)*5° → n*5°, centred at (n-0.5)*5°.
+  // melaAngles[i] is the CENTRE angle of mela i+1's slot (used for janya fan anchoring).
+  const melaAngles = Array.from({ length: 72 }, (_, i) => (i + 0.5) * 2 * Math.PI / 72);
 
   // ── compsByRaga: three sources ────────────────────────────────────────────
   // Source 1: compositions.json compositions[] — canonical compositions
@@ -1164,22 +1168,51 @@ window.drawRagaWheel = function() {
     RagaWheel.fit();
   }, { signal: _signal });
 
-  // Cakra sectors — appended to viewport group (vp) for pan/zoom
+  // ── ADR-123: Katapayadi decoding rings ─────────────────────────────────────
+  // Ri-ga and da-ni pair subscript labels (upper-triangular enumeration order)
+  const _RIGA_LABELS = ['R\u2081G\u2081','R\u2081G\u2082','R\u2081G\u2083','R\u2082G\u2082','R\u2082G\u2083','R\u2083G\u2083'];
+  const _DANI_LABELS = ['D\u2081N\u2081','D\u2081N\u2082','D\u2081N\u2083','D\u2082N\u2082','D\u2082N\u2083','D\u2083N\u2083'];
+
+  // Ring 0 — Madhyama centre disk: right half = \u015buddha (M\u2081, melas 1\u201336), left = prati (M\u2082, melas 37\u201372)
+  // Use accentSelect (bright terminal amber #fabd2f) at high opacity for a vivid glowing centre.
+  const madGold = THEME.accentSelect;
+  vp.appendChild(svgEl('path', {
+    d: sectorPath(cx, cy, 0, R_MADHYAMA, 0, 180),
+    fill: madGold, opacity: 0.80, stroke: 'none', 'pointer-events': 'none'
+  }));
+  vp.appendChild(svgEl('path', {
+    d: sectorPath(cx, cy, 0, R_MADHYAMA, 180, 360),
+    fill: madGold, opacity: 0.40, stroke: 'none', 'pointer-events': 'none'
+  }));
+  // Hemisphere labels (M\u2081 / M\u2082) at 3-o'clock / 9-o'clock inside the disk
+  const madFontSize = Math.max(9, minDim * 0.018);
+  [['M\u2081', 90], ['M\u2082', 270]].forEach(([lbl, deg]) => {
+    const lp = polar(cx, cy, R_MADHYAMA * 0.58, deg);
+    const t = svgEl('text', {
+      x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+      fill: THEME.bg, 'font-size': madFontSize + 'px', 'font-weight': 'bold',
+      'pointer-events': 'none'
+    });
+    t.textContent = lbl;
+    vp.appendChild(t);
+  });
+
+  // Ring 1 — Cakra wedge ring (R_MADHYAMA \u2192 R_CAKRA): 12 wedges, 30\u00b0 each
+  // High opacity so vivid cakra colours read clearly; dark text for inverse-video contrast.
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
     vp.appendChild(svgEl('path', {
-      d: sectorPath(cx, cy, R_INNER, R_CAKRA, startDeg, endDeg),
-      fill: color, opacity: 0.35, stroke: THEME.labelOutline, 'stroke-width': 1
+      d: sectorPath(cx, cy, R_MADHYAMA, R_CAKRA, startDeg, endDeg),
+      fill: color, opacity: 0.82, stroke: THEME.labelOutline, 'stroke-width': 0.5,
+      'pointer-events': 'none'
     }));
-    // Fix 6: cakra name only, rotated to follow the arc — flip on left half so text is never upside-down
     const midDeg = startDeg + 15;
-    const lp = polar(cx, cy, (R_INNER + R_CAKRA) / 2, midDeg);
-    // Right half (0–180°): rotate text so it reads clockwise; left half (180–360°): flip 180° to stay upright
+    const lp = polar(cx, cy, (R_MADHYAMA + R_CAKRA) / 2, midDeg);
     const cakraRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
     const nameLbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.fg, 'font-size': Math.max(8, minDim * 0.015) + 'px',
+      fill: THEME.bgDeep, 'font-size': Math.max(8, minDim * 0.017) + 'px',
       'font-weight': 'bold', 'pointer-events': 'none',
       transform: `rotate(${cakraRotDeg}, ${lp.x}, ${lp.y})`
     });
@@ -1187,41 +1220,117 @@ window.drawRagaWheel = function() {
     vp.appendChild(nameLbl);
   }
 
-  vp.appendChild(svgEl('circle', {
-    cx, cy, r: R_CAKRA, fill: 'none', stroke: THEME.edgeLine, 'stroke-width': 1
+  // Ring 2 — Ri-ga arc ring (R_CAKRA \u2192 R_RIGA): 12 arcs, one per cakra wedge
+  // Each cakra\u2019s (ri, ga) pair cycles through the 6 upper-triangular pairs within each hemisphere.
+  // Ice-blue fill (#83a598, gruvbox blueBright) = terminal syntax annotation colour.
+  const rigaFontSize = Math.max(10, minDim * 0.020);
+  for (let cakra = 1; cakra <= 12; cakra++) {
+    const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
+    const rigaIdx = (cakra - 1) % 6;  // 0..5, repeats identically in each hemisphere
+    vp.appendChild(svgEl('path', {
+      d: sectorPath(cx, cy, R_CAKRA, R_RIGA, startDeg, endDeg),
+      fill: '#83a598', opacity: 0.62, stroke: THEME.labelOutline, 'stroke-width': 0.5,
+      'pointer-events': 'none'
+    }));
+    const midDeg = startDeg + 15;
+    const lp = polar(cx, cy, (R_CAKRA + R_RIGA) / 2, midDeg);
+    const rotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
+    const rlbl = svgEl('text', {
+      x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+      fill: THEME.bgDeep, 'font-size': rigaFontSize + 'px',
+      'font-weight': 'bold', 'pointer-events': 'none',
+      transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
+    });
+    rlbl.textContent = _RIGA_LABELS[rigaIdx];
+    vp.appendChild(rlbl);
+  }
+
+  // Ring 3 — Da-ni cell ring (R_RIGA \u2192 R_DANI): 72 cells, 5\u00b0 each (6 per cakra wedge)
+  // Position within a cakra = da-ni pair index (0..5) via the upper-triangular sequence.
+  // Bright orange (#fe8019, gruvbox orangeBright) = terminal accent / warning; dark cutout text.
+  const daniFontSize = Math.max(8, minDim * 0.015);
+  for (let n = 1; n <= 72; n++) {
+    const startDeg = (n - 1) * 5, endDeg = n * 5;
+    const daniIdx = (n - 1) % 6;
+    vp.appendChild(svgEl('path', {
+      d: sectorPath(cx, cy, R_RIGA, R_DANI, startDeg, endDeg),
+      fill: '#fe8019', opacity: 0.50, stroke: THEME.labelOutline, 'stroke-width': 0.5,
+      'pointer-events': 'none'
+    }));
+    // Show da-ni subscript only when the cell arc is wide enough to be legible
+    const arcLen = R_DANI * 5 * Math.PI / 180;
+    if (arcLen >= 7) {
+      const midDeg = startDeg + 2.5;
+      const lp = polar(cx, cy, (R_RIGA + R_DANI) / 2, midDeg);
+      const rotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
+      const dlbl = svgEl('text', {
+        x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        fill: THEME.bgDeep, 'font-size': daniFontSize + 'px',
+        'font-weight': 'bold', 'pointer-events': 'none',
+        transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
+      });
+      dlbl.textContent = _DANI_LABELS[daniIdx];
+      vp.appendChild(dlbl);
+    }
+  }
+
+  // Vertical hemisphere dividing line (top \u2192 bottom through centre)
+  vp.appendChild(svgEl('line', {
+    x1: cx, y1: cy - R_MELA, x2: cx, y2: cy + R_MELA,
+    stroke: THEME.fg, 'stroke-width': 1, opacity: 0.35, 'pointer-events': 'none'
   }));
 
-  // Fix 7: two-pass rendering — all circles first, then all labels on top
-  // Pass 1: circles + interaction (no labels yet)
+  // ── ADR-123: Mela ring (R_DANI \u2192 R_MELA) \u2014 72 arc slots, 5\u00b0 each ────────────────
+  // Two-pass rendering: all arc slots first, then all labels on top (labels in _labelLayer).
   const melaCirleGroups = [];
   for (let n = 1; n <= 72; n++) {
-    const angleRad = melaAngles[n - 1];
-    const angleDeg = angleRad * 180 / Math.PI;
-    const pos = polarRad(cx, cy, R_MELA, angleRad);
-    const raga = melaByNum[n];
+    const startDeg = (n - 1) * 5;
+    const endDeg   = n * 5;
+    const angleRad = melaAngles[n - 1];    // centre angle of this slot
+    const pos      = polar(cx, cy, (R_DANI + R_MELA) / 2, startDeg + 2.5);  // visual centre
+    const raga  = melaByNum[n];
     const cakra = Math.ceil(n / 6);
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
 
     const isLive = raga && melasWithMusic.has(raga.id);
-    const origOpacity = isLive ? 1 : (raga ? 0.28 : 0.5);
+    const origOpacity = isLive ? 0.90 : (raga ? 0.30 : 0.20);
+
     const g = svgEl('g', { class: 'mela-node', 'data-mela': n, 'data-id': raga ? raga.id : '' });
-    const circle = svgEl('circle', {
-      cx: pos.x, cy: pos.y, r: NR_MELA,
+
+    // Arc sector — the visual mela slot
+    const slotPath = svgEl('path', {
+      d: sectorPath(cx, cy, R_DANI, R_MELA, startDeg, endDeg),
       fill: raga ? color : THEME.bgPanel,
       stroke: raga ? THEME.fg : THEME.edgeLine,
-      'stroke-width': raga ? 1.5 : 1,
+      'stroke-width': raga ? 0.75 : 0.5,
       opacity: origOpacity,
-      cursor: isLive ? 'pointer' : 'default',
       'data-mela': n,
       'data-orig-opacity': origOpacity
     });
-    g.appendChild(circle);
-    // Invisible hit-target circle for touch accuracy (ADR-035 §7)
-    const hitCircleMela = svgEl('circle', {
-      cx: pos.x, cy: pos.y, r: NR_MELA + 8,
-      fill: 'transparent', 'pointer-events': 'all', 'stroke': 'none'
+    g.appendChild(slotPath);
+
+    // Mela number inside the slot (small, radially rotated)
+    if (raga) {
+      const numFontSize = Math.max(7, minDim * 0.012);
+      const midDeg = startDeg + 2.5;
+      const numPos = polar(cx, cy, (R_DANI + R_MELA) * 0.5, midDeg);
+      const numRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
+      const numLbl = svgEl('text', {
+        x: numPos.x, y: numPos.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        fill: THEME.bgDeep, 'font-size': numFontSize + 'px', 'font-weight': 'bold',
+        'pointer-events': 'none', opacity: isLive ? 1 : 0.5,
+        transform: `rotate(${numRotDeg}, ${numPos.x}, ${numPos.y})`
+      });
+      numLbl.textContent = String(n);
+      g.appendChild(numLbl);
+    }
+
+    // Transparent hit-target arc (slightly wider for touch accuracy)
+    const hitPath = svgEl('path', {
+      d: sectorPath(cx, cy, R_DANI, R_MELA + minDim * 0.03, startDeg, endDeg),
+      fill: 'transparent', 'pointer-events': 'all', stroke: 'none'
     });
-    g.appendChild(hitCircleMela);
+    g.appendChild(hitPath);
 
     if (isLive) {
       g.style.cursor = 'pointer';
@@ -1246,21 +1355,21 @@ window.drawRagaWheel = function() {
         } else {
           _collapseAll(vp, melaByNum);
           // On mobile, dismiss the bani-flow panel before opening the box so
-          // the rasika only sees one thing at a time (wheel tap → box → panel cascade).
+          // the rasika only sees one thing at a time (wheel tap \u2192 box \u2192 panel cascade).
           if (window.matchMedia('(max-width: 768px)').matches && typeof window.setPanelState === 'function') {
             window.setPanelState('IDLE');
           }
-          // Option B: show mela→janya→comp in the detail panel instead of SVG fans
+          // Option B: show mela\u2192janya\u2192comp in the detail panel instead of SVG fans
           _openWheelDetailPanel(raga);
-          circle.setAttribute('stroke', THEME.accentSelect);
-          circle.setAttribute('stroke-width', 2.5);
+          slotPath.setAttribute('stroke', THEME.accentSelect);
+          slotPath.setAttribute('stroke-width', 2);
           _expandedMela = raga.id;
-          // Dim all other mela nodes so the selected one stands out
-          vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
+          // Dim all other mela arc slots so the selected one stands out
+          vp.querySelectorAll('.mela-node path[data-mela]').forEach(c => {
             const melaG = c.closest('.mela-node');
             const nodeId = melaG ? melaG.getAttribute('data-id') : '';
             if (nodeId !== raga.id) {
-              c.setAttribute('opacity', '0.15');
+              c.setAttribute('opacity', '0.10');
             }
           });
           // Dim all other mela labels
@@ -1278,7 +1387,7 @@ window.drawRagaWheel = function() {
             applyBaniFilter('raga', raga.id);
           }
           window._wheelSyncInProgress = false;
-          // Option B: zoom to the mela node — detail is in the panel, SVG only has the ring
+          // Zoom to the mela slot — detail is in the WDP panel
           _animateToTarget(pos.x, pos.y, 2.5);
         }
       });
@@ -1292,12 +1401,17 @@ window.drawRagaWheel = function() {
     melaCirleGroups.push({ n, angleRad, raga });
   }
 
-  // Pass 2: labels — in the module-level _labelLayer so they are always topmost
+  // Pass 2: mela name labels in the module-level _labelLayer (always topmost)
   _labelLayer = svgEl('g', { id: 'wheel-label-layer', 'pointer-events': 'none' });
   melaCirleGroups.forEach(({ n, angleRad, raga }) => {
     const angleDeg = angleRad * 180 / Math.PI;
-    const labelR = R_MELA + NR_MELA + Math.max(5, minDim * 0.014);
-    const lp = polarRad(cx, cy, labelR, angleRad);
+    // Anchor inner edge of chip at R_MELA + MELA_LABEL_GAP (thin parametric band).
+    // _labelWithBg centres the chip at its anchor point; shifting by +tw/2 radially puts the
+    // inner edge at exactly (R_MELA + MELA_LABEL_GAP). _PAD_X/_GLYPH must match _labelWithBg.
+    const _PAD_X = 3, _GLYPH = '\u25c8\u00a0'; // raga chip glyph (2 chars)
+    const _dispText = _GLYPH + (raga ? raga.name : String(n));
+    const _tw = _dispText.length * melaFontSize * 0.55 + _PAD_X * 2;
+    const lp = polarRad(cx, cy, R_MELA + MELA_LABEL_GAP + _tw / 2, angleRad);
     const normAngle = ((angleDeg % 360) + 360) % 360;
     let melaRotDeg, anchor;
     if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = -90;           anchor = 'middle'; }
@@ -1306,10 +1420,6 @@ window.drawRagaWheel = function() {
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
     const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
-    // All mela labels now use the raga chip style (ADR-073: melas are ragas).
-    // rotate wraps the chip <g> so the rect+text rotate together around lp.
-    // wrapOpacity provides the inactive-mela dimming envelope.
-    // The rect click target replaces the prior pointer-events:all on <text>.
     _labelWithBg(_labelLayer, raga ? raga.name : String(n), lp.x, lp.y, melaFontSize, {
       'font-size': melaFontSize + 'px',
       class: 'mela-label',
@@ -1336,11 +1446,11 @@ function _collapseAll(vp, melaByNum) {
   if (_labelLayer) {
     _labelLayer.querySelectorAll('.sat-label').forEach(el => el.remove());
   }
-  vp.querySelectorAll('.mela-node circle[data-mela]').forEach(c => {
+  vp.querySelectorAll('.mela-node path[data-mela]').forEach(c => {
     const n = parseInt(c.getAttribute('data-mela'));
     const raga = melaByNum[n];
     c.setAttribute('stroke', raga ? THEME.fg : THEME.edgeLine);
-    c.setAttribute('stroke-width', raga ? 1.5 : 1);
+    c.setAttribute('stroke-width', raga ? 0.75 : 0.5);
     // Restore original opacity (Bug fix: mela nodes stayed dimmed after comp collapse)
     const orig = c.getAttribute('data-orig-opacity');
     if (orig) c.setAttribute('opacity', orig);

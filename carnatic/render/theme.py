@@ -163,10 +163,12 @@ ERA_FONT_SIZES = {
 }
 
 # ── Level 2: Cakra colours (raga wheel sector fills) ──────────────────────────
+# Hacker aesthetic: full bright gruvbox spectrum — vivid neon against hard-dark canvas.
+# Warm-to-cool cycle; śuddha hemisphere (1–6) glows warm, prati hemisphere (7–12) cool.
 CAKRA_COLORS = {
-    1:  _P["yellow"],   2:  _P["green"],    3:  _P["aqua"],    4:  _P["blue"],
-    5:  "#076678",      6:  "#427b58",      7:  "#79740e",     8:  _P["orange"],
-    9:  "#af3a03",      10: _P["red"],      11: _P["purple"],  12: _P["purple_bright"],
+    1:  _P["yellow_bright"],   2:  _P["orange_bright"],  3:  _P["red_bright"],   4:  _P["purple_bright"],
+    5:  _P["green_bright"],    6:  _P["aqua_bright"],    7:  _P["blue_bright"],  8:  _P["blue"],
+    9:  _P["aqua"],            10: _P["green"],          11: _P["purple"],       12: _P["yellow"],
 }
 
 
