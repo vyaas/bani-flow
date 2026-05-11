@@ -1172,17 +1172,18 @@ window.drawRagaWheel = function() {
   const _DANI_LABELS = ['D\u2081N\u2081','D\u2081N\u2082','D\u2081N\u2083','D\u2082N\u2082','D\u2082N\u2083','D\u2083N\u2083'];
 
   // Ring 0 — Madhyama centre disk: right half = \u015buddha (M\u2081, melas 1\u201336), left = prati (M\u2082, melas 37\u201372)
-  const madGold = THEME.accent || '#d4aa00';
+  // Use accentSelect (bright terminal amber #fabd2f) at high opacity for a vivid glowing centre.
+  const madGold = THEME.accentSelect;
   vp.appendChild(svgEl('path', {
     d: sectorPath(cx, cy, 0, R_MADHYAMA, 0, 180),
-    fill: madGold, opacity: 0.60, stroke: 'none', 'pointer-events': 'none'
+    fill: madGold, opacity: 0.80, stroke: 'none', 'pointer-events': 'none'
   }));
   vp.appendChild(svgEl('path', {
     d: sectorPath(cx, cy, 0, R_MADHYAMA, 180, 360),
-    fill: madGold, opacity: 0.28, stroke: 'none', 'pointer-events': 'none'
+    fill: madGold, opacity: 0.40, stroke: 'none', 'pointer-events': 'none'
   }));
   // Hemisphere labels (M\u2081 / M\u2082) at 3-o'clock / 9-o'clock inside the disk
-  const madFontSize = Math.max(7, minDim * 0.013);
+  const madFontSize = Math.max(9, minDim * 0.018);
   [['M\u2081', 90], ['M\u2082', 270]].forEach(([lbl, deg]) => {
     const lp = polar(cx, cy, R_MADHYAMA * 0.58, deg);
     const t = svgEl('text', {
@@ -1195,12 +1196,13 @@ window.drawRagaWheel = function() {
   });
 
   // Ring 1 — Cakra wedge ring (R_MADHYAMA \u2192 R_CAKRA): 12 wedges, 30\u00b0 each
+  // High opacity so vivid cakra colours read clearly; dark text for inverse-video contrast.
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
     vp.appendChild(svgEl('path', {
       d: sectorPath(cx, cy, R_MADHYAMA, R_CAKRA, startDeg, endDeg),
-      fill: color, opacity: 0.60, stroke: THEME.labelOutline, 'stroke-width': 0.5,
+      fill: color, opacity: 0.82, stroke: THEME.labelOutline, 'stroke-width': 0.5,
       'pointer-events': 'none'
     }));
     const midDeg = startDeg + 15;
@@ -1208,7 +1210,7 @@ window.drawRagaWheel = function() {
     const cakraRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
     const nameLbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.fg, 'font-size': Math.max(6, minDim * 0.012) + 'px',
+      fill: THEME.bgDeep, 'font-size': Math.max(8, minDim * 0.017) + 'px',
       'font-weight': 'bold', 'pointer-events': 'none',
       transform: `rotate(${cakraRotDeg}, ${lp.x}, ${lp.y})`
     });
@@ -1218,13 +1220,14 @@ window.drawRagaWheel = function() {
 
   // Ring 2 — Ri-ga arc ring (R_CAKRA \u2192 R_RIGA): 12 arcs, one per cakra wedge
   // Each cakra\u2019s (ri, ga) pair cycles through the 6 upper-triangular pairs within each hemisphere.
-  const rigaFontSize = Math.max(6, minDim * 0.011);
+  // Ice-blue fill (#83a598, gruvbox blueBright) = terminal syntax annotation colour.
+  const rigaFontSize = Math.max(10, minDim * 0.020);
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
     const rigaIdx = (cakra - 1) % 6;  // 0..5, repeats identically in each hemisphere
     vp.appendChild(svgEl('path', {
       d: sectorPath(cx, cy, R_CAKRA, R_RIGA, startDeg, endDeg),
-      fill: '#3a7a50', opacity: 0.40, stroke: THEME.labelOutline, 'stroke-width': 0.5,
+      fill: '#83a598', opacity: 0.62, stroke: THEME.labelOutline, 'stroke-width': 0.5,
       'pointer-events': 'none'
     }));
     const midDeg = startDeg + 15;
@@ -1232,7 +1235,8 @@ window.drawRagaWheel = function() {
     const rotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
     const rlbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.fg, 'font-size': rigaFontSize + 'px', 'pointer-events': 'none',
+      fill: THEME.bgDeep, 'font-size': rigaFontSize + 'px',
+      'font-weight': 'bold', 'pointer-events': 'none',
       transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
     });
     rlbl.textContent = _RIGA_LABELS[rigaIdx];
@@ -1241,13 +1245,14 @@ window.drawRagaWheel = function() {
 
   // Ring 3 — Da-ni cell ring (R_RIGA \u2192 R_DANI): 72 cells, 5\u00b0 each (6 per cakra wedge)
   // Position within a cakra = da-ni pair index (0..5) via the upper-triangular sequence.
-  const daniFontSize = Math.max(5, minDim * 0.009);
+  // Bright orange (#fe8019, gruvbox orangeBright) = terminal accent / warning; dark cutout text.
+  const daniFontSize = Math.max(8, minDim * 0.015);
   for (let n = 1; n <= 72; n++) {
     const startDeg = (n - 1) * 5, endDeg = n * 5;
     const daniIdx = (n - 1) % 6;
     vp.appendChild(svgEl('path', {
       d: sectorPath(cx, cy, R_RIGA, R_DANI, startDeg, endDeg),
-      fill: '#8a5030', opacity: 0.35, stroke: THEME.labelOutline, 'stroke-width': 0.5,
+      fill: '#fe8019', opacity: 0.50, stroke: THEME.labelOutline, 'stroke-width': 0.5,
       'pointer-events': 'none'
     }));
     // Show da-ni subscript only when the cell arc is wide enough to be legible
@@ -1258,7 +1263,8 @@ window.drawRagaWheel = function() {
       const rotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
       const dlbl = svgEl('text', {
         x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-        fill: THEME.fg, 'font-size': daniFontSize + 'px', 'pointer-events': 'none',
+        fill: THEME.bgDeep, 'font-size': daniFontSize + 'px',
+        'font-weight': 'bold', 'pointer-events': 'none',
         transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
       });
       dlbl.textContent = _DANI_LABELS[daniIdx];
@@ -1303,13 +1309,13 @@ window.drawRagaWheel = function() {
 
     // Mela number inside the slot (small, radially rotated)
     if (raga) {
-      const numFontSize = Math.max(5, minDim * 0.009);
+      const numFontSize = Math.max(7, minDim * 0.012);
       const midDeg = startDeg + 2.5;
       const numPos = polar(cx, cy, (R_DANI + R_MELA) * 0.5, midDeg);
       const numRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
       const numLbl = svgEl('text', {
         x: numPos.x, y: numPos.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-        fill: THEME.fg, 'font-size': numFontSize + 'px', 'font-weight': 'bold',
+        fill: THEME.bgDeep, 'font-size': numFontSize + 'px', 'font-weight': 'bold',
         'pointer-events': 'none', opacity: isLive ? 1 : 0.5,
         transform: `rotate(${numRotDeg}, ${numPos.x}, ${numPos.y})`
       });
@@ -1397,7 +1403,13 @@ window.drawRagaWheel = function() {
   _labelLayer = svgEl('g', { id: 'wheel-label-layer', 'pointer-events': 'none' });
   melaCirleGroups.forEach(({ n, angleRad, raga }) => {
     const angleDeg = angleRad * 180 / Math.PI;
-    const lp = polarRad(cx, cy, R_LABEL, angleRad);
+    // Anchor inner edge of chip flush at R_LABEL so all mela names start at the same radius.
+    // _labelWithBg centres the chip at its anchor point; shifting by +tw/2 radially puts the
+    // inner edge at R_LABEL. _PAD_X and _GLYPH must match _labelWithBg internals.
+    const _PAD_X = 3, _GLYPH = '\u25c8\u00a0'; // raga chip glyph (2 chars)
+    const _dispText = _GLYPH + (raga ? raga.name : String(n));
+    const _tw = _dispText.length * melaFontSize * 0.55 + _PAD_X * 2;
+    const lp = polarRad(cx, cy, R_LABEL + _tw / 2, angleRad);
     const normAngle = ((angleDeg % 360) + 360) % 360;
     let melaRotDeg, anchor;
     if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = -90;           anchor = 'middle'; }

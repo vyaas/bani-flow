@@ -133,10 +133,12 @@ const THEME = (() => {
   };
 
   // ── Level 2: Cakra colours (raga wheel sector fills) ─────────────────────
+  // Hacker aesthetic: full bright gruvbox spectrum — vivid neon against hard-dark canvas.
+  // Warm-to-cool cycle; śuddha hemisphere (1–6) glows warm, prati hemisphere (7–12) cool.
   S.cakra = {
-    1:  P.yellow,   2:  P.green,    3:  P.aqua,    4:  P.blue,
-    5:  '#076678',  6:  '#427b58',  7:  '#79740e', 8:  P.orange,
-    9:  '#af3a03',  10: P.red,      11: P.purple,  12: P.purpleBright,
+    1:  P.yellowBright,   2:  P.orangeBright,  3:  P.redBright,   4:  P.purpleBright,
+    5:  P.greenBright,    6:  P.aquaBright,     7:  P.blueBright,  8:  P.blue,
+    9:  P.aqua,           10: P.green,          11: P.purple,      12: P.yellow,
   };
 
   // ── ADR-054: era tint helpers ─────────────────────────────────────────────
