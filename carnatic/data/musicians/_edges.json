@@ -1066,5 +1066,33 @@
     "target": "thanjavur_kalyanaraman",
     "confidence": 1.0,
     "source_url": "https://en.wikipedia.org/wiki/S._Kalyanaraman"
+  },
+  {
+    "source": "papanasam_sivan",
+    "target": "s_rajam",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/S._Rajam",
+    "note": "Wikipedia: 'He was a student of the Carnatic musician Papanasam Sivan'"
+  },
+  {
+    "source": "musiri_subramania_iyer",
+    "target": "mani_krishnaswami",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/Mani_Krishnaswami",
+    "note": "Wikipedia: 'Mani followed the Musiri tradition.' Primary guru among five Sangeetha Kalanidhi teachers."
+  },
+  {
+    "source": "mysore_vasudevacharya",
+    "target": "mani_krishnaswami",
+    "confidence": 0.85,
+    "source_url": "https://en.wikipedia.org/wiki/Mani_Krishnaswami",
+    "note": "Wikipedia: one of five Sangeetha Kalanidhi recipients under whom Mani Krishnaswami trained"
+  },
+  {
+    "source": "tiger_varadachariar",
+    "target": "mani_krishnaswami",
+    "confidence": 0.85,
+    "source_url": "https://en.wikipedia.org/wiki/Mani_Krishnaswami",
+    "note": "Wikipedia: trained under Tiger Varadachariar at Kalakshetra"
   }
 ]

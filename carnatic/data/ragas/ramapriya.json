@@ -2,19 +2,19 @@
   "id": "ramapriya",
   "name": "Rāmapriyā",
   "tradition": "carnatic",
-  "aliases": [],
+  "aliases": ["Ramamanohari", "Ramāmanōhari"],
   "melakarta": 52,
   "is_melakarta": true,
   "cakra": 9,
   "parent_raga": null,
   "sources": [
     {
-      "url": "https://en.wikipedia.org/wiki/Melakarta",
-      "label": "Wikipedia — Melakarta",
+      "url": "https://en.wikipedia.org/wiki/Ramapriya",
+      "label": "Wikipedia",
       "type": "wikipedia"
     }
   ],
-  "notes": "52th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₂ N₂ Ṡ",
+  "notes": "52th melakarta; Cakra 9 (Brahma); arohana: S R₁ G₃ M₂ P D₂ N₂ Ṡ; called Ramāmanōhari in Muthuswami Dikshitar school",
   "katapayadi": {
     "madhyama": 2,
     "ri": 1,

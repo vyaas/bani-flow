@@ -1,0 +1,233 @@
+{
+  "id": "music_academy_1975_thanjavur_kalyanaraman",
+  "video_id": "R7CW-NAv9yU",
+  "url": "https://youtu.be/R7CW-NAv9yU",
+  "title": "Thanjavur S. Kalyanaraman | The Music Academy, 24 December 1975",
+  "short_title": "Music Academy 1975",
+  "date": "1975-12-24",
+  "venue": "The Music Academy, Chennai",
+  "occasion": "Music Academy annual conference concert, 24 December 1975; uploaded by Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://youtu.be/R7CW-NAv9yU",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "thanjavur_kalyanaraman", "role": "vocal" },
+        { "musician_id": "t_rukmini", "role": "violin" },
+        { "musician_id": "guruvayur_dorai", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "type": "kriti",
+          "raga_id": "kalyani",
+          "composition_id": "ganapate_mahamate",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Ganapate Mahamate",
+          "tala": "rupakam",
+          "notes": ""
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:08:14",
+          "offset_seconds": 494,
+          "type": "kriti",
+          "raga_id": "manohari",
+          "composition_id": "kanjadalayatakshi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Kanjadalayatakshi",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:13:58",
+          "offset_seconds": 838,
+          "type": "alapana",
+          "raga_id": "ramapriya",
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Alapana — Ramapriya",
+          "tala": null,
+          "notes": "raga is Ramamanohari in Dikshitar school"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:22:55",
+          "offset_seconds": 1375,
+          "type": "kriti",
+          "raga_id": "ramapriya",
+          "composition_id": "matangi_sri_rajarajeshwari",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Matangi Sri Rajarajeshwari",
+          "tala": "rupakam",
+          "notes": "raga is Ramamanohari in Dikshitar school"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:35:30",
+          "offset_seconds": 2130,
+          "type": "alapana",
+          "raga_id": "madhyamavati",
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Alapana — Madhyamavati",
+          "tala": null,
+          "notes": ""
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:38:38",
+          "offset_seconds": 2318,
+          "type": "kriti",
+          "raga_id": "madhyamavati",
+          "composition_id": "pannaga_shayana_padmanabha",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Pannaga Shayana Padmanabha",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:43:44",
+          "offset_seconds": 2624,
+          "type": "alapana",
+          "raga_id": "kambhoji",
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Alapana — Kambhoji",
+          "tala": null,
+          "notes": ""
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:01:22",
+          "offset_seconds": 3682,
+          "type": "kriti",
+          "raga_id": "kambhoji",
+          "composition_id": "kailasa_nathena",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Kailasa Nathena",
+          "tala": "misra_chapu",
+          "notes": ""
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:15:05",
+          "offset_seconds": 4505,
+          "type": "tani",
+          "raga_id": null,
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Tani Avarthanam",
+          "tala": "misra_chapu",
+          "notes": ""
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:25:02",
+          "offset_seconds": 5102,
+          "type": "alapana",
+          "raga_id": "nasikabhusani",
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Alapana — Nasikabhusani",
+          "tala": null,
+          "notes": "raga is Nasamani in Dikshitar school"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:28:42",
+          "offset_seconds": 5322,
+          "type": "kriti",
+          "raga_id": "nasikabhusani",
+          "composition_id": "sri_rama_saraswati",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Sri Rama Saraswati",
+          "tala": "adi",
+          "notes": "raga is Nasamani in Dikshitar school"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:37:04",
+          "offset_seconds": 5824,
+          "type": "kriti",
+          "raga_id": "suddha_saveri",
+          "composition_id": "ekamresha_nayike",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Ekamresha Nayike",
+          "tala": "adi",
+          "notes": "Dikshitar calls raga Karnataka Shuddha Saveri; mapped to suddha_saveri"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "01:40:01",
+          "offset_seconds": 6001,
+          "type": "alapana",
+          "raga_id": "dhanyasi",
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Alapana — Dhanyasi",
+          "tala": null,
+          "notes": ""
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "01:50:57",
+          "offset_seconds": 6657,
+          "type": "kriti",
+          "raga_id": "dhanyasi",
+          "composition_id": "paradevatha",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Paradevatha",
+          "tala": "adi",
+          "notes": "2 kalai"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:05:55",
+          "offset_seconds": 7555,
+          "type": "alapana",
+          "raga_id": "brindavana_saranga",
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Alapana — Brindavana Saranga",
+          "tala": null,
+          "notes": ""
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "02:07:45",
+          "offset_seconds": 7665,
+          "type": "kriti",
+          "raga_id": "brindavana_saranga",
+          "composition_id": "swaminathena_samrakshitoham",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Swaminathena Samrakshitoham",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "02:16:01",
+          "offset_seconds": 8161,
+          "type": "thillana",
+          "raga_id": "dwijavanthi",
+          "composition_id": "thillana_dwijavanthi_kalyanaraman",
+          "composer_id": "thanjavur_kalyanaraman",
+          "display_title": "Thillana — Dwijavanthi",
+          "tala": null,
+          "notes": "own composition"
+        }
+      ]
+    }
+  ]
+}

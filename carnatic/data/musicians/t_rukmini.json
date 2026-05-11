@@ -1,0 +1,20 @@
+{
+  "id": "t_rukmini",
+  "label": "T. Rukmini",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/T._Rukmini",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1936,
+  "died": 2020,
+  "era": "disseminator",
+  "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

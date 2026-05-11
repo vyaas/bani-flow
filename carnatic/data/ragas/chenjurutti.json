@@ -1,0 +1,19 @@
+{
+  "id": "chenjurutti",
+  "name": "Chenjurutti",
+  "tradition": "carnatic",
+  "aliases": [
+    "Senjurutti",
+    "Chenjirutti"
+  ],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kharaharapriya",
+      "label": "Wikipedia (via Kharaharapriya janya)",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Kharaharapriya (22nd melakarta); encountered in concert tracklist of Thanjavur Kalyanaraman"
+}

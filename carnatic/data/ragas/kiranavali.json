@@ -1,0 +1,19 @@
+{
+  "id": "kiranavali",
+  "name": "Kiranavali",
+  "tradition": "carnatic",
+  "aliases": [
+    "Kiranāvali",
+    "Kiranavali"
+  ],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragask.shtml#kiraNAvaLi",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ],
+  "notes": "Janya of Harikambhoji (28th melakarta)"
+}

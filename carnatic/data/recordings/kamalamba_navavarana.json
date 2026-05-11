@@ -1,0 +1,370 @@
+{
+  "id": "kamalamba_navavarana",
+  "video_id": "WWfsMsTQeiQ",
+  "url": "https://youtu.be/WWfsMsTQeiQ",
+  "title": "Kamalamba Navavarana Kritis — Complete Cycle",
+  "short_title": "Kamalamba Navavarana",
+  "date": null,
+  "venue": null,
+  "occasion": "Complete performance of the eleven Kamalamba Navavarana Kritis by Muthuswami Dikshitar (1775–1835), dedicated to Goddess Kamalamba of Thyagaraja Temple, Tiruvarur. Each kriti corresponds to one avaranam (enclosure) of the Sri Chakra, from the outermost Trailokyamohana to the innermost bindu. Preceded by invocatory kritis for Ganapati and Muruga, and concluded with a Mangala kriti. Dikshitar appears throughout as composer-in-residence.",
+  "sources": [
+    {
+      "url": "https://youtu.be/WWfsMsTQeiQ",
+      "label": "YouTube",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "notes": "Invocatory — Ganapati. Opens the complete Navavarana cycle.",
+      "performers": [
+        {
+          "musician_id": "alathur_brothers",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "sri_maha_ganapathiravathu_mam",
+          "raga_id": "gowla",
+          "tala": "misra_capu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "śrī mahā gaṇapatirāvathu mām",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 2,
+      "notes": "Invocatory — Muruga. Second opening piece before the Navavarana proper.",
+      "performers": [
+        {
+          "musician_id": "rk_srikantan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:08:46",
+          "offset_seconds": 526,
+          "composition_id": "balasubramanyam_bhajeham",
+          "raga_id": "surutti",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "bālasubrahmaṇyam bhajēham",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 3,
+      "notes": "Dhyana Kriti — meditative invocation preparing the devotee for the spiritual journey. Timestamp from start of alapana, which is performed as an integral prelude.",
+      "performers": [
+        {
+          "musician_id": "ms_subbulakshmi",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:13:01",
+          "offset_seconds": 781,
+          "composition_id": "kamalambike_dikshitar",
+          "raga_id": "thodi",
+          "tala": "rupakam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "kamalāmbikē",
+          "notes": "Alapana from 00:13:01; kriti from 00:24:49"
+        }
+      ]
+    },
+    {
+      "session_index": 4,
+      "notes": "1st Avaranam — Trailokyamohana Chakra ('Enchanter of the Three Worlds'); the outermost enclosure of the Sri Chakra. Timestamp from start of alapana.",
+      "performers": [
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:40:30",
+          "offset_seconds": 2430,
+          "composition_id": "kamalamba_samrakshathu",
+          "raga_id": "ananda_bhairavi",
+          "tala": "misra_capu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "kamalāmba samrakṣathu",
+          "notes": "Alapana from 00:40:30; kriti from 00:45:46"
+        }
+      ]
+    },
+    {
+      "session_index": 5,
+      "notes": "2nd Avaranam — Sarvasaparipuraka Chakra ('Fulfillment of All Desires'); the sixteen-petaled lotus. Timestamp from start of alapana.",
+      "performers": [
+        {
+          "musician_id": "ml_vasanthakumari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:57:51",
+          "offset_seconds": 3471,
+          "composition_id": "kamalambam_bhajare",
+          "raga_id": "kalyani",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "kamalāmbam bhajare",
+          "notes": "Alapana from 00:57:51; kriti from 01:14:00"
+        }
+      ]
+    },
+    {
+      "session_index": 6,
+      "notes": "3rd Avaranam — Sarvasamkshobana Chakra ('Agitator of All'); the eight-petaled lotus. Timestamp from start of alapana.",
+      "performers": [
+        {
+          "musician_id": "dk_jayaraman",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "01:27:46",
+          "offset_seconds": 5266,
+          "composition_id": "sri_kamalambikaya_katakshitoham",
+          "raga_id": "shankarabharanam",
+          "tala": "rupakam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "śrī kamalāmbikāyā katākṣitoham",
+          "notes": "Alapana from 01:27:46; kriti from 01:38:44"
+        }
+      ]
+    },
+    {
+      "session_index": 7,
+      "notes": "4th Avaranam — Sarvasaubhagyadayaka Chakra ('Bestower of All Prosperity'); the fourteen-triangle enclosure. No separate alapana in this segment.",
+      "performers": [
+        {
+          "musician_id": "s_rajam",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "01:50:08",
+          "offset_seconds": 6608,
+          "composition_id": "kamalambikayai",
+          "raga_id": "kambhoji",
+          "tala": "ata",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "kamalāmbikāyai",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 8,
+      "notes": "5th Avaranam — Sarvarthasadhaka Chakra ('Accomplisher of All Purposes'); the outer ten-triangle enclosure. Timestamp from start of alapana.",
+      "performers": [
+        {
+          "musician_id": "madurai_mani_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:00:15",
+          "offset_seconds": 7215,
+          "composition_id": "sri_kamalambayah_param",
+          "raga_id": "bhairavi",
+          "tala": "misra_jampa",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "śrī kamalāmbāyāḥ param",
+          "notes": "Alapana from 02:00:15; kriti from 02:15:43"
+        }
+      ]
+    },
+    {
+      "session_index": 9,
+      "notes": "6th Avaranam — Sarvaraksakara Chakra ('Protector of All'); the inner ten-triangle enclosure. No separate alapana in this segment.",
+      "performers": [
+        {
+          "musician_id": "mani_krishnaswami",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:23:17",
+          "offset_seconds": 8597,
+          "composition_id": "kamalambikayaastava",
+          "raga_id": "punnagavarali",
+          "tala": "rupakam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "kamalāmbikāyāstava",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 10,
+      "notes": "7th Avaranam — Sarvarogahara Chakra ('Curer of All Diseases'); the eight-triangle enclosure. Timestamp from start of alapana.",
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:33:03",
+          "offset_seconds": 9183,
+          "composition_id": "sri_kamalambikayam",
+          "raga_id": "sahana",
+          "tala": "tisra_triputa",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "śrī kamalāmbikāyam",
+          "notes": "Alapana from 02:33:03; kriti from 02:42:19"
+        }
+      ]
+    },
+    {
+      "session_index": 11,
+      "notes": "8th Avaranam — Sarvasiddhiprada Chakra ('Granter of All Perfections'); the three-triangle enclosure. Rare Ghanta raga. No separate alapana in this segment.",
+      "performers": [
+        {
+          "musician_id": "t_viswanathan",
+          "role": "flute"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:48:16",
+          "offset_seconds": 10096,
+          "composition_id": "sri_kamalambike_ghanta",
+          "raga_id": "ghanta",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "śrī kamalāmbikē (ghaṇṭā)",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "session_index": 12,
+      "notes": "9th Avaranam — Sarvanandamaya Chakra ('Full of All Bliss'); the innermost bindu, representing ultimate union with the divine. Timestamp from start of alapana.",
+      "performers": [
+        {
+          "musician_id": "balamuralikrishna",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "02:54:29",
+          "offset_seconds": 10469,
+          "composition_id": "sri_kamalamba_jayati",
+          "raga_id": "ahiri",
+          "tala": "rupakam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "śrī kamalāmbā jayati",
+          "notes": "Alapana from 02:54:29; kriti from 02:56:36"
+        }
+      ]
+    },
+    {
+      "session_index": 13,
+      "notes": "Mangala Kriti — auspicious close of the complete cycle. Sri raga, traditionally associated with benediction.",
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "muthuswami_dikshitar",
+          "role": "composer"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "03:08:02",
+          "offset_seconds": 11282,
+          "composition_id": "sri_kamalambike_mangala",
+          "raga_id": "sriraga",
+          "tala": "khanda_ekam",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "śrī kamalāmbikē (maṅgala)",
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

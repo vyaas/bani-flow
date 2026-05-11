@@ -1,0 +1,20 @@
+{
+  "id": "s_rajam",
+  "label": "S. Rajam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/S._Rajam",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1919,
+  "died": 2010,
+  "era": "golden_age",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}
