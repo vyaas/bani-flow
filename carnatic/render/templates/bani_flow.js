@@ -1720,6 +1720,11 @@ function _buildBaniFlowLecdemSubjectChips(subjects, excludeType, excludeId) {
     c.className = 'musician-chip';
     c.textContent = mLabel;
     c.title = 'Open ' + mLabel + '\u2019s panel';
+    if (mNode && mNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
+      const tint = THEME.eraTintCss(mNode.data('era') || null);
+      c.style.setProperty('--chip-era-bg',     tint.bg);
+      c.style.setProperty('--chip-era-border', tint.border);
+    }
     c.addEventListener('click', function(e) {
       e.stopPropagation();
       c.classList.add('chip-tapped');

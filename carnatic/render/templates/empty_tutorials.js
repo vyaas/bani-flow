@@ -172,6 +172,7 @@
     } else if (kind === 'composition') {
       chip.addEventListener('click', () => _onComposition(id, opts));
     } else if (kind === 'musician') {
+      if (id) _applyEraTint(chip, id);
       chip.addEventListener('click', () => _onMusician(id));
     } else if (kind === 'lecdem_by' || kind === 'lecdem_about') {
       chip.addEventListener('click', () => _onMusician(id));
@@ -197,7 +198,7 @@
   }
 
   function _chipLikeLabel(cls, text) {
-    return _el('span', 'pt-demo-title', text);
+    return _el('span', cls, text);
   }
 
   // _renderEffectParts: builds an inline pt-effect span from a structured parts array.
@@ -284,7 +285,7 @@
     if (type === 'lecdem_row') {
       const block = _el('div', 'pt-demo-block');
       const row = _el('div', 'pt-demo-row pt-demo-row-lecdem');
-      row.appendChild(_chipLikeLabel('lecdem-chip', demo.chip_label || '\u270e Lec-Dem'));
+      row.appendChild(_chipLikeLabel('lecdem-label-chip', demo.chip_label || '\u270e Lec-Dem'));
 
       const acts = _el('div', 'trail-acts pt-demo-acts');
       const playBtn = _el('button', 'tree-play-btn rec-play-btn play-btn-concert', '\u25b6');
@@ -371,7 +372,7 @@
       const headerRow = _el('div', 'pt-demo-row pt-demo-row-lecdem');
 
       // Concert header chip (short title)
-      headerRow.appendChild(_chipLikeLabel('lecdem-chip', demo.chip_label || '\u266a Recording'));
+      headerRow.appendChild(_chipLikeLabel('yt-label-chip', demo.chip_label || '\u266a Recording'));
 
       // ▶ / ↗ buttons
       const acts = _el('div', 'trail-acts pt-demo-acts');

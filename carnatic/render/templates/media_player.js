@@ -1302,7 +1302,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     row.className = 'trail-row2';
 
     const labelSpan = document.createElement('span');
-    labelSpan.className = 'yt-label-chip';
+    labelSpan.className = 'lecdem-label-chip';
     labelSpan.textContent = ref.label || 'Lecture-Demo';
     labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
     row.appendChild(labelSpan);
@@ -1383,7 +1383,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   titleRow.className = 'concert-title-row';
 
   const titleSpan = document.createElement('span');
-  titleSpan.className = 'concert-title';
+  titleSpan.className = 'concert-title lecdem-title';
   titleSpan.textContent = ref.label || 'Lecture-Demo';
   titleRow.appendChild(titleSpan);
 
