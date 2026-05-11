@@ -256,13 +256,13 @@
   }
 
   // Restore pin state — localStorage persists across sessions.
-  // Default on first desktop visit: left panel pinned, right panel unpinned.
+  // Default on first desktop visit: both panels pinned open.
   if (isDesktop()) {
     try {
       var _lp = localStorage.getItem('baniLeftPinned');
       var _rp = localStorage.getItem('baniRightPinned');
       leftPinned  = _lp !== null ? _lp  === 'true' : true;
-      rightPinned = _rp !== null ? _rp === 'true' : false;
+      rightPinned = _rp !== null ? _rp === 'true' : true;
       _applyPinState();
     } catch (e) { /* storage unavailable — ignore */ }
   }
