@@ -51,6 +51,68 @@ function applyBaniFilter(type, id) {
       if (tracks.some(t => t.vid === ytVid)) nodeSet.add(n.id());
     });
     matchedNodeIds = [...nodeSet];
+  } else if (type === 'madhyama') {
+    // id = '1' (śuddha, melas 1–36) or '2' (prati, melas 37–72)
+    const mVal = parseInt(id, 10);
+    const nodeSet = new Set();
+    for (let M = 1; M <= 72; M++) {
+      const hem = M <= 36 ? 1 : 2;
+      if (hem === mVal) {
+        Object.keys(ragaToNodes).forEach(rid => {
+          const raga = ragas && ragas.find(r => r.id === rid);
+          const mn = raga && raga.melakarta;
+          if (mn === M) (ragaToNodes[rid] || []).forEach(nid => nodeSet.add(nid));
+        });
+      }
+    }
+    matchedNodeIds = [...nodeSet];
+  } else if (type === 'cakra') {
+    // id = cakra number 1–12
+    const cVal = parseInt(id, 10);
+    const nodeSet = new Set();
+    for (let M = 1; M <= 72; M++) {
+      const n2 = M <= 36 ? M : M - 36;
+      const c = Math.floor((n2 - 1) / 6) + 1;
+      const actualC = M <= 36 ? c : c + 6;
+      if (actualC === cVal) {
+        Object.keys(ragaToNodes).forEach(rid => {
+          const raga = ragas && ragas.find(r => r.id === rid);
+          const mn = raga && raga.melakarta;
+          if (mn === M) (ragaToNodes[rid] || []).forEach(nid => nodeSet.add(nid));
+        });
+      }
+    }
+    matchedNodeIds = [...nodeSet];
+  } else if (type === 'riga') {
+    // id = rigaIdx (0–5) shared by 12 melas (both hemispheres)
+    const rigaIdx = parseInt(id, 10);
+    const nodeSet = new Set();
+    for (let M = 1; M <= 72; M++) {
+      const n2 = M <= 36 ? M : M - 36;
+      if (Math.floor((n2 - 1) / 6) === rigaIdx) {
+        Object.keys(ragaToNodes).forEach(rid => {
+          const raga = ragas && ragas.find(r => r.id === rid);
+          const mn = raga && raga.melakarta;
+          if (mn === M) (ragaToNodes[rid] || []).forEach(nid => nodeSet.add(nid));
+        });
+      }
+    }
+    matchedNodeIds = [...nodeSet];
+  } else if (type === 'dani') {
+    // id = daniIdx (0–5); 2 melas: the cell's mela-number and hemispheric companion
+    const daniIdx = parseInt(id, 10);
+    const nodeSet = new Set();
+    for (let M = 1; M <= 72; M++) {
+      const n2 = M <= 36 ? M : M - 36;
+      if ((n2 - 1) % 6 === daniIdx) {
+        Object.keys(ragaToNodes).forEach(rid => {
+          const raga = ragas && ragas.find(r => r.id === rid);
+          const mn = raga && raga.melakarta;
+          if (mn === M) (ragaToNodes[rid] || []).forEach(nid => nodeSet.add(nid));
+        });
+      }
+    }
+    matchedNodeIds = [...nodeSet];
   } else {
     matchedNodeIds = [];
   }

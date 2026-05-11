@@ -602,3 +602,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-10: ADR-123 wheel: `melaAngles[i] = (i+0.5) * 2π/72` centres each angle in its 5° arc slot — using `i * 2π/72` (the old circle-node convention) misaligns janya fan anchor angles by half a slot; shift to centred angles when migrating from point nodes to arc sectors.
 - 2026-05-10: ADR-123 ring radii are a strict monotone sequence (R_MADHYAMA 0.10 → R_CAKRA 0.18 → R_RIGA 0.26 → R_DANI 0.34 → R_MELA 0.42 → R_LABEL 0.50 → R_JANYA 0.62 → R_COMP 0.78 → R_MUSC 0.92); assert this ordering in any script that reads or modifies these constants.
 [AGENTS: graph-architect, carnatic-coder]
+- 2026-05-11: ADR-124 zoom retirement: removing pan/zoom/pinch machinery requires two separate splice points — the state+RagaWheel object block (before drawRagaWheel) and the event handler block (inside drawRagaWheel after vp creation); both must be removed or the retired _applyTransform call will crash on first draw.
+- 2026-05-11: ADR-124 ring interactivity: making SVG ring paths clickable requires both `pointer-events: all` (replaces `none`) and a `data-orig-opacity` attribute that the light-up machinery reads to restore dimmed cells; missing either breaks the dim/restore cycle.
+- 2026-05-11: ADR-124 orientRagaWheel: the old implementation polled _wheelSyncInProgress and then animated via _wheelGetVx/y/scale/_wheelApplyTransform — all now retired; replacement is a one-liner `window.lightUpSpine(ragaId)` with no polling needed.
+[AGENTS: carnatic-coder]

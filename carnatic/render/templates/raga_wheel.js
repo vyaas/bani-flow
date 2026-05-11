@@ -159,12 +159,9 @@ function vpRelayout() {
 function wheelFit() {
   if (window.RagaWheel && typeof window.RagaWheel.fit === 'function') {
     window.RagaWheel.fit();
-    return;
+  } else {
+    if (typeof window.clearWheelLightUp === 'function') window.clearWheelLightUp();
   }
-  window._wheelSetVx(0);
-  window._wheelSetVy(0);
-  window._wheelSetVscale(1);
-  window._wheelApplyTransform();
 }
 
 // Backward-compatible wrapper (used by bani_flow.js and other callers)
@@ -628,14 +625,224 @@ function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
     panel.appendChild(group);
   }
 }
-let _wheelMouseMove = null;
-let _wheelMouseUp   = null;
-let _animRafId = null;  // current _animateToTarget rAF handle (cancelled on new call)
-
 // AbortController for SVG-level event listeners — aborted and re-created on
 // each drawRagaWheel() call so stale handlers from previous draws don't
 // accumulate on the persistent <svg> element.
 let _svgListenerController = null;
+
+// ── ADR-124: Light-up state ───────────────────────────────────────────────────
+// ID of the currently lit mela raga (for toggle-off).
+let _litMelaId = null;
+
+// ── ADR-124: JS katapayadi formula (mirrors melakarta_math.py) ──────────────
+// Upper-triangular (ri,ga) / (da,ni) pair enumeration — shared axis for both.
+const _PAIRS = [[1,1],[1,2],[1,3],[2,2],[2,3],[3,3]];
+
+function _melaToTuple(M) {
+  const madhyama = M <= 36 ? 1 : 2;
+  const n = madhyama === 1 ? M : M - 36;           // 1..36 within hemisphere
+  const cakraIdx    = Math.floor((n - 1) / 6);      // 0..5
+  const posInCakra  = (n - 1) % 6;                  // 0..5
+  return {
+    madhyama,
+    ri: _PAIRS[cakraIdx][0],   ga: _PAIRS[cakraIdx][1],
+    da: _PAIRS[posInCakra][0], ni: _PAIRS[posInCakra][1],
+    cakra: madhyama === 1 ? cakraIdx + 1 : cakraIdx + 7, // 1..12 on the wheel
+  };
+}
+
+// ── ADR-124: Light-up core functions ─────────────────────────────────────────
+function _lightUpSpineForMela(M) {
+  const svg = document.getElementById('raga-wheel');
+  if (!svg) return;
+  const t = _melaToTuple(M);
+
+  // Dim all ring cells to near-zero
+  svg.querySelectorAll('[data-ring]').forEach(el => {
+    el.setAttribute('opacity', '0.08');
+  });
+  // Dim mela arc slots — scale origOp proportionally so live/empty hierarchy is preserved
+  const SLOT_DIM = 0.35;
+  svg.querySelectorAll('.mela-node path[data-mela]').forEach(el => {
+    const mStr = el.getAttribute('data-mela');
+    const hasRaga = el.closest('.mela-node') && el.closest('.mela-node').getAttribute('data-id');
+    const isLit = parseInt(mStr) === M;
+    const origOp = parseFloat(el.getAttribute('data-orig-opacity')) || 0;
+    el.setAttribute('opacity', isLit ? '0.95' : String(origOp * SLOT_DIM));
+    el.setAttribute('stroke', hasRaga ? THEME.fg : THEME.edgeLine);
+    el.setAttribute('stroke-width', hasRaga ? '0.75' : '0.5');
+  });
+  // Dim mela labels — scale origOp proportionally; grayscale already set on empty chips
+  const LBL_DIM = 0.35;
+  if (_labelLayer) {
+    _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
+      const origOp = parseFloat(lbl.getAttribute('data-orig-opacity')) || 0;
+      lbl.setAttribute('opacity', String(origOp * LBL_DIM));
+      // Don’t touch style.filter — empty chips already have grayscale(1) from initial render
+    });
+  }
+
+  // Light the 5 spine cells with themed accent
+  const madEl = svg.querySelector(`[data-ring="madhyama"][data-madhyama="${t.madhyama}"]`);
+  if (madEl) madEl.setAttribute('opacity', t.madhyama === 1 ? '0.85' : '0.50');
+
+  const cakraEl = svg.querySelector(`[data-ring="cakra"][data-cakra="${t.cakra}"]`);
+  if (cakraEl) cakraEl.setAttribute('opacity', '0.92');
+
+  const rigaEl = svg.querySelector(`[data-ring="riga"][data-cakra="${t.cakra}"]`);
+  if (rigaEl) rigaEl.setAttribute('opacity', '0.82');
+
+  const daniEl = svg.querySelector(`[data-ring="dani"][data-mela="${M}"]`);
+  if (daniEl) daniEl.setAttribute('opacity', '0.90');
+
+  // Mela slot — accent stroke to make it pop
+  const melaSlot = svg.querySelector(`.mela-node[data-mela="${M}"] path[data-mela]`);
+  if (melaSlot) {
+    melaSlot.setAttribute('stroke', THEME.accentSelect);
+    melaSlot.setAttribute('stroke-width', '2');
+  }
+  // Lit mela label: full opacity, clear any grayscale
+  if (_labelLayer) {
+    const melaG = svg.querySelector(`.mela-node[data-mela="${M}"]`);
+    const melaId = melaG ? melaG.getAttribute('data-id') : '';
+    if (melaId) {
+      const lbl = _labelLayer.querySelector(`.mela-label[data-id="${CSS.escape(melaId)}"]`);
+      if (lbl) { lbl.setAttribute('opacity', '1'); lbl.style.filter = ''; }
+    }
+  }
+}
+
+function _lightUpMelas(melaNumbers) {
+  const litSet = new Set(melaNumbers.map(String));
+  const svg = document.getElementById('raga-wheel');
+  if (!svg) return;
+
+  // Dim all ring cells
+  svg.querySelectorAll('[data-ring]').forEach(el => el.setAttribute('opacity', '0.08'));
+
+  // Light up spine cells (madhyama, cakra, ri-ga, da-ni) for every lit mela
+  for (const M of melaNumbers) {
+    const t = _melaToTuple(M);
+    if (!t) continue;
+    // Madhyama half
+    const madEl = svg.querySelector(`[data-ring="madhyama"][data-madhyama="${t.madhyama}"]`);
+    if (madEl) {
+      const orig = parseFloat(madEl.getAttribute('data-orig-opacity')) || 0.80;
+      madEl.setAttribute('opacity', Math.min(1, orig + 0.15));
+    }
+    // Cakra wedge
+    const actualCakra = M <= 36 ? Math.floor((M - 1) / 6) + 1 : Math.floor((M - 37) / 6) + 7;
+    const cakraEl = svg.querySelector(`[data-ring="cakra"][data-cakra="${actualCakra}"]`);
+    if (cakraEl) {
+      const orig = parseFloat(cakraEl.getAttribute('data-orig-opacity')) || 0.82;
+      cakraEl.setAttribute('opacity', Math.min(1, orig + 0.12));
+    }
+    // Ri-ga arc (keyed by cakra number on the element)
+    const rigaEl = svg.querySelector(`[data-ring="riga"][data-cakra="${actualCakra}"]`);
+    if (rigaEl) {
+      const orig = parseFloat(rigaEl.getAttribute('data-orig-opacity')) || 0.62;
+      rigaEl.setAttribute('opacity', Math.min(1, orig + 0.30));
+    }
+    // Da-ni cell (keyed by mela number)
+    const daniEl = svg.querySelector(`[data-ring="dani"][data-mela="${M}"]`);
+    if (daniEl) {
+      const orig = parseFloat(daniEl.getAttribute('data-orig-opacity')) || 0.50;
+      daniEl.setAttribute('opacity', Math.min(1, orig + 0.45));
+    }
+  }
+
+  // Mela arc slots — even within the lit set, empty melas stay muted (no contributions)
+  const SLOT_DIM = 0.35;
+  svg.querySelectorAll('.mela-node path[data-mela]').forEach(el => {
+    const m = el.getAttribute('data-mela');
+    const lit = litSet.has(m);
+    const hasRaga = el.closest('.mela-node') && el.closest('.mela-node').getAttribute('data-id');
+    const origOp = parseFloat(el.getAttribute('data-orig-opacity')) || 0;
+    const isLive = origOp >= 0.5;  // live slot orig=0.90, non-live orig=0.30, empty orig=0.20
+    let op;
+    if (lit && isLive)       op = '0.95';                 // lit + live: full bright
+    else if (lit && !isLive) op = String(origOp);          // lit + empty: keep original muted opacity
+    else                     op = String(origOp * SLOT_DIM); // unlit: scale down
+    el.setAttribute('opacity', op);
+    el.setAttribute('stroke', (lit && isLive) ? THEME.accentSelect : (hasRaga ? THEME.fg : THEME.edgeLine));
+    el.setAttribute('stroke-width', (lit && isLive) ? '2' : (hasRaga ? '0.75' : '0.5'));
+  });
+
+  // Mela labels — same rule: empty stays muted even when lit
+  const LBL_DIM = 0.35;
+  if (_labelLayer) {
+    _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
+      const melaG = document.querySelector(`.mela-node[data-id="${CSS.escape(lbl.getAttribute('data-id') || '')}"]`);
+      const m = melaG ? melaG.getAttribute('data-mela') : null;
+      const origOp = parseFloat(lbl.getAttribute('data-orig-opacity')) || 0;
+      const isLive = origOp >= 0.5;  // live label orig=1, non-live orig=0.28
+      const lit = m && litSet.has(m);
+      if (lit && isLive) {
+        lbl.setAttribute('opacity', '1');
+        lbl.style.filter = '';
+      } else if (lit && !isLive) {
+        // Lit but empty — keep the muted "no contributions" look
+        lbl.setAttribute('opacity', String(origOp));
+        // grayscale stays (already on wrapper from initial render)
+      } else {
+        // Unlit — scale down further
+        lbl.setAttribute('opacity', String(origOp * LBL_DIM));
+      }
+    });
+  }
+}
+
+function _clearWheelLightUp() {
+  const svg = document.getElementById('raga-wheel');
+  if (!svg) return;
+
+  // Restore ring cells
+  svg.querySelectorAll('[data-ring]').forEach(el => {
+    const orig = el.getAttribute('data-orig-opacity');
+    if (orig) el.setAttribute('opacity', orig);
+  });
+  // Restore mela arc slots
+  svg.querySelectorAll('.mela-node path[data-mela]').forEach(el => {
+    const orig = el.getAttribute('data-orig-opacity');
+    if (orig) el.setAttribute('opacity', orig);
+    const hasRaga = el.closest('.mela-node') && el.closest('.mela-node').getAttribute('data-id');
+    el.setAttribute('stroke', hasRaga ? THEME.fg : THEME.edgeLine);
+    el.setAttribute('stroke-width', hasRaga ? '0.75' : '0.5');
+  });
+  // Restore mela labels
+  if (_labelLayer) {
+    _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
+      const orig = lbl.getAttribute('data-orig-opacity');
+      if (orig) lbl.setAttribute('opacity', orig);
+      // Re-apply grayscale for non-live chips (orig < 1 means no contributions)
+      lbl.style.filter = parseFloat(orig) < 1 ? 'grayscale(1)' : '';
+    });
+  }
+  _litMelaId = null;
+}
+
+// Expose on window for syncRagaWheelToFilter and external callers
+window.lightUpSpine = function(ragaId) {
+  if (!ragaId) { _clearWheelLightUp(); return; }
+  const raga = ragas.find(r => r.id === ragaId);
+  if (!raga) return;
+  // Climb to parent mela for janya ragas
+  const melaRaga = raga.is_melakarta ? raga :
+    (raga.parent_raga ? ragas.find(r2 => r2.id === raga.parent_raga) : null);
+  if (!melaRaga || !melaRaga.melakarta) return;
+  // Toggle: second click on same mela clears
+  if (_litMelaId === melaRaga.id) { _clearWheelLightUp(); return; }
+  _litMelaId = melaRaga.id;
+  _lightUpSpineForMela(melaRaga.melakarta);
+};
+window.clearWheelLightUp = _clearWheelLightUp;
+// Keep RagaWheel stub so vpFit() and external callers don't throw.
+window.RagaWheel = { fit: function() { _clearWheelLightUp(); } };
+
+// Expose abort helper so hideRagaWheel (outside IIFE) can clean up SVG listeners
+let _wheelMouseMove = null;
+let _wheelMouseUp   = null;
+let _animRafId = null;  // current _animateToTarget rAF handle (cancelled on new call)
 
 // Pan/zoom state — inside the IIFE but exposed on window so orientRagaWheel
 // (defined outside the IIFE) can read/write them for the pan animation.
@@ -684,7 +891,6 @@ const RagaWheel = {
   },
   rotate(dTheta, anchor) {
     if (!isFinite(dTheta)) return;
-    // Off-centre anchors are reserved for future use.
     this._state.rotation = this._normaliseRotation(this._state.rotation + dTheta);
     this._applyTransform();
   },
@@ -694,10 +900,9 @@ const RagaWheel = {
     this._state.scale = 1;
     this._state.rotation = 0;
     this._applyTransform();
+    _clearWheelLightUp();
   },
-  centreOn(targetX, targetY, targetScale) {
-    _animateToTarget(targetX, targetY, targetScale);
-  },
+  centreOn(targetX, targetY, targetScale) { /* zoom-to-mela retired (ADR-124) */ },
   alignLabelTo(angleRad) {
     this._state.rotation = this._normaliseRotation(-angleRad);
     this._applyTransform();
@@ -727,11 +932,9 @@ const _activePointers = new Map();
 let _pinchStartDist = null, _pinchStartScale = 1;
 // Taphold (long-press) — fires openMetaInspector after 500ms on stationary touch
 let _tapHoldTimer = null, _tapHoldTarget = null;
-// Double-tap detection — fires wheelFit() when two taps hit SVG background within 300ms
+// Double-tap detection
 let _lastTapTime = 0, _lastTapTarget = null;
 // Guard: timestamp of the last synthetic click dispatched by _onPointerEnd.
-// Used to suppress duplicate native click events that some browsers fire
-// despite e.preventDefault() on pointerdown.
 let _wheelLastSyntheticClick = 0;
 
 function _startTapHoldTimer(e) {
@@ -740,28 +943,20 @@ function _startTapHoldTimer(e) {
     if (!_tapHoldTarget) return;
     const el = _tapHoldTarget.closest('[data-id]') || _tapHoldTarget.closest('[data-mela]');
     if (!el) return;
-    // Determine node type from containing group class
     const g = el.closest('.mela-node, .janya-node, .comp-node, .musc-node');
     if (!g) return;
     let nodeType, nodeId;
     if (g.classList.contains('mela-node')) {
-      nodeType = 'mela';
-      const n = parseInt(g.getAttribute('data-mela'));
-      const melaId = g.getAttribute('data-id');
-      // Re-use click handler's raga lookup via the DOM data-id attribute
-      nodeId = melaId || null;
+      nodeType = 'mela'; nodeId = g.getAttribute('data-id') || null;
     } else if (g.classList.contains('janya-node')) {
       nodeType = 'janya'; nodeId = g.getAttribute('data-id');
     } else if (g.classList.contains('comp-node')) {
       nodeType = 'composition'; nodeId = g.getAttribute('data-id');
-    } else if (g.classList.contains('musc-node')) {
-      nodeType = null;  // musicians open via click, not inspector
     }
     if (nodeType && nodeId && typeof openMetaInspector === 'function') {
       openMetaInspector(nodeType, { id: nodeId });
     }
-    _tapHoldTarget = null;
-    _tapHoldTimer = null;
+    _tapHoldTarget = null; _tapHoldTimer = null;
   }, 500);
 }
 
@@ -781,13 +976,12 @@ function _toSvgPoint(svg, clientX, clientY) {
 }
 
 // Apply the current pan/zoom transform to the viewport group.
-// Looks up #wheel-viewport by ID so it works after a full SVG rebuild.
 function _applyTransform() {
   RagaWheel._applyTransform();
 }
 
 // Expose pan/zoom state and transform function on window so orientRagaWheel
-// (outside this IIFE) can drive the pan animation.
+// (outside this IIFE) can drive animations.
 window._wheelGetVx      = () => RagaWheel._state.panX;
 window._wheelGetVy      = () => RagaWheel._state.panY;
 window._wheelGetVscale  = () => RagaWheel._state.scale;
@@ -796,7 +990,6 @@ window._wheelSetVy      = (v) => { RagaWheel._state.panY = v; };
 window._wheelSetVscale  = (v) => { RagaWheel._state.scale = v; };
 window._wheelApplyTransform = () => _applyTransform();
 
-// Expose abort helper so hideRagaWheel (outside IIFE) can clean up SVG listeners
 window._svgAbortFromOutside = () => {
   if (_svgListenerController) { _svgListenerController.abort(); _svgListenerController = null; }
 };
@@ -836,10 +1029,6 @@ window.drawRagaWheel = function() {
   const NR_JANYA   = Math.max(5,  minDim * 0.013);
   const NR_COMP    = Math.max(5,  minDim * 0.013);
   const NR_MUSC    = Math.max(4,  minDim * 0.010);
-
-  RagaWheel._geometry.cx = cx;
-  RagaWheel._geometry.cy = cy;
-  RagaWheel._geometry.rOuter = R_MUSC;
 
   // Build lookups
   const melaByNum = {};
@@ -975,13 +1164,11 @@ window.drawRagaWheel = function() {
   _wdpData = { janyasByMela, compsByRaga, melaByNum };
   _closeWheelDetailPanel();
 
-  // Background rect — transparent hit-target for pan/zoom gestures.
-  // Single-click on empty space collapses the full-mobile player (exploration
-  // intent) but otherwise does nothing to prevent accidental resets while
-  // exploring.  Double-click still resets the viewport pan/zoom.
+  // Background rect — click on empty space collapses mobile player or clears light-up.
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
   bg.addEventListener('click', e => {
     if (e.target !== bg) return;
+    _clearWheelLightUp();
     if (typeof window._collapseMobilePlayer === 'function' &&
         document.querySelector('.media-player.full-mobile')) {
       window._collapseMobilePlayer();
@@ -992,48 +1179,38 @@ window.drawRagaWheel = function() {
   // Viewport group — all wheel content goes inside this <g>
   const vp = svgEl('g', { id: 'wheel-viewport' });
   svg.appendChild(vp);
-  _applyTransform();  // restore saved pan/zoom after SVG rebuild
+  // Restore saved pan/zoom and record geometry for gesture handlers
+  RagaWheel._geometry.cx = cx;
+  RagaWheel._geometry.cy = cy;
+  RagaWheel._geometry.rOuter = R_MUSC;
+  _applyTransform();
 
-  // Wheel zoom (mouse wheel) — clamped to sane limits so the user cannot
-  // accidentally scroll the wheel completely out of view or into a pixel.
-  // ZOOM_MIN/MAX define the hard floor/ceiling.  The per-event factor is kept
-  // small (≤5% per tick) so trackpad momentum scrolling feels gradual rather
-  // than snapping straight to a limit.
+  // ESC key clears light-up — registered once per draw via AbortController
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') _clearWheelLightUp();
+  }, { signal: _signal });
+
+  // ── Pan/zoom gesture handlers (wheel scroll, pointer drag, pinch) ─────────
   const ZOOM_MIN = 0.5, ZOOM_MAX = 4.0;
   svg.addEventListener('wheel', (e) => {
     e.preventDefault();
-    // Normalise deltaY: trackpads send pixel-mode values (deltaMode=0) that
-    // can be large; clamp the effective delta to ±1 "notch" worth of zoom.
     const delta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 50);
-    const factor = Math.pow(1.05, -delta / 50);   // ≤5% per 50-pixel notch
-    // Zoom toward cursor position
+    const factor = Math.pow(1.05, -delta / 50);
     const p = _toSvgPoint(svg, e.clientX, e.clientY);
     RagaWheel.zoom(factor, { x: p.x, y: p.y });
   }, { passive: false, signal: _signal });
-
-  // Wheel pan/pinch-zoom — Pointer Events API (ADR-035)
-  // Replaces mousedown/mousemove/mouseup to work on both desktop and touch.
-  // The `wheel` event handler for scroll-zoom is retained for desktop (above).
-  // Stale handlers are cleaned up via _svgListenerController.abort() at the
-  // top of drawRagaWheel().
 
   svg.addEventListener('pointerdown', (e) => {
     if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
     e.preventDefault();
     svg.setPointerCapture(e.pointerId);
     _activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
     if (_activePointers.size === 1) {
       _dragging = true;
       _gestureMode = 'pan';
       _dragMoved = false;
       _dragStartX = e.clientX; _dragStartY = e.clientY;
       _dragVX = RagaWheel._state.panX; _dragVY = RagaWheel._state.panY;
-
-      // Rim-drag rotation only on touch (not mouse): on desktop, all drags pan.
-      // Rationale: rOuter=0.88×minDim covers most of a wide canvas, making
-      // rotation trigger unpredictably on mouse. Touch users rotate intentionally
-      // by dragging with one finger on the outer rim.
       if (e.pointerType !== 'mouse' && (e.target === bg || e.target === svg)) {
         const p = _toSvgPoint(svg, e.clientX, e.clientY);
         if (RagaWheel.isRimDrag(p.x, p.y)) {
@@ -1042,13 +1219,12 @@ window.drawRagaWheel = function() {
           _rotateStartRotation = RagaWheel._state.rotation;
         }
       }
-
       if (e.pointerType !== 'mouse') _startTapHoldTimer(e);
       svg.style.cursor = 'grabbing';
     } else if (_activePointers.size === 2) {
       _gestureMode = 'pinch';
       _cancelTapHoldTimer();
-      _dragMoved = true;  // suppress tap action when second finger lands
+      _dragMoved = true;
       _pinchStartDist = _getPinchDistance();
       _pinchStartScale = RagaWheel._state.scale;
     }
@@ -1057,13 +1233,9 @@ window.drawRagaWheel = function() {
   svg.addEventListener('pointermove', (e) => {
     if (!_activePointers.has(e.pointerId)) return;
     _activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
     if (_activePointers.size === 1 && _dragging && _gestureMode === 'pan') {
       const dx = e.clientX - _dragStartX, dy = e.clientY - _dragStartY;
-      if (!_dragMoved && Math.hypot(dx, dy) > 5) {
-        _dragMoved = true;
-        _cancelTapHoldTimer();
-      }
+      if (!_dragMoved && Math.hypot(dx, dy) > 5) { _dragMoved = true; _cancelTapHoldTimer(); }
       RagaWheel._state.panX = _dragVX + dx;
       RagaWheel._state.panY = _dragVY + dy;
       _applyTransform();
@@ -1072,17 +1244,12 @@ window.drawRagaWheel = function() {
       const currentAngle = Math.atan2(p.y - RagaWheel._geometry.cy, p.x - RagaWheel._geometry.cx);
       const delta = currentAngle - _rotateStartAngle;
       RagaWheel._state.rotation = RagaWheel._normaliseRotation(_rotateStartRotation + delta);
-      if (!_dragMoved && Math.abs(delta) > (2 * Math.PI / 180)) {
-        _dragMoved = true;
-        _cancelTapHoldTimer();
-      }
+      if (!_dragMoved && Math.abs(delta) > (2 * Math.PI / 180)) { _dragMoved = true; _cancelTapHoldTimer(); }
       _applyTransform();
     } else if (_activePointers.size === 2 && _pinchStartDist !== null) {
       const newDist = _getPinchDistance();
       const factor = newDist / _pinchStartDist;
-      const ZOOM_MIN = 0.5, ZOOM_MAX = 4.0;
       const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, _pinchStartScale * factor));
-      // Zoom toward midpoint of the two touch points
       const pts = [..._activePointers.values()];
       const rect = svg.getBoundingClientRect();
       const mx = (pts[0].x + pts[1].x) / 2 - rect.left;
@@ -1102,33 +1269,15 @@ window.drawRagaWheel = function() {
     _activePointers.delete(e.pointerId);
     _cancelTapHoldTimer();
     if (_activePointers.size < 2) _pinchStartDist = null;
-
-    // ── Pinch→pan handoff: re-anchor drag origin to the remaining finger ──
-    // Without this, the single-finger pan path uses stale _dragStartX/Y and
-    // _dragVX/Y from the original pointerdown (before the pinch changed
-    // _vx/_vy), causing the viewport to jump back to its pre-pinch position.
     if (_activePointers.size === 1 && _dragging) {
       const remaining = [..._activePointers.values()][0];
-      _dragStartX = remaining.x;
-      _dragStartY = remaining.y;
-      _dragVX = RagaWheel._state.panX;
-      _dragVY = RagaWheel._state.panY;
+      _dragStartX = remaining.x; _dragStartY = remaining.y;
+      _dragVX = RagaWheel._state.panX; _dragVY = RagaWheel._state.panY;
       if (_gestureMode === 'pinch') _gestureMode = 'pan';
     }
-
     if (_activePointers.size === 0) {
-      _dragging = false;
-      _gestureMode = null;
-      svg.style.cursor = '';
-
-      // ADR-035 fix: e.preventDefault() on pointerdown suppresses native click
-      // events (the spec says no compatibility mouse events shall fire).
-      // setPointerCapture redirects pointerup to the SVG, so e.target is SVG,
-      // not the element under the pointer.  Resolve the real target and
-      // re-dispatch a synthetic click so mela/janya/comp handlers still fire.
+      _dragging = false; _gestureMode = null; svg.style.cursor = '';
       const realTarget = document.elementFromPoint(e.clientX, e.clientY);
-
-      // Double-tap on SVG background → wheelFit() (mobile supplement to dblclick)
       if (!_dragMoved && realTarget && (realTarget === bg || realTarget === svg)) {
         const now = Date.now();
         if (now - _lastTapTime < 300 && _lastTapTarget === bg) {
@@ -1138,8 +1287,6 @@ window.drawRagaWheel = function() {
         }
         _lastTapTime = now; _lastTapTarget = bg;
       }
-
-      // Re-dispatch click on the real element under the pointer (tap, not drag)
       if (!_dragMoved && realTarget) {
         _wheelLastSyntheticClick = Date.now();
         realTarget.dispatchEvent(new MouseEvent('click', {
@@ -1152,39 +1299,49 @@ window.drawRagaWheel = function() {
   svg.addEventListener('pointerup',     _onPointerEnd, { signal: _signal });
   svg.addEventListener('pointercancel', _onPointerEnd, { signal: _signal });
 
-  // Block native click events that some browsers fire despite
-  // e.preventDefault() on pointerdown.  Our synthetic clicks
-  // have isTrusted=false; browser-generated ones have isTrusted=true.
   svg.addEventListener('click', (e) => {
     if (e.isTrusted && Date.now() - _wheelLastSyntheticClick < 300) {
       e.stopImmediatePropagation();
     }
-  }, { capture: true, signal: _signal });  // capturing phase — runs before any bubble-phase handlers
+  }, { capture: true, signal: _signal });
 
-  // Double-click on empty canvas → reset pan/zoom (desktop; guards: not a pan-end, not a node dblclick)
   svg.addEventListener('dblclick', (e) => {
     e.stopPropagation();
     if (_dragMoved) { _dragMoved = false; return; }
     RagaWheel.fit();
   }, { signal: _signal });
 
-  // ── ADR-123: Katapayadi decoding rings ─────────────────────────────────────
+  // ── ADR-123 / ADR-124: Katapayadi decoding rings (interactive) ───────────
   // Ri-ga and da-ni pair subscript labels (upper-triangular enumeration order)
   const _RIGA_LABELS = ['R\u2081G\u2081','R\u2081G\u2082','R\u2081G\u2083','R\u2082G\u2082','R\u2082G\u2083','R\u2083G\u2083'];
   const _DANI_LABELS = ['D\u2081N\u2081','D\u2081N\u2082','D\u2081N\u2083','D\u2082N\u2082','D\u2082N\u2083','D\u2083N\u2083'];
 
-  // Ring 0 — Madhyama centre disk: right half = \u015buddha (M\u2081, melas 1\u201336), left = prati (M\u2082, melas 37\u201372)
+  // Ring 0 — Madhyama centre disk: right half = śuddha (M₁, melas 1–36), left = prati (M₂, melas 37–72)
   // Use accentSelect (bright terminal amber #fabd2f) at high opacity for a vivid glowing centre.
   const madGold = THEME.accentSelect;
-  vp.appendChild(svgEl('path', {
-    d: sectorPath(cx, cy, 0, R_MADHYAMA, 0, 180),
-    fill: madGold, opacity: 0.80, stroke: 'none', 'pointer-events': 'none'
-  }));
-  vp.appendChild(svgEl('path', {
-    d: sectorPath(cx, cy, 0, R_MADHYAMA, 180, 360),
-    fill: madGold, opacity: 0.40, stroke: 'none', 'pointer-events': 'none'
-  }));
-  // Hemisphere labels (M\u2081 / M\u2082) at 3-o'clock / 9-o'clock inside the disk
+  [[0, 180, 1, 0.80, 'śuddha madhyama (M₁) — melas 1–36'],
+   [180, 360, 2, 0.40, 'prati madhyama (M₂) — melas 37–72']].forEach(([startD, endD, madhyama, baseOpacity, titleText]) => {
+    const madPath = svgEl('path', {
+      d: sectorPath(cx, cy, 0, R_MADHYAMA, startD, endD),
+      fill: madGold, opacity: baseOpacity, stroke: 'none',
+      'pointer-events': 'all', cursor: 'pointer',
+      'data-ring': 'madhyama', 'data-madhyama': madhyama,
+      'data-orig-opacity': baseOpacity, tabindex: '0',
+    });
+    const titleEl = svgEl('title', {});
+    titleEl.textContent = titleText;
+    madPath.appendChild(titleEl);
+    madPath.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const melaIds = [];
+      for (let M = 1; M <= 72; M++) { if ((M <= 36 ? 1 : 2) === madhyama) melaIds.push(M); }
+      _lightUpMelas(melaIds);
+      if (typeof applyBaniFilter === 'function') applyBaniFilter('madhyama', String(madhyama));
+      _litMelaId = null;
+    });
+    vp.appendChild(madPath);
+  });
+  // Hemisphere labels (M₁ / M₂) at 3-o'clock / 9-o'clock inside the disk
   const madFontSize = Math.max(9, minDim * 0.018);
   [['M\u2081', 90], ['M\u2082', 270]].forEach(([lbl, deg]) => {
     const lp = polar(cx, cy, R_MADHYAMA * 0.58, deg);
@@ -1197,16 +1354,36 @@ window.drawRagaWheel = function() {
     vp.appendChild(t);
   });
 
-  // Ring 1 — Cakra wedge ring (R_MADHYAMA \u2192 R_CAKRA): 12 wedges, 30\u00b0 each
+  // Ring 1 — Cakra wedge ring (R_MADHYAMA → R_CAKRA): 12 wedges, 30° each
   // High opacity so vivid cakra colours read clearly; dark text for inverse-video contrast.
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
     const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
-    vp.appendChild(svgEl('path', {
+    const cakraPath = svgEl('path', {
       d: sectorPath(cx, cy, R_MADHYAMA, R_CAKRA, startDeg, endDeg),
       fill: color, opacity: 0.82, stroke: THEME.labelOutline, 'stroke-width': 0.5,
-      'pointer-events': 'none'
-    }));
+      'pointer-events': 'all', cursor: 'pointer',
+      'data-ring': 'cakra', 'data-cakra': cakra, 'data-orig-opacity': 0.82, tabindex: '0',
+    });
+    const cakraTitle = svgEl('title', {});
+    const cakraMelaStart = cakra <= 6 ? (cakra - 1) * 6 + 1 : (cakra - 7) * 6 + 37;
+    const cakraName = CAKRA_NAMES[cakra <= 6 ? cakra : cakra - 6] || String(cakra);
+    cakraTitle.textContent = `Cakra ${cakra} — ${cakraName} — melas ${cakraMelaStart}–${cakraMelaStart + 5}`;
+    cakraPath.appendChild(cakraTitle);
+    cakraPath.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const melaIds = [];
+      for (let M = 1; M <= 72; M++) {
+        const n = M <= 36 ? M : M - 36;
+        const c = Math.floor((n - 1) / 6) + 1; // 1..6 within hemisphere
+        const actualC = M <= 36 ? c : c + 6;
+        if (actualC === cakra) melaIds.push(M);
+      }
+      _lightUpMelas(melaIds);
+      if (typeof applyBaniFilter === 'function') applyBaniFilter('cakra', String(cakra));
+      _litMelaId = null;
+    });
+    vp.appendChild(cakraPath);
     const midDeg = startDeg + 15;
     const lp = polar(cx, cy, (R_MADHYAMA + R_CAKRA) / 2, midDeg);
     const cakraRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
@@ -1227,11 +1404,27 @@ window.drawRagaWheel = function() {
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
     const rigaIdx = (cakra - 1) % 6;  // 0..5, repeats identically in each hemisphere
-    vp.appendChild(svgEl('path', {
+    const rigaPath = svgEl('path', {
       d: sectorPath(cx, cy, R_CAKRA, R_RIGA, startDeg, endDeg),
       fill: '#83a598', opacity: 0.62, stroke: THEME.labelOutline, 'stroke-width': 0.5,
-      'pointer-events': 'none'
-    }));
+      'pointer-events': 'all', cursor: 'pointer',
+      'data-ring': 'riga', 'data-cakra': cakra, 'data-orig-opacity': 0.62, tabindex: '0',
+    });
+    const rigaTitle = svgEl('title', {});
+    rigaTitle.textContent = `${_RIGA_LABELS[rigaIdx]} — 12 melas (both hemispheres)`;
+    rigaPath.appendChild(rigaTitle);
+    rigaPath.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const melaIds = [];
+      for (let M = 1; M <= 72; M++) {
+        const n2 = M <= 36 ? M : M - 36;
+        if (Math.floor((n2 - 1) / 6) === rigaIdx) melaIds.push(M);
+      }
+      _lightUpMelas(melaIds);
+      if (typeof applyBaniFilter === 'function') applyBaniFilter('riga', String(rigaIdx));
+      _litMelaId = null;
+    });
+    vp.appendChild(rigaPath);
     const midDeg = startDeg + 15;
     const lp = polar(cx, cy, (R_CAKRA + R_RIGA) / 2, midDeg);
     const rotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
@@ -1252,11 +1445,24 @@ window.drawRagaWheel = function() {
   for (let n = 1; n <= 72; n++) {
     const startDeg = (n - 1) * 5, endDeg = n * 5;
     const daniIdx = (n - 1) % 6;
-    vp.appendChild(svgEl('path', {
+    const daniPath = svgEl('path', {
       d: sectorPath(cx, cy, R_RIGA, R_DANI, startDeg, endDeg),
       fill: '#fe8019', opacity: 0.50, stroke: THEME.labelOutline, 'stroke-width': 0.5,
-      'pointer-events': 'none'
-    }));
+      'pointer-events': 'all', cursor: 'pointer',
+      'data-ring': 'dani', 'data-mela': n, 'data-orig-opacity': 0.50, tabindex: '0',
+    });
+    const daniTitle = svgEl('title', {});
+    const companionM = n <= 36 ? n + 36 : n - 36;
+    daniTitle.textContent = `${_DANI_LABELS[daniIdx]} — melas ${n} & ${companionM}`;
+    daniPath.appendChild(daniTitle);
+    daniPath.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const companionM2 = n <= 36 ? n + 36 : n - 36;
+      _lightUpMelas([n, companionM2]);
+      if (typeof applyBaniFilter === 'function') applyBaniFilter('dani', String(daniIdx));
+      _litMelaId = null;
+    });
+    vp.appendChild(daniPath);
     // Show da-ni subscript only when the cell arc is wide enough to be legible
     const arcLen = R_DANI * 5 * Math.PI / 180;
     if (arcLen >= 7) {
@@ -1364,6 +1570,7 @@ window.drawRagaWheel = function() {
           slotPath.setAttribute('stroke', THEME.accentSelect);
           slotPath.setAttribute('stroke-width', 2);
           _expandedMela = raga.id;
+          if (typeof window.lightUpSpine === 'function') window.lightUpSpine(raga.id);
           // Dim all other mela arc slots so the selected one stands out
           vp.querySelectorAll('.mela-node path[data-mela]').forEach(c => {
             const melaG = c.closest('.mela-node');
@@ -1387,8 +1594,6 @@ window.drawRagaWheel = function() {
             applyBaniFilter('raga', raga.id);
           }
           window._wheelSyncInProgress = false;
-          // Zoom to the mela slot — detail is in the WDP panel
-          _animateToTarget(pos.x, pos.y, 2.5);
         }
       });
       g.addEventListener('dblclick', (e) => {
@@ -1419,8 +1624,10 @@ window.drawRagaWheel = function() {
     else if (normAngle < 180)   { melaRotDeg = angleDeg - 90; anchor = 'start';  }
     else                        { melaRotDeg = angleDeg + 90; anchor = 'end';    }
     const isLiveLbl = raga && melasWithMusic.has(raga.id);
-    const melaLblOpacity = isLiveLbl ? 1 : (raga ? 0.35 : 1);
-    _labelWithBg(_labelLayer, raga ? raga.name : String(n), lp.x, lp.y, melaFontSize, {
+    // Non-live: dim to 0.28 AND desaturate so the bright chip border colour doesn't
+    // compensate perceptually for the low opacity (ADR-124: "no contributions" signal).
+    const melaLblOpacity = isLiveLbl ? 1 : 0.28;
+    const lbl = _labelWithBg(_labelLayer, raga ? raga.name : String(n), lp.x, lp.y, melaFontSize, {
       'font-size': melaFontSize + 'px',
       class: 'mela-label',
       'data-orig-opacity': melaLblOpacity,
@@ -1434,6 +1641,11 @@ window.drawRagaWheel = function() {
         bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY
       }));
     } : null);
+    // Desaturate non-live chip so the coloured border/text doesn't read as "active"
+    if (!isLiveLbl) {
+      const wrapG = lbl.parentElement;
+      if (wrapG) wrapG.style.filter = 'grayscale(1)';
+    }
   });
   vp.appendChild(_labelLayer);
 };
@@ -1460,54 +1672,12 @@ function _collapseAll(vp, melaByNum) {
     _labelLayer.querySelectorAll('.mela-label').forEach(lbl => {
       const orig = lbl.getAttribute('data-orig-opacity');
       if (orig) lbl.setAttribute('opacity', orig);
+      lbl.style.filter = parseFloat(orig) < 1 ? 'grayscale(1)' : '';
     });
   }
   vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
   hideWheelTooltip();
-}
-
-// Animate the wheel viewport to centre on (targetX, targetY) at the given scale.
-// Used by click handlers to "land" on a node after exploding it.
-function _animateToTarget(targetX, targetY, targetScale) {
-  const svg = document.getElementById('raga-wheel');
-  if (!svg) return;
-  const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
-  const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
-  const targetVX = W / 2 - targetScale * targetX;
-  const targetVY = H / 2 - targetScale * targetY;
-
-  // Cancel any in-flight animation so two concurrent calls don't fight over state
-  if (_animRafId !== null) {
-    cancelAnimationFrame(_animRafId);
-    _animRafId = null;
-  }
-
-  const startVX = RagaWheel._state.panX;
-  const startVY = RagaWheel._state.panY;
-  const startScale = RagaWheel._state.scale;
-  const DURATION = 400;
-  const startTime = performance.now();
-
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  }
-
-  function step(now) {
-    const elapsed = now - startTime;
-    const t = Math.min(1, elapsed / DURATION);
-    const e = easeInOutCubic(t);
-    RagaWheel._state.panX = startVX + (targetVX - startVX) * e;
-    RagaWheel._state.panY = startVY + (targetVY - startVY) * e;
-    RagaWheel._state.scale = startScale + (targetScale - startScale) * e;
-    _applyTransform();
-    if (t < 1) {
-      _animRafId = requestAnimationFrame(step);
-    } else {
-      _animRafId = null;
-    }
-  }
-  _animRafId = requestAnimationFrame(step);
 }
 
 function _expandMela(vp, svg, raga, melaAngle, cx, cy,
@@ -1638,9 +1808,6 @@ function _expandMela(vp, svg, raga, melaAngle, cx, cy,
           applyBaniFilter('raga', janya.id);
         }
         window._wheelSyncInProgress = false;
-        // Auto-zoom: scale 2.2 centred on janya shows janya + comp fan together
-        // (half-viewport ≈ W/(2×2.2) just covers R_COMP−R_JANYA + label overhang)
-        _animateToTarget(jPos.x, jPos.y, 2.2);
       });
       jg.addEventListener('dblclick', (e) => {
         e.stopPropagation();
@@ -1869,8 +2036,6 @@ function _expandComps(vp, svg, janya, jAngle, jPos, cx, cy,
         }
       }
       window._wheelSyncInProgress = false;
-      // Auto-zoom to bring the selected composition into focus
-      _animateToTarget(cPos.x, cPos.y, 2.8);
     });
     g.appendChild(cg);
   });
@@ -2053,97 +2218,17 @@ function syncRagaWheelToFilter(type, id) {
   drawRagaWheel();
   const targetCompId = (type === 'comp') ? id : null;
   window._triggerMelaExpand(melaRaga.melakarta, raga.is_melakarta ? null : ragaId, targetCompId);
+  if (typeof window.lightUpSpine === 'function') window.lightUpSpine(melaRaga.id);
 }
 
-/**
- * orientRagaWheel(type, id)
- *
- * Only acts when the raga wheel is the active view.  Does NOT switch views.
- * Waits for syncRagaWheelToFilter (called by applyBaniFilter just before this)
- * to finish its expand sequence, then animates the viewport to centre on the
- * mela that contains the raga (or the raga of the composition) at zoom 2.5.
- *
- * @param {'raga'|'comp'} type
- * @param {string}        id    — raga id or composition id
- */
 function orientRagaWheel(type, id) {
-  // Only act when the raga wheel is visible
   if (currentView !== 'raga') return;
-
-  // Resolve composition → raga_id
   let ragaId = id;
   if (type === 'comp') {
     const comp = compositions.find(c => c.id === id);
     if (!comp || !comp.raga_id) return;
     ragaId = comp.raga_id;
   }
-
-  const raga = ragas.find(r => r.id === ragaId);
-  if (!raga) return;
-
-  const melaId = raga.is_melakarta ? raga.id : raga.parent_raga;
-  if (!melaId) return;
-  const melaRaga = ragas.find(r => r.id === melaId);
-  if (!melaRaga || !melaRaga.melakarta) return;
-
-  // syncRagaWheelToFilter (called by applyBaniFilter just before us) has already
-  // called drawRagaWheel() + _triggerMelaExpand, which sets _wheelSyncInProgress=true
-  // and clears it after ~50ms.  We poll until it clears, then pan/zoom.
-  function waitAndPan() {
-    if (window._wheelSyncInProgress) {
-      setTimeout(waitAndPan, 20);
-      return;
-    }
-
-    const svg = document.getElementById('raga-wheel');
-    if (!svg) return;
-    const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
-    const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
-    const minDim = Math.min(W, H);
-    const melaAngle = (melaRaga.melakarta - 1) * 5;
-    const rad = (melaAngle - 90) * Math.PI / 180;
-
-    // Option B: always zoom to the mela node — comp/janya fans no longer exist in SVG.
-    const R_MELA_EST = minDim * 0.38;
-    let targetX = W / 2 + R_MELA_EST * Math.cos(rad);
-    let targetY = H / 2 + R_MELA_EST * Math.sin(rad);
-    const TARGET_SCALE = 2.5;
-
-    // Prefer the actual rendered mela node position (R_MELA may differ from estimate).
-    const melaEl = document.querySelector(
-      `#wheel-viewport .mela-node[data-id="${CSS.escape(melaRaga.id)}"] circle[data-mela]`
-    );
-    if (melaEl) {
-      const mx = parseFloat(melaEl.getAttribute('cx'));
-      const my = parseFloat(melaEl.getAttribute('cy'));
-      if (!isNaN(mx) && !isNaN(my)) { targetX = mx; targetY = my; }
-    }
-
-    const targetVX = W / 2 - TARGET_SCALE * targetX;
-    const targetVY = H / 2 - TARGET_SCALE * targetY;
-
-    const startVX = window._wheelGetVx(), startVY = window._wheelGetVy(),
-          startScale = window._wheelGetVscale();
-    const DURATION = 500;
-    const startTime = performance.now();
-
-    function easeInOutCubic(t) {
-      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
-
-    function step(now) {
-      const elapsed = now - startTime;
-      const t = Math.min(1, elapsed / DURATION);
-      const e = easeInOutCubic(t);
-      window._wheelSetVx(startVX    + (targetVX    - startVX)    * e);
-      window._wheelSetVy(startVY    + (targetVY    - startVY)    * e);
-      window._wheelSetVscale(startScale + (TARGET_SCALE - startScale) * e);
-      window._wheelApplyTransform();
-      if (t < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-
-  waitAndPan();
+  if (typeof window.lightUpSpine === 'function') window.lightUpSpine(ragaId);
 }
 
