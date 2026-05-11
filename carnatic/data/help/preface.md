@@ -9,14 +9,16 @@ _Haunting of the ear_
 For this is **<cr>Raga<cr> Music**
 Whose forms are myriad
 An Oceanic Infinity revealed
-But only to those who _listen_
-(O listening! Have you any hope in this tyranny of images?
+If we only _listen_
+(In this tyranny of images
+What hope does listening have?
 Even in Mylapore?)
 
 For this is **Art Music**
-> _Art is a way to make feelings happen_ 
-- Brian Eno
+> _Art is a way to make feelings happen_
+We've always known this, Brian Eno called it
 Every rendition is an Art object
+Every Raga a mode of emotion
 <cr>Reetigowla<cr> summons a terrible yet hopeful event in a world remote from mine
 <cr>Surutti<cr> reveals a heron disappearing its frame into an orange sunrise
 <cr>Khamas<cr> evokes deep and enduring sky blue joy
@@ -34,17 +36,20 @@ From Guru to Shishya to Guru
 This is how _Bani_ flows
 Mutated by aesthetic preferences
 Survived by the test of Time
-Bejewlled by the Trinity of Geniuses
+Fortified by the Trinity
  -- Carnatic Music's own Cambrian Explosion --
 <cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, and <cm>Shyama Shastri<cm>
+Bejewelled by their Genius
 
-For this is a **sparsely notated Music**
+For this is an **Anti-notation Music**
 Whose essence cannot be grasped textually
 It would be like reading Fluid Mechanics 
 To learn how to swim!
 You could read a hundred pages
 On the descriptive and prescriptive aesthetics of <cr>Thodi<cr>
 And still not know what it sounds like
+The isomorphisms do not emerge from symbols
+They emerge from _emotion_
 
 So I invite you to browse this library of youtube links
 Along the principle axes of Carnatic Music
@@ -58,7 +63,7 @@ Singing, playing, performing will all thrive
 Carnatic Music is _not_ endangered
 But listening _is_
 
-Bani-flow's mission statement is simple:
+Bani-flow's mission is simple:
 > Provide a no nonsense navigable interface to explore Carnatic Music
 > Enable frictionless immersion in its abstractions
 
