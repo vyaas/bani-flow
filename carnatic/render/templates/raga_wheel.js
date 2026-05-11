@@ -826,7 +826,9 @@ window.drawRagaWheel = function() {
   const R_RIGA     = minDim * 0.26;   // ri-ga arc ring outer edge (12 arcs)
   const R_DANI     = minDim * 0.34;   // da-ni cell ring outer edge (72 cells, 5°)
   const R_MELA     = minDim * 0.42;   // mela arc slot ring outer edge
-  const R_LABEL    = minDim * 0.50;   // mela name label radius (radial spoke)
+  // Gap between the outer edge of the mela arc ring and the inner edge of the name chip.
+  // Increase MELA_LABEL_GAP to add breathing room; decrease toward 0 for tight pack.
+  const MELA_LABEL_GAP = minDim * 0.005;
   const R_JANYA    = minDim * 0.62;   // janya satellite chips
   const R_COMP     = minDim * 0.78;   // composition satellite chips
   const R_MUSC     = minDim * 0.92;   // musician chips
@@ -1403,13 +1405,13 @@ window.drawRagaWheel = function() {
   _labelLayer = svgEl('g', { id: 'wheel-label-layer', 'pointer-events': 'none' });
   melaCirleGroups.forEach(({ n, angleRad, raga }) => {
     const angleDeg = angleRad * 180 / Math.PI;
-    // Anchor inner edge of chip flush at R_LABEL so all mela names start at the same radius.
+    // Anchor inner edge of chip at R_MELA + MELA_LABEL_GAP (thin parametric band).
     // _labelWithBg centres the chip at its anchor point; shifting by +tw/2 radially puts the
-    // inner edge at R_LABEL. _PAD_X and _GLYPH must match _labelWithBg internals.
+    // inner edge at exactly (R_MELA + MELA_LABEL_GAP). _PAD_X/_GLYPH must match _labelWithBg.
     const _PAD_X = 3, _GLYPH = '\u25c8\u00a0'; // raga chip glyph (2 chars)
     const _dispText = _GLYPH + (raga ? raga.name : String(n));
     const _tw = _dispText.length * melaFontSize * 0.55 + _PAD_X * 2;
-    const lp = polarRad(cx, cy, R_LABEL + _tw / 2, angleRad);
+    const lp = polarRad(cx, cy, R_MELA + MELA_LABEL_GAP + _tw / 2, angleRad);
     const normAngle = ((angleDeg % 360) + 360) % 360;
     let melaRotDeg, anchor;
     if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = -90;           anchor = 'middle'; }
