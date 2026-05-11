@@ -1,8 +1,8 @@
 # ADR-123: Katapayadi-Structured Raga Wheel (Concentric Decoding Rings)
 
-**Status**: Accepted
+**Status**: Implemented
 **Date**: 2026-05-10
-**Branch**: `feat/123-katapayadi-wheel`
+**Branch**: `feat/123-katapayadi-wheel` (merged to `main` 2026-05-10)
 **Depends on**: ADR-122 (swara→mela mapping & validation)
 **Refines** (does not supersede): ADR-023 (raga wheel as third view), ADR-092 (raga wheel as stateful object), ADR-093 (chip spacing solver). Janya/composition/musician layers from those ADRs are preserved. **Supersedes**: ADR-094 (zoom-coupled adaptive radii — addressed in ADR-124), ADR-096 (sunburst reformulation — proposed, never built; this ADR replaces that proposal)
 **Enables**: ADR-124 (light-up interaction & zoom retirement)
