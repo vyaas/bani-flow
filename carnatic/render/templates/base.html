@@ -3747,6 +3747,19 @@
     font-size: 0.70rem;
     color: var(--fg-muted);
   }
+
+  /* ── ADR-124: Raga wheel ring hover tint ──────────────────────────────── */
+  #raga-wheel [data-ring] {
+    cursor: pointer;
+    transition: filter 0.12s ease;
+  }
+  #raga-wheel [data-ring]:hover {
+    filter: brightness(1.35) saturate(1.2);
+  }
+  #raga-wheel [data-ring]:focus-visible {
+    outline: 2px solid var(--accent-select, #fabd2f);
+    outline-offset: 2px;
+  }
 </style>
 </head>
 <body>
