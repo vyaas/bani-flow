@@ -3,7 +3,7 @@
 This is a substantive yet forever incomplete curation
 That aims to enable an immersion
 Otherwise impossible outside Mylapore
-Of a Music whose name literally translates to
+Of a Music whose name literally means
 _Haunting of the ear_
 
 For this is **<cr>Raga<cr> Music**
