@@ -198,12 +198,21 @@ function buildPlayerTrackList(vid, tracks, instance) {
   return ul;
 }
 
-// ── buildPlayerBar — lean title bar: [artist chip] — [title] [≡] [✕] ────────
+// ── buildPlayerBar — lean title bar: [▼] [artist chip] — [title] [≡] [✕] ───
 // meta = { nodeId } — nodeId drives the artist chip click
 function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta) {
   meta = meta || {};
   const bar = document.createElement('div');
   bar.className = 'mp-bar';
+
+  // ── Fold chevron — leftmost affordance; mirrors panel section-collapse-btn ─
+  const foldBtn = document.createElement('button');
+  foldBtn.type = 'button';
+  foldBtn.className = 'section-collapse-btn mp-fold-btn';
+  foldBtn.textContent = '\u25bc'; // ▼ expanded
+  foldBtn.title = 'Fold / unfold player';
+  foldBtn.setAttribute('aria-label', 'Fold/unfold player');
+  bar.appendChild(foldBtn);
 
   // ── Artist chip — same musician-chip class + era tinting as panels ────────
   if (artistName) {
@@ -431,6 +440,16 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     playerRegistry.delete(vid);
     refreshPlayingIndicators();
   });
+
+  // Fold chevron: toggle .mp-folded to hide/show video body
+  const foldBtnC = el.querySelector('.mp-fold-btn');
+  if (foldBtnC) {
+    foldBtnC.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isFolded = el.classList.toggle('mp-folded');
+      foldBtnC.textContent = isFolded ? '\u25b6' : '\u25bc';
+    });
+  }
 
   // Wire track list toggle and populate track items
   if (hasTracks && instance.tracklistEl) {
@@ -2117,28 +2136,42 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  // Named player: sruti drone has a minimize toggle (ADR-131 R3) instead of a
-  // close button — collapsing turns the player into a brightish title-bar
-  // strip that can be dragged anywhere on the canvas. Restore expands the
-  // iframe back. The drone is stopped only by clicking the active sruti pie
-  // sector at the wheel centre.
+  // Named player: sruti drone uses chevron to fold and a true close button to stop.
+  // Non-sruti named players also get the fold chevron.
   if (playerId === 'sruti') {
     el.classList.add('sruti-player');
-    const minBtn = el.querySelector('.mp-close');
-    if (minBtn) {
-      minBtn.textContent = '\u2212';   // − (minus sign) = minimize
-      minBtn.title = 'Minimize';
-      minBtn.setAttribute('aria-label', 'Minimize sruti player');
-      minBtn.addEventListener('click', (e) => {
+
+    // Fold chevron → toggle sruti-minimized (keeps accent visual identity)
+    const foldBtnN = el.querySelector('.mp-fold-btn');
+    if (foldBtnN) {
+      foldBtnN.addEventListener('click', (e) => {
         e.stopPropagation();
         const minimized = el.classList.toggle('sruti-minimized');
-        minBtn.textContent = minimized ? '\u2922' : '\u2212';   // ⤢ restore | − minimize
-        minBtn.title       = minimized ? 'Restore' : 'Minimize';
-        minBtn.setAttribute('aria-label',
-          minimized ? 'Restore sruti player' : 'Minimize sruti player');
+        foldBtnN.textContent = minimized ? '\u25b6' : '\u25bc';
+      });
+    }
+
+    // Close button → clear tonic ring + close player
+    const closeBtn = el.querySelector('.mp-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof RagaWheel !== 'undefined' && RagaWheel._clearSrutiRing) {
+          RagaWheel._clearSrutiRing();
+        }
+        closePlayer('sruti');
       });
     }
   } else {
+    // Fold chevron for non-sruti named players
+    const foldBtnN = el.querySelector('.mp-fold-btn');
+    if (foldBtnN) {
+      foldBtnN.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isFolded = el.classList.toggle('mp-folded');
+        foldBtnN.textContent = isFolded ? '\u25b6' : '\u25bc';
+      });
+    }
     el.querySelector('.mp-close').addEventListener('click', () => {
       closePlayer(playerId);
     });
@@ -2325,7 +2358,7 @@ function _wireMobilePlayerEvents(mp) {
 
   // Full mode bar: tap anywhere on the bar to collapse (except dedicated buttons)
   mp.bar.addEventListener('click', e => {
-    const isBtn = e.target.closest('.mp-close, .mp-minimize, .mp-tracklist-toggle');
+    const isBtn = e.target.closest('.mp-close, .mp-fold-btn, .mp-tracklist-toggle');
     if (isBtn) return;
     _collapseMobilePlayer();
   });
@@ -2386,20 +2419,13 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     });
   }
 
-  // ── Mobile: inject minimize (⌄) button before close ─────────────────────
-  // Gives a clear affordance to collapse to mini strip without stopping playback.
-  const existingMinBtn = mp.bar.querySelector('.mp-minimize');
-  if (!existingMinBtn && barClose) {
-    const minBtn = document.createElement('button');
-    minBtn.className = 'mp-minimize';
-    minBtn.title = 'Minimise';
-    minBtn.setAttribute('aria-label', 'Minimise player');
-    minBtn.textContent = '\u2304';   // ⌄ downward chevron
-    minBtn.addEventListener('click', e => {
+  // ── Wire fold chevron → collapse to mini strip ────────────────────────────
+  const mobileFoldBtn = mp.bar.querySelector('.mp-fold-btn');
+  if (mobileFoldBtn) {
+    mobileFoldBtn.addEventListener('click', e => {
       e.stopPropagation();
       _collapseMobilePlayer();
     });
-    barClose.parentNode.insertBefore(minBtn, barClose);
   }
 
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───

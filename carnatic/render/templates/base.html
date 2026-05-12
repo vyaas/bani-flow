@@ -994,25 +994,22 @@
     );
   }
 
-  /* ── ADR-131 R3: Sruti player minimize affordance ───────────────────────
-     The sruti drone player (.sruti-player) carries a minimize toggle in
-     place of a close button. When minimized it collapses to its title bar
-     only — a thin, brightly-coloured strip that can be dragged anywhere
-     on the canvas. The drone keeps playing; only clicking the active
-     sruti pie sector at the wheel centre stops it. */
-  /* Minimize button — large + obvious; bar has plenty of room */
-  .media-player.sruti-player .mp-close {
+  /* ── Sruti player fold + close affordance ─────────────────────────────
+     Fold chevron (mp-fold-btn) collapses to title strip — active drone
+     keeps playing. Close button (mp-close) stops the drone and unpresses
+     the tonic ring. Both are always visible (desktop + mobile). */
+  /* Fold chevron — accent treatment marks it as the primary sruti control */
+  .media-player.sruti-player .mp-fold-btn {
     color: var(--accent);
     background: color-mix(in srgb, var(--accent) 14%, transparent);
     border: 1px solid var(--accent);
     border-radius: 4px;
-    width: 28px; height: 22px;
-    font-size: 1.15rem; font-weight: bold;
-    line-height: 1; padding: 0;
+    width: 22px; height: 18px;
+    font-size: 0.62rem;
     display: inline-flex; align-items: center; justify-content: center;
     transition: background 0.12s, color 0.12s, transform 0.08s;
   }
-  .media-player.sruti-player .mp-close:hover {
+  .media-player.sruti-player .mp-fold-btn:hover {
     color: var(--bg);
     background: var(--accent);
     transform: scale(1.05);
@@ -1036,6 +1033,12 @@
   .media-player.sruti-player.sruti-minimized .mp-video-wrap,
   .media-player.sruti-player.sruti-minimized .mp-footer,
   .media-player.sruti-player.sruti-minimized .mp-resize { display: none; }
+
+  /* mp-folded: generic fold state for concert + named players */
+  .media-player.mp-folded .mp-video-wrap,
+  .media-player.mp-folded .mp-footer,
+  .media-player.mp-folded .mp-resize { display: none; }
+
   .mp-resize:hover { opacity: 1; background-color: var(--bg-active); }
 
   /* ── timeline ruler — monospace font retained for data-dense ruler ── */
@@ -3389,19 +3392,11 @@
       min-width: 44px; min-height: 44px;
       font-size: 1.25rem;
     }
-    /* Minimise button — hidden on desktop, shown in full-mobile bar */
-    .mp-minimize { display: none; }
-    .media-player.full-mobile .mp-minimize {
-      display: inline-flex; align-items: center; justify-content: center;
+    /* mp-fold-btn in full-mobile bar — enlarge touch target */
+    .media-player.full-mobile .mp-fold-btn {
       min-width: 44px; min-height: 44px;
-      font-size: 1.4rem; line-height: 1;
-      color: var(--accent);
-      background: none; border: none;
-      cursor: pointer;
-      padding: 0;
-      transition: opacity 0.1s;
+      font-size: 0.9rem;
     }
-    .media-player.full-mobile .mp-minimize:hover { opacity: 0.75; }
     /* ADR-051: video fills remaining height; override JS-set padding-top */
     .media-player.full-mobile .mp-video-wrap {
       flex: 1;
