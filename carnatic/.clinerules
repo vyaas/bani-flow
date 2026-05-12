@@ -611,3 +611,5 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-11: add-composer was removed in ADR-110; musician node ID serves directly as composer_id in compositions and in performance entries — no separate composer registration step needed.
 - 2026-05-11: Recording files require `video_id` (bare YouTube ID), `url`, `short_title`, `occasion`, `sources[]`, `session_index` (not session_id), `performance_index`, `timestamp`, `offset_seconds`, `composer_id`, and `display_title` in each performance — the earlier `start_time`/`session_id` schema was retired; always copy an existing recording file as the template rather than writing from memory.
 [AGENTS: librarian]
+- 2026-05-11: ADR-126 proposes a swara-first chromatic palette where the 12 swara variants are the primitive colours and every other ring (cakra wedge, ri-ga arc, da-ni cell, mela slot) is a derived spectral mix; the current `THEME.cakra` becomes a derivation, not a primitive, so all visual hierarchy aligns with the musical hierarchy of ADR-122 / ADR-123.
+[AGENTS: graph-architect]
