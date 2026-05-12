@@ -517,7 +517,9 @@ function buildYtLink(vid, offsetSeconds) {
   a.target    = '_blank';
   a.rel       = 'noopener noreferrer';
   a.title     = 'Open on YouTube';
-  a.textContent = '↗';
+  // ADR-128 D13: inline SVG glyph (geometrically centred by flex parent) —
+  // unicode ↗ has upper-right visual bias and won't centre reliably.
+  a.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
   a.addEventListener('click', e => e.stopPropagation());
   return a;
 }
@@ -1127,9 +1129,18 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
   const li = document.createElement('li');
   li.className = 'tree-group tree-group-open';
 
-  // ── Header: raga chip only — no chevron, no count ──────────────────────
+  // ── Header: chevron + raga chip. ADR-128 D9: chevron is an indicator;
+  //    the entire header row is the toggle affordance.
   const header = document.createElement('div');
   header.className = 'tree-group-header';
+
+  // Chevron indicator (uses .section-collapse-btn — the single source of truth
+  // for collapse indicators across all panel sections, ADR-128 D10)
+  const chev = document.createElement('span');
+  chev.className = 'section-collapse-btn';
+  chev.textContent = '\u25bc';  // ▼ open by default
+  chev.setAttribute('aria-hidden', 'true');
+  header.appendChild(chev);
 
   if (ragaId && ragaObj) {
     const ragaChip = document.createElement('span');
@@ -1149,6 +1160,14 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
     miscSpan.textContent = 'Misc';
     header.appendChild(miscSpan);
   }
+
+  // Whole-row click toggles open/closed; chevron is purely indicator.
+  header.addEventListener('click', function (e) {
+    // Don't toggle if click came from an interactive child (chip, button, link)
+    if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
+    const opened = li.classList.toggle('tree-group-open');
+    chev.textContent = opened ? '\u25bc' : '\u25b6';
+  });
 
   li.appendChild(header);
 
@@ -1535,43 +1554,21 @@ function buildRecordingsList(nodeId, nodeData) {
   // Keep Lecdems at the top of the musician panel while preserving all
   // existing section ordering below it. Header always rendered (per Concerts/
   // Compositions pattern) so the section is always visible as an anchor.
+  // ADR-128 D3+D4: use buildSection; collect for empty-section demotion.
+  const _sections = [];  // { sectionEl, count } — populated first, then empty
   {
-    const lsSection = document.createElement('section');
-    lsSection.className = 'lecdem-section';
+    const lecdemCount = lecdemsBy_.length + lecdemsAbout_.length;
+    const lsHdrChip = document.createElement('span');
+    lsHdrChip.className = 'lecdem-chip chip-section-hdr';
+    lsHdrChip.textContent = 'Lecdems';
+    const { sectionEl: lsSection, bodyEl: lsBody } = buildSection({
+      headerChip: lsHdrChip,
+      count: lecdemCount,
+      onAdd: function() { if (typeof openAddLecdemToMusicianForm === 'function') openAddLecdemToMusicianForm(nodeId); },
+      addTitle: 'Add lecdem recording for ' + artistLabel,
+    });
+    lsSection.classList.add('lecdem-section');
     lsSection.dataset.section = 'lecdems';
-
-    const lsSectionHdr = document.createElement('div');
-    lsSectionHdr.className = 'lecdem-section-header';
-    const lsCollapseBtn = document.createElement('button');
-    lsCollapseBtn.type = 'button';
-    lsCollapseBtn.className = 'section-collapse-btn';
-    lsCollapseBtn.textContent = '▼';
-    lsCollapseBtn.title = 'Collapse / expand';
-    lsSectionHdr.appendChild(lsCollapseBtn);
-    const lsHdrText = document.createElement('span');
-    lsHdrText.textContent = 'Lecdems (' + (lecdemsBy_.length + lecdemsAbout_.length) + ')';
-    lsSectionHdr.appendChild(lsHdrText);
-    const lsAddChip = document.createElement('button');
-    lsAddChip.type = 'button';
-    lsAddChip.className = 'co-add-chip';
-    lsAddChip.textContent = '+';
-    lsAddChip.title = 'Add lecdem recording for ' + artistLabel;
-    lsAddChip.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (typeof openAddLecdemToMusicianForm === 'function') {
-        openAddLecdemToMusicianForm(nodeId);
-      }
-    });
-    lsSectionHdr.appendChild(lsAddChip);
-    lsSection.appendChild(lsSectionHdr);
-
-    const lsBody = document.createElement('div');
-    lsBody.className = 'section-body';
-    lsCollapseBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      lsBody.hidden = !lsBody.hidden;
-      lsCollapseBtn.textContent = lsBody.hidden ? '▶' : '▼';
-    });
 
     // Lecdems by this musician
     if (lecdemsBy_.length > 0) {
@@ -1588,7 +1585,8 @@ function buildRecordingsList(nodeId, nodeData) {
 
       const byHdr = document.createElement('div');
       byHdr.className = 'lecdem-subsection-header';
-      byHdr.textContent = `Lecdems by ${artistLabel}`;
+      // ADR-128 D9: subsection label simplified to just "By" (chip is on parent section header)
+      byHdr.appendChild(document.createTextNode('By'));
       bySubsec.appendChild(byHdr);
 
       const byList = document.createElement('ul');
@@ -1602,11 +1600,13 @@ function buildRecordingsList(nodeId, nodeData) {
 
         li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
 
+        // ADR-128 D5: wrap subject chips in collapsible buildSubjectGroup
         if (subjectChips && subjectChips.length > 0) {
-          const subjectsWrap = document.createElement('span');
-          subjectsWrap.className = 'lecdem-subjects';
-          subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          li.appendChild(subjectsWrap);
+          li.appendChild(buildSubjectGroup({
+            chips: subjectChips,
+            defaultCollapsed: true,
+            summaryText: subjectChips.length + ' subject' + (subjectChips.length !== 1 ? 's' : ''),
+          }));
         }
         byList.appendChild(li);
       });
@@ -1627,7 +1627,8 @@ function buildRecordingsList(nodeId, nodeData) {
 
       const aboutHdr = document.createElement('div');
       aboutHdr.className = 'lecdem-subsection-header';
-      aboutHdr.textContent = `Lecdems about ${artistLabel}`;
+      // ADR-128 D9: subsection label simplified to just "About"
+      aboutHdr.appendChild(document.createTextNode('About'));
       aboutSubsec.appendChild(aboutHdr);
 
       const aboutList = document.createElement('ul');
@@ -1642,12 +1643,19 @@ function buildRecordingsList(nodeId, nodeData) {
 
         li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
 
-        if (lecturerChip || subjectChips.length > 0) {
-          const subjectsWrap = document.createElement('span');
-          subjectsWrap.className = 'lecdem-subjects';
-          if (lecturerChip) subjectsWrap.appendChild(lecturerChip);
-          subjectChips.forEach(c => subjectsWrap.appendChild(c));
-          li.appendChild(subjectsWrap);
+        // ADR-128 D5: lecturer chip always visible; subject chips collapsed behind buildSubjectGroup
+        if (lecturerChip) {
+          const musicianWrap = document.createElement('span');
+          musicianWrap.className = 'lecdem-subjects';
+          musicianWrap.appendChild(lecturerChip);
+          li.appendChild(musicianWrap);
+        }
+        if (subjectChips.length > 0) {
+          li.appendChild(buildSubjectGroup({
+            chips: subjectChips,
+            defaultCollapsed: true,
+            summaryText: subjectChips.length + ' subject' + (subjectChips.length !== 1 ? 's' : ''),
+          }));
         }
         aboutList.appendChild(li);
       });
@@ -1656,8 +1664,7 @@ function buildRecordingsList(nodeId, nodeData) {
       lsBody.appendChild(aboutSubsec);
     }
 
-    lsSection.appendChild(lsBody);
-    recList.appendChild(lsSection);
+    _sections.push({ sectionEl: lsSection, count: lecdemCount });
   }
 
   // ── 1. Group structured perfs by recording_id → session_index ────────────
@@ -1700,46 +1707,23 @@ function buildRecordingsList(nodeId, nodeData) {
 
   // ADR-107: CONCERTS section header always rendered (even when empty) so the
   // + chip is always visible and invites first-concert entry.
-  const concertSection = document.createElement('section');
+  // ADR-128 D3: use buildSection; D5 note: Concerts not a first-class vocab chip yet.
+  // ADR-128 D8 + D10: 'Concerts' promoted to neutral chip with microphone glyph.
+  const _concertsChip = document.createElement('span');
+  _concertsChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-concerts';
+  _concertsChip.textContent = 'Concerts';
+  const { sectionEl: concertSection, bodyEl: concertBody } = buildSection({
+    headerChip: _concertsChip,
+    count: concerts.length,
+    onAdd: function() { if (typeof openAddRecordingForm === 'function') openAddRecordingForm({ musicianId: nodeId }); },
+    addTitle: 'Add a new concert featuring ' + artistLabel,
+  });
   concertSection.dataset.section = 'concerts';
-  const concertHeader = document.createElement('div');
-  concertHeader.className = 'rec-section-header-row';
-  const concertCollapseBtn = document.createElement('button');
-  concertCollapseBtn.type = 'button';
-  concertCollapseBtn.className = 'section-collapse-btn';
-  concertCollapseBtn.textContent = '▼';
-  concertCollapseBtn.title = 'Collapse / expand';
-  concertHeader.appendChild(concertCollapseBtn);
-  const concertHeaderLabel = document.createElement('span');
-  concertHeaderLabel.textContent = 'Concerts (' + concerts.length + ')';
-  concertHeader.appendChild(concertHeaderLabel);
-  const concertAddChip = document.createElement('button');
-  concertAddChip.type = 'button';
-  concertAddChip.className = 'co-add-chip';
-  concertAddChip.textContent = '+';
-  concertAddChip.title = 'Add a new concert featuring ' + artistLabel;
-  concertAddChip.addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (typeof openAddRecordingForm === 'function') {
-      openAddRecordingForm({ musicianId: nodeId });
-    }
-  });
-  concertHeader.appendChild(concertAddChip);
-  concertSection.appendChild(concertHeader);
-
-  const concertBody = document.createElement('div');
-  concertBody.className = 'section-body';
-  concertCollapseBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    concertBody.hidden = !concertBody.hidden;
-    concertCollapseBtn.textContent = concertBody.hidden ? '▶' : '▼';
-  });
   concerts.forEach(concert => {
     const bracket = buildConcertBracket(concert, nodeId, artistLabel);
     concertBody.appendChild(bracket);
   });
-  concertSection.appendChild(concertBody);
-  recList.appendChild(concertSection);
+  _sections.push({ sectionEl: concertSection, count: concerts.length });
 
   // ── 2. Raga tree — structured perfs + normalized legacy, all grouped by raga ──
   // Deduplicate: legacy entries whose video_id is already in structured_perfs are skipped.
@@ -1758,45 +1742,29 @@ function buildRecordingsList(nodeId, nodeData) {
     }));
   const allPerfs = [...structuredPerfs, ...normalizedLegacy];
   // Header always rendered so all sections are visible for every musician.
-  const ragaSection = document.createElement('section');
+  // ADR-128 D3: use buildSection. Composite headerChip preserves "Recordings by Raga" reading order.
+  // ADR-128 D8 + D10: 'Recordings' promoted to neutral chip with gramophone glyph.
+  const _ragaHdrLabel = document.createElement('span');
+  const _recordingsChip = document.createElement('span');
+  _recordingsChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-recordings';
+  _recordingsChip.textContent = 'Recordings';
+  _ragaHdrLabel.appendChild(_recordingsChip);
+  _ragaHdrLabel.appendChild(document.createTextNode(' by '));
+  const ragaTypeChip = document.createElement('span');
+  ragaTypeChip.className = 'raga-chip chip-section-hdr';
+  ragaTypeChip.textContent = 'Raga';
+  _ragaHdrLabel.appendChild(ragaTypeChip);
+  const { sectionEl: ragaSection, bodyEl: ragaBody } = buildSection({
+    headerChip: _ragaHdrLabel,
+    count: allPerfs.length,
+    onAdd: function() { if (typeof openAddYouTubeToMusicianForm === 'function') openAddYouTubeToMusicianForm(nodeId); },
+    addTitle: 'Add YouTube recording for ' + artistLabel,
+  });
   ragaSection.dataset.section = 'raga-recordings';
-  const ragaHeader = document.createElement('div');
-  ragaHeader.className = 'rec-section-header-row';
-  const ragaCollapseBtn = document.createElement('button');
-  ragaCollapseBtn.type = 'button';
-  ragaCollapseBtn.className = 'section-collapse-btn';
-  ragaCollapseBtn.textContent = '▼';
-  ragaCollapseBtn.title = 'Collapse / expand';
-  ragaHeader.appendChild(ragaCollapseBtn);
-  const ragaHeaderLabel = document.createElement('span');
-  ragaHeaderLabel.textContent = 'Recordings by Raga (' + allPerfs.length + ')';
-  ragaHeader.appendChild(ragaHeaderLabel);
-  const ragaAddChip = document.createElement('button');
-  ragaAddChip.type = 'button';
-  ragaAddChip.className = 'co-add-chip';
-  ragaAddChip.textContent = '+';
-  ragaAddChip.title = 'Add YouTube recording for ' + artistLabel;
-  ragaAddChip.addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (typeof openAddYouTubeToMusicianForm === 'function') {
-      openAddYouTubeToMusicianForm(nodeId);
-    }
-  });
-  ragaHeader.appendChild(ragaAddChip);
-  ragaSection.appendChild(ragaHeader);
-
-  const ragaBody = document.createElement('div');
-  ragaBody.className = 'section-body';
-  ragaCollapseBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    ragaBody.hidden = !ragaBody.hidden;
-    ragaCollapseBtn.textContent = ragaBody.hidden ? '▶' : '▼';
-  });
   if (allPerfs.length > 0) {
     ragaBody.appendChild(buildRagaTree(allPerfs, nodeId, artistLabel));
   }
-  ragaSection.appendChild(ragaBody);
-  recList.appendChild(ragaSection);
+  _sections.push({ sectionEl: ragaSection, count: allPerfs.length });
 
   // ── 4. Compositions by this musician (ADR-057) ───────────────────────────
   // Find any composer whose musician_node_id matches this nodeId.
@@ -1815,50 +1783,32 @@ function buildRecordingsList(nodeId, nodeData) {
   // + chip always visible regardless of whether a composer record is linked.
   // Passes { composerId } when found, { musicianId } otherwise — openAddCompositionForm
   // handles the auto-create companion composer record path (ADR-109 §2).
+  // ADR-128 D3: use buildSection.
   {
-    const compSection = document.createElement('div');
-    compSection.className = 'comp-section';
-
-    const compHeader = document.createElement('div');
-    compHeader.className = 'comp-section-header';
-    const compCollapseBtn = document.createElement('button');
-    compCollapseBtn.type = 'button';
-    compCollapseBtn.className = 'section-collapse-btn';
-    compCollapseBtn.textContent = '▼';
-    compCollapseBtn.title = 'Collapse / expand';
-    compHeader.appendChild(compCollapseBtn);
-    const compHeaderLabel = document.createElement('span');
-    compHeaderLabel.textContent = `Compositions (${composerComps.length})`;
-    compHeader.appendChild(compHeaderLabel);
-
-    // + chip — always present (ADR-109 §1)
-    const compAddChip = document.createElement('button');
-    compAddChip.type = 'button';
-    compAddChip.className = 'co-add-chip';
-    compAddChip.textContent = '+';
-    compAddChip.title = composerForNode
+    const compAddTitle = composerForNode
       ? 'Add a composition by ' + (composerForNode.name || composerForNode.id)
       : 'Add a composition by this musician';
-    compAddChip.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (typeof openAddCompositionForm === 'function') {
-        if (composerForNode) {
-          openAddCompositionForm({ composerId: composerForNode.id });
-        } else {
-          openAddCompositionForm({ musicianId: nodeId });
+    // ADR-128 D12: 'Compositions' uses the .comp-chip section header (orange,
+    // uppercase) — same chip the Bani Flow panel uses, so the vocabulary
+    // matches across panels.
+    const _compsChip = document.createElement('span');
+    _compsChip.className = 'comp-chip chip-section-hdr';
+    _compsChip.textContent = 'Compositions';
+    const { sectionEl: compSection, bodyEl: compBody } = buildSection({
+      headerChip: _compsChip,
+      count: composerComps.length,
+      onAdd: function() {
+        if (typeof openAddCompositionForm === 'function') {
+          if (composerForNode) {
+            openAddCompositionForm({ composerId: composerForNode.id });
+          } else {
+            openAddCompositionForm({ musicianId: nodeId });
+          }
         }
-      }
+      },
+      addTitle: compAddTitle,
     });
-    compHeader.appendChild(compAddChip);
-    compSection.appendChild(compHeader);
-
-    const compBody = document.createElement('div');
-    compBody.className = 'section-body';
-    compCollapseBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      compBody.hidden = !compBody.hidden;
-      compCollapseBtn.textContent = compBody.hidden ? '▶' : '▼';
-    });
+    compSection.classList.add('comp-section');
 
     if (composerComps.length > 0) {
       const compList = document.createElement('ul');
@@ -1951,9 +1901,15 @@ function buildRecordingsList(nodeId, nodeData) {
       compBody.appendChild(compList);
     }
 
-    compSection.appendChild(compBody);
-    recList.appendChild(compSection);
+    _sections.push({ sectionEl: compSection, count: composerComps.length });
   }
+
+  // ── 5. ADR-128 D4: Empty-section demotion ────────────────────────────────
+  // Stable partition: sections with count > 0 come first (natural order),
+  // sections with count === 0 come last (natural order). Sort before append.
+  const _populated = _sections.filter(s => s.count > 0);
+  const _empty     = _sections.filter(s => s.count === 0);
+  [..._populated, ..._empty].forEach(s => recList.appendChild(s.sectionEl));
 
   // ── 6. Show/hide panel ────────────────────────────────────────────────────
   // ADR-107: always show the panel when a node is selected — even with no
@@ -1975,83 +1931,10 @@ function buildRecordingsList(nodeId, nodeData) {
 }
 
 // ── _buildLecdemSubjectChips — subject cross-links for a lecdem row (ADR-080) ──
-// Returns an array of chip elements for all subjects, excluding `excludeId`
-// (the current musician node).  Returns null if no chips to render.
+// ADR-128 D6: delegates to the converged buildLecdemSubjectChips in panel_components.js.
+// Backward-compat wrapper: returns null (not []) when empty, matching old call sites.
 function _buildLecdemSubjectChips(subjects, excludeId) {
-  if (!subjects) return null;
-  const chips = [];
-  const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
-  const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
-  const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
-
-  ragaIds.forEach(ragaId => {
-    const ragaObj  = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
-    const ragaName = ragaObj ? ragaObj.name : ragaId;
-    const c = document.createElement('span');
-    c.className = 'raga-chip';
-    c.textContent = ragaName;
-    c.title = 'Explore ' + ragaName + ' in Bani Flow';
-    c.addEventListener('click', e => {
-      e.stopPropagation();
-      c.classList.add('chip-tapped');
-      setTimeout(() => c.classList.remove('chip-tapped'), 200);
-      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
-    });
-    chips.push(c);
-  });
-
-  compIds.forEach(compId => {
-    const compObj  = (typeof compositions !== 'undefined') ? compositions.find(x => x.id === compId) : null;
-    const compName = compObj ? compObj.title : compId;
-    const c = document.createElement('span');
-    c.className = 'comp-chip';
-    c.textContent = compName;
-    c.title = 'Explore ' + compName + ' in Bani Flow';
-    c.addEventListener('click', e => {
-      e.stopPropagation();
-      c.classList.add('chip-tapped');
-      setTimeout(() => c.classList.remove('chip-tapped'), 200);
-      if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compId);
-    });
-    chips.push(c);
-  });
-
-  musicianIds.forEach(mid => {
-    if (mid === excludeId) return;   // skip the current node — it's already the panel subject
-    const mNode    = (typeof cy !== 'undefined') ? cy.getElementById(mid) : null;
-    const mLabel   = (mNode && mNode.length) ? (mNode.data('label') || mid) : mid;
-    const c = document.createElement('span');
-    c.className = 'musician-chip';
-    c.textContent = mLabel;
-    c.title = 'Open ' + mLabel + "'s panel";
-
-    // Era-tint so the chip matches every other musician chip
-    if (mNode && mNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
-      const tint = THEME.eraTintCss(mNode.data('era') || null);
-      c.style.setProperty('--chip-era-bg',     tint.bg);
-      c.style.setProperty('--chip-era-border', tint.border);
-    }
-
-    c.addEventListener('click', e => {
-      e.stopPropagation();
-      c.classList.add('chip-tapped');
-      setTimeout(() => c.classList.remove('chip-tapped'), 200);
-      // Zoom+center in the guru-shishya (graph) view, then populate the panel
-      if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
-        orientToNode(mid);
-      }
-      if (mNode && mNode.length && typeof selectNode === 'function') {
-        selectNode(mNode);
-        if (typeof window.setPanelState === 'function') {
-          setTimeout(() => window.setPanelState('MUSICIAN'), 50);
-        }
-      } else if (typeof showGraphAbsentToast === 'function') {
-        showGraphAbsentToast(mLabel);
-      }
-    });
-    chips.push(c);
-  });
-
+  const chips = buildLecdemSubjectChips(subjects, { excludeMusicianId: excludeId });
   return chips.length > 0 ? chips : null;
 }
 

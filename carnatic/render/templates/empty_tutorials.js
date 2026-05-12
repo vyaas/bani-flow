@@ -269,7 +269,8 @@
       block.appendChild(playLine);
 
       const linkLine = _el('div', 'pt-action-line');
-      const ext = _el('a', 'tree-ext-link yt-ext-link', '\u2197');
+      const ext = _el('a', 'tree-ext-link yt-ext-link');
+      ext.innerHTML = '<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z\"/><path d=\"M19 19H5V5h7V3H3v18h18v-9h-2z\"/></svg>';
       ext.href = demo.youtube_url || '#';
       ext.title = 'Open source';
       ext.addEventListener('click', function (evt) {
@@ -310,7 +311,8 @@
       });
       acts.appendChild(playBtn);
 
-      const ext = _el('a', 'tree-ext-link yt-ext-link', '\u2197');
+      const ext = _el('a', 'tree-ext-link yt-ext-link');
+      ext.innerHTML = '<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z\"/><path d=\"M19 19H5V5h7V3H3v18h18v-9h-2z\"/></svg>';
       ext.href = demo.youtube_url || '#';
       ext.title = 'Open source';
       ext.addEventListener('click', function (evt) {
@@ -419,7 +421,8 @@
       acts.appendChild(playBtn);
 
       const videoHost = demo.video_id ? 'https://www.youtube.com/watch?v=' + demo.video_id : '#';
-      const ext = _el('a', 'tree-ext-link yt-ext-link', '\u2197');
+      const ext = _el('a', 'tree-ext-link yt-ext-link');
+      ext.innerHTML = '<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z\"/><path d=\"M19 19H5V5h7V3H3v18h18v-9h-2z\"/></svg>';
       ext.href = demo.youtube_url || videoHost;
       ext.title = 'Open on YouTube';
       ext.addEventListener('click', function (evt) { evt.stopPropagation(); });
