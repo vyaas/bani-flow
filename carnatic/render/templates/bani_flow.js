@@ -165,6 +165,12 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   subjectSub.innerHTML = '';
   subjectLink.style.display = 'none';
   subjectLink.href = '#';
+  // ADR-128 D2: hide affordances row on reset
+  const _baniAffordancesReset = document.getElementById('bani-header-affordances');
+  if (_baniAffordancesReset) _baniAffordancesReset.style.display = 'none';
+  // also clear edit button
+  const _baniEditBtnReset = document.getElementById('bani-subject-edit-btn');
+  if (_baniEditBtnReset) { _baniEditBtnReset.style.display = 'none'; _baniEditBtnReset.onclick = null; }
   const subjectAddBtn = document.getElementById('bani-subject-add-btn');
   if (subjectAddBtn) { subjectAddBtn.style.display = 'none'; subjectAddBtn.onclick = null; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
@@ -199,6 +205,15 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     if (compSrc) {
       subjectLink.href = compSrc.url;
       subjectLink.style.display = 'inline';
+    }
+    // ADR-128 D2: wire edit button for comp subject
+    const _compEditBtn = document.getElementById('bani-subject-edit-btn');
+    if (_compEditBtn) {
+      _compEditBtn.style.display = 'inline-flex';
+      _compEditBtn.onclick = function(e) {
+        e.stopPropagation();
+        if (typeof openEditForm === 'function') openEditForm({ entityType: 'comp', id: id });
+      };
     }
     if (subjectAddBtn && typeof openAddYouTubeFormForComposition === 'function') {
       subjectAddBtn.style.display = '';
@@ -433,6 +448,15 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       subjectLink.href = ragaSrc.url;
       subjectLink.style.display = 'inline';
     }
+    // ADR-128 D2: wire edit button for raga subject
+    const _ragaEditBtn = document.getElementById('bani-subject-edit-btn');
+    if (_ragaEditBtn) {
+      _ragaEditBtn.style.display = 'inline-flex';
+      _ragaEditBtn.onclick = function(e) {
+        e.stopPropagation();
+        if (typeof openEditForm === 'function') openEditForm({ entityType: 'raga', id: id });
+      };
+    }
 
     // Row 2 (#bani-subject-sub): structural position
     subjectSub.innerHTML = '';
@@ -635,7 +659,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         herAddBtn.className = 'co-add-chip';
         herAddBtn.textContent = '+';
         herAddBtn.title = 'Add a Hindustani equivalent for ' + (raga.name || id);
-        herAddBtn.style.marginLeft = 'auto';
+        // ADR-128: + appears immediately after the equivalents (no margin-left:auto)
         herAddBtn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (typeof openAddRagaFormHER === 'function') openAddRagaFormHER(id);
@@ -666,7 +690,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         ceAddBtn.className = 'co-add-chip';
         ceAddBtn.textContent = '+';
         ceAddBtn.title = 'Add a Carnatic equivalent raga';
-        ceAddBtn.style.marginLeft = 'auto';
+        // ADR-128: + appears immediately after the equivalents (no margin-left:auto)
         ceAddBtn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (typeof openAddRagaFormCarnatic === 'function') openAddRagaFormCarnatic();
@@ -679,6 +703,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   }
 
   subjectHeader.style.display = 'block';
+  // ADR-128 D2: show affordances row (wiki link + edit button) when a subject is loaded
+  const _baniAffordances = document.getElementById('bani-header-affordances');
+  if (_baniAffordances) _baniAffordances.style.display = '';
   // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
   _renderBaniFlowLecdemStrip(type, id);
 
@@ -1207,14 +1234,17 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
 
   li.appendChild(primaryDiv);
 
-  // ── Co-performers: tag cloud below (no commas) ────────────────────────────
+  // ── Co-performers: collapsible tag cloud below (ADR-128 D5) ──────────────
+  // Folded by default — keeps the leaf compact; expand reveals accompanists.
   if (row.coPerformers && row.coPerformers.length > 0) {
-    const coDiv = document.createElement('div');
-    coDiv.className = 'tree-leaf-coperformers';
-    row.coPerformers.forEach(function(cp) {
-      coDiv.appendChild(buildArtistSpan(cp, false, 'raga', null));
+    const cpChips = row.coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'raga', null); });
+    const grp = buildSubjectGroup({
+      chips: cpChips,
+      defaultCollapsed: true,
+      summaryText: '+' + cpChips.length + ' accompanist' + (cpChips.length !== 1 ? 's' : ''),
     });
-    li.appendChild(coDiv);
+    grp.classList.add('tree-leaf-coperformers-group');
+    li.appendChild(grp);
   }
 
   return li;
@@ -1308,29 +1338,44 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     });
     li.appendChild(childrenUl);
 
-    trailList.appendChild(li);
+    return li;
   }
 
   // ── Compositions section ──────────────────────────────────────────────────
   if (compGroups.length > 0) {
-    const compSecHdr = document.createElement('div');
-    compSecHdr.className = 'rec-section-header-row';
-    const compSecLabel = document.createElement('span');
-    compSecLabel.textContent = 'Compositions (' + compGroups.length + ')';
-    compSecHdr.appendChild(compSecLabel);
-    trailList.appendChild(compSecHdr);
-    compGroups.forEach(_renderGroup);
+    // ADR-128 D3: buildSection for consistent header
+    const compTypeChip = document.createElement('span');
+    compTypeChip.className = 'comp-chip chip-section-hdr';
+    compTypeChip.textContent = 'Compositions';
+    const { sectionEl: compSec, bodyEl: compSecBody } = buildSection({
+      headerChip: compTypeChip,
+      count: compGroups.length,
+    });
+    compGroups.forEach(function(g) { compSecBody.appendChild(_renderGroup(g)); });
+    trailList.appendChild(compSec);
   }
 
   // ── Other recordings section ──────────────────────────────────────────────
   if (otherGroups.length > 0) {
-    const otherSecHdr = document.createElement('div');
-    otherSecHdr.className = 'rec-section-header-row';
-    const otherSecLabel = document.createElement('span');
-    otherSecLabel.textContent = 'Other recordings (' + otherGroups[0].rows.length + ')';
-    otherSecHdr.appendChild(otherSecLabel);
-    trailList.appendChild(otherSecHdr);
-    otherGroups.forEach(_renderGroup);
+    // ADR-128 D11: 'Recordings' neutral chip + ' (misc)' suffix — same chip as
+    // the Musician panel uses, so the vocabulary is consistent across panels.
+    const _miscChip = document.createElement('span');
+    _miscChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-recordings';
+    _miscChip.textContent = 'Recordings';
+    const { sectionEl: otherSec, bodyEl: otherSecBody } = buildSection({
+      headerChip: _miscChip,
+      headerSuffixText: ' (misc)',
+      count: otherGroups[0].rows.length,
+    });
+    // Render rows directly into the section body — buildSection already
+    // provides the collapsible header. _renderGroup would emit a redundant
+    // empty-labelled inner fold on the no-comp group.
+    otherGroups.forEach(function(g) {
+      g.rows.forEach(function(row) {
+        otherSecBody.appendChild(buildTreeLeaf(row, multiVersionKeys, false));
+      });
+    });
+    trailList.appendChild(otherSec);
   }
 }
 
@@ -1405,15 +1450,17 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
 
     li.appendChild(header);
 
-    // ADR-070: when a single-version row carries accompanists, render them
-    // directly under the header (multi-version path renders them per-leaf).
+    // ADR-070 + ADR-128 D5: when a single-version row carries accompanists,
+    // wrap them in a collapsed buildSubjectGroup directly under the header.
     if (isSingle && group.rows[0].coPerformers && group.rows[0].coPerformers.length > 0) {
-      const coDiv = document.createElement('div');
-      coDiv.className = 'tree-leaf-coperformers';
-      group.rows[0].coPerformers.forEach(function(cp) {
-        coDiv.appendChild(buildArtistSpan(cp, false, 'comp', null));
+      const cpChips = group.rows[0].coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'comp', null); });
+      const grp = buildSubjectGroup({
+        chips: cpChips,
+        defaultCollapsed: true,
+        summaryText: '+' + cpChips.length + ' accompanist' + (cpChips.length !== 1 ? 's' : ''),
       });
-      li.appendChild(coDiv);
+      grp.classList.add('tree-leaf-coperformers-group');
+      li.appendChild(grp);
     }
 
     // ── Children (multi-version only) ─────────────────────────────────────────
@@ -1622,12 +1669,16 @@ function _renderBaniFlowLecdemStrip(type, id) {
     const comp = compositions.find(function(c) { return c.id === id; });
     subjectName = comp ? comp.title : id;
   }
-  const hdr = document.createElement('div');
-  hdr.className = 'rec-section-header-row';
-  const hdrLabel = document.createElement('span');
-  hdrLabel.textContent = 'Lecdems on ' + subjectName + ' (' + refs.length + ')';
-  hdr.appendChild(hdrLabel);
-  section.appendChild(hdr);
+  const hdrChip = document.createElement('span');
+  hdrChip.className = 'lecdem-chip chip-section-hdr';
+  hdrChip.textContent = 'Lecdems';
+  // ADR-128 D3+D11: buildSection. Subject context (raga / composition) is
+  // already the panel subject — the suffix "on {subjectName}" was redundant.
+  const { sectionEl: lecdemSectionWrap, bodyEl: lecdemListBody } = buildSection({
+    headerChip: hdrChip,
+    count: refs.length,
+  });
+  section.appendChild(lecdemSectionWrap);
 
   // §3: one row per lecdem ref
   const list = document.createElement('ul');
@@ -1655,90 +1706,29 @@ function _renderBaniFlowLecdemStrip(type, id) {
 
     const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
     if (subjectChips.length > 0) {
-      const wrap = document.createElement('span');
-      wrap.className = 'lecdem-subjects';
-      subjectChips.forEach(function(c) { wrap.appendChild(c); });
-      li.appendChild(wrap);
+      // ADR-128 D5: wrap subject chips in collapsible buildSubjectGroup
+      li.appendChild(buildSubjectGroup({
+        chips: subjectChips,
+        defaultCollapsed: true,
+        summaryText: subjectChips.length + ' subject' + (subjectChips.length !== 1 ? 's' : ''),
+      }));
     }
 
     list.appendChild(li);
   });
 
-  section.appendChild(list);
+  lecdemListBody.appendChild(list);
   section.style.display = 'block';
 }
 
 // Build subject cross-link chips for a strip row, excluding the current trail
 // subject (excludeType + excludeId). Returns an array of chip elements.
-// §5: clicking a raga/comp chip navigates to that subject in Bani Flow;
-//     clicking a musician chip opens the target's musician panel.
+// ADR-128 D6: delegates to converged buildLecdemSubjectChips in panel_components.js.
 function _buildBaniFlowLecdemSubjectChips(subjects, excludeType, excludeId) {
-  if (!subjects) return [];
-  const chips = [];
-  const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
-  const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
-  const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
-
-  ragaIds.forEach(function(ragaId) {
-    if (excludeType === 'raga' && ragaId === excludeId) return;
-    const ragaObj  = ragas.find(function(r) { return r.id === ragaId; });
-    const ragaName = ragaObj ? ragaObj.name : ragaId;
-    const c = document.createElement('span');
-    c.className = 'raga-chip';
-    c.textContent = ragaName;
-    c.title = 'Explore ' + ragaName + ' in Bani Flow';
-    c.addEventListener('click', function(e) {
-      e.stopPropagation();
-      c.classList.add('chip-tapped');
-      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
-      triggerBaniSearch('raga', ragaId);
-    });
-    chips.push(c);
+  return buildLecdemSubjectChips(subjects, {
+    excludeRagaId:     excludeType === 'raga'     ? excludeId : undefined,
+    excludeCompId:     excludeType === 'comp'     ? excludeId : undefined,
+    excludeMusicianId: excludeType === 'musician' ? excludeId : undefined,
   });
-
-  compIds.forEach(function(compId) {
-    if (excludeType === 'comp' && compId === excludeId) return;
-    const compObj  = compositions.find(function(x) { return x.id === compId; });
-    const compName = compObj ? compObj.title : compId;
-    const c = document.createElement('span');
-    c.className = 'comp-chip';
-    c.textContent = compName;
-    c.title = 'Explore ' + compName + ' in Bani Flow';
-    c.addEventListener('click', function(e) {
-      e.stopPropagation();
-      c.classList.add('chip-tapped');
-      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
-      triggerBaniSearch('comp', compId);
-    });
-    chips.push(c);
-  });
-
-  musicianIds.forEach(function(mid) {
-    const mNode  = cy.getElementById(mid);
-    const mLabel = (mNode && mNode.length) ? (mNode.data('label') || mid) : mid;
-    const c = document.createElement('span');
-    c.className = 'musician-chip';
-    c.textContent = mLabel;
-    c.title = 'Open ' + mLabel + '\u2019s panel';
-    if (mNode && mNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
-      const tint = THEME.eraTintCss(mNode.data('era') || null);
-      c.style.setProperty('--chip-era-bg',     tint.bg);
-      c.style.setProperty('--chip-era-border', tint.border);
-    }
-    c.addEventListener('click', function(e) {
-      e.stopPropagation();
-      c.classList.add('chip-tapped');
-      setTimeout(function() { c.classList.remove('chip-tapped'); }, 200);
-      if (mNode && mNode.length && typeof selectNode === 'function') {
-        selectNode(mNode);
-        if (typeof window.setPanelState === 'function') {
-          setTimeout(function() { window.setPanelState('MUSICIAN'); }, 50);
-        }
-      }
-    });
-    chips.push(c);
-  });
-
-  return chips;
 }
 

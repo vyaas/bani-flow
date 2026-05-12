@@ -219,11 +219,12 @@ def render_html(
     )
 
     # ── Load templates ────────────────────────────────────────────────────────
-    base         = _load("base.html")
-    help_html    = _render_help_md((DATA_DIR / "help" / "preface.md").read_text(encoding="utf-8"))
-    theme_js     = _load("theme.js")
-    graph_view   = _load("graph_view.js")
-    media_player = _load("media_player.js")
+    base             = _load("base.html")
+    help_html        = _render_help_md((DATA_DIR / "help" / "preface.md").read_text(encoding="utf-8"))
+    theme_js         = _load("theme.js")
+    graph_view       = _load("graph_view.js")
+    panel_components = _load("panel_components.js")  # ADR-128: must precede media_player + bani_flow
+    media_player     = _load("media_player.js")
     sruti_bar    = _load("sruti_bar.js")
     timeline     = _load("timeline_view.js")
     raga_wheel   = _load("raga_wheel.js")
@@ -244,16 +245,46 @@ def render_html(
     # ── Inject :root {} CSS vars from theme.py (single source of truth) ───────
     base = base.replace("/* INJECT_CSS_VARS */", css_vars())
 
+    # ── ADR-128 D7: derive panel width from longest composition title + raga name.
+    # Both sidebars must be wide enough to render their largest first-class chip
+    # (composition title for right panel; raga name + composition title for left
+    # panel) without truncating the play/edit/add buttons that sit beside it.
+    # Formula: longest_chars * px_per_char + chrome_overhead, capped to a sane max.
+    _comps = comp_data.get("compositions", []) or []
+    _ragas = comp_data.get("ragas", []) or []
+    _max_comp = max((len(c.get("title", "")) for c in _comps), default=0)
+    _max_raga = max((len(r.get("name", "")) for r in _ragas), default=0)
+    # Per-character pixel estimate at chip font-size (~0.74rem ≈ 11.8px) on the
+    # default sans-serif stack: ~7.0px average for mixed case. Chrome overhead
+    # (chevron + count badge + +chip + section padding + sidebar padding):
+    # ≈ 140px. Right panel uses comps; left panel uses max(comps, ragas).
+    _PX_PER_CHAR = 7.0
+    _CHROME_OVERHEAD = 140
+    _MIN_PANEL_PX = 280   # never below the legacy default
+    _MAX_PANEL_PX = 480   # cap so panels don't dominate the viewport
+    _max_left = max(_max_comp, _max_raga)
+    _right_px = max(_MIN_PANEL_PX, min(_MAX_PANEL_PX, int(_max_comp * _PX_PER_CHAR) + _CHROME_OVERHEAD))
+    _left_px  = max(_MIN_PANEL_PX, min(_MAX_PANEL_PX, int(_max_left * _PX_PER_CHAR) + _CHROME_OVERHEAD))
+    _panel_vars = (
+        f"\n  /* ADR-128 D7: derived from data — longest comp={_max_comp}, raga={_max_raga} */\n"
+        f"  --right-panel-width: {_right_px}px;\n"
+        f"  --left-panel-width:  {_left_px}px;\n"
+    )
+    # Append to the :root block by inserting right before the closing brace of the first :root rule
+    base = base.replace("/* INJECT_PANEL_WIDTH_VARS */", _panel_vars)
+
     # ── Assemble <script> block ───────────────────────────────────────────────
     # theme.js MUST be first — it defines the THEME global used by all other scripts.
+    # panel_components.js MUST precede media_player.js + bani_flow.js (ADR-128).
     # sruti_bar.js MUST come after media_player.js (needs openPlayer/closePlayer).
     # entry_forms.js MUST come after media_player.js (needs wireDrag/nextSpawnPosition/topZ)
     # and after data_js (needs graphData global).
     script_block = "\n".join([
         "<script>",
-        theme_js,      # ← FIRST: defines THEME global
+        theme_js,          # ← FIRST: defines THEME global
         data_js,
         graph_view,
+        panel_components,  # ← ADR-128: shared panel constructors (before media_player/bani_flow)
         media_player,
         sruti_bar,     # ← after media_player: needs openPlayer/closePlayer
         timeline,

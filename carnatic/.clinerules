@@ -619,3 +619,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-11: ADR-126 revised before acceptance — spectral RGB mixing rejected; saturated gruvbox primitives blend to muddy mid-tones that destroy raga vibrancy and reduce mela-number legibility on the outer ring; cakra wedge and mela slot are now neutral surfaces (THEME.bgPanel / THEME.bgDeep), swara cells stay at full saturation as the only chromatic surfaces, and the light-up gesture is the chromatic moment that the mind's eye composes into a raga-colour.
 [AGENTS: graph-architect]
+- 2026-05-11: ADR-127 vocabulary chips: the `.chip-section-hdr` modifier must be wrapped in a `.rec-section-hdr-label-wrap` (inline-flex) when placed inside a `justify-content: space-between` flex row — otherwise individual chip and count nodes become separate flex children and space-between distributes them to opposite ends; always wrap chip + adjacent text nodes in a single span container.
+[AGENTS: carnatic-coder]

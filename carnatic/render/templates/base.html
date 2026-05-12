@@ -30,6 +30,8 @@
     --subject-size:           1.05rem;     /* search-subject chip font-size */
     --subject-padding:        4px 10px;    /* search-subject chip padding */
     --hier-indent-step:       14px;        /* one indent level (desktop) */
+    /* ADR-128 D7: panel widths derived from data (longest comp title + raga name) */
+    /* INJECT_PANEL_WIDTH_VARS */
     /* ADR-079: lecdem chip palette */
     --lecdem-bg:       #2a2233;
     --lecdem-border:   #6f5a8a;
@@ -55,7 +57,7 @@
   header {
     padding: 13px 0; background: var(--bg-panel);
     border-bottom: 2px solid var(--border-strong);
-    display: grid; grid-template-columns: 280px 1fr 280px; align-items: center; gap: 0;
+    display: grid; grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px); align-items: center; gap: 0;
   }
   #header-left {
     display: flex; align-items: center; gap: 8px; padding: 0 14px;
@@ -205,7 +207,7 @@
   /* Mobile: overridden to position:fixed by the mobile media query.            */
   #left-sidebar {
     position: absolute; top: 0; left: 0; bottom: 0;
-    width: 280px; background: var(--bg-panel);
+    width: var(--left-panel-width, 280px); background: var(--bg-panel);
     border-right: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
     overflow-y: auto; overflow-x: hidden; font-size: 0.78rem;
@@ -232,7 +234,7 @@
   /* Mobile: overridden to position:fixed by the mobile media query.            */
   #right-sidebar {
     position: absolute; top: 0; right: 0; bottom: 0;
-    width: 280px; background: var(--bg-panel);
+    width: var(--right-panel-width, 280px); background: var(--bg-panel);
     border-left: 2px solid var(--border-strong);
     display: flex; flex-direction: column;
     overflow-y: auto; overflow-x: hidden; font-size: 0.78rem;
@@ -317,9 +319,10 @@
     background: rgba(184, 187, 38, 0.12);
   }
 
-  /* ── node header (collapsed single-line) ── */
+  /* ── node header — ADR-128 D2: two-row layout (chip row + affordances row) ── */
   #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  #node-header { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px; }
+  #node-header { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+  #node-header-chip-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px; }
   /* #node-name is now a transparent wrapper — the .musician-chip inside it carries all styles */
   #node-name { display: inline-flex; align-items: center; min-width: 0; flex: 0 1 auto; }
   /* ADR-072: search-subject prominence — match left-sidebar bani-subject sizing */
@@ -332,12 +335,37 @@
     overflow: visible;
     text-overflow: unset;
   }
-  #node-lifespan { font-size: 0.78rem; color: var(--fg-muted); margin-left: 4px; }
+  #node-header-affordances { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 2px 0; }
+  #node-lifespan { font-size: 0.78rem; color: var(--fg-muted); }
+  /* Legacy plain-link style kept for backward compat; new affordances use .yt-ext-link */
   .node-wiki-link {
-    margin-left: auto; flex-shrink: 0;
+    flex-shrink: 0;
     color: var(--accent-link); font-size: 0.72rem; text-decoration: none;
   }
   .node-wiki-link:hover { text-decoration: underline; }
+
+  /* ── ADR-128: panel header affordances row (shared by both panels) ── */
+  .panel-header-affordances {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 2px 0;
+  }
+  .panel-header-subtitle { font-size: 0.70rem; color: var(--fg-muted); }
+  /* .panel-hdr-ext-link reuses .yt-ext-link as-is. The shared base rule
+     (font-size 0.70rem on a centered inline-flex circle) is the single
+     source of truth for any "send the user out of our system" affordance.
+     ADR-128 D9: do NOT override font-size or use ::before — that introduces
+     a second glyph and visual drift. Inherit the trail-acts geometry verbatim. */
+
+  /* ── ADR-128: subject-group (collapsible lecdem subject chips) ── */
+  .subject-group { display: inline-flex; flex-direction: column; gap: 3px; }
+  .subject-group-summary {
+    display: inline-flex; align-items: center;
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.65rem; cursor: pointer; padding: 0;
+    font-family: inherit; line-height: 1; user-select: none;
+  }
+  .subject-group-summary:hover { color: var(--accent); }
+  .subject-group-body { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+  .subject-group-body[hidden] { display: none; }
 
   /* Instrument shape icon in node header — outline only, rendered as inline SVG by JS */
   .node-shape-icon {
@@ -360,7 +388,7 @@
   #trail-filter::placeholder { color: var(--fg-muted); font-style: italic; }
 
   /* ── unified recordings panel ── */
-  #recordings-panel { display: none; }
+  #recordings-panel { display: none; padding-bottom: 0; border-bottom: none; }
   #recordings-list { list-style: none; margin-top: 4px; }
 
   /* ── ADR-064: section headers within recordings panel ── */
@@ -386,16 +414,16 @@
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
     padding: 6px 8px; border-bottom: 1px solid var(--border);
     background: var(--bg-input);
-    cursor: default; user-select: none;
+    cursor: pointer; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
+  #recordings-list .tree-group-header:hover { background: var(--bg-active); }
   #recordings-list .rec-group-count {
     font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
   }
-  /* All raga groups start open — .tree-children override for rec context */
-  #recordings-list .tree-children {
-    list-style: none; padding: 0; margin: 0; display: block;
-  }
+  /* ADR-128 D9: raga groups respect .tree-group-open like trail tree;
+     the previous override forced them always open and disabled chevrons. */
+  #recordings-list .tree-children { list-style: none; padding: 0; margin: 0; }
   /* Single-raga chevron hidden */
   #recordings-list .tree-group-single > .tree-group-header > .tree-chevron {
     display: none;
@@ -569,25 +597,38 @@
     border-color: var(--accent); color: var(--accent);
   }
   .co-add-chip::after, .co-edit-chip::after { content: ''; position: absolute; inset: -8px; }
-  /* Rec section header with right-edge chip: needs flex layout */
+  /* Rec section header: left-justified label, + button pinned right via margin-left:auto.
+     ADR-128 D9: entire row is the click affordance for collapse/expand; chevron
+     functions as an indicator. Inner buttons stop propagation so they keep their
+     own behavior. */
   .rec-section-header-row {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; gap: 6px;
     font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
     color: var(--fg-muted); text-transform: uppercase;
     padding: 10px 0 3px; border-bottom: 1px solid var(--border);
     margin-top: 4px;
+    cursor: pointer;
+    user-select: none;
   }
-  /* Collapse toggle button shared by all four musician-panel sections */
+  .rec-section-header-row:hover { color: var(--fg); }
+  /* Pin the + add button to the right edge of any section header. */
+  .rec-section-header-row > .co-add-chip { margin-left: auto; }
+  /* Indent section bodies under their header for visual hierarchy. */
+  .section-body { padding-left: var(--hier-indent-step, 14px); }
+  .section-body[hidden] { padding-left: 0; }
+  /* Collapse-toggle indicator shared by all panel sections AND raga-tree groups.
+     ADR-128 D10: single source of truth — all chevrons in any panel section
+     use this geometry. Indicator-only (no border, no background, no hover
+     box — the surrounding row is the click affordance). */
   .section-collapse-btn {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 28px; height: 28px;
+    width: 18px; height: 18px;
     background: none; border: none; color: var(--fg-muted);
-    font-size: 0.65rem; cursor: pointer; padding: 0;
+    font-size: 0.62rem; cursor: pointer; padding: 0;
     flex-shrink: 0; font-family: inherit; line-height: 1;
     user-select: none;
   }
   .section-collapse-btn:hover { color: var(--accent); }
-  .section-body[hidden] { display: none; }
 
   /* ── composition list inside bracket ── */
   .concert-perf-list {
@@ -1157,6 +1198,15 @@
     transition: background 0.12s, border-color 0.12s;
     -webkit-tap-highlight-color: transparent;
   }
+  /* ADR-128 D10: raga-tree groups now use .section-collapse-btn directly \u2014\n     identical to musician-panel sections. The legacy .tree-chevron-sm modifier\n     is retained as a no-op for backward compat but is no longer applied. */
+  .tree-chevron-sm {
+    width: 18px; height: 18px;
+    border: none;
+    margin-left: 0;
+    font-size: 0.62rem;
+    color: var(--fg-muted);
+  }
+  .tree-chevron-sm:hover { background: none; border: none; }
   .tree-chevron::before { content: '\25B6'; }
   .tree-group-open > .tree-group-header > .tree-chevron::before { content: '\25BC'; }
   .tree-chevron::after { content: ''; position: absolute; inset: -9px; }
@@ -1200,6 +1250,18 @@
     display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
     margin-top: 3px;
     padding-left: var(--hier-indent-step);
+  }
+  /* ADR-128 D5: collapsible co-performers wrap (uses buildSubjectGroup).
+     Match the legacy .tree-leaf-coperformers indent and spacing so the
+     visual rhythm doesn't shift when the user expands the group. */
+  .tree-leaf-coperformers-group {
+    display: flex; flex-direction: column; align-items: flex-start;
+    margin-top: 3px;
+    padding-left: var(--hier-indent-step);
+    width: 100%;
+  }
+  .tree-leaf-coperformers-group > .subject-group-body {
+    display: flex; flex-wrap: wrap; gap: 4px; padding-top: 3px;
   }
   /* ADR-072: composer chip inside the trail group header is indented one
      level beneath its composition (level 1 of left-sidebar hierarchy). */
@@ -1353,41 +1415,44 @@
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
     transform: scale(0.93);
   }
-  /* YouTube link — circular sibling of ▶ (ADR-065) */
+  /* YouTube/external link \u2014 plain icon, no circle (ADR-128 D14). */
   .yt-ext-link {
     flex-shrink: 0;
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     padding: 0;
-    border-radius: 50%;
-    border: 1.5px solid var(--border-muted, var(--border-strong));
-    color: var(--fg-muted);
-    font-size: 0.70rem;
+    border: none;
+    background: none;
+    color: var(--accent-sub);
+    font-size: 0;
+    line-height: 1;
     text-decoration: none;
     white-space: nowrap;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
+    transition: color 0.12s, transform 0.12s;
   }
   .yt-ext-link::after {
     content: '';
     position: absolute;
     inset: -9px;
   }
+  .yt-ext-link svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+    fill: currentColor;
+    pointer-events: none;
+  }
   .yt-ext-link:hover {
-    color: var(--fg);
-    background: var(--bg-active);
-    border-color: var(--fg-muted);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg-muted) 20%, transparent);
+    color: var(--accent);
   }
   .yt-ext-link:active {
-    background: var(--bg-pressed);
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
-    transform: scale(0.93);
+    transform: scale(0.92);
   }
   /* trail-acts: ▶ + ↗ always right-aligned in any flex parent */
   .trail-acts {
@@ -1640,15 +1705,165 @@
     filter: brightness(1.35);
     text-decoration: underline;
   }
+  /* ADR-128 D10: scholar's-cap glyph (mortarboard) inlined as data: URL.
+     The previous mask: url("#icon-lecdem") referenced an SVG <symbol>, which
+     CSS mask cannot resolve — the icon was invisible. Inline data: URL works
+     in every browser and survives the single-file build. */
   .lecdem-chip::before {
     content: "";
     display: inline-block;
-    width: 12px;
-    height: 12px;
-    background: var(--lecdem-glyph);
-    -webkit-mask: url("#icon-lecdem") center / contain no-repeat;
-            mask: url("#icon-lecdem") center / contain no-repeat;
+    width: 13px;
+    height: 13px;
+    background: var(--lecdem-glyph, currentColor);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 3 1 9l11 6 9-4.91V17h2V9zM5 13.18v4L12 21l7-3.82v-4L12 17z'/></svg>") center / contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 3 1 9l11 6 9-4.91V17h2V9zM5 13.18v4L12 21l7-3.82v-4L12 17z'/></svg>") center / contain no-repeat;
     flex-shrink: 0;
+  }
+  /* ADR-128 D10: neutral-chip glyph variants — microphone for Concerts,
+     gramophone-disc for Recordings, ledger-page for Compositions. Glyph is
+     opt-in via .neutral-chip-concerts / -recordings / -compositions modifier. */
+  .neutral-chip.has-glyph { display: inline-flex; align-items: center; gap: 5px; }
+  .neutral-chip.has-glyph::before {
+    content: "";
+    display: inline-block;
+    width: 13px; height: 13px;
+    background: currentColor;
+    flex-shrink: 0;
+    -webkit-mask-position: center;
+            mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+            mask-size: contain;
+  }
+  .neutral-chip-concerts::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z'/></svg>");
+  }
+  .neutral-chip-recordings::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2z'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2z'/></svg>");
+  }
+  .neutral-chip-compositions::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm4 18H6V4h7v5h5zM8 12h8v2H8zm0 4h5v2H8z'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm4 18H6V4h7v5h5zM8 12h8v2H8zm0 4h5v2H8z'/></svg>");
+  }
+
+  /* ── ADR-127: Vocabulary chip scale modifiers ─────────────────────────────
+     Three scale levels for each vocabulary chip:
+       (inline base)        — 0.74rem, cursor:pointer (click affordance)
+       .chip-section-hdr    — 0.85rem, cursor:default, hover:no-underline
+       .chip-panel-title    — 1.0rem,  cursor:default, uppercase, spaced
+     Modifier rules are noun-agnostic; adding a new chip family opts in
+     automatically without changing these patterns.                          */
+
+  /* ── Section-header scale (type labels in section rows) ── */
+  .raga-chip.chip-section-hdr,
+  .comp-chip.chip-section-hdr,
+  .musician-chip.chip-section-hdr,
+  .lecdem-chip.chip-section-hdr,
+  .neutral-chip.chip-section-hdr {
+    font-size: 0.85rem;
+    padding: 3px 10px;
+    letter-spacing: 0.02em;
+    cursor: default;
+    vertical-align: middle;
+  }
+  .raga-chip.chip-section-hdr:hover,
+  .comp-chip.chip-section-hdr:hover,
+  .musician-chip.chip-section-hdr:hover,
+  .lecdem-chip.chip-section-hdr:hover,
+  .neutral-chip.chip-section-hdr:hover {
+    filter: none;
+    outline: none;
+    text-decoration: none;
+  }
+  /* Neutral vocabulary chip — white-on-black contrast.
+     Used for non-domain words promoted to chip status (Concerts, Recordings, Compositions)
+     so they share scale and weight with the colored vocabulary chips alongside them. */
+  .neutral-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    user-select: none;
+  }
+
+  /* ── Panel-title scale (BANI FLOW / MUSICIAN panel headers) ── */
+  .raga-chip.chip-panel-title,
+  .comp-chip.chip-panel-title,
+  .musician-chip.chip-panel-title,
+  .lecdem-chip.chip-panel-title {
+    font-size: 1.0rem;
+    padding: 5px 14px;
+    letter-spacing: 0.12em;
+    cursor: default;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .raga-chip.chip-panel-title:hover,
+  .comp-chip.chip-panel-title:hover,
+  .musician-chip.chip-panel-title:hover,
+  .lecdem-chip.chip-panel-title:hover {
+    filter: none;
+    outline: none;
+  }
+  /* Musician panel title: use accent border fallback (no inline era vars at panel level) */
+  .musician-chip.chip-panel-title {
+    --chip-era-border: var(--accent, #d79921);
+    --chip-era-bg: color-mix(in srgb, var(--accent, #d79921) 10%, transparent);
+  }
+
+  /* ── ADR-127 D3: .bani-chip — composite gradient, panel-title scale only ──
+     Blends raga teal and comp gold at 45°. Only used for BANI FLOW header;
+     never applied as a navigable instance chip.                             */
+  .bani-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--chip-raga-border) 18%, transparent) 0%,
+      color-mix(in srgb, var(--chip-comp-border) 18%, transparent) 100%);
+    border: 1px solid color-mix(in srgb, var(--chip-raga-border) 50%, var(--chip-comp-border) 50%);
+    border-left-width: 3px;
+    color: var(--fg);
+    font-weight: bold;
+    border-radius: var(--chip-border-radius, 4px);
+    white-space: nowrap;
+    user-select: none;
+    transition: none;
+  }
+  .bani-chip.chip-panel-title {
+    font-size: 1.0rem;
+    padding: 5px 14px;
+    letter-spacing: 0.12em;
+    cursor: default;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+
+  /* ── ADR-127 D5: Non-chip section header label (Concerts, Other recordings) ──
+     Scale and contrast lift without a colored chip palette.                 */
+  .rec-section-hdr-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--fg-sub);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Inline-flex wrapper that keeps a vocabulary chip + following text nodes
+     together as a single flex child (prevents space-between from splitting them). */
+  .rec-section-hdr-label-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
   }
 
   /* ── ADR-125: Lecdem label chip — title label within a lecdem row ── */
@@ -2807,13 +3022,13 @@
     }
     /* When panel is open: slide handle to sit at the panel's outer edge */
     .desktop-handle-left.handle-panel-open {
-      left: 280px;
+      left: var(--left-panel-width, 280px);
       border-left: 1px solid var(--accent);
       border-right: none;
       border-radius: 6px 0 0 6px;
     }
     .desktop-handle-right.handle-panel-open {
-      right: 280px;
+      right: var(--right-panel-width, 280px);
       border-right: 1px solid var(--accent);
       border-left: none;
       border-radius: 0 6px 6px 0;
@@ -2839,9 +3054,9 @@
     #right-sidebar { grid-column: 3; grid-row: 1; }
 
     /* Pin-state variants driven by classes set in mobile.js */
-    #main.left-pinned               { grid-template-columns: 280px 1fr 0px; }
-    #main.right-pinned              { grid-template-columns: 0px 1fr 280px; }
-    #main.left-pinned.right-pinned  { grid-template-columns: 280px 1fr 280px; }
+    #main.left-pinned               { grid-template-columns: var(--left-panel-width, 280px) 1fr 0px; }
+    #main.right-pinned              { grid-template-columns: 0px 1fr var(--right-panel-width, 280px); }
+    #main.left-pinned.right-pinned  { grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px); }
 
     /* Pinned panels become static in-flow grid items */
     #left-sidebar.panel-pinned,
@@ -2902,9 +3117,9 @@
       gap: 6px;
       padding: 0 12px;
     }
-    .dpb-left   { border-right: 1px solid var(--border-strong); }
+    .dpb-left   { border-right: 1px solid var(--border-strong); width: var(--left-panel-width, 280px); }
     .dpb-center { flex: 1; width: auto; justify-content: center; }
-    .dpb-right  { border-left: 1px solid var(--border-strong); justify-content: flex-end; }
+    .dpb-right  { border-left: 1px solid var(--border-strong); justify-content: flex-end; width: var(--right-panel-width, 280px); }
     .dpb-bundle {
       font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
       color: var(--fg-dim); background: none;
@@ -3840,7 +4055,7 @@
       <div class="panel" id="bani-flow-panel">
         <h3>
           <span class="panel-nav-spacer" aria-hidden="true"></span>
-          Bani Flow &#9835;
+          <span class="bani-chip chip-panel-title">BANI FLOW</span>
           <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
@@ -3858,9 +4073,15 @@
             <span id="bani-subject-icon" class="bani-subject-icon"></span>
             <span id="bani-her-prefix" style="display:none">[Hindustani]</span>
             <span id="bani-subject-name"></span>
+            <!-- add button moved to affordances row below for breathing room -->
+          </div>
+          <!-- ADR-128 D2: affordances row (wiki + edit + add). Shown when subject loaded. -->
+          <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
+            <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
+               target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
+            <button id="bani-subject-edit-btn" class="co-edit-chip panel-hdr-edit-btn"
+                    title="Edit" style="display:none">&#9998;</button>
             <button id="bani-subject-add-btn" class="co-add-chip" style="display:none" title="Add a recording">+</button>
-            <a id="bani-subject-link" class="bani-subject-link" href="#"
-               target="_blank" style="display:none">&#8599;</a>
           </div>
           <div id="bani-subject-sub"></div>
           <!-- Row 3: aliases (ADR-022) -->
@@ -3958,7 +4179,7 @@
       <div class="panel" id="musician-panel">
         <h3>
           <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-          Musician &#9835;
+          <span class="musician-chip chip-panel-title">MUSICIAN</span>
           <!-- ADR-108: + chip to add a new musician, always visible -->
           <button class="co-add-chip" title="Add a new musician" onclick="openAddMusicianForm()" style="margin-left:4px">+</button>
           <span style="display:inline-flex;align-items:center;gap:4px">
@@ -3978,14 +4199,20 @@
       </div>
       <div id="node-info">
         <div id="node-header">
-          <span id="node-shape-icon" class="node-shape-icon ellipse"></span>
-          <span id="node-name">—</span>
-          <span id="node-lifespan"></span>
-          <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
-             style="display:none">&#8599;</a>
-          <!-- ADR-104 Track A / ADR-108: ✎ chip rewired to openEditMusicianForm -->
-          <button id="node-edit-chip" class="co-edit-chip" title="Edit this musician"
-                  style="display:none; margin-left:auto">&#9998;</button>
+          <!-- Row 1: musician chip (ADR-128 D2) -->
+          <div id="node-header-chip-row">
+            <span id="node-shape-icon" class="node-shape-icon ellipse" style="display:none"></span>
+            <span id="node-name">&mdash;</span>
+          </div>
+          <!-- Row 2: lifespan + encircled wiki + encircled edit (ADR-128 D2) -->
+          <div id="node-header-affordances" class="panel-header-affordances" style="display:none">
+            <span id="node-lifespan"></span>
+            <a id="node-wiki-link" class="yt-ext-link panel-hdr-ext-link" href="#" target="_blank"
+               style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
+            <!-- ADR-104 Track A / ADR-108: &#9998; chip rewired to openEditMusicianForm -->
+            <button id="node-edit-chip" class="co-edit-chip panel-hdr-edit-btn" title="Edit this musician"
+                    style="display:none">&#9998;</button>
+          </div>
         </div>
         <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
                style="display:none" autocomplete="off" spellcheck="false" />
@@ -3996,7 +4223,7 @@
       <!-- ADR-086: empty-panel tutorial (shown when no node selected) -->
       <div id="musician-tutorial" class="panel-tutorial" style="display:none"></div>
       <div class="panel" id="recordings-panel" style="display:none">
-        <h3>Recordings</h3>
+        <!-- ADR-128 D8: redundant <h3>Recordings</h3> removed; section headers self-label. -->
         <ul id="recordings-list"></ul>
       </div>
 
