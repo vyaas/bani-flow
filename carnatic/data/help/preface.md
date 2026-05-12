@@ -87,7 +87,7 @@ Just _listen_
 	</a>
 	<div class="hd-project-box">
 		<span class="hd-project-kicker">Project</span>
-		<a class="hd-project-link" href="https://github.com/vyaas/bani_flow" target="_blank" rel="noopener noreferrer">github.com/vyaas/bani_flow</a>
+		<a class="hd-project-link" href="https://github.com/vyaas/bani-flow" target="_blank" rel="noopener noreferrer">github.com/vyaas/bani_flow</a>
 		<span class="hd-project-note">Source, issues, and the contribution path live here.</span>
 	</div>
 </div>

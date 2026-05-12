@@ -63,7 +63,7 @@ python3 carnatic/cli.py stats
 The workflow at [`.github/workflows/deploy-pages.yml`](./workflows/deploy-pages.yml):
 - Triggers on push to `main` when `carnatic/data/**`, `carnatic/render/**`, or `pyproject.toml` change, or manually via `workflow_dispatch`
 - Installs `bani-flow`, runs `bani-render`, copies `carnatic/graph.html` → `_site/index.html`
-- Deploys to `https://vyaas.github.io/bani_flow/` via OIDC (no secrets needed)
+- Deploys to `https://vyaas.github.io/bani-flow/` via OIDC (no secrets needed)
 
 **One-time repo setup**: Settings → Pages → Source = "GitHub Actions".
 
