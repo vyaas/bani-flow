@@ -101,13 +101,13 @@ The chip in a section header is **non-navigable** — it is a type label, not an
 
 **After**:
 ```html
-<h2 id="left-panel-title"><span class="raga-chip chip-panel-title">BANI FLOW</span></h2>
+<h2 id="left-panel-title"><span class="bani-chip chip-panel-title">BANI FLOW</span></h2>
 <h2 id="right-panel-title"><span class="musician-chip chip-panel-title">MUSICIAN</span></h2>
 ```
 
 The `♫` / `&#9835;` glyph is **removed** from both panel titles. The chip identity is the semantic marker; no Western-notation glyph is needed. ADR-011 §Asymmetry-2 is superseded with respect to glyph choice (the *symmetry* commitment of ADR-011 stands; the *mechanism* changes from glyphs to chips).
 
-For BANI FLOW the chip used is `.raga-chip` because the left panel is the music-entry point and raga is its dominant subject. (Composition is co-equal in the left panel; the choice of raga over composition for the title is for visual stability — ragas are the more universal entry. Open question: should it instead be a custom `.bani-chip` that visually combines raga+composition palettes? See Open Questions.)
+For BANI FLOW the panel title uses a new composite `.bani-chip` class — a single chip whose background blends the raga teal and composition gold (CSS `linear-gradient`, ~45°), border tinted to the midpoint, text colour chosen for legibility against the gradient. The composite acknowledges that the left panel is the joint raga + composition entry; neither sub-vocabulary alone is faithful to its scope. The composite is **only** used at `chip-panel-title` scale — it is not a navigable instance chip and never appears inline.
 
 ### D4. Help deck adopts the same vocabulary chips
 
@@ -116,6 +116,31 @@ The "What is Bani Flow" help-deck card already uses inline chips for vocabulary 
 ### D5. Concert and Recording are *not* vocabulary chips (yet)
 
 `Concerts` and `Recordings` are sub-categories of the lecdem/recording space, not first-class vocabulary nouns. They get the section-header scale treatment (font-size lift, contrast lift) but not a coloured chip palette. If future ADRs promote them to first-class status, they get their own palettes via amendment.
+
+### D6. Self-reference suppression
+
+When a section header would render a chip whose entity *is* the panel's own subject, the chip is **suppressed** in favour of the type chip alone — the sub-header drops the redundant musician/raga/composition reference entirely.
+
+Examples:
+- On Vina Dhanammal's musician panel: the `Lecdems by` sub-header renders as `[lecdem chip]Lecdems by` — not `[lecdem chip]Lecdems by [musician chip]Vina Dhanammal`. The panel's own header already names her.
+- On Bhairavi's raga panel: `Lecdems on` renders without a trailing `[raga chip]Bhairavi`.
+- On a composition panel: `Recordings of` renders without a trailing comp chip naming the composition.
+
+The principle: **consistency is a means, not the end.** Repeating the panel's subject in every sub-header dilutes the chip vocabulary by overuse and visually clutters the section row. Suppression keeps the chip language pungent and the panel's subject anchored at its header where it belongs.
+
+The cross-panel cases (e.g. left-panel Bhairavi raga showing `[lecdem chip]Lecdems on Bhairavi (3)`) **retain** the trailing chip — there the subject reference is informational because the user arrived from a different surface.
+
+### D7. Vocabulary registry — extensibility for future nouns
+
+The chip system is structurally open. New vocabulary nouns will arrive — Tala is the obvious near-term candidate (currently rendered as plain text in recording rows), and the system already hints at Mela, Bani, and Era as latent candidates.
+
+To future-proof:
+
+1. **Single registry**: chip definitions live in one place (`base.html` chip block), one CSS pattern per noun. No vocabulary chip is allowed to be defined ad-hoc inside `media_player.js` / `bani_flow.js` / a help-deck card.
+2. **Modifier orthogonality**: the three scale modifiers (`chip-section-hdr`, `chip-panel-title`, and the implicit inline base) are **noun-agnostic**. Adding a new noun requires defining only its base palette + glyph; the three scales come for free via the modifier rules. Coder must keep the modifier CSS authored as patterns that apply to the chip *family*, not enumerated per-noun, to the extent the existing chip-class structure permits.
+3. **Glyph slot**: each chip has a `::before` glyph slot. The current four use ♫ (musician), ◆ (raga), ♪ (comp — pending), ⊕ (lecdem — pending). A future noun supplies its own. The glyph is the only piece of identity that does not derive from CSS variables.
+4. **No structural commitments to "exactly four"**: Coder must not write code that assumes the vocabulary set is closed. Section-header construction in `panel_components.js` (per ADR-128) takes a `headerChip` *element*, not a noun *enum* — a future noun's chip is accepted without changing the constructor signature.
+5. **Tala specifically (forecast, not commitment)**: when Tala is promoted to first-class (separate ADR), it adopts a fifth palette — provisional working name `.tala-chip`, candidate hue green/sage to occupy a colour-wheel position distinct from the existing four. ADR-127 does not pre-commit the palette; it commits only that the addition will not require restructuring the chip system.
 
 ---
 
@@ -147,11 +172,12 @@ Coder owns:
    .raga-chip.chip-section-hdr:hover { text-decoration: none; }
    .raga-chip.chip-panel-title { font-size: 1.1rem; padding: 6px 14px; letter-spacing: 0.06em; cursor: default; text-transform: uppercase; }
    ```
-   (and parallel rules for the other three classes)
-2. Replace section-header text constructions in `media_player.js` and `bani_flow.js` per the table in D2. Use `document.createElement('span')` + `className = 'raga-chip chip-section-hdr'` etc.
-3. Replace the panel title HTML in `base.html` per D3. Remove the `&#9835;` entity.
-4. Audit the help deck and any tooltips/empty-states for occurrences of the four vocabulary words; convert per D4.
-5. Run `bani-render` and visually inspect both panels at three viewport widths (320 / 768 / 1440).
+   (and parallel rules for the other three classes). Author the modifier rules so adding a fifth chip family later (per D7) requires only the new base palette plus opt-in to the same modifier patterns.
+2. Add `.bani-chip` (composite, panel-title-only per D3) — a new class whose background is a `linear-gradient` blending the raga and comp palettes, with the `chip-panel-title` modifier applied at the BANI FLOW title.
+3. Replace section-header text constructions in `media_player.js` and `bani_flow.js` per the table in D2, applying D6 self-reference suppression: when the would-be trailing chip's id equals the panel's current subject id, render only the type chip + preposition.
+4. Replace the panel title HTML in `base.html` per D3. Remove the `&#9835;` entity.
+5. Audit the help deck and any tooltips/empty-states for occurrences of the four vocabulary words; convert per D4.
+6. Run `bani-render` and visually inspect both panels at three viewport widths (320 / 768 / 1440).
 
 Librarian: no work — this is presentational only; no data-shape changes.
 
@@ -159,6 +185,8 @@ Librarian: no work — this is presentational only; no data-shape changes.
 
 ## Open Questions
 
-- Should BANI FLOW use a composite `.bani-chip` palette (raga teal + composition gold gradient) instead of a single `.raga-chip`? Defer to Coder's prototype; revisit before merge.
-- Should Concert / Lecdem-subject sub-headers (`Lecdems by X`) render the musician part as a chip even when the lecturer is the panel's own musician (i.e. self-reference)? Provisional: yes — consistency wins.
-- Is there a fifth vocabulary noun (Mela? Bani? Era?) that should join this system? Out of scope for ADR-127; raise as a separate ADR if so.
+*(All three opening questions resolved 2026-05-11 by user direction; see D3 composite, D6 self-reference suppression, D7 extensibility.)*
+
+- The `.bani-chip` gradient angle, hue stops, and text-colour contrast are Coder's call during implementation — the only commitment in D3 is "composite of raga + comp palettes".
+- D7 leaves the Tala palette unspecified; a future ADR (when Tala is promoted) will fix it.
+- Should D6's self-reference suppression apply to the panel-header `+` button's tooltip text too (currently `Add lecdem recording for Vina Dhanammal`)? Cosmetic; defer.
