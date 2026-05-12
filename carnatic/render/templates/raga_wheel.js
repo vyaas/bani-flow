@@ -1369,13 +1369,18 @@ window.drawRagaWheel = function() {
     const lblFontSize = Math.max(7, minDim * 0.012);
     const lblR = R_SRUTI * 0.68;               // mid-radius for label placement
 
-    // Per-pitch hue (chromatic circle). Saturation/lightness tuned dark so the
-    // pie reads as a coherent inner disk, not 12 loud confetti wedges.
+    // ADR-132: piano-key palette mapped to Gruvbox Hard Dark primitives.
+    // White keys (natural notes) → fg #ebdbb2 (warm cream); text: bg_h #1d2021
+    // Black keys (altered notes) → bg1 #3c3836 (warm panel dark); text: fg2 #bdae93
+    // Active (any key)           → yellow #d79921 (Gruvbox accent); text: bg_h #1d2021
+    const _SRUTI_WHITE_KEYS = new Set([0, 2, 4, 5, 7, 9, 11]); // C D E F G A B
     function _srutiFill(idx, active) {
-      const hue = Math.round((idx * 360) / N_SRUTI);
-      return active
-        ? `hsl(${hue}, 82%, 58%)`              // bright + saturated when active
-        : `hsl(${hue}, 42%, 32%)`;             // visible-but-muted resting
+      if (active) return '#d79921';                              // Gruvbox yellow — playing
+      return _SRUTI_WHITE_KEYS.has(idx) ? '#ebdbb2' : '#3c3836';
+    }
+    function _srutiTextFill(idx, active) {
+      if (active) return '#1d2021';                              // bg_h on yellow
+      return _SRUTI_WHITE_KEYS.has(idx) ? '#1d2021' : '#bdae93';
     }
 
     // RagaWheel._sruti = persistent state across redraws + view switches.
@@ -1394,7 +1399,8 @@ window.drawRagaWheel = function() {
       });
       // Also repaint labels
       vp.querySelectorAll('text[data-ring="sruti-label"]').forEach((t) => {
-        t.setAttribute('fill', THEME.fgDim || '#a89984');
+        const i = parseInt(t.getAttribute('data-sruti-idx'), 10);
+        t.setAttribute('fill', _srutiTextFill(i, false));
         t.setAttribute('font-weight', 'normal');
       });
     };
@@ -1413,9 +1419,19 @@ window.drawRagaWheel = function() {
         p.setAttribute('fill', _srutiFill(i, false));
         p.removeAttribute('stroke');
       });
+      vp.querySelectorAll('text[data-ring="sruti-label"]').forEach((t) => {
+        const i = parseInt(t.getAttribute('data-sruti-idx'), 10);
+        t.setAttribute('fill', _srutiTextFill(i, false));
+        t.setAttribute('font-weight', 'normal');
+      });
       sectorPathEl.setAttribute('fill', _srutiFill(idx, true));
       sectorPathEl.setAttribute('stroke', THEME.fg || '#ebdbb2');
       sectorPathEl.setAttribute('stroke-width', '1.5');
+      // Update active label to dark-on-amber text
+      vp.querySelectorAll(`text[data-ring="sruti-label"][data-sruti-idx="${idx}"]`).forEach((t) => {
+        t.setAttribute('fill', _srutiTextFill(idx, true));
+        t.setAttribute('font-weight', 'bold');
+      });
       if (typeof openPlayer === 'function') {
         openPlayer(entry.id, entry.note + ' tanpura', 'sruti');
       }
@@ -1455,7 +1471,7 @@ window.drawRagaWheel = function() {
       const lbl = svgEl('text', {
         x: lp.x, y: lp.y,
         'text-anchor': 'middle', 'dominant-baseline': 'middle',
-        fill: isActive ? THEME.bg : (THEME.fgDim || '#a89984'),
+        fill: _srutiTextFill(idx, isActive),
         'font-size': lblFontSize + 'px',
         'font-weight': isActive ? 'bold' : 'normal',
         'pointer-events': 'none',
