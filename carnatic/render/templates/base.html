@@ -1126,7 +1126,7 @@
 
   #viewport-toolbar {
     position: absolute;
-    top: 8px;
+    top: calc(var(--chrome-top, 50px) + 4px);
     right: 10px;
     z-index: 70;
     display: flex;
@@ -3205,8 +3205,8 @@
   @media (max-width: 768px) {
 
     /* ADR-129: no <header> on mobile — floating clusters inherit fixed positioning */
-    /* Scale down title and view selector for small screens */
-    #app-title-float h1 { font-size: 0.8rem; }
+    /* Suppress title text on mobile — only help (?) and view toggle remain */
+    #app-title-float h1 { display: none; }
     #view-selector-float { top: 8px; right: 8px; }
     #view-selector-float .view-btn { min-height: 36px; padding: 0 7px; font-size: 0.72rem; }
 

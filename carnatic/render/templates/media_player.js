@@ -2065,6 +2065,13 @@ function openPlayer(videoId, title, playerId) {
     return;
   }
 
+  // On mobile, route all named players (including sruti/tanpura) through the
+  // mobile singleton bottom-sheet player — one video at a time (ADR-037).
+  if (_isMobilePlayer()) {
+    _openMobilePlayer(videoId, title, '', undefined, undefined, [], {});
+    return;
+  }
+
   // Close any existing player with this playerId
   closePlayer(playerId);
 
@@ -2153,6 +2160,11 @@ function openPlayer(videoId, title, playerId) {
  * No-op if no player with that playerId exists.
  */
 function closePlayer(playerId) {
+  // On mobile, named players run through the singleton — close that instead.
+  if (_isMobilePlayer() && _mobilePlayer) {
+    _closeMobilePlayer();
+    return;
+  }
   if (!namedPlayerRegistry.has(playerId)) return;
   const instance = namedPlayerRegistry.get(playerId);
   instance.iframe.src = '';   // stop audio immediately
