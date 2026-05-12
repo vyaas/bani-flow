@@ -456,6 +456,37 @@
   .subject-group-body { display: inline-flex; flex-wrap: wrap; gap: 4px; }
   .subject-group-body[hidden] { display: none; }
 
+  /* ── row-accordion: chevron-left whole-row fold (winning design) ── */
+  .row-accordion { display: block; }
+  .row-accordion-header {
+    display: flex; align-items: center; gap: 4px;
+    cursor: pointer; user-select: none;
+  }
+  /* The headerEl stretches to fill the remaining space. */
+  .row-accordion-header > *:not(.row-accordion-chevron) { flex: 1; min-width: 0; }
+  .row-accordion-chevron {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.62rem; cursor: pointer; padding: 0;
+    font-family: inherit; line-height: 1; user-select: none;
+  }
+  .row-accordion-chevron:hover { color: var(--accent); }
+  /* Phantom chevron: purely a spacing placeholder — grayed, non-interactive. */
+  .row-accordion-chevron-phantom {
+    opacity: 0.2; pointer-events: none; cursor: default;
+  }
+  .row-accordion-body {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding-top: 4px; padding-left: 22px;
+  }
+  .row-accordion-body[hidden] { display: none; }
+  /* Lec-dem subjects shown inline below a segmented concert-bracket. */
+  .lecdem-subjects-inline {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding: 4px 0 0 var(--hier-indent-step);
+  }
+
   /* Instrument shape icon in node header — outline only, rendered as inline SVG by JS */
   .node-shape-icon {
     display: inline-flex; align-items: center; justify-content: center;
@@ -588,12 +619,12 @@
   .concert-header:hover .concert-title { color: var(--accent); }
 
   .concert-chevron {
-    font-size: 0; color: var(--fg-muted);
-    flex-shrink: 0; margin-top: 3px; width: 10px; text-align: center;
-    user-select: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: 18px; height: 18px;
+    color: var(--fg-muted); user-select: none; margin-top: 0;
   }
-  .concert-chevron::before { font-size: 0.60rem; content: '▶'; }
-  .concert-bracket.expanded .concert-chevron::before { content: '▼'; }
+  .concert-chevron::before { font-size: 0.62rem; content: '\25B6'; }
+  .concert-bracket.expanded .concert-chevron::before { content: '\25BC'; }
 
   .concert-header-body { flex: 1; min-width: 0; }
 
@@ -994,22 +1025,25 @@
     );
   }
 
-  /* ── Sruti player fold + close affordance ─────────────────────────────
-     Fold chevron (mp-fold-btn) collapses to title strip — active drone
-     keeps playing. Close button (mp-close) stops the drone and unpresses
-     the tonic ring. Both are always visible (desktop + mobile). */
-  /* Fold chevron — accent treatment marks it as the primary sruti control */
-  .media-player.sruti-player .mp-fold-btn {
+  /* ── ADR-131 R3: Sruti player minimize affordance ───────────────────────
+     The sruti drone player (.sruti-player) carries a minimize toggle in
+     place of a close button. When minimized it collapses to its title bar
+     only — a thin, brightly-coloured strip that can be dragged anywhere
+     on the canvas. The drone keeps playing; only clicking the active
+     sruti pie sector at the wheel centre stops it. */
+  /* Minimize button — large + obvious; bar has plenty of room */
+  .media-player.sruti-player .mp-close {
     color: var(--accent);
     background: color-mix(in srgb, var(--accent) 14%, transparent);
     border: 1px solid var(--accent);
     border-radius: 4px;
-    width: 22px; height: 18px;
-    font-size: 0.62rem;
+    width: 28px; height: 22px;
+    font-size: 1.15rem; font-weight: bold;
+    line-height: 1; padding: 0;
     display: inline-flex; align-items: center; justify-content: center;
     transition: background 0.12s, color 0.12s, transform 0.08s;
   }
-  .media-player.sruti-player .mp-fold-btn:hover {
+  .media-player.sruti-player .mp-close:hover {
     color: var(--bg);
     background: var(--accent);
     transform: scale(1.05);
@@ -1033,12 +1067,6 @@
   .media-player.sruti-player.sruti-minimized .mp-video-wrap,
   .media-player.sruti-player.sruti-minimized .mp-footer,
   .media-player.sruti-player.sruti-minimized .mp-resize { display: none; }
-
-  /* mp-folded: generic fold state for concert + named players */
-  .media-player.mp-folded .mp-video-wrap,
-  .media-player.mp-folded .mp-footer,
-  .media-player.mp-folded .mp-resize { display: none; }
-
   .mp-resize:hover { opacity: 1; background-color: var(--bg-active); }
 
   /* ── timeline ruler — monospace font retained for data-dense ruler ── */
@@ -1387,17 +1415,10 @@
     margin-top: 3px;
     padding-left: var(--hier-indent-step);
   }
-  /* ADR-128 D5: collapsible co-performers wrap (uses buildSubjectGroup).
-     Match the legacy .tree-leaf-coperformers indent and spacing so the
-     visual rhythm doesn't shift when the user expands the group. */
+  /* Collapsible co-performers wrap (buildRowAccordion). */
   .tree-leaf-coperformers-group {
-    display: flex; flex-direction: column; align-items: flex-start;
     margin-top: 3px;
-    padding-left: var(--hier-indent-step);
     width: 100%;
-  }
-  .tree-leaf-coperformers-group > .subject-group-body {
-    display: flex; flex-wrap: wrap; gap: 4px; padding-top: 3px;
   }
   /* ADR-072: composer chip inside the trail group header is indented one
      level beneath its composition (level 1 of left-sidebar hierarchy). */
@@ -2983,7 +3004,7 @@
       --hier-indent-step: 10px;
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
-    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn) {
+    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn) {
       min-height: 44px;
     }
     .view-btn {
@@ -3008,12 +3029,6 @@
     /* ADR-040: filter toggle button removed on mobile */
     #filter-toggle-btn {
       display: none;
-    }
-    /* WDP top stays at 8px: #main padding-top already clears the fixed chrome,
-       so #cy-wrap starts below it and the panel needs no extra offset on mobile. */
-    #wheel-detail-panel {
-      top: 8px;
-      max-height: calc(100% - 8px - var(--chrome-bottom));
     }
   }
 
@@ -3221,10 +3236,8 @@
 
     /* ── Main layout: canvas occupies full viewport width ── */
     /* ADR-042: pad bottom so canvas never extends behind the tab bar (56px) */
-    /* Pad top so filter bar / canvas never overlap the fixed help + view-toggle chrome */
     #main {
       position: relative;
-      padding-top: var(--chrome-top);
       padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
     }
     #canvas-wrap {
@@ -3392,11 +3405,19 @@
       min-width: 44px; min-height: 44px;
       font-size: 1.25rem;
     }
-    /* mp-fold-btn in full-mobile bar — enlarge touch target */
-    .media-player.full-mobile .mp-fold-btn {
+    /* Minimise button — hidden on desktop, shown in full-mobile bar */
+    .mp-minimize { display: none; }
+    .media-player.full-mobile .mp-minimize {
+      display: inline-flex; align-items: center; justify-content: center;
       min-width: 44px; min-height: 44px;
-      font-size: 0.9rem;
+      font-size: 1.4rem; line-height: 1;
+      color: var(--accent);
+      background: none; border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.1s;
     }
+    .media-player.full-mobile .mp-minimize:hover { opacity: 0.75; }
     /* ADR-051: video fills remaining height; override JS-set padding-top */
     .media-player.full-mobile .mp-video-wrap {
       flex: 1;

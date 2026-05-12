@@ -198,21 +198,12 @@ function buildPlayerTrackList(vid, tracks, instance) {
   return ul;
 }
 
-// ── buildPlayerBar — lean title bar: [▼] [artist chip] — [title] [≡] [✕] ───
+// ── buildPlayerBar — lean title bar: [artist chip] — [title] [≡] [✕] ────────
 // meta = { nodeId } — nodeId drives the artist chip click
 function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta) {
   meta = meta || {};
   const bar = document.createElement('div');
   bar.className = 'mp-bar';
-
-  // ── Fold chevron — leftmost affordance; mirrors panel section-collapse-btn ─
-  const foldBtn = document.createElement('button');
-  foldBtn.type = 'button';
-  foldBtn.className = 'section-collapse-btn mp-fold-btn';
-  foldBtn.textContent = '\u25bc'; // ▼ expanded
-  foldBtn.title = 'Fold / unfold player';
-  foldBtn.setAttribute('aria-label', 'Fold/unfold player');
-  bar.appendChild(foldBtn);
 
   // ── Artist chip — same musician-chip class + era tinting as panels ────────
   if (artistName) {
@@ -440,16 +431,6 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     playerRegistry.delete(vid);
     refreshPlayingIndicators();
   });
-
-  // Fold chevron: toggle .mp-folded to hide/show video body
-  const foldBtnC = el.querySelector('.mp-fold-btn');
-  if (foldBtnC) {
-    foldBtnC.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isFolded = el.classList.toggle('mp-folded');
-      foldBtnC.textContent = isFolded ? '\u25b6' : '\u25bc';
-    });
-  }
 
   // Wire track list toggle and populate track items
   if (hasTracks && instance.tracklistEl) {
@@ -999,6 +980,13 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     compHeader.appendChild(titleSpan);
   }
 
+  // Left-chevron: phantom for single-recording, upgraded to functional in multi path.
+  const chevron = document.createElement('span');
+  chevron.className = 'section-collapse-btn row-accordion-chevron-phantom';
+  chevron.textContent = '\u25b6';
+  chevron.setAttribute('aria-hidden', 'true');
+  compHeader.prepend(chevron);
+
   const recCount = sortedPerfs.length;
 
   if (recCount === 1) {
@@ -1030,13 +1018,10 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
     compHeader.appendChild(actsDiv);
   } else {
-    // ── Multiple recordings: toggle button (starts expanded) ──────────────
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'tree-rec-toggle';
-    toggleBtn.setAttribute('aria-expanded', 'true');
-    toggleBtn.textContent = '\u25BC ' + recCount + ' recordings';
-    compHeader.appendChild(toggleBtn);
-
+    // ── Multiple recordings: left-chevron accordion (starts collapsed) ─────
+    chevron.classList.remove('row-accordion-chevron-phantom');
+    chevron.textContent = '\u25b6';  // collapsed by default
+    compHeader.style.cursor = 'pointer';
     li.appendChild(compHeader);
 
     // Composer chip
@@ -1048,10 +1033,10 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       li.appendChild(metaDiv);
     }
 
-    // Recording rows — start visible
+    // Recording rows — start hidden (collapsed by default)
     const recUl = document.createElement('ul');
     recUl.className = 'tree-rec-list';
-    recUl.hidden = false;
+    recUl.hidden = true;
 
     sortedPerfs.forEach((p, idx) => {
       const recLi = document.createElement('li');
@@ -1099,12 +1084,11 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
 
     li.appendChild(recUl);
 
-    toggleBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-      recUl.hidden = isExpanded;
-      toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
-      toggleBtn.textContent = (isExpanded ? '\u25B6 ' : '\u25BC ') + recCount + ' recordings';
+    // Entire comp-header row is the click affordance; interactive children stop propagation.
+    compHeader.addEventListener('click', function (e) {
+      if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
+      recUl.hidden = !recUl.hidden;
+      chevron.textContent = recUl.hidden ? '\u25b6' : '\u25bc';
     });
 
     return li;
@@ -1616,16 +1600,18 @@ function buildRecordingsList(nodeId, nodeData) {
         li.className = 'lecdem-row';
 
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
-
-        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
-
-        // ADR-128 D5: wrap subject chips in collapsible buildSubjectGroup
-        if (subjectChips && subjectChips.length > 0) {
-          li.appendChild(buildSubjectGroup({
-            chips: subjectChips,
-            defaultCollapsed: true,
-            summaryText: subjectChips.length + ' subject' + (subjectChips.length !== 1 ? 's' : ''),
-          }));
+        const hasSegments = !!(ref.segments && ref.segments.length > 0);
+        const bracketEl = _buildLecdemBracket(ref, nodeId, artistLabel);
+        if (!hasSegments && subjectChips && subjectChips.length > 0) {
+          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: subjectChips, defaultCollapsed: true }));
+        } else {
+          li.appendChild(bracketEl);
+          if (subjectChips && subjectChips.length > 0) {
+            const subjectsDiv = document.createElement('div');
+            subjectsDiv.className = 'lecdem-subjects-inline';
+            subjectChips.forEach(function (el) { subjectsDiv.appendChild(el); });
+            li.appendChild(subjectsDiv);
+          }
         }
         byList.appendChild(li);
       });
@@ -1659,22 +1645,19 @@ function buildRecordingsList(nodeId, nodeData) {
 
         const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
-
-        li.appendChild(_buildLecdemBracket(ref, nodeId, artistLabel));
-
-        // ADR-128 D5: lecturer chip always visible; subject chips collapsed behind buildSubjectGroup
-        if (lecturerChip) {
-          const musicianWrap = document.createElement('span');
-          musicianWrap.className = 'lecdem-subjects';
-          musicianWrap.appendChild(lecturerChip);
-          li.appendChild(musicianWrap);
-        }
-        if (subjectChips.length > 0) {
-          li.appendChild(buildSubjectGroup({
-            chips: subjectChips,
-            defaultCollapsed: true,
-            summaryText: subjectChips.length + ' subject' + (subjectChips.length !== 1 ? 's' : ''),
-          }));
+        const hasSegments = !!(ref.segments && ref.segments.length > 0);
+        const bracketEl = _buildLecdemBracket(ref, nodeId, artistLabel);
+        const bodyEls = [lecturerChip, ...subjectChips].filter(Boolean);
+        if (!hasSegments && bodyEls.length > 0) {
+          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
+        } else {
+          li.appendChild(bracketEl);
+          if (bodyEls.length > 0) {
+            const subjectsDiv = document.createElement('div');
+            subjectsDiv.className = 'lecdem-subjects-inline';
+            bodyEls.forEach(function (el) { subjectsDiv.appendChild(el); });
+            li.appendChild(subjectsDiv);
+          }
         }
         aboutList.appendChild(li);
       });
@@ -2136,42 +2119,28 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  // Named player: sruti drone uses chevron to fold and a true close button to stop.
-  // Non-sruti named players also get the fold chevron.
+  // Named player: sruti drone has a minimize toggle (ADR-131 R3) instead of a
+  // close button — collapsing turns the player into a brightish title-bar
+  // strip that can be dragged anywhere on the canvas. Restore expands the
+  // iframe back. The drone is stopped only by clicking the active sruti pie
+  // sector at the wheel centre.
   if (playerId === 'sruti') {
     el.classList.add('sruti-player');
-
-    // Fold chevron → toggle sruti-minimized (keeps accent visual identity)
-    const foldBtnN = el.querySelector('.mp-fold-btn');
-    if (foldBtnN) {
-      foldBtnN.addEventListener('click', (e) => {
+    const minBtn = el.querySelector('.mp-close');
+    if (minBtn) {
+      minBtn.textContent = '\u2212';   // − (minus sign) = minimize
+      minBtn.title = 'Minimize';
+      minBtn.setAttribute('aria-label', 'Minimize sruti player');
+      minBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const minimized = el.classList.toggle('sruti-minimized');
-        foldBtnN.textContent = minimized ? '\u25b6' : '\u25bc';
-      });
-    }
-
-    // Close button → clear tonic ring + close player
-    const closeBtn = el.querySelector('.mp-close');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (typeof RagaWheel !== 'undefined' && RagaWheel._clearSrutiRing) {
-          RagaWheel._clearSrutiRing();
-        }
-        closePlayer('sruti');
+        minBtn.textContent = minimized ? '\u2922' : '\u2212';   // ⤢ restore | − minimize
+        minBtn.title       = minimized ? 'Restore' : 'Minimize';
+        minBtn.setAttribute('aria-label',
+          minimized ? 'Restore sruti player' : 'Minimize sruti player');
       });
     }
   } else {
-    // Fold chevron for non-sruti named players
-    const foldBtnN = el.querySelector('.mp-fold-btn');
-    if (foldBtnN) {
-      foldBtnN.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isFolded = el.classList.toggle('mp-folded');
-        foldBtnN.textContent = isFolded ? '\u25b6' : '\u25bc';
-      });
-    }
     el.querySelector('.mp-close').addEventListener('click', () => {
       closePlayer(playerId);
     });
@@ -2358,7 +2327,7 @@ function _wireMobilePlayerEvents(mp) {
 
   // Full mode bar: tap anywhere on the bar to collapse (except dedicated buttons)
   mp.bar.addEventListener('click', e => {
-    const isBtn = e.target.closest('.mp-close, .mp-fold-btn, .mp-tracklist-toggle');
+    const isBtn = e.target.closest('.mp-close, .mp-minimize, .mp-tracklist-toggle');
     if (isBtn) return;
     _collapseMobilePlayer();
   });
@@ -2419,13 +2388,20 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     });
   }
 
-  // ── Wire fold chevron → collapse to mini strip ────────────────────────────
-  const mobileFoldBtn = mp.bar.querySelector('.mp-fold-btn');
-  if (mobileFoldBtn) {
-    mobileFoldBtn.addEventListener('click', e => {
+  // ── Mobile: inject minimize (⌄) button before close ─────────────────────
+  // Gives a clear affordance to collapse to mini strip without stopping playback.
+  const existingMinBtn = mp.bar.querySelector('.mp-minimize');
+  if (!existingMinBtn && barClose) {
+    const minBtn = document.createElement('button');
+    minBtn.className = 'mp-minimize';
+    minBtn.title = 'Minimise';
+    minBtn.setAttribute('aria-label', 'Minimise player');
+    minBtn.textContent = '\u2304';   // ⌄ downward chevron
+    minBtn.addEventListener('click', e => {
       e.stopPropagation();
       _collapseMobilePlayer();
     });
+    barClose.parentNode.insertBefore(minBtn, barClose);
   }
 
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
@@ -2566,10 +2542,6 @@ function _closeMobilePlayer() {
 
   if (mp.iframe) mp.iframe.src = '';
   mp.vid = null;
-  // Reset sruti ring highlight if a tanpura drone was playing
-  if (typeof RagaWheel !== 'undefined' && typeof RagaWheel._clearSrutiRing === 'function') {
-    RagaWheel._clearSrutiRing();
-  }
   // ADR-043: hide player + restore normal bottom offset
   mp.el.classList.remove('full-mobile');
   mp.el.style.display = 'none';

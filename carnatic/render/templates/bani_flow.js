@@ -1232,20 +1232,15 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     li.appendChild(labelDiv);
   }
 
-  li.appendChild(primaryDiv);
-
-  // ── Co-performers: collapsible tag cloud below (ADR-128 D5) ──────────────
-  // Folded by default — keeps the leaf compact; expand reveals accompanists.
-  if (row.coPerformers && row.coPerformers.length > 0) {
-    const cpChips = row.coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'raga', null); });
-    const grp = buildSubjectGroup({
-      chips: cpChips,
-      defaultCollapsed: true,
-      summaryText: '+' + cpChips.length + ' accompanist' + (cpChips.length !== 1 ? 's' : ''),
-    });
-    grp.classList.add('tree-leaf-coperformers-group');
-    li.appendChild(grp);
-  }
+  // ── Co-performers: chevron-left accordion ─────────────────────────────────
+  // Always wrap primaryDiv in a row-accordion. When no accompanists, buildRowAccordion
+  // auto-produces a phantom chevron so all artist rows stay vertically aligned.
+  const cpChips = (row.coPerformers && row.coPerformers.length > 0)
+    ? row.coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'raga', null); })
+    : [];
+  const accordion = buildRowAccordion({ headerEl: primaryDiv, bodyEls: cpChips, defaultCollapsed: true });
+  accordion.classList.add('tree-leaf-coperformers-group');
+  li.appendChild(accordion);
 
   return li;
 }
@@ -1291,8 +1286,25 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     const header = document.createElement('div');
     header.className = 'tree-group-header';
 
+    // Chevron always first — phantom for single-version (alignment), functional for multi.
+    const chevron = document.createElement('span');
+    chevron.setAttribute('aria-hidden', 'true');
+    if (isSingle) {
+      chevron.className = 'section-collapse-btn row-accordion-chevron-phantom';
+      chevron.textContent = '\u25b6';
+    } else {
+      chevron.className = 'section-collapse-btn';
+      chevron.textContent = '\u25bc';  // open by default
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', function() {
+        const opened = li.classList.toggle('tree-group-open');
+        chevron.textContent = opened ? '\u25bc' : '\u25b6';
+      });
+    }
+    header.appendChild(chevron);
+
     if (group.comp) {
-      // Inline row: composition chip + add button side by side (no wrapping collision)
+      // Composition chip + composer chip stacked in tree-header-text
       const textDiv = document.createElement('div');
       textDiv.className = 'tree-header-text';
       const compChip = document.createElement('span');
@@ -1311,19 +1323,6 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
       header.appendChild(textDiv);
     }
     // no-comp: section header already says "Other recordings (N)" — no label needed
-
-    // For multi-child groups the whole header bar is the toggle target.
-    // Chip clicks (comp chip, composer chip) already stopPropagation independently.
-    if (!isSingle) {
-      const chevron = document.createElement('span');
-      chevron.className = 'tree-chevron';
-      chevron.setAttribute('aria-hidden', 'true');
-      header.appendChild(chevron);
-      header.style.cursor = 'pointer';
-      header.addEventListener('click', function() {
-        li.classList.toggle('tree-group-open');
-      });
-    }
 
     // Only append header for comp groups or multi-child no-comp groups (chevron toggle)
     if (group.comp || !isSingle) {
@@ -1450,17 +1449,15 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
 
     li.appendChild(header);
 
-    // ADR-070 + ADR-128 D5: when a single-version row carries accompanists,
-    // wrap them in a collapsed buildSubjectGroup directly under the header.
+    // ADR-070: when a single-version row carries accompanists, wrap the header
+    // in a row-accordion so the entire artist row is the click affordance.
+    // buildRowAccordion(headerEl: header) moves header out of li via appendChild,
+    // so we simply append the accordion (not replaceChild).
     if (isSingle && group.rows[0].coPerformers && group.rows[0].coPerformers.length > 0) {
       const cpChips = group.rows[0].coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'comp', null); });
-      const grp = buildSubjectGroup({
-        chips: cpChips,
-        defaultCollapsed: true,
-        summaryText: '+' + cpChips.length + ' accompanist' + (cpChips.length !== 1 ? 's' : ''),
-      });
-      grp.classList.add('tree-leaf-coperformers-group');
-      li.appendChild(grp);
+      const accordion = buildRowAccordion({ headerEl: header, bodyEls: cpChips, defaultCollapsed: true });
+      accordion.classList.add('tree-leaf-coperformers-group');
+      li.appendChild(accordion);
     }
 
     // ── Children (multi-version only) ─────────────────────────────────────────
@@ -1688,30 +1685,29 @@ function _renderBaniFlowLecdemStrip(type, id) {
     const li = document.createElement('li');
     li.className = 'lecdem-row';
 
-    // §5: label first (with play buttons), then lecturer, then other subjects.
-    // Order mirrors the Musician Panel: label bracket → musician → subjects.
-    if (typeof _buildLecdemBracket === 'function') {
-      li.appendChild(_buildLecdemBracket(ref, ref.lecturer_id || '', ''));
-    }
-
+    // §5: concert-brackets (with segments) are self-contained accordions — do NOT
+    // wrap them in buildRowAccordion. Only flat trail-row2 items use the row-accordion.
+    const hasSegments = !!(ref.segments && ref.segments.length > 0);
+    const bracketEl = (typeof _buildLecdemBracket === 'function')
+      ? _buildLecdemBracket(ref, ref.lecturer_id || '', '')
+      : null;
     const lecturerChip = (typeof _buildLecturerChip === 'function')
       ? _buildLecturerChip(ref.lecturer_id, ref.lecturer_label)
       : null;
-    if (lecturerChip) {
-      const musicianWrap = document.createElement('span');
-      musicianWrap.className = 'lecdem-musician';
-      musicianWrap.appendChild(lecturerChip);
-      li.appendChild(musicianWrap);
-    }
-
     const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
-    if (subjectChips.length > 0) {
-      // ADR-128 D5: wrap subject chips in collapsible buildSubjectGroup
-      li.appendChild(buildSubjectGroup({
-        chips: subjectChips,
-        defaultCollapsed: true,
-        summaryText: subjectChips.length + ' subject' + (subjectChips.length !== 1 ? 's' : ''),
-      }));
+    const bodyEls = [lecturerChip, ...subjectChips].filter(Boolean);
+    if (bracketEl) {
+      if (!hasSegments && bodyEls.length > 0) {
+        li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
+      } else {
+        li.appendChild(bracketEl);
+        if (bodyEls.length > 0) {
+          const subjectsDiv = document.createElement('div');
+          subjectsDiv.className = 'lecdem-subjects-inline';
+          bodyEls.forEach(function (el) { subjectsDiv.appendChild(el); });
+          li.appendChild(subjectsDiv);
+        }
+      }
     }
 
     list.appendChild(li);

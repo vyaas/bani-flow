@@ -174,6 +174,70 @@ function buildSubjectGroup({ chips = [], defaultCollapsed = true, summaryText = 
   return groupEl;
 }
 
+// ── buildRowAccordion ─────────────────────────────────────────────────────────
+// Wraps a main-content row and a collapsible body using the "winning design":
+//   [▶/▼ chevron] [headerEl — flex: 1]   ← entire row is the click affordance
+//   [bodyEls...]                          ← hidden by default, wrapping flex below
+//
+// Returns the wrapper container element (a <div.row-accordion>).
+//
+//   headerEl         DOM element — the always-visible primary row content
+//   bodyEls          array of DOM elements to show/hide
+//   defaultCollapsed boolean (default true)
+function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true } = {}) {
+  const wrapEl = document.createElement('div');
+  wrapEl.className = 'row-accordion';
+
+  const headerRow = document.createElement('div');
+  headerRow.className = 'row-accordion-header';
+
+  const chevron = document.createElement('button');
+  chevron.type = 'button';
+  chevron.className = 'row-accordion-chevron';
+  chevron.textContent = '\u25b6';
+  headerRow.appendChild(chevron);
+
+  headerRow.appendChild(headerEl);
+  wrapEl.appendChild(headerRow);
+
+  const filteredEls = bodyEls.filter(Boolean);
+  // When no body elements, render a phantom chevron (grayed, non-interactive)
+  // purely for spacing/alignment — keeps rows with and without sub-items vertically aligned.
+  if (filteredEls.length === 0) {
+    chevron.classList.add('row-accordion-chevron-phantom');
+    headerRow.style.cursor = 'default';
+    return wrapEl;
+  }
+
+  chevron.textContent = defaultCollapsed ? '\u25b6' : '\u25bc';
+  chevron.title = 'Expand / collapse';
+
+  const bodyEl = document.createElement('div');
+  bodyEl.className = 'row-accordion-body';
+  bodyEl.hidden = defaultCollapsed;
+  filteredEls.forEach(function (el) { bodyEl.appendChild(el); });
+  wrapEl.appendChild(bodyEl);
+
+  function _toggle() {
+    bodyEl.hidden = !bodyEl.hidden;
+    chevron.textContent = bodyEl.hidden ? '\u25b6' : '\u25bc';
+  }
+
+  // Chevron button has its own handler (stops propagation so header doesn't double-fire).
+  chevron.addEventListener('click', function (e) {
+    e.stopPropagation();
+    _toggle();
+  });
+
+  // Entire header row also toggles collapse; interactive children stop propagation.
+  headerRow.addEventListener('click', function (e) {
+    if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
+    _toggle();
+  });
+
+  return wrapEl;
+}
+
 // ── buildLecdemSubjectChips ───────────────────────────────────────────────────
 // Converges _buildLecdemSubjectChips (media_player.js, ADR-080) and
 // _buildBaniFlowLecdemSubjectChips (bani_flow.js) into one function.
