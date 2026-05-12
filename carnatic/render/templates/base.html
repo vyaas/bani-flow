@@ -1096,6 +1096,7 @@
     border-radius: 8px; padding: 10px 12px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.55);
     pointer-events: all; box-sizing: border-box;
+    transition: left 0.22s ease;
   }
   #wheel-detail-panel.wdp-open { display: flex; flex-direction: column; gap: 5px; }
   .wdp-header {
@@ -3134,8 +3135,18 @@
     /* ── Floating-sidebar safety offsets ─────────────────────────────────── */
     /* When the left sidebar is open but unpinned (floating overlay), the mela  */
     /* detail panel would spawn underneath it. Shift it right so it's visible.  */
-    #main:not(.left-pinned) #left-sidebar.drawer-open ~ #canvas-wrap #wheel-detail-panel {
+    /* Uses :has() (matches the viewport-toolbar pattern) instead of the ~      */
+    /* sibling combinator, which can be unreliable with absolutely-positioned   */
+    /* grid items sharing a parent with the canvas column.                      */
+    #main:not(.left-pinned):has(> #left-sidebar.drawer-open) #wheel-detail-panel {
       left: 292px;
+    }
+
+    /* On desktop, inset the WDP below the floating top chrome so it never      */
+    /* spawns behind the title / view-selector cluster.                         */
+    #wheel-detail-panel {
+      top: var(--chrome-top);
+      max-height: calc(100% - var(--chrome-top) - var(--chrome-bottom));
     }
 
     /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
