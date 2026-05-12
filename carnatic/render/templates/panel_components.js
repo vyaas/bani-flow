@@ -6,7 +6,7 @@
 // ── buildPanelHeader ──────────────────────────────────────────────────────────
 // Builds a 2-row header:
 //   row 1 (.panel-header-row1): titleNode  (the chip supplied by caller)
-//   row 2 (.panel-header-affordances): [subtitleContent] [↗ ext-link] [✎ edit]
+//   row 2 (.panel-header-affordances): [subtitleContent] [✎ edit] [↗ ext-link]
 //
 //   titleNode        DOM element — the vocabulary chip (musician/raga/comp)
 //   subtitleContent  string or DOM node (optional) — lifespan / parent-mela line
@@ -38,18 +38,6 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
     row2.appendChild(sub);
   }
 
-  if (externalUrl) {
-    const link = document.createElement('a');
-    link.className = 'yt-ext-link panel-hdr-ext-link';
-    link.href = externalUrl;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.title = externalLabel || 'Open in new tab';
-    // ADR-128 D13: SVG glyph for reliable centering.
-    link.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
-    row2.appendChild(link);
-  }
-
   if (typeof onEdit === 'function') {
     const editBtn = document.createElement('button');
     editBtn.type = 'button';
@@ -61,6 +49,18 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
       onEdit(e);
     });
     row2.appendChild(editBtn);
+  }
+
+  if (externalUrl) {
+    const link = document.createElement('a');
+    link.className = 'yt-ext-link panel-hdr-ext-link';
+    link.href = externalUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.title = externalLabel || 'Open in new tab';
+    // ADR-128 D13: SVG glyph for reliable centering.
+    link.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
+    row2.appendChild(link);
   }
 
   if (row2.children.length > 0) root.appendChild(row2);
