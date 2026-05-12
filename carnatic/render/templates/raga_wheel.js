@@ -187,8 +187,9 @@ function hideRagaWheel() {
 // ── Raga Wheel — SVG rendering (ADR-023) ──────────────────────────────────────
 (function() {
 
-// Cakra colour palette — sourced from THEME.cakra (ADR-028: single source of truth)
-const CAKRA_COLORS = THEME.cakra;
+// ADR-126: cakra ring is retired as a colour surface — always returns bgPanel.
+// Shim retained so call-site change is minimal and future ADRs can re-introduce cakra colour.
+function getCakraColor(_n) { return THEME.bgPanel; }
 
 function svgEl(tag, attrs) {
   const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -712,7 +713,9 @@ function _lightUpSpineForMela(M) {
   }
 }
 
-function _lightUpMelas(melaNumbers) {
+// strokeHint: optional hex colour for lit+live mela slot strokes (ADR-126 swara cell clicks).
+// If omitted, falls back to THEME.accentSelect (used for non-swara light-up paths).
+function _lightUpMelas(melaNumbers, strokeHint) {
   const litSet = new Set(melaNumbers.map(String));
   const svg = document.getElementById('raga-wheel');
   if (!svg) return;
@@ -764,8 +767,8 @@ function _lightUpMelas(melaNumbers) {
     else if (lit && !isLive) op = String(origOp);          // lit + empty: keep original muted opacity
     else                     op = String(origOp * SLOT_DIM); // unlit: scale down
     el.setAttribute('opacity', op);
-    el.setAttribute('stroke', (lit && isLive) ? THEME.accentSelect : (hasRaga ? THEME.fg : THEME.edgeLine));
-    el.setAttribute('stroke-width', (lit && isLive) ? '2' : (hasRaga ? '0.75' : '0.5'));
+    el.setAttribute('stroke', (lit && isLive) ? (strokeHint || THEME.accentSelect) : THEME.borderStrong);
+    el.setAttribute('stroke-width', (lit && isLive) ? '2' : '0.5');
   });
 
   // Mela labels — same rule: empty stays muted even when lit
@@ -801,13 +804,12 @@ function _clearWheelLightUp() {
     const orig = el.getAttribute('data-orig-opacity');
     if (orig) el.setAttribute('opacity', orig);
   });
-  // Restore mela arc slots
+  // Restore mela arc slots — ADR-126: all slots use neutral borderStrong hairline
   svg.querySelectorAll('.mela-node path[data-mela]').forEach(el => {
     const orig = el.getAttribute('data-orig-opacity');
     if (orig) el.setAttribute('opacity', orig);
-    const hasRaga = el.closest('.mela-node') && el.closest('.mela-node').getAttribute('data-id');
-    el.setAttribute('stroke', hasRaga ? THEME.fg : THEME.edgeLine);
-    el.setAttribute('stroke-width', hasRaga ? '0.75' : '0.5');
+    el.setAttribute('stroke', THEME.borderStrong);
+    el.setAttribute('stroke-width', '0.5');
   });
   // Restore mela labels
   if (_labelLayer) {
@@ -1317,13 +1319,12 @@ window.drawRagaWheel = function() {
   const _DANI_LABELS = ['D\u2081N\u2081','D\u2081N\u2082','D\u2081N\u2083','D\u2082N\u2082','D\u2082N\u2083','D\u2083N\u2083'];
 
   // Ring 0 — Madhyama centre disk: right half = śuddha (M₁, melas 1–36), left = prati (M₂, melas 37–72)
-  // Use accentSelect (bright terminal amber #fabd2f) at high opacity for a vivid glowing centre.
-  const madGold = THEME.accentSelect;
-  [[0, 180, 1, 0.80, 'śuddha madhyama (M₁) — melas 1–36'],
-   [180, 360, 2, 0.40, 'prati madhyama (M₂) — melas 37–72']].forEach(([startD, endD, madhyama, baseOpacity, titleText]) => {
+  // ADR-126: M₁ = THEME.swara.M1 (yellow #d79921, warm), M₂ = THEME.swara.M2 (aqua #689d6a, cool).
+  [[0, 180, 1, 0.80, 'śuddha madhyama (M₁) — melas 1–36',   THEME.swara.M1],
+   [180, 360, 2, 0.40, 'prati madhyama (M₂) — melas 37–72', THEME.swara.M2]].forEach(([startD, endD, madhyama, baseOpacity, titleText, madColor]) => {
     const madPath = svgEl('path', {
       d: sectorPath(cx, cy, 0, R_MADHYAMA, startD, endD),
-      fill: madGold, opacity: baseOpacity, stroke: 'none',
+      fill: madColor, opacity: baseOpacity, stroke: 'none',
       'pointer-events': 'all', cursor: 'pointer',
       'data-ring': 'madhyama', 'data-madhyama': madhyama,
       'data-orig-opacity': baseOpacity, tabindex: '0',
@@ -1355,13 +1356,13 @@ window.drawRagaWheel = function() {
   });
 
   // Ring 1 — Cakra wedge ring (R_MADHYAMA → R_CAKRA): 12 wedges, 30° each
-  // High opacity so vivid cakra colours read clearly; dark text for inverse-video contrast.
+  // ADR-126: cakra ring is now a neutral structural band — bgPanel fill, THEME.border hairline.
+  // Wedges are distinguished by angular position and cakra name label only.
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
-    const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
     const cakraPath = svgEl('path', {
       d: sectorPath(cx, cy, R_MADHYAMA, R_CAKRA, startDeg, endDeg),
-      fill: color, opacity: 0.82, stroke: THEME.labelOutline, 'stroke-width': 0.5,
+      fill: getCakraColor(cakra), opacity: 0.82, stroke: THEME.border, 'stroke-width': 1,
       'pointer-events': 'all', cursor: 'pointer',
       'data-ring': 'cakra', 'data-cakra': cakra, 'data-orig-opacity': 0.82, tabindex: '0',
     });
@@ -1389,7 +1390,7 @@ window.drawRagaWheel = function() {
     const cakraRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
     const nameLbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.bgDeep, 'font-size': Math.max(8, minDim * 0.017) + 'px',
+      fill: THEME.fg, 'font-size': Math.max(8, minDim * 0.017) + 'px',
       'font-weight': 'bold', 'pointer-events': 'none',
       transform: `rotate(${cakraRotDeg}, ${lp.x}, ${lp.y})`
     });
@@ -1397,40 +1398,61 @@ window.drawRagaWheel = function() {
     vp.appendChild(nameLbl);
   }
 
-  // Ring 2 — Ri-ga arc ring (R_CAKRA \u2192 R_RIGA): 12 arcs, one per cakra wedge
-  // Each cakra\u2019s (ri, ga) pair cycles through the 6 upper-triangular pairs within each hemisphere.
-  // Ice-blue fill (#83a598, gruvbox blueBright) = terminal syntax annotation colour.
+  // Ring 2 — Ri-ga arc ring (R_CAKRA → R_RIGA): 12 arcs, one per cakra wedge
+  // ADR-126: vertical split — inner half = R swara colour, outer half = G swara colour.
+  // Each half rendered at full saturation; group opacity controls overall brightness.
   const rigaFontSize = Math.max(10, minDim * 0.020);
   for (let cakra = 1; cakra <= 12; cakra++) {
     const startDeg = (cakra - 1) * 30, endDeg = cakra * 30;
     const rigaIdx = (cakra - 1) % 6;  // 0..5, repeats identically in each hemisphere
-    const rigaPath = svgEl('path', {
-      d: sectorPath(cx, cy, R_CAKRA, R_RIGA, startDeg, endDeg),
-      fill: '#83a598', opacity: 0.62, stroke: THEME.labelOutline, 'stroke-width': 0.5,
-      'pointer-events': 'all', cursor: 'pointer',
-      'data-ring': 'riga', 'data-cakra': cakra, 'data-orig-opacity': 0.62, tabindex: '0',
+    const ri = _PAIRS[rigaIdx][0], ga = _PAIRS[rigaIdx][1];
+    const rigaMid = (R_CAKRA + R_RIGA) / 2;
+    // Group carries data-ring for light-up selectors; pointer-events on hit target inside
+    const rigaG = svgEl('g', {
+      'data-ring': 'riga', 'data-cakra': cakra, 'data-orig-opacity': 0.62, opacity: 0.62,
+      'pointer-events': 'none',
     });
     const rigaTitle = svgEl('title', {});
-    rigaTitle.textContent = `${_RIGA_LABELS[rigaIdx]} — 12 melas (both hemispheres)`;
-    rigaPath.appendChild(rigaTitle);
-    rigaPath.addEventListener('click', (e) => {
+    rigaTitle.textContent = `${_RIGA_LABELS[rigaIdx]} (R${ri}G${ga}) — 12 melas (both hemispheres)`;
+    rigaG.appendChild(rigaTitle);
+    // Inner half: R swara colour
+    rigaG.appendChild(svgEl('path', {
+      d: sectorPath(cx, cy, R_CAKRA, rigaMid, startDeg, endDeg),
+      fill: THEME.swara['R' + ri], stroke: THEME.labelOutline, 'stroke-width': 0.25,
+      'pointer-events': 'none',
+    }));
+    // Outer half: G swara colour
+    rigaG.appendChild(svgEl('path', {
+      d: sectorPath(cx, cy, rigaMid, R_RIGA, startDeg, endDeg),
+      fill: THEME.swara['G' + ga], stroke: THEME.labelOutline, 'stroke-width': 0.25,
+      'pointer-events': 'none',
+    }));
+    // Transparent hit target (full radial extent) for pointer events
+    const rigaHit = svgEl('path', {
+      d: sectorPath(cx, cy, R_CAKRA, R_RIGA, startDeg, endDeg),
+      fill: 'transparent', stroke: 'none',
+      'pointer-events': 'all', cursor: 'pointer', tabindex: '0',
+    });
+    rigaHit.addEventListener('click', (e) => {
       e.stopPropagation();
       const melaIds = [];
       for (let M = 1; M <= 72; M++) {
         const n2 = M <= 36 ? M : M - 36;
         if (Math.floor((n2 - 1) / 6) === rigaIdx) melaIds.push(M);
       }
-      _lightUpMelas(melaIds);
+      const outerSwaraColor = THEME.swara['G' + ga];
+      _lightUpMelas(melaIds, outerSwaraColor);
       if (typeof applyBaniFilter === 'function') applyBaniFilter('riga', String(rigaIdx));
       _litMelaId = null;
     });
-    vp.appendChild(rigaPath);
+    rigaG.appendChild(rigaHit);
+    vp.appendChild(rigaG);
     const midDeg = startDeg + 15;
     const lp = polar(cx, cy, (R_CAKRA + R_RIGA) / 2, midDeg);
     const rotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
     const rlbl = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-      fill: THEME.bgDeep, 'font-size': rigaFontSize + 'px',
+      fill: THEME.fg, 'font-size': rigaFontSize + 'px',
       'font-weight': 'bold', 'pointer-events': 'none',
       transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
     });
@@ -1438,31 +1460,52 @@ window.drawRagaWheel = function() {
     vp.appendChild(rlbl);
   }
 
-  // Ring 3 — Da-ni cell ring (R_RIGA \u2192 R_DANI): 72 cells, 5\u00b0 each (6 per cakra wedge)
-  // Position within a cakra = da-ni pair index (0..5) via the upper-triangular sequence.
-  // Bright orange (#fe8019, gruvbox orangeBright) = terminal accent / warning; dark cutout text.
+  // Ring 3 — Da-ni cell ring (R_RIGA → R_DANI): 72 cells, 5° each (6 per cakra wedge)
+  // ADR-126: vertical split — inner half = D swara colour, outer half = N swara colour.
+  // Each half rendered at full saturation; group opacity controls overall brightness.
   const daniFontSize = Math.max(8, minDim * 0.015);
   for (let n = 1; n <= 72; n++) {
     const startDeg = (n - 1) * 5, endDeg = n * 5;
     const daniIdx = (n - 1) % 6;
-    const daniPath = svgEl('path', {
-      d: sectorPath(cx, cy, R_RIGA, R_DANI, startDeg, endDeg),
-      fill: '#fe8019', opacity: 0.50, stroke: THEME.labelOutline, 'stroke-width': 0.5,
-      'pointer-events': 'all', cursor: 'pointer',
-      'data-ring': 'dani', 'data-mela': n, 'data-orig-opacity': 0.50, tabindex: '0',
+    const da = _PAIRS[daniIdx][0], ni = _PAIRS[daniIdx][1];
+    const daniMid = (R_RIGA + R_DANI) / 2;
+    const companionM = n <= 36 ? n + 36 : n - 36;
+    // Group carries data-ring for light-up selectors
+    const daniG = svgEl('g', {
+      'data-ring': 'dani', 'data-mela': n, 'data-orig-opacity': 0.50, opacity: 0.50,
+      'pointer-events': 'none',
     });
     const daniTitle = svgEl('title', {});
-    const companionM = n <= 36 ? n + 36 : n - 36;
-    daniTitle.textContent = `${_DANI_LABELS[daniIdx]} — melas ${n} & ${companionM}`;
-    daniPath.appendChild(daniTitle);
-    daniPath.addEventListener('click', (e) => {
+    daniTitle.textContent = `${_DANI_LABELS[daniIdx]} (D${da}N${ni}) — melas ${n} & ${companionM}`;
+    daniG.appendChild(daniTitle);
+    // Inner half: D swara colour
+    daniG.appendChild(svgEl('path', {
+      d: sectorPath(cx, cy, R_RIGA, daniMid, startDeg, endDeg),
+      fill: THEME.swara['D' + da], stroke: THEME.labelOutline, 'stroke-width': 0.25,
+      'pointer-events': 'none',
+    }));
+    // Outer half: N swara colour
+    daniG.appendChild(svgEl('path', {
+      d: sectorPath(cx, cy, daniMid, R_DANI, startDeg, endDeg),
+      fill: THEME.swara['N' + ni], stroke: THEME.labelOutline, 'stroke-width': 0.25,
+      'pointer-events': 'none',
+    }));
+    // Transparent hit target for pointer events
+    const daniHit = svgEl('path', {
+      d: sectorPath(cx, cy, R_RIGA, R_DANI, startDeg, endDeg),
+      fill: 'transparent', stroke: 'none',
+      'pointer-events': 'all', cursor: 'pointer', tabindex: '0',
+    });
+    daniHit.addEventListener('click', (e) => {
       e.stopPropagation();
       const companionM2 = n <= 36 ? n + 36 : n - 36;
-      _lightUpMelas([n, companionM2]);
+      const outerSwaraColor = THEME.swara['N' + ni];
+      _lightUpMelas([n, companionM2], outerSwaraColor);
       if (typeof applyBaniFilter === 'function') applyBaniFilter('dani', String(daniIdx));
       _litMelaId = null;
     });
-    vp.appendChild(daniPath);
+    daniG.appendChild(daniHit);
+    vp.appendChild(daniG);
     // Show da-ni subscript only when the cell arc is wide enough to be legible
     const arcLen = R_DANI * 5 * Math.PI / 180;
     if (arcLen >= 7) {
@@ -1471,7 +1514,7 @@ window.drawRagaWheel = function() {
       const rotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
       const dlbl = svgEl('text', {
         x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-        fill: THEME.bgDeep, 'font-size': daniFontSize + 'px',
+        fill: THEME.fg, 'font-size': daniFontSize + 'px',
         'font-weight': 'bold', 'pointer-events': 'none',
         transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
       });
@@ -1495,27 +1538,26 @@ window.drawRagaWheel = function() {
     const angleRad = melaAngles[n - 1];    // centre angle of this slot
     const pos      = polar(cx, cy, (R_DANI + R_MELA) / 2, startDeg + 2.5);  // visual centre
     const raga  = melaByNum[n];
-    const cakra = Math.ceil(n / 6);
-    const color = CAKRA_COLORS[cakra] || THEME.borderStrong;
+    const cakra = Math.ceil(n / 6); // used for cakra name in tooltip
 
     const isLive = raga && melasWithMusic.has(raga.id);
     const origOpacity = isLive ? 0.90 : (raga ? 0.30 : 0.20);
 
     const g = svgEl('g', { class: 'mela-node', 'data-mela': n, 'data-id': raga ? raga.id : '' });
 
-    // Arc sector — the visual mela slot
+    // Arc sector — ADR-126: neutral bgDeep fill, borderStrong hairline; live/dim by opacity only
     const slotPath = svgEl('path', {
       d: sectorPath(cx, cy, R_DANI, R_MELA, startDeg, endDeg),
-      fill: raga ? color : THEME.bgPanel,
-      stroke: raga ? THEME.fg : THEME.edgeLine,
-      'stroke-width': raga ? 0.75 : 0.5,
+      fill: THEME.bgDeep,
+      stroke: THEME.borderStrong,
+      'stroke-width': 0.5,
       opacity: origOpacity,
       'data-mela': n,
       'data-orig-opacity': origOpacity
     });
     g.appendChild(slotPath);
 
-    // Mela number inside the slot (small, radially rotated)
+    // Mela number inside the slot — ADR-126: THEME.fg (cream on neutral bgDeep)
     if (raga) {
       const numFontSize = Math.max(7, minDim * 0.012);
       const midDeg = startDeg + 2.5;
@@ -1523,7 +1565,7 @@ window.drawRagaWheel = function() {
       const numRotDeg = midDeg <= 180 ? midDeg - 90 : midDeg + 90;
       const numLbl = svgEl('text', {
         x: numPos.x, y: numPos.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-        fill: THEME.bgDeep, 'font-size': numFontSize + 'px', 'font-weight': 'bold',
+        fill: THEME.fg, 'font-size': numFontSize + 'px', 'font-weight': 'bold',
         'pointer-events': 'none', opacity: isLive ? 1 : 0.5,
         transform: `rotate(${numRotDeg}, ${numPos.x}, ${numPos.y})`
       });

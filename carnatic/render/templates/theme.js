@@ -132,13 +132,33 @@ const THEME = (() => {
     contemporary:   P.green,
   };
 
-  // ── Level 2: Cakra colours (raga wheel sector fills) ─────────────────────
-  // Hacker aesthetic: full bright gruvbox spectrum — vivid neon against hard-dark canvas.
-  // Warm-to-cool cycle; śuddha hemisphere (1–6) glows warm, prati hemisphere (7–12) cool.
-  S.cakra = {
-    1:  P.yellowBright,   2:  P.orangeBright,  3:  P.redBright,   4:  P.purpleBright,
-    5:  P.greenBright,    6:  P.aquaBright,     7:  P.blueBright,  8:  P.blue,
-    9:  P.aqua,           10: P.green,          11: P.purple,      12: P.yellow,
+  // ── Level 2: Swara colours (raga wheel decoding rings) ────────────────────
+  // ADR-126: hue = family (R/G/D/N walks gruvbox warm→cool); brightness = variant.
+  // All other wheel colours derive from these. THEME.cakra is retired.
+  S.swara = {
+    // Rishabha (red/orange family)
+    R1: P.red,            // #cc241d  śuddha
+    R2: P.orange,         // #d65d0e  catuśruti
+    R3: P.orangeBright,   // #fe8019  ṣaṭśruti
+
+    // Gandhara (yellow/green family)
+    G1: P.green,          // #98971a  śuddha
+    G2: P.greenBright,    // #b8bb26  sādhāraṇa
+    G3: P.yellowBright,   // #fabd2f  antara
+
+    // Madhyama (centre disk only — two values)
+    M1: P.yellow,         // #d79921  śuddha (warm)  — right half
+    M2: P.aqua,           // #689d6a  prati  (cool)  — left half
+
+    // Dhaivata (aqua/blue family)
+    D1: P.aquaBright,     // #8ec07c  śuddha
+    D2: P.blue,           // #458588  catuśruti
+    D3: P.blueBright,     // #83a598  ṣaṭśruti
+
+    // Nishada (purple family)
+    N1: P.purple,         // #b16286  śuddha
+    N2: P.purpleBright,   // #d3869b  kaiśika
+    N3: P.fg2,            // #bdae93  kākalī (warm-pale — subject to first-render review)
   };
 
   // ── ADR-054: era tint helpers ─────────────────────────────────────────────
@@ -170,6 +190,9 @@ const THEME = (() => {
     ...tokens,
     get(key)        { return tokens[key]; },
     set(key, value) { tokens[key] = value; },
+    // ADR-126: cakra ring is retired as a colour surface — always returns bgPanel.
+    // Retained as a shim so future ADRs can re-introduce cakra-level encoding.
+    getCakraColor(_n) { return tokens.bgPanel; },
     hexToRgba,
     eraTintCss,
     // Convenience: dump all tokens as CSS custom properties string
