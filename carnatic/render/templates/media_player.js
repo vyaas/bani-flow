@@ -2110,11 +2110,27 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  // Named player: sruti drone has no close button — power switch is in the sruti bar (ADR-076)
+  // Named player: sruti drone has a minimize toggle (ADR-131 R3) instead of a
+  // close button — collapsing turns the player into a brightish title-bar
+  // strip that can be dragged anywhere on the canvas. Restore expands the
+  // iframe back. The drone is stopped only by clicking the active sruti pie
+  // sector at the wheel centre.
   if (playerId === 'sruti') {
-    const closeEl = el.querySelector('.mp-close');
-    if (closeEl) closeEl.remove();
-    // Do not wire a close-click listener for sruti
+    el.classList.add('sruti-player');
+    const minBtn = el.querySelector('.mp-close');
+    if (minBtn) {
+      minBtn.textContent = '\u2212';   // − (minus sign) = minimize
+      minBtn.title = 'Minimize';
+      minBtn.setAttribute('aria-label', 'Minimize sruti player');
+      minBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const minimized = el.classList.toggle('sruti-minimized');
+        minBtn.textContent = minimized ? '\u2922' : '\u2212';   // ⤢ restore | − minimize
+        minBtn.title       = minimized ? 'Restore' : 'Minimize';
+        minBtn.setAttribute('aria-label',
+          minimized ? 'Restore sruti player' : 'Minimize sruti player');
+      });
+    }
   } else {
     el.querySelector('.mp-close').addEventListener('click', () => {
       closePlayer(playerId);

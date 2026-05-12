@@ -17,7 +17,9 @@
     --chip-era-bg:            transparent;       /* set inline per chip */
     --chip-era-border:        var(--border-strong);
     --bg-pressed:             rgba(0, 0, 0, 0.28);
-    --header-h:               52px;              /* ADR-062: sruti bar height token */
+    /* ADR-129: safe-zone tokens — panel/canvas insets that clear the floating chrome */
+    --chrome-top:             50px;   /* bottom of top-chrome (title+view-selector) + gap */
+    --chrome-bottom:          64px;   /* top of bottom-chrome (panel toggles + bundle) + gap */
     /* ADR-063: uniform first-class chip appearance */
     --chip-raga-border:       var(--accent-match, #6ec6a8);   /* teal/green accent */
     --chip-raga-bg:           color-mix(in srgb, var(--chip-raga-border) 12%, transparent);
@@ -53,22 +55,109 @@
     height: 100vh; display: flex; flex-direction: column;
   }
 
-  /* ── header ── */
-  header {
-    padding: 13px 0; background: var(--bg-panel);
-    border-bottom: 2px solid var(--border-strong);
-    display: grid; grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px); align-items: center; gap: 0;
+  /* ── ADR-129 D1: Floating chrome clusters (replaced <header>) ── */
+  /* pointer-events: none on wrapper so transparent gaps pass clicks to canvas */
+  #app-title-float {
+    position: fixed; top: 10px; left: 14px;
+    display: flex; align-items: center; gap: 8px;
+    pointer-events: none; z-index: 72;
   }
-  #header-left {
-    display: flex; align-items: center; gap: 8px; padding: 0 14px;
-  }
-  header h1 {
-    font-size: 1.05rem; color: var(--accent);
+  #app-title-float > * { pointer-events: auto; }
+  #app-title-float h1 {
+    font-size: 1.0rem; color: var(--accent);
     letter-spacing: 0.08em; text-transform: uppercase; font-weight: bold;
     white-space: nowrap;
+    text-shadow: 0 1px 4px var(--bg-deep, #0d0d0d);
   }
-  .stats  { font-size: 0.78rem; color: var(--fg-sub); }
-  .controls { display: flex; gap: 8px; padding: 0 14px; justify-content: flex-end; }
+  #view-selector-float {
+    position: fixed; top: 10px; right: 14px;
+    pointer-events: none; z-index: 72;
+  }
+  #view-selector-float > * { pointer-events: auto; }
+  #view-selector-float .view-selector {
+    margin-left: 0;
+    background: transparent;
+    border-color: transparent;
+  }
+  #view-selector-float .view-btn {
+    background: transparent;
+    border-color: transparent;
+    color: var(--fg-dim);
+    text-shadow: 0 1px 3px var(--bg-deep, #0d0d0d);
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  #view-selector-float .view-btn:hover {
+    background: color-mix(in srgb, var(--bg-panel) 70%, transparent);
+    border-color: var(--border-strong);
+    color: var(--fg);
+  }
+  #view-selector-float .view-btn.active {
+    color: var(--accent); font-weight: bold;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-color: transparent;
+  }
+
+  /* ── ADR-129 D2: Floating panel toggles + bundle (replaced #desktop-panel-bar) ── */
+  /* Ghost by default — fully transparent so the canvas shows through.
+     Colour and background emerge only on hover or when active/pinned. */
+  #left-panel-toggle,
+  #right-panel-toggle {
+    display: none; /* shown in desktop media query */
+    align-items: center; gap: 5px;
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--fg-dim); background: transparent;
+    border: 1px solid transparent; border-radius: 4px;
+    padding: 6px 14px; cursor: pointer;
+    min-width: 44px; min-height: 40px;
+    position: fixed; bottom: 14px; z-index: 72;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    pointer-events: auto;
+    text-shadow: 0 1px 3px var(--bg-deep, #0d0d0d); /* legible over canvas */
+  }
+  #left-panel-toggle  { left: 14px; }
+  #right-panel-toggle { right: 14px; }
+  #left-panel-toggle:hover,
+  #right-panel-toggle:hover {
+    color: var(--fg);
+    background: color-mix(in srgb, var(--bg-panel) 70%, transparent);
+    border-color: var(--border-strong);
+  }
+  #left-panel-toggle.float-toggle-active,
+  #right-panel-toggle.float-toggle-active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  /* Bundle button — floating bottom-centre, ghost until items are added */
+  #bundle-download-btn {
+    display: none; /* shown in desktop media query */
+    font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--fg-dim); background: transparent;
+    border: 1px solid transparent; border-radius: 4px;
+    padding: 6px 14px; cursor: pointer;
+    min-height: 40px; min-width: 44px;
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    z-index: 72;
+    transition: color 0.15s, border-color 0.15s, background 0.15s, opacity 0.15s;
+    pointer-events: auto;
+    text-shadow: 0 1px 3px var(--bg-deep, #0d0d0d);
+  }
+  #bundle-download-btn:hover:not(:disabled) {
+    color: var(--fg); border-color: var(--border-strong);
+    background: color-mix(in srgb, var(--bg-panel) 70%, transparent);
+  }
+  #bundle-download-btn:disabled { opacity: 0.25; cursor: default; }
+  #bundle-download-btn.entry-btn-active {
+    color: var(--accent); border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    opacity: 0.95;
+  }
+  @keyframes bundle-pulse {
+    0%   { opacity: 0.4; transform: translateX(-50%) scale(0.97); }
+    55%  { opacity: 1;   transform: translateX(-50%) scale(1.05); }
+    100% { opacity: 0.95; transform: translateX(-50%) scale(1); }
+  }
+  #bundle-download-btn.bundle-pulse { animation: bundle-pulse 0.32s ease-out; }
 
   /* ── canvas column (filter bar + graph) ── */
   #canvas-wrap {
@@ -904,6 +993,49 @@
       rgba(255,255,255,0.08) 3px
     );
   }
+
+  /* ── ADR-131 R3: Sruti player minimize affordance ───────────────────────
+     The sruti drone player (.sruti-player) carries a minimize toggle in
+     place of a close button. When minimized it collapses to its title bar
+     only — a thin, brightly-coloured strip that can be dragged anywhere
+     on the canvas. The drone keeps playing; only clicking the active
+     sruti pie sector at the wheel centre stops it. */
+  /* Minimize button — large + obvious; bar has plenty of room */
+  .media-player.sruti-player .mp-close {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    width: 28px; height: 22px;
+    font-size: 1.15rem; font-weight: bold;
+    line-height: 1; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.12s, color 0.12s, transform 0.08s;
+  }
+  .media-player.sruti-player .mp-close:hover {
+    color: var(--bg);
+    background: var(--accent);
+    transform: scale(1.05);
+  }
+  .media-player.sruti-player.sruti-minimized {
+    width: auto; min-width: 0;
+    /* Bright accent border so the minimized strip is visually distinct
+       from a regular minimized window — it is an active drone. */
+    border-color: var(--accent);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.55),
+                0 0 10px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+  .media-player.sruti-player.sruti-minimized .mp-bar {
+    border-bottom: none;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--accent) 14%, var(--bg-input));
+  }
+  .media-player.sruti-player.sruti-minimized .mp-bar .mp-title {
+    color: var(--accent); font-weight: bold;
+  }
+  .media-player.sruti-player.sruti-minimized .mp-video-wrap,
+  .media-player.sruti-player.sruti-minimized .mp-footer,
+  .media-player.sruti-player.sruti-minimized .mp-resize { display: none; }
   .mp-resize:hover { opacity: 1; background-color: var(--bg-active); }
 
   /* ── timeline ruler — monospace font retained for data-dense ruler ── */
@@ -2185,102 +2317,11 @@
     color: var(--accent-match);
   }
 
-  /* ── Sruti Bar — inline in header (ADR-029, ADR-076) ── */
-  #sruti-strip {
-    display: flex; align-items: center; gap: 4px;
-    flex: 0 0 auto; width: fit-content; max-width: 600px;
-    justify-self: center;           /* centred in middle header column */
-    background: var(--bg-input);
-    border: 1px solid var(--border-strong);
-    border-radius: 6px;
-    padding: 2px 6px;
-  }
-  /* "SRUTI" rackmount label */
-  .sruti-label {
-    font-size: 0.6rem; font-family: var(--font-mono, monospace);
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--fg-sub); white-space: nowrap; user-select: none;
-    padding-right: 4px;
-    border-right: 1px solid var(--border-strong);
-    flex-shrink: 0;
-  }
-  /* Power button — sole on/off control (ADR-076) */
-  .sruti-power {
-    font-size: 1rem; background: none;
-    border: 1px solid var(--border-strong);
-    color: var(--fg-muted); cursor: pointer;
-    flex-shrink: 0; margin-left: 4px;
-    padding: 2px 5px; border-radius: 4px;
-    transition: color 0.15s, background 0.15s, border-color 0.15s;
-    user-select: none; line-height: 1;
-  }
-  .sruti-power.sruti-on  {
-    color: var(--accent-sub);
-    border-color: var(--accent-sub);
-    background: rgba(142,192,124,0.12);
-  }
-  .sruti-power:hover     { color: var(--accent-danger); border-color: var(--accent-danger); }
-  #sruti-buttons {
-    display: flex;
-    gap: 0;
-    flex: 1;
-    min-width: 0;
-  }
-  /* ── Sruti buttons: Winamp-style raised relief ── */
-  .sruti-btn {
-    flex: 1;                  /* equispaced: each button takes equal share */
-    min-width: 30px;          /* 1.5× wider than default; forces strip to expand */
-    padding: 5px 2px;
-    /* Raised bevel: light top/left, dark bottom/right */
-    background: var(--bg-input);
-    border-top:    1px solid var(--fg-muted);
-    border-left:   1px solid var(--fg-muted);
-    border-bottom: 2px solid #111;
-    border-right:  2px solid #111;
-    /* Collapse adjacent borders — override with margin trick */
-    margin-right: -1px;
-    color: var(--fg-dim);
-    font-size: 0.78rem;
-    font-family: var(--font-ui);
-    cursor: pointer;
-    text-align: center;
-    transition: color 0.1s, background 0.1s, box-shadow 0.05s, transform 0.05s;
-    white-space: nowrap;
-    user-select: none;
-    border-radius: 8px;
-    position: relative;
-    box-shadow: 1px 1px 0 #111, inset 0 1px 0 rgba(255,255,255,0.07);
-  }
-  .sruti-btn:first-child { border-radius: 8px 4px 4px 8px; }
-  .sruti-btn:last-child  { border-radius: 4px 8px 8px 4px; margin-right: 0; }
-  .sruti-btn:hover {
-    color: var(--accent);
-    background: var(--bg-active);
-    z-index: 1;
-  }
-  /* Pressed state: invert bevel, push down */
-  .sruti-btn:active {
-    border-top:    2px solid #111;
-    border-left:   2px solid #111;
-    border-bottom: 1px solid var(--fg-muted);
-    border-right:  1px solid var(--fg-muted);
-    box-shadow: none;
-    transform: translate(1px, 1px);
-    color: var(--accent);
-    background: var(--bg-active);
-  }
-  .sruti-btn.sruti-active {
-    border-top:    2px solid #111;
-    border-left:   2px solid #111;
-    border-bottom: 1px solid var(--fg-muted);
-    border-right:  1px solid var(--fg-muted);
-    box-shadow: none;
-    transform: translate(1px, 1px);
-    color: var(--accent-select);   /* bright yellow — high contrast on pressed bg */
-    background: var(--bg-active);
-    z-index: 1;
-  }
-  .sruti-btn.sharp { font-size: 0.68rem; }
+  /* ── ADR-131 R3: Sruti widget retired ──
+     The drone tonic is no longer a floating widget. It is rendered as a
+     12-sector pie at the absolute centre of the raga wheel by raga_wheel.js
+     (sectors with `data-ring="sruti"`). Click toggles the drone for that
+     pitch. No CSS is needed here; the SVG paths are styled inline. */
 
   /* ── ADR-045: Help button ── */
   .help-btn {
@@ -3058,7 +3099,16 @@
     #main.right-pinned              { grid-template-columns: 0px 1fr var(--right-panel-width, 280px); }
     #main.left-pinned.right-pinned  { grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px); }
 
+    /* ADR-129: Inset floating (unpinned) panels so they never overlap the top/bottom chrome */
+    #left-sidebar:not(.panel-pinned),
+    #right-sidebar:not(.panel-pinned) {
+      top: var(--chrome-top);
+      bottom: var(--chrome-bottom);
+    }
+
     /* Pinned panels become static in-flow grid items */
+    /* height is NOT set; grid stretch (align-items: stretch default) auto-sizes it */
+    /* margin-top/bottom keep the panel background clear of the floating chrome zones */
     #left-sidebar.panel-pinned,
     #right-sidebar.panel-pinned {
       position: static;
@@ -3066,13 +3116,17 @@
       top: auto; bottom: auto; left: auto; right: auto;
       z-index: auto;
       box-shadow: none;
-      height: 100%;
+      margin-top: var(--chrome-top);
+      margin-bottom: var(--chrome-bottom);
       overflow-y: auto;
     }
     #left-sidebar.panel-pinned  { border-right: 2px solid var(--border-strong); }
     #right-sidebar.panel-pinned { border-left:  2px solid var(--border-strong); border-right: none; }
 
     /* Canvas column must not collapse below a usable width */
+    /* ADR-129: canvas fills viewport edge-to-edge — floating chrome overlays it
+       (text-shadow keeps labels legible; pointer-events on wrapper let clicks
+       pass through transparent gaps). */
     #canvas-wrap {
       min-width: 200px;
     }
@@ -3090,7 +3144,7 @@
       right: 292px;
     }
 
-    /* Floating edge handles replaced by #desktop-panel-bar — keep hidden */
+    /* Floating edge handles — keep hidden on desktop (ADR-129: bottom toggles take over) */
     .desktop-drawer-handle { display: none !important; }
 
     /* Scrims are absent on desktop — keep hidden */
@@ -3099,59 +3153,10 @@
       display: none !important;
     }
 
-    /* ── Desktop panel bar ── */
-    #desktop-panel-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 44px;
-      flex-shrink: 0;
-      background: var(--bg-panel);
-      border-top: 2px solid var(--border-strong);
-    }
-    .dpb-section {
-      width: 280px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 12px;
-    }
-    .dpb-left   { border-right: 1px solid var(--border-strong); width: var(--left-panel-width, 280px); }
-    .dpb-center { flex: 1; width: auto; justify-content: center; }
-    .dpb-right  { border-left: 1px solid var(--border-strong); justify-content: flex-end; width: var(--right-panel-width, 280px); }
-    .dpb-bundle {
-      font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--fg-dim); background: none;
-      border: 1px solid var(--border-strong); border-radius: 4px;
-      padding: 4px 10px; cursor: pointer;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
-    }
-    .dpb-bundle:hover:not(:disabled) { color: var(--fg); border-color: var(--fg-dim); background: var(--bg-active); }
-    .dpb-bundle:disabled { opacity: 0.35; cursor: default; }
-    .dpb-toggle {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--fg-dim); background: none; border: none;
-      padding: 4px 8px; border-radius: 4px; cursor: pointer;
-      transition: color 0.15s, background 0.15s;
-    }
-    .dpb-toggle:hover { color: var(--fg); background: var(--bg-active); }
-    .dpb-toggle.dpb-active { color: var(--accent); }
-    .dpb-pin {
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; background: none; border: none;
-      padding: 4px; border-radius: 4px; cursor: pointer;
-      opacity: 0.35; transition: opacity 0.15s, color 0.15s;
-    }
-    .dpb-pin:hover { opacity: 0.75; background: var(--bg-active); }
-    .dpb-pin.pin-active { opacity: 1; color: var(--accent); }
-  }
-
-  /* ── Desktop panel bar hidden on mobile ── */
-  #desktop-panel-bar { display: none; }
-  @media (min-width: 769px) {
-    #desktop-panel-bar { display: flex; }
+    /* ADR-129 D2: Show floating panel toggles and bundle button on desktop */
+    #left-panel-toggle,
+    #right-panel-toggle,
+    #bundle-download-btn { display: inline-flex; }
   }
 
   /* ── Panel pin button (desktop only) ───────────────────────────────────── */
@@ -3188,28 +3193,11 @@
   /* ── Phase 1: Responsive layout — left drawer + bottom sheet (ADR-034) ── */
   @media (max-width: 768px) {
 
-    /* ── Header: flex row replacing 3-col grid ── */
-    header {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      gap: 0;
-      position: relative;            /* anchor for absolutely-centred controls */
-      grid-template-columns: unset;  /* defeat the desktop grid */
-    }
-
-    header h1 { display: none; }
-    #header-left { flex-shrink: 0; gap: 4px; padding: 0 4px; }
-    .stats { display: none; }
-    #sruti-strip { display: none; }
-    .controls {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 0;
-      pointer-events: none;          /* let clicks pass through gap to header */
-    }
-    .controls > * { pointer-events: auto; }  /* re-enable on actual buttons */
+    /* ADR-129: no <header> on mobile — floating clusters inherit fixed positioning */
+    /* Scale down title and view selector for small screens */
+    #app-title-float h1 { font-size: 0.8rem; }
+    #view-selector-float { top: 8px; right: 8px; }
+    #view-selector-float .view-btn { min-height: 36px; padding: 0 7px; font-size: 0.72rem; }
 
     /* ── Main layout: canvas occupies full viewport width ── */
     /* ADR-042: pad bottom so canvas never extends behind the tab bar (56px) */
@@ -4020,29 +4008,27 @@
   </symbol>
 </svg>
 
-<header>
-  <!-- ADR-045: header-left wraps title + help button -->
-  <div id="header-left">
-    <h1>Carnatic Music Explorer</h1>
-    <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
+<!-- ADR-129 D1: Floating title cluster (top-left) — no backing bar -->
+<div id="app-title-float">
+  <h1>Carnatic Music Explorer</h1>
+  <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
+</div>
+
+<!-- ADR-131 R3: sruti widget retired — drone tonic now lives as a permanent
+     12-sector pie at the centre of the raga wheel (rendered by raga_wheel.js).
+     No floating chrome, no states. Click a sector to start; click again to stop. -->
+
+<!-- ADR-129 D1: Floating view selector (top-right) — no backing bar -->
+<div id="view-selector-float">
+  <div class="view-selector" id="view-selector">
+    <button class="view-btn" id="view-btn-graph"
+            onclick="switchView('graph')" title="Guru-shishya parampara"
+            aria-label="Guru-Shishya"><span class="view-label-full">Guru-Shishya</span><span class="view-label-short">GS</span></button>
+    <button class="view-btn active" id="view-btn-raga"
+            onclick="switchView('raga')" title="Melakarta–janya raga system"
+            aria-label="Mela-Janya"><span class="view-label-full">Mela-Janya</span><span class="view-label-short">MJ</span></button>
   </div>
-  <!-- ── Sruti Strip (ADR-076): labeled widget with power button ── -->
-  <div id="sruti-strip">
-    <span id="sruti-label" class="sruti-label">SRUTI</span>
-    <div id="sruti-buttons"></div>
-    <button id="sruti-power" class="sruti-power" title="Tanpura on/off" aria-label="Sruti power">&#9211;</button>
-  </div>
-  <div class="controls">
-    <div class="view-selector" id="view-selector">
-      <button class="view-btn" id="view-btn-graph"
-              onclick="switchView('graph')" title="Guru-shishya parampara"
-              aria-label="Guru-Shishya"><span class="view-label-full">Guru-Shishya</span><span class="view-label-short">GS</span></button>
-      <button class="view-btn active" id="view-btn-raga"
-              onclick="switchView('raga')" title="Melakarta–janya raga system"
-              aria-label="Mela-Janya"><span class="view-label-full">Mela-Janya</span><span class="view-label-short">MJ</span></button>
-    </div>
-  </div>
-</header>
+</div>
 
 <div id="graph-absent-toast"></div>
 
@@ -4239,31 +4225,20 @@
     </div>
   </div>
 </div>
-<!-- ADR-046: Desktop drawer handles — persistent edge tabs (hidden on mobile via CSS) -->
+<!-- ADR-046: Desktop drawer handles — persistent edge tabs (hidden on desktop via CSS; ADR-129 bottom toggles serve desktop) -->
 <button id="desktop-left-handle" class="desktop-drawer-handle desktop-handle-left"
         aria-label="Open Bani Flow panel">&#9776;&thinsp;Bani Flow</button>
 <button id="desktop-right-handle" class="desktop-drawer-handle desktop-handle-right"
         aria-label="Open Musician panel">Musician&thinsp;&#9835;</button>
 
-<!-- Desktop panel bar: toggle + pin for each side; hidden on mobile -->
-<div id="desktop-panel-bar">
-  <div class="dpb-section dpb-left">
-    <button id="dpb-left-toggle" class="dpb-toggle" title="Open / close Bani Flow panel"
-            onclick="toggleLeftDrawer()">&#9776; Bani Flow</button>
-    <button id="dpb-left-pin" class="dpb-pin" title="Pin panel open" aria-pressed="false"
-            onclick="toggleLeftPin()">&#128204;</button>
-  </div>
-  <div class="dpb-section dpb-center">
-    <button id="bundle-download-btn" class="dpb-bundle" onclick="downloadBundle()" disabled
-            title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
-  </div>
-  <div class="dpb-section dpb-right">
-    <button id="dpb-right-pin" class="dpb-pin" title="Pin panel open" aria-pressed="false"
-            onclick="toggleRightPin()">&#128204;</button>
-    <button id="dpb-right-toggle" class="dpb-toggle" title="Open / close Musician panel"
-            onclick="toggleRightDrawer()">Musician &#9835;</button>
-  </div>
-</div>
+<!-- ADR-129 D2: Floating panel toggles (bottom-left / bottom-right) + bundle (bottom-centre) -->
+<!-- Hidden on mobile via CSS; shown on desktop. Each toggle is open-pinned ↔ closed. -->
+<button id="left-panel-toggle" title="Open / close Bani Flow panel"
+        aria-pressed="false">&#9776; Bani Flow</button>
+<button id="bundle-download-btn" onclick="downloadBundle()" disabled
+        title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
+<button id="right-panel-toggle" title="Open / close Musician panel"
+        aria-pressed="false">&#9776; Musician</button>
 
 <!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
 <div id="left-drawer-scrim" aria-hidden="true"></div>

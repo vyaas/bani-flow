@@ -1318,12 +1318,14 @@ window.drawRagaWheel = function() {
   const _RIGA_LABELS = ['R\u2081G\u2081','R\u2081G\u2082','R\u2081G\u2083','R\u2082G\u2082','R\u2082G\u2083','R\u2083G\u2083'];
   const _DANI_LABELS = ['D\u2081N\u2081','D\u2081N\u2082','D\u2081N\u2083','D\u2082N\u2082','D\u2082N\u2083','D\u2083N\u2083'];
 
-  // Ring 0 — Madhyama centre disk: right half = śuddha (M₁, melas 1–36), left = prati (M₂, melas 37–72)
+  // Ring 0 — Madhyama centre annulus: right half = śuddha (M₁, melas 1–36), left = prati (M₂, melas 37–72)
   // ADR-126: M₁ = THEME.swara.M1 (yellow #d79921, warm), M₂ = THEME.swara.M2 (aqua #689d6a, cool).
+  // ADR-131 R3: inner radius is now R_SRUTI (not 0) — the sruti pie occupies the very centre.
+  const R_SRUTI = R_MADHYAMA * 0.55;
   [[0, 180, 1, 0.80, 'śuddha madhyama (M₁) — melas 1–36',   THEME.swara.M1],
    [180, 360, 2, 0.40, 'prati madhyama (M₂) — melas 37–72', THEME.swara.M2]].forEach(([startD, endD, madhyama, baseOpacity, titleText, madColor]) => {
     const madPath = svgEl('path', {
-      d: sectorPath(cx, cy, 0, R_MADHYAMA, startD, endD),
+      d: sectorPath(cx, cy, R_SRUTI, R_MADHYAMA, startD, endD),
       fill: madColor, opacity: baseOpacity, stroke: 'none',
       'pointer-events': 'all', cursor: 'pointer',
       'data-ring': 'madhyama', 'data-madhyama': madhyama,
@@ -1342,10 +1344,12 @@ window.drawRagaWheel = function() {
     });
     vp.appendChild(madPath);
   });
-  // Hemisphere labels (M₁ / M₂) at 3-o'clock / 9-o'clock inside the disk
+  // Hemisphere labels (M₁ / M₂) at 3-o'clock / 9-o'clock inside the annulus.
+  // ADR-131 R3: pushed outward so they sit in the annulus, not the sruti pie.
   const madFontSize = Math.max(9, minDim * 0.018);
+  const madLabelR = (R_SRUTI + R_MADHYAMA) / 2;
   [['M\u2081', 90], ['M\u2082', 270]].forEach(([lbl, deg]) => {
-    const lp = polar(cx, cy, R_MADHYAMA * 0.58, deg);
+    const lp = polar(cx, cy, madLabelR, deg);
     const t = svgEl('text', {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
       fill: THEME.bg, 'font-size': madFontSize + 'px', 'font-weight': 'bold',
@@ -1354,6 +1358,104 @@ window.drawRagaWheel = function() {
     t.textContent = lbl;
     vp.appendChild(t);
   });
+
+  // ── ADR-131 R3 — Sruti pie: 12 pitch sectors at the very centre ────────────
+  // The drone is the wheel's acoustic root. Click a sector to start that
+  // tonic's tanpura; click it again (or the active sector) to stop. No floating
+  // chrome, no states beyond active/inactive — the pie is permanent.
+  if (typeof tanpuraData !== 'undefined' && Array.isArray(tanpuraData) && tanpuraData.length > 0) {
+    const N_SRUTI = tanpuraData.length;        // 12
+    const SECT_DEG = 360 / N_SRUTI;
+    const lblFontSize = Math.max(7, minDim * 0.012);
+    const lblR = R_SRUTI * 0.68;               // mid-radius for label placement
+
+    // Per-pitch hue (chromatic circle). Saturation/lightness tuned dark so the
+    // pie reads as a coherent inner disk, not 12 loud confetti wedges.
+    function _srutiFill(idx, active) {
+      const hue = Math.round((idx * 360) / N_SRUTI);
+      return active
+        ? `hsl(${hue}, 62%, 48%)`              // bright when active
+        : `hsl(${hue}, 28%, 22%)`;             // muted resting
+    }
+
+    // RagaWheel._sruti = persistent state across redraws + view switches.
+    if (!RagaWheel._sruti) RagaWheel._sruti = { activeIdx: null };
+    const _activeIdx = RagaWheel._sruti.activeIdx;
+
+    function _stopSruti() {
+      RagaWheel._sruti.activeIdx = null;
+      try { localStorage.removeItem('sruti.tonic'); } catch (e) { /* ignore */ }
+      if (typeof closePlayer === 'function') closePlayer('sruti');
+      // Re-paint all sectors as inactive
+      vp.querySelectorAll('path[data-ring="sruti"]').forEach((p) => {
+        const i = parseInt(p.getAttribute('data-sruti-idx'), 10);
+        p.setAttribute('fill', _srutiFill(i, false));
+        p.removeAttribute('stroke');
+      });
+    }
+
+    function _startSruti(idx, entry, sectorPathEl) {
+      RagaWheel._sruti.activeIdx = idx;
+      try { localStorage.setItem('sruti.tonic', entry.note); } catch (e) { /* ignore */ }
+      // Repaint: all inactive first, then mark this one
+      vp.querySelectorAll('path[data-ring="sruti"]').forEach((p) => {
+        const i = parseInt(p.getAttribute('data-sruti-idx'), 10);
+        p.setAttribute('fill', _srutiFill(i, false));
+        p.removeAttribute('stroke');
+      });
+      sectorPathEl.setAttribute('fill', _srutiFill(idx, true));
+      sectorPathEl.setAttribute('stroke', THEME.fg || '#ebdbb2');
+      sectorPathEl.setAttribute('stroke-width', '1.5');
+      if (typeof openPlayer === 'function') {
+        openPlayer(entry.id, entry.note + ' tanpura', 'sruti');
+      }
+    }
+
+    tanpuraData.forEach((entry, idx) => {
+      const startD = idx * SECT_DEG;
+      const endD   = startD + SECT_DEG;
+      const isActive = (idx === _activeIdx);
+      const sect = svgEl('path', {
+        d: sectorPath(cx, cy, 0, R_SRUTI, startD, endD),
+        fill: _srutiFill(idx, isActive),
+        'pointer-events': 'all', cursor: 'pointer',
+        'data-ring': 'sruti', 'data-sruti-idx': String(idx),
+        tabindex: '0',
+      });
+      if (isActive) {
+        sect.setAttribute('stroke', THEME.fg || '#ebdbb2');
+        sect.setAttribute('stroke-width', '1.5');
+      }
+      const sectTitle = svgEl('title', {});
+      sectTitle.textContent = entry.note + ' — tanpura drone';
+      sect.appendChild(sectTitle);
+      sect.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (RagaWheel._sruti.activeIdx === idx) {
+          _stopSruti();
+        } else {
+          _startSruti(idx, entry, sect);
+        }
+      });
+      vp.appendChild(sect);
+
+      // Tiny pitch label at sector mid-angle
+      const midDeg = startD + SECT_DEG / 2;
+      const lp = polar(cx, cy, lblR, midDeg);
+      const lbl = svgEl('text', {
+        x: lp.x, y: lp.y,
+        'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        fill: isActive ? THEME.bg : (THEME.fgDim || '#a89984'),
+        'font-size': lblFontSize + 'px',
+        'font-weight': isActive ? 'bold' : 'normal',
+        'pointer-events': 'none',
+        'data-ring': 'sruti-label',
+        'data-sruti-idx': String(idx),
+      });
+      lbl.textContent = entry.note;
+      vp.appendChild(lbl);
+    });
+  }
 
   // Ring 1 — Cakra wedge ring (R_MADHYAMA → R_CAKRA): 12 wedges, 30° each
   // ADR-126: cakra ring is now a neutral structural band — bgPanel fill, THEME.border hairline.

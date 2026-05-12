@@ -623,3 +623,8 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-11: ADR-129/130 chrome retirement: the top header bar and bottom desktop-panel-bar are visual frames around an exploration canvas — both are removable because every control they host is either a self-sufficient widget (title, view selector, sruti) or a toggle/pin pair that collapses into one tri-state button; bundle button changes from always-visible-dim to dim-when-empty bright-when-ready as the user's loop-exit signal (ADR-085).
 [AGENTS: graph-architect]
+- 2026-05-11: ADR-130 sruti widget: always restore to expanded state on page reload (not mini) even if localStorage says mini — the tanpura player cannot auto-restart audio without user gesture, so showing expanded is safer than a mini chip with no active audio.
+[AGENTS: carnatic-coder]
+- 2026-05-11: ADR-131 R3: the drone is not a widget — it is the acoustic root of the modal field; embedding it as a permanent 12-sector SVG pie inside `#wheel-viewport` eliminates all floating chrome and makes co-transformation (pan/zoom/rotate) automatic at zero extra cost. [AGENTS: carnatic-coder]
+- 2026-05-11: ADR-131 R3: when retiring a floating HTML widget in favour of native SVG, delete the CSS block and the JS file entirely rather than leaving stubs — orphaned selectors accumulate and confuse future agents. [AGENTS: carnatic-coder]
+- 2026-05-11: ADR-131 R3: for named players that must stay alive (drone, not closeable), repurpose the close button as a minimize toggle rather than removing it — preserves the DOM structure that `buildPlayerBar` already creates. [AGENTS: carnatic-coder]

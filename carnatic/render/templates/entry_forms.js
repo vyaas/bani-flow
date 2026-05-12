@@ -36,10 +36,20 @@ function addToBundle(type, obj) {
 function _updateBundleBtn() {
   const btn = document.getElementById('bundle-download-btn');
   if (!btn) return;
+  const prevTotal = parseInt(btn.dataset.prevTotal || '0', 10);
   const total = Object.values(baniBundle).reduce((s, arr) => s + arr.length, 0);
   btn.textContent = `⬇ Bundle (${total} item${total === 1 ? '' : 's'})`;
   btn.disabled = total === 0;
   btn.classList.toggle('entry-btn-active', total > 0);
+  // ADR-129 D2: pulse animation when first item is added
+  if (prevTotal === 0 && total === 1) {
+    btn.classList.add('bundle-pulse');
+    btn.addEventListener('animationend', function onEnd() {
+      btn.classList.remove('bundle-pulse');
+      btn.removeEventListener('animationend', onEnd);
+    });
+  }
+  btn.dataset.prevTotal = String(total);
 }
 
 function downloadBundle() {

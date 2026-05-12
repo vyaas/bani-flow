@@ -225,7 +225,8 @@ def render_html(
     graph_view       = _load("graph_view.js")
     panel_components = _load("panel_components.js")  # ADR-128: must precede media_player + bani_flow
     media_player     = _load("media_player.js")
-    sruti_bar    = _load("sruti_bar.js")
+    # ADR-131 R3: sruti_bar.js retired — drone tonic now lives as a permanent
+    # 12-sector pie inside raga_wheel.js (no separate widget script needed).
     timeline     = _load("timeline_view.js")
     raga_wheel   = _load("raga_wheel.js")
     bani_flow    = _load("bani_flow.js")
@@ -276,7 +277,8 @@ def render_html(
     # ── Assemble <script> block ───────────────────────────────────────────────
     # theme.js MUST be first — it defines the THEME global used by all other scripts.
     # panel_components.js MUST precede media_player.js + bani_flow.js (ADR-128).
-    # sruti_bar.js MUST come after media_player.js (needs openPlayer/closePlayer).
+    # raga_wheel.js renders the sruti pie at the wheel centre (ADR-131 R3) and
+    #   needs openPlayer/closePlayer from media_player.js — so it loads after.
     # entry_forms.js MUST come after media_player.js (needs wireDrag/nextSpawnPosition/topZ)
     # and after data_js (needs graphData global).
     script_block = "\n".join([
@@ -286,7 +288,6 @@ def render_html(
         graph_view,
         panel_components,  # ← ADR-128: shared panel constructors (before media_player/bani_flow)
         media_player,
-        sruti_bar,     # ← after media_player: needs openPlayer/closePlayer
         timeline,
         raga_wheel,
         bani_flow,
