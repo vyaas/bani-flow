@@ -621,3 +621,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: graph-architect]
 - 2026-05-11: ADR-127 vocabulary chips: the `.chip-section-hdr` modifier must be wrapped in a `.rec-section-hdr-label-wrap` (inline-flex) when placed inside a `justify-content: space-between` flex row — otherwise individual chip and count nodes become separate flex children and space-between distributes them to opposite ends; always wrap chip + adjacent text nodes in a single span container.
 [AGENTS: carnatic-coder]
+- 2026-05-11: ADR-129/130 chrome retirement: the top header bar and bottom desktop-panel-bar are visual frames around an exploration canvas — both are removable because every control they host is either a self-sufficient widget (title, view selector, sruti) or a toggle/pin pair that collapses into one tri-state button; bundle button changes from always-visible-dim to dim-when-empty bright-when-ready as the user's loop-exit signal (ADR-085).
+[AGENTS: graph-architect]
