@@ -1367,7 +1367,7 @@ window.drawRagaWheel = function() {
     const N_SRUTI = tanpuraData.length;        // 12
     const SECT_DEG = 360 / N_SRUTI;
     const lblFontSize = Math.max(7, minDim * 0.012);
-    const lblR = R_SRUTI * 0.68;               // mid-radius for label placement
+    const lblR = R_SRUTI * 0.82;               // pushed toward edge — more arc width at larger radius
 
     // ADR-132: piano-key palette mapped to Gruvbox Hard Dark primitives.
     // White keys (natural notes) → fg #ebdbb2 (warm cream); text: bg_h #1d2021
@@ -1478,7 +1478,22 @@ window.drawRagaWheel = function() {
         'data-ring': 'sruti-label',
         'data-sruti-idx': String(idx),
       });
-      lbl.textContent = entry.note;
+      // Render accidentals (e.g. "C#") with the letter at full size and the
+      // "#" as a smaller superscript tspan to keep the label inside its slice.
+      if (entry.note.includes('#')) {
+        const letter = svgEl('tspan', {});
+        letter.textContent = entry.note.replace('#', '');
+        const sharp = svgEl('tspan', {
+          'font-size': Math.round(lblFontSize * 0.62) + 'px',
+          'dy': '-0.38em',
+          'dx': '0.06em',
+        });
+        sharp.textContent = '#';
+        lbl.appendChild(letter);
+        lbl.appendChild(sharp);
+      } else {
+        lbl.textContent = entry.note;
+      }
       vp.appendChild(lbl);
     });
   }
