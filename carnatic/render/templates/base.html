@@ -3006,6 +3006,11 @@
     #filter-toggle-btn {
       display: none;
     }
+    /* Ensure WDP never spawns behind the fixed top-chrome on mobile */
+    #wheel-detail-panel {
+      top: var(--chrome-top);
+      max-height: calc(100% - var(--chrome-top) - var(--chrome-bottom));
+    }
   }
 
   /* ── ADR-036: compact view selector — short labels hidden on desktop ── */
