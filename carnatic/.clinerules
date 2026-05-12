@@ -613,5 +613,7 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: librarian]
 - 2026-05-11: ADR-126 proposes a swara-first chromatic palette where the 12 swara variants are the primitive colours and every other ring (cakra wedge, ri-ga arc, da-ni cell, mela slot) is a derived spectral mix; the current `THEME.cakra` becomes a derivation, not a primitive, so all visual hierarchy aligns with the musical hierarchy of ADR-122 / ADR-123.
 [AGENTS: graph-architect]
+- 2026-05-11: ADR-126 implementation: ri-ga arcs (R₃) and da-ni cells (R₄) require a `<g>` wrapper to carry `data-ring`/`data-orig-opacity` for the light-up selectors, with two inner `<path>` elements (pointer-events:none) for the split swara colours and one transparent hit-target `<path>` (pointer-events:all) on top — setting opacity on the group correctly dims/restores both halves together without double-counting; mela slot text flipped from THEME.bgDeep (dark, for inverse-video on bright fill) to THEME.fg (cream, for legibility on the new neutral bgDeep fill).
+[AGENTS: carnatic-coder]
 - 2026-05-11: ADR-126 revised before acceptance — spectral RGB mixing rejected; saturated gruvbox primitives blend to muddy mid-tones that destroy raga vibrancy and reduce mela-number legibility on the outer ring; cakra wedge and mela slot are now neutral surfaces (THEME.bgPanel / THEME.bgDeep), swara cells stay at full saturation as the only chromatic surfaces, and the light-up gesture is the chromatic moment that the mind's eye composes into a raga-colour.
 [AGENTS: graph-architect]

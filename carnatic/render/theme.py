@@ -162,13 +162,29 @@ ERA_FONT_SIZES = {
     "contemporary":   11,
 }
 
-# ── Level 2: Cakra colours (raga wheel sector fills) ──────────────────────────
-# Hacker aesthetic: full bright gruvbox spectrum — vivid neon against hard-dark canvas.
-# Warm-to-cool cycle; śuddha hemisphere (1–6) glows warm, prati hemisphere (7–12) cool.
-CAKRA_COLORS = {
-    1:  _P["yellow_bright"],   2:  _P["orange_bright"],  3:  _P["red_bright"],   4:  _P["purple_bright"],
-    5:  _P["green_bright"],    6:  _P["aqua_bright"],    7:  _P["blue_bright"],  8:  _P["blue"],
-    9:  _P["aqua"],            10: _P["green"],          11: _P["purple"],       12: _P["yellow"],
+# ── Level 2: Swara colours (raga wheel decoding rings) ────────────────────────────────────────
+# ADR-126: hue = family (R/G/D/N walks gruvbox warm→cool); brightness = variant.
+# CAKRA_COLORS is retired — cakra ring is now a neutral structural band.
+SWARA_COLORS = {
+    # Rishabha (red/orange family)
+    "R1": _P["red"],            # #cc241d  śuddha
+    "R2": _P["orange"],         # #d65d0e  catuśruti
+    "R3": _P["orange_bright"],  # #fe8019  ṣaṭśruti
+    # Gandhara (yellow/green family)
+    "G1": _P["green"],          # #98971a  śuddha
+    "G2": _P["green_bright"],   # #b8bb26  sādhāraṇa
+    "G3": _P["yellow_bright"],  # #fabd2f  antara
+    # Madhyama (centre disk only)
+    "M1": _P["yellow"],         # #d79921  śuddha (warm) — right half
+    "M2": _P["aqua"],           # #689d6a  prati  (cool) — left half
+    # Dhaivata (aqua/blue family)
+    "D1": _P["aqua_bright"],    # #8ec07c  śuddha
+    "D2": _P["blue"],           # #458588  catuśruti
+    "D3": _P["blue_bright"],    # #83a598  ṣaṭśruti
+    # Nishada (purple family)
+    "N1": _P["purple"],         # #b16286  śuddha
+    "N2": _P["purple_bright"],  # #d3869b  kaiśika
+    "N3": _P["fg2"],            # #bdae93  kākalī (warm-pale — subject to first-render review)
 }
 
 
