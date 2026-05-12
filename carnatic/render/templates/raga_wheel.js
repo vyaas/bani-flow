@@ -658,8 +658,8 @@ function _lightUpSpineForMela(M) {
   if (!svg) return;
   const t = _melaToTuple(M);
 
-  // Dim all ring cells to near-zero
-  svg.querySelectorAll('[data-ring]').forEach(el => {
+  // Dim all ring cells to near-zero — exclude sruti pie (independent of bani filter)
+  svg.querySelectorAll('[data-ring]:not([data-ring="sruti"]):not([data-ring="sruti-label"])').forEach(el => {
     el.setAttribute('opacity', '0.08');
   });
   // Dim mela arc slots — scale origOp proportionally so live/empty hierarchy is preserved
@@ -720,8 +720,8 @@ function _lightUpMelas(melaNumbers, strokeHint) {
   const svg = document.getElementById('raga-wheel');
   if (!svg) return;
 
-  // Dim all ring cells
-  svg.querySelectorAll('[data-ring]').forEach(el => el.setAttribute('opacity', '0.08'));
+  // Dim all ring cells — exclude sruti pie (independent of bani filter)
+  svg.querySelectorAll('[data-ring]:not([data-ring="sruti"]):not([data-ring="sruti-label"])').forEach(el => el.setAttribute('opacity', '0.08'));
 
   // Light up spine cells (madhyama, cakra, ri-ga, da-ni) for every lit mela
   for (const M of melaNumbers) {
@@ -799,8 +799,8 @@ function _clearWheelLightUp() {
   const svg = document.getElementById('raga-wheel');
   if (!svg) return;
 
-  // Restore ring cells
-  svg.querySelectorAll('[data-ring]').forEach(el => {
+  // Restore ring cells — exclude sruti pie (manages its own active/inactive state)
+  svg.querySelectorAll('[data-ring]:not([data-ring="sruti"]):not([data-ring="sruti-label"])').forEach(el => {
     const orig = el.getAttribute('data-orig-opacity');
     if (orig) el.setAttribute('opacity', orig);
   });
@@ -1374,24 +1374,34 @@ window.drawRagaWheel = function() {
     function _srutiFill(idx, active) {
       const hue = Math.round((idx * 360) / N_SRUTI);
       return active
-        ? `hsl(${hue}, 62%, 48%)`              // bright when active
-        : `hsl(${hue}, 28%, 22%)`;             // muted resting
+        ? `hsl(${hue}, 82%, 58%)`              // bright + saturated when active
+        : `hsl(${hue}, 42%, 32%)`;             // visible-but-muted resting
     }
 
     // RagaWheel._sruti = persistent state across redraws + view switches.
     if (!RagaWheel._sruti) RagaWheel._sruti = { activeIdx: null };
     const _activeIdx = RagaWheel._sruti.activeIdx;
 
-    function _stopSruti() {
+    // Exposed on RagaWheel so the media player's close button can reset the ring
+    // without re-entering closePlayer (which would loop back here).
+    RagaWheel._clearSrutiRing = function() {
       RagaWheel._sruti.activeIdx = null;
       try { localStorage.removeItem('sruti.tonic'); } catch (e) { /* ignore */ }
-      if (typeof closePlayer === 'function') closePlayer('sruti');
-      // Re-paint all sectors as inactive
       vp.querySelectorAll('path[data-ring="sruti"]').forEach((p) => {
         const i = parseInt(p.getAttribute('data-sruti-idx'), 10);
         p.setAttribute('fill', _srutiFill(i, false));
         p.removeAttribute('stroke');
       });
+      // Also repaint labels
+      vp.querySelectorAll('text[data-ring="sruti-label"]').forEach((t) => {
+        t.setAttribute('fill', THEME.fgDim || '#a89984');
+        t.setAttribute('font-weight', 'normal');
+      });
+    };
+
+    function _stopSruti() {
+      RagaWheel._clearSrutiRing();
+      if (typeof closePlayer === 'function') closePlayer('sruti');
     }
 
     function _startSruti(idx, entry, sectorPathEl) {

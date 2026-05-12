@@ -3370,7 +3370,30 @@
     }
     .media-player.full-mobile .mp-mini-strip { display: none; }
     .media-player.full-mobile .mp-full-handle { display: flex; flex-shrink: 0; }
-    .media-player.full-mobile .mp-bar { flex-shrink: 0; }
+    .media-player.full-mobile .mp-bar {
+      flex-shrink: 0;
+      cursor: pointer; /* hint: tap bar to minimise */
+    }
+    .media-player.full-mobile .mp-title {
+      font-size: 1.15rem; font-weight: 700;
+    }
+    .media-player.full-mobile .mp-close {
+      min-width: 44px; min-height: 44px;
+      font-size: 1.25rem;
+    }
+    /* Minimise button — hidden on desktop, shown in full-mobile bar */
+    .mp-minimize { display: none; }
+    .media-player.full-mobile .mp-minimize {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 44px; min-height: 44px;
+      font-size: 1.4rem; line-height: 1;
+      color: var(--accent);
+      background: none; border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.1s;
+    }
+    .media-player.full-mobile .mp-minimize:hover { opacity: 0.75; }
     /* ADR-051: video fills remaining height; override JS-set padding-top */
     .media-player.full-mobile .mp-video-wrap {
       flex: 1;

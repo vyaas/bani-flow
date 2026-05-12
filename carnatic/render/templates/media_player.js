@@ -2323,6 +2323,13 @@ function _wireMobilePlayerEvents(mp) {
   }, { passive: true });
   mp.handle.addEventListener('click', () => _collapseMobilePlayer());
 
+  // Full mode bar: tap anywhere on the bar to collapse (except dedicated buttons)
+  mp.bar.addEventListener('click', e => {
+    const isBtn = e.target.closest('.mp-close, .mp-minimize, .mp-tracklist-toggle');
+    if (isBtn) return;
+    _collapseMobilePlayer();
+  });
+
   // Mini strip: swipe left/right → track switching
   let stripTouchX = null;
   mp.strip.addEventListener('touchstart', e => {
@@ -2377,6 +2384,22 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
       e.stopPropagation();
       _closeMobilePlayer();
     });
+  }
+
+  // ── Mobile: inject minimize (⌄) button before close ─────────────────────
+  // Gives a clear affordance to collapse to mini strip without stopping playback.
+  const existingMinBtn = mp.bar.querySelector('.mp-minimize');
+  if (!existingMinBtn && barClose) {
+    const minBtn = document.createElement('button');
+    minBtn.className = 'mp-minimize';
+    minBtn.title = 'Minimise';
+    minBtn.setAttribute('aria-label', 'Minimise player');
+    minBtn.textContent = '\u2304';   // ⌄ downward chevron
+    minBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      _collapseMobilePlayer();
+    });
+    barClose.parentNode.insertBefore(minBtn, barClose);
   }
 
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
@@ -2517,6 +2540,10 @@ function _closeMobilePlayer() {
 
   if (mp.iframe) mp.iframe.src = '';
   mp.vid = null;
+  // Reset sruti ring highlight if a tanpura drone was playing
+  if (typeof RagaWheel !== 'undefined' && typeof RagaWheel._clearSrutiRing === 'function') {
+    RagaWheel._clearSrutiRing();
+  }
   // ADR-043: hide player + restore normal bottom offset
   mp.el.classList.remove('full-mobile');
   mp.el.style.display = 'none';
