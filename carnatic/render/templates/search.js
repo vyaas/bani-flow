@@ -90,26 +90,43 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
   function getItems(q) {
     const ql = normText(q);
     const results = [];
-    cy.nodes().forEach(n => {
-      const d = n.data();
-      if (normText(d.label).includes(ql) || d.id.toLowerCase().includes(ql)) {
-        results.push({
-          id:           d.id,
-          primary:      d.label,
-          primaryColor: d.color,
-          secondary:    [d.lifespan, d.era_label, d.instrument, d.bani]
-                          .filter(Boolean).join(' \u00b7 '),
-        });
+    const TIER_PREFIX = 0, TIER_WORD = 1, TIER_SUBSTR = 2;
+    // Use the full `elements` array (not cy.nodes()) so isolated musicians
+    // — those with no lineage edges — are searchable too.
+    elements.filter(e => e.data.source === undefined).forEach(n => {
+      const d = n.data;
+      const labelNorm = normText(d.label);
+      const idLower   = d.id.toLowerCase();
+      let tier = null;
+      if (labelNorm.startsWith(ql) || idLower.startsWith(ql)) {
+        tier = TIER_PREFIX;
+      } else if (labelNorm.split(/\s+/).some(w => w.startsWith(ql))) {
+        tier = TIER_WORD;
+      } else if (labelNorm.includes(ql) || idLower.includes(ql)) {
+        tier = TIER_SUBSTR;
       }
+      if (tier === null) return;
+      results.push({
+        id:           d.id,
+        tier,
+        primary:      d.label,
+        primaryColor: d.color,
+        secondary:    [d.lifespan, d.era_label, d.instrument, d.bani]
+                        .filter(Boolean).join(' \u00b7 '),
+      });
     });
-    results.sort((a, b) => a.primary.localeCompare(b.primary));
-    return results.slice(0, 8);
+    results.sort((a, b) => a.tier !== b.tier ? a.tier - b.tier : a.primary.localeCompare(b.primary));
+    return results.slice(0, 10);
   }
 
   makeDropdown(input, dropdown, getItems, item => {
     const node = cy.getElementById(item.id);
-    if (!node || !node.length) return;
-    selectNode(node);
+    if (node && node.length) {
+      selectNode(node);
+    } else {
+      // Isolated musician (no lineage edges) — not in cy, use transit path.
+      _openMusicianPanelForTransit(item.id);
+    }
   });
 })();
 
