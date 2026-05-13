@@ -719,10 +719,17 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const ytVidFilter = type === 'yt' ? id.split('::')[0] : null;
     matchedNodeIds.forEach(nid => {
       const n = cy.getElementById(nid);
-      // ADR-138: transit nodes are culled from _cyElements; cy.getElementById()
-      // returns an empty Collection (truthy!) for them — guard with .length check.
-      if (!n || !n.length) return;
-      const d = n.data();
+      // ADR-138: transit/isolated nodes are culled from _cyElements; cy.getElementById()
+      // returns an empty Collection (truthy!) for them — fall back to raw elements array
+      // so musicians with no lineage edges still appear in raga/comp panels.
+      let d;
+      if (n && n.length) {
+        d = n.data();
+      } else {
+        const rawEl = elements.find(function(e) { return !e.data.source && e.data.id === nid; });
+        if (!rawEl) return;
+        d = rawEl.data;
+      }
       if (!d || !d.tracks) return;
       d.tracks.forEach(t => {
         let matches;
@@ -753,6 +760,10 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             if (hostNode && hostNode.length) {
               primaryNid = t.host_id;
               primaryD   = hostNode.data();
+            } else {
+              // Host is also a transit node — fall back to raw elements
+              const rawHost = elements.find(function(e) { return !e.data.source && e.data.id === t.host_id; });
+              if (rawHost) { primaryNid = t.host_id; primaryD = rawHost.data; }
             }
           }
           rawRows.push({
