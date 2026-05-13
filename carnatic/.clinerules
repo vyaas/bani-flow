@@ -649,3 +649,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-12: When merging two flexbox rows into one using `display: contents` on the row divs, any `pointer-events: auto` on those divs becomes a no-op — all interactive children must carry `pointer-events: auto` explicitly; this applies to the button, the wrap, the list panel, and each list item independently.
 - 2026-05-12: Cytoscape does not support CSS `var()` in style map values — always use literal colour values; the `border-color: var(--her-chip-accent, #8fb4d8)` on Hindustani nodes was silently ignored until now.
 [AGENTS: carnatic-coder]
+- 2026-05-13: ADR-137: `gurusOf` and `shishyasOf` are pure O(n) scans over the raw `elements` array (not the cy graph) so transit musicians appear correctly in both sections; `buildLineagePanel` must clear `panel.innerHTML` before re-populating to avoid stale chips when navigating between musicians via the lineage chips themselves.
+[AGENTS: carnatic-coder]
+- 2026-05-13: ADR-137 popup redesign: the lineage popup IIFE must capture the `lineage-popup` div at init time (getElementById at script execution) not inside each onclick handler — the div exists before the IIFE runs since it sits in the static HTML; `chip-dimmed` opacity on `.lineage-chip` must be paired with a higher-opacity `:hover` state so dimmed chips are still discoverable on hover.
+[AGENTS: carnatic-coder]

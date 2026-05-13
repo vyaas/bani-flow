@@ -857,6 +857,185 @@ function panelForward() {
 document.getElementById('panel-back-btn').addEventListener('click', panelBack);
 document.getElementById('panel-fwd-btn').addEventListener('click', panelForward);
 
+// ── ADR-137: Lineage traversal helpers ───────────────────────────────────────
+// Pure functions over the raw `elements` array (includes transit musicians).
+
+// Returns array of musician data objects who taught nodeId (gurus).
+function gurusOf(nodeId) {
+  var guruIds = [];
+  elements.forEach(function (el) {
+    if (el.data.source !== undefined && el.data.target === nodeId) {
+      guruIds.push(el.data.source);
+    }
+  });
+  return guruIds.map(function (id) {
+    var node = elements.find(function (e) { return e.data.source === undefined && e.data.id === id; });
+    return node ? node.data : null;
+  }).filter(Boolean);
+}
+
+// Returns array of musician data objects taught by nodeId (shishyas).
+function shishyasOf(nodeId) {
+  var shishyaIds = [];
+  elements.forEach(function (el) {
+    if (el.data.source !== undefined && el.data.source === nodeId) {
+      shishyaIds.push(el.data.target);
+    }
+  });
+  return shishyaIds.map(function (id) {
+    var node = elements.find(function (e) { return e.data.source === undefined && e.data.id === id; });
+    return node ? node.data : null;
+  }).filter(Boolean);
+}
+
+// Builds a single era-tinted lineage chip for musician data `d`.
+// Dims chips for musicians with no content (recordings/lecdems) per ADR-137/138.
+function _makeLineageChip(d) {
+  var tint = THEME.eraTintCss(d.era || null);
+  var chip = document.createElement('span');
+  chip.className = 'lineage-chip';
+  chip.style.setProperty('--chip-era-bg', tint.bg);
+  chip.style.setProperty('--chip-era-border', tint.border);
+  if (d.is_hindustani) {
+    chip.classList.add('hindustani-musician');
+    chip.style.setProperty('--chip-era-border', 'var(--her-chip-accent, #8fb4d8)');
+  }
+  // Dim if not content-bearing (no recordings / lecdems)
+  var isContentBearing = window._contentBearingIds && window._contentBearingIds.has(d.id);
+  if (!isContentBearing) chip.classList.add('chip-dimmed');
+
+  if (d.instrument && typeof makeInstrBadge === 'function') {
+    chip.appendChild(makeInstrBadge(d.instrument));
+  }
+  chip.appendChild(document.createTextNode(d.label || d.id));
+  chip.title = (d.label || d.id) +
+               (d.instrument ? ' \u00b7 ' + d.instrument : '') +
+               (d.lifespan   ? ' \u00b7 ' + d.lifespan   : '') +
+               (!isContentBearing ? ' \u00b7 no recordings' : '');
+
+  chip.addEventListener('click', function (e) {
+    e.stopPropagation();
+    // Close the popup when navigating to another musician
+    var pop = document.getElementById('lineage-popup');
+    if (pop) pop.style.display = 'none';
+    chip.classList.add('chip-tapped');
+    setTimeout(function () { chip.classList.remove('chip-tapped'); }, 200);
+    var n = cy.getElementById(d.id);
+    if (n && n.length) {
+      if (typeof orientToNode === 'function' &&
+          typeof currentView !== 'undefined' && currentView === 'graph') {
+        orientToNode(d.id);
+      } else {
+        selectNode(n);
+      }
+    } else {
+      _openMusicianPanelForTransit(d.id);
+    }
+    if (typeof window.setPanelState === 'function') {
+      setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
+    }
+  });
+  return chip;
+}
+
+// ── ADR-137: Lineage popup system ─────────────────────────────────────────────
+// Replaces the full panel sections with a compact ⇅ N button in the header
+// chip row. Clicking opens a floating popup with Gurus and Shishyas chip rows.
+(function () {
+  var _pop = document.getElementById('lineage-popup');
+  if (!_pop) return;
+
+  // Sort musicians: gurus oldest first, shishyas youngest first.
+  function _sorted(musicians, role) {
+    return musicians.slice().sort(function (a, b) {
+      var hasA = a.born != null, hasB = b.born != null;
+      if (hasA && hasB) return role === 'guru' ? a.born - b.born : b.born - a.born;
+      if (hasA) return -1;
+      if (hasB) return 1;
+      return (a.label || '').localeCompare(b.label || '');
+    });
+  }
+
+  function _populatePopup(gurus, shishyas) {
+    _pop.innerHTML = '';
+
+    function addSection(glyph, label, musicians, role) {
+      var hdr = document.createElement('div');
+      hdr.className = 'lineage-pop-hdr';
+      hdr.textContent = glyph + '\u00a0' + label + ' (' + musicians.length + ')';
+      _pop.appendChild(hdr);
+
+      var sorted = _sorted(musicians, role);
+      var row = document.createElement('div');
+      row.className = 'lineage-chip-row';
+      if (sorted.length === 0) {
+        var none = document.createElement('span');
+        none.className = 'lineage-none-label';
+        none.textContent = 'None recorded';
+        row.appendChild(none);
+      } else {
+        sorted.forEach(function (d) { row.appendChild(_makeLineageChip(d)); });
+      }
+      _pop.appendChild(row);
+    }
+
+    addSection('\u2191', 'Gurus',    gurus,    'guru');    // ↑
+    var sep = document.createElement('hr');
+    sep.className = 'lineage-pop-sep';
+    _pop.appendChild(sep);
+    addSection('\u2193', 'Shishyas', shishyas, 'shishya'); // ↓
+  }
+
+  // Close on outside click (capture phase, same as transit popover pattern).
+  document.addEventListener('click', function (e) {
+    var btn = document.getElementById('lineage-popup-btn');
+    if (!_pop.contains(e.target) && e.target !== btn) {
+      _pop.style.display = 'none';
+    }
+  }, true);
+
+  // Exposed: update button label + attach click handler for current musician.
+  window._setupLineagePopupBtn = function (nodeId) {
+    var btn = document.getElementById('lineage-popup-btn');
+    if (!btn) return;
+    var gurus    = gurusOf(nodeId);
+    var shishyas = shishyasOf(nodeId);
+    var total = gurus.length + shishyas.length;
+    if (total === 0) {
+      btn.style.display = 'none';
+      _pop.style.display = 'none';
+      return;
+    }
+    btn.textContent = '\u21c5\u00a0' + total; // ⇅ N
+    btn.title = gurus.length + ' guru' + (gurus.length !== 1 ? 's' : '') +
+                ', ' + shishyas.length + ' shishya' + (shishyas.length !== 1 ? 's' : '');
+    btn.style.display = 'inline-flex';
+    btn.onclick = function (e) {
+      e.stopPropagation();
+      if (_pop.style.display !== 'none') { _pop.style.display = 'none'; return; }
+      _populatePopup(gurus, shishyas);
+      // Position below the button, aligned to its left edge, within viewport.
+      _pop.style.display = 'block';
+      var rect = btn.getBoundingClientRect();
+      var pw = _pop.offsetWidth  || 200;
+      var ph = _pop.offsetHeight || 100;
+      var left = rect.left;
+      var top  = rect.bottom + 5;
+      if (left + pw > window.innerWidth)  left = window.innerWidth  - pw - 8;
+      if (top  + ph > window.innerHeight) top  = rect.top - ph - 5;
+      _pop.style.left = Math.max(4, left) + 'px';
+      _pop.style.top  = Math.max(4, top)  + 'px';
+    };
+  };
+}());
+
+// Populates #lineage-panel with Gurus and Shishyas sections for nodeId.
+function buildLineagePanel(nodeId) {
+  if (typeof window._setupLineagePopupBtn === 'function') {
+    window._setupLineagePopupBtn(nodeId);
+  }
+}
+
 // ── selectNode — shared selection logic (sidebar + graph highlight) ───────────
 function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   const d = node.data();
@@ -930,6 +1109,8 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   recFilter.dispatchEvent(new Event('input'));
 
   buildRecordingsList(d.id, d);
+  // ADR-137: populate Gurus / Shishyas lineage sections
+  buildLineagePanel(d.id);
 
   cy.elements().addClass('faded');
   node.removeClass('faded');
@@ -1024,6 +1205,8 @@ function _openMusicianPanelForTransit(transitId) {
   recFilter.dispatchEvent(new Event('input'));
 
   buildRecordingsList(transitId, d);
+  // ADR-137: populate Gurus / Shishyas lineage sections
+  buildLineagePanel(transitId);
 
   if (typeof window.setPanelState === 'function') window.setPanelState('MUSICIAN');
 }
@@ -1486,6 +1669,10 @@ cy.on('tap', evt => {
   document.getElementById('rec-filter').style.display       = 'none';
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';
+  var _lgBgTap = document.getElementById('lineage-popup-btn');
+  if (_lgBgTap) { _lgBgTap.style.display = 'none'; _lgBgTap.onclick = null; }
+  var _lgPopBgTap = document.getElementById('lineage-popup');
+  if (_lgPopBgTap) _lgPopBgTap.style.display = 'none';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
   const _bgTapEditChip = document.getElementById('node-edit-chip');
@@ -1516,6 +1703,10 @@ window.clearMusicianPanel = function () {
   document.getElementById('rec-filter').style.display       = 'none';
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';
+  var _lgReset = document.getElementById('lineage-popup-btn');
+  if (_lgReset) { _lgReset.style.display = 'none'; _lgReset.onclick = null; }
+  var _lgPopReset = document.getElementById('lineage-popup');
+  if (_lgPopReset) _lgPopReset.style.display = 'none';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
   const _clearEditChip = document.getElementById('node-edit-chip');

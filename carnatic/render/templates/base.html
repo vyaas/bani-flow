@@ -1790,6 +1790,86 @@
     text-decoration: underline;
   }
 
+  /* ── ADR-137: Lineage chip — era-tinted, compact, lives inside popup ────── */
+  .lineage-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: var(--chip-padding-secondary);
+    border: var(--chip-border-width, 1px) solid var(--chip-era-border);
+    border-left-width: 3px;
+    background: var(--chip-era-bg);
+    color: var(--fg);
+    font-size: var(--chip-size-secondary);
+    font-weight: bold;
+    border-radius: var(--chip-border-radius, 4px);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: filter 0.12s, background 0.12s;
+    margin: 2px 2px 2px 0;
+  }
+  .lineage-chip:hover {
+    filter: brightness(1.15);
+    outline: 1px solid currentColor;
+    outline-offset: 1px;
+  }
+  .lineage-chip:active,
+  .lineage-chip.chip-tapped { filter: brightness(1.35); text-decoration: underline; }
+  /* Dimmed = no content (recordings / lecdems). Still clickable for bio. */
+  .lineage-chip.chip-dimmed { opacity: 0.38; }
+  .lineage-chip.chip-dimmed:hover { opacity: 0.65; filter: none; }
+
+  /* Lineage chip row + helper text */
+  .lineage-chip-row { display: flex; flex-wrap: wrap; gap: 2px; padding: 2px 0; }
+  .lineage-none-label { font-size: 0.68rem; color: var(--fg-muted); font-style: italic; display: block; }
+
+  /* ── ADR-137: Lineage popup trigger button (inline in #node-header-chip-row) */
+  .lineage-popup-btn {
+    display: inline-flex; align-items: center;
+    padding: 1px 6px;
+    background: transparent;
+    border: 1px solid var(--border-strong, #555);
+    border-radius: var(--chip-border-radius, 4px);
+    color: var(--fg-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    transition: color 0.12s, border-color 0.12s;
+    white-space: nowrap;
+  }
+  .lineage-popup-btn:hover { color: var(--fg); border-color: var(--fg-muted); }
+  .lineage-popup-btn:active { filter: brightness(1.25); }
+
+  /* ── ADR-137: Lineage floating popup ─────────────────────────────────────── */
+  .lineage-popup {
+    position: fixed; z-index: 9998;
+    background: var(--bg-panel, #1e1e1e);
+    border: 1px solid var(--border-strong, #444);
+    border-radius: 6px;
+    padding: 6px 10px 8px;
+    max-width: 280px;
+    min-width: 140px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    font-size: 0.78rem;
+  }
+  .lineage-pop-hdr {
+    font-size: 0.60rem;
+    font-weight: 700;
+    color: var(--fg-sub, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 3px;
+    margin-top: 4px;
+  }
+  .lineage-pop-hdr:first-child { margin-top: 0; }
+  .lineage-pop-sep {
+    border: none;
+    border-top: 1px solid var(--border, #333);
+    margin: 5px 0;
+  }
+
   /* ── ADR-113: Hindustani Equivalent Raga (HER) chip ──────────────────────
      Cool slate-blue background; WCAG AA (#fff on #5a7da3 ≈ 4.7:1 ✓).      */
   .her-chip {
@@ -4169,6 +4249,8 @@
           <div id="node-header-chip-row">
             <span id="node-shape-icon" class="node-shape-icon ellipse" style="display:none"></span>
             <span id="node-name">&mdash;</span>
+            <!-- ADR-137: lineage popup trigger -->
+            <button id="lineage-popup-btn" class="lineage-popup-btn" style="display:none" title="Gurus &amp; Shishyas">&#8645;</button>
           </div>
           <!-- Row 2: lifespan + encircled edit + encircled wiki (ADR-128 D2) -->
           <div id="node-header-affordances" class="panel-header-affordances" style="display:none">
@@ -4219,6 +4301,9 @@
         title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
 <button id="right-panel-toggle" title="Open / close Musician panel"
         aria-pressed="false">&#9776; Musician</button>
+
+<!-- ADR-137: Lineage floating popup (populated by _setupLineagePopupBtn) -->
+<div id="lineage-popup" class="lineage-popup" style="display:none"></div>
 
 <!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
 <div id="left-drawer-scrim" aria-hidden="true"></div>

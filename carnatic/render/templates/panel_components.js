@@ -130,7 +130,7 @@ function buildSection({ headerChip, headerSuffixText, count, onAdd, addTitle, de
   // ADR-128 D9: entire header row toggles collapse — chevron is just an indicator.
   // Clicks originating from interactive children (chips, the + button, links) are ignored.
   headerEl.addEventListener('click', function (e) {
-    if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
+    if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip, .lineage-chip')) return;
     bodyEl.hidden = !bodyEl.hidden;
     chevron.textContent = bodyEl.hidden ? '\u25b6' : '\u25bc';
   });
