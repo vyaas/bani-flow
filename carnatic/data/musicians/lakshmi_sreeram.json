@@ -478,7 +478,9 @@
       "kind": "lecdem",
       "subjects": {
         "raga_ids": [],
-        "composition_ids": [],
+        "composition_ids": [
+          "vazhi_maraitirukkude"
+        ],
         "musician_ids": []
       }
     },
