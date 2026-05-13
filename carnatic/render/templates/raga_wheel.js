@@ -1317,6 +1317,10 @@ window.drawRagaWheel = function() {
   // Ri-ga and da-ni pair subscript labels (upper-triangular enumeration order)
   const _RIGA_LABELS = ['R\u2081G\u2081','R\u2081G\u2082','R\u2081G\u2083','R\u2082G\u2082','R\u2082G\u2083','R\u2083G\u2083'];
   const _DANI_LABELS = ['D\u2081N\u2081','D\u2081N\u2082','D\u2081N\u2083','D\u2082N\u2082','D\u2082N\u2083','D\u2083N\u2083'];
+  // Left-half reversed labels: anti-flip rotation (midDeg+90) inverts reading direction,
+  // so swap the inner/outer swara in the label to match the colored bands.
+  const _RIGA_LABELS_REV = ['G\u2081R\u2081','G\u2082R\u2081','G\u2083R\u2081','G\u2082R\u2082','G\u2083R\u2082','G\u2083R\u2083'];
+  const _DANI_LABELS_REV = ['N\u2081D\u2081','N\u2082D\u2081','N\u2083D\u2081','N\u2082D\u2082','N\u2083D\u2082','N\u2083D\u2083'];
 
   // Ring 0 — Madhyama centre annulus: right half = śuddha (M₁, melas 1–36), left = prati (M₂, melas 37–72)
   // ADR-126: M₁ = THEME.swara.M1 (yellow #d79921, warm), M₂ = THEME.swara.M2 (aqua #689d6a, cool).
@@ -1599,7 +1603,7 @@ window.drawRagaWheel = function() {
       'font-weight': 'bold', 'pointer-events': 'none',
       transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
     });
-    rlbl.textContent = _RIGA_LABELS[rigaIdx];
+    rlbl.textContent = midDeg <= 180 ? _RIGA_LABELS[rigaIdx] : _RIGA_LABELS_REV[rigaIdx];
     vp.appendChild(rlbl);
   }
 
@@ -1661,7 +1665,7 @@ window.drawRagaWheel = function() {
         'font-weight': 'bold', 'pointer-events': 'none',
         transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
       });
-      dlbl.textContent = _DANI_LABELS[daniIdx];
+      dlbl.textContent = midDeg <= 180 ? _DANI_LABELS[daniIdx] : _DANI_LABELS_REV[daniIdx];
       vp.appendChild(dlbl);
     }
   }
