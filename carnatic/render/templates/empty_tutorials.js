@@ -763,8 +763,8 @@
       graphBtn.classList.toggle('active', activeView === 'graph');
       ragaBtn.classList.toggle('active', activeView === 'raga');
 
-      switcher.appendChild(graphBtn);
       switcher.appendChild(ragaBtn);
+      switcher.appendChild(graphBtn);
       section.appendChild(switcher);
 
       if (viewSection.graph_note) {
@@ -850,15 +850,15 @@
           row.appendChild(_renderEffectParts(entry.effect_parts));
         } else if (entry.effect_graph && entry.effect_raga) {
           const eff = _el('span', 'pt-effect');
-          const graphLine = _el('span', 'pt-effect-line');
-          graphLine.appendChild(_el('span', 'pt-nowrap', '(Guru-Shishya)'));
-          graphLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_graph)));
-          eff.appendChild(graphLine);
-
           const ragaLine = _el('span', 'pt-effect-line');
           ragaLine.appendChild(_el('span', 'pt-nowrap', '(Mela-Janya)'));
           ragaLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_raga)));
           eff.appendChild(ragaLine);
+
+          const graphLine = _el('span', 'pt-effect-line');
+          graphLine.appendChild(_el('span', 'pt-nowrap', '(Guru-Shishya)'));
+          graphLine.appendChild(document.createTextNode(' \u00b7 ' + _normalizeEffectText(entry.effect_graph)));
+          eff.appendChild(graphLine);
           row.appendChild(eff);
         } else {
           const text = _normalizeEffectText(entry.effect || '');

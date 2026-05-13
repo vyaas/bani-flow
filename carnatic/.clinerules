@@ -635,3 +635,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-12: ADR-133 view-selector reorder: `empty_tutorials.js` already had `ragaBtn` appended before `graphBtn` (the append was correct); only `base.html` required the swap — always verify the current state of the file before applying a "swap" to avoid double-swapping.
 [AGENTS: carnatic-coder]
+- 2026-05-12: ADR-102 Phase 3 + ADR-133 D2: adding the colophon block (schema_version 3→4) required patching `data/help/empty_panels.json` with apply_diff; no write_cli.py command exists for this — use apply_diff for any `help/` JSON not covered by write_cli; the "two organs" paragraph leads with Mela-Janya per ADR-133 D2, with the Gravatar avatar URL resolved from https://gravatar.com/vyaas (hash-based URL, not email-derived).
+[AGENTS: librarian]
