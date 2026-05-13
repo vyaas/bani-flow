@@ -3036,6 +3036,12 @@
     #filter-toggle-btn {
       display: none;
     }
+    /* WDP top stays at 8px: #main padding-top already clears the fixed chrome,
+       so #cy-wrap starts below it and the panel needs no extra offset on mobile. */
+    #wheel-detail-panel {
+      top: 8px;
+      max-height: calc(100% - 8px - var(--chrome-bottom));
+    }
   }
 
   /* ── ADR-036: compact view selector — short labels hidden on desktop ── */
@@ -3242,8 +3248,10 @@
 
     /* ── Main layout: canvas occupies full viewport width ── */
     /* ADR-042: pad bottom so canvas never extends behind the tab bar (56px) */
+    /* Pad top so filter bar / canvas never overlap the fixed help + view-toggle chrome */
     #main {
       position: relative;
+      padding-top: var(--chrome-top);
       padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
     }
     #canvas-wrap {
