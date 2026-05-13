@@ -328,6 +328,20 @@ function buildFilterDropdowns() {
     instrList.appendChild(li);
   });
 
+  // Per-group clear item — shown only when that group has active selections
+  ['era', 'instr'].forEach(prefix => {
+    const list  = document.getElementById(prefix + '-dropdown-list');
+    const group = prefix === 'era' ? 'era' : 'instrument';
+    const sep   = document.createElement('li');
+    sep.className = 'filter-dropdown-item filter-dropdown-clear';
+    sep.id = prefix + '-clear-item';
+    sep.setAttribute('role', 'option');
+    sep.setAttribute('hidden', '');
+    sep.textContent = '\u00d7 Clear';
+    sep.addEventListener('click', () => clearGroupFilter(group));
+    list.appendChild(sep);
+  });
+
   // Close dropdowns on outside click/touch
   document.addEventListener('mousedown', _closeDropdownsOnOutsideClick);
   document.addEventListener('touchstart', _closeDropdownsOnOutsideClick, { passive: true });
@@ -387,6 +401,10 @@ function _updateFilterBtnLabels() {
   if (instrCountEl) instrCountEl.textContent = instrCount > 0 ? '(' + instrCount + ')' : '';
   if (eraBtn)   eraBtn.classList.toggle('filter-active',   eraCount   > 0);
   if (instrBtn) instrBtn.classList.toggle('filter-active', instrCount > 0);
+  const eraClearItem   = document.getElementById('era-clear-item');
+  const instrClearItem = document.getElementById('instr-clear-item');
+  if (eraClearItem)   eraClearItem.hidden   = eraCount   === 0;
+  if (instrClearItem) instrClearItem.hidden = instrCount === 0;
 }
 
 function applyChipFilters() {
@@ -437,14 +455,27 @@ function applyChipFilters() {
   _setLineageEmptyMsg(!anyVisible);
 }
 
+function clearGroupFilter(group) {
+  activeFilters[group].clear();
+  const prefix = group === 'era' ? 'era' : 'instr';
+  const list = document.getElementById(prefix + '-dropdown-list');
+  const btn  = document.getElementById(prefix + '-dropdown-btn');
+  if (list) {
+    list.querySelectorAll('.filter-dropdown-item[aria-selected="true"]')
+        .forEach(i => i.setAttribute('aria-selected', 'false'));
+    list.hidden = true;
+  }
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+  _updateFilterBtnLabels();
+  applyChipFilters();
+}
+
 function clearAllChipFilters() {
   activeFilters.era.clear();
   activeFilters.instrument.clear();
   document.querySelectorAll('.filter-dropdown-item[aria-selected="true"]')
     .forEach(i => i.setAttribute('aria-selected', 'false'));
   cy.elements().removeClass('chip-faded');
-  const clearBtn = document.getElementById('filter-clear-all');
-  if (clearBtn) clearBtn.hidden = true;
   _updateFilterBtnLabels();
   setScopeLabels(false);
   _setLineageEmptyMsg(false);
