@@ -5486,9 +5486,14 @@ function buildFocusedLecdemForm(musicianId) {
 
   bundleBtn.addEventListener('click', () => {
     const lecdem = collectLecdem();
-    if (!lecdem.url) { alert('YouTube URL is required.'); return; }
+    if (!lecdem.url) {
+      const prev = bundleBtn.textContent;
+      bundleBtn.textContent = '⚠ URL required';
+      setTimeout(() => { bundleBtn.textContent = prev; }, 2000);
+      return;
+    }
     addToBundle('musicians', { op: 'append', id: musicianId, array: 'youtube', value: lecdem });
-    alert('Added to bundle.');
+    showGenericSuccess(win, musicianId, 'bundle');
   });
 }
 

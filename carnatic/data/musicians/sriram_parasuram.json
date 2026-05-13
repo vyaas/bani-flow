@@ -227,6 +227,23 @@
           "thanjavur_kalyanaraman"
         ]
       }
+    },
+    {
+      "url": "https://youtu.be/7_x8FeOmg_o",
+      "label": "Sound, Music, and Meaning in MDR's Art",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "reetigowla"
+        ],
+        "composition_ids": [
+          "vatapi_ganapathim",
+          "giripai_nelakona"
+        ],
+        "musician_ids": [
+          "md_ramanathan"
+        ]
+      }
     }
   ]
 }
