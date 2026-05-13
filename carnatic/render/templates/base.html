@@ -172,7 +172,7 @@
   }
 
   /* ── dropdown trigger buttons ── */
-  .filter-dropdown-wrap { position: relative; flex-shrink: 0; }
+  .filter-dropdown-wrap { position: relative; flex-shrink: 0; pointer-events: auto; }
   .filter-dropdown-btn {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 4px 10px; border-radius: 10px;
@@ -180,6 +180,7 @@
     color: var(--fg-dim); font-size: 0.72rem;
     cursor: pointer; user-select: none; white-space: nowrap;
     transition: border-color 0.12s, color 0.12s;
+    pointer-events: auto;
   }
   .filter-dropdown-btn:hover { border-color: var(--fg-sub); color: var(--fg); }
   .filter-dropdown-btn.filter-active {
@@ -197,12 +198,14 @@
     list-style: none; margin: 0;
     z-index: 200;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    pointer-events: auto;
   }
   .filter-dropdown-item {
     display: flex; align-items: center; gap: 8px;
     padding: 6px 12px;
     cursor: pointer; font-size: 0.78rem; color: var(--fg-dim);
     transition: background 0.1s;
+    pointer-events: auto;
   }
   .filter-dropdown-item:hover { background: var(--bg-active); }
   .filter-dropdown-item[aria-selected="true"] { color: var(--fg); }
@@ -1175,23 +1178,21 @@
   .wdp-chip.wdp-comp.wdp-active { background: var(--chip-comp-border); color: var(--bg-deep); font-weight: 600; border-left: 3px solid var(--accent-select); }
   .wdp-chip-count { margin-left: auto; font-size: 0.66rem; opacity: 0.65; flex-shrink: 0; padding-left: 4px; }
 
-  /* ADR-135: layout-controls-float — two-row cluster: row-1 layout-shape, row-2 predicate-filters */
+  /* ADR-135: layout-controls-float — single row, all controls inline */
   #layout-controls-float {
     position: absolute;
     top: calc(var(--chrome-top, 50px) + 4px);
     right: 10px;
     z-index: 70;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
     pointer-events: none;
   }
   .lc-row-layout,
   .lc-row-filters {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    pointer-events: auto;
+    display: contents;  /* children participate directly in the parent flex row */
   }
   /* Dropdown panels open toward the left when anchored top-right */
   #layout-controls-float .filter-dropdown-list {
@@ -1200,13 +1201,15 @@
   }
   .vp-btn {
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 4px 10px; border-radius: 10px;
+    padding: 4px 9px; border-radius: 10px;
     border: 1px solid var(--border-strong); background: var(--bg-panel);
     color: var(--fg-dim); font-size: 0.72rem;
     font-family: inherit;
     cursor: pointer; user-select: none; white-space: nowrap;
     transition: border-color 0.12s, color 0.12s;
+    pointer-events: auto;
   }
+  .vp-btn .vp-icon { font-style: normal; font-size: 0.78rem; line-height: 1; }
   .vp-btn:hover { border-color: var(--fg-sub); color: var(--fg); }
   /* Timeline active state — accent tint, matches .filter-dropdown-btn.filter-active */
   .vp-btn.active {
@@ -3040,9 +3043,11 @@
       min-height: 44px;
       padding: 4px 12px;
     }
-    /* ADR-135: layout-controls-float mobile — rows remain horizontal, cluster stacks vertically */
+    /* ADR-135: layout-controls-float mobile — single row wraps if needed */
     #layout-controls-float {
-      gap: 4px;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     /* ADR-068: dropdown panel full-width on very narrow viewports */
     .filter-dropdown-list {
@@ -4211,15 +4216,11 @@
       <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);touch-action:none;"></svg>
       <!-- ADR-096 Option B: mela→janya→comp detail panel (replaces SVG satellite fans) -->
       <div id="wheel-detail-panel"></div>
-      <!-- ADR-135: layout-controls-float — single top-right cluster, two rows:
-           row 1 (layout-shape): Fit / Re-layout / Timeline
-           row 2 (predicate-filters): Era / Instrument / Clear
-           Hidden entirely when Mela-Janya view is active (D2). -->
+      <!-- ADR-135: layout-controls-float — single row: all layout + filter controls inline -->
       <div id="layout-controls-float">
         <div class="lc-row-layout">
-          <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()">Timeline</button>
-          <button id="btn-fit"      class="vp-btn" title="Fit all nodes into view"      onclick="vpFit()">Fit</button>
-          <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()">Re-layout</button>
+          <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()"><i class="vp-icon">&#128336;</i> Timeline</button>
+          <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()"><i class="vp-icon">&#10227;</i> Re-layout</button>
         </div>
         <div class="lc-row-filters">
           <!-- ADR-068: compact multi-select dropdowns (era + instrument) -->

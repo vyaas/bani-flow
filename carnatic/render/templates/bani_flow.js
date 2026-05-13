@@ -719,8 +719,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const ytVidFilter = type === 'yt' ? id.split('::')[0] : null;
     matchedNodeIds.forEach(nid => {
       const n = cy.getElementById(nid);
-      if (!n) return;
+      // ADR-138: transit nodes are culled from _cyElements; cy.getElementById()
+      // returns an empty Collection (truthy!) for them — guard with .length check.
+      if (!n || !n.length) return;
       const d = n.data();
+      if (!d || !d.tracks) return;
       d.tracks.forEach(t => {
         let matches;
         if (type === 'comp') {

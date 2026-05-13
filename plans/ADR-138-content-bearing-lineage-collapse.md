@@ -1,6 +1,6 @@
 # ADR-138: Content-Bearing Lineage — Collapse Contentless Nodes Into Bulged Transitive Edges
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-05-12
 **Author**: Graph Architect
 **Depends on**: ADR-134 (connected-only Guru-Shishya graph — the predicate this ADR tightens), ADR-013 (single-source-of-truth traversal layer), ADR-077 (YouTube `kind` vocabulary — recital / lecdem / raga_alap / concert / misc)

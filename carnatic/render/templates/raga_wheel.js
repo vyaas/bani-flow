@@ -39,10 +39,9 @@ function _restoreGraphPositions() {
 }
 
 // ── _updateViewportToolbar: show/hide toolbar buttons based on view/layout ────
-// | Button      | graph (graph) | graph (timeline) | raga                  |
-// | btn-fit     | visible       | visible          | visible → wheelFit()  |
-// | btn-relayout| visible       | visible          | hidden                |
-// | btn-timeline| visible, off  | visible, active  | hidden                |
+// | Button      | graph (graph)    | graph (timeline)    | raga   |
+// | btn-relayout| 'Re-layout', on  | 'Fit', on           | hidden |
+// | btn-timeline| visible, off     | visible, active     | hidden |
 function _updateViewportToolbar(view, layout) {
   const btnRelayout = document.getElementById('btn-relayout');
   const btnTimeline = document.getElementById('btn-timeline');
@@ -50,7 +49,19 @@ function _updateViewportToolbar(view, layout) {
     if (btnRelayout) btnRelayout.style.display = 'none';
     if (btnTimeline) btnTimeline.style.display = 'none';
   } else {
-    if (btnRelayout) btnRelayout.style.display = '';
+    if (btnRelayout) {
+      btnRelayout.style.display = '';
+      btnRelayout.disabled = false;
+      // Repurpose the button when timeline is active: act as Fit instead.
+      // Use innerHTML to preserve the icon <i> element.
+      if (layout === 'timeline') {
+        btnRelayout.innerHTML = '<i class="vp-icon">&#10021;</i> Fit';
+        btnRelayout.title = 'Fit all nodes into view';
+      } else {
+        btnRelayout.innerHTML = '<i class="vp-icon">&#10227;</i> Re-layout';
+        btnRelayout.title = 'Re-run force-directed layout';
+      }
+    }
     if (btnTimeline) {
       btnTimeline.style.display = '';
       btnTimeline.classList.toggle('active', layout === 'timeline');
@@ -151,6 +162,8 @@ function vpFit() {
 
 function vpRelayout() {
   if (currentView !== 'graph') return;
+  // When timeline is active the button is repurposed as Fit.
+  if (currentLayout === 'timeline') { cy.fit(undefined, 60); return; }
   relayout();
 }
 

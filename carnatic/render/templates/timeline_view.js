@@ -70,13 +70,14 @@ function axisCoord(year) {
 
 // ── D1–D2: Placement year computation ────────────────────────────────────────
 // Walk guru (incoming) or shishya (outgoing) neighbours up to `depth` hops,
-// collecting sourced birth years.
+// collecting sourced birth years.  Skips transitive edges — they span multiple
+// generations and are handled separately by _collectTransitYears.
 function _collectNeighbourYears(node, direction, depth, visited) {
   if (depth <= 0 || visited.has(node.id())) return [];
   visited.add(node.id());
   const neighbours = direction === 'gurus'
-    ? node.incomers('node')   // source of edge → this node  =  guru
-    : node.outgoers('node');  // this node → target of edge  =  shishya
+    ? node.incomers('edge[kind != "transitive"]').sources()  // direct guru edges only
+    : node.outgoers('edge[kind != "transitive"]').targets(); // direct shishya edges only
   const years = [];
   neighbours.forEach(n => {
     const b = n.data('born');
@@ -89,14 +90,56 @@ function _collectNeighbourYears(node, direction, depth, visited) {
   return years;
 }
 
+// For transitive (ADR-138) edges, find the born year of the transit node nearest
+// to `node` — i.e. the culled intermediate closest in the chain.  Falls back to
+// source/target born + chain-depth * GENERATION when transit nodes lack dates.
+function _collectTransitYears(node, direction) {
+  const years = [];
+  const rawEls = typeof elements !== 'undefined' ? elements : [];
+  const edges = direction === 'gurus'
+    ? node.incomers('edge[kind = "transitive"]')
+    : node.outgoers('edge[kind = "transitive"]');
+  edges.forEach(e => {
+    const transitIds = (e.data('transit') || []).slice();
+    // Nearest to this node: last entry for incoming edges, first for outgoing
+    if (direction === 'gurus') transitIds.reverse();
+    let found = false;
+    for (const tid of transitIds) {
+      const el = rawEls.find(x => x.data && x.data.id === tid);
+      if (el && el.data.born != null) {
+        years.push(el.data.born);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      // No transit node has a born year — estimate from chain depth
+      const chainLen = (e.data('transit') || []).length;
+      if (direction === 'gurus') {
+        const srcBorn = e.source().data('born');
+        if (srcBorn != null) years.push(srcBorn + chainLen * GENERATION);
+      } else {
+        const tgtBorn = e.target().data('born');
+        if (tgtBorn != null) years.push(tgtBorn - chainLen * GENERATION);
+      }
+    }
+  });
+  return years;
+}
+
 function placementYear(node) {
   // D1: sourced birth year wins
   const born = node.data('born');
   if (born != null) return born;
 
-  // D2: interpolate from lineage edges
+  // D2: interpolate from direct lineage edges (non-transitive only)
   const gYears = _collectNeighbourYears(node, 'gurus',    INTERP_DEPTH_CAP, new Set());
   const sYears = _collectNeighbourYears(node, 'shishyas', INTERP_DEPTH_CAP, new Set());
+  // D2b: supplement with transit node years from collapsed transitive edges (ADR-138).
+  // Without this, a node whose direct cy-graph guru is a transitive source several
+  // generations removed gets placed only 1×GENERATION after that source.
+  gYears.push(..._collectTransitYears(node, 'gurus'));
+  sYears.push(..._collectTransitYears(node, 'shishyas'));
 
   if (gYears.length > 0 && sYears.length > 0) {
     const gMax = Math.max(...gYears);
@@ -134,7 +177,6 @@ function applyTimelineLayout() {
 
   const positions = {};
   Object.entries(laneNodes).forEach(([era, nodes]) => {
-    const laneC = ERA_LANE_CENTRE[era] !== undefined ? ERA_LANE_CENTRE[era] : 1100;
     // Sort by placement year (nulls last)
     nodes.sort((a, b) => {
       const ya = pyCache.get(a.id()), yb = pyCache.get(b.id());
@@ -150,15 +192,17 @@ function applyTimelineLayout() {
         positions[n.id()] = { x: -9999, y: -9999 };
         return;
       }
+      // Both axes encode time: x = left-to-right, y = top-to-bottom, both = axisCoord(year).
+      // Nodes cluster on the diagonal; LANE_STEP jitter separates same-era/same-year neighbours.
       const coord  = axisCoord(py);
       const half   = Math.floor(i / 2) + 1;
       const offset = (i % 2 === 0 ? 1 : -1) * half * LANE_STEP;
       if (portrait) {
-        // Vertical (D6): time flows top→bottom on Y, era lanes on X
-        positions[n.id()] = { x: laneC + offset, y: coord };
+        // Vertical (D6): time flows top→bottom on Y, diagonal on X
+        positions[n.id()] = { x: coord + offset, y: coord };
       } else {
-        // Horizontal: time on X, era lanes on Y
-        positions[n.id()] = { x: coord, y: laneC + offset };
+        // Horizontal: time on X and Y → diagonal scatter
+        positions[n.id()] = { x: coord, y: coord + offset };
       }
     });
   });
@@ -171,7 +215,15 @@ function applyTimelineLayout() {
     fit:              true,
     padding:          60,
   });
-  layout.one('layoutstop', () => showTimelineRuler());
+  layout.one('layoutstop', () => {
+    showTimelineRuler();
+    // ADR-138: increase transitive-edge bulge for timeline's large coordinate space.
+    // 30 graph-units (cose default) is invisible against a 5200-unit span; 180 is ~3.5%.
+    if (typeof cy !== 'undefined') {
+      cy.style().selector('edge[kind = "transitive"]')
+        .style({ 'control-point-distances': 180 }).update();
+    }
+  });
   layout.run();
 }
 
@@ -282,17 +334,19 @@ function drawRuler() {
     ruler.appendChild(hit);
   });
 
-  // Era lane labels on the appropriate margin
-  Object.entries(ERA_LANE_CENTRE).forEach(([era, laneC]) => {
+  // Era lane labels: positioned at axisCoord(ERA_BAND_MEDIAN[era]) on both axes
+  // so the y-axis labels are proportionally spaced by historical time, not evenly.
+  Object.entries(ERA_BAND_MEDIAN).forEach(([era, medianYear]) => {
+    const eraCoord = axisCoord(medianYear);
     const text = document.createElementNS(svgNS, 'text');
     if (portrait) {
-      const lx = graphXtoPx(laneC);
+      const lx = graphXtoPx(eraCoord);
       text.setAttribute('x', lx);
       text.setAttribute('y', 14);
       text.setAttribute('text-anchor', 'middle');
       text.setAttribute('dominant-baseline', 'hanging');
     } else {
-      const ly = graphYtoPx(laneC);
+      const ly = graphYtoPx(eraCoord);
       text.setAttribute('x', 6);
       text.setAttribute('y', ly);
       text.setAttribute('text-anchor', 'start');

@@ -1084,10 +1084,11 @@
   });
 })();
 
-// ── ADR-134 D4: lineage-empty hint text ──────────────────────────────────────
+// ── ADR-134 D4 / ADR-138: lineage-empty hint text ────────────────────────────
 // Shown on the cy canvas when an era/instrument filter combination yields
-// zero visible nodes within the connected (guru-shishya) set.
-// Consumed by graph_view.js _setLineageEmptyMsg via the LINEAGE_FILTER_EMPTY_TEXT global.
+// zero visible nodes within the content-bearing connected (guru-shishya) set.
+// Consumed by graph_view.js cy.ready() via the LINEAGE_FILTER_EMPTY_TEXT global.
 const LINEAGE_FILTER_EMPTY_TEXT =
-  'No musicians match these filters. Some lineages are still being sourced \u2014 ' +
-  'see them by name in the search bar or via the Mela-Janya view.';
+  'No musicians match these filters. Musicians without recordings or compositions ' +
+  'are not shown on this canvas \u2014 find them by name in the search bar, ' +
+  'or see all lineages in the Mela-Janya view.';
