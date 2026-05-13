@@ -1250,5 +1250,18 @@ function relayout() {
       if (currentView === 'graph') relayout();
     }, 400);
   });
+
+  // ADR-136: Re-run timeline layout when portrait ↔ landscape breakpoint is crossed.
+  // orientationchange fires before resize on many mobile browsers; the 300 ms delay
+  // lets the viewport dimensions settle before the layout re-runs.
+  window.addEventListener('orientationchange', () => {
+    if (currentLayout === 'timeline' && currentView === 'graph') {
+      clearTimeout(_resizeTimer);
+      _resizeTimer = setTimeout(() => {
+        cy.resize();
+        applyTimelineLayout();
+      }, 300);
+    }
+  });
 })();
 

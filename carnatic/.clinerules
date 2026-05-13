@@ -637,3 +637,7 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-12: ADR-102 Phase 3 + ADR-133 D2: adding the colophon block (schema_version 3→4) required patching `data/help/empty_panels.json` with apply_diff; no write_cli.py command exists for this — use apply_diff for any `help/` JSON not covered by write_cli; the "two organs" paragraph leads with Mela-Janya per ADR-133 D2, with the Gravatar avatar URL resolved from https://gravatar.com/vyaas (hash-based URL, not email-derived).
 [AGENTS: librarian]
+- 2026-05-12: ADR-136 timeline overhaul: `node.incomers('node')` = gurus, `node.outgoers('node')` = shishyas (edge direction is source=guru → target=shishya per write_cli.py `add-edge` convention); the interpolation cache (`pyCache` Map) must be populated once per layout pass and reused in sort and position calculations to avoid redundant graph walks.
+[AGENTS: carnatic-coder]
+- 2026-05-12: ADR-136: SVG `text-anchor` and `dominant-baseline` must be set as element attributes in JS (not CSS) when they vary by orientation; CSS rules for these properties on `.tick-label` would override the portrait-mode `text-anchor: start` attribute set in JS, breaking the left-edge vertical ruler.
+[AGENTS: carnatic-coder]
