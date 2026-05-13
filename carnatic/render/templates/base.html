@@ -3419,12 +3419,12 @@
       min-width: 44px; min-height: 44px;
       font-size: 1.25rem;
     }
-    /* Minimise button — hidden on desktop, shown in full-mobile bar */
+    /* Minimise button — hidden on desktop, shown at left of full-mobile bar */
     .mp-minimize { display: none; }
     .media-player.full-mobile .mp-minimize {
       display: inline-flex; align-items: center; justify-content: center;
       min-width: 44px; min-height: 44px;
-      font-size: 1.4rem; line-height: 1;
+      font-size: 1rem; line-height: 1;
       color: var(--accent);
       background: none; border: none;
       cursor: pointer;
@@ -3501,6 +3501,14 @@
       display: flex; align-items: center; justify-content: center;
       background: none; border: none;
       color: var(--fg-muted); font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .mp-mini-expand {
+      width: 44px; height: 44px;
+      min-width: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none;
+      color: var(--accent); font-size: 0.85rem;
       cursor: pointer;
     }
 

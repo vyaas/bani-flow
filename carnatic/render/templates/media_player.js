@@ -2217,6 +2217,13 @@ function _createMobilePlayer() {
   progress.appendChild(progressBar);
   strip.appendChild(progress);
 
+  const expandBtn = document.createElement('button');
+  expandBtn.className = 'mp-mini-expand';
+  expandBtn.title = 'Expand player';
+  expandBtn.setAttribute('aria-label', 'Expand player');
+  expandBtn.textContent = '\u25B2';   // ▲ upward triangle = expand
+  strip.appendChild(expandBtn);
+
   const playBtn = document.createElement('button');
   playBtn.className = 'mp-mini-play';
   playBtn.textContent = '\u25B6';
@@ -2265,6 +2272,7 @@ function _createMobilePlayer() {
   const mp = {
     el, strip, bar, videoWrap, tracklistDiv, handle,
     miniTitle: titleSpan,
+    miniExpand: expandBtn,
     miniPlay: playBtn,
     miniClose: closeBtn,
     progressBar,
@@ -2315,6 +2323,12 @@ function _wireMobilePlayerEvents(mp) {
   mp.strip.addEventListener('click', e => {
     if (e.target === mp.miniClose || e.target === mp.miniPlay ||
         mp.miniClose.contains(e.target) || mp.miniPlay.contains(e.target)) return;
+    _expandMobilePlayer();
+  });
+
+  // Mini expand chevron (▲) — explicit expand affordance at left of strip
+  mp.miniExpand.addEventListener('click', e => {
+    e.stopPropagation();
     _expandMobilePlayer();
   });
 
@@ -2394,7 +2408,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
 
   // ── Build full-mode bar ─────────────────────────────────────────────────
   mp.bar.innerHTML = '';
-  const fullBar = buildPlayerBar(vid, artistName, concertTitle, trackLabel,
+  const fullBar = buildPlayerBar(vid, artistName, concertTitle || trackLabel, trackLabel,
                                  mp.tracks.length > 0, meta || {});
   while (fullBar.firstChild) mp.bar.appendChild(fullBar.firstChild);
 
@@ -2410,17 +2424,17 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   // ── Mobile: inject minimize (⌄) button before close ─────────────────────
   // Gives a clear affordance to collapse to mini strip without stopping playback.
   const existingMinBtn = mp.bar.querySelector('.mp-minimize');
-  if (!existingMinBtn && barClose) {
+  if (!existingMinBtn) {
     const minBtn = document.createElement('button');
     minBtn.className = 'mp-minimize';
     minBtn.title = 'Minimise';
     minBtn.setAttribute('aria-label', 'Minimise player');
-    minBtn.textContent = '\u2304';   // ⌄ downward chevron
+    minBtn.textContent = '\u25BC';   // ▼ downward triangle = collapse/fold
     minBtn.addEventListener('click', e => {
       e.stopPropagation();
       _collapseMobilePlayer();
     });
-    barClose.parentNode.insertBefore(minBtn, barClose);
+    mp.bar.insertBefore(minBtn, mp.bar.firstChild);
   }
 
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
