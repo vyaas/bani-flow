@@ -39,10 +39,9 @@ function _restoreGraphPositions() {
 }
 
 // ── _updateViewportToolbar: show/hide toolbar buttons based on view/layout ────
-// | Button      | graph (graph) | graph (timeline) | raga                  |
-// | btn-fit     | visible       | visible          | visible → wheelFit()  |
-// | btn-relayout| visible       | visible          | hidden                |
-// | btn-timeline| visible, off  | visible, active  | hidden                |
+// | Button      | graph (graph)    | graph (timeline)    | raga   |
+// | btn-relayout| 'Re-layout', on  | 'Fit', on           | hidden |
+// | btn-timeline| visible, off     | visible, active     | hidden |
 function _updateViewportToolbar(view, layout) {
   const btnRelayout = document.getElementById('btn-relayout');
   const btnTimeline = document.getElementById('btn-timeline');
@@ -50,7 +49,19 @@ function _updateViewportToolbar(view, layout) {
     if (btnRelayout) btnRelayout.style.display = 'none';
     if (btnTimeline) btnTimeline.style.display = 'none';
   } else {
-    if (btnRelayout) btnRelayout.style.display = '';
+    if (btnRelayout) {
+      btnRelayout.style.display = '';
+      btnRelayout.disabled = false;
+      // Repurpose the button when timeline is active: act as Fit instead.
+      // Use innerHTML to preserve the icon <i> element.
+      if (layout === 'timeline') {
+        btnRelayout.innerHTML = '<i class="vp-icon">&#10021;</i> Fit';
+        btnRelayout.title = 'Fit all nodes into view';
+      } else {
+        btnRelayout.innerHTML = '<i class="vp-icon">&#10227;</i> Re-layout';
+        btnRelayout.title = 'Re-run force-directed layout';
+      }
+    }
     if (btnTimeline) {
       btnTimeline.style.display = '';
       btnTimeline.classList.toggle('active', layout === 'timeline');
@@ -82,7 +93,7 @@ function switchView(name) {
 
   _updateViewportToolbar(name, currentLayout);
 
-  const filterBar = document.getElementById('filter-bar');
+  const layoutControls = document.getElementById('layout-controls-float');
   const cyLabels  = document.getElementById('cy-labels');
   if (name === 'graph') {
     hideTimelineRuler();
@@ -90,7 +101,7 @@ function switchView(name) {
     if (typeof window._closeWheelDetailPanel === 'function') window._closeWheelDetailPanel();
     document.getElementById('cy').style.display = '';
     if (cyLabels) cyLabels.style.display = '';
-    if (filterBar) filterBar.style.display = 'flex';
+    if (layoutControls) layoutControls.style.display = '';
     if (typeof cy !== 'undefined' && cy) cy.resize();
     // Restore the sub-layout that was active when the user left
     if (currentLayout === 'timeline') {
@@ -107,7 +118,7 @@ function switchView(name) {
     hideTimelineRuler();
     document.getElementById('cy').style.display = 'none';
     if (cyLabels) cyLabels.style.display = 'none';
-    if (filterBar) filterBar.style.display = 'none';
+    if (layoutControls) layoutControls.style.display = 'none';
     showRagaWheel(/* skipDraw when sync will redraw */ !!(typeof activeBaniFilter !== 'undefined' && activeBaniFilter));
     // Re-apply the current Bani filter to the wheel (ADR-025 sync gap)
     if (typeof activeBaniFilter !== 'undefined' && activeBaniFilter &&
@@ -151,6 +162,8 @@ function vpFit() {
 
 function vpRelayout() {
   if (currentView !== 'graph') return;
+  // When timeline is active the button is repurposed as Fit.
+  if (currentLayout === 'timeline') { cy.fit(undefined, 60); return; }
   relayout();
 }
 

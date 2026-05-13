@@ -172,7 +172,7 @@
   }
 
   /* ── dropdown trigger buttons ── */
-  .filter-dropdown-wrap { position: relative; flex-shrink: 0; }
+  .filter-dropdown-wrap { position: relative; flex-shrink: 0; pointer-events: auto; }
   .filter-dropdown-btn {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 4px 10px; border-radius: 10px;
@@ -180,6 +180,7 @@
     color: var(--fg-dim); font-size: 0.72rem;
     cursor: pointer; user-select: none; white-space: nowrap;
     transition: border-color 0.12s, color 0.12s;
+    pointer-events: auto;
   }
   .filter-dropdown-btn:hover { border-color: var(--fg-sub); color: var(--fg); }
   .filter-dropdown-btn.filter-active {
@@ -197,12 +198,14 @@
     list-style: none; margin: 0;
     z-index: 200;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    pointer-events: auto;
   }
   .filter-dropdown-item {
     display: flex; align-items: center; gap: 8px;
     padding: 6px 12px;
     cursor: pointer; font-size: 0.78rem; color: var(--fg-dim);
     transition: background 0.1s;
+    pointer-events: auto;
   }
   .filter-dropdown-item:hover { background: var(--bg-active); }
   .filter-dropdown-item[aria-selected="true"] { color: var(--fg); }
@@ -222,15 +225,12 @@
   }
   .filter-dropdown-item[aria-selected="true"] .filter-checkmark { opacity: 1; }
 
-  /* ── clear-all button (ADR-068: shown via hidden attr, not visibility) ── */
-  .filter-clear {
-    display: inline-flex; align-items: center;
-    padding: 4px 10px; border-radius: 10px;
-    border: 1px solid var(--border-strong); background: transparent;
-    color: var(--fg-dim); font-size: 0.72rem;
-    cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  /* ── per-group clear item at the bottom of each dropdown ── */
+  .filter-dropdown-clear {
+    border-top: 1px solid var(--border); margin-top: 2px;
+    color: var(--fg-muted); font-size: 0.70rem; font-style: italic;
   }
-  .filter-clear:hover { color: var(--fg); border-color: var(--fg-sub); }
+  .filter-dropdown-clear:hover { color: var(--accent); background: var(--bg-active); }
 
   /* ── ADR-069: instrument badge inside musician chips ── */
   .chip-instr-icon {
@@ -1075,27 +1075,44 @@
   .media-player.sruti-player.sruti-minimized .mp-resize { display: none; }
   .mp-resize:hover { opacity: 1; background-color: var(--bg-active); }
 
-  /* ── timeline ruler — monospace font retained for data-dense ruler ── */
+  /* ── timeline ruler (ADR-136) — navigable ticks, hybrid axis ── */
   #timeline-ruler .tick-line {
-    stroke: var(--border); stroke-width: 1px;
+    stroke: var(--border); stroke-width: 1px; opacity: 0.15;
   }
   #timeline-ruler .tick-line.century {
-    stroke: var(--border-strong); stroke-width: 1.5px;
+    stroke: var(--border-strong); stroke-width: 1.5px; opacity: 0.25;
   }
   #timeline-ruler .tick-label {
     fill: var(--fg-muted); font-family: var(--font-mono);
-    font-size: 11px; text-anchor: middle; dominant-baseline: hanging;
+    font-size: 14px; font-weight: 500;
   }
   #timeline-ruler .tick-label.century {
-    fill: var(--fg-sub); font-size: 13px; font-weight: bold;
+    fill: var(--fg-sub); font-size: 16px; font-weight: bold;
+  }
+  #timeline-ruler .tick-click-target {
+    fill: transparent; cursor: pointer;
   }
   #timeline-ruler .era-band {
     fill: none; stroke: none;
   }
   #timeline-ruler .era-label {
     fill: var(--border-strong); font-family: var(--font-mono);
-    font-size: 10px; dominant-baseline: middle;
+    font-size: 11px; dominant-baseline: middle;
   }
+  @keyframes tick-flash {
+    0%   { opacity: 1;   }
+    40%  { opacity: 0.1; }
+    100% { opacity: 1;   }
+  }
+  #timeline-ruler .tick-flash {
+    animation: tick-flash 0.6s ease-in-out;
+  }
+  /* ADR-136: larger ruler labels on portrait/mobile viewports (≥16px) */
+  @media (max-width: 768px), (orientation: portrait) {
+    #timeline-ruler .tick-label         { font-size: 16px; }
+    #timeline-ruler .tick-label.century { font-size: 18px; }
+  }
+
   /* ── Two-view selector (ADR-030) ── */
   .view-selector {
     display: inline-flex;
@@ -1161,38 +1178,42 @@
   .wdp-chip.wdp-comp.wdp-active { background: var(--chip-comp-border); color: var(--bg-deep); font-weight: 600; border-left: 3px solid var(--accent-select); }
   .wdp-chip-count { margin-left: auto; font-size: 0.66rem; opacity: 0.65; flex-shrink: 0; padding-left: 4px; }
 
-  #viewport-toolbar {
+  /* ADR-135: layout-controls-float — single row, all controls inline */
+  #layout-controls-float {
     position: absolute;
     top: calc(var(--chrome-top, 50px) + 4px);
     right: 10px;
     z-index: 70;
     display: flex;
+    flex-direction: row;
+    align-items: center;
     gap: 4px;
-    pointer-events: auto;
+    pointer-events: none;
+  }
+  .lc-row-layout,
+  .lc-row-filters {
+    display: contents;  /* children participate directly in the parent flex row */
+  }
+  /* Dropdown panels open toward the left when anchored top-right */
+  #layout-controls-float .filter-dropdown-list {
+    left: auto;
+    right: 0;
   }
   .vp-btn {
-    background: var(--bg-panel);
-    color: var(--fg-muted);
-    border: 1px solid var(--border-strong);
-    padding: 3px 8px;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 9px; border-radius: 10px;
+    border: 1px solid var(--border-strong); background: var(--bg-panel);
+    color: var(--fg-dim); font-size: 0.72rem;
     font-family: inherit;
-    font-size: 0.68rem;
-    cursor: pointer;
-    border-radius: 6px;
-    opacity: 0.75;
-    transition: opacity 0.15s, color 0.15s, background 0.15s;
-    white-space: nowrap;
+    cursor: pointer; user-select: none; white-space: nowrap;
+    transition: border-color 0.12s, color 0.12s;
+    pointer-events: auto;
   }
-  .vp-btn:hover {
-    opacity: 1;
-    color: var(--accent);
-    background: var(--bg-input);
-  }
+  .vp-btn .vp-icon { font-style: normal; font-size: 0.78rem; line-height: 1; }
+  .vp-btn:hover { border-color: var(--fg-sub); color: var(--fg); }
+  /* Timeline active state — accent tint, matches .filter-dropdown-btn.filter-active */
   .vp-btn.active {
-    opacity: 1;
-    color: var(--accent);
-    background: var(--bg-active);
-    font-weight: bold;
+    border-color: var(--accent); color: var(--accent);
   }
 
   /* ── Bani Flow panel ── */
@@ -3020,13 +3041,13 @@
     /* ADR-045: full view labels shown on mobile — no label swap */
     .vp-btn {
       min-height: 44px;
-      padding: 0 12px;
+      padding: 4px 12px;
     }
-    /* ADR-068: filter bar is always single line — no wrap on mobile */
-    #filter-bar {
-      flex-wrap: nowrap;
-      gap: 6px;
-      padding: 5px 8px;
+    /* ADR-135: layout-controls-float mobile — single row wraps if needed */
+    #layout-controls-float {
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     /* ADR-068: dropdown panel full-width on very narrow viewports */
     .filter-dropdown-list {
@@ -3187,7 +3208,7 @@
 
     /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
     /* Re-layout / Timeline) would be hidden under it. Shift it left.            */
-    #main:not(.right-pinned):has(#right-sidebar.drawer-open) #viewport-toolbar {
+    #main:not(.right-pinned):has(#right-sidebar.drawer-open) #layout-controls-float {
       right: 292px;
     }
 
@@ -4101,12 +4122,12 @@
 <!-- ADR-129 D1: Floating view selector (top-right) — no backing bar -->
 <div id="view-selector-float">
   <div class="view-selector" id="view-selector">
-    <button class="view-btn" id="view-btn-graph"
-            onclick="switchView('graph')" title="Guru-shishya parampara"
-            aria-label="Guru-Shishya"><span class="view-label-full">Guru-Shishya</span><span class="view-label-short">GS</span></button>
     <button class="view-btn active" id="view-btn-raga"
             onclick="switchView('raga')" title="Melakarta–janya raga system"
             aria-label="Mela-Janya"><span class="view-label-full">Mela-Janya</span><span class="view-label-short">MJ</span></button>
+    <button class="view-btn" id="view-btn-graph"
+            onclick="switchView('graph')" title="Guru-shishya parampara"
+            aria-label="Guru-Shishya"><span class="view-label-full">Guru-Shishya</span><span class="view-label-short">GS</span></button>
   </div>
 </div>
 
@@ -4184,31 +4205,8 @@
     </div>
   </div>
 
-  <!-- ── canvas column: filter bar + graph ── -->
+  <!-- ── canvas column (graph fills full height — filter bar removed per ADR-135) ── -->
   <div id="canvas-wrap">
-    <!-- ADR-040: filter toggle button removed (chips always visible, wrapping) -->
-    <div id="filter-bar">
-      <!-- ADR-068: compact multi-select dropdowns (era + instrument) -->
-      <div class="filter-dropdown-wrap" id="era-dropdown-wrap">
-        <button class="filter-dropdown-btn" id="era-dropdown-btn"
-                aria-haspopup="listbox" aria-expanded="false"
-                onclick="toggleFilterDropdown('era')">Era <span class="filter-count" id="era-filter-count"></span><span class="filter-arrow">&#9660;</span></button>
-        <ul class="filter-dropdown-list" id="era-dropdown-list"
-            role="listbox" aria-multiselectable="true"
-            aria-label="Filter by era" hidden></ul>
-      </div>
-      <div class="filter-dropdown-wrap" id="instr-dropdown-wrap">
-        <button class="filter-dropdown-btn" id="instr-dropdown-btn"
-                aria-haspopup="listbox" aria-expanded="false"
-                onclick="toggleFilterDropdown('instrument')">Instrument <span class="filter-count" id="instr-filter-count"></span><span class="filter-arrow">&#9660;</span></button>
-        <ul class="filter-dropdown-list" id="instr-dropdown-list"
-            role="listbox" aria-multiselectable="true"
-            aria-label="Filter by instrument" hidden></ul>
-      </div>
-      <button class="filter-clear" id="filter-clear-all"
-              hidden title="Clear all filters"
-              onclick="clearAllChipFilters()">&#10005; Clear</button>
-    </div>
     <div id="cy-wrap">
       <div id="cy"></div>
       <!-- ADR-074: DOM-overlay musician chip labels (replace canvas labels) -->
@@ -4218,11 +4216,31 @@
       <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);touch-action:none;"></svg>
       <!-- ADR-096 Option B: mela→janya→comp detail panel (replaces SVG satellite fans) -->
       <div id="wheel-detail-panel"></div>
-      <!-- ── Viewport toolbar (ADR-030): compact overlay, bottom-right of canvas pane ── -->
-      <div id="viewport-toolbar">
-        <button id="btn-fit"      class="vp-btn" title="Fit all nodes into view"      onclick="vpFit()">Fit</button>
-        <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()">Re-layout</button>
-        <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()">Timeline</button>
+      <!-- ADR-135: layout-controls-float — single row: all layout + filter controls inline -->
+      <div id="layout-controls-float">
+        <div class="lc-row-layout">
+          <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()"><i class="vp-icon">&#128336;</i> Timeline</button>
+          <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()"><i class="vp-icon">&#10227;</i> Re-layout</button>
+        </div>
+        <div class="lc-row-filters">
+          <!-- ADR-068: compact multi-select dropdowns (era + instrument) -->
+          <div class="filter-dropdown-wrap" id="era-dropdown-wrap">
+            <button class="filter-dropdown-btn" id="era-dropdown-btn"
+                    aria-haspopup="listbox" aria-expanded="false"
+                    onclick="toggleFilterDropdown('era')">Era <span class="filter-count" id="era-filter-count"></span><span class="filter-arrow">&#9660;</span></button>
+            <ul class="filter-dropdown-list" id="era-dropdown-list"
+                role="listbox" aria-multiselectable="true"
+                aria-label="Filter by era" hidden></ul>
+          </div>
+          <div class="filter-dropdown-wrap" id="instr-dropdown-wrap">
+            <button class="filter-dropdown-btn" id="instr-dropdown-btn"
+                    aria-haspopup="listbox" aria-expanded="false"
+                    onclick="toggleFilterDropdown('instrument')">Instrument <span class="filter-count" id="instr-filter-count"></span><span class="filter-arrow">&#9660;</span></button>
+            <ul class="filter-dropdown-list" id="instr-dropdown-list"
+                role="listbox" aria-multiselectable="true"
+                aria-label="Filter by instrument" hidden></ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>

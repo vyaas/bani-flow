@@ -8,10 +8,134 @@ const CAKRA_NAMES = {
   9: 'Brahma', 10: 'Disi', 11: 'Rudra', 12: 'Aditya'
 };
 
+// ── ADR-134: connected-set predicate — nodes incident to ≥1 guru-shishya edge ─
+// A node is included iff it is incident to at least one edge.
+// Computed once before Cytoscape is initialised; retained for use by filters.
+const _connectedNodeIds = (function () {
+  const ids = new Set();
+  elements.forEach(function (el) {
+    if (el.data.source) {
+      ids.add(el.data.source);
+      ids.add(el.data.target);
+    }
+  });
+  return ids;
+}());
+
+// ── ADR-138 D1: content-bearing set ──────────────────────────────────────────
+// A musician is content-bearing iff:
+//   · is_listenable == 1  (tracks, concerts, lecdem host, or is a composer)
+//   · OR appears as a lecdem subject in lecdemsAboutMusician (ADR-078)
+// Computed once; exposed as window._contentBearingIds for ADR-137 panel dimming.
+function _computeContentBearingSet() {
+  const ids = new Set();
+  elements.forEach(function (el) {
+    if (el.data.source === undefined && el.data.is_listenable === 1) {
+      ids.add(el.data.id);
+    }
+  });
+  // has_lecdem_about is not included in is_listenable — add separately.
+  if (typeof lecdemsAboutMusician !== 'undefined') {
+    Object.keys(lecdemsAboutMusician).forEach(function (mid) {
+      const refs = lecdemsAboutMusician[mid];
+      if (refs && refs.length > 0) ids.add(mid);
+    });
+  }
+  return ids;
+}
+const _contentBearingIds = _computeContentBearingSet();
+// Expose for ADR-137 panel-chip dimming (musician_panel.js).
+window._contentBearingIds = _contentBearingIds;
+
+// ── ADR-138 D3: collapse contentless transit nodes into transitive edges ──────
+// For each path (a, t₁…tₖ, b) where a, b are content-bearing and all tᵢ are
+// transit (connected but not content-bearing) nodes, produce a synthetic edge
+// a→b annotated with transit ids and labels.
+function _computeTransitiveEdges() {
+  // Build directed adjacency: nodeId → [neighborId, ...]
+  const adj = new Map();
+  // Track direct CB→CB pairs so we never emit a redundant transitive edge.
+  const primaryPairs = new Set();
+  elements.forEach(function (el) {
+    if (el.data.source === undefined) return;
+    const s = el.data.source, t = el.data.target;
+    if (!adj.has(s)) adj.set(s, []);
+    adj.get(s).push(t);
+    if (_contentBearingIds.has(s) && _contentBearingIds.has(t)) {
+      primaryPairs.add(s + '::' + t);
+    }
+  });
+  // Label lookup for tooltip names.
+  const labelById = new Map();
+  elements.forEach(function (el) {
+    if (el.data.source === undefined) {
+      labelById.set(el.data.id, el.data.label || el.data.id);
+    }
+  });
+  // BFS from each content-bearing node through transit nodes to content-bearing successors.
+  const seenPairs = new Set();
+  const result = [];
+  _contentBearingIds.forEach(function (srcId) {
+    if (!_connectedNodeIds.has(srcId)) return;
+    const queue = [];
+    const visited = new Set();
+    (adj.get(srcId) || []).forEach(function (nbr) {
+      if (!_contentBearingIds.has(nbr) && _connectedNodeIds.has(nbr) && !visited.has(nbr)) {
+        visited.add(nbr);
+        queue.push({ id: nbr, transit: [nbr] });
+      }
+    });
+    while (queue.length > 0) {
+      const item = queue.shift();
+      (adj.get(item.id) || []).forEach(function (nxt) {
+        if (_contentBearingIds.has(nxt) && _connectedNodeIds.has(nxt)) {
+          const pairKey = srcId + '::' + nxt;
+          if (!seenPairs.has(pairKey) && !primaryPairs.has(pairKey)) {
+            seenPairs.add(pairKey);
+            result.push({ data: {
+              id:           'transit::' + pairKey,
+              source:       srcId,
+              target:       nxt,
+              kind:         'transitive',
+              transit:      item.transit.slice(),
+              transit_names: item.transit.map(function (tid) { return labelById.get(tid) || tid; }),
+              width:        1.5,
+              confidence:   0,
+              source_url:   '',
+              note:         '',
+            }});
+          }
+        } else if (!_contentBearingIds.has(nxt) && _connectedNodeIds.has(nxt) && !visited.has(nxt)) {
+          visited.add(nxt);
+          queue.push({ id: nxt, transit: item.transit.concat(nxt) });
+        }
+      });
+    }
+  });
+  return result;
+}
+const _transitiveEdges = _computeTransitiveEdges();
+
+// ── ADR-138 D2: visible element set ──────────────────────────────────────────
+// Nodes:          connected AND content-bearing.
+// Primary edges:  both endpoints content-bearing + connected.
+// Transitive edges: derived synthetic arcs for collapsed transit chains.
+const _cyElements = elements.filter(function (el) {
+  if (el.data.source !== undefined) {
+    // Primary edge: keep only when both endpoints are visible.
+    return _contentBearingIds.has(el.data.source) &&
+           _contentBearingIds.has(el.data.target) &&
+           _connectedNodeIds.has(el.data.source) &&
+           _connectedNodeIds.has(el.data.target);
+  }
+  // Node: connected AND content-bearing.
+  return _connectedNodeIds.has(el.data.id) && _contentBearingIds.has(el.data.id);
+}).concat(_transitiveEdges);
+
 // ── Cytoscape init ────────────────────────────────────────────────────────────
 const cy = cytoscape({
   container: document.getElementById('cy'),
-  elements:  elements,
+  elements:  _cyElements,
   style: [
     {
       selector: 'node',
@@ -65,10 +189,11 @@ const cy = cytoscape({
       style: { 'border-color': THEME.nodeBaniMatch, 'border-width': '3.5px' }
     },
     // ADR-114: Hindustani musician nodes get a cool-colour (slate-blue) border
+    // Note: Cytoscape does not support CSS var() in style maps — use literal value.
     {
       selector: 'node[is_hindustani = 1]',
       style: {
-        'border-color': 'var(--her-chip-accent, #8fb4d8)',
+        'border-color': '#8fb4d8',
         'border-width': '3px',
         'border-style': 'dashed',
       }
@@ -83,6 +208,23 @@ const cy = cytoscape({
         'width':               'data(width)',
         'arrow-scale':         0.8,
         'opacity':             THEME.opacityEdge,
+      }
+    },
+    // ADR-138 D4: transitive edge — bulged bezier, thinner stroke, same colour.
+    // The perpendicular bulge (30px mid-control-point) is the sole visual signal
+    // that this connection passes through ≥1 contentless transit musician.
+    {
+      selector: 'edge[kind = "transitive"]',
+      style: {
+        'curve-style':             'unbundled-bezier',
+        'control-point-distances': 30,
+        'control-point-weights':   0.5,
+        'target-arrow-shape':      'triangle',
+        'target-arrow-color':      THEME.edgeArrow,
+        'line-color':              THEME.edgeLine,
+        'width':                   'data(width)',
+        'arrow-scale':             0.7,
+        'opacity':                 THEME.opacityEdge,
       }
     },
     {
@@ -122,6 +264,26 @@ cy.ready(() => {
   // Default view is Mela-Janya — switch after cy is ready so showRagaWheel()
   // has valid SVG dimensions to draw into.
   requestAnimationFrame(() => switchView('raga'));
+
+  // ADR-134 D4: create lineage empty-state overlay for filter combinations
+  // that yield zero visible connected nodes.
+  (function () {
+    const wrap = document.getElementById('cy-wrap');
+    if (!wrap) return;
+    const msg = document.createElement('div');
+    msg.id = 'cy-lineage-empty-msg';
+    msg.setAttribute('aria-live', 'polite');
+    msg.style.cssText = [
+      'display:none', 'position:absolute', 'top:50%', 'left:50%',
+      'transform:translate(-50%,-50%)', 'text-align:center',
+      'color:var(--fg-sub)', 'padding:1.5rem', 'pointer-events:none',
+      'max-width:320px', 'font-size:0.85rem', 'line-height:1.5',
+    ].join(';');
+    msg.textContent = (typeof window.LINEAGE_FILTER_EMPTY_TEXT === 'string')
+      ? window.LINEAGE_FILTER_EMPTY_TEXT
+      : 'No musicians match these filters. Musicians without recordings or compositions are not shown on this canvas \u2014 find them by name in the search bar, or see all lineages in the Mela-Janya view.';
+    wrap.appendChild(msg);
+  }());
 });
 
 // ── ERA_COLOURS and INSTRUMENT_SHAPES mirrors (for chip injection) ─────────────
@@ -289,6 +451,20 @@ function buildFilterDropdowns() {
     instrList.appendChild(li);
   });
 
+  // Per-group clear item — shown only when that group has active selections
+  ['era', 'instr'].forEach(prefix => {
+    const list  = document.getElementById(prefix + '-dropdown-list');
+    const group = prefix === 'era' ? 'era' : 'instrument';
+    const sep   = document.createElement('li');
+    sep.className = 'filter-dropdown-item filter-dropdown-clear';
+    sep.id = prefix + '-clear-item';
+    sep.setAttribute('role', 'option');
+    sep.setAttribute('hidden', '');
+    sep.textContent = '\u00d7 Clear';
+    sep.addEventListener('click', () => clearGroupFilter(group));
+    list.appendChild(sep);
+  });
+
   // Close dropdowns on outside click/touch
   document.addEventListener('mousedown', _closeDropdownsOnOutsideClick);
   document.addEventListener('touchstart', _closeDropdownsOnOutsideClick, { passive: true });
@@ -348,6 +524,10 @@ function _updateFilterBtnLabels() {
   if (instrCountEl) instrCountEl.textContent = instrCount > 0 ? '(' + instrCount + ')' : '';
   if (eraBtn)   eraBtn.classList.toggle('filter-active',   eraCount   > 0);
   if (instrBtn) instrBtn.classList.toggle('filter-active', instrCount > 0);
+  const eraClearItem   = document.getElementById('era-clear-item');
+  const instrClearItem = document.getElementById('instr-clear-item');
+  if (eraClearItem)   eraClearItem.hidden   = eraCount   === 0;
+  if (instrClearItem) instrClearItem.hidden = instrCount === 0;
 }
 
 function applyChipFilters() {
@@ -392,6 +572,25 @@ function applyChipFilters() {
 
   if (clearBtn) clearBtn.hidden = false;
   setScopeLabels(true);
+
+  // ADR-134 D4: show empty-state hint when the filter yields no visible nodes.
+  const anyVisible = cy.nodes().some(n => !n.hasClass('chip-faded'));
+  _setLineageEmptyMsg(!anyVisible);
+}
+
+function clearGroupFilter(group) {
+  activeFilters[group].clear();
+  const prefix = group === 'era' ? 'era' : 'instr';
+  const list = document.getElementById(prefix + '-dropdown-list');
+  const btn  = document.getElementById(prefix + '-dropdown-btn');
+  if (list) {
+    list.querySelectorAll('.filter-dropdown-item[aria-selected="true"]')
+        .forEach(i => i.setAttribute('aria-selected', 'false'));
+    list.hidden = true;
+  }
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+  _updateFilterBtnLabels();
+  applyChipFilters();
 }
 
 function clearAllChipFilters() {
@@ -400,10 +599,15 @@ function clearAllChipFilters() {
   document.querySelectorAll('.filter-dropdown-item[aria-selected="true"]')
     .forEach(i => i.setAttribute('aria-selected', 'false'));
   cy.elements().removeClass('chip-faded');
-  const clearBtn = document.getElementById('filter-clear-all');
-  if (clearBtn) clearBtn.hidden = true;
   _updateFilterBtnLabels();
   setScopeLabels(false);
+  _setLineageEmptyMsg(false);
+}
+
+// ADR-134 D4: toggle the lineage-empty overlay on the cy canvas.
+function _setLineageEmptyMsg(show) {
+  const msg = document.getElementById('cy-lineage-empty-msg');
+  if (msg) msg.style.display = show ? 'block' : 'none';
 }
 
 function setScopeLabels(visible) {
@@ -572,6 +776,26 @@ cy.on('mousemove', 'node', evt => {
   popover.style.top  = (y + 16 + ph > window.innerHeight ? y - ph - 10 : y + 16) + 'px';
 });
 
+// ── ADR-138 D4: hover tooltip for transitive (bulged) edges ──────────────────
+// Shows the names of all collapsed transit musicians on hover.
+cy.on('mouseover', 'edge[kind = "transitive"]', function (evt) {
+  const d = evt.target.data();
+  const names = (d.transit_names || []).join(', ');
+  document.getElementById('hp-name').textContent = 'via ' + (names || 'intermediate musician');
+  document.getElementById('hp-sub').textContent = 'Transmitted lineage \u2014 click for details';
+  popover.style.display = 'block';
+});
+cy.on('mouseout', 'edge[kind = "transitive"]', function () {
+  popover.style.display = 'none';
+});
+cy.on('mousemove', 'edge[kind = "transitive"]', function (evt) {
+  const x = evt.originalEvent.clientX, y = evt.originalEvent.clientY;
+  const pw = popover.offsetWidth  || 200;
+  const ph = popover.offsetHeight || 60;
+  popover.style.left = (x + 16 + pw > window.innerWidth  ? x - pw - 10 : x + 16) + 'px';
+  popover.style.top  = (y + 16 + ph > window.innerHeight ? y - ph - 10 : y + 16) + 'px';
+});
+
 // ── Panel history (ADR-066) ──────────────────────────────────────────────────
 let _currentPanelNodeId = null;
 const panelHistory = { back: [], forward: [] };
@@ -716,6 +940,68 @@ function orientToNode(nodeId) {
   // Flash the node border briefly to draw the eye
   n.addClass('bani-match');
   setTimeout(() => n.removeClass('bani-match'), 1400);
+}
+
+// ── ADR-138 D4: open musician panel for a transit (culled) node ───────────────
+// Transit musicians are not in the Cytoscape graph so selectNode() can't be
+// used directly. This helper populates the right-sidebar panel from the raw
+// elements array instead. It mirrors the panel-population logic in selectNode
+// without the cy graph-highlight side-effects.
+function _openMusicianPanelForTransit(transitId) {
+  const el = elements.find(function (e) { return !e.data.source && e.data.id === transitId; });
+  if (!el) return;
+  const d = el.data;
+
+  _currentPanelNodeId = transitId;
+  _updatePanelNavButtons();
+
+  const nameEl = document.getElementById('node-name');
+  nameEl.innerHTML = '';
+  const tint = THEME.eraTintCss(d.era || null);
+  const nameChip = document.createElement('span');
+  nameChip.className = 'musician-chip';
+  nameChip.style.setProperty('--chip-era-bg', tint.bg);
+  nameChip.style.setProperty('--chip-era-border', tint.border);
+  if (d.instrument && typeof makeInstrBadge === 'function') {
+    nameChip.appendChild(makeInstrBadge(d.instrument));
+  }
+  nameChip.appendChild(document.createTextNode(d.label || transitId));
+  nameEl.appendChild(nameChip);
+
+  document.getElementById('node-lifespan').textContent = d.lifespan || '';
+
+  const wikiLink = document.getElementById('node-wiki-link');
+  const primarySrc = d.sources && d.sources.length > 0 ? d.sources[0] : null;
+  if (primarySrc) {
+    wikiLink.href          = primarySrc.url;
+    wikiLink.title         = primarySrc.label;
+    wikiLink.style.display = 'inline';
+  } else {
+    wikiLink.style.display = 'none';
+  }
+
+  document.getElementById('node-info').style.display = 'block';
+  document.getElementById('edge-info').style.display = 'none';
+  const _affordances = document.getElementById('node-header-affordances');
+  if (_affordances) _affordances.style.display = '';
+  const _editChip = document.getElementById('node-edit-chip');
+  if (_editChip) {
+    _editChip.style.display = 'inline-flex';
+    _editChip.onclick = function (e) {
+      e.stopPropagation();
+      if (typeof openEditForm === 'function') openEditForm({ entityType: 'musician', id: transitId });
+    };
+  }
+  if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
+  if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
+
+  const recFilter = document.getElementById('rec-filter');
+  recFilter.value = '';
+  recFilter.dispatchEvent(new Event('input'));
+
+  buildRecordingsList(transitId, d);
+
+  if (typeof window.setPanelState === 'function') window.setPanelState('MUSICIAN');
 }
 
 // ── rec-filter event listener — bracket-aware (ADR-018) + raga-tree-aware (ADR-064) ──
@@ -1097,6 +1383,72 @@ cy.on('tap', 'edge', evt => {
   evt.target.target().removeClass('faded');
 });
 
+// ── ADR-138 D4: transitive edge tap — show transit-musician chip popover ──────
+// Creates a floating popover near the click point listing each collapsed transit
+// musician as a chip. Each chip opens that musician's panel via
+// _openMusicianPanelForTransit (transit nodes are not in the cy graph).
+(function () {
+  // Build the popover element once; reuse on subsequent taps.
+  const _transitPop = document.createElement('div');
+  _transitPop.id = 'transit-edge-popover';
+  _transitPop.style.cssText = [
+    'display:none', 'position:fixed', 'z-index:9999',
+    'background:var(--bg-panel,#1e1e1e)', 'border:1px solid var(--border-strong,#444)',
+    'border-radius:6px', 'padding:0.5rem 0.75rem', 'max-width:260px',
+    'box-shadow:0 4px 12px rgba(0,0,0,0.4)', 'font-size:0.8rem',
+  ].join(';');
+  document.body.appendChild(_transitPop);
+
+  // Close on outside click.
+  document.addEventListener('click', function (e) {
+    if (!_transitPop.contains(e.target)) _transitPop.style.display = 'none';
+  }, true);
+
+  cy.on('tap', 'edge[kind = "transitive"]', function (evt) {
+    const d = evt.target.data();
+    const transitIds    = d.transit      || [];
+    const transitNames  = d.transit_names || transitIds;
+    _transitPop.innerHTML = '';
+
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:0.7rem;color:var(--fg-sub,#888);margin-bottom:0.35rem;';
+    hdr.textContent = 'Transmitted via';
+    _transitPop.appendChild(hdr);
+
+    transitIds.forEach(function (tid, i) {
+      const name  = transitNames[i] || tid;
+      // Look up era for tinting.
+      const rawEl = elements.find(function (e) { return !e.data.source && e.data.id === tid; });
+      const eraId = rawEl ? (rawEl.data.era || null) : null;
+      const tint  = THEME.eraTintCss(eraId);
+      const chip  = document.createElement('span');
+      chip.className = 'musician-chip chip-navigable';
+      chip.style.setProperty('--chip-era-bg',     tint.bg);
+      chip.style.setProperty('--chip-era-border', tint.border);
+      chip.textContent = name;
+      chip.title = name + ' \u2014 Open Musician panel';
+      chip.style.display = 'inline-block';
+      chip.style.margin  = '2px 2px 2px 0';
+      chip.style.cursor  = 'pointer';
+      chip.addEventListener('click', function (e) {
+        e.stopPropagation();
+        _transitPop.style.display = 'none';
+        _openMusicianPanelForTransit(tid);
+      });
+      _transitPop.appendChild(chip);
+    });
+
+    // Position near the click point, staying within viewport.
+    const oe = evt.originalEvent;
+    const px = oe.clientX, py = oe.clientY;
+    _transitPop.style.display = 'block';
+    const pw = _transitPop.offsetWidth  || 200;
+    const ph = _transitPop.offsetHeight || 80;
+    _transitPop.style.left = (px + 12 + pw > window.innerWidth  ? px - pw - 8  : px + 12) + 'px';
+    _transitPop.style.top  = (py + 12 + ph > window.innerHeight ? py - ph - 8  : py + 12) + 'px';
+  });
+}());
+
 // ── background tap ────────────────────────────────────────────────────────────
 cy.on('tap', evt => {
   if (evt.target !== cy) return;
@@ -1116,8 +1468,8 @@ cy.on('tap', evt => {
   if (_bgTapEditChip) { _bgTapEditChip.style.display = 'none'; _bgTapEditChip.onclick = null; }
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
-  // NEW: clear chip filters on background tap
-  clearAllChipFilters();
+  // Note: era/instrument dropdown filters are intentionally NOT cleared on background tap —
+  // they are a persistent selection the user must clear explicitly via the Clear button.
   applyZoomLabels();
   // ADR-034: dismiss bottom sheet on mobile when canvas background is tapped
   if (typeof dismissBottomSheet === 'function') dismissBottomSheet();
@@ -1152,6 +1504,9 @@ window.clearMusicianPanel = function () {
 // ── controls ──────────────────────────────────────────────────────────────────
 function relayout() {
   if (currentLayout === 'timeline') { applyTimelineLayout(); return; }
+  // ADR-138: reset transitive-edge control-point distance to cose default (30).
+  cy.style().selector('edge[kind = "transitive"]')
+    .style({ 'control-point-distances': 30 }).update();
   cy.layout({
     name: 'cose', animate: true, animationDuration: 600, randomize: false,
     nodeRepulsion: () => 8000, idealEdgeLength: () => 120,
@@ -1168,6 +1523,19 @@ function relayout() {
       cy.resize();
       if (currentView === 'graph') relayout();
     }, 400);
+  });
+
+  // ADR-136: Re-run timeline layout when portrait ↔ landscape breakpoint is crossed.
+  // orientationchange fires before resize on many mobile browsers; the 300 ms delay
+  // lets the viewport dimensions settle before the layout re-runs.
+  window.addEventListener('orientationchange', () => {
+    if (currentLayout === 'timeline' && currentView === 'graph') {
+      clearTimeout(_resizeTimer);
+      _resizeTimer = setTimeout(() => {
+        cy.resize();
+        applyTimelineLayout();
+      }, 300);
+    }
   });
 })();
 
