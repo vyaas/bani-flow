@@ -1621,9 +1621,8 @@ function buildRecordingsList(nodeId, nodeData) {
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId);
         const hasSegments = !!(ref.segments && ref.segments.length > 0);
         const bracketEl = _buildLecdemBracket(ref, nodeId, artistLabel);
-        if (!hasSegments && subjectChips && subjectChips.length > 0) {
-          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: subjectChips, defaultCollapsed: true }));
-        } else {
+        if (hasSegments) {
+          // Concert bracket — has its own internal chevron; render directly.
           li.appendChild(bracketEl);
           if (subjectChips && subjectChips.length > 0) {
             const subjectsDiv = document.createElement('div');
@@ -1631,6 +1630,10 @@ function buildRecordingsList(nodeId, nodeData) {
             subjectChips.forEach(function (el) { subjectsDiv.appendChild(el); });
             li.appendChild(subjectsDiv);
           }
+        } else {
+          // Flat row: always wrap in row-accordion so the left chevron is
+          // consistent across all rows. Empty bodyEls → phantom chevron for alignment.
+          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: subjectChips || [], defaultCollapsed: true }));
         }
         byList.appendChild(li);
       });
@@ -1667,9 +1670,8 @@ function buildRecordingsList(nodeId, nodeData) {
         const hasSegments = !!(ref.segments && ref.segments.length > 0);
         const bracketEl = _buildLecdemBracket(ref, nodeId, artistLabel);
         const bodyEls = [lecturerChip, ...subjectChips].filter(Boolean);
-        if (!hasSegments && bodyEls.length > 0) {
-          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
-        } else {
+        if (hasSegments) {
+          // Concert bracket — has its own internal chevron; render directly.
           li.appendChild(bracketEl);
           if (bodyEls.length > 0) {
             const subjectsDiv = document.createElement('div');
@@ -1677,6 +1679,9 @@ function buildRecordingsList(nodeId, nodeData) {
             bodyEls.forEach(function (el) { subjectsDiv.appendChild(el); });
             li.appendChild(subjectsDiv);
           }
+        } else {
+          // Flat row: always wrap in row-accordion. Empty bodyEls → phantom chevron.
+          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
         }
         aboutList.appendChild(li);
       });

@@ -1232,13 +1232,13 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     li.appendChild(labelDiv);
   }
 
-  // ── Co-performers: chevron-left accordion ─────────────────────────────────
-  // Always wrap primaryDiv in a row-accordion. When no accompanists, buildRowAccordion
-  // auto-produces a phantom chevron so all artist rows stay vertically aligned.
+  // ── Co-performers: chevron-right accordion ────────────────────────────────
+  // Chevron on the RIGHT keeps the artist name at position 0 for all rows,
+  // whether or not they have accompanists (no left-indent misalignment).
   const cpChips = (row.coPerformers && row.coPerformers.length > 0)
     ? row.coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'raga', null); })
     : [];
-  const accordion = buildRowAccordion({ headerEl: primaryDiv, bodyEls: cpChips, defaultCollapsed: true });
+  const accordion = buildRowAccordion({ headerEl: primaryDiv, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right' });
   accordion.classList.add('tree-leaf-coperformers-group');
   li.appendChild(accordion);
 
@@ -1277,8 +1277,6 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
 
     const li = document.createElement('li');
     li.className = 'tree-group';
-    // Open all groups by default — discoverability over chrome economy.
-    // Users can still toggle to collapse via the chevron.
     li.classList.add('tree-group-open');
     if (isSingle) li.classList.add('tree-group-single');
 
@@ -1286,7 +1284,7 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     const header = document.createElement('div');
     header.className = 'tree-group-header';
 
-    // Chevron always functional — even single-version groups are collapsible.
+    // Chevron always functional — groups start open, user clicks to collapse.
     const chevron = document.createElement('span');
     chevron.setAttribute('aria-hidden', 'true');
     chevron.className = 'section-collapse-btn';
@@ -1413,9 +1411,6 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
 
     const li = document.createElement('li');
     li.className = 'tree-group';
-    // Open all groups by default — discoverability over chrome economy.
-    // Users can still toggle to collapse via the chevron.
-    li.classList.add('tree-group-open');
     if (isSingle) li.classList.add('tree-group-single');
 
     // ── Group header ──────────────────────────────────────────────────────────
@@ -1450,7 +1445,7 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
     // so we simply append the accordion (not replaceChild).
     if (isSingle && group.rows[0].coPerformers && group.rows[0].coPerformers.length > 0) {
       const cpChips = group.rows[0].coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'comp', null); });
-      const accordion = buildRowAccordion({ headerEl: header, bodyEls: cpChips, defaultCollapsed: true });
+      const accordion = buildRowAccordion({ headerEl: header, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right' });
       accordion.classList.add('tree-leaf-coperformers-group');
       li.appendChild(accordion);
     }
@@ -1692,9 +1687,8 @@ function _renderBaniFlowLecdemStrip(type, id) {
     const subjectChips = _buildBaniFlowLecdemSubjectChips(ref.subjects, type, id);
     const bodyEls = [lecturerChip, ...subjectChips].filter(Boolean);
     if (bracketEl) {
-      if (!hasSegments && bodyEls.length > 0) {
-        li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
-      } else {
+      if (hasSegments) {
+        // Concert bracket — has its own internal chevron; render directly.
         li.appendChild(bracketEl);
         if (bodyEls.length > 0) {
           const subjectsDiv = document.createElement('div');
@@ -1702,6 +1696,9 @@ function _renderBaniFlowLecdemStrip(type, id) {
           bodyEls.forEach(function (el) { subjectsDiv.appendChild(el); });
           li.appendChild(subjectsDiv);
         }
+      } else {
+        // Flat row: always wrap in row-accordion. Empty bodyEls → phantom chevron.
+        li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
       }
     }
 

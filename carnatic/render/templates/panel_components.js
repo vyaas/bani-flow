@@ -184,7 +184,7 @@ function buildSubjectGroup({ chips = [], defaultCollapsed = true, summaryText = 
 //   headerEl         DOM element — the always-visible primary row content
 //   bodyEls          array of DOM elements to show/hide
 //   defaultCollapsed boolean (default true)
-function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true } = {}) {
+function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true, chevronPosition = 'left' } = {}) {
   const wrapEl = document.createElement('div');
   wrapEl.className = 'row-accordion';
 
@@ -195,18 +195,30 @@ function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true } =
   chevron.type = 'button';
   chevron.className = 'row-accordion-chevron';
   chevron.textContent = '\u25b6';
-  headerRow.appendChild(chevron);
+  // Left chevron: prepend before headerEl (aligns all rows with left-padding).
+  // Right chevron: append after headerEl (artist name always at position 0).
+  if (chevronPosition !== 'right') {
+    headerRow.appendChild(chevron);
+  }
 
   headerRow.appendChild(headerEl);
   wrapEl.appendChild(headerRow);
 
   const filteredEls = bodyEls.filter(Boolean);
-  // When no body elements, render a phantom chevron (grayed, non-interactive)
-  // purely for spacing/alignment — keeps rows with and without sub-items vertically aligned.
+  // When no body elements:
+  // - left chevron: render phantom for spacing/alignment.
+  // - right chevron: no chevron needed (no left-indent effect).
   if (filteredEls.length === 0) {
-    chevron.classList.add('row-accordion-chevron-phantom');
+    if (chevronPosition !== 'right') {
+      chevron.classList.add('row-accordion-chevron-phantom');
+    }
     headerRow.style.cursor = 'default';
     return wrapEl;
+  }
+
+  // Right chevron: append after headerEl now that body is confirmed non-empty.
+  if (chevronPosition === 'right') {
+    headerRow.appendChild(chevron);
   }
 
   chevron.textContent = defaultCollapsed ? '\u25b6' : '\u25bc';
@@ -214,6 +226,9 @@ function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true } =
 
   const bodyEl = document.createElement('div');
   bodyEl.className = 'row-accordion-body';
+  if (chevronPosition === 'right') {
+    bodyEl.style.paddingLeft = 'var(--hier-indent-step)';
+  }
   bodyEl.hidden = defaultCollapsed;
   filteredEls.forEach(function (el) { bodyEl.appendChild(el); });
   wrapEl.appendChild(bodyEl);
