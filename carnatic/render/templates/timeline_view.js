@@ -1,6 +1,6 @@
 // ── ADR-136: Timeline Overhaul ────────────────────────────────────────────────
 // D1-D3: Interpolated dating  D4: Hybrid log/linear axis
-// D5: Navigable 50-year ruler  D6: Mobile vertical orientation
+// D5: Navigable 50-year ruler
 
 // ── D4: Hybrid axis constants ─────────────────────────────────────────────────
 const TIMELINE_PIVOT        = 1775;   // log/linear split (Trinity birth window)
@@ -35,11 +35,6 @@ let currentLayout = 'graph';
 // Dynamic axis bounds — updated each time applyTimelineLayout() runs
 let _axisYearMin = 1700;
 let _axisYearMax = 2030;
-
-// ── Orientation ───────────────────────────────────────────────────────────────
-function _isPortrait() {
-  return window.innerHeight > window.innerWidth;
-}
 
 // ── D4: Hybrid axis mapping ───────────────────────────────────────────────────
 function _updateAxisBounds(years) {
@@ -158,8 +153,6 @@ function placementYear(node) {
 
 // ── Apply timeline layout ─────────────────────────────────────────────────────
 function applyTimelineLayout() {
-  const portrait = _isPortrait();
-
   // Pre-compute all placement years (one pass — avoid repeating graph walks)
   const pyCache = new Map();
   cy.nodes().forEach(n => pyCache.set(n.id(), placementYear(n)));
@@ -197,13 +190,7 @@ function applyTimelineLayout() {
       const coord  = axisCoord(py);
       const half   = Math.floor(i / 2) + 1;
       const offset = (i % 2 === 0 ? 1 : -1) * half * LANE_STEP;
-      if (portrait) {
-        // Vertical (D6): time flows top→bottom on Y, diagonal on X
-        positions[n.id()] = { x: coord + offset, y: coord };
-      } else {
-        // Horizontal: time on X and Y → diagonal scatter
-        positions[n.id()] = { x: coord, y: coord + offset };
-      }
+      positions[n.id()] = { x: coord, y: coord + offset };
     });
   });
 
@@ -254,7 +241,6 @@ function drawRuler() {
   ruler.innerHTML = '';
 
   const svgNS   = 'http://www.w3.org/2000/svg';
-  const portrait = _isPortrait();
   const W       = ruler.clientWidth  || window.innerWidth;
   const H       = ruler.clientHeight || window.innerHeight;
 
@@ -279,53 +265,30 @@ function drawRuler() {
 
   ticks.forEach(({ year, isLog, halfWindow }) => {
     const coord = axisCoord(year);
-    let sx, sy;
-    if (portrait) {
-      sy = graphYtoPx(coord);
-      if (sy < -20 || sy > H + 20) return;
-    } else {
-      sx = graphXtoPx(coord);
-      if (sx < -20 || sx > W + 20) return;
-    }
+    const sx = graphXtoPx(coord);
+    if (sx < -20 || sx > W + 20) return;
 
     // (a) Faint full-span grid line
     const line = document.createElementNS(svgNS, 'line');
-    if (portrait) {
-      line.setAttribute('x1', 0);  line.setAttribute('x2', W);
-      line.setAttribute('y1', sy); line.setAttribute('y2', sy);
-    } else {
-      line.setAttribute('x1', sx); line.setAttribute('x2', sx);
-      line.setAttribute('y1', 0);  line.setAttribute('y2', H);
-    }
+    line.setAttribute('x1', sx); line.setAttribute('x2', sx);
+    line.setAttribute('y1', 0);  line.setAttribute('y2', H);
     line.setAttribute('class', 'tick-line' + (isLog ? ' century' : ''));
     ruler.appendChild(line);
 
     // (b) Tick label
     const label = document.createElementNS(svgNS, 'text');
-    if (portrait) {
-      label.setAttribute('x', 6);
-      label.setAttribute('y', sy - 3);
-      label.setAttribute('text-anchor', 'start');
-      label.setAttribute('dominant-baseline', 'auto');
-    } else {
-      label.setAttribute('x', sx);
-      label.setAttribute('y', 4);
-      label.setAttribute('text-anchor', 'middle');
-      label.setAttribute('dominant-baseline', 'hanging');
-    }
+    label.setAttribute('x', sx);
+    label.setAttribute('y', 4);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('dominant-baseline', 'hanging');
     label.setAttribute('class', 'tick-label' + (isLog ? ' century' : ''));
     label.textContent = String(year);
     ruler.appendChild(label);
 
     // (c) Invisible 24-px click target
     const hit = document.createElementNS(svgNS, 'rect');
-    if (portrait) {
-      hit.setAttribute('x', 0);         hit.setAttribute('y', sy - 12);
-      hit.setAttribute('width',  W);    hit.setAttribute('height', 24);
-    } else {
-      hit.setAttribute('x', sx - 12);   hit.setAttribute('y', 0);
-      hit.setAttribute('width',  24);   hit.setAttribute('height', H);
-    }
+    hit.setAttribute('x', sx - 12);   hit.setAttribute('y', 0);
+    hit.setAttribute('width',  24);   hit.setAttribute('height', H);
     hit.setAttribute('fill', 'transparent');
     hit.setAttribute('class', 'tick-click-target');
     hit.style.pointerEvents = 'all';
@@ -339,19 +302,11 @@ function drawRuler() {
   Object.entries(ERA_BAND_MEDIAN).forEach(([era, medianYear]) => {
     const eraCoord = axisCoord(medianYear);
     const text = document.createElementNS(svgNS, 'text');
-    if (portrait) {
-      const lx = graphXtoPx(eraCoord);
-      text.setAttribute('x', lx);
-      text.setAttribute('y', 14);
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('dominant-baseline', 'hanging');
-    } else {
-      const ly = graphYtoPx(eraCoord);
-      text.setAttribute('x', 6);
-      text.setAttribute('y', ly);
-      text.setAttribute('text-anchor', 'start');
-      text.setAttribute('dominant-baseline', 'middle');
-    }
+    const ly = graphYtoPx(eraCoord);
+    text.setAttribute('x', 6);
+    text.setAttribute('y', ly);
+    text.setAttribute('text-anchor', 'start');
+    text.setAttribute('dominant-baseline', 'middle');
     text.setAttribute('class', 'era-label');
     text.textContent = '— ' + (eraDisplayNames[era] || era);
     ruler.appendChild(text);

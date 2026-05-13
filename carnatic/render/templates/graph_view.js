@@ -120,6 +120,30 @@ const _transitiveEdges = _computeTransitiveEdges();
 // Nodes:          connected AND content-bearing.
 // Primary edges:  both endpoints content-bearing + connected.
 // Transitive edges: derived synthetic arcs for collapsed transit chains.
+
+// A node is "visibly connected" only if it is an endpoint of at least one edge
+// that survives the filter (both endpoints content-bearing) or a transitive edge.
+// Using raw _connectedNodeIds here is insufficient: a node can have edges in the
+// data whose only counterparts are non-content-bearing transit nodes — those edges
+// are dropped, leaving the node stranded with no visible connections.
+const _visiblyConnectedIds = (function () {
+  const ids = new Set();
+  elements.forEach(function (el) {
+    if (el.data.source === undefined) return;
+    const s = el.data.source, t = el.data.target;
+    if (_contentBearingIds.has(s) && _contentBearingIds.has(t) &&
+        _connectedNodeIds.has(s) && _connectedNodeIds.has(t)) {
+      ids.add(s);
+      ids.add(t);
+    }
+  });
+  _transitiveEdges.forEach(function (el) {
+    ids.add(el.data.source);
+    ids.add(el.data.target);
+  });
+  return ids;
+}());
+
 const _cyElements = elements.filter(function (el) {
   if (el.data.source !== undefined) {
     // Primary edge: keep only when both endpoints are visible.
@@ -128,8 +152,8 @@ const _cyElements = elements.filter(function (el) {
            _connectedNodeIds.has(el.data.source) &&
            _connectedNodeIds.has(el.data.target);
   }
-  // Node: connected AND content-bearing.
-  return _connectedNodeIds.has(el.data.id) && _contentBearingIds.has(el.data.id);
+  // Node: must have at least one visible edge (primary or transitive).
+  return _visiblyConnectedIds.has(el.data.id) && _contentBearingIds.has(el.data.id);
 }).concat(_transitiveEdges);
 
 // ── Cytoscape init ────────────────────────────────────────────────────────────
@@ -1523,19 +1547,6 @@ function relayout() {
       cy.resize();
       if (currentView === 'graph') relayout();
     }, 400);
-  });
-
-  // ADR-136: Re-run timeline layout when portrait ↔ landscape breakpoint is crossed.
-  // orientationchange fires before resize on many mobile browsers; the 300 ms delay
-  // lets the viewport dimensions settle before the layout re-runs.
-  window.addEventListener('orientationchange', () => {
-    if (currentLayout === 'timeline' && currentView === 'graph') {
-      clearTimeout(_resizeTimer);
-      _resizeTimer = setTimeout(() => {
-        cy.resize();
-        applyTimelineLayout();
-      }, 300);
-    }
   });
 })();
 
