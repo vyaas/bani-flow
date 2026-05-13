@@ -1286,21 +1286,16 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     const header = document.createElement('div');
     header.className = 'tree-group-header';
 
-    // Chevron always first — phantom for single-version (alignment), functional for multi.
+    // Chevron always functional — even single-version groups are collapsible.
     const chevron = document.createElement('span');
     chevron.setAttribute('aria-hidden', 'true');
-    if (isSingle) {
-      chevron.className = 'section-collapse-btn row-accordion-chevron-phantom';
-      chevron.textContent = '\u25b6';
-    } else {
-      chevron.className = 'section-collapse-btn';
-      chevron.textContent = '\u25bc';  // open by default
-      header.style.cursor = 'pointer';
-      header.addEventListener('click', function() {
-        const opened = li.classList.toggle('tree-group-open');
-        chevron.textContent = opened ? '\u25bc' : '\u25b6';
-      });
-    }
+    chevron.className = 'section-collapse-btn';
+    chevron.textContent = '\u25bc';  // open by default
+    header.style.cursor = 'pointer';
+    header.addEventListener('click', function() {
+      const opened = li.classList.toggle('tree-group-open');
+      chevron.textContent = opened ? '\u25bc' : '\u25b6';
+    });
     header.appendChild(chevron);
 
     if (group.comp) {
