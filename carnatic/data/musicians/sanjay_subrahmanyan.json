@@ -69,6 +69,18 @@
       "composition_id": "soundara_rajam_ashraye",
       "raga_id": "brindavana_saranga",
       "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/7wRxXzOzefk",
+      "label": "",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "thanjavur_kalyanaraman"
+        ]
+      }
     }
   ]
 }
