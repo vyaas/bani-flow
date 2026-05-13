@@ -3031,7 +3031,8 @@
       --hier-indent-step: 10px;
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
-    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn) {
+    /* .vp-btn excluded: same visual size as .filter-dropdown-btn (both are pill controls) */
+    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn) {
       min-height: 44px;
     }
     .view-btn {
@@ -3039,12 +3040,15 @@
       padding: 0 9px;   /* ADR-045: full labels fit at tighter padding */
     }
     /* ADR-045: full view labels shown on mobile — no label swap */
+    /* min-height intentionally omitted: .vp-btn and .filter-dropdown-btn should match */
     .vp-btn {
-      min-height: 44px;
       padding: 4px 12px;
     }
     /* ADR-135: layout-controls-float mobile — single row wraps if needed */
+    /* top: 4px because #main already has padding-top: var(--chrome-top) on mobile,
+       so #cy-wrap starts below the chrome — no need for the extra chrome offset */
     #layout-controls-float {
+      top: 4px;
       gap: 3px;
       flex-wrap: wrap;
       justify-content: flex-end;
