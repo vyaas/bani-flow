@@ -34,7 +34,16 @@ function formatTala(tala) {
 function nextSpawnPosition() {
   const offset = (spawnCount % 8) * 28;
   spawnCount += 1;
-  return { top: 18 + offset, left: 18 + offset };
+  const mainEl = document.getElementById('main');
+  const mw = mainEl ? mainEl.offsetWidth  : 800;
+  const mh = mainEl ? mainEl.offsetHeight : 600;
+  const pw = 480; // default player width
+  const baseLeft = Math.max(0, Math.round((mw - pw) / 2));
+  const baseTop  = Math.max(0, Math.round(mh * 0.15));
+  return {
+    top:  Math.min(baseTop  + offset, mh - 220),
+    left: Math.min(baseLeft + offset, mw - pw),
+  };
 }
 
 function bringToFront(player) {
@@ -49,20 +58,26 @@ function refreshPlayingIndicators() {
 }
 
 function wireDrag(el, bar) {
-  let dragging = false, ox = 0, oy = 0;
+  let dragging = false, ox = 0, oy = 0, bounds = null, rafPending = false;
   bar.addEventListener('mousedown', e => {
     dragging = true;
+    bounds = el.parentElement.getBoundingClientRect();
     ox = e.clientX - el.offsetLeft;
     oy = e.clientY - el.offsetTop;
     e.preventDefault();
   });
   document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    const p = el.parentElement.getBoundingClientRect();
-    el.style.left = Math.max(0, Math.min(e.clientX - ox, p.width  - el.offsetWidth))  + 'px';
-    el.style.top  = Math.max(0, Math.min(e.clientY - oy, p.height - el.offsetHeight)) + 'px';
+    if (!dragging || rafPending) return;
+    rafPending = true;
+    const cx = e.clientX, cy = e.clientY;
+    requestAnimationFrame(() => {
+      rafPending = false;
+      if (!dragging) return;
+      el.style.left = Math.max(0, Math.min(cx - ox, bounds.width  - el.offsetWidth))  + 'px';
+      el.style.top  = Math.max(0, Math.min(cy - oy, bounds.height - el.offsetHeight)) + 'px';
+    });
   });
-  document.addEventListener('mouseup', () => { dragging = false; });
+  document.addEventListener('mouseup', () => { dragging = false; bounds = null; });
 }
 
 function wireResize(el, handle) {
@@ -77,31 +92,35 @@ function wireResize(el, handle) {
   //
   // Min width 320px: YouTube controls stay reachable.
   // Min video height 160px: iframe stays visible.
-  let resizing = false, startX = 0, startY = 0, startW = 0, startVideoH = 0;
+  let resizing = false, startX = 0, startY = 0, startW = 0, startVideoH = 0,
+      resizeVideoWrap = null, rafResizePending = false;
   handle.addEventListener('mousedown', e => {
     resizing = true;
     startX = e.clientX; startY = e.clientY;
     startW = el.offsetWidth;
-    // Current rendered video height = container width × 9/16
-    const videoWrap = el.querySelector('.mp-video-wrap');
-    startVideoH = videoWrap ? videoWrap.offsetHeight : Math.round(el.offsetWidth * 9 / 16);
+    // Cache videoWrap reference and current video height once
+    resizeVideoWrap = el.querySelector('.mp-video-wrap');
+    startVideoH = resizeVideoWrap ? resizeVideoWrap.offsetHeight : Math.round(el.offsetWidth * 9 / 16);
     e.preventDefault();
   });
   document.addEventListener('mousemove', e => {
-    if (!resizing) return;
-    // Width: resize the whole player
-    const newW = Math.max(320, startW + e.clientX - startX);
-    el.style.width = newW + 'px';
-    // Height: resize only the video wrap, not the container
-    const newVideoH = Math.max(160, startVideoH + e.clientY - startY);
-    const videoWrap = el.querySelector('.mp-video-wrap');
-    if (videoWrap) {
-      // Switch from padding-top ratio trick to explicit pixel height
-      videoWrap.style.paddingTop = '0';
-      videoWrap.style.height = newVideoH + 'px';
-    }
+    if (!resizing || rafResizePending) return;
+    rafResizePending = true;
+    const cx = e.clientX, cy = e.clientY;
+    requestAnimationFrame(() => {
+      rafResizePending = false;
+      if (!resizing) return;
+      // Width: resize the whole player
+      el.style.width = Math.max(320, startW + cx - startX) + 'px';
+      // Height: resize only the video wrap, not the container
+      if (resizeVideoWrap) {
+        // Switch from padding-top ratio trick to explicit pixel height
+        resizeVideoWrap.style.paddingTop = '0';
+        resizeVideoWrap.style.height = Math.max(160, startVideoH + cy - startY) + 'px';
+      }
+    });
   });
-  document.addEventListener('mouseup', () => { resizing = false; });
+  document.addEventListener('mouseup', () => { resizing = false; resizeVideoWrap = null; });
 }
 
 // ── buildNotesSection — render a notes[] array as a soft footnote block ──────

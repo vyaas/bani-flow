@@ -889,6 +889,7 @@
     display: flex;
     flex-direction: column;
     user-select: none;
+    will-change: left, top;
   }
 
   /* title bar / drag handle */
@@ -1010,19 +1011,24 @@
     border-top: 1px solid var(--border-strong);
   }
 
-  /* resize grip at bottom-right corner — nwse-resize signals both axes */
+  /* resize grip at bottom — se-resize cursor + corner-dot indicator pointing ↘ */
   .mp-resize {
-    height: 7px; cursor: nwse-resize;
+    position: relative;
+    height: 10px; cursor: se-resize;
     background: var(--bg-input); border-top: 1px solid var(--border-strong);
     border-radius: 0 0 4px 4px; opacity: 0.6;
-    /* Diagonal grip lines hint at corner-resize affordance */
-    background-image: repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 2px,
-      rgba(255,255,255,0.08) 2px,
-      rgba(255,255,255,0.08) 3px
-    );
+  }
+  /* Three dots in an L-shape at the bottom-right corner signalling ↘ expand */
+  .mp-resize::after {
+    content: '';
+    position: absolute;
+    right: 5px; bottom: 2px;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    box-shadow:
+      -5px  0    0 rgba(255,255,255,0.35),
+       0   -5px  0 rgba(255,255,255,0.35);
   }
 
   /* ── ADR-131 R3: Sruti player minimize affordance ───────────────────────
