@@ -593,127 +593,6 @@
     return div.children.length ? div : null;
   }
 
-  function _renderColophon(colophon, container) {
-    if (!colophon || typeof colophon !== 'object') return;
-
-    const wrap = _el('div', 'pt-colophon');
-    const hr = document.createElement('hr');
-    hr.className = 'pt-divider';
-    wrap.appendChild(hr);
-
-    const order = ['vision', 'curation_loop', 'contribute', 'listening_ethic', 'author'];
-    order.forEach(function (key) {
-      const sub = colophon[key];
-      if (!sub || typeof sub !== 'object') return;
-
-      const sec = _el('div', 'pt-colophon-section pt-colophon-' + key.replace('_', '-'));
-      if (_nonEmptyString(sub.heading)) {
-        sec.appendChild(_el('h3', 'pt-colophon-head', sub.heading));
-      }
-
-      if (key === 'vision') {
-        (sub.paragraphs || []).forEach(function (p) {
-          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
-        });
-        if (sub.epigraph && _nonEmptyString(sub.epigraph.text)) {
-          const bq = _el('blockquote', 'pt-vision-epigraph');
-          bq.appendChild(_el('p', null, '\u201c' + sub.epigraph.text + '\u201d'));
-          if (_nonEmptyString(sub.epigraph.source)) {
-            bq.appendChild(_el('cite', 'pt-epigraph-source', '\u2014 ' + sub.epigraph.source));
-          }
-          sec.appendChild(bq);
-        }
-
-      } else if (key === 'curation_loop') {
-        (sub.paragraphs || []).forEach(function (p) {
-          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
-        });
-        if (_nonEmptyString(sub.diagram_text)) {
-          const pre = document.createElement('pre');
-          pre.className = 'pt-loop-diagram';
-          pre.textContent = sub.diagram_text;
-          sec.appendChild(pre);
-        }
-        const loopLinks = _renderExtLinks(sub.ext_links);
-        if (loopLinks) sec.appendChild(loopLinks);
-
-      } else if (key === 'contribute') {
-        if (_nonEmptyString(sub.summary)) {
-          sec.appendChild(_el('p', 'pt-colophon-para', sub.summary));
-        }
-        if (sub.repo && _nonEmptyString(sub.repo.url) && _nonEmptyString(sub.repo.label)) {
-          const repoRow = _el('div', 'pt-contribute-repo');
-          const repoLink = document.createElement('a');
-          repoLink.className = 'pt-repo-link';
-          repoLink.href = sub.repo.url;
-          repoLink.target = '_blank';
-          repoLink.rel = 'noopener noreferrer';
-          if (sub.repo.icon === 'github') {
-            const iconSpan = document.createElement('span');
-            iconSpan.innerHTML = _GITHUB_SVG;
-            repoLink.appendChild(iconSpan);
-          }
-          repoLink.appendChild(document.createTextNode('\u00a0' + sub.repo.label));
-          repoRow.appendChild(repoLink);
-          sec.appendChild(repoRow);
-        }
-        if (Array.isArray(sub.quickstart) && sub.quickstart.length) {
-          const ol = document.createElement('ol');
-          ol.className = 'pt-quickstart';
-          sub.quickstart.forEach(function (step) {
-            if (!_nonEmptyString(step)) return;
-            const li = document.createElement('li');
-            const code = document.createElement('code');
-            code.textContent = step;
-            li.appendChild(code);
-            ol.appendChild(li);
-          });
-          if (ol.children.length) sec.appendChild(ol);
-        }
-        const contribLinks = _renderExtLinks(sub.ext_links);
-        if (contribLinks) sec.appendChild(contribLinks);
-
-      } else if (key === 'listening_ethic') {
-        (sub.paragraphs || []).forEach(function (p) {
-          if (_nonEmptyString(p)) sec.appendChild(_el('p', 'pt-colophon-para', p));
-        });
-        const listenLinks = _renderExtLinks(sub.ext_links);
-        if (listenLinks) sec.appendChild(listenLinks);
-
-      } else if (key === 'author') {
-        if (_nonEmptyString(sub.name)) {
-          const authorRow = _el('div', 'pt-author-row');
-          if (_nonEmptyString(sub.avatar_url)) {
-            const img = document.createElement('img');
-            img.className = 'pt-author-avatar';
-            img.src = sub.avatar_url;
-            img.alt = sub.name;
-            img.loading = 'lazy';
-            img.referrerPolicy = 'no-referrer';
-            img.width = 40;
-            img.height = 40;
-            authorRow.appendChild(img);
-          }
-          const authorText = _el('div', 'pt-author-text');
-          authorText.appendChild(_el('div', 'pt-author-name', sub.name));
-          if (_nonEmptyString(sub.tagline)) {
-            authorText.appendChild(_el('div', 'pt-author-tagline', sub.tagline));
-          }
-          authorRow.appendChild(authorText);
-          sec.appendChild(authorRow);
-        }
-        const authorLinks = _renderExtLinks(sub.ext_links);
-        if (authorLinks) sec.appendChild(authorLinks);
-      }
-
-      wrap.appendChild(sec);
-    });
-
-    if (wrap.children.length > 1) {
-      container.appendChild(wrap);
-    }
-  }
-
   function _renderInto(container, block, slot) {
     container.innerHTML = '';
 
@@ -904,11 +783,6 @@
       if (seeds.closing_note) cross.appendChild(_el('p', 'pt-closing-note', seeds.closing_note));
       container.appendChild(cross);
     }
-
-    // ── Section D: colophon (ADR-102) ────────────────────────────────────
-    const colophon = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
-      ? (helpEmptyPanels.colophon || null) : null;
-    _renderColophon(colophon, container);
 
   }
 
