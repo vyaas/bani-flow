@@ -1083,3 +1083,11 @@
     _tintPrefaceChips();
   });
 })();
+
+// ── ADR-134 D4: lineage-empty hint text ──────────────────────────────────────
+// Shown on the cy canvas when an era/instrument filter combination yields
+// zero visible nodes within the connected (guru-shishya) set.
+// Consumed by graph_view.js _setLineageEmptyMsg via the LINEAGE_FILTER_EMPTY_TEXT global.
+const LINEAGE_FILTER_EMPTY_TEXT =
+  'No musicians match these filters. Some lineages are still being sourced \u2014 ' +
+  'see them by name in the search bar or via the Mela-Janya view.';

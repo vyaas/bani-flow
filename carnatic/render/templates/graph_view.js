@@ -8,10 +8,29 @@ const CAKRA_NAMES = {
   9: 'Brahma', 10: 'Disi', 11: 'Rudra', 12: 'Aditya'
 };
 
+// ── ADR-134: connected-set predicate — suppress lineage orphans ──────────────
+// A node is included in the Guru-Shishya view iff it is incident to at least
+// one edge in the elements array. All current edges are guru-shishya edges (D5).
+// Computed once before Cytoscape is initialised; cached as a module-level Set.
+const _connectedNodeIds = (function () {
+  const ids = new Set();
+  elements.forEach(function (el) {
+    if (el.data.source) {
+      ids.add(el.data.source);
+      ids.add(el.data.target);
+    }
+  });
+  return ids;
+}());
+const _cyElements = elements.filter(function (el) {
+  // Keep all edges; keep only nodes that are in the connected set.
+  return el.data.source !== undefined || _connectedNodeIds.has(el.data.id);
+});
+
 // ── Cytoscape init ────────────────────────────────────────────────────────────
 const cy = cytoscape({
   container: document.getElementById('cy'),
-  elements:  elements,
+  elements:  _cyElements,
   style: [
     {
       selector: 'node',
@@ -122,6 +141,26 @@ cy.ready(() => {
   // Default view is Mela-Janya — switch after cy is ready so showRagaWheel()
   // has valid SVG dimensions to draw into.
   requestAnimationFrame(() => switchView('raga'));
+
+  // ADR-134 D4: create lineage empty-state overlay for filter combinations
+  // that yield zero visible connected nodes.
+  (function () {
+    const wrap = document.getElementById('cy-wrap');
+    if (!wrap) return;
+    const msg = document.createElement('div');
+    msg.id = 'cy-lineage-empty-msg';
+    msg.setAttribute('aria-live', 'polite');
+    msg.style.cssText = [
+      'display:none', 'position:absolute', 'top:50%', 'left:50%',
+      'transform:translate(-50%,-50%)', 'text-align:center',
+      'color:var(--fg-sub)', 'padding:1.5rem', 'pointer-events:none',
+      'max-width:320px', 'font-size:0.85rem', 'line-height:1.5',
+    ].join(';');
+    msg.textContent = (typeof window.LINEAGE_FILTER_EMPTY_TEXT === 'string')
+      ? window.LINEAGE_FILTER_EMPTY_TEXT
+      : 'No musicians match these filters. Some lineages are still being sourced — see them by name in the search bar or via the Mela-Janya view.';
+    wrap.appendChild(msg);
+  }());
 });
 
 // ── ERA_COLOURS and INSTRUMENT_SHAPES mirrors (for chip injection) ─────────────
@@ -392,6 +431,10 @@ function applyChipFilters() {
 
   if (clearBtn) clearBtn.hidden = false;
   setScopeLabels(true);
+
+  // ADR-134 D4: show empty-state hint when the filter yields no visible nodes.
+  const anyVisible = cy.nodes().some(n => !n.hasClass('chip-faded'));
+  _setLineageEmptyMsg(!anyVisible);
 }
 
 function clearAllChipFilters() {
@@ -404,6 +447,13 @@ function clearAllChipFilters() {
   if (clearBtn) clearBtn.hidden = true;
   _updateFilterBtnLabels();
   setScopeLabels(false);
+  _setLineageEmptyMsg(false);
+}
+
+// ADR-134 D4: toggle the lineage-empty overlay on the cy canvas.
+function _setLineageEmptyMsg(show) {
+  const msg = document.getElementById('cy-lineage-empty-msg');
+  if (msg) msg.style.display = show ? 'block' : 'none';
 }
 
 function setScopeLabels(visible) {
