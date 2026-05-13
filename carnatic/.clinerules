@@ -653,3 +653,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-13: ADR-137 popup redesign: the lineage popup IIFE must capture the `lineage-popup` div at init time (getElementById at script execution) not inside each onclick handler — the div exists before the IIFE runs since it sits in the static HTML; `chip-dimmed` opacity on `.lineage-chip` must be paired with a higher-opacity `:hover` state so dimmed chips are still discoverable on hover.
 [AGENTS: carnatic-coder]
+- 2026-05-13: `buildListeningTrail` iterated `matchedNodeIds` with `cy.getElementById()` and early-returned on empty collections — this silently dropped musicians with no lineage edges (transit/isolated nodes not in `_cyElements`), causing their recordings to vanish from raga/comp panels even though they were correctly in `ragaToNodes`. Fix: fall back to raw `elements` array (same as `_openMusicianPanelForTransit`) when `cy.getElementById()` returns an empty collection.
+[AGENTS: carnatic-coder]
