@@ -1152,17 +1152,18 @@
   }
 
   /* ── Viewport toolbar — compact overlay, top-right of graph canvas (ADR-030) ── */
-  /* ── Wheel Detail Panel (Option B, ADR-096): mela→janya→comp list overlay ── */
+  /* ── Wheel Detail Panel (Option B, ADR-096 / ADR-140): mela→janya→comp list overlay ── */
+  /* ADR-140: left/top are set dynamically by JS, anchored to the mela that opened it. */
   #wheel-detail-panel {
     display: none;
-    position: absolute; top: 8px; left: 8px;
-    width: 228px; max-height: calc(100% - 60px);
+    position: absolute;
+    width: 228px; max-height: 60vh;
     overflow-y: auto; z-index: 65;
     background: var(--bg-panel); border: 1px solid var(--border-strong);
     border-radius: 8px; padding: 10px 12px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.55);
     pointer-events: all; box-sizing: border-box;
-    transition: left 0.22s ease;
+    transform-origin: top left;
   }
   #wheel-detail-panel.wdp-open { display: flex; flex-direction: column; gap: 5px; }
   .wdp-header {
@@ -3153,12 +3154,7 @@
     #filter-toggle-btn {
       display: none;
     }
-    /* WDP top stays at 8px: #main padding-top already clears the fixed chrome,
-       so #cy-wrap starts below it and the panel needs no extra offset on mobile. */
-    #wheel-detail-panel {
-      top: 8px;
-      max-height: calc(100% - 8px - var(--chrome-bottom));
-    }
+    /* ADR-140: WDP left/top are set by JS — no CSS position override on mobile. */
   }
 
   /* ── ADR-036: compact view selector — short labels hidden on desktop ── */
@@ -3285,22 +3281,7 @@
       min-width: 200px;
     }
 
-    /* ── Floating-sidebar safety offsets ─────────────────────────────────── */
-    /* When the left sidebar is open but unpinned (floating overlay), the mela  */
-    /* detail panel would spawn underneath it. Shift it right so it's visible.  */
-    /* Uses :has() (matches the viewport-toolbar pattern) instead of the ~      */
-    /* sibling combinator, which can be unreliable with absolutely-positioned   */
-    /* grid items sharing a parent with the canvas column.                      */
-    #main:not(.left-pinned):has(> #left-sidebar.drawer-open) #wheel-detail-panel {
-      left: 292px;
-    }
-
-    /* On desktop, inset the WDP below the floating top chrome so it never      */
-    /* spawns behind the title / view-selector cluster.                         */
-    #wheel-detail-panel {
-      top: var(--chrome-top);
-      max-height: calc(100% - var(--chrome-top) - var(--chrome-bottom));
-    }
+    /* ADR-140: WDP left/top are set by JS — no CSS position overrides on desktop. */
 
     /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
     /* Re-layout / Timeline) would be hidden under it. Shift it left.            */

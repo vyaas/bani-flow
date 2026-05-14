@@ -442,16 +442,157 @@ function hideWheelTooltip() {
 let _expandedMela = null, _expandedJanya = null, _expandedComp = null;
 let _labelLayer = null;  // top-most <g> in vp — all text labels go here
 let _wdpData = null;     // Option B: panel data cache (set in drawRagaWheel)
+let _wdpMelaNum = null;  // ADR-140: melakarta number of the currently open WDP (null = closed)
+let _wdpCorner  = null;  // ADR-140: anchor corner of current WDP ('tl'|'tr'|'bl'|'br')
 
 // ── Wheel Detail Panel (Option B, ADR-096) ─────────────────────────────────
 // Shows mela→janya→comp as a scrollable HTML overlay panel, replacing SVG
 // satellite fans. The wheel stays fully at overview scale; detail is beside it.
 
 function _closeWheelDetailPanel() {
+  _wdpMelaNum = null;
+  _wdpCorner  = null;
   const panel = document.getElementById('wheel-detail-panel');
-  if (panel) { panel.classList.remove('wdp-open'); panel.innerHTML = ''; }
+  if (panel) {
+    panel.classList.remove('wdp-open');
+    panel.innerHTML = '';
+    panel.style.left            = '';
+    panel.style.top             = '';
+    panel.style.transform       = '';
+    panel.style.transformOrigin = '';
+  }
 }
 window._closeWheelDetailPanel = _closeWheelDetailPanel;
+
+// ADR-140 §Corner: reposition the WDP so the correct corner is anchored just
+// outside the mela arc outer edge. The anchor corner is chosen by visual
+// quadrant so the panel always fans AWAY from the wheel centre:
+//   [  0°,  90°] top-right  -> bottom-left  (panel extends upper-right)
+//   [ 90°, 180°] bot-right  -> top-left     (panel extends lower-right)
+//   [180°, 270°] bot-left   -> top-right    (panel extends lower-left)
+//   [270°, 360°] top-left   -> bottom-right (panel extends upper-left)
+// 0° = 12-o'clock, clockwise. Called every _applyTransform() frame.
+function _positionWdpAtMela(melaNum) {
+  const panel = document.getElementById('wheel-detail-panel');
+  if (!panel || !panel.classList.contains('wdp-open')) return;
+  const g = RagaWheel._geometry;
+  if (!g.cx || !g.rMela) return;
+  const s = RagaWheel._state;
+
+  // SVG local: anchor just past the outer tip of the mela chip so the chip
+  // itself remains visible and clickable. rMelaHead[melaNum] is the outer-tip
+  // radius stored during drawRagaWheel; fall back to rMela+12 if unavailable.
+  const rHead = (g.rMelaHead && g.rMelaHead[melaNum]) ? g.rMelaHead[melaNum] + 8 : g.rMela + 12;
+  const thetaDeg = (melaNum - 0.5) * 5;
+  const thetaRad = (thetaDeg - 90) * Math.PI / 180;
+  const lx = g.cx + rHead * Math.cos(thetaRad);
+  const ly = g.cy + rHead * Math.sin(thetaRad);
+
+  // Apply viewport transform: rotate -> scale -> translate.
+  const rot = s.rotation;
+  const dx = lx - g.cx, dy = ly - g.cy;
+  const rx = Math.cos(rot) * dx - Math.sin(rot) * dy + g.cx;
+  const ry = Math.sin(rot) * dx + Math.cos(rot) * dy + g.cy;
+  const screenX = rx * s.scale + s.panX;
+  const screenY = ry * s.scale + s.panY;
+
+  // Compute visual angle (0 = 12-o'clock, CW) accounting for wheel rotation.
+  // Pick the corner that touches the mela so the panel fans outward.
+  const visualAngleRad = Math.atan2(ry - g.cy, rx - g.cx);
+  const visualAngleDeg = (((visualAngleRad + Math.PI / 2) * 180 / Math.PI) + 360) % 360;
+  let corner;
+  if      (visualAngleDeg <  90) corner = 'bl';  // top-right  -> bottom-left anchor
+  else if (visualAngleDeg < 180) corner = 'tl';  // bot-right  -> top-left anchor
+  else if (visualAngleDeg < 270) corner = 'tr';  // bot-left   -> top-right anchor
+  else                           corner = 'br';  // top-left   -> bottom-right anchor
+  _wdpCorner = corner;
+
+  // Place left/top so the chosen corner sits at (screenX, screenY).
+  // transform-origin must match so scale() expands from that same corner.
+  const W = panel.offsetWidth  || 0;
+  const H = panel.offsetHeight || 0;
+  let L, T;
+  switch (corner) {
+    case 'tl': L = screenX;     T = screenY;     break;
+    case 'tr': L = screenX - W; T = screenY;     break;
+    case 'bl': L = screenX;     T = screenY - H; break;
+    case 'br': L = screenX - W; T = screenY - H; break;
+  }
+  const ORIGINS = { tl: '0 0', tr: '100% 0', bl: '0 100%', br: '100% 100%' };
+  panel.style.left            = L + 'px';
+  panel.style.top             = T + 'px';
+  panel.style.transform       = 'scale(' + s.scale + ')';
+  panel.style.transformOrigin = ORIGINS[corner];
+}
+
+// ADR-140: Smoothly pan the wheel so the mela arc centre lands at the middle
+// of the viewport. Zoom is preserved. Uses the _animRafId slot so any
+// in-flight animation is cancelled before starting a new one.
+function _animateWheelToMela(melaNum, durationMs) {
+  const g = RagaWheel._geometry;
+  if (!g.cx || !g.rMela) return;
+  const svg = document.getElementById('raga-wheel');
+  if (!svg) return;
+  const W = svg.clientWidth  || svg.parentElement.clientWidth  || 800;
+  const H = svg.clientHeight || svg.parentElement.clientHeight || 600;
+  const s = RagaWheel._state;
+  // SVG local: midpoint along the mela chip (halfway between arc edge and chip tip).
+  // Centring on the midpoint keeps both the chip and the WDP in view.
+  const rMid = (g.rMelaHead && g.rMelaHead[melaNum])
+    ? (g.rMela + g.rMelaHead[melaNum]) / 2
+    : g.rMela;
+  const thetaDeg = (melaNum - 0.5) * 5;
+  const thetaRad = (thetaDeg - 90) * Math.PI / 180;
+  const lx = g.cx + rMid * Math.cos(thetaRad);
+  const ly = g.cy + rMid * Math.sin(thetaRad);
+  // Apply rotation only (scale/translate folded into the pan target formula)
+  const rot = s.rotation;
+  const dx = lx - g.cx, dy = ly - g.cy;
+  const rx = Math.cos(rot) * dx - Math.sin(rot) * dy + g.cx;
+  const ry = Math.sin(rot) * dx + Math.cos(rot) * dy + g.cy;
+  // Compute target pan to centre the WDP panel (not just the anchor point).
+  // Half-panel offsets shift the anchor so the panel's visual centre lands at
+  // the viewport centre. cornerOffsets derived from the same quadrant rule as
+  // _positionWdpAtMela:
+  //   bl (top-right)   : panel extends right+up   -> anchor must go left+down
+  //   tl (bot-right)   : panel extends right+down -> anchor must go left+up
+  //   tr (bot-left)    : panel extends left+down  -> anchor must go right+up
+  //   br (top-left)    : panel extends left+up    -> anchor must go right+down
+  const targetScale = s.scale;
+  let targetPanX = W / 2 - rx * targetScale;
+  let targetPanY = H / 2 - ry * targetScale;
+  const panel = document.getElementById('wheel-detail-panel');
+  if (panel && panel.classList.contains('wdp-open')) {
+    const PW = (panel.offsetWidth  || 0) * targetScale;
+    const PH = (panel.offsetHeight || 0) * targetScale;
+    // Determine corner from visual angle (same formula as _positionWdpAtMela).
+    const vAngRad = Math.atan2(ry - g.cy, rx - g.cx);
+    const vAngDeg = (((vAngRad + Math.PI / 2) * 180 / Math.PI) + 360) % 360;
+    let cX, cY;  // signed offset: positive moves anchor rightward / downward
+    if      (vAngDeg <  90) { cX = -PW / 2; cY =  PH / 2; }  // bl
+    else if (vAngDeg < 180) { cX = -PW / 2; cY = -PH / 2; }  // tl
+    else if (vAngDeg < 270) { cX =  PW / 2; cY = -PH / 2; }  // tr
+    else                    { cX =  PW / 2; cY =  PH / 2; }  // br
+    targetPanX += cX;
+    targetPanY += cY;
+  }
+  if (Math.abs(targetPanX - s.panX) < 1 && Math.abs(targetPanY - s.panY) < 1) return;
+  if (_animRafId) { cancelAnimationFrame(_animRafId); _animRafId = null; }
+  const startPanX = s.panX, startPanY = s.panY;
+  const startTime = performance.now();
+  const ms = durationMs || 500;
+  function easeInOutCubic(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+  function step(now) {
+    const t = Math.min((now - startTime) / ms, 1);
+    const e = easeInOutCubic(t);
+    s.panX = startPanX + (targetPanX - startPanX) * e;
+    s.panY = startPanY + (targetPanY - startPanY) * e;
+    RagaWheel._applyTransform();
+    if (t < 1) { _animRafId = requestAnimationFrame(step); }
+    else { _animRafId = null; }
+  }
+  _animRafId = requestAnimationFrame(step);
+}
 
 function _openWheelDetailPanel(raga) {
   if (!_wdpData || !raga) return;
@@ -545,6 +686,15 @@ function _openWheelDetailPanel(raga) {
   }
 
   panel.classList.add('wdp-open');
+  // ADR-140: anchor WDP to the mela that opened it and pan the wheel to centre it.
+  _wdpMelaNum = raga.melakarta || null;
+  if (_wdpMelaNum !== null) {
+    _positionWdpAtMela(_wdpMelaNum);   // immediate placement (no animation flash)
+    // Defer by one rAF so the browser lays out the panel (offsetWidth/Height
+    // is 0 synchronously on the first paint) before we compute the centring offset.
+    const _wdpMelaAtOpen = _wdpMelaNum;
+    requestAnimationFrame(() => { _animateWheelToMela(_wdpMelaAtOpen, 500); });
+  }
   // Ghost-click guard: record the time the panel opens so that comp chip
   // click handlers can ignore native ghost clicks that land on the freshly
   // rendered WDP (mobile browsers fire a delayed isTrusted click at the
@@ -937,6 +1087,8 @@ const RagaWheel = {
       'transform',
       `translate(${s.panX},${s.panY}) scale(${s.scale}) rotate(${deg} ${g.cx} ${g.cy})`
     );
+    // ADR-140: reposition the WDP to stay anchored to its mela on every frame
+    if (_wdpMelaNum !== null) _positionWdpAtMela(_wdpMelaNum);
   },
 };
 window.RagaWheel = RagaWheel;
@@ -1198,6 +1350,7 @@ window.drawRagaWheel = function() {
   RagaWheel._geometry.cx = cx;
   RagaWheel._geometry.cy = cy;
   RagaWheel._geometry.rOuter = R_MUSC;
+  RagaWheel._geometry.rMela  = R_MELA;  // ADR-140: needed by _positionWdpAtMela
   _applyTransform();
 
   // ESC key clears light-up — registered once per draw via AbortController
@@ -1819,6 +1972,10 @@ window.drawRagaWheel = function() {
     const _dispText = _GLYPH + (raga ? raga.name : String(n));
     const _tw = _dispText.length * melaFontSize * 0.55 + _PAD_X * 2;
     const lp = polarRad(cx, cy, R_MELA + MELA_LABEL_GAP + _tw / 2, angleRad);
+    // ADR-140: store the outer-tip radius of each mela chip so _positionWdpAtMela
+    // can anchor the WDP just past the chip head (clear of the mela label).
+    if (!RagaWheel._geometry.rMelaHead) RagaWheel._geometry.rMelaHead = {};
+    RagaWheel._geometry.rMelaHead[n] = R_MELA + MELA_LABEL_GAP + _tw;
     const normAngle = ((angleDeg % 360) + 360) % 360;
     let melaRotDeg, anchor;
     if (Math.abs(normAngle - 0) < 1e-6)        { melaRotDeg = -90;           anchor = 'middle'; }
