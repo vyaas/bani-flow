@@ -1,0 +1,20 @@
+{
+  "id": "kalpakam_swaminathan",
+  "label": "Kalpakam Swaminathan",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Kalpakam_Swaminathan",
+      "label": "Wikipedia — Kalpakam Swaminathan",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1922,
+  "died": 2011,
+  "era": "golden_age",
+  "instrument": "veena",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

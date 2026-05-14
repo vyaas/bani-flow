@@ -1,0 +1,16 @@
+{
+  "id": "pagavari_hamsadhwani",
+  "title": "Pagavari",
+  "composer_id": "patnam_subramanya_iyer",
+  "raga_id": "hamsadhwani",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+      "label": "Wikipedia — Patnam Subramania Iyer",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Varnam in Hamsadhwani, Adi tala by Patnam Subramanya Iyer"
+}

@@ -1094,5 +1094,38 @@
     "confidence": 0.85,
     "source_url": "https://en.wikipedia.org/wiki/Mani_Krishnaswami",
     "note": "Wikipedia: trained under Tiger Varadachariar at Kalakshetra"
+  },
+  {
+    "source": "tiger_varadachariar",
+    "target": "sr_janakiraman",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/S._R._Janakiraman",
+    "note": "Kalakshetra faculty, 1945 onwards"
+  },
+  {
+    "source": "budaloor_krishnamurthy_shastri",
+    "target": "sr_janakiraman",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/S._R._Janakiraman",
+    "note": "Kalakshetra faculty, 1945 onwards"
+  },
+  {
+    "source": "kalpakam_swaminathan",
+    "target": "sr_janakiraman",
+    "confidence": 0.95,
+    "source_url": "https://en.wikipedia.org/wiki/S._R._Janakiraman",
+    "note": "Kalakshetra faculty, 1945 onwards"
+  },
+  {
+    "source": "musiri_subramania_iyer",
+    "target": "sr_janakiraman",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/S._R._Janakiraman"
+  },
+  {
+    "source": "t_brinda",
+    "target": "sr_janakiraman",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/S._R._Janakiraman"
   }
 ]

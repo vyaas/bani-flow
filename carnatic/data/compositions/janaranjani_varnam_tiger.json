@@ -1,0 +1,16 @@
+{
+  "id": "janaranjani_varnam_tiger",
+  "title": "Janaranjani Varnam",
+  "composer_id": "tiger_varadachariar",
+  "raga_id": "janaranjani",
+  "tala": "misra_jhampa",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Tiger_Varadachariar",
+      "label": "Wikipedia — Tiger Varadachariar",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Varnam in Janaranjani, Mishra Jhampa tala by Tiger Varadachariar"
+}

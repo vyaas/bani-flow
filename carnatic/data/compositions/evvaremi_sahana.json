@@ -1,0 +1,16 @@
+{
+  "id": "evvaremi_sahana",
+  "title": "Evvaremi Bodhana Jesinaro",
+  "composer_id": "patnam_subramanya_iyer",
+  "raga_id": "sahana",
+  "tala": "ata",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
+      "label": "Wikipedia — Patnam Subramania Iyer",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Varnam in Sahana, Ata tala by Patnam Subramanya Iyer"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "inta_calamu_kambhoji",
+  "title": "Inta Calamu",
+  "composer_id": "pallavi_gopala_iyer",
+  "raga_id": "kambhoji",
+  "tala": "ata",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Pallavi_Gopala_Iyer",
+      "label": "Wikipedia — Pallavi Gopala Iyer",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Varnam in Kambhoji, Ata tala by Pallavi Gopala Iyer"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "kanakangi_todi_varnam",
+  "title": "Kanakangi",
+  "composer_id": "pallavi_gopala_iyer",
+  "raga_id": "thodi",
+  "tala": "ata",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Pallavi_Gopala_Iyer",
+      "label": "Wikipedia — Pallavi Gopala Iyer",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Varnam in Thodi, Ata tala by Pallavi Gopala Iyer"
+}

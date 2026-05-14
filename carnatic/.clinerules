@@ -372,6 +372,11 @@ Nodes whose `wikipedia` field has no own article — flagged for community atten
 - **Maha Vaidyanatha Iyer lineage** — Wikipedia reveals his students include GNB, K.S.
   Narayanaswamy, S. Ramanathan (via Sabhesha Iyer at Annamalai University). Edges not yet added.
 
+#### S. R. Janakiraman lecdem ingest — three blocked items (raised 2026-05-13, librarian)
+- **Sonti Venkatasubbayyar** (composer of Bilahari varnam "Nenarunci Elukora") — no standalone Wikipedia article found; cited in Sangita Sampradaya Pradarshini. Node and composition `nenarunci_elukora_bilahari` cannot be created. Check ibiblio.org's SSP translation, Carnatica.net, or Rasikas.org for a citable reference URL. Video 2 ("Bilahari Varnam") has been ingested with `raga_id: bilahari` but no `composition_id`.
+- **Pallavi Doraiswami Iyer** (composer of Arabhi varnam "Sarasija Mukhiro") — no Wikipedia article found. Node and composition cannot be created. Check Karnatik.com composer listing or varnam anthologies for a reference URL. Video 8 ("Arabhi Varnam") ingested with `raga_id: arabhi` but no `composition_id`.
+- **T. K. Ramasami Ayyangar** (SRJ's Kalakshetra guru, vocal) — no Wikipedia article found; sourced only from the lecdem video description. Node cannot be created; edge `tk_ramasami_ayyangar → sr_janakiraman` is pending. Re-check periodically.
+
 #### Shivanamayogi — composer identity unverified (raised 2026-04-23, librarian)
 Composer of "Enna Punniyam – Huseni – Misra Chapu" (Jamshedpur 1964). No Wikipedia article found. Name sourced solely from the concert listing on the YouTube video description. Added to composers[] with source pointing to Karnatik.com general URL; flagged `"composer details unverified"` in the composition notes. Needs a reliable citation (Karnatik.com composer page, journal article, or notation anthology) before the flag can be cleared.
 
@@ -573,6 +578,12 @@ Entries are terse — this is a log, not an essay.
 - 2025-07-13: V4 AIR Trichy 1963 tracklist ends with a Surutti alapana cut; model as composition_id: null + raga_id: surutti + notes: "alapana" rather than dropping the performance entirely.
 - 2026-04-26: ADR-110 migration: muthuthandavar was one of the 19 "already linked" composers but compositions still carried composer_id: "muthuthandavar" (the composer alias, not the musician ID "muthu_thandavar") — always verify that all composer_id values in compositions match the canonical musician IDs after retiring _composers.json, not just that the 19 had musician_node_id set.
 - 2026-04-30: Nonesuch 1967 LP (Ramnad Krishnan): two compositions share the title "Palinchu Kamakshi" — `palinchu_kamakshi` (Dikshitar, Madhyamavati, mangalam) and `palimchu_kamakshi` (Shyama Shastri, Madhyamavati, kriti); the Dikshitar version had no recording references so was deleted; always grep all of carnatic/data/ before deleting a composition file. Archive.org PDF liner notes (source-type: pdf) are an accepted source for musicians without Wikipedia pages when explicitly authorised by the project owner. The `kanjira` instrument ID is not in the write_cli vocabulary — use `khanjira`; `tampura` is also not accepted — use `other`.
+- 2026-05-13: Sonti Venkatasubbayyar (Bilahari varnam composer, referenced in Sangita Sampradaya Pradarshini) has no standalone Wikipedia article; composition `nenarunci_elukora_bilahari` and musician node blocked pending a citable reference URL — recording tagged `raga_id: bilahari` only.
+- 2026-05-13: Pallavi Doraiswami Iyer (Arabhi varnam composer) has no Wikipedia article; recording tagged `raga_id: arabhi` only until a reference page is found.
+- 2026-05-13: T. K. Ramasami Ayyangar (SRJ's Kalakshetra vocal guru) has no Wikipedia article; edge cannot be added without a source URL — flagged in Open questions.
+- 2026-05-13: Kalpakam Swaminathan Wikipedia title is "Kalpakam" not "Kalpagam" — search both spellings; she was Kalakshetra veena faculty under Tiger Varadachariar's direction.
+- 2026-05-13: "Tiruvotriyur" (single t) vs "Tiruvottiyur" (double tt) — the node ID uses the double-tt spelling; always verify exact id before assuming NOT FOUND.
+- 2026-05-13: add-composer subcommand was removed in ADR-110; all composers are musician nodes — `stats` reports "Composers: N (derived)" meaning musicians who own at least one composition; no separate composer-registration step needed after add-musician.
 
 ### 🎵 Carnatic Coder
 

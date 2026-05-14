@@ -1,0 +1,16 @@
+{
+  "id": "sami_ninne_yadukulakamboji",
+  "title": "Sami Ninne",
+  "composer_id": "tanjore_vadivelu",
+  "raga_id": "yadukulakamboji",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Thanjavur_Quartet",
+      "label": "Wikipedia — Thanjavur Quartet",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Pada varnam in Yadukulakamboji, Adi tala by Vadivelu of the Tanjore Quartet"
+}
