@@ -1068,6 +1068,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   const trailPlayBtn = document.createElement('button');
   const concertTitle = row.track.short_title || row.track.concert_title || null;
   trailPlayBtn.className = isConcertEntry ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
+  trailPlayBtn.setAttribute('data-vid', row.track.vid);
   trailPlayBtn.title = isConcertEntry && concertTitle ? `Part of: ${concertTitle}` : 'Play';
   trailPlayBtn.textContent = '▶';
   trailPlayBtn.addEventListener('click', e => {
@@ -1148,6 +1149,7 @@ function _buildPlayActsDiv(row) {
   const concertTitle = row.track.short_title || row.track.concert_title || null;
   const playBtn = document.createElement('button');
   playBtn.className = isConcertEntry ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
+  playBtn.setAttribute('data-vid', row.track.vid);
   playBtn.title = isConcertEntry && concertTitle ? 'Part of: ' + concertTitle : 'Play';
   playBtn.textContent = '\u25b6';
   playBtn.addEventListener('click', function(e) {

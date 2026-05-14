@@ -2375,9 +2375,18 @@
   }
   li.rec-legacy.playing .rec-play-btn,
   li.concert-perf-item.playing .rec-play-btn,
-  #trail-list li.playing .rec-play-btn {
+  #trail-list li.playing .rec-play-btn,
+  .rec-play-btn.playing {
     color: var(--accent);
     border-color: var(--accent);
+    font-size: 0;
+  }
+  li.rec-legacy.playing .rec-play-btn::before,
+  li.concert-perf-item.playing .rec-play-btn::before,
+  #trail-list li.playing .rec-play-btn::before,
+  .rec-play-btn.playing::before {
+    content: '\25a0';
+    font-size: 13px;
   }
 
   /* ── ADR-052: extend tap-highlight suppression to all row containers ── */

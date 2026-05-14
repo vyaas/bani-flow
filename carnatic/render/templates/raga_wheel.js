@@ -2555,6 +2555,55 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     }
   };
 
+  // Resolves any ragaId to its parent melakarta number (integer), or null if not found.
+  function _getMelaNumForRaga(ragaId) {
+    if (!_wdpData) return null;
+    const keys = Object.keys(_wdpData.melaByNum);
+    for (let i = 0; i < keys.length; i++) {
+      if (_wdpData.melaByNum[keys[i]].id === ragaId) return parseInt(keys[i], 10);
+    }
+    const raga = (typeof ragas !== 'undefined') && ragas.find(r => r.id === ragaId);
+    if (!raga || !raga.parent_raga) return null;
+    return _getMelaNumForRaga(raga.parent_raga);
+  }
+
+  // Expand the raga wheel WDP to show the given raga/composition.
+  // Switches to the raga wheel view if not already there.
+  // Safe to call immediately after openOrFocusPlayer — polls until any
+  // in-flight syncRagaWheelToFilter expansion clears before overriding the WDP.
+  window._openWdpForPlayback = function(ragaId, compId) {
+    if (!ragaId || !_wdpData) return;
+    const melaNum = _getMelaNumForRaga(ragaId);
+    if (!melaNum) return;
+
+    function doExpand() {
+      // If this mela is already expanded, the mela click handler would toggle it
+      // CLOSED (collapse branch fires). Skip the full expand — the WDP and janya
+      // highlight are still intact from the previous open; nothing needs to change.
+      const melaRaga = _wdpData.melaByNum[melaNum];
+      if (melaRaga && _expandedMela === melaRaga.id) return;
+      window._triggerMelaExpand(melaNum, ragaId, compId || null);
+    }
+    function pollAndExpand() {
+      const t0 = Date.now();
+      const id = setInterval(() => {
+        if (!window._wheelSyncInProgress || Date.now() - t0 > 1500) {
+          clearInterval(id);
+          doExpand();
+        }
+      }, 20);
+    }
+
+    if (currentView !== 'raga') {
+      switchView('raga');
+      pollAndExpand();
+    } else if (window._wheelSyncInProgress) {
+      pollAndExpand();
+    } else {
+      doExpand();
+    }
+  };
+
 })(); // end raga-wheel IIFE
 
 /**

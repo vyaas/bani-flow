@@ -53,7 +53,13 @@ function bringToFront(player) {
 
 function refreshPlayingIndicators() {
   document.querySelectorAll('[data-vid]').forEach(el => {
-    el.classList.toggle('playing', playerRegistry.has(el.dataset.vid));
+    const isPlaying = playerRegistry.has(el.dataset.vid);
+    el.classList.toggle('playing', isPlaying);
+    const btn = el.classList.contains('rec-play-btn') ? el : el.querySelector('.rec-play-btn');
+    if (btn) {
+      btn.dataset.origTitle = btn.dataset.origTitle || btn.title;
+      btn.title = isPlaying ? 'Stop' : (btn.dataset.origTitle || 'Play');
+    }
   });
 }
 
@@ -506,30 +512,30 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
 
 // meta = { nodeId, ragaId, compositionId } — all optional; drives clickable chips in title bar
 function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+  // Toggle-close: if this video is already playing, close it — works for both desktop and mobile.
+  if (playerRegistry.has(vid)) {
+    const existing = playerRegistry.get(vid);
+    if (existing._isMobileSingleton) {
+      _closeMobilePlayer();
+    } else {
+      existing.iframe.src = '';
+      existing.el.remove();
+      playerRegistry.delete(vid);
+      refreshPlayingIndicators();
+    }
+    return;
+  }
   // ADR-037: on mobile, delegate to singleton player
   if (_isMobilePlayer()) {
     _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta);
-    return;
-  }
-  if (playerRegistry.has(vid)) {
-    const existing = playerRegistry.get(vid);
-    // Jump to new timestamp; title does NOT change — concert identity is stable
-    existing.iframe.src = ytEmbedUrl(vid, startSeconds);
-    existing.currentOffset = startSeconds || 0;
-    // Update active indicator in track list if open
-    if (existing.tracklistEl) {
-      existing.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
-        li.classList.toggle('mp-track-active',
-          parseInt(li.dataset.offset, 10) === existing.currentOffset);
-      });
-    }
-    bringToFront(existing);
+  } else {
+    const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
+    playerRegistry.set(vid, p);
     refreshPlayingIndicators();
-    return;
   }
-  const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
-  playerRegistry.set(vid, p);
-  refreshPlayingIndicators();
+  if (meta && meta.ragaId && typeof window._openWdpForPlayback === 'function') {
+    window._openWdpForPlayback(meta.ragaId, meta.compositionId || null);
+  }
 }
 
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
