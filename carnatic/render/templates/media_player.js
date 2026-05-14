@@ -591,11 +591,16 @@ function buildComposerChip(compositionId) {
         }
       });
     } else {
-      // musician_node_id set but composer not yet on the graph
-      chip.title = composerObj.name;
+      // musician_node_id exists but composer has no lineage edges — open panel via transit path
+      chip.className += ' chip-navigable';
+      chip.title = composerObj.name + ' — Open Musician panel';
       chip.addEventListener('click', e => {
         e.stopPropagation();
-        if (typeof showGraphAbsentToast === 'function') showGraphAbsentToast(composerObj.name);
+        chip.classList.add('chip-tapped');
+        setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+        if (typeof _openMusicianPanelForTransit === 'function') {
+          _openMusicianPanelForTransit(composerObj.musician_node_id);
+        }
       });
     }
   } else {
@@ -692,11 +697,11 @@ function _buildLecdemSubjectFooter(subjects) {
     mchip.style.setProperty('--chip-era-border', tint.border);
     mchip.textContent = name;
     mchip.title = name + ' — Open Musician panel';
-    if (node && node.length) {
-      mchip.addEventListener('click', e => {
-        e.stopPropagation();
-        mchip.classList.add('chip-tapped');
-        setTimeout(() => mchip.classList.remove('chip-tapped'), 200);
+    mchip.addEventListener('click', e => {
+      e.stopPropagation();
+      mchip.classList.add('chip-tapped');
+      setTimeout(() => mchip.classList.remove('chip-tapped'), 200);
+      if (node && node.length) {
         if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
           orientToNode(musicianId);
         } else if (typeof selectNode === 'function') {
@@ -705,8 +710,11 @@ function _buildLecdemSubjectFooter(subjects) {
         if (typeof window.setPanelState === 'function') {
           setTimeout(() => window.setPanelState('MUSICIAN'), 50);
         }
-      });
-    }
+      } else if (typeof _openMusicianPanelForTransit === 'function') {
+        // Isolated musician (no lineage edges) — open panel via transit path
+        _openMusicianPanelForTransit(musicianId);
+      }
+    });
     footer.appendChild(mchip);
   });
 
@@ -797,6 +805,9 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           if (typeof window.setPanelState === 'function') {
             setTimeout(() => window.setPanelState('MUSICIAN'), 50);
           }
+        } else if (typeof _openMusicianPanelForTransit === 'function') {
+          // Isolated musician (no lineage edges) — open panel via transit path
+          _openMusicianPanelForTransit(pf.musicianId);
         }
       });
     }
@@ -1996,8 +2007,9 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
       if (typeof window.setPanelState === 'function') {
         setTimeout(() => window.setPanelState('MUSICIAN'), 50);
       }
-    } else if (typeof showGraphAbsentToast === 'function') {
-      showGraphAbsentToast(lecturerLabel);
+    } else if (typeof _openMusicianPanelForTransit === 'function') {
+      // Isolated musician (no lineage edges) — open panel via transit path
+      _openMusicianPanelForTransit(lecturerId);
     }
   });
   return chip;

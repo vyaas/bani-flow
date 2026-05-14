@@ -334,8 +334,9 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
         if (typeof window.setPanelState === 'function') {
           setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
         }
-      } else if (typeof showGraphAbsentToast === 'function') {
-        showGraphAbsentToast(mLabel);
+      } else if (typeof _openMusicianPanelForTransit === 'function') {
+        // Isolated musician (no lineage edges) — open panel directly from elements array
+        _openMusicianPanelForTransit(mid);
       }
     });
     chips.push(c);

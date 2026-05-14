@@ -1485,10 +1485,13 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
 function buildArtistSpan(artistRow, isPrimary, type, id) {
   const span = document.createElement('span');
 
-  // Derive era from the Cytoscape node data; fall back to null (neutral tint).
-  const eraId = artistRow.nodeId
-    ? (cy.getElementById(artistRow.nodeId).data('era') || null)
-    : null;
+  // Derive era/instrument from the Cytoscape node first; fall back to raw elements
+  // for musicians with no lineage edges (isolated — not in _cyElements).
+  const _cyNode = artistRow.nodeId ? cy.getElementById(artistRow.nodeId) : null;
+  const _rawEl  = (_cyNode && _cyNode.length) ? null
+    : (artistRow.nodeId ? elements.find(function(e) { return !e.data.source && e.data.id === artistRow.nodeId; }) : null);
+  const eraId = (_cyNode && _cyNode.length) ? (_cyNode.data('era') || null)
+    : (_rawEl ? (_rawEl.data.era || null) : null);
   const tint = THEME.eraTintCss(eraId);
   span.style.setProperty('--chip-era-bg', tint.bg);
   span.style.setProperty('--chip-era-border', tint.border);
@@ -1496,12 +1499,11 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
   // Primary performer → full-size chip; co-performer → secondary (smaller, italic)
   span.className = isPrimary ? 'musician-chip' : 'musician-chip chip-secondary';
 
-  // ADR-069: instrument badge — resolve from Cytoscape node data when available
-  if (artistRow.nodeId) {
-    const instrKey = cy.getElementById(artistRow.nodeId).data('instrument');
-    if (instrKey && typeof makeInstrBadge === 'function') {
-      span.appendChild(makeInstrBadge(instrKey, isPrimary ? 13 : 11));
-    }
+  // ADR-069: instrument badge — resolve from node data (cy or raw elements)
+  const instrKey = (_cyNode && _cyNode.length) ? _cyNode.data('instrument')
+    : (_rawEl ? _rawEl.data.instrument : null);
+  if (instrKey && typeof makeInstrBadge === 'function') {
+    span.appendChild(makeInstrBadge(instrKey, isPrimary ? 13 : 11));
   }
 
   span.appendChild(document.createTextNode(artistRow.artistLabel));
@@ -1523,6 +1525,9 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
         if (typeof window.setPanelState === 'function') {
           setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
         }
+      } else if (typeof _openMusicianPanelForTransit === 'function') {
+        // Isolated musician (no lineage edges) — open panel directly from elements array
+        _openMusicianPanelForTransit(artistRow.nodeId);
       }
     }
   });
