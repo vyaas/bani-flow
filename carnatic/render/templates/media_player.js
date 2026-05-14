@@ -2537,17 +2537,6 @@ function _expandMobilePlayer() {
   if (typeof window.setPanelState === 'function') {
     window.setPanelState('IDLE');
   }
-  // ADR-049: expand mela+janya then pan/zoom to the raga if the wheel is the active view.
-  // syncRagaWheelToFilter triggers the mela expand (sets _wheelSyncInProgress=true);
-  // orientRagaWheel polls until clear, then animates the viewport.
-  if (mp.currentRagaId) {
-    if (typeof syncRagaWheelToFilter === 'function') {
-      syncRagaWheelToFilter('raga', mp.currentRagaId);
-    }
-    if (typeof orientRagaWheel === 'function') {
-      orientRagaWheel('raga', mp.currentRagaId);
-    }
-  }
 
   mp.el.classList.remove('mini');
   mp.el.classList.add('full-mobile');
