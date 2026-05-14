@@ -2388,15 +2388,15 @@ function _wireMobilePlayerEvents(mp) {
     if (handleTouchY === null) return;
     const dy = e.changedTouches[0].clientY - handleTouchY;
     handleTouchY = null;
-    if (dy > 20) _collapseMobilePlayer();
+    if (dy > 20) _collapseMobilePlayer(false);
   }, { passive: true });
-  mp.handle.addEventListener('click', () => _collapseMobilePlayer());
+  mp.handle.addEventListener('click', () => _collapseMobilePlayer(false));
 
   // Full mode bar: tap anywhere on the bar to collapse (except dedicated buttons)
   mp.bar.addEventListener('click', e => {
     const isBtn = e.target.closest('.mp-close, .mp-minimize, .mp-tracklist-toggle, .mp-copy-btn');
     if (isBtn) return;
-    _collapseMobilePlayer();
+    _collapseMobilePlayer(false);
   });
 
   // Mini strip: swipe left/right → track switching
@@ -2466,7 +2466,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     minBtn.textContent = '\u25BC';   // ▼ downward triangle = collapse/fold
     minBtn.addEventListener('click', e => {
       e.stopPropagation();
-      _collapseMobilePlayer();
+      _collapseMobilePlayer(false);
     });
     mp.bar.insertBefore(minBtn, mp.bar.firstChild);
   }
@@ -2605,8 +2605,9 @@ function _collapseMobilePlayer(restoreState) {
   // ADR-043: restore mini strip visibility + drawer offset
   showMiniPlayer();
 
-  // Restore saved panel state (skip when collapsing via background tap —
-  // the user intends to keep exploring, not reopen a previous panel)
+  // Restore saved panel state only when called programmatically (restoreState=true).
+  // All user-initiated fold gestures (minimize button, handle tap/swipe, bar tap)
+  // pass false — the user expects to land on the underlying view, not have a panel reopen.
   if (restoreState && mp._savedPanelState && typeof window.setPanelState === 'function') {
     window.setPanelState(mp._savedPanelState);
     mp._savedPanelState = null;

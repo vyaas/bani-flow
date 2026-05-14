@@ -613,9 +613,7 @@ function _openWheelDetailPanel(raga) {
   nameChip.title = 'Open ' + raga.name + ' in BaniFlow panel';
   nameChip.addEventListener('click', (e) => {
     e.stopPropagation();
-    window._wheelOriginatedTrigger = true;
-    if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', raga.id);
-    window._wheelOriginatedTrigger = false;
+    _wdpSelectJanya(raga, nameChip);
   });
   titleEl.appendChild(nameChip);
   if (cakra) {
