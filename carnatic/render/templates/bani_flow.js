@@ -1133,7 +1133,6 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   const actsDiv = document.createElement('div');
   actsDiv.className = 'trail-acts';
   actsDiv.appendChild(trailPlayBtn);
-  actsDiv.appendChild(buildYtLink(row.track.vid, row.track.offset_seconds || 0));
   row2Div.appendChild(actsDiv);
 
   li.appendChild(headerDiv);
@@ -1194,7 +1193,6 @@ function _buildPlayActsDiv(row) {
   const actsDiv = document.createElement('div');
   actsDiv.className = 'trail-acts';
   actsDiv.appendChild(playBtn);
-  actsDiv.appendChild(buildYtLink(row.track.vid, row.track.offset_seconds || 0));
   return actsDiv;
 }
 

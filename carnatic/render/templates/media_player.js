@@ -287,6 +287,14 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   const rightGroup = document.createElement('span');
   rightGroup.className = 'mp-bar-right';
 
+  // ADR-139: clipboard copy button — copies ytDirectUrl(vid, currentOffset) to clipboard.
+  // Click handler is wired in createPlayer() after the instance is constructed.
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'mp-copy-btn';
+  copyBtn.title = 'Copy link to clipboard';
+  copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+  rightGroup.appendChild(copyBtn);
+
   if (hasTracks) {
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'mp-tracklist-toggle';
@@ -451,6 +459,21 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     refreshPlayingIndicators();
   });
 
+  // ADR-139: wire clipboard copy button
+  const copyBtn = el.querySelector('.mp-copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const url = ytDirectUrl(vid, instance.currentOffset);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          copyBtn.classList.add('mp-copy-copied');
+          setTimeout(() => copyBtn.classList.remove('mp-copy-copied'), 1500);
+        });
+      }
+    });
+  }
+
   // Wire track list toggle and populate track items
   if (hasTracks && instance.tracklistEl) {
     const trackUl = buildPlayerTrackList(vid, tracks, instance);
@@ -523,25 +546,7 @@ function toggleConcert(headerEl) {
   }
 }
 
-// ── buildYtLink — external YouTube link icon always shown next to ▶ ─────────────
-// Returns an <a class="yt-ext-link"> that opens the video (at offset if given) in a
-// new tab — libredirect intercepts it transparently.
-function buildYtLink(vid, offsetSeconds) {
-  const secs = Math.floor(offsetSeconds || 0);
-  const url  = 'https://www.youtube.com/watch?v=' + encodeURIComponent(vid)
-             + (secs > 0 ? '&t=' + secs + 's' : '');
-  const a = document.createElement('a');
-  a.className = 'yt-ext-link';
-  a.href      = url;
-  a.target    = '_blank';
-  a.rel       = 'noopener noreferrer';
-  a.title     = 'Open on YouTube';
-  // ADR-128 D13: inline SVG glyph (geometrically centred by flex parent) —
-  // unicode ↗ has upper-right visual bias and won't centre reliably.
-  a.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
-  a.addEventListener('click', e => e.stopPropagation());
-  return a;
-}
+// buildYtLink removed — ADR-139: external link replaced by clipboard copy in media player bar.
 
 // ── buildComposerChip — composer chip for a given composition_id ────────────────
 // Returns a .composer-chip <span> (navigable if musician_node_id is set) or null.
@@ -903,7 +908,6 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         );
       });
       row1.appendChild(playBtn);
-      row1.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
 
       // Row 2: raga chip + tala + timestamp link
       const row2 = document.createElement('div');
@@ -1034,7 +1038,6 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       );
     });
     actsDiv.appendChild(playBtn);
-    actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
     compHeader.appendChild(actsDiv);
   } else {
     // ── Multiple recordings: left-chevron accordion (starts collapsed) ─────
@@ -1094,7 +1097,6 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
         );
       });
       actsDiv.appendChild(playBtn);
-      actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
       row.appendChild(actsDiv);
 
       recLi.appendChild(row);
@@ -1289,7 +1291,6 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
     );
   });
   actsDiv.appendChild(playBtn);
-  actsDiv.appendChild(buildYtLink(p.video_id, p.offset_seconds || 0));
   row.appendChild(actsDiv);
 
   li.appendChild(row);
@@ -1372,7 +1373,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
       }
     });
     actsDiv.appendChild(playBtn);
-    actsDiv.appendChild(buildYtLink(ref.video_id, 0));
 
     if (typeof buildLecdemEditForm === 'function') {
       const editBtn = document.createElement('button');
@@ -1507,7 +1507,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
       openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, {});
     });
     row1.appendChild(playBtn);
-    row1.appendChild(buildYtLink(ref.video_id, seg.offset_seconds || 0));
 
     li.appendChild(row1);
 

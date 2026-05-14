@@ -994,6 +994,18 @@
   }
   .mp-close:hover { color: var(--accent-danger); }
 
+  /* ADR-139: clipboard copy button in media player title bar */
+  .mp-copy-btn {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0; cursor: pointer; padding: 0 2px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.12s;
+  }
+  .mp-copy-btn svg { width: 14px; height: 14px; fill: currentColor; display: block; pointer-events: none; }
+  .mp-copy-btn:hover { color: var(--accent-sub); }
+  .mp-copy-btn.mp-copy-copied { color: var(--accent); }
+
   /* 16:9 iframe wrapper */
   .mp-video-wrap {
     position: relative; width: 100%; padding-top: 56.25%; background: #000;
