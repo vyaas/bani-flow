@@ -1,0 +1,15 @@
+{
+  "id": "kuvi_azhaitthal",
+  "title": "Kuvi Azhaitthal Kural Koduppan",
+  "composer_id": "vaali",
+  "raga_id": "valaji",
+  "tala": "adi",
+  "language": "tamil",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c9328.shtml",
+      "label": "Karnatik.com",
+      "type": "article"
+    }
+  ]
+}

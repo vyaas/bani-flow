@@ -1,0 +1,20 @@
+{
+  "id": "vaali",
+  "label": "Vaali",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Vaali_(poet)",
+      "label": "Wikipedia — Vaali",
+      "type": "wikipedia"
+    }
+  ],
+  "born": 1931,
+  "died": 2013,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

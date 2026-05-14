@@ -584,6 +584,10 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-13: Kalpakam Swaminathan Wikipedia title is "Kalpakam" not "Kalpagam" — search both spellings; she was Kalakshetra veena faculty under Tiger Varadachariar's direction.
 - 2026-05-13: "Tiruvotriyur" (single t) vs "Tiruvottiyur" (double tt) — the node ID uses the double-tt spelling; always verify exact id before assuming NOT FOUND.
 - 2026-05-13: add-composer subcommand was removed in ADR-110; all composers are musician nodes — `stats` reports "Composers: N (derived)" meaning musicians who own at least one composition; no separate composer-registration step needed after add-musician.
+- 2026-05-13: Vaali (Tamil lyricist, 1931–2013) enters the graph as a musician node (era: disseminator) because his devotional Tamil compositions are performed in Carnatic concerts; he is not a Carnatic musician but the composer-as-musician paradigm admits him via his composition `kuvi_azhaitthal` in valaji.
+- 2026-05-13: Rēvati raga file is absent from the DB despite being a well-known janya; always ls carnatic/data/ragas/ before assuming a raga exists — even "popular" ragas may be missing if no prior concert has needed them.
+- 2026-05-13: Recording schema requires `video_id` (bare 11-char YouTube ID), `url`, `short_title`, `occasion`, `sources` array, `session_index` (integer), `performance_index` (integer), `timestamp`, `offset_seconds`, `composer_id` and `display_title` per performance — not just `start_time`/`composition_id`; always reference an existing recording file before creating a new one.
+- 2026-05-13: `upacharamu` in the DB already uses the spelling `upacharamu` (not `upacaramu`) and its raga is bhairavi, tala rupakam — confirm DB spelling before referencing in recording files.
 
 ### 🎵 Carnatic Coder
 

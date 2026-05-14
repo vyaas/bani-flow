@@ -1,0 +1,175 @@
+{
+  "id": "nadabhrnga_archive_kalyanaraman",
+  "video_id": "tFc7zDtEDfk",
+  "url": "https://youtu.be/tFc7zDtEDfk",
+  "title": "Thanjavur S. Kalyanaraman — Nādabhṛṅga Archive",
+  "short_title": "Nādabhṛṅga Archive",
+  "date": null,
+  "venue": "Archive",
+  "occasion": "Released by Nādabhṛṅga on Kalyanaraman's 92nd birth anniversary (2 July 2022). Actual concert date unknown; recorded before January 1994.",
+  "sources": [
+    {
+      "url": "https://youtu.be/tFc7zDtEDfk",
+      "label": "YouTube — Nādabhṛṅga",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "thanjavur_kalyanaraman", "role": "vocal" },
+        { "musician_id": "ms_gopalakrishnan", "role": "violin" },
+        { "musician_id": null, "role": "mridangam", "unmatched_name": "Ramnad C S Murugabhupathi" },
+        { "musician_id": null, "role": "khanjira", "unmatched_name": "G Harishankar" },
+        { "musician_id": null, "role": "ghatam", "unmatched_name": "T H Vinayakaram" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "type": "kriti",
+          "raga_id": "hamsadhwani",
+          "composition_id": "vandenisamaham",
+          "composer_id": "mysore_vasudevacharya",
+          "display_title": "Vandeniśamaham",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:06:21",
+          "offset_seconds": 381,
+          "type": "kriti",
+          "raga_id": "dhenuka",
+          "composition_id": "teliyaleru_rama",
+          "composer_id": "tyagaraja",
+          "display_title": "Teliyalēru Rāma",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:14:14",
+          "offset_seconds": 854,
+          "type": "kriti",
+          "raga_id": "latangi",
+          "composition_id": "marivere_dikkevvaru",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Marivērē Dikkevvaru",
+          "tala": "khanda_chapu",
+          "notes": ""
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:34:05",
+          "offset_seconds": 2045,
+          "type": "kriti",
+          "raga_id": "natakapriya",
+          "composition_id": "idi_samayamu_brova_rada",
+          "composer_id": "mysore_vasudevacharya",
+          "display_title": "Idi Samayamu Brōva Rādā",
+          "tala": "rupakam",
+          "notes": ""
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:43:28",
+          "offset_seconds": 2608,
+          "type": "kriti",
+          "raga_id": "hamir_kalyani",
+          "composition_id": "manamu_leda",
+          "composer_id": "tyagaraja",
+          "display_title": "Mānamu Lēdā",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:07:44",
+          "offset_seconds": 4064,
+          "type": "kriti",
+          "raga_id": "bhairavi",
+          "composition_id": "upacharamu",
+          "composer_id": "tyagaraja",
+          "display_title": "Upacāramu Jēsēvāru",
+          "tala": "rupakam",
+          "notes": ""
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:39:02",
+          "offset_seconds": 5942,
+          "type": "kriti",
+          "raga_id": "chalanata",
+          "composition_id": "edayya_gati",
+          "composer_id": "koteeswara_iyer",
+          "display_title": "Ēdayyā Gati",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:55:37",
+          "offset_seconds": 6937,
+          "type": "tani",
+          "raga_id": null,
+          "composition_id": null,
+          "composer_id": null,
+          "display_title": "Tani Āvartana",
+          "tala": null,
+          "notes": "Tani Avarthanam"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:23:39",
+          "offset_seconds": 8619,
+          "type": "kriti",
+          "raga_id": "valaji",
+          "composition_id": "kuvi_azhaitthal",
+          "composer_id": "vaali",
+          "display_title": "Kūvi Aḻaittāl Kural Koḍuppān",
+          "tala": "adi",
+          "notes": "Tamil devotional; composer Vaali (T. S. Rangarajan)"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "02:28:39",
+          "offset_seconds": 8919,
+          "type": "kriti",
+          "raga_id": "revati",
+          "composition_id": "ramate_yamuna_pulina",
+          "composer_id": "jayadeva",
+          "display_title": "Ramate Yamunā Pulina",
+          "tala": "adi",
+          "notes": "Ashtapadi from Jayadeva's Gita Govinda"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:35:40",
+          "offset_seconds": 9340,
+          "type": "tillana",
+          "raga_id": "sindhu_bhairavi",
+          "composition_id": "tillana_sindhu_bhairavi_kalyanaraman",
+          "composer_id": "thanjavur_kalyanaraman",
+          "display_title": "Tillānā (Sindhubhairavī)",
+          "tala": "adi",
+          "notes": ""
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:38:27",
+          "offset_seconds": 9507,
+          "type": "kriti",
+          "raga_id": "sowrashtram",
+          "composition_id": "ni_nama_roopamulaku",
+          "composer_id": "tyagaraja",
+          "display_title": "Nī Nāma Rūpamulaku (Maṅgalam)",
+          "tala": "adi",
+          "notes": "Mangalam"
+        }
+      ]
+    }
+  ]
+}

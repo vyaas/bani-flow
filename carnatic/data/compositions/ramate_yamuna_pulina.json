@@ -1,0 +1,16 @@
+{
+  "id": "ramate_yamuna_pulina",
+  "title": "Ramate Yamuna Pulina",
+  "composer_id": "jayadeva",
+  "raga_id": "revati",
+  "tala": "adi",
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://gretil.sub.uni-goettingen.de/gretil/corpustei/transformations/html/sa_jayadeva-gItagovinda.htm",
+      "label": "GRETIL — Gita Govinda",
+      "type": "archive"
+    }
+  ],
+  "notes": "Ashtapadi from the Gita Govinda"
+}

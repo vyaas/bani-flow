@@ -1,0 +1,16 @@
+{
+  "id": "revati",
+  "name": "Revati",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "ratnangi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Revati_(raga)",
+      "label": "Wikipedia — Revati",
+      "type": "wikipedia"
+    }
+  ],
+  "notes": "Janya of Ratnangi (2nd melakarta); audava-audava; arohana: S R₁ M₁ P N₂ Ṡ; avarohana: Ṡ N₂ P M₁ R₁ S"
+}
