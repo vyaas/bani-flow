@@ -20,90 +20,96 @@
     {
       "url": "https://www.youtube.com/watch?v=goqDMliS6kQ",
       "label": "Varnam through the Ages: Introduction",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": [], "composition_ids": [], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=O8AHwEHr97M",
       "label": "Varnam through the Ages: Bilahari Varnam 'Nenarunci Elukora' (Sonti Venkatasubbayyar, Ata tala)",
-      "raga_id": "bilahari",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["bilahari"], "composition_ids": [], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=QSpMwASJzhI",
       "label": "Varnam through the Ages: Types of Varnam Explained",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": [], "composition_ids": [], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=bJh5-M8B4mM",
       "label": "Varnam through the Ages: Shankarabharanam Varnam 'Sami Ninne Kori' (Veena Kuppaiyer, Adi tala)",
-      "composition_id": "sami_ninne_kori_shankarabharanam",
-      "raga_id": "shankarabharanam",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["shankarabharanam"], "composition_ids": ["sami_ninne_kori_shankarabharanam"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=wguQpxsIjY8",
       "label": "Varnam through the Ages: Yadukulakamboji Varnam 'Sami Ninne' (Vadivelu, Adi tala)",
-      "composition_id": "sami_ninne_yadukulakamboji",
-      "raga_id": "yadukulakamboji",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["yadukulakamboji"], "composition_ids": ["sami_ninne_yadukulakamboji"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=-vIytbKadd4",
       "label": "Varnam through the Ages: Hamsadhwani Varnam 'Pagavari' (Patnam Subramanya Iyer, Adi tala)",
-      "composition_id": "pagavari_hamsadhwani",
-      "raga_id": "hamsadhwani",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["hamsadhwani"], "composition_ids": ["pagavari_hamsadhwani"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=EMF7NtUHQX8",
       "label": "Varnam through the Ages: Saranga Varnam 'Intamodi Seya' (Tiruvottiyur Tyagayya, Adi tala)",
-      "composition_id": "intamodi_seya",
-      "raga_id": "saranga",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["saranga"], "composition_ids": ["intamodi_seya"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=yGsZydzlqi0",
       "label": "Varnam through the Ages: Arabhi Varnam 'Sarasija Mukhiro' (Pallavi Doraiswami Iyer, Ata tala)",
-      "raga_id": "arabhi",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["arabhi"], "composition_ids": [], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=cOrcGTsKJ3U",
       "label": "Varnam through the Ages: Kambhoji Varnam 'Inta Calamu' (Pallavi Gopala Iyer, Ata tala)",
-      "composition_id": "inta_calamu_kambhoji",
-      "raga_id": "kambhoji",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["kambhoji"], "composition_ids": ["inta_calamu_kambhoji"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=HGwQvVDrJu8",
       "label": "Varnam through the Ages: Janaranjani Varnam (Tiger Varadachariar, Mishra Jhampa tala)",
-      "composition_id": "janaranjani_varnam_tiger",
-      "raga_id": "janaranjani",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["janaranjani"], "composition_ids": ["janaranjani_varnam_tiger"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=dP5XcneEvIo",
       "label": "Varnam through the Ages: Thodi Varnam 'Kanakangi' (Pallavi Gopala Iyer, Ata tala)",
-      "composition_id": "kanakangi_todi_varnam",
-      "raga_id": "thodi",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["thodi"], "composition_ids": ["kanakangi_todi_varnam"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     },
     {
       "url": "https://www.youtube.com/watch?v=laUmVPjyhcw",
       "label": "Varnam through the Ages: Sahana Varnam 'Evvaremi Bodhana Jesinaro' (Patnam Subramanya Iyer, Ata tala)",
-      "composition_id": "evvaremi_sahana",
-      "raga_id": "sahana",
+      "kind": "lecdem",
+      "subjects": { "raga_ids": ["sahana"], "composition_ids": ["evvaremi_sahana"], "musician_ids": [] },
       "year": 1990,
       "version": "Lecture-demonstration, Saraswati Vaggeyakara Trust"
     }
