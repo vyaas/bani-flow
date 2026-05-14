@@ -2334,6 +2334,24 @@
   }
   #graph-absent-toast.visible { opacity: 1; }
 
+  /* ── Copy-link toast — non-obtrusive, accessible ─────────────────── */
+  #mp-copy-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg-panel));
+    color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 6px;
+    padding: 6px 14px; font-size: 0.72rem;
+    pointer-events: none; z-index: 9999;
+    opacity: 0; transition: opacity 0.25s;
+    white-space: nowrap;
+  }
+  #mp-copy-toast.visible { opacity: 1; }
+  @media (max-width: 768px) {
+    #mp-copy-toast {
+      bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
   /* ── ADR-056: secondary chip modifier — smaller italic for unmatched titles ── */
   .chip-secondary {
     font-size: var(--chip-size-secondary) !important;
@@ -4100,6 +4118,7 @@
 </div>
 
 <div id="graph-absent-toast"></div>
+<div id="mp-copy-toast" aria-live="polite" aria-atomic="true"></div>
 
 <div id="main">
   <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->

@@ -31,6 +31,17 @@ function formatTala(tala) {
   return tala.split('_').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
 }
 
+// Show a brief non-obtrusive notice when the user copies a link to clipboard.
+let _copyToastTimer = null;
+function showCopyLinkToast() {
+  const el = document.getElementById('mp-copy-toast');
+  if (!el) return;
+  el.textContent = 'Link copied';
+  el.classList.add('visible');
+  clearTimeout(_copyToastTimer);
+  _copyToastTimer = setTimeout(function() { el.classList.remove('visible'); }, 1500);
+}
+
 function nextSpawnPosition() {
   const offset = (spawnCount % 8) * 28;
   spawnCount += 1;
@@ -475,6 +486,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
         navigator.clipboard.writeText(url).then(() => {
           copyBtn.classList.add('mp-copy-copied');
           setTimeout(() => copyBtn.classList.remove('mp-copy-copied'), 1500);
+          showCopyLinkToast();
         });
       }
     });
@@ -2382,7 +2394,7 @@ function _wireMobilePlayerEvents(mp) {
 
   // Full mode bar: tap anywhere on the bar to collapse (except dedicated buttons)
   mp.bar.addEventListener('click', e => {
-    const isBtn = e.target.closest('.mp-close, .mp-minimize, .mp-tracklist-toggle');
+    const isBtn = e.target.closest('.mp-close, .mp-minimize, .mp-tracklist-toggle, .mp-copy-btn');
     if (isBtn) return;
     _collapseMobilePlayer();
   });
@@ -2476,6 +2488,27 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
       if (!isOpen) {
         mp.tracklistDiv.querySelectorAll('.mp-track-item').forEach((li, idx) => {
           li.classList.toggle('mp-track-active', idx === mp.trackIndex);
+        });
+      }
+    });
+  }
+
+  // ── Wire clipboard copy button on mobile path ────────────────────────────
+  // buildPlayerBar() creates a fresh .mp-copy-btn but _openMobilePlayer() only
+  // re-wires .mp-close, .mp-minimize, .mp-tracklist-toggle. Clone to drop any
+  // stale listeners (same pattern as tracklist toggle above), then wire.
+  const mobileCopyBtn = mp.bar.querySelector('.mp-copy-btn');
+  if (mobileCopyBtn) {
+    const freshCopy = mobileCopyBtn.cloneNode(true);
+    mobileCopyBtn.parentNode.replaceChild(freshCopy, mobileCopyBtn);
+    freshCopy.addEventListener('click', e => {
+      e.stopPropagation();
+      const url = ytDirectUrl(mp.vid, mp.currentOffset || 0);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          freshCopy.classList.add('mp-copy-copied');
+          setTimeout(() => freshCopy.classList.remove('mp-copy-copied'), 1500);
+          showCopyLinkToast();
         });
       }
     });
