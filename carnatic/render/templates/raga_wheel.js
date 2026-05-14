@@ -617,7 +617,13 @@ function _openWheelDetailPanel(raga) {
     if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', raga.id);
     window._wheelOriginatedTrigger = false;
     if (window.matchMedia('(max-width: 768px)').matches) {
-      _closeWheelDetailPanel();
+      const svg = document.getElementById('raga-wheel');
+      if (svg && _wdpData) {
+        const vp = svg.querySelector('#wheel-viewport');
+        if (vp) _collapseAll(vp, _wdpData.melaByNum);
+      } else {
+        _closeWheelDetailPanel();
+      }
     }
   });
   titleEl.appendChild(nameChip);
@@ -628,18 +634,6 @@ function _openWheelDetailPanel(raga) {
     titleEl.appendChild(sub);
   }
   header.appendChild(titleEl);
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'wdp-close'; closeBtn.textContent = '\u00d7';
-  closeBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    _closeWheelDetailPanel();
-    const svg = document.getElementById('raga-wheel');
-    if (svg && _wdpData) {
-      const vp = svg.querySelector('#wheel-viewport');
-      if (vp) _collapseAll(vp, _wdpData.melaByNum);
-    }
-  });
-  header.appendChild(closeBtn);
   panel.appendChild(header);
 
   // Direct mela compositions (no janya intermediary)
@@ -1065,6 +1059,7 @@ const RagaWheel = {
     this._state.scale = 1;
     this._state.rotation = 0;
     this._applyTransform();
+    _closeWheelDetailPanel();
     _clearWheelLightUp();
   },
   centreOn(targetX, targetY, targetScale) { /* zoom-to-mela retired (ADR-124) */ },
@@ -1335,6 +1330,7 @@ window.drawRagaWheel = function() {
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
   bg.addEventListener('click', e => {
     if (e.target !== bg) return;
+    _closeWheelDetailPanel();
     _clearWheelLightUp();
     if (typeof window._collapseMobilePlayer === 'function' &&
         document.querySelector('.media-player.full-mobile')) {
@@ -1355,7 +1351,7 @@ window.drawRagaWheel = function() {
 
   // ESC key clears light-up — registered once per draw via AbortController
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') _clearWheelLightUp();
+    if (e.key === 'Escape') { _closeWheelDetailPanel(); _clearWheelLightUp(); }
   }, { signal: _signal });
 
   // ── Pan/zoom gesture handlers (wheel scroll, pointer drag, pinch) ─────────
@@ -1506,6 +1502,7 @@ window.drawRagaWheel = function() {
     madPath.appendChild(titleEl);
     madPath.addEventListener('click', (e) => {
       e.stopPropagation();
+      _closeWheelDetailPanel();
       const melaIds = [];
       for (let M = 1; M <= 72; M++) { if ((M <= 36 ? 1 : 2) === madhyama) melaIds.push(M); }
       _lightUpMelas(melaIds);
@@ -1686,6 +1683,7 @@ window.drawRagaWheel = function() {
     cakraPath.appendChild(cakraTitle);
     cakraPath.addEventListener('click', (e) => {
       e.stopPropagation();
+      _closeWheelDetailPanel();
       const melaIds = [];
       for (let M = 1; M <= 72; M++) {
         const n = M <= 36 ? M : M - 36;
@@ -1748,6 +1746,7 @@ window.drawRagaWheel = function() {
     });
     rigaHit.addEventListener('click', (e) => {
       e.stopPropagation();
+      _closeWheelDetailPanel();
       const melaIds = [];
       for (let M = 1; M <= 72; M++) {
         const n2 = M <= 36 ? M : M - 36;
@@ -1811,6 +1810,7 @@ window.drawRagaWheel = function() {
     });
     daniHit.addEventListener('click', (e) => {
       e.stopPropagation();
+      _closeWheelDetailPanel();
       const companionM2 = n <= 36 ? n + 36 : n - 36;
       const outerSwaraColor = THEME.swara['N' + ni];
       _lightUpMelas([n, companionM2], outerSwaraColor);
@@ -2035,6 +2035,7 @@ function _collapseAll(vp, melaByNum) {
     });
   }
   vp.querySelectorAll('.janya-node circle').forEach(c => c.setAttribute('opacity', '0.75'));
+  _clearWheelLightUp();
   _expandedMela = null; _expandedJanya = null; _expandedComp = null;
   hideWheelTooltip();
 }
