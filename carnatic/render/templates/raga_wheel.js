@@ -636,24 +636,34 @@ function _openWheelDetailPanel(raga) {
   header.appendChild(titleEl);
   panel.appendChild(header);
 
+  // Scrollable body — all content below the sticky header lives here so that
+  // offsetHeight of the panel itself is stable for the entire panel lifetime.
+  // _positionWdpAtMela uses offsetHeight for corner anchoring; mutating content
+  // inside the body leaves panel.offsetHeight unchanged (body grows/clips internally).
+  const wdpBody = document.createElement('div');
+  wdpBody.className = 'wdp-body';
+  wdpBody.id = 'wdp-body';
+  panel.appendChild(wdpBody);
+
   // Direct mela compositions (no janya intermediary)
   const melaDirect = compsByRaga[raga.id] || [];
   if (melaDirect.length > 0) {
     const lbl = document.createElement('div');
     lbl.className = 'wdp-section-label';
     lbl.textContent = melaDirect.length + ' composition' + (melaDirect.length > 1 ? 's' : '') + ' (mela direct)';
-    panel.appendChild(lbl);
-    _wdpRenderComps(panel, melaDirect, raga.id, null);
+    wdpBody.appendChild(lbl);
+    _wdpRenderComps(wdpBody, melaDirect, raga.id, null);
   }
 
-  // Janyas — sorted alphabetically
+  // Janyas — sorted alphabetically; all comp groups pre-rendered so the tree is fully
+  // unfolded from the start and panel height is stable (no DOM mutations on janya click).
   const janyas = (janyasByMela[raga.id] || []).slice()
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   if (janyas.length > 0) {
     const lbl = document.createElement('div');
     lbl.className = 'wdp-section-label';
     lbl.textContent = janyas.length + ' janya raga' + (janyas.length > 1 ? 's' : '');
-    panel.appendChild(lbl);
+    wdpBody.appendChild(lbl);
     const janyaList = document.createElement('div');
     janyaList.className = 'wdp-chips'; janyaList.id = 'wdp-janya-list';
     janyas.forEach(janya => {
@@ -668,15 +678,20 @@ function _openWheelDetailPanel(raga) {
       }
       chip.addEventListener('click', (e) => { e.stopPropagation(); _wdpSelectJanya(janya, chip); });
       janyaList.appendChild(chip);
+      // Pre-render the comp group immediately after the chip so the tree is complete
+      // at open time — _wdpSelectJanya only toggles highlight state, never mutates structure.
+      if (comps.length > 0) {
+        _wdpRenderComps(janyaList, comps, janya.id, chip);
+      }
     });
-    panel.appendChild(janyaList);
+    wdpBody.appendChild(janyaList);
   }
 
   if (janyas.length === 0 && melaDirect.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'wdp-empty';
     empty.textContent = 'No compositions or janyas recorded';
-    panel.appendChild(empty);
+    wdpBody.appendChild(empty);
   }
 
   panel.classList.add('wdp-open');
@@ -702,21 +717,26 @@ function _openWheelDetailPanel(raga) {
 // activeCompId: if set, the matching comp chip gets wdp-active at render time.
 function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
   if (!_wdpData) return;
-  const { compsByRaga } = _wdpData;
   const panel = document.getElementById('wheel-detail-panel');
   if (!panel) return;
 
-  // Toggle: clicking the active janya collapses its comp list (only on user-initiated clicks)
+  // Toggle: clicking the already-selected janya deselects it (highlight-only; comp list stays).
   const wasSelected = !suppressFilter && chipEl && chipEl.classList.contains('wdp-selected');
   panel.querySelectorAll('.wdp-chip.wdp-raga').forEach(c => c.classList.remove('wdp-selected'));
-  panel.querySelectorAll('.wdp-comp-group').forEach(el => el.remove());
   panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
+  // NOTE: .wdp-comp-group elements are NOT removed — the tree is fully pre-rendered at
+  // _openWheelDetailPanel time. _wdpSelectJanya only toggles highlight state.
   if (wasSelected) return;
 
-  if (chipEl) chipEl.classList.add('wdp-selected');
-  const items = compsByRaga[janya.id] || [];
-  // Pass activeCompId so the matching chip is marked wdp-active synchronously during render.
-  if (items.length > 0 && chipEl) _wdpRenderComps(panel, items, janya.id, chipEl, activeCompId || null);
+  if (chipEl) {
+    chipEl.classList.add('wdp-selected');
+    chipEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  // Mark the active comp chip (already in the DOM — find it by data-id selector).
+  if (activeCompId) {
+    const activeChip = panel.querySelector('.wdp-chip.wdp-comp[data-id="' + CSS.escape(activeCompId) + '"]');
+    if (activeChip) activeChip.classList.add('wdp-active');
+  }
 
   // Load bani-flow trail for this janya — only when user clicks, not during programmatic sync.
   // suppressFilter=true means the caller (syncRagaWheelToFilter) already set the bani filter
@@ -2528,14 +2548,15 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
       }, 50);
     } else if (targetCompId && _wdpData) {
       // Mela-direct composition (no janya intermediary) —
-      // re-render the mela-direct comp list with wdp-active applied at render time.
+      // The comp group is pre-rendered; just mark the chip wdp-active by selector.
       setTimeout(() => {
-        const melaRagaObj = _wdpData.melaByNum[melaNum];
-        if (melaRagaObj && _wdpData.compsByRaga[melaRagaObj.id]) {
-          const panel = document.getElementById('wheel-detail-panel');
-          if (panel) {
-            panel.querySelectorAll('.wdp-comp-group').forEach(el => el.remove());
-            _wdpRenderComps(panel, _wdpData.compsByRaga[melaRagaObj.id], melaRagaObj.id, null, targetCompId);
+        const panel = document.getElementById('wheel-detail-panel');
+        if (panel) {
+          panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
+          const activeChip = panel.querySelector('.wdp-chip.wdp-comp[data-id="' + CSS.escape(targetCompId) + '"]');
+          if (activeChip) {
+            activeChip.classList.add('wdp-active');
+            activeChip.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
           }
         }
         window._wheelSyncInProgress = false;

@@ -1154,18 +1154,22 @@
   /* ── Viewport toolbar — compact overlay, top-right of graph canvas (ADR-030) ── */
   /* ── Wheel Detail Panel (Option B, ADR-096 / ADR-140): mela→janya→comp list overlay ── */
   /* ADR-140: left/top are set dynamically by JS, anchored to the mela that opened it. */
+  /* Layout: fixed-height box with sticky header + scrollable body so offsetHeight is
+     stable for the entire panel lifetime — prevents the corner-anchor shift on janya click. */
   #wheel-detail-panel {
     display: none;
     position: absolute;
     width: 228px; max-height: 60vh;
-    overflow-y: auto; z-index: 65;
+    overflow: hidden; z-index: 65;
     background: var(--bg-panel); border: 1px solid var(--border-strong);
     border-radius: 8px; padding: 10px 12px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.55);
     pointer-events: all; box-sizing: border-box;
     transform-origin: top left;
   }
-  #wheel-detail-panel.wdp-open { display: flex; flex-direction: column; gap: 5px; }
+  #wheel-detail-panel.wdp-open { display: flex; flex-direction: column; }
+  /* Scrollable body below the sticky header */
+  .wdp-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-top: 5px; }
   .wdp-header {
     display: flex; align-items: flex-start; justify-content: space-between; gap: 6px;
     border-bottom: 1px solid var(--border-strong); padding-bottom: 6px;
