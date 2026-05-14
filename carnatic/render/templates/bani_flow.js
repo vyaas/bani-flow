@@ -259,7 +259,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
     if (composer) {
       const eraId = composer.musician_node_id
-        ? (cy.getElementById(composer.musician_node_id).data('era') || null)
+        ? ((graphData.nodes || []).find(n => n.id === composer.musician_node_id) || {}).era || null
         : null;
       const tint = THEME.eraTintCss(eraId);
       const composerChip = document.createElement('span');
@@ -286,11 +286,16 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             }
           });
         } else {
-          // musician_node_id set but not yet on the graph
-          composerChip.title = composer.name;
+          // musician_node_id set but not in the cy graph (transit/culled node) — open panel from raw data
+          composerChip.className += ' chip-navigable';
+          composerChip.title = composer.name + ' — Open Musician panel';
           composerChip.addEventListener('click', e => {
             e.stopPropagation();
-            showGraphAbsentToast(composer.name);
+            composerChip.classList.add('chip-tapped');
+            setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
+            if (typeof _openMusicianPanelForTransit === 'function') {
+              _openMusicianPanelForTransit(composer.musician_node_id);
+            }
           });
         }
       } else {
