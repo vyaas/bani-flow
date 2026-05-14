@@ -1,0 +1,16 @@
+{
+  "id": "vandanamu",
+  "title": "Vandanamu",
+  "composer_id": "tiger_varadachariar",
+  "raga_id": "vachaspati",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tana varnam by Tiger Varadachariar in Vachaspati"
+}

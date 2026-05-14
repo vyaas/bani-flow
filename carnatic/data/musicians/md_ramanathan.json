@@ -50,6 +50,250 @@
       "composition_id": "janani_ninnuvina",
       "raga_id": "reetigowla",
       "tala": "misra chapu"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=OtzbE9YzT_E",
+      "label": "Amba Nee Mathi Sallaga · Anandabhairavi · MD Ramanathan",
+      "composition_id": "amba_nee_mathi_sallaga",
+      "raga_id": "ananda_bhairavi",
+      "year": 2013
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=wPOlI9RfcFg",
+      "label": "Vandanamu · Vachaspathi · Tiger Varadachariar · MD Ramanathan",
+      "composition_id": "vandanamu",
+      "raga_id": "vachaspati",
+      "year": 2017
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=1B5iSkGyTqk",
+      "label": "Brindavana Lola Govinda · Thodi · Tyagaraja · MD Ramanathan",
+      "composition_id": "brindavana_lola_govinda",
+      "raga_id": "thodi",
+      "year": 2019,
+      "tala": "adi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=ctaTPWgqXRM",
+      "label": "Bhajana Seyave · Kedaram · Anai Ayya · MD Ramanathan",
+      "composition_id": "bhajana_seyave",
+      "raga_id": "kedaram",
+      "year": 2013
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=n8LSsSmD1YQ",
+      "label": "Ehi Manmathakoti · Shriranjani · Tiger Varadachariar · MD Ramanathan",
+      "composition_id": "ehi_manmathakoti",
+      "raga_id": "sriranjini",
+      "year": 2017,
+      "tala": "adi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=ajkaTB1O4vI",
+      "label": "Ema Ninne · Mukhari · Subbaraya Shastri · MD Ramanathan",
+      "composition_id": "emani_ne",
+      "raga_id": "mukhari",
+      "year": 2013,
+      "performers": [
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=WoLGhOEqYN4",
+      "label": "Lambodharam Avalabe · Kambhoji · Mysore Vasudevacharya · MD Ramanathan",
+      "composition_id": "lambodharam_avalabe",
+      "raga_id": "kambhoji",
+      "year": 2016
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Dda8XCIkD94",
+      "label": "Marachitivemo · Poorvikalyani · Mysore Vasudevacharya · MD Ramanathan",
+      "composition_id": "marachitivemo",
+      "raga_id": "poorvikalyani",
+      "year": 2016
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Vl74M03i9E0",
+      "label": "Na Moralanu · Arabhi · Tyagaraja · MD Ramanathan",
+      "composition_id": "na_moralanu",
+      "raga_id": "arabhi",
+      "year": 2013,
+      "performers": [
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=sPBV8aNTmhI",
+      "label": "Ne Jesina Neramu · Purnachandrika · Patnam Subramanya Iyer · MD Ramanathan",
+      "composition_id": "ne_jesina_neramu",
+      "raga_id": "purnachandrika",
+      "year": 2019,
+      "tala": "adi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=XacuIjFRv0M",
+      "label": "Nilakantham Bhajeham · Kedaragaula · Dikshitar · MD Ramanathan",
+      "composition_id": "nilakantham_bhajeham",
+      "raga_id": "kedaragaula",
+      "year": 2016,
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_mani_iyer",
+          "role": "mridangam"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=njCI6dZ0Q10",
+      "label": "Ra Ra Sita Ramani · Hindolavasantham · Tyagaraja · MD Ramanathan",
+      "composition_id": "ra_ra_sita_ramani",
+      "raga_id": "hindolavasantham",
+      "year": 2009,
+      "tala": "rupaka"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=eFCS2ogPUBI",
+      "label": "Saroruhasana · Pantuvarali · Swati Tirunal · MD Ramanathan",
+      "composition_id": "saroruhasana",
+      "raga_id": "pantuvarali",
+      "year": 2014,
+      "performers": [
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "palghat_raghu",
+          "role": "mridangam"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=P36GNHV24SQ",
+      "label": "Sri Balasubramanya · Bilahari · Dikshitar · MD Ramanathan",
+      "composition_id": "sri_balasubramanya",
+      "raga_id": "bilahari",
+      "year": 2017,
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_mani_iyer",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "swaminatha_pillai",
+          "role": "flute"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=59YK2UgIKTs",
+      "label": "Sri Ramachandra Padabje · Ragamalika · Mysore Vasudevacharya · MD Ramanathan",
+      "composition_id": "sri_ramachandra_padabje",
+      "raga_id": "ragamalika",
+      "year": 2017
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=2YMnG1HaBMk",
+      "label": "Tappi Bratiki Pova · Thodi · Tyagaraja · MD Ramanathan",
+      "composition_id": "tappi_bratiki_pova",
+      "raga_id": "thodi",
+      "year": 2017,
+      "tala": "adi"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=DFf3ZUS0wGU",
+      "label": "Tyagarajam Bhajare Re · Yadukulakamboji · Dikshitar · MD Ramanathan",
+      "composition_id": "tyagarajam_bhajare",
+      "raga_id": "yadukulakamboji",
+      "year": 2018,
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=zDVXqJps4y0",
+      "label": "Thyagaraja Palaya · Gowla · Dikshitar · MD Ramanathan",
+      "composition_id": "thyagaraja_palaya",
+      "raga_id": "gowla",
+      "year": 2022,
+      "performers": [
+        {
+          "musician_id": "md_ramanathan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vv_subrahmanyam",
+          "role": "violin"
+        }
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=lfrBCTOny8E",
+      "label": "Vaddani Ne · Kapi · Poochi Srinivasa Iyengar · MD Ramanathan",
+      "composition_id": "vaddani_ne",
+      "raga_id": "kapi",
+      "year": 2022,
+      "tala": "rupaka"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=xIftzo-6Iw4",
+      "label": "Vanajasana · Sriraga · Subbaraya Shastri · MD Ramanathan",
+      "composition_id": "vanajasana",
+      "raga_id": "sriraga",
+      "year": 2013,
+      "tala": "rupaka"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=qNU3g52TbXc",
+      "label": "Vinana Asakoni Yunnanu Ra · Pratapavarali · Tyagaraja · MD Ramanathan",
+      "composition_id": "vinana_asakoni",
+      "raga_id": "pratapavarali",
+      "year": 2018,
+      "tala": "adi"
     }
   ]
 }

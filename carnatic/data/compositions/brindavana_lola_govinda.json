@@ -1,0 +1,15 @@
+{
+  "id": "brindavana_lola_govinda",
+  "title": "Brindavana Lola Govinda",
+  "composer_id": "tyagaraja",
+  "raga_id": "thodi",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "thyagaraja_palaya",
+  "title": "Thyagaraja Palaya",
+  "composer_id": "muthuswami_dikshitar",
+  "raga_id": "gowla",
+  "language": "Sanskrit",
+  "sources": [
+    {
+      "url": "http://www.sangeetasudha.org/dikshitar/vol5/D254.html",
+      "label": "Sangeetasudha.org — Dikshitar vol5 D254",
+      "type": "article"
+    }
+  ],
+  "notes": "Dikshitar kriti on Lord Tyagaraja of Tiruvarur; kshetra kriti"
+}

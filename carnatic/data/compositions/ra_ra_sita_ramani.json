@@ -1,0 +1,16 @@
+{
+  "id": "ra_ra_sita_ramani",
+  "title": "Ra Ra Sita Ramani",
+  "composer_id": "tyagaraja",
+  "raga_id": "hindolavasantham",
+  "tala": "adi",
+  "language": "Telugu",
+  "sources": [
+    {
+      "url": "https://karnatik.com/c31348.shtml",
+      "label": "Karnatik.com c31348",
+      "type": "article"
+    }
+  ],
+  "notes": "Suddha dhaivata (D1) is the historically correct form; versions with catusruti dhaivata (D2) are patantharam deviations"
+}

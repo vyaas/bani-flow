@@ -1,0 +1,16 @@
+{
+  "id": "pratapavarali",
+  "name": "Pratapavarali",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-pratapavarali-janya-of-mela-28-ragam-harikambhoji",
+      "label": "Dr M Radhakrishnan — Pratapavarali",
+      "type": "article"
+    }
+  ],
+  "notes": "Vakra-oudava shadava janya of Harikambhoji (mela 28); arohana: S R₂ M₁ P D₂ P Ṡ (vakra P, N₂ and G₃ omitted), avarohana: Ṡ D₂ P M₁ G₃ R₂ S (N₂ omitted); eka-raga — sole composition is Tyagaraja's Vinana Asakoni Yunnanu Ra (adi); close similarity to Kapi Narayani which adds N₂"
+}
