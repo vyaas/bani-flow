@@ -616,15 +616,6 @@ function _openWheelDetailPanel(raga) {
     window._wheelOriginatedTrigger = true;
     if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', raga.id);
     window._wheelOriginatedTrigger = false;
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      const svg = document.getElementById('raga-wheel');
-      if (svg && _wdpData) {
-        const vp = svg.querySelector('#wheel-viewport');
-        if (vp) _collapseAll(vp, _wdpData.melaByNum);
-      } else {
-        _closeWheelDetailPanel();
-      }
-    }
   });
   titleEl.appendChild(nameChip);
   if (cakra) {
@@ -789,11 +780,6 @@ function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
       }
       window._wheelSyncInProgress = false;
       window._wheelOriginatedTrigger = false;
-      // On mobile, close the box so the bani-flow panel (which triggerBaniSearch
-      // opens 50ms later) is the sole focus (box → panel cascade).
-      if (window.matchMedia('(max-width: 768px)').matches) {
-        window._closeWheelDetailPanel();
-      }
     });
     group.appendChild(chip);
   });
