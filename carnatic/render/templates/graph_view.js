@@ -1659,6 +1659,13 @@ cy.on('tap', 'edge', evt => {
 // ── background tap ────────────────────────────────────────────────────────────
 cy.on('tap', evt => {
   if (evt.target !== cy) return;
+  // If the full-mobile player is open, this tap means the user wants to keep exploring —
+  // collapse the player only, leave graph/panel state untouched.
+  if (typeof window._collapseMobilePlayer === 'function' &&
+      document.querySelector('.media-player.full-mobile')) {
+    window._collapseMobilePlayer(false);
+    return;
+  }
   _focusedGraphNode = null;
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—'; // clear chip
@@ -1684,11 +1691,6 @@ cy.on('tap', evt => {
   applyZoomLabels();
   // ADR-034: dismiss bottom sheet on mobile when canvas background is tapped
   if (typeof dismissBottomSheet === 'function') dismissBottomSheet();
-  // Collapse full-mobile player on canvas tap — exploration intent (mirrors sheet behaviour)
-  if (typeof window._collapseMobilePlayer === 'function' &&
-      document.querySelector('.media-player.full-mobile')) {
-    window._collapseMobilePlayer();
-  }
 });
 
 // ── Panel reset — exposed for the reset button in #musician-panel h3 ─────────

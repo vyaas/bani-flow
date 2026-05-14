@@ -1350,12 +1350,15 @@ window.drawRagaWheel = function() {
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
   bg.addEventListener('click', e => {
     if (e.target !== bg) return;
-    _closeWheelDetailPanel();
-    _clearWheelLightUp();
+    // If the full-mobile player is covering the lower half, this tap means the user wants
+    // to continue exploring — collapse the player only, leave wheel state untouched.
     if (typeof window._collapseMobilePlayer === 'function' &&
         document.querySelector('.media-player.full-mobile')) {
-      window._collapseMobilePlayer();
+      window._collapseMobilePlayer(false);
+      return;
     }
+    _closeWheelDetailPanel();
+    _clearWheelLightUp();
   });
   svg.appendChild(bg);
 

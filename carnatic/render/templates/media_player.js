@@ -2544,8 +2544,9 @@ function _expandMobilePlayer() {
   if (typeof cy !== 'undefined') setTimeout(function () { cy.resize(); }, 40);
 }
 
-function _collapseMobilePlayer() {
+function _collapseMobilePlayer(restoreState) {
   if (!_mobilePlayer) return;
+  if (restoreState === undefined) restoreState = true;
   const mp = _mobilePlayer;
 
   mp.el.classList.remove('full-mobile');
@@ -2553,8 +2554,9 @@ function _collapseMobilePlayer() {
   // ADR-043: restore mini strip visibility + drawer offset
   showMiniPlayer();
 
-  // Restore saved panel state
-  if (mp._savedPanelState && typeof window.setPanelState === 'function') {
+  // Restore saved panel state (skip when collapsing via background tap —
+  // the user intends to keep exploring, not reopen a previous panel)
+  if (restoreState && mp._savedPanelState && typeof window.setPanelState === 'function') {
     window.setPanelState(mp._savedPanelState);
     mp._savedPanelState = null;
   }
