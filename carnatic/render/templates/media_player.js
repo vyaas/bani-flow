@@ -234,65 +234,23 @@ function buildPlayerTrackList(vid, tracks, instance) {
   return ul;
 }
 
-// ── buildPlayerBar — lean title bar: [artist chip] — [title] [≡] [✕] ────────
-// meta = { nodeId } — nodeId drives the artist chip click
+// ── buildPlayerBar — [▾] [title] [copy] [≡?] [✕] ──────────────────────────
+// Artist chip moves to the footer (buildPlayerFooter). meta.nodeId is still
+// stored on the instance so updatePlayerFooter can include the musician chip.
 function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta) {
   meta = meta || {};
   const bar = document.createElement('div');
   bar.className = 'mp-bar';
 
-  // ── Artist chip — same musician-chip class + era tinting as panels ────────
-  if (artistName) {
-    const eraId = (meta.nodeId && typeof cy !== 'undefined')
-      ? (cy.getElementById(meta.nodeId).data('era') || null) : null;
-    const tint = (typeof THEME !== 'undefined')
-      ? THEME.eraTintCss(eraId)
-      : { bg: 'transparent', border: 'var(--border-strong)' };
-    const artistChip = document.createElement('span');
-    artistChip.className = 'musician-chip';
-    artistChip.style.setProperty('--chip-era-bg',     tint.bg);
-    artistChip.style.setProperty('--chip-era-border', tint.border);
-    // ADR-069: instrument badge
-    if (meta.nodeId && typeof cy !== 'undefined' && typeof makeInstrBadge === 'function') {
-      const instrKey = cy.getElementById(meta.nodeId).data('instrument');
-      if (instrKey) artistChip.appendChild(makeInstrBadge(instrKey));
-    }
-    artistChip.appendChild(document.createTextNode(artistName));
-    if (meta.nodeId) {
-      artistChip.title = artistName + ' — Open Musician panel';
-      artistChip.addEventListener('click', e => {
-        e.stopPropagation();
-        artistChip.classList.add('chip-tapped');
-        setTimeout(() => artistChip.classList.remove('chip-tapped'), 200);
-        const n = cy.getElementById(meta.nodeId);
-        if (n && n.length) {
-          if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
-            orientToNode(meta.nodeId);
-          } else if (typeof selectNode === 'function') {
-            selectNode(n);
-          }
-          if (typeof window.setPanelState === 'function')
-            setTimeout(() => window.setPanelState('MUSICIAN'), 50);
-        }
-      });
-    } else {
-      artistChip.style.cursor = 'default';
-    }
-    bar.appendChild(artistChip);
-  }
+  // ── Fold-cue (▾ visual hint that the bar collapses the player; non-interactive) ─
+  const foldCue = document.createElement('span');
+  foldCue.className = 'mp-fold-cue';
+  foldCue.textContent = '\u25be'; // ▾ small downward-pointing triangle
+  bar.appendChild(foldCue);
 
-  // ── Concert title only (plain text, fills remaining space) ────────────────
-  // When a concertTitle is available, show it — it identifies the recording.
-  // trackLabel (individual performance title) is omitted here: it is already
-  // surfaced in the footer via the composition chip, avoiding redundancy.
+  // ── Title (fills remaining space) ─────────────────────────────────────────
   const titleText = concertTitle || '';
   if (titleText) {
-    if (artistName) {
-      const sep = document.createElement('span');
-      sep.className = 'mp-bar-sep';
-      sep.textContent = ' \u2014 ';
-      bar.appendChild(sep);
-    }
     const titleSpan = document.createElement('span');
     titleSpan.className = 'mp-title';
     titleSpan.textContent = titleText;
@@ -330,18 +288,69 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   return bar;
 }
 
+// ── _buildMusicianChipForFooter — era-tinted musician chip with transit fallback ─
+// Shared by buildPlayerFooter and _buildLecdemSubjectFooter.
+// nodeId may be null if only artistName is known (renders chip without navigation).
+function _buildMusicianChipForFooter(nodeId, artistName) {
+  if (!nodeId && !artistName) return null;
+  const node = (nodeId && typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null;
+  const name = (node && node.length) ? (node.data('label') || artistName || nodeId)
+                                     : (artistName || nodeId);
+  if (!name) return null;
+  const eraId = (node && node.length) ? (node.data('era') || null) : null;
+  const tint  = (typeof THEME !== 'undefined')
+    ? THEME.eraTintCss(eraId)
+    : { bg: 'transparent', border: 'var(--border-strong)' };
+  const chip = document.createElement('span');
+  chip.className = 'musician-chip';
+  chip.style.setProperty('--chip-era-bg',     tint.bg);
+  chip.style.setProperty('--chip-era-border', tint.border);
+  // ADR-069: instrument badge
+  if (nodeId && typeof cy !== 'undefined' && typeof makeInstrBadge === 'function') {
+    const instrKey = (node && node.length) ? node.data('instrument') : null;
+    if (instrKey) chip.appendChild(makeInstrBadge(instrKey));
+  }
+  chip.appendChild(document.createTextNode(name));
+  chip.title = name + ' — Open Musician panel';
+  chip.addEventListener('click', e => {
+    e.stopPropagation();
+    chip.classList.add('chip-tapped');
+    setTimeout(() => chip.classList.remove('chip-tapped'), 200);
+    if (node && node.length) {
+      if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+        orientToNode(nodeId);
+      } else if (typeof selectNode === 'function') {
+        selectNode(node);
+      }
+      if (typeof window.setPanelState === 'function') {
+        setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+      }
+    } else if (nodeId && typeof _openMusicianPanelForTransit === 'function') {
+      // Isolated musician (no lineage edges) — open panel via transit path
+      _openMusicianPanelForTransit(nodeId);
+    }
+  });
+  return chip;
+}
+
 // ── buildPlayerFooter — musician + raga + comp + composer chips below the video ──
 // ADR-066: chips use same classes as panels for visual parity.
-// meta = { ragaId, compositionId, displayTitle, tala } — all optional
-// Note: musician name is already shown in the title bar; no musician chip here.
+// meta = { nodeId, artistName, ragaId, compositionId, displayTitle, tala } — all optional.
+// nodeId + artistName drive the musician chip (prepended first).
 function buildPlayerFooter(meta) {
   if (!meta) return null;
-  const { ragaId, compositionId, displayTitle, tala } = meta;
-  const hasAny = ragaId || compositionId || displayTitle;
+  const { nodeId, artistName, ragaId, compositionId, displayTitle, tala } = meta;
+  const hasAny = nodeId || artistName || ragaId || compositionId || displayTitle;
   if (!hasAny) return null;
 
   const footer = document.createElement('div');
   footer.className = 'mp-footer';
+
+  // ── Musician chip (always first) ──────────────────────────────────────────
+  if (nodeId || artistName) {
+    const mChip = _buildMusicianChipForFooter(nodeId || null, artistName || null);
+    if (mChip) footer.appendChild(mChip);
+  }
 
   // ── Raga chip + tala (same .raga-chip class as panels; tala stays inline) ────
   if (ragaId) {
@@ -405,14 +414,23 @@ function buildPlayerFooter(meta) {
 
 // ── updatePlayerFooter — replace the footer in-place when a track is selected ─
 // Called by buildPlayerTrackList on track click and on track swipe to keep chips in sync.
-// ADR-066: displayTitle added; nodeId+artistName no longer needed (musician shown in bar).
+// Reads nodeId + artistName from player.meta so the musician chip persists on every
+// track change on both desktop and mobile.
 function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
   const el = player.el;
   // Remove existing footer if present
   const existing = el.querySelector('.mp-footer');
   if (existing) existing.remove();
-  // Build and insert new footer (before .mp-resize)
-  const newFooter = buildPlayerFooter({ ragaId, compositionId, displayTitle: displayTitle || null, tala: tala || null });
+  // Include musician meta so musician chip persists across track changes
+  const pmeta = player.meta || {};
+  const newFooter = buildPlayerFooter({
+    nodeId:        pmeta.nodeId    || null,
+    artistName:    pmeta.artistName || null,
+    ragaId,
+    compositionId,
+    displayTitle:  displayTitle || null,
+    tala:          tala || null,
+  });
   if (newFooter) {
     const resize = el.querySelector('.mp-resize');
     if (resize) {
@@ -449,9 +467,16 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     allowfullscreen></iframe>`;
   el.appendChild(videoWrap);
 
-  // ── Footer: raga + comp + composer chips (ADR-066; musician shown in bar) ──
+  // ── Footer: musician + raga + comp + composer chips ──────────────────────
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
-  const footer = buildPlayerFooter({ ragaId: (fullMeta.ragaId || null), compositionId: (fullMeta.compositionId || null), displayTitle: trackLabel || null, tala: fullMeta.tala || null });
+  const footer = buildPlayerFooter({
+    nodeId:        fullMeta.nodeId       || null,
+    artistName:    fullMeta.artistName   || null,
+    ragaId:        fullMeta.ragaId       || null,
+    compositionId: fullMeta.compositionId || null,
+    displayTitle:  trackLabel            || null,
+    tala:          fullMeta.tala         || null,
+  });
   if (footer) el.appendChild(footer);
 
   const resizeHandle = document.createElement('div');
@@ -640,12 +665,15 @@ function buildLecdemChip(ref) {
     e.stopPropagation();
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
-    // Open media player on the lecdem video
-    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', '', undefined, ref.label || 'Lecture-Demo', [], {});
-    // Inject subject cross-link chips into the player footer (ADR-079 §4)
+    // Open media player on the lecdem video; pass lecturer meta so footer shows lecturer chip
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', [], { nodeId: ref.lecturer_id || null });
+    // Replace footer with a unified footer: lecturer chip + subject cross-link chips (ADR-079 §4)
     const instance = playerRegistry.get(ref.video_id);
     if (instance && ref.subjects) {
-      const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+      const subFooter = _buildLecdemSubjectFooter(
+        ref.subjects,
+        { nodeId: ref.lecturer_id || null, artistName: ref.lecturer_label || null }
+      );
       if (subFooter) {
         const existing = instance.el.querySelector('.mp-footer');
         if (existing) existing.remove();
@@ -659,16 +687,24 @@ function buildLecdemChip(ref) {
 }
 
 // Helper: footer with subject cross-link chips for a lecdem player (ADR-079 §4)
+// lecturerMeta (optional): { nodeId, artistName } — prepended as first chip if provided.
 // Each raga_id → .raga-chip, composition_id → .comp-chip, musician_id → .musician-chip.
-// Returns null if all subject arrays are empty (no footer needed).
-function _buildLecdemSubjectFooter(subjects) {
+// Returns null if lecturerMeta is absent AND all subject arrays are empty.
+function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
   const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
   const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
   const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
-  if (!ragaIds.length && !compIds.length && !musicianIds.length) return null;
+  const hasLecturer = lecturerMeta && (lecturerMeta.nodeId || lecturerMeta.artistName);
+  if (!ragaIds.length && !compIds.length && !musicianIds.length && !hasLecturer) return null;
 
   const footer = document.createElement('div');
   footer.className = 'mp-footer';
+
+  // ── Lecturer chip (first) ─────────────────────────────────────────────────
+  if (hasLecturer) {
+    const lecChip = _buildMusicianChipForFooter(lecturerMeta.nodeId || null, lecturerMeta.artistName || null);
+    if (lecChip) footer.appendChild(lecChip);
+  }
 
   ragaIds.forEach(ragaId => {
     const ragaObj  = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
@@ -1388,10 +1424,13 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.textContent = '\u25B6';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', [], {});
+      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', [], { nodeId });
       const instance = playerRegistry.get(ref.video_id);
       if (instance && ref.subjects) {
-        const subFooter = _buildLecdemSubjectFooter(ref.subjects);
+        const subFooter = _buildLecdemSubjectFooter(
+          ref.subjects,
+          { nodeId: nodeId || null, artistName: artistLabel || null }
+        );
         if (subFooter) {
           const existing = instance.el.querySelector('.mp-footer');
           if (existing) existing.remove();
@@ -1533,7 +1572,33 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.textContent = '▶';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, {});
+      openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, { nodeId });
+      const instance = playerRegistry.get(ref.video_id);
+      if (instance) {
+        // Aggregate all subjects from every segment + top-level ref.subjects
+        const mergedSubjects = {
+          raga_ids: [...new Set([
+            ...(ref.subjects && ref.subjects.raga_ids ? ref.subjects.raga_ids : []),
+            ...segments.filter(s => s.raga_id).map(s => s.raga_id),
+          ])],
+          composition_ids: [...new Set([
+            ...(ref.subjects && ref.subjects.composition_ids ? ref.subjects.composition_ids : []),
+            ...segments.filter(s => s.composition_id).map(s => s.composition_id),
+          ])],
+          musician_ids: (ref.subjects && ref.subjects.musician_ids) ? ref.subjects.musician_ids : [],
+        };
+        const subFooter = _buildLecdemSubjectFooter(
+          mergedSubjects,
+          { nodeId: nodeId || null, artistName: artistLabel || null }
+        );
+        if (subFooter) {
+          const existing = instance.el.querySelector('.mp-footer');
+          if (existing) existing.remove();
+          const resize = instance.el.querySelector('.mp-resize');
+          if (resize) instance.el.insertBefore(subFooter, resize);
+          else        instance.el.appendChild(subFooter);
+        }
+      }
     });
     row1.appendChild(playBtn);
 
@@ -2394,7 +2459,7 @@ function _wireMobilePlayerEvents(mp) {
 
   // Full mode bar: tap anywhere on the bar to collapse (except dedicated buttons)
   mp.bar.addEventListener('click', e => {
-    const isBtn = e.target.closest('.mp-close, .mp-minimize, .mp-tracklist-toggle, .mp-copy-btn');
+    const isBtn = e.target.closest('.mp-close, .mp-tracklist-toggle, .mp-copy-btn');
     if (isBtn) return;
     _collapseMobilePlayer(false);
   });
@@ -2453,22 +2518,6 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
       e.stopPropagation();
       _closeMobilePlayer();
     });
-  }
-
-  // ── Mobile: inject minimize (⌄) button before close ─────────────────────
-  // Gives a clear affordance to collapse to mini strip without stopping playback.
-  const existingMinBtn = mp.bar.querySelector('.mp-minimize');
-  if (!existingMinBtn) {
-    const minBtn = document.createElement('button');
-    minBtn.className = 'mp-minimize';
-    minBtn.title = 'Minimise';
-    minBtn.setAttribute('aria-label', 'Minimise player');
-    minBtn.textContent = '\u25BC';   // ▼ downward triangle = collapse/fold
-    minBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      _collapseMobilePlayer(false);
-    });
-    mp.bar.insertBefore(minBtn, mp.bar.firstChild);
   }
 
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───

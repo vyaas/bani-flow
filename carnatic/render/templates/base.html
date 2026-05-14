@@ -914,6 +914,13 @@
     flex-shrink: 0; font-size: 0.74rem; color: var(--fg-muted);
   }
 
+  /* ▾ fold-cue — non-interactive visual hint that the bar collapses the player */
+  .mp-fold-cue {
+    flex-shrink: 0; margin-right: 2px;
+    color: var(--text-dim, var(--fg-muted)); font-size: 0.75rem;
+    user-select: none; pointer-events: none;
+  }
+
   /* right-side group: tracklist toggle + close */
   .mp-bar-right {
     display: flex; align-items: center; gap: 2px;
@@ -3548,19 +3555,6 @@
       min-width: 44px; min-height: 44px;
       font-size: 1.25rem;
     }
-    /* Minimise button — hidden on desktop, shown at left of full-mobile bar */
-    .mp-minimize { display: none; }
-    .media-player.full-mobile .mp-minimize {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-width: 44px; min-height: 44px;
-      font-size: 1rem; line-height: 1;
-      color: var(--accent);
-      background: none; border: none;
-      cursor: pointer;
-      padding: 0;
-      transition: opacity 0.1s;
-    }
-    .media-player.full-mobile .mp-minimize:hover { opacity: 0.75; }
     /* ADR-051: video fills remaining height; override JS-set padding-top */
     .media-player.full-mobile .mp-video-wrap {
       flex: 1;
@@ -3568,12 +3562,11 @@
       padding-top: 0 !important;
       position: relative;
     }
-    .media-player.full-mobile .mp-tracklist {
-      display: block;
-      flex: 1; overflow-y: auto;
-    }
-    /* No tracks → tracklist is empty; collapse it so the video fills all space */
-    .media-player.full-mobile .mp-tracklist:empty { display: none; }
+    /* Tracklist hidden by default; shown when toggle button adds .mp-tracklist-open */
+    .media-player.full-mobile .mp-tracklist { display: none; overflow-y: auto; }
+    .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; flex: 1; }
+    /* No tracks → tracklist is empty; keep hidden regardless of class */
+    .media-player.full-mobile .mp-tracklist:empty { display: none !important; }
     .media-player.full-mobile .mp-footer { flex-shrink: 0; }
     .media-player.full-mobile .mp-resize { display: none; }
 
