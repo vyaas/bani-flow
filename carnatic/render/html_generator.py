@@ -8,11 +8,86 @@ Phase 2 of the render-refactor plan.
 Implements ADR-028: theme.js is injected first (defines THEME global);
 :root {} CSS vars are generated from theme.py css_vars().
 """
+import base64
 import json
+import math
 import re
 from pathlib import Path
 from .graph_builder import INSTRUMENT_SHAPES
-from .theme import css_vars
+from .theme import css_vars, SWARA_COLORS, TOKENS
+
+# ── Favicon: miniature raga wheel as SVG data-URI ─────────────────────────────
+# Replicates the raga_wheel.js polar/sectorPath geometry in Python so the
+# favicon stays in sync with the live wheel's colors (single source: theme.py).
+
+_FAV_PAIRS = [[1, 1], [1, 2], [1, 3], [2, 2], [2, 3], [3, 3]]
+
+
+def _fav_polar(cx, cy, r, angle_deg):
+    rad = (angle_deg - 90) * math.pi / 180
+    return cx + r * math.cos(rad), cy + r * math.sin(rad)
+
+
+def _fav_sector(cx, cy, r1, r2, start_deg, end_deg):
+    """Annular sector path; r1=0 produces a pie-slice from center."""
+    large = 1 if (end_deg - start_deg) > 180 else 0
+    if r1 == 0:
+        sx, sy = _fav_polar(cx, cy, r2, start_deg)
+        ex, ey = _fav_polar(cx, cy, r2, end_deg)
+        return f"M {cx} {cy} L {sx:.3f} {sy:.3f} A {r2} {r2} 0 {large} 1 {ex:.3f} {ey:.3f} Z"
+    s1x, s1y = _fav_polar(cx, cy, r1, start_deg)
+    e1x, e1y = _fav_polar(cx, cy, r1, end_deg)
+    s2x, s2y = _fav_polar(cx, cy, r2, start_deg)
+    e2x, e2y = _fav_polar(cx, cy, r2, end_deg)
+    return (
+        f"M {s1x:.3f} {s1y:.3f} "
+        f"A {r1} {r1} 0 {large} 1 {e1x:.3f} {e1y:.3f} "
+        f"L {e2x:.3f} {e2y:.3f} "
+        f"A {r2} {r2} 0 {large} 0 {s2x:.3f} {s2y:.3f} Z"
+    )
+
+
+def _generate_favicon_svg():
+    cx, cy = 50, 50
+    RM = 10   # madhyama outer
+    RC = 18   # cakra outer
+    RR = 26   # ri-ga outer
+    RD = 34   # da-ni outer
+
+    bg = TOKENS["bgDeep"]
+    M1 = SWARA_COLORS["M1"]
+    M2 = SWARA_COLORS["M2"]
+
+    parts = []
+    parts.append(f'<circle cx="{cx}" cy="{cy}" r="50" fill="{bg}"/>')
+
+    # Madhyama centre disc
+    parts.append(f'<path d="{_fav_sector(cx, cy, 0, RM, 0, 180)}" fill="{M1}"/>')
+    parts.append(f'<path d="{_fav_sector(cx, cy, 0, RM, 180, 360)}" fill="{M2}"/>')
+
+    # Ri-Ga ring: 12 × 30° segments, split at mid-radius
+    riga_mid = (RC + RR) / 2
+    for i in range(12):
+        s, e = i * 30, (i + 1) * 30
+        ri, ga = _FAV_PAIRS[i % 6]
+        parts.append(f'<path d="{_fav_sector(cx, cy, RC, riga_mid, s, e)}" fill="{SWARA_COLORS[f"R{ri}"]}"/>')
+        parts.append(f'<path d="{_fav_sector(cx, cy, riga_mid, RR, s, e)}" fill="{SWARA_COLORS[f"G{ga}"]}"/>')
+
+    # Da-Ni ring: 72 × 5° segments, split at mid-radius
+    dani_mid = (RR + RD) / 2
+    for n in range(72):
+        s, e = n * 5, (n + 1) * 5
+        da, ni = _FAV_PAIRS[n % 6]
+        parts.append(f'<path d="{_fav_sector(cx, cy, RR, dani_mid, s, e)}" fill="{SWARA_COLORS[f"D{da}"]}"/>')
+        parts.append(f'<path d="{_fav_sector(cx, cy, dani_mid, RD, s, e)}" fill="{SWARA_COLORS[f"N{ni}"]}"/>')
+
+    body = "\n  ".join(parts)
+    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">\n  {body}\n</svg>'
+
+
+def _favicon_data_uri():
+    b64 = base64.b64encode(_generate_favicon_svg().encode()).decode()
+    return f"data:image/svg+xml;base64,{b64}"
 
 
 def _render_help_md(md_text: str) -> str:
@@ -245,6 +320,9 @@ def render_html(
 
     # ── Inject :root {} CSS vars from theme.py (single source of truth) ───────
     base = base.replace("/* INJECT_CSS_VARS */", css_vars())
+
+    # ── Inject raga-wheel favicon SVG (data-URI, generated from theme.py colors)
+    base = base.replace("INJECT_FAVICON_SVG", _favicon_data_uri())
 
     # ── ADR-128 D7: derive panel width from longest composition title + raga name.
     # Both sidebars must be wide enough to render their largest first-class chip

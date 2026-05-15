@@ -199,23 +199,79 @@ function buildPlayerTrackList(vid, tracks, instance) {
     li.className = 'mp-track-item';
     li.dataset.offset = t.offset_seconds;
 
-    const labelSpan = document.createElement('span');
-    labelSpan.className = 'mp-track-label';
-    const _trackLabel = t.display_title
-      || (() => { const c = (typeof compositions !== 'undefined' ? compositions : []).find(x => x.id === t.composition_id); return c ? c.title : null; })()
-      || t.composition_id || '';
-    labelSpan.textContent = _trackLabel;
-    labelSpan.title = _trackLabel;
+    const _compCanonical = t.composition_id
+      ? (() => { const c = (typeof compositions !== 'undefined' ? compositions : []).find(x => x.id === t.composition_id); return c ? c.title : null; })()
+      : null;
+    const _trackLabel = _compCanonical || t.display_title || t.composition_id || '';
 
-    const metaSpan = document.createElement('span');
-    metaSpan.className = 'mp-track-meta';
-    const parts = [t.raga_name, formatTala(t.tala)].filter(Boolean);
-    metaSpan.textContent = (parts.length ? parts.join(' \u00b7 ') + ' \u00b7 ' : '') + (t.timestamp || '00:00');
+    // ── Left group: comp-chip · raga-chip · tala ──
+    const leftSpan = document.createElement('span');
+    leftSpan.className = 'mp-track-left';
 
-    li.appendChild(labelSpan);
-    li.appendChild(metaSpan);
+    if (t.composition_id) {
+      const compChip = document.createElement('span');
+      compChip.className = 'comp-chip';
+      compChip.textContent = _trackLabel;
+      compChip.title = _trackLabel;
+      compChip.addEventListener('click', e => {
+        e.stopPropagation();
+        triggerBaniSearch('comp', t.composition_id);
+      });
+      leftSpan.appendChild(compChip);
+    } else {
+      const labelText = document.createElement('span');
+      labelText.className = 'mp-track-label';
+      labelText.textContent = _trackLabel;
+      labelText.title = _trackLabel;
+      leftSpan.appendChild(labelText);
+    }
 
-    li.addEventListener('click', () => {
+    if (t.raga_id && t.raga_name) {
+      const ragaChip = document.createElement('span');
+      ragaChip.className = 'raga-chip';
+      ragaChip.textContent = t.raga_name;
+      ragaChip.addEventListener('click', e => {
+        e.stopPropagation();
+        triggerBaniSearch('raga', t.raga_id);
+      });
+      leftSpan.appendChild(ragaChip);
+    } else if (t.raga_name) {
+      const ragaText = document.createElement('span');
+      ragaText.className = 'mp-track-raga-text';
+      ragaText.textContent = t.raga_name;
+      leftSpan.appendChild(ragaText);
+    }
+
+    const talaPart = formatTala(t.tala);
+    if (talaPart) {
+      const talaSpan = document.createElement('span');
+      talaSpan.className = 'mp-track-tala';
+      talaSpan.textContent = talaPart;
+      leftSpan.appendChild(talaSpan);
+    }
+
+    // ── Right group: play button · timestamp ──
+    const rightSpan = document.createElement('span');
+    rightSpan.className = 'mp-track-right';
+
+    const playBtn = document.createElement('button');
+    playBtn.type = 'button';
+    playBtn.className = 'mp-track-play-btn';
+    playBtn.textContent = '\u25b6';
+    playBtn.title = 'Play this track';
+
+    const tsSpan = document.createElement('span');
+    tsSpan.className = 'mp-track-ts';
+    tsSpan.textContent = t.timestamp || '00:00';
+
+    rightSpan.appendChild(playBtn);
+    rightSpan.appendChild(tsSpan);
+
+    li.appendChild(leftSpan);
+    li.appendChild(rightSpan);
+
+    li.addEventListener('click', e => {
+      if (e.target.closest('.raga-chip, .comp-chip')) return;
       const player = playerRegistry.get(vid);
       if (!player) return;
       player.iframe.src = ytEmbedUrl(vid, t.offset_seconds > 0 ? t.offset_seconds : undefined);

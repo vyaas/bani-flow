@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>Carnatic Music Explorer</title>
+<link rel="icon" type="image/svg+xml" href="INJECT_FAVICON_SVG">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <style>
   /* INJECT_CSS_VARS */
@@ -2478,36 +2479,77 @@
 
   .mp-track-item {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    gap: 6px;
-    padding: 3px 8px;
+    gap: 8px;
+    padding: 4px 8px;
     cursor: pointer;
     font-size: 0.70rem;
     border-bottom: 1px solid var(--border);
   }
   .mp-track-item:last-child { border-bottom: none; }
-  .mp-track-item:hover .mp-track-label { color: var(--accent); }
+  .mp-track-item:hover .mp-track-play-btn { color: var(--accent); }
 
-  .mp-track-label {
-    color: var(--fg-dim);
+  .mp-track-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
     flex: 1;
     min-width: 0;
     overflow: hidden;
+  }
+
+  .mp-track-right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .mp-track-label {
+    color: var(--fg-dim);
+    overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .mp-track-raga-text,
+  .mp-track-tala {
+    color: var(--fg-muted);
+    font-size: 0.65rem;
     white-space: nowrap;
   }
 
-  .mp-track-meta {
+  .mp-track-play-btn {
+    background: none;
+    border: none;
     color: var(--fg-muted);
+    font-size: 0.55rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
     flex-shrink: 0;
-    font-size: 0.65rem;
   }
 
-  .mp-track-item.mp-track-active .mp-track-label {
-    color: var(--accent-sub);
+  .mp-track-ts {
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
-  .mp-track-item.mp-track-active .mp-track-meta {
+
+  .mp-track-item .raga-chip,
+  .mp-track-item .comp-chip {
+    font-size: var(--chip-size-secondary);
+    padding: var(--chip-padding-secondary);
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .mp-track-item.mp-track-active .mp-track-play-btn,
+  .mp-track-item.mp-track-active .mp-track-ts {
     color: var(--accent-match);
   }
 
