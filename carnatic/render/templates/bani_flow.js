@@ -508,14 +508,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     }
     // (if neither: sub-label is empty — graceful degradation)
 
-    // Row 3 (#bani-subject-aliases-row): aliases
-    const aliasesRow = document.getElementById('bani-subject-aliases-row');
-    aliasesRow.textContent = '';
-    aliasesRow.style.display = 'none';
-    if (raga && raga.aliases && raga.aliases.length > 0) {
-      aliasesRow.textContent = 'also: ' + raga.aliases.join(', ');
-      aliasesRow.style.display = 'block';
-    }
     // Notes section (ADR-097 §7) — array-shaped notes only; string notes stay as tooltip
     if (_notesRow && raga && Array.isArray(raga.notes) && raga.notes.length > 0) {
       const notesEl = buildNotesSection(raga.notes);

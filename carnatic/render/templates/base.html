@@ -104,8 +104,8 @@
   #left-panel-toggle,
   #right-panel-toggle {
     display: none; /* shown in desktop media query */
-    align-items: center; gap: 5px;
-    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    align-items: center; justify-content: center; gap: 5px;
+    font-size: 0.80rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--fg-dim); background: transparent;
     border: 1px solid transparent; border-radius: 4px;
     padding: 6px 14px; cursor: pointer;
@@ -132,7 +132,8 @@
   /* Bundle button — floating bottom-centre, ghost until items are added */
   #bundle-download-btn {
     display: none; /* shown in desktop media query */
-    font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+    align-items: center; justify-content: center;
+    font-size: 0.80rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
     color: var(--fg-dim); background: transparent;
     border: 1px solid transparent; border-radius: 4px;
     padding: 6px 14px; cursor: pointer;
@@ -1268,7 +1269,10 @@
     flex-shrink: 0;
   }
   #bani-subject-name-row {
-    display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+  }
+  #bani-subject-name-row .panel-header-affordances {
+    margin-left: auto; padding: 0; flex-wrap: nowrap;
   }
   #bani-subject-name {
     font-size: 0.85rem; color: var(--accent); font-weight: bold;
@@ -4190,15 +4194,14 @@
             <span id="bani-subject-icon" class="bani-subject-icon"></span>
             <span id="bani-her-prefix" style="display:none">[Hindustani]</span>
             <span id="bani-subject-name"></span>
-            <!-- add button moved to affordances row below for breathing room -->
-          </div>
-          <!-- ADR-128 D2: affordances row (edit + add + wiki). Shown when subject loaded. -->
-          <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
-            <button id="bani-subject-edit-btn" class="co-edit-chip panel-hdr-edit-btn"
-                    title="Edit" style="display:none">&#9998;</button>
-            <button id="bani-subject-add-btn" class="co-add-chip" style="display:none" title="Add a recording">+</button>
-            <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
-               target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
+            <!-- ADR-128 D2: affordances (edit + add + wiki) inlined right of name chip -->
+            <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
+              <button id="bani-subject-edit-btn" class="co-edit-chip panel-hdr-edit-btn"
+                      title="Edit" style="display:none">&#9998;</button>
+              <button id="bani-subject-add-btn" class="co-add-chip" style="display:none" title="Add a recording">+</button>
+              <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
+                 target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
+            </div>
           </div>
           <div id="bani-subject-sub"></div>
           <!-- Row 3: aliases (ADR-022) -->
