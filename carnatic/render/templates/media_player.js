@@ -2279,6 +2279,7 @@ function openPlayer(videoId, title, playerId) {
   // On mobile, route all named players (including sruti/tanpura) through the
   // mobile singleton bottom-sheet player — one video at a time (ADR-037).
   if (_isMobilePlayer()) {
+    _getMobilePlayer()._currentPlayerId = playerId || null;
     _openMobilePlayer(videoId, title, '', undefined, undefined, [], {});
     return;
   }
@@ -2328,11 +2329,9 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  // Named player: sruti drone has a minimize toggle (ADR-131 R3) instead of a
-  // close button — collapsing turns the player into a brightish title-bar
-  // strip that can be dragged anywhere on the canvas. Restore expands the
-  // iframe back. The drone is stopped only by clicking the active sruti pie
-  // sector at the wheel centre.
+  // Named player: sruti drone has a minimize toggle (ADR-131 R3) alongside a
+  // close button. The minimize toggle collapses the player to a bright title-bar
+  // strip. The close button stops the drone and resets the tonic ring.
   if (playerId === 'sruti') {
     el.classList.add('sruti-player');
     const minBtn = el.querySelector('.mp-close');
@@ -2349,6 +2348,21 @@ function openPlayer(videoId, title, playerId) {
           minimized ? 'Restore sruti player' : 'Minimize sruti player');
       });
     }
+    // Close button: stops drone and resets the tonic ring on the raga wheel
+    const srutiCloseBtn = document.createElement('button');
+    srutiCloseBtn.className = 'mp-sruti-close';
+    srutiCloseBtn.textContent = '\u2715';   // ✕
+    srutiCloseBtn.title = 'Stop tanpura';
+    srutiCloseBtn.setAttribute('aria-label', 'Stop tanpura drone');
+    srutiCloseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (typeof RagaWheel !== 'undefined' && typeof RagaWheel._clearSrutiRing === 'function') {
+        RagaWheel._clearSrutiRing();
+      }
+      closePlayer('sruti');
+    });
+    const barRight = el.querySelector('.mp-bar-right');
+    if (barRight) barRight.appendChild(srutiCloseBtn);
   } else {
     el.querySelector('.mp-close').addEventListener('click', () => {
       closePlayer(playerId);
@@ -2759,6 +2773,14 @@ window._collapseMobilePlayer = _collapseMobilePlayer;
 function _closeMobilePlayer() {
   if (!_mobilePlayer) return;
   const mp = _mobilePlayer;
+
+  // If the active player was the sruti drone, reset the tonic ring.
+  if (mp._currentPlayerId === 'sruti' &&
+      typeof RagaWheel !== 'undefined' &&
+      typeof RagaWheel._clearSrutiRing === 'function') {
+    RagaWheel._clearSrutiRing();
+  }
+  mp._currentPlayerId = null;
 
   if (mp.iframe) mp.iframe.src = '';
   mp.vid = null;

@@ -1086,6 +1086,13 @@
     background: var(--accent);
     transform: scale(1.05);
   }
+  /* Close (stop) button on sruti player — standard ✕ style, stops drone */
+  .media-player.sruti-player .mp-sruti-close {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
+    flex-shrink: 0;
+  }
+  .media-player.sruti-player .mp-sruti-close:hover { color: var(--accent-danger); }
   .media-player.sruti-player.sruti-minimized {
     width: auto; min-width: 0;
     /* Bright accent border so the minimized strip is visually distinct
