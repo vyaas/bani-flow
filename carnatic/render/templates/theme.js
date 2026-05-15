@@ -59,7 +59,7 @@ const THEME = (() => {
     // Backgrounds
     bgDeep:       P.bg_h,    // deepest: graph canvas, editor area
     bg:           P.bg0,     // main page background
-    bgPanel:      P.bg1,     // sidebar, panel background
+    bgPanel:      P.bg_h,    // sidebar, panel background
     bgInput:      P.bg2,     // input fields, subtle inset
     bgHover:      P.bg2,     // hover state background
     bgActive:     P.bg3,     // active/pressed state

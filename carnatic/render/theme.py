@@ -51,7 +51,7 @@ TOKENS = {
     # Backgrounds
     "bgDeep":       _P["bg_h"],    # deepest: graph canvas, editor area
     "bg":           _P["bg0"],     # main page background
-    "bgPanel":      _P["bg1"],     # sidebar, panel background
+    "bgPanel":      _P["bg_h"],    # sidebar, panel background
     "bgInput":      _P["bg2"],     # input fields, subtle inset
     "bgHover":      _P["bg2"],     # hover state background
     "bgActive":     _P["bg3"],     # active/pressed state
