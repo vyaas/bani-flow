@@ -3283,9 +3283,7 @@
     #right-sidebar { grid-column: 3; grid-row: 1; }
 
     /* Pin-state variants driven by classes set in mobile.js */
-    #main.left-pinned               { grid-template-columns: var(--left-panel-width, 280px) 1fr 0px; }
     #main.right-pinned              { grid-template-columns: 0px 1fr var(--right-panel-width, 280px); }
-    #main.left-pinned.right-pinned  { grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px); }
 
     /* ADR-129: Inset floating (unpinned) panels so they never overlap the top/bottom chrome */
     #left-sidebar:not(.panel-pinned),
@@ -3308,7 +3306,6 @@
       margin-bottom: var(--chrome-bottom);
       overflow-y: auto;
     }
-    #left-sidebar.panel-pinned  { border-right: 2px solid var(--border-strong); }
     #right-sidebar.panel-pinned { border-left:  2px solid var(--border-strong); border-right: none; }
 
     /* Canvas column must not collapse below a usable width */
