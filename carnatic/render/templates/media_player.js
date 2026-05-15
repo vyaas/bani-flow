@@ -690,20 +690,23 @@ function buildLecdemChip(ref) {
 // lecturerMeta (optional): { nodeId, artistName } — prepended as first chip if provided.
 // Each raga_id → .raga-chip, composition_id → .comp-chip, musician_id → .musician-chip.
 // Returns null if lecturerMeta is absent AND all subject arrays are empty.
+// Only the first PREVIEW_COUNT chips are shown by default; the rest are behind a
+// fold/unfold toggle (▶ N more / ▼ less) to keep the footer compact on mobile.
 function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
+  const PREVIEW_COUNT = 3;
   const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
   const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
   const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
   const hasLecturer = lecturerMeta && (lecturerMeta.nodeId || lecturerMeta.artistName);
   if (!ragaIds.length && !compIds.length && !musicianIds.length && !hasLecturer) return null;
 
-  const footer = document.createElement('div');
-  footer.className = 'mp-footer';
+  // ── Collect all chips into an array before deciding layout ────────────────
+  const allChips = [];
 
-  // ── Lecturer chip (first) ─────────────────────────────────────────────────
+  // Lecturer chip (first)
   if (hasLecturer) {
     const lecChip = _buildMusicianChipForFooter(lecturerMeta.nodeId || null, lecturerMeta.artistName || null);
-    if (lecChip) footer.appendChild(lecChip);
+    if (lecChip) allChips.push(lecChip);
   }
 
   ragaIds.forEach(ragaId => {
@@ -719,7 +722,7 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
       setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
     });
-    footer.appendChild(ragaChip);
+    allChips.push(ragaChip);
   });
 
   compIds.forEach(compId => {
@@ -735,7 +738,7 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
       setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compId);
     });
-    footer.appendChild(compChip);
+    allChips.push(compChip);
   });
 
   musicianIds.forEach(musicianId => {
@@ -769,8 +772,40 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
         _openMusicianPanelForTransit(musicianId);
       }
     });
-    footer.appendChild(mchip);
+    allChips.push(mchip);
   });
+
+  if (!allChips.length) return null;
+
+  // ── Build footer with preview + optional overflow ─────────────────────────
+  const footer = document.createElement('div');
+  footer.className = 'mp-footer';
+
+  const previewChips  = allChips.slice(0, PREVIEW_COUNT);
+  const overflowChips = allChips.slice(PREVIEW_COUNT);
+
+  previewChips.forEach(c => footer.appendChild(c));
+
+  if (overflowChips.length > 0) {
+    const overflowEl = document.createElement('span');
+    overflowEl.className = 'mp-footer-overflow';
+    overflowEl.hidden = true;
+    overflowChips.forEach(c => overflowEl.appendChild(c));
+
+    const n = overflowChips.length;
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'mp-footer-toggle';
+    toggleBtn.textContent = '\u25b6 ' + n + ' more';
+    toggleBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      overflowEl.hidden = !overflowEl.hidden;
+      toggleBtn.textContent = overflowEl.hidden ? ('\u25b6 ' + n + ' more') : '\u25bc less';
+    });
+
+    footer.appendChild(toggleBtn);
+    footer.appendChild(overflowEl);
+  }
 
   return footer.hasChildNodes() ? footer : null;
 }

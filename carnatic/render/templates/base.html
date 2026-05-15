@@ -1029,6 +1029,17 @@
     background: var(--bg-panel);
     border-top: 1px solid var(--border-strong);
   }
+  .mp-footer-overflow {
+    display: inline-flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  }
+  .mp-footer-overflow[hidden] { display: none; }
+  .mp-footer-toggle {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.65rem; cursor: pointer; padding: 0 2px;
+    font-family: inherit; line-height: 1; user-select: none;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .mp-footer-toggle:hover { color: var(--accent); }
 
   /* resize grip at bottom — se-resize cursor + corner-dot indicator pointing ↘ */
   .mp-resize {
