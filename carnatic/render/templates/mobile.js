@@ -13,6 +13,7 @@
   // Mutual exclusion: TRAIL and MUSICIAN are never both active.
   // Pin flags: a pinned panel is never closed by setPanelState (desktop only).
   var panelState  = 'IDLE';
+  var leftPinned  = false;
   var rightPinned = false;
 
   var sidebar        = document.getElementById('left-sidebar');
@@ -30,8 +31,8 @@
   // Update floating toggle active state to reflect transient open/close
   function _updateDesktopHandles(state) {
     if (leftPanelToggle) {
-      leftPanelToggle.classList.toggle('float-toggle-active', state === 'TRAIL');
-      leftPanelToggle.setAttribute('aria-pressed', String(state === 'TRAIL'));
+      leftPanelToggle.classList.toggle('float-toggle-active', leftPinned || state === 'TRAIL');
+      leftPanelToggle.setAttribute('aria-pressed', String(leftPinned || state === 'TRAIL'));
     }
     if (rightPanelToggle) rightPanelToggle.classList.toggle('float-toggle-active', rightPinned);
     // Legacy floating handles (hidden via CSS but kept for backwards compat)
@@ -84,8 +85,8 @@
 
     panelState = newState;
 
-    // Close everything first — but respect right pin lock
-    _closeLeftDrawer();
+    // Close everything first — but respect pin locks
+    if (!leftPinned) _closeLeftDrawer();
     if (!rightPinned) _closeRightDrawer();
 
     // Open the requested panel
@@ -204,7 +205,7 @@
   if (leftPanelToggle) {
     leftPanelToggle.addEventListener('click', function (e) {
       e.stopPropagation();
-      toggleLeftDrawer();
+      toggleLeftPanelFloat();
     });
   }
   if (rightPanelToggle) {
@@ -222,6 +223,27 @@
   // drawer. State is persisted per session via sessionStorage.
 
   var mainEl         = document.getElementById('main');
+
+  function _applyLeftPinState() {
+    if (sidebar)  sidebar.classList.toggle('panel-pinned', leftPinned);
+    if (mainEl)   mainEl.classList.toggle('left-pinned', leftPinned);
+    if (leftPanelToggle) {
+      leftPanelToggle.classList.toggle('float-toggle-active', leftPinned);
+      leftPanelToggle.setAttribute('aria-pressed', String(leftPinned));
+    }
+    if (leftPinned) _openLeftDrawer();
+    try {
+      localStorage.setItem('baniLeftPinned', String(leftPinned));
+    } catch (e) { /* storage unavailable — ignore */ }
+    if (typeof cy !== 'undefined') {
+      setTimeout(function () { cy.resize(); }, 50);
+    }
+    // If raga wheel is active, redraw with corrected canvas dimensions
+    if (typeof currentView !== 'undefined' && currentView === 'raga' &&
+        typeof drawRagaWheel === 'function') {
+      setTimeout(function () { drawRagaWheel(); }, 80);
+    }
+  }
 
   function _applyPinState() {
         // ─ right sidebar ──────────────────────────────────────────
@@ -260,17 +282,26 @@
     }
   }
 
+  // Symmetric left panel toggle (open-and-pin / close-and-unpin)
+  function toggleLeftPanelFloat() {
+    leftPinned = !leftPinned;
+    _applyLeftPinState();
+    if (!leftPinned) {
+      _closeLeftDrawer();
+      if (panelState === 'TRAIL') setPanelState('IDLE');
+    }
+  }
+
   // Restore pin state — localStorage persists across sessions.
-  // Left panel: always a drawer overlay (no pin mode); default open on desktop.
-  // Right panel: restored from localStorage; default pinned open on first visit.
+  // Both panels default pinned open on first visit (desktop).
   if (isDesktop()) {
     try {
-      localStorage.removeItem('baniLeftPinned');
+      var _lp = localStorage.getItem('baniLeftPinned');
+      leftPinned  = _lp !== null ? _lp === 'true' : true;
       var _rp = localStorage.getItem('baniRightPinned');
       rightPinned = _rp !== null ? _rp === 'true' : true;
+      _applyLeftPinState();
       _applyPinState();
-      // Open bani-flow as a drawer by default (replaces old pin-open default)
-      _openLeftDrawer();
       panelState = 'TRAIL';
       _updateDesktopHandles('TRAIL');
     } catch (e) { /* storage unavailable — ignore */ }
@@ -282,7 +313,8 @@
   window.toggleLeftDrawer      = toggleLeftDrawer;
   window.toggleRightDrawer     = toggleRightDrawer;
   window.toggleRightPin        = toggleRightPin;
-  // ADR-129 D2: floating toggle API (right panel only; left is always a drawer)
+  // ADR-129 D2: floating toggle API (both panels)
+  window.toggleLeftPanelFloat  = toggleLeftPanelFloat;
   window.toggleRightPanelFloat = toggleRightPanelFloat;
   window.peekBottomSheet    = peekBottomSheet;
   window.dismissBottomSheet = dismissBottomSheet;

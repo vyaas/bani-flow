@@ -3348,6 +3348,8 @@
 
     /* Pin-state variants driven by classes set in mobile.js */
     #main.right-pinned              { grid-template-columns: 0px 1fr var(--right-panel-width, 280px); }
+    #main.left-pinned               { grid-template-columns: var(--left-panel-width, 280px) 1fr 0px; }
+    #main.left-pinned.right-pinned  { grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px); }
 
     /* ADR-129: Inset floating (unpinned) panels so they never overlap the top/bottom chrome */
     #left-sidebar:not(.panel-pinned),
