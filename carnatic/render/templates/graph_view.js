@@ -232,6 +232,7 @@ const cy = cytoscape({
         'width':               'data(width)',
         'arrow-scale':         0.8,
         'opacity':             THEME.opacityEdge,
+        'z-index':             0,
       }
     },
     // ADR-138 D4: transitive edge — bulged bezier, thinner stroke, same colour.
@@ -748,45 +749,50 @@ function applyZoomLabels() {
   const z = cy.zoom();
   const defaultView = _isDefaultView();
 
-  // In default view, also reveal direct neighbors of any selected node so
-  // the focal context (selected node + its connections) lights up together.
+  // Use _currentPanelNodeId (set by ALL selectNode paths: canvas tap, chip click,
+  // history nav, search) rather than cy ':selected' (only set by canvas taps).
+  const focusedId = defaultView ? _currentPanelNodeId : null;
   const neighborIds = new Set();
-  if (defaultView) {
-    cy.nodes(':selected').forEach(sn => {
-      sn.neighborhood().nodes().forEach(nb => neighborIds.add(nb.id()));
-    });
+  if (focusedId) {
+    const focused = cy.getElementById(focusedId);
+    if (focused && focused.length) {
+      focused.neighborhood().nodes().forEach(nb => neighborIds.add(nb.id()));
+    }
   }
 
   cy.nodes().forEach(n => {
     const chip = _cyChipMap.get(n.id());
     if (!chip) return;
-    const tier     = n.data('label_tier');
-    const selected = n.selected();
-    const isTrinity   = TRINITY_IDS.has(n.id());
-    const isNeighbor  = neighborIds.has(n.id());
+    const tier       = n.data('label_tier');
+    const selected   = n.selected();
+    const isTrinity  = TRINITY_IDS.has(n.id());
+    const isFocused  = n.id() === focusedId;
+    const isNeighbor = neighborIds.has(n.id());
 
-    // Default (no filters): show Trinity, the selected node, and its direct neighbors.
+    // Default (no filters): show Trinity, the focused node, and its direct neighbors.
     // Filtered / zoomed: use tier-based zoom thresholds.
     const show = defaultView
-      ? (selected || isTrinity || isNeighbor)
+      ? (isTrinity || isFocused || isNeighbor)
       : (selected ||
          tier === 0 ||
          (tier === 1 && z >= 0.35) ||
          (tier === 2 && z >= 0.60));
     chip.classList.toggle('chip-hidden', !show);
 
-    // Default view only: dim every node that is not Trinity, not selected,
-    // and not a direct neighbor of the selected node.
+    // Default view only: dim every node that is not Trinity, not focused,
+    // and not a direct neighbor of the focused node.
     // In filter mode, applyChipFilters() owns chip-faded — don't clobber it.
     if (defaultView) {
-      n.toggleClass('chip-faded', !isTrinity && !selected && !isNeighbor);
+      n.toggleClass('chip-faded', !isTrinity && !isFocused && !isNeighbor);
     }
   });
 
-  // Edges: dim all in default view, but un-dim edges touching the selected node.
+  // Edges: dim all in default view, but un-dim edges connected to the focused node.
   if (defaultView) {
     cy.edges().addClass('chip-faded');
-    cy.nodes(':selected').connectedEdges().removeClass('chip-faded');
+    if (focusedId) {
+      cy.getElementById(focusedId).connectedEdges().removeClass('chip-faded');
+    }
   }
   scheduleCyChipSync();
 }
@@ -862,6 +868,26 @@ cy.on('mouseout', 'edge[kind = "transitive"]', function () {
   popover.style.display = 'none';
 });
 cy.on('mousemove', 'edge[kind = "transitive"]', function (evt) {
+  const x = evt.originalEvent.clientX, y = evt.originalEvent.clientY;
+  const pw = popover.offsetWidth  || 200;
+  const ph = popover.offsetHeight || 60;
+  popover.style.left = (x + 16 + pw > window.innerWidth  ? x - pw - 10 : x + 16) + 'px';
+  popover.style.top  = (y + 16 + ph > window.innerHeight ? y - ph - 10 : y + 16) + 'px';
+});
+
+// ── Hover tooltip for direct (non-transitive) guru-shishya edges ──────────────
+cy.on('mouseover', 'edge[kind != "transitive"]', function (evt) {
+  const e = evt.target;
+  const shishya = e.target().data('label') || '';
+  const guru    = e.source().data('label') || '';
+  document.getElementById('hp-name').textContent = shishya + ' is shishya of ' + guru;
+  document.getElementById('hp-sub').textContent  = 'Guru\u2013shishya relationship';
+  popover.style.display = 'block';
+});
+cy.on('mouseout', 'edge[kind != "transitive"]', function () {
+  popover.style.display = 'none';
+});
+cy.on('mousemove', 'edge[kind != "transitive"]', function (evt) {
   const x = evt.originalEvent.clientX, y = evt.originalEvent.clientY;
   const pw = popover.offsetWidth  || 200;
   const ph = popover.offsetHeight || 60;
@@ -1165,6 +1191,9 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   node.removeClass('faded');
   node.connectedEdges().removeClass('faded').addClass('highlighted');
   node.connectedEdges().connectedNodes().removeClass('faded');
+  // Sync chip-faded / label visibility for ALL entry paths (canvas tap, chip
+  // click, history nav, search). _currentPanelNodeId is already set above.
+  applyZoomLabels();
 
   // ADR-046: open right drawer on any screen width when a node is selected.
   // Mobile first-tap suppresses reveal — panel is pre-populated, surfaced on
@@ -1716,6 +1745,7 @@ cy.on('tap', evt => {
     return;
   }
   _focusedGraphNode = null;
+  _currentPanelNodeId = null;   // clear focus so applyZoomLabels re-dims everything
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—'; // clear chip
   document.getElementById('node-lifespan').textContent      = '';
@@ -1745,6 +1775,7 @@ cy.on('tap', evt => {
 // ── Panel reset — exposed for the reset button in #musician-panel h3 ─────────
 window.clearMusicianPanel = function () {
   _focusedGraphNode = null;
+  _currentPanelNodeId = null;   // clear focus so applyZoomLabels re-dims everything
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—';
   document.getElementById('node-lifespan').textContent      = '';

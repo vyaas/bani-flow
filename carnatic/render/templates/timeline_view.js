@@ -19,16 +19,18 @@ const ERA_BAND_MEDIAN = {
   contemporary:   2000,
 };
 
-// Era lane centres — graph-space units along the non-time axis
+// Era lane centres — graph-space units along the non-time (y) axis
+// Graduated spacing: denser eras receive more vertical room.
+// Total span grows from 1100 to 1750 graph-space px, affecting cy.fit() zoom.
 const ERA_LANE_CENTRE = {
   trinity:        0,
-  bridge:         220,
-  golden_age:     440,
-  disseminator:   660,
-  living_pillars: 880,
-  contemporary:   1100,
+  bridge:         280,
+  golden_age:     600,
+  disseminator:   950,
+  living_pillars: 1300,
+  contemporary:   1750,
 };
-const LANE_STEP = 55;   // vertical spread step within a lane
+const LANE_STEP = 75;   // vertical spread step within a lane
 
 let currentLayout = 'graph';
 
@@ -185,12 +187,14 @@ function applyTimelineLayout() {
         positions[n.id()] = { x: -9999, y: -9999 };
         return;
       }
-      // Both axes encode time: x = left-to-right, y = top-to-bottom, both = axisCoord(year).
-      // Nodes cluster on the diagonal; LANE_STEP jitter separates same-era/same-year neighbours.
+      // x = birth-year axis (left-to-right); y = era lane centre + LANE_STEP jitter.
+      // Using ERA_LANE_CENTRE for y separates eras into distinct horizontal bands,
+      // giving co-born contemporaries vertical room proportional to era size.
       const coord  = axisCoord(py);
+      const laneY  = ERA_LANE_CENTRE[era] !== undefined ? ERA_LANE_CENTRE[era] : coord;
       const half   = Math.floor(i / 2) + 1;
       const offset = (i % 2 === 0 ? 1 : -1) * half * LANE_STEP;
-      positions[n.id()] = { x: coord, y: coord + offset };
+      positions[n.id()] = { x: coord, y: laneY + offset };
     });
   });
 
@@ -275,12 +279,13 @@ function drawRuler() {
     line.setAttribute('class', 'tick-line' + (isLog ? ' century' : ''));
     ruler.appendChild(line);
 
-    // (b) Tick label
+    // (b) Tick label — placed at bottom of the trimmed ruler SVG
+    const RULER_BOTTOM_RESERVE = 6;    // px above the SVG's bottom edge
     const label = document.createElementNS(svgNS, 'text');
     label.setAttribute('x', sx);
-    label.setAttribute('y', 4);
+    label.setAttribute('y', H - RULER_BOTTOM_RESERVE);
     label.setAttribute('text-anchor', 'middle');
-    label.setAttribute('dominant-baseline', 'hanging');
+    label.setAttribute('dominant-baseline', 'auto');   // text sits above the y coord
     label.setAttribute('class', 'tick-label' + (isLog ? ' century' : ''));
     label.textContent = String(year);
     ruler.appendChild(label);
@@ -297,18 +302,30 @@ function drawRuler() {
     ruler.appendChild(hit);
   });
 
-  // Era lane labels: positioned at axisCoord(ERA_BAND_MEDIAN[era]) on both axes
-  // so the y-axis labels are proportionally spaced by historical time, not evenly.
-  Object.entries(ERA_BAND_MEDIAN).forEach(([era, medianYear]) => {
-    const eraCoord = axisCoord(medianYear);
+  // Era lane labels: y-position from ERA_LANE_CENTRE so labels align with actual node positions.
+  // Each era also gets a faint tinted band spanning ± LANE_STEP from the lane centre.
+  Object.entries(ERA_LANE_CENTRE).forEach(([era, laneY]) => {
+    const ly = graphYtoPx(laneY);
+
+    // Faint era-coloured band behind nodes (inserted before all other elements)
+    const band = document.createElementNS(svgNS, 'rect');
+    band.setAttribute('x', 0);
+    band.setAttribute('y', ly - LANE_STEP);
+    band.setAttribute('width', W);
+    band.setAttribute('height', LANE_STEP * 2);
+    band.style.fill = ERA_COLOURS[era] || 'transparent';
+    band.setAttribute('opacity', '0.04');
+    band.setAttribute('class', 'era-band');
+    ruler.insertBefore(band, ruler.firstChild);   // behind all other elements
+
     const text = document.createElementNS(svgNS, 'text');
-    const ly = graphYtoPx(eraCoord);
     text.setAttribute('x', 6);
     text.setAttribute('y', ly);
     text.setAttribute('text-anchor', 'start');
     text.setAttribute('dominant-baseline', 'middle');
     text.setAttribute('class', 'era-label');
-    text.textContent = '— ' + (eraDisplayNames[era] || era);
+    text.style.fill = ERA_COLOURS[era] || 'var(--fg-muted)';
+    text.textContent = eraDisplayNames[era] || era;   // no '— ' prefix
     ruler.appendChild(text);
   });
 }

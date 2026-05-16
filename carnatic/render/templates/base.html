@@ -1135,21 +1135,22 @@
     stroke: var(--border-strong); stroke-width: 1.5px; opacity: 0.25;
   }
   #timeline-ruler .tick-label {
-    fill: var(--fg-muted); font-family: var(--font-mono);
-    font-size: 14px; font-weight: 500;
+    fill: var(--fg-sub); font-family: var(--font-mono);
+    font-size: 13px; font-weight: 500;
   }
   #timeline-ruler .tick-label.century {
-    fill: var(--fg-sub); font-size: 16px; font-weight: bold;
+    fill: var(--accent, #d79921); font-size: 16px; font-weight: 600;
   }
   #timeline-ruler .tick-click-target {
     fill: transparent; cursor: pointer;
   }
   #timeline-ruler .era-band {
-    fill: none; stroke: none;
+    stroke: none;
   }
   #timeline-ruler .era-label {
-    fill: var(--border-strong); font-family: var(--font-mono);
-    font-size: 11px; dominant-baseline: middle;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 600; dominant-baseline: middle;
+    /* fill set inline per era in drawRuler() */
   }
   @keyframes tick-flash {
     0%   { opacity: 1;   }
@@ -1162,7 +1163,7 @@
   /* ADR-136: larger ruler labels on portrait/mobile viewports (≥16px) */
   @media (max-width: 768px), (orientation: portrait) {
     #timeline-ruler .tick-label         { font-size: 16px; }
-    #timeline-ruler .tick-label.century { font-size: 18px; }
+    #timeline-ruler .tick-label.century { font-size: 20px; }
   }
 
   /* ── Two-view selector (ADR-030) ── */
@@ -4283,7 +4284,7 @@
       <div id="cy"></div>
       <!-- ADR-074: DOM-overlay musician chip labels (replace canvas labels) -->
       <div id="cy-labels" aria-hidden="true"></div>
-      <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
+      <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:calc(100% - var(--chrome-bottom, 64px));pointer-events:none;overflow:hidden;z-index:50;"></svg>
       <!-- Raga wheel (ADR-023) -->
       <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);touch-action:none;"></svg>
       <!-- ADR-096 Option B: mela→janya→comp detail panel (replaces SVG satellite fans) -->
