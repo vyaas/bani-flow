@@ -7,6 +7,7 @@ on:
       - "carnatic/data/**"
       - "carnatic/render/**"
       - "pyproject.toml"
+      - "assets/**"
   workflow_dispatch:   # allow manual trigger from the Actions tab
 
 # Required for the OIDC-based Pages deployment
@@ -43,6 +44,7 @@ jobs:
         run: |
           mkdir -p _site
           cp carnatic/graph.html _site/index.html
+          cp assets/preview.png _site/preview.png
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
