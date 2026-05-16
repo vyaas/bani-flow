@@ -1798,17 +1798,115 @@ window.clearMusicianPanel = function () {
   if (typeof applyZoomLabels === 'function') applyZoomLabels();
 };
 
+// ── Trinity triangle layout ───────────────────────────────────────────────────
+// Places the three Trinity composers at equilateral triangle vertices, locks
+// them, then re-runs cose so all other nodes cluster around the anchors.
+// Radius is computed from the current container size so the triangle fills the
+// viewport; after the layout settles, cy.fit() is called to maximise real estate.
+// Vertex angles (y-axis points DOWN in Cytoscape, so −π/2 = top)
+const _TRINITY_VERTS = {
+  tyagaraja:           -Math.PI / 2,                  // top
+  muthuswami_dikshitar: -Math.PI / 2 + (2 * Math.PI / 3), // bottom-right
+  shyama_shastri:       -Math.PI / 2 + (4 * Math.PI / 3), // bottom-left
+};
+
+function applyTrinityTriangleLayout() {
+  cy.nodes().unlock();
+
+  const R  = 550;   // triangle circumradius
+  const cx = 0, cy_ = 0;
+
+  const CENTRE_ID  = 'vina_dhanammal';
+  const _anchorIds = new Set([...TRINITY_IDS, CENTRE_ID]);
+
+  // ── Fixed anchor positions ────────────────────────────────────────────────
+  const anchorPos = {};
+  TRINITY_IDS.forEach(id => {
+    const a = _TRINITY_VERTS[id];
+    anchorPos[id] = { x: cx + R * Math.cos(a), y: cy_ + R * Math.sin(a) };
+    cy.getElementById(id).position(anchorPos[id]).lock();
+  });
+  const cp = cy.getElementById(CENTRE_ID);
+  if (cp.length) {
+    anchorPos[CENTRE_ID] = { x: cx, y: cy_ };
+    cp.position({ x: cx, y: cy_ }).lock();
+  }
+
+  // ── BFS ordering so students land near their guru ─────────────────────────
+  const ordered = [];
+  const bfsVisited = new Set(_anchorIds);
+  const bfsQ = [...TRINITY_IDS];
+  while (bfsQ.length) {
+    const id = bfsQ.shift();
+    cy.getElementById(id).connectedEdges().connectedNodes().forEach(nb => {
+      const nid = nb.id();
+      if (!bfsVisited.has(nid)) {
+        bfsVisited.add(nid);
+        ordered.push(nid);
+        bfsQ.push(nid);
+      }
+    });
+  }
+  cy.nodes().forEach(n => { if (!bfsVisited.has(n.id())) ordered.push(n.id()); });
+
+  // ── Poisson disc sampling within the circumscribed circle ────────────────
+  // Each node tries MAX_TRIES random positions and picks the first that is
+  // at least MIN_DIST from every already-placed node.  This guarantees spacing
+  // without any physics.  Fallback: golden-angle spiral from centre.
+  const MIN_DIST  = 44;   // min gap between any two nodes (graph units)
+  const MAX_TRIES = 60;
+  const placed    = Object.values(anchorPos);  // collision check includes anchors
+  const positions = { ...anchorPos };
+
+  ordered.forEach(nid => {
+    let pos = null;
+    for (let t = 0; t < MAX_TRIES; t++) {
+      const a  = Math.random() * 2 * Math.PI;
+      const r  = R * Math.sqrt(Math.random());   // uniform-area distribution
+      const px = cx + r * Math.cos(a);
+      const py = cy_ + r * Math.sin(a);
+      let ok = true;
+      for (const p of placed) {
+        const dx = px - p.x, dy = py - p.y;
+        if (dx * dx + dy * dy < MIN_DIST * MIN_DIST) { ok = false; break; }
+      }
+      if (ok) { pos = { x: px, y: py }; break; }
+    }
+    if (!pos) {
+      // Fallback: golden-angle spiral — guaranteed non-overlapping for large n
+      const i  = placed.length;
+      const r  = MIN_DIST * Math.sqrt(i);
+      const a  = i * (137.508 * Math.PI / 180);
+      pos = { x: cx + r * Math.cos(a), y: cy_ + r * Math.sin(a) };
+    }
+    positions[nid] = pos;
+    placed.push(pos);
+  });
+
+  // ── Preset layout — no physics, pure position assignment ─────────────────
+  cy.style().selector('edge[kind = "transitive"]')
+    .style({ 'control-point-distances': 30 }).update();
+
+  cy.layout({
+    name: 'preset',
+    positions: node => positions[node.id()] || { x: cx, y: cy_ },
+    animate: true,
+    animationDuration: 800,
+    fit: true,
+    padding: 60,
+  }).on('layoutstop', () => {
+    cy.fit(undefined, 60);
+    if (typeof applyZoomLabels === 'function') applyZoomLabels();
+  }).run();
+}
+
+
 // ── controls ──────────────────────────────────────────────────────────────────
 function relayout() {
   if (currentLayout === 'timeline') { applyTimelineLayout(); return; }
-  // ADR-138: reset transitive-edge control-point distance to cose default (30).
-  cy.style().selector('edge[kind = "transitive"]')
-    .style({ 'control-point-distances': 30 }).update();
-  cy.layout({
-    name: 'cose', animate: true, animationDuration: 600, randomize: false,
-    nodeRepulsion: () => 8000, idealEdgeLength: () => 120,
-    gravity: 0.25, numIter: 500,
-  }).run();
+  // Trinity is the base graph state — always re-run the trinity layout.
+  currentLayout = 'trinity';
+  applyTrinityTriangleLayout();
 }
 
 // ── Auto-relayout on browser resize ───────────────────────────────────────────

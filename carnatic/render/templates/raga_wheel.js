@@ -1,47 +1,14 @@
 // ── Two-view selector (ADR-030) ───────────────────────────────────────────────
 // currentView: primary view — 'graph' (Guru-Shishya) | 'raga' (Mela-Janya)
-// currentLayout: sub-mode within graph view — 'graph' | 'timeline'
+// currentLayout: sub-mode within graph view — 'trinity' | 'timeline'
 //   declared in timeline_view.js (loaded before this file); do not re-declare here.
+//   Default is 'trinity' — the trinity layout is always the base graph state.
 let currentView = 'graph'; // 'graph' | 'raga'
 
-// Snapshot of graph-view node positions — saved whenever the user leaves the
-// graph view so that returning to it restores the exact layout they had.
-// Keyed by node id, value is {x, y} in Cytoscape graph-space.
-// null means no snapshot yet (first load uses the cose layout).
-let _savedGraphPositions = null;
-
-// Save the current Cytoscape node positions into _savedGraphPositions.
-// Called just before leaving the graph view (to raga).
-function _saveGraphPositions() {
-  _savedGraphPositions = {};
-  cy.nodes().forEach(n => {
-    const p = n.position();
-    _savedGraphPositions[n.id()] = { x: p.x, y: p.y };
-  });
-}
-
-// Restore node positions from _savedGraphPositions using a preset layout.
-// Falls back to relayout() if no snapshot exists (first load).
-function _restoreGraphPositions() {
-  if (!_savedGraphPositions) {
-    relayout();
-    return;
-  }
-  const snap = _savedGraphPositions;
-  cy.layout({
-    name: 'preset',
-    positions: node => snap[node.id()] || node.position(),
-    animate: true,
-    animationDuration: 400,
-    fit: false,   // do NOT re-fit — preserve the user's zoom/pan
-    padding: 0,
-  }).run();
-}
-
 // ── _updateViewportToolbar: show/hide toolbar buttons based on view/layout ────
-// | Button      | graph (graph)    | graph (timeline)    | raga   |
-// | btn-relayout| 'Re-layout', on  | 'Fit', on           | hidden |
-// | btn-timeline| visible, off     | visible, active     | hidden |
+// | Button      | graph (trinity)     | graph (timeline)    | raga   |
+// | btn-relayout| 'Re-layout', on     | 'Fit', on           | hidden |
+// | btn-timeline| visible, off        | visible, active     | hidden |
 function _updateViewportToolbar(view, layout) {
   const btnRelayout = document.getElementById('btn-relayout');
   const btnTimeline = document.getElementById('btn-timeline');
@@ -52,14 +19,12 @@ function _updateViewportToolbar(view, layout) {
     if (btnRelayout) {
       btnRelayout.style.display = '';
       btnRelayout.disabled = false;
-      // Repurpose the button when timeline is active: act as Fit instead.
-      // Use innerHTML to preserve the icon <i> element.
       if (layout === 'timeline') {
         btnRelayout.innerHTML = '<i class="vp-icon">&#10021;</i> Fit';
         btnRelayout.title = 'Fit all nodes into view';
       } else {
         btnRelayout.innerHTML = '<i class="vp-icon">&#10227;</i> Re-layout';
-        btnRelayout.title = 'Re-run force-directed layout';
+        btnRelayout.title = 'Re-run Trinity layout';
       }
     }
     if (btnTimeline) {
@@ -71,11 +36,6 @@ function _updateViewportToolbar(view, layout) {
 
 function switchView(name) {
   if (name === currentView) return;
-
-  // ── Save positions before leaving graph view ──────────────────────────────
-  if (currentView === 'graph') {
-    _saveGraphPositions();
-  }
 
   currentView = name;
 
@@ -103,12 +63,13 @@ function switchView(name) {
     if (cyLabels) cyLabels.style.display = '';
     if (layoutControls) layoutControls.style.display = '';
     if (typeof cy !== 'undefined' && cy) cy.resize();
-    // Restore the sub-layout that was active when the user left
+    // Restore the sub-layout that was active when the user left.
+    // Trinity is always the base — re-run it fresh (viewport-normalised).
     if (currentLayout === 'timeline') {
       applyTimelineLayout();
     } else {
-      currentLayout = 'graph';
-      _restoreGraphPositions();
+      currentLayout = 'trinity';
+      applyTrinityTriangleLayout();
     }
     if (typeof cy !== 'undefined' && cy) {
       requestAnimationFrame(() => cy.resize());
@@ -128,16 +89,17 @@ function switchView(name) {
   }
 }
 
-// ── vpToggleTimeline: toggle timeline sub-layout within Guru-Shishya view ─────
+// ── vpToggleTimeline: toggle between timeline and trinity layouts ─────────────
 function vpToggleTimeline() {
   if (currentView !== 'graph') return;
   if (currentLayout === 'timeline') {
-    // Switch back to force-directed graph layout
-    currentLayout = 'graph';
+    // Return to trinity (the base graph state)
     hideTimelineRuler();
-    relayout();
+    currentLayout = 'trinity';
+    applyTrinityTriangleLayout();
   } else {
-    // Switch to timeline layout
+    // Leaving trinity mode: unlock nodes before applying timeline
+    cy.nodes().unlock();
     currentLayout = 'timeline';
     applyTimelineLayout();
   }

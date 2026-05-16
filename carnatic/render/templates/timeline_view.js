@@ -32,7 +32,7 @@ const ERA_LANE_CENTRE = {
 };
 const LANE_STEP = 75;   // vertical spread step within a lane
 
-let currentLayout = 'graph';
+let currentLayout = 'trinity';
 
 // Dynamic axis bounds — updated each time applyTimelineLayout() runs
 let _axisYearMin = 1700;
