@@ -538,7 +538,10 @@ function _animateWheelToMela(melaNum, durationMs) {
     targetPanX += cX;
     targetPanY += cY;
   }
-  if (Math.abs(targetPanX - s.panX) < 1 && Math.abs(targetPanY - s.panY) < 1) return;
+  if (Math.abs(targetPanX - s.panX) < 1 && Math.abs(targetPanY - s.panY) < 1) {
+    window.dispatchEvent(new CustomEvent('wdp-settled'));
+    return;
+  }
   if (_animRafId) { cancelAnimationFrame(_animRafId); _animRafId = null; }
   const startPanX = s.panX, startPanY = s.panY;
   const startTime = performance.now();
@@ -551,7 +554,7 @@ function _animateWheelToMela(melaNum, durationMs) {
     s.panY = startPanY + (targetPanY - startPanY) * e;
     RagaWheel._applyTransform();
     if (t < 1) { _animRafId = requestAnimationFrame(step); }
-    else { _animRafId = null; }
+    else { _animRafId = null; window.dispatchEvent(new CustomEvent('wdp-settled')); }
   }
   _animRafId = requestAnimationFrame(step);
 }

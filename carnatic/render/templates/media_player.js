@@ -42,6 +42,58 @@ function showCopyLinkToast() {
   _copyToastTimer = setTimeout(function() { el.classList.remove('visible'); }, 1500);
 }
 
+// Returns { top, left } positioning the player flush-right (or left) of the
+// open Wheel Detail Panel, relative to the given offsetParent element.
+// Avoids placing the player over any open sidebar panel (#left-sidebar,
+// #right-sidebar). Returns null when: WDP is not open, view is not raga, or
+// neither side of the WDP has enough room.
+function _wdpAdjacentPosition(offsetParentEl) {
+  const panel = document.getElementById('wheel-detail-panel');
+  if (!panel || !panel.classList.contains('wdp-open')) return null;
+  if (typeof currentView !== 'undefined' && currentView !== 'raga') return null;
+  const wdpRect = panel.getBoundingClientRect();
+  if (!wdpRect.width) return null;
+  const parentEl = offsetParentEl || document.getElementById('main');
+  if (!parentEl) return null;
+  const parentRect = parentEl.getBoundingClientRect();
+  const PW = 480; // player width
+  const GAP = 16;
+
+  // Compute the safe horizontal zone (viewport x) that doesn't overlap open sidebars.
+  // getBoundingClientRect() returns post-transform coords, so closed sidebars
+  // (translated off-screen) return rects outside the visible area and are ignored.
+  let safeLeft  = parentRect.left;  // viewport x: left edge of available zone
+  let safeRight = parentRect.right; // viewport x: right edge of available zone
+  const leftSb = document.getElementById('left-sidebar');
+  if (leftSb) {
+    const r = leftSb.getBoundingClientRect();
+    if (r.right > safeLeft + 4) safeLeft = r.right;  // sidebar is visually open
+  }
+  const rightSb = document.getElementById('right-sidebar');
+  if (rightSb) {
+    const r = rightSb.getBoundingClientRect();
+    if (r.left < safeRight - 4) safeRight = r.left;  // sidebar is visually open
+  }
+
+  // Prefer right of WDP; fall back to left; fall back to null (default spawn).
+  let left;
+  const rightClearance = safeRight - (wdpRect.right + GAP);
+  const leftClearance  = (wdpRect.left - GAP) - safeLeft;
+  if (rightClearance >= PW) {
+    left = wdpRect.right + GAP - parentRect.left;
+  } else if (leftClearance >= PW) {
+    left = wdpRect.left - GAP - PW - parentRect.left;
+  } else {
+    return null;
+  }
+
+  // Align player top to WDP top, clamped inside parent bounds.
+  const rawTop = wdpRect.top - parentRect.top;
+  const parentH = parentEl.offsetHeight || (window.innerHeight - parentRect.top);
+  const top = Math.max(0, Math.min(rawTop, parentH - 220));
+  return { top: Math.round(top), left: Math.round(left) };
+}
+
 function nextSpawnPosition() {
   const offset = (spawnCount % 8) * 28;
   spawnCount += 1;
@@ -625,6 +677,33 @@ function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTit
     const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
     playerRegistry.set(vid, p);
     refreshPlayingIndicators();
+    // Position player next to the Wheel Detail Panel when a raga context is present.
+    if (meta && meta.ragaId) {
+      const wdpPanel = document.getElementById('wheel-detail-panel');
+      const wdpAlreadyOpen = wdpPanel && wdpPanel.classList.contains('wdp-open') &&
+                             (typeof currentView === 'undefined' || currentView === 'raga');
+      if (wdpAlreadyOpen) {
+        // Case A: WDP is already visible — reposition after one rAF so the player
+        // has been laid out and has valid offsetParent/offsetWidth.
+        requestAnimationFrame(() => {
+          const pos = _wdpAdjacentPosition(p.el.offsetParent);
+          if (pos) { p.el.style.left = pos.left + 'px'; p.el.style.top = pos.top + 'px'; }
+        });
+      } else {
+        // Case B: WDP will open after wheel pan animation completes (wdp-settled fires).
+        let settled = false;
+        const fallbackTimer = setTimeout(() => {
+          if (!settled) window.removeEventListener('wdp-settled', handler);
+        }, 2500);
+        function handler() {
+          settled = true;
+          clearTimeout(fallbackTimer);
+          const pos = _wdpAdjacentPosition(p.el.offsetParent);
+          if (pos) { p.el.style.left = pos.left + 'px'; p.el.style.top = pos.top + 'px'; }
+        }
+        window.addEventListener('wdp-settled', handler, { once: true });
+      }
+    }
   }
   if (meta && meta.ragaId && typeof window._openWdpForPlayback === 'function') {
     window._openWdpForPlayback(meta.ragaId, meta.compositionId || null);
