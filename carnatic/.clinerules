@@ -679,3 +679,8 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-14: Isolated musicians (no lineage edges, not in `_cyElements`) were silently unclickable in 6 places: `buildArtistSpan` (bani_flow.js), `panel_components.js` lecdem subject chips, `buildComposerChip` (media_player.js), `_buildLecdemSubjectFooter` (media_player.js), `buildConcertBracket` co-performer chips, and `_buildLecturerChip`. All fell through to either a no-op or `showGraphAbsentToast`. Fixed all 6 by routing the else-branch to `_openMusicianPanelForTransit` which reads from the raw `elements` array. Also fixed era-tint and instrument badge in `buildArtistSpan` to use raw elements as fallback.
 [AGENTS: carnatic-coder]
+- 2026-05-16: Centering `#layout-controls-float` on desktop uses `position: fixed; left: 50%; transform: translateX(-50%)` within the desktop media query (keeping the base rule as `position: absolute` for mobile); the previous `right: 292px` drawer-open special-case is removed since centered-toolbar stays centered regardless of panel state.
+- 2026-05-16: Trinity-only default labels: `_isDefaultView()` checks only `activeFilters` (not selection state) so it is stable to call at the top of `applyZoomLabels()` without a cy round-trip; `applyZoomLabels()` must be called at the end of `toggleFilterItem`, `clearGroupFilter`, `clearAllChipFilters`, and on `unselect` to keep label state consistent with filter state.
+[AGENTS: carnatic-coder]
+- 2026-05-16: ADR-141 proposes graduated ERA_LANE_CENTRE spacing (proportional to era density) rather than uniform 220 px steps; total contemporary lane shifts from 1100 to 1750 graph-space units — verify cy.fit() zoom-out is acceptable before accepting the ADR.
+[AGENTS: graph-architect]

@@ -392,6 +392,14 @@ function makeInstrBadge(instrKey, size) {
 // ── chip filter state ─────────────────────────────────────────────────────────
 const activeFilters = { era: new Set(), instrument: new Set() };
 
+// The three roots of the Guru-Shishya tree — shown by default with no filters.
+const TRINITY_IDS = new Set(['tyagaraja', 'muthuswami_dikshitar', 'shyama_shastri']);
+
+// True when no era/instrument filters are active (unfiltered default view).
+function _isDefaultView() {
+  return activeFilters.era.size === 0 && activeFilters.instrument.size === 0;
+}
+
 // ADR-068: build the two multi-select filter dropdowns
 // ADR-081 §6b: only era and instrument filters exist here — no lecdem filter.
 // Lecdems are a discovery experience, not a faceted filter. Adding a "lecdems"
@@ -535,6 +543,7 @@ function toggleFilterItem(item) {
   }
   _updateFilterBtnLabels();
   applyChipFilters();
+  applyZoomLabels();
 }
 
 function _updateFilterBtnLabels() {
@@ -615,6 +624,7 @@ function clearGroupFilter(group) {
   if (btn) btn.setAttribute('aria-expanded', 'false');
   _updateFilterBtnLabels();
   applyChipFilters();
+  applyZoomLabels();
 }
 
 function clearAllChipFilters() {
@@ -626,6 +636,7 @@ function clearAllChipFilters() {
   _updateFilterBtnLabels();
   setScopeLabels(false);
   _setLineageEmptyMsg(false);
+  applyZoomLabels();
 }
 
 // ADR-134 D4: toggle the lineage-empty overlay on the cy canvas.
@@ -653,6 +664,7 @@ function _buildOverlayChip(node) {
   const tint = THEME.eraTintCss(d.era || null);
   const chip = document.createElement('span');
   chip.className = 'musician-chip cy-overlay-chip';
+  if (TRINITY_IDS.has(node.id())) chip.classList.add('chip-trinity');
   chip.style.setProperty('--chip-era-bg', tint.bg);
   chip.style.setProperty('--chip-era-border', tint.border);
   // ADR-114: visually distinguish Hindustani musician chips with cool-colour border
@@ -734,16 +746,48 @@ function scheduleCyChipSync() {
 // thresholds so the perceived label density is unchanged.
 function applyZoomLabels() {
   const z = cy.zoom();
+  const defaultView = _isDefaultView();
+
+  // In default view, also reveal direct neighbors of any selected node so
+  // the focal context (selected node + its connections) lights up together.
+  const neighborIds = new Set();
+  if (defaultView) {
+    cy.nodes(':selected').forEach(sn => {
+      sn.neighborhood().nodes().forEach(nb => neighborIds.add(nb.id()));
+    });
+  }
+
   cy.nodes().forEach(n => {
     const chip = _cyChipMap.get(n.id());
     if (!chip) return;
-    const tier = n.data('label_tier');
-    const show = n.selected() ||
-                 tier === 0 ||
-                 (tier === 1 && z >= 0.35) ||
-                 (tier === 2 && z >= 0.60);
+    const tier     = n.data('label_tier');
+    const selected = n.selected();
+    const isTrinity   = TRINITY_IDS.has(n.id());
+    const isNeighbor  = neighborIds.has(n.id());
+
+    // Default (no filters): show Trinity, the selected node, and its direct neighbors.
+    // Filtered / zoomed: use tier-based zoom thresholds.
+    const show = defaultView
+      ? (selected || isTrinity || isNeighbor)
+      : (selected ||
+         tier === 0 ||
+         (tier === 1 && z >= 0.35) ||
+         (tier === 2 && z >= 0.60));
     chip.classList.toggle('chip-hidden', !show);
+
+    // Default view only: dim every node that is not Trinity, not selected,
+    // and not a direct neighbor of the selected node.
+    // In filter mode, applyChipFilters() owns chip-faded — don't clobber it.
+    if (defaultView) {
+      n.toggleClass('chip-faded', !isTrinity && !selected && !isNeighbor);
+    }
   });
+
+  // Edges: dim all in default view, but un-dim edges touching the selected node.
+  if (defaultView) {
+    cy.edges().addClass('chip-faded');
+    cy.nodes(':selected').connectedEdges().removeClass('chip-faded');
+  }
   scheduleCyChipSync();
 }
 cy.on('zoom', applyZoomLabels);
@@ -768,10 +812,15 @@ cy.on('select', 'node', evt => {
     chip.classList.add('chip-selected');
     chip.classList.remove('chip-hidden');
   }
+  // Un-dim the selected node in default view.
+  applyZoomLabels();
 });
 cy.on('unselect', 'node', evt => {
   const chip = _cyChipMap.get(evt.target.id());
   if (chip) chip.classList.remove('chip-selected');
+  // Re-run label visibility: in default view a deselected non-Trinity node
+  // should be hidden again.
+  applyZoomLabels();
 });
 
 

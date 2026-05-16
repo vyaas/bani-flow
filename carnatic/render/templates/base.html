@@ -294,6 +294,13 @@
   }
   .cy-overlay-chip.chip-hidden { display: none; }
   .cy-overlay-chip.chip-faded  { opacity: 0.18; }
+  /* Trinity chips — prominently larger to signal the three root entry points */
+  .cy-overlay-chip.chip-trinity {
+    font-size: 1.0rem;
+    padding: 4px 13px;
+    border-left-width: 4px;
+    letter-spacing: 0.01em;
+  }
   .cy-overlay-chip.chip-selected {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -931,7 +938,7 @@
 
   /* right-side group: tracklist toggle + close */
   .mp-bar-right {
-    display: flex; align-items: center; gap: 2px;
+    display: flex; align-items: center; gap: 6px;
     flex-shrink: 0; margin-left: auto;
   }
 
@@ -1004,7 +1011,7 @@
 
   .mp-close {
     background: none; border: none; color: var(--fg-muted);
-    font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
+    font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1;
     flex-shrink: 0;
   }
   .mp-close:hover { color: var(--accent-danger); }
@@ -1012,7 +1019,7 @@
   /* ADR-139: clipboard copy button in media player title bar */
   .mp-copy-btn {
     background: none; border: none; color: var(--fg-muted);
-    font-size: 0; cursor: pointer; padding: 0 2px;
+    font-size: 0; cursor: pointer; padding: 0 4px;
     display: inline-flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     transition: color 0.12s;
@@ -3390,10 +3397,16 @@
 
     /* ADR-140: WDP left/top are set by JS — no CSS position overrides on desktop. */
 
-    /* When the right sidebar is open but unpinned, the viewport toolbar (Fit /  */
-    /* Re-layout / Timeline) would be hidden under it. Shift it left.            */
-    #main:not(.right-pinned):has(#right-sidebar.drawer-open) #layout-controls-float {
-      right: 292px;
+    /* Center layout controls inline with the title row on desktop (same top: 10px as
+       #app-title-float and #view-selector-float). max-width guard prevents overlap
+       with the flanking chrome on narrow desktop viewports. */
+    #layout-controls-float {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      max-width: calc(100vw - 400px);
     }
 
     /* Floating edge handles — keep hidden on desktop (ADR-129: bottom toggles take over) */
@@ -3618,11 +3631,22 @@
       cursor: pointer; /* hint: tap bar to minimise */
     }
     .media-player.full-mobile .mp-title {
-      font-size: 1.15rem; font-weight: 700;
+      font-size: 0.74rem; font-weight: 400;
+    }
+    .media-player.full-mobile .mp-bar-right {
+      gap: 0;
+    }
+    .media-player.full-mobile .mp-copy-btn,
+    .media-player.full-mobile .mp-tracklist-toggle {
+      min-width: 44px; min-height: 44px;
+      display: inline-flex; align-items: center; justify-content: center;
     }
     .media-player.full-mobile .mp-close {
       min-width: 44px; min-height: 44px;
       font-size: 1.25rem;
+      margin-left: 6px;
+      border-left: 1px solid var(--border-strong);
+      padding-left: 12px;
     }
     /* ADR-051: video fills remaining height; override JS-set padding-top */
     .media-player.full-mobile .mp-video-wrap {
