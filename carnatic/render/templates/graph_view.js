@@ -665,7 +665,7 @@ function _buildOverlayChip(node) {
   const tint = THEME.eraTintCss(d.era || null);
   const chip = document.createElement('span');
   chip.className = 'musician-chip cy-overlay-chip';
-  if (TRINITY_IDS.has(node.id())) chip.classList.add('chip-trinity');
+  if (TRINITY_IDS.has(node.id()) || node.id() === 'vina_dhanammal') chip.classList.add('chip-trinity');
   chip.style.setProperty('--chip-era-bg', tint.bg);
   chip.style.setProperty('--chip-era-border', tint.border);
   // ADR-114: visually distinguish Hindustani musician chips with cool-colour border
