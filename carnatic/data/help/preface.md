@@ -34,6 +34,7 @@ Every rendition an Art object
 
 Feelings help us work backwards
 And learn who we are
+
 ```bani-formula
 Art → Feelings → Self-realization(s)
 ```
