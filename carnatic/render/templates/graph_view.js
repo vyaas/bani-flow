@@ -766,24 +766,25 @@ function applyZoomLabels() {
     const tier       = n.data('label_tier');
     const selected   = n.selected();
     const isTrinity  = TRINITY_IDS.has(n.id());
+    const isAnchor   = isTrinity || n.id() === 'vina_dhanammal';
     const isFocused  = n.id() === focusedId;
     const isNeighbor = neighborIds.has(n.id());
 
-    // Default (no filters): show Trinity, the focused node, and its direct neighbors.
+    // Default (no filters): show Trinity + Vina Dhanammal, the focused node, and its direct neighbors.
     // Filtered / zoomed: use tier-based zoom thresholds.
     const show = defaultView
-      ? (isTrinity || isFocused || isNeighbor)
+      ? (isAnchor || isFocused || isNeighbor)
       : (selected ||
          tier === 0 ||
          (tier === 1 && z >= 0.35) ||
          (tier === 2 && z >= 0.60));
     chip.classList.toggle('chip-hidden', !show);
 
-    // Default view only: dim every node that is not Trinity, not focused,
-    // and not a direct neighbor of the focused node.
+    // Default view only: dim every node that is not an anchor (Trinity or Vina Dhanammal),
+    // not focused, and not a direct neighbor of the focused node.
     // In filter mode, applyChipFilters() owns chip-faded — don't clobber it.
     if (defaultView) {
-      n.toggleClass('chip-faded', !isTrinity && !isFocused && !isNeighbor);
+      n.toggleClass('chip-faded', !isAnchor && !isFocused && !isNeighbor);
     }
   });
 
