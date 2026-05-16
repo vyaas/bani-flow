@@ -4,23 +4,22 @@ This is a substantive curation
 Forever incomplete
 That aims to enable an immersion
 Otherwise impossible outside Mylapore
-Of a Music whose name means _Haunting of the ear_
+Of a Music whose very name means _Haunting of the ear_
 
 For this is **<cr>Raga<cr> Music**
-Whose forms are myriad
-And entirely sonic
-And picked up only by the ear
-The _haunted_ ear
-Its Oceanic Infinity revealed
-To those who _listen_
-(In this tyranny of images and algorithm
-How hopeless is listening?
-Even in Mylapore?)
+Whose sonic forms are myriad
+And Oceanic in depth
+Revealed to those who _listen_
+And let their ears be _haunted_
+A struggle in this tyranny of images
+And algorithm driven habit forming
+Is there any hope for _listening_?
+Even in Mylapore?
 
 For this is **Art Music**
 > _Art is a way to make feelings happen_
 (Brian Eno called it)
-Every Raga is a mode of emotion
+Every Raga is a vessel of emotion
 Every rendition an Art object
 <cr>Reetigowla<cr> summons terror and hope in a world remote from mine
 <cr>Surutti<cr> paints a heron disappearing its frame into an orange sunrise
@@ -32,8 +31,8 @@ Every rendition an Art object
 (Your life) Experiences + (Carnatic) Music = (Your unique) Feelings
 ```
 
-Feelings help us work backwards
-And learn who we are
+Feelings can help us work backwards
+And learn who we really are
 
 ```bani-formula
 Art → Feelings → Self-realization(s)
@@ -45,23 +44,22 @@ From Guru to Shishya to Guru
 This is how _Bani_ flows
 Mutated by aesthetic preferences
 Survived by the test of Time
-Seeded by the Trinity
+Bejewelled by the Genius of the Trinity
 Carnatic Music's own Cambrian Explosion
-<cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, and <cm>Shyama Shastri<cm>
-Bejewelled by their Genius
+<cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, <cm>Shyama Shastri<cm>
 
 For this is an **Anti-notation Music**
 Whose essence cannot be grasped textually
-You could read a hundred pages
+You can read hundreds of pages
 On the descriptive and prescriptive aesthetics of <cr>Thodi<cr>
 And still not know what it sounds like!
 For the sound does not travel by page
 You cannot analytically capture it
-You can do Fourier transforms on _alapanas_ all day
-And lose the plot
-This Music is a lesson in _abstraction_
-Where isomorphisms do not emerge from symbols
-They emerge from _emotion_
+Fourier transforming an _alapana_
+Loses the plot
+For this Music is a masterclass in _abstraction_
+Whose isomorphisms do not emerge from symbols
+They emerge from _emotions_
 
 For this is emphatically **not Pop Music**
 It does not exist to please you
@@ -89,8 +87,8 @@ Bani-flow's mission is simple:
 > Enable frictionless immersion in its abstractions
 
 So that you (and I) can simply _listen_
-So that then the only remaining friction
-Is in our minds
+So that the remaining friction
+Is only in our minds
 Which I can do nothing about
 Except remind you (and I) to just _listen_
 
