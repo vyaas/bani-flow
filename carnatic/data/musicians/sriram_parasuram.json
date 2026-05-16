@@ -244,6 +244,16 @@
           "md_ramanathan"
         ]
       }
+    },
+    {
+      "url": "https://youtu.be/InqpHdOqFYQ",
+      "label": "Marvels of Manodharma, Tanam, and Viruttam",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }
