@@ -13,7 +13,7 @@ Revealed to those who _listen_
 And let their ears be _haunted_
 A struggle in this tyranny of images
 And algorithm driven habit forming
-Is there any hope for _listening_?
+O is there any hope for _listening_?
 Even in Mylapore?
 
 For this is **Art Music**
