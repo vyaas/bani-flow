@@ -32,6 +32,20 @@ const ERA_LANE_CENTRE = {
 };
 const LANE_STEP = 75;   // vertical spread step within a lane
 
+// Responsive y-scale: computed once per applyTimelineLayout() call so that the
+// full era span fills the Cytoscape viewport height (portrait mobile fix).
+let _eraYScale = 1.0;
+
+function _computeEraYScale() {
+  const cw = cy.width();
+  const ch = cy.height();
+  if (!cw || !ch) return 1.0;
+  // Target y-span = x-span scaled by aspect ratio, so cy.fit() uses both axes.
+  const targetYSpan = TIMELINE_VIRTUAL_SPAN * (ch / cw);
+  // Clamp at 1.0: never compress eras below their designed spacing on ultrawide screens.
+  return Math.max(1.0, targetYSpan / ERA_LANE_CENTRE.contemporary);
+}
+
 let currentLayout = 'trinity';
 
 // Dynamic axis bounds — updated each time applyTimelineLayout() runs
@@ -161,6 +175,7 @@ function applyTimelineLayout() {
 
   const placedYears = [...pyCache.values()].filter(y => y != null);
   _updateAxisBounds(placedYears);
+  _eraYScale = _computeEraYScale();
 
   // Group nodes by era
   const laneNodes = {};
@@ -191,9 +206,9 @@ function applyTimelineLayout() {
       // Using ERA_LANE_CENTRE for y separates eras into distinct horizontal bands,
       // giving co-born contemporaries vertical room proportional to era size.
       const coord  = axisCoord(py);
-      const laneY  = ERA_LANE_CENTRE[era] !== undefined ? ERA_LANE_CENTRE[era] : coord;
+      const laneY  = ERA_LANE_CENTRE[era] !== undefined ? ERA_LANE_CENTRE[era] * _eraYScale : coord;
       const half   = Math.floor(i / 2) + 1;
-      const offset = (i % 2 === 0 ? 1 : -1) * half * LANE_STEP;
+      const offset = (i % 2 === 0 ? 1 : -1) * half * LANE_STEP * _eraYScale;
       positions[n.id()] = { x: coord, y: laneY + offset };
     });
   });
@@ -305,14 +320,16 @@ function drawRuler() {
   // Era lane labels: y-position from ERA_LANE_CENTRE so labels align with actual node positions.
   // Each era also gets a faint tinted band spanning ± LANE_STEP from the lane centre.
   Object.entries(ERA_LANE_CENTRE).forEach(([era, laneY]) => {
-    const ly = graphYtoPx(laneY);
+    const scaledLaneY = laneY * _eraYScale;
+    const ly = graphYtoPx(scaledLaneY);
+    const scaledLaneStep = LANE_STEP * _eraYScale;
 
     // Faint era-coloured band behind nodes (inserted before all other elements)
     const band = document.createElementNS(svgNS, 'rect');
     band.setAttribute('x', 0);
-    band.setAttribute('y', ly - LANE_STEP);
+    band.setAttribute('y', ly - scaledLaneStep);
     band.setAttribute('width', W);
-    band.setAttribute('height', LANE_STEP * 2);
+    band.setAttribute('height', scaledLaneStep * 2);
     band.style.fill = ERA_COLOURS[era] || 'transparent';
     band.setAttribute('opacity', '0.04');
     band.setAttribute('class', 'era-band');
