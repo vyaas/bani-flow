@@ -1,0 +1,16 @@
+{
+  "id": "sanatana_parama",
+  "title": "Sanatana Parama",
+  "composer_id": "tyagaraja",
+  "raga_id": "phalamanjari",
+  "tala": "deshadi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1812.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Tyagaraja kriti in Phalamanjari; deshadi tala; rare raga"
+}

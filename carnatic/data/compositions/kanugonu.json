@@ -1,0 +1,15 @@
+{
+  "id": "kanugonu",
+  "title": "Kanugonu",
+  "composer_id": "tyagaraja",
+  "raga_id": "nayaki",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.shivkumar.org/music/kanugonu-nayaki.htm",
+      "label": "Shivkumar.org — Kanugonu Nayaki",
+      "type": "other"
+    }
+  ]
+}

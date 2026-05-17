@@ -1,0 +1,16 @@
+{
+  "id": "apudu_manasu",
+  "title": "Apudu Manasu",
+  "composer_id": "patnam_subramanya_iyer",
+  "raga_id": "khamas",
+  "tala": "rupakam",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://karnatik.com/c25979.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ],
+  "notes": "Javali by Patnam Subramanya Iyer in Khamas; rupaka tala"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "shuddha_sarang",
+  "name": "Shuddha Sarang",
+  "tradition": "hindustani",
+  "aliases": [
+    "Suddha Sarang",
+    "Soodha Sarang"
+  ],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [],
+  "sources": [
+    {
+      "url": "https://ragajunglism.org/ragas/shuddha-sarang/",
+      "label": "Raga Junglism — Shuddha Sarang",
+      "type": "other"
+    }
+  ],
+  "notes": "Prominent Hindustani raga of the Sarang family; early afternoon raga; Ga is omitted, Dha is ornamental; both shuddha and tivra Ma used; evokes sringara (romantic love); prominent in North Indian classical tradition"
+}

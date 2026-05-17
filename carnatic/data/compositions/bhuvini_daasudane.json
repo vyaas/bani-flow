@@ -1,0 +1,15 @@
+{
+  "id": "bhuvini_daasudane",
+  "title": "Bhuvini Daasudane",
+  "composer_id": "tyagaraja",
+  "raga_id": "sriranjini",
+  "tala": "deshadi",
+  "language": "telugu",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c2227.shtml",
+      "label": "Karnatik.com",
+      "type": "archive"
+    }
+  ]
+}

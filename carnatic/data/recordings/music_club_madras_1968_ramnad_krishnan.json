@@ -1,0 +1,227 @@
+{
+  "id": "music_club_madras_1968_ramnad_krishnan",
+  "video_id": "Srw7dNPgrqM",
+  "url": "https://youtu.be/Srw7dNPgrqM",
+  "title": "Ramnad Krishnan — Music Club, Madras 1968",
+  "short_title": "Music Club Madras 1968 (Ramnad Krishnan)",
+  "date": "1968",
+  "venue": "Music Club, Madras",
+  "occasion": "Concert at Music Club, Madras, 1968. Part of the Nadopasana series; archived and uploaded by Vaak.",
+  "sources": [
+    {
+      "url": "https://youtu.be/Srw7dNPgrqM",
+      "label": "YouTube — Vaak / Nadopasana",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        { "musician_id": "ramnad_krishnan", "role": "vocal" },
+        { "musician_id": "m_chandrasekaran", "role": "violin" },
+        { "musician_id": "umayalpuram_sivaraman", "role": "mridangam" }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "palukavemi_na",
+          "raga_id": "purnachandrika",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Palukavemi Na",
+          "notes": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:08:05",
+          "offset_seconds": 485,
+          "composition_id": "paraloka_bhayamu",
+          "raga_id": "mandari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Paraloka Bhayamu",
+          "notes": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:19:47",
+          "offset_seconds": 1187,
+          "composition_id": "enduku_nirdaya",
+          "raga_id": "harikambhoji",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Enduku Nirdaya",
+          "notes": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:32:07",
+          "offset_seconds": 1927,
+          "composition_id": "siva_siva_siva_ena_radha",
+          "raga_id": "pantuvarali",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Siva Siva Siva Ena Radha",
+          "notes": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:51:09",
+          "offset_seconds": 3069,
+          "composition_id": "sanatana_parama",
+          "raga_id": "phalamanjari",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Sanatana Parama",
+          "notes": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:55:42",
+          "offset_seconds": 3342,
+          "composition_id": "bhuvini_daasudane",
+          "raga_id": "sriranjini",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Bhuvini Daasudane",
+          "notes": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:15:49",
+          "offset_seconds": 4549,
+          "composition_id": "akshaya_linga_vibho",
+          "raga_id": "shankarabharanam",
+          "tala": "misra_capu",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Akshaya Linga Vibho",
+          "notes": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:48:13",
+          "offset_seconds": 6493,
+          "composition_id": "namakusuma",
+          "raga_id": "sriraga",
+          "tala": null,
+          "composer_id": "tyagaraja",
+          "display_title": "Namakusuma",
+          "notes": "Main item; includes tani avarthanam"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:24:45",
+          "offset_seconds": 8685,
+          "composition_id": "eti_janmamidi",
+          "raga_id": "varali",
+          "tala": "misra_capu",
+          "composer_id": "tyagaraja",
+          "display_title": "Eti Janmamidi",
+          "notes": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "02:29:18",
+          "offset_seconds": 8958,
+          "composition_id": "ninnada",
+          "raga_id": "kannada",
+          "tala": null,
+          "composer_id": "tyagaraja",
+          "display_title": "Ninnada Nela",
+          "notes": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:33:14",
+          "offset_seconds": 9194,
+          "composition_id": "kanugonu",
+          "raga_id": "nayaki",
+          "tala": "rupakam",
+          "composer_id": "tyagaraja",
+          "display_title": "Kanugonu",
+          "notes": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:37:07",
+          "offset_seconds": 9427,
+          "composition_id": "vinarada_na_manavi",
+          "raga_id": "devagandhari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Vinarada Na Manavi",
+          "notes": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:41:25",
+          "offset_seconds": 9685,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Ragam Tanam Pallavi (Bhairavi)",
+          "notes": "Ragam Tanam Pallavi"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "03:08:28",
+          "offset_seconds": 11308,
+          "composition_id": "apudu_manasu",
+          "raga_id": "khamas",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Apudu Manasu",
+          "notes": "Javali"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "03:11:25",
+          "offset_seconds": 11485,
+          "composition_id": "kalaya_yashode",
+          "raga_id": "shuddha_sarang",
+          "tala": "adi",
+          "composer_id": "narayana_theertha",
+          "display_title": "Kalaya Yashode Tava Balam",
+          "notes": null
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "03:13:30",
+          "offset_seconds": 11610,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Virutam",
+          "notes": "Virutam"
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "03:29:00",
+          "offset_seconds": 12540,
+          "composition_id": "govardhana_giridhara",
+          "raga_id": "darbari_kanada",
+          "tala": "tisra_triputa",
+          "composer_id": "narayana_theertha",
+          "display_title": "Govardhana Giridhara Govinda",
+          "notes": null
+        },
+        {
+          "performance_index": 18,
+          "timestamp": "03:31:30",
+          "offset_seconds": 12690,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ni Nama Roopamulaku",
+          "notes": "Mangalam"
+        }
+      ]
+    }
+  ]
+}
