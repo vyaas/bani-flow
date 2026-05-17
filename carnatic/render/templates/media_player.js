@@ -1186,16 +1186,19 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       });
       actsDiv.appendChild(playBtn);
       compHeader.appendChild(actsDiv);
-      li.appendChild(compHeader);
 
-      // ── Composer chip (tree-comp-meta, indented below composition) ───────────
+      // ── Wrap comp header + composer in indented block when raga is present ────
       const concertComposerChip = buildComposerChip(p.composition_id);
+      const compBlock = document.createElement('div');
+      if (ragaObj) compBlock.className = 'concert-comp-block';
+      compBlock.appendChild(compHeader);
       if (concertComposerChip) {
         const metaDiv = document.createElement('div');
         metaDiv.className = 'tree-comp-meta';
         metaDiv.appendChild(concertComposerChip);
-        li.appendChild(metaDiv);
+        compBlock.appendChild(metaDiv);
       }
+      li.appendChild(compBlock);
       perfList.appendChild(li);
     });
   });
@@ -2085,11 +2088,6 @@ function buildRecordingsList(nodeId, nodeData) {
   _recordingsChip.dataset.sectionAction = 'add-recording';
   _recordingsChip.dataset.musicianId   = nodeId;
   _ragaHdrLabel.appendChild(_recordingsChip);
-  _ragaHdrLabel.appendChild(document.createTextNode(' by '));
-  const ragaTypeChip = document.createElement('span');
-  ragaTypeChip.className = 'raga-chip chip-section-hdr';
-  ragaTypeChip.textContent = 'Raga';
-  _ragaHdrLabel.appendChild(ragaTypeChip);
   const { sectionEl: ragaSection, bodyEl: ragaBody } = buildSection({
     headerChip: _ragaHdrLabel,
     count: allPerfs.length,

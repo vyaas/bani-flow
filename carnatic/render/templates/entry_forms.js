@@ -4588,7 +4588,7 @@ function buildLecdemEditForm(ref, nodeId) {
   const addSubjectBtn = document.createElement('button');
   addSubjectBtn.type = 'button'; addSubjectBtn.textContent = '+';
   addSubjectBtn.className = 'ef-add-btn';
-  addSubjectBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;';
+  addSubjectBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;margin-bottom:0;';
   const subjectInputRow = document.createElement('div');
   subjectInputRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
   subjectInputRow.appendChild(subjectCombo);
@@ -4761,22 +4761,21 @@ function buildLecdemEditForm(ref, nodeId) {
   secondarySep.className = 'ef-group-sep';
   body.appendChild(secondarySep);
 
-  const yearInp = efInput(null, 'number', 'e.g. 1965', null);
-  yearInp.min = 1900; yearInp.max = 2030;
-  yearInp.style.width = '80px';
-  if (ref.year) yearInp.value = ref.year;
-  const lblInp = efInput(null, 'text', 'label', null);
+  const lblInp = efInput(null, 'text', 'optional', null);
   if (ref.label) lblInp.value = ref.label;
+  lblInp.style.cssText = 'flex:1;';
+  const yearInp = efInput(null, 'number', 'e.g. 1975', null);
+  yearInp.min = 1900; yearInp.max = 2030;
+  yearInp.style.cssText = 'width:90px;flex-shrink:0;';
+  if (ref.year) yearInp.value = ref.year;
   const yearLblRow = document.createElement('div');
-  yearLblRow.style.cssText = 'display:flex;gap:10px;align-items:flex-start;';
-  const yearCell = document.createElement('div');
-  yearCell.style.flexShrink = '0';
-  yearCell.appendChild(efRow('Year', false, null, yearInp));
-  const lblCell = document.createElement('div');
-  lblCell.style.flex = '1';
-  lblCell.appendChild(efRow('Label', false, 'optional', lblInp));
-  yearLblRow.appendChild(yearCell);
-  yearLblRow.appendChild(lblCell);
+  yearLblRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;';
+  const ylLabel = document.createElement('span');
+  ylLabel.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
+  ylLabel.textContent = 'Label';
+  yearLblRow.appendChild(ylLabel);
+  yearLblRow.appendChild(lblInp);
+  yearLblRow.appendChild(yearInp);
   body.appendChild(yearLblRow);
 
   // ── Footer ────────────────────────────────────────────────────────────────
@@ -5783,8 +5782,23 @@ function buildAddYouTubeToMusicianForm(musicianId) {
 // until addYoutubeBlock supports a defaultKind parameter).
 function buildMusicianRecordingsForm(opts) {
   if (opts && opts.nodeId) {
-    if (opts.kind === 'lecdem') return buildFocusedLecdemForm(opts.nodeId);
+    if (opts.kind === 'lecdem') {
+      let prefill = null;
+      if (opts.subjectType && opts.subjectId) {
+        const axis = opts.subjectType === 'raga' ? 'raga_ids' : 'composition_ids';
+        prefill = [{ axis, id: opts.subjectId }];
+      }
+      return buildFocusedLecdemForm(opts.nodeId, prefill);
+    }
     return buildFocusedYouTubeForm(opts.nodeId);
+  }
+  if (opts && !opts.nodeId && opts.kind === 'lecdem') {
+    let prefill = null;
+    if (opts.subjectType && opts.subjectId) {
+      const axis = opts.subjectType === 'raga' ? 'raga_ids' : 'composition_ids';
+      prefill = [{ axis, id: opts.subjectId }];
+    }
+    return buildFocusedLecdemForm(null, prefill);
   }
   return buildAddMusicianForm();
 }
@@ -5962,22 +5976,27 @@ function openAddYouTubeToMusicianForm(musicianId) {
 
 // ── Focused Lecdem Form ───────────────────────────────────────────────────────
 
-function buildFocusedLecdemForm(musicianId) {
+function buildFocusedLecdemForm(musicianId, prefillSubjects) {
   const win = createEntryWindow('Add Lecdem Recording');
   if (!win) return;
   const body = win.querySelector('.ew-body');
   const node = (graphData.nodes || []).find(n => n.id === musicianId);
 
-  // ── Musician identity row (read-only, era-tinted) ────────────────────────
+  // musCombo_ is only set in the bani-flow context (no pre-locked musician).
+  // collectLecdem() reads it to resolve the musician at submission time.
+  let musCombo_ = null;
+
+  // ── Musician identity row ────────────────────────────────────────────────
   const musRow = document.createElement('div');
   musRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
   const musLabel = document.createElement('span');
   musLabel.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
   musLabel.textContent = 'Musician';
-  const musicianChip = document.createElement('span');
-  musicianChip.className = 'musician-chip';
-  musicianChip.style.cursor = 'default';
   if (node) {
+    // Pre-locked musician (musician-panel context): show era-tinted chip.
+    const musicianChip = document.createElement('span');
+    musicianChip.className = 'musician-chip';
+    musicianChip.style.cursor = 'default';
     const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(node.era || null) : { bg: '', border: '' };
     musicianChip.style.setProperty('--chip-era-bg', tint.bg);
     musicianChip.style.setProperty('--chip-era-border', tint.border);
@@ -5985,11 +6004,16 @@ function buildFocusedLecdemForm(musicianId) {
       musicianChip.appendChild(makeInstrBadge(node.instrument));
     }
     musicianChip.appendChild(document.createTextNode(node.label));
+    musRow.appendChild(musLabel);
+    musRow.appendChild(musicianChip);
   } else {
-    musicianChip.textContent = musicianId;
+    // Bani-flow context: no pre-locked musician — provide a search dropdown.
+    const musOpts_ = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+    musCombo_ = efCombobox(null, musOpts_, null, win);
+    musCombo_.style.flex = '1';
+    musRow.appendChild(musLabel);
+    musRow.appendChild(musCombo_);
   }
-  musRow.appendChild(musLabel);
-  musRow.appendChild(musicianChip);
   body.appendChild(musRow);
 
   // ── URL (required) ────────────────────────────────────────────────────────
@@ -6013,6 +6037,15 @@ function buildFocusedLecdemForm(musicianId) {
   const chipClassMap = { raga_ids: 'raga-chip', composition_ids: 'comp-chip', musician_ids: 'musician-chip' };
   const staged = new Map(); // compositeKey → { axis, id, label }
 
+  // Seed from bani-flow subject context (raga or composition pre-selected in panel).
+  if (prefillSubjects) {
+    prefillSubjects.forEach(({ axis, id }) => {
+      const optList = axis === 'raga_ids' ? ragaOpts : compOpts;
+      const opt = optList.find(o => o.value === id);
+      staged.set(axis + '::' + id, { axis, id, label: opt ? opt.label : id });
+    });
+  }
+
   body.appendChild(efSection('Subjects'));
 
   const chipsWrap = document.createElement('div');
@@ -6024,7 +6057,7 @@ function buildFocusedLecdemForm(musicianId) {
   const addSubjectBtn = document.createElement('button');
   addSubjectBtn.type = 'button'; addSubjectBtn.textContent = '+';
   addSubjectBtn.className = 'ef-add-btn';
-  addSubjectBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;';
+  addSubjectBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;margin-bottom:0;';
   const subjectInputRow = document.createElement('div');
   subjectInputRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
   subjectInputRow.appendChild(subjectCombo);
@@ -6174,20 +6207,19 @@ function buildFocusedLecdemForm(musicianId) {
   secondarySep.className = 'ef-group-sep';
   body.appendChild(secondarySep);
 
-  const yearInp = efInput(null, 'number', 'e.g. 1965', null);
+  const lblInp = efInput(null, 'text', 'optional', null);
+  lblInp.style.cssText = 'flex:1;';
+  const yearInp = efInput(null, 'number', 'e.g. 1975', null);
   yearInp.min = 1900; yearInp.max = 2030;
-  yearInp.style.width = '80px';
-  const lblInp = efInput(null, 'text', 'auto-generated from raga subjects if empty', null);
+  yearInp.style.cssText = 'width:90px;flex-shrink:0;';
   const yearLblRow = document.createElement('div');
-  yearLblRow.style.cssText = 'display:flex;gap:10px;align-items:flex-start;';
-  const yearCell = document.createElement('div');
-  yearCell.style.flexShrink = '0';
-  yearCell.appendChild(efRow('Year', false, null, yearInp));
-  const lblCell = document.createElement('div');
-  lblCell.style.flex = '1';
-  lblCell.appendChild(efRow('Label', false, 'optional', lblInp));
-  yearLblRow.appendChild(yearCell);
-  yearLblRow.appendChild(lblCell);
+  yearLblRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;';
+  const ylLabel = document.createElement('span');
+  ylLabel.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
+  ylLabel.textContent = 'Label';
+  yearLblRow.appendChild(ylLabel);
+  yearLblRow.appendChild(lblInp);
+  yearLblRow.appendChild(yearInp);
   body.appendChild(yearLblRow);
 
   // ── Accompanists (chip-based) ─────────────────────────────────────────────
@@ -6207,7 +6239,7 @@ function buildFocusedLecdemForm(musicianId) {
   const addPerfBtn = document.createElement('button');
   addPerfBtn.type = 'button'; addPerfBtn.textContent = '+';
   addPerfBtn.className = 'ef-add-btn';
-  addPerfBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;';
+  addPerfBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;margin-bottom:0;';
   const perfInputRow = document.createElement('div');
   perfInputRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
   perfInputRow.appendChild(perfCombo);
@@ -6301,13 +6333,14 @@ function buildFocusedLecdemForm(musicianId) {
     }
     const subjects = { raga_ids: [], composition_ids: [], musician_ids: [] };
     staged.forEach(({ axis, id }) => { subjects[axis].push(id); });
-    const hostNode_ = (graphData.nodes || []).find(n => n.id === musicianId);
+    const resolvedId = musicianId || (musCombo_ && musCombo_.getValue()) || null;
+    const hostNode_ = resolvedId ? (graphData.nodes || []).find(n => n.id === resolvedId) : null;
     const hostInstrument = hostNode_ ? (hostNode_.instrument || 'vocal') : 'vocal';
     let performers = null;
     if (perfChips.size > 0) {
       const perfs = [];
-      if (!perfChips.has(musicianId)) {
-        perfs.push({ musician_id: musicianId, role: hostInstrument });
+      if (!perfChips.has(resolvedId)) {
+        perfs.push({ musician_id: resolvedId, role: hostInstrument });
       }
       perfChips.forEach(({ id, instrument }) => { perfs.push({ musician_id: id, role: instrument }); });
       performers = perfs;
@@ -6321,7 +6354,8 @@ function buildFocusedLecdemForm(musicianId) {
   }
 
   function buildItem() {
-    return { type: 'lecdem_append', musician_id: musicianId, lecdem: collectLecdem() };
+    const resolvedId = musicianId || (musCombo_ && musCombo_.getValue()) || null;
+    return { type: 'lecdem_append', musician_id: resolvedId, lecdem: collectLecdem() };
   }
 
   previewBtn.addEventListener('click', () => {
@@ -6335,7 +6369,8 @@ function buildFocusedLecdemForm(musicianId) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `lecdem_${musicianId}_${Date.now()}.json`;
+    const fnId = musicianId || (musCombo_ && musCombo_.getValue()) || 'unknown';
+    a.download = `lecdem_${fnId}_${Date.now()}.json`;
     a.click();
   });
 
@@ -6347,8 +6382,8 @@ function buildFocusedLecdemForm(musicianId) {
       setTimeout(() => { bundleBtn.textContent = prev; }, 2000);
       return;
     }
-    addToBundle('musicians', { op: 'append', id: musicianId, array: 'youtube', value: lecdem });
-    showGenericSuccess(win, musicianId, 'bundle');
+    addToBundle('musicians', { op: 'append', id: musicianId || (musCombo_ && musCombo_.getValue()) || '', array: 'youtube', value: lecdem });
+    showGenericSuccess(win, musicianId || (musCombo_ && musCombo_.getValue()) || '', 'bundle');
   });
 }
 

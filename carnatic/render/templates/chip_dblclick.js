@@ -86,11 +86,13 @@
       : null;
     if (!chip) return false;
 
-    const action     = chip.dataset.sectionAction || '';
-    const musicianId = chip.dataset.musicianId    || '';
+    const action      = chip.dataset.sectionAction || '';
+    const musicianId  = chip.dataset.musicianId    || '';
+    const subjectType = chip.dataset.subjectType   || '';
+    const subjectId   = chip.dataset.subjectId     || '';
     if (!action) return false;
 
-    const key = 'section-add|' + action + '|' + musicianId;
+    const key = 'section-add|' + action + '|' + musicianId + '|' + subjectType + '|' + subjectId;
     const now = Date.now();
 
     if (lastEntityKey === key && (now - lastClickTime) <= DBL_CLICK_MS) {
@@ -103,7 +105,10 @@
         console.warn('[ADR-144] unknown section-action:', action);
         return true;
       }
-      const { type, opts } = factory(musicianId || undefined);
+      let { type, opts } = factory(musicianId || undefined);
+      if (subjectType && subjectId) {
+        opts = Object.assign({}, opts || {}, { subjectType, subjectId });
+      }
 
       e.preventDefault();
       e.stopPropagation();

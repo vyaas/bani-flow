@@ -1606,9 +1606,11 @@ function _renderBaniFlowLecdemStrip(type, id) {
   const hdrChip = document.createElement('span');
   hdrChip.className = 'lecdem-chip chip-section-hdr';
   hdrChip.textContent = 'Lecdems';
-  // ADR-142 §1 / ADR-144: Lecdems section-add chip (dblclick opens add-lecdem form, unscoped)
+  // ADR-142 §1 / ADR-144: Lecdems section-add chip (dblclick opens add-lecdem form, pre-scoped to current subject)
   if (typeof applyChipRole === 'function') applyChipRole(hdrChip, 'section-add', 'recording');
   hdrChip.dataset.sectionAction = 'add-lecdem';
+  hdrChip.dataset.subjectType   = type;  // 'raga' | 'comp'
+  hdrChip.dataset.subjectId     = id;
   // ADR-128 D3+D11: buildSection. Subject context (raga / composition) is
   // already the panel subject — the suffix "on {subjectName}" was redundant.
   const { sectionEl: lecdemSectionWrap, bodyEl: lecdemListBody } = buildSection({

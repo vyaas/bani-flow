@@ -764,6 +764,14 @@
   }
   .concert-perf-item.playing .rec-title,
   .concert-perf-item.playing .yt-label-chip { color: var(--accent-sub); }
+  /* raga chip in concert item: only as wide as its content */
+  .concert-perf-item > .raga-chip { align-self: flex-start; }
+  /* indented block (comp + composer) when a raga chip precedes it */
+  .concert-comp-block {
+    padding-left: var(--hier-indent-step);
+    border-left: 2px solid var(--border);
+    margin-top: 1px;
+  }
 
   /* ── legacy flat items ── */
   li.rec-legacy {
