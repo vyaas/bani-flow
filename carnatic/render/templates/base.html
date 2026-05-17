@@ -294,12 +294,12 @@
   }
   .cy-overlay-chip.chip-hidden { display: none; }
   .cy-overlay-chip.chip-faded  { opacity: 0.18; }
-  /* Trinity + Vina Dhanammal chips — prominently larger to signal the four anchor nodes */
+  /* Trinity chips — prominently larger to signal the three root entry points */
   .cy-overlay-chip.chip-trinity {
-    font-size: 1.5rem;
-    padding: 6px 16px;
-    border-left-width: 5px;
-    letter-spacing: 0.02em;
+    font-size: 1.0rem;
+    padding: 4px 13px;
+    border-left-width: 4px;
+    letter-spacing: 0.01em;
   }
   .cy-overlay-chip.chip-selected {
     outline: 2px solid var(--accent);
@@ -491,15 +491,6 @@
   .row-accordion-chevron-phantom {
     opacity: 0.2; pointer-events: none; cursor: default;
   }
-  /* Trailing acts element (play button) in accordion header — always rightmost;
-     must not grow (overrides the flex:1 catch-all) and must not shift left. */
-  .row-accordion-header > .trail-acts { flex: none; margin-left: 0; }
-  /* Right-chevron rows that also have a trailing play button: chip+chevron stay
-     natural width (left-anchored), spacer fills the gap, play anchors right.
-     Only applied when JS adds has-trail-right (body elements confirmed present).
-     width: auto overrides the explicit width:100% on .tree-leaf-primary. */
-  .row-accordion-header.has-trail-right > *:not(.row-accordion-chevron):not(.trail-acts):not(.row-accordion-spacer) { flex: 0 1 auto; width: auto; }
-  .row-accordion-spacer { flex: 1; }
   .row-accordion-body {
     display: flex; flex-wrap: wrap; gap: 4px;
     padding-top: 4px; padding-left: 22px;
@@ -545,21 +536,23 @@
 
   /* ── ADR-064: raga tree — raga-level groups in musician panel ── */
   #recordings-list li.tree-group {
-    padding: 0; border-bottom: none; gap: 0; list-style: none; margin: 4px 0;
+    padding: 0; border-bottom: none; gap: 0; list-style: none;
+    border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin: 4px 0;
   }
-  /* Flat separator between raga groups — matches .comp-raga-group style */
+  /* Spacing between boxed raga groups — box margin handles separation */
   #recordings-list li.tree-group + li.tree-group {
-    margin-top: 6px;
-    padding-top: 4px;
-    border-top: 1px solid var(--border);
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: none;
   }
   #recordings-list .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
-    padding: 5px 0 4px;
-    border-bottom: 1px solid var(--border);
-    cursor: default; user-select: none;
+    padding: 6px 8px; border-bottom: 1px solid var(--border);
+    background: var(--bg-input);
+    cursor: pointer; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
+  #recordings-list .tree-group-header:hover { background: var(--bg-active); }
   #recordings-list .rec-group-count {
     font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
   }
@@ -723,8 +716,10 @@
     font-size: 0.72rem; color: var(--fg-muted); font-style: italic;
   }
 
-  /* ADR-103 §6: encircled edit (✎) chip on panel section headers. */
-  .co-edit-chip {
+  /* ADR-103 §6: co-located add (+) and edit (✎) chips on panel section headers.
+     Used by ADR-104 (✎ on panel headers), ADR-105 (+ on Compositions),
+     ADR-106 (+ on Janyas), ADR-107 (+ on Concerts). */
+  .co-add-chip, .co-edit-chip {
     display: inline-flex; align-items: center; justify-content: center;
     width: 28px; height: 28px; border-radius: 50%;
     border: 1px solid var(--border); background: var(--bg-panel);
@@ -733,11 +728,11 @@
     transition: border-color 0.12s, color 0.12s;
     font-family: inherit; padding: 0; position: relative;
   }
-  .co-edit-chip:hover {
+  .co-add-chip:hover, .co-edit-chip:hover {
     border-color: var(--accent); color: var(--accent);
   }
-  .co-edit-chip::after { content: ''; position: absolute; inset: -8px; }
-  /* Rec section header: left-justified label.
+  .co-add-chip::after, .co-edit-chip::after { content: ''; position: absolute; inset: -8px; }
+  /* Rec section header: left-justified label, + button pinned right via margin-left:auto.
      ADR-128 D9: entire row is the click affordance for collapse/expand; chevron
      functions as an indicator. Inner buttons stop propagation so they keep their
      own behavior. */
@@ -751,6 +746,8 @@
     user-select: none;
   }
   .rec-section-header-row:hover { color: var(--fg); }
+  /* Pin the + add button to the right edge of any section header. */
+  .rec-section-header-row > .co-add-chip { margin-left: auto; }
   /* Indent section bodies under their header for visual hierarchy. */
   .section-body { padding-left: var(--hier-indent-step, 14px); }
   .section-body[hidden] { padding-left: 0; }
@@ -781,9 +778,6 @@
     display: flex; flex-direction: column; gap: 2px;
   }
   .concert-perf-item:last-child { border-bottom: none; }
-  /* Raga chip at top of a concert item: only as wide as its text. The
-     tree-comp-header below it stays full-width via its own width:100%. */
-  .concert-perf-item > .raga-chip { align-self: flex-start; }
   .concert-perf-item.playing .rec-title,
   .concert-perf-item.playing .yt-label-chip { color: var(--accent-sub); }
 
@@ -1433,6 +1427,7 @@
   .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
     padding: 6px 8px; border-bottom: 1px solid var(--border);
+    background: var(--bg-input);
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
@@ -1819,50 +1814,6 @@
     text-decoration: underline;
   }
 
-  /* ── ADR-142 §1 Phase δ: edit-gesture affordance ──
-     Any chip carrying both data-entity-type and data-entity-id is double-click
-     editable (see chip_dblclick.js). On hover we show a tiny ✎ glyph and an
-     inset outline so users can discover the gesture without docs. Chips
-     without data-entity-id (preface chips, section headers) are unaffected.
-     NOTE: do NOT set `position: relative` here — graph-overlay label chips
-     (graph_view.js) rely on absolute positioning from a higher ancestor; any
-     `position` declaration on the chip itself becomes its own containing
-     block and collapses overlay chips to document-flow positions. */
-  [data-chip-role="panel-title"][data-entity-type][data-entity-id] { cursor: pointer; }
-  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
-    box-shadow: inset 0 0 0 1px var(--fg-muted, currentColor);
-  }
-  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after {
-    content: " ✎";
-    font-size: 0.85em;
-    opacity: 0.55;
-    margin-left: 2px;
-    pointer-events: none;
-  }
-
-  /* ── ADR-142 Phase E: first-use double-click discoverability hint ─────────
-     Appears once on first chip dblclick gesture; dismissed by click/keydown
-     or after 3.5s; gated by localStorage 'baniDblClickHinted'. */
-  .dblclick-hint {
-    position: fixed;
-    bottom: calc(var(--chrome-bottom, 64px) + 16px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-panel);
-    border: 1px solid var(--border-strong);
-    color: var(--fg);
-    font-size: 0.78rem;
-    padding: 6px 14px;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-    z-index: 9998;
-    pointer-events: none;
-    white-space: nowrap;
-    opacity: 1;
-    transition: opacity 0.35s ease;
-  }
-  .dblclick-hint.dh-fading { opacity: 0; }
-
   /* ── ADR-057: Composer chip — same shape as musician-chip,
      but uses ♯ glyph to mark "composer (compositions, not recordings)".  */
   .composer-chip {
@@ -2151,19 +2102,6 @@
     filter: none;
     outline: none;
     text-decoration: none;
-  }
-  /* ADR-144 Phase A: section-add chips signal “add” with dashed outline on hover.
-     Dashed vs solid distinguishes “add” from “edit” at a glance. */
-  [data-chip-role="section-add"]:hover {
-    outline: 1px dashed var(--accent);
-    cursor: pointer;
-  }
-  /* ADR-144 Phase B: single-recording row-block affordance.
-     cursor:context-menu signals “secondary action” without claiming the row is a link. */
-  [data-chip-role="row-block"] { cursor: context-menu; }
-  [data-chip-role="row-block"]:hover {
-    outline: 1px dashed var(--accent);
-    border-radius: 3px;
   }
   /* Neutral vocabulary chip — white-on-black contrast.
      Used for non-domain words promoted to chip status (Concerts, Recordings, Compositions)
@@ -3303,7 +3241,7 @@
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
     /* .vp-btn excluded: same visual size as .filter-dropdown-btn (both are pill controls) */
-    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn) {
+    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn) {
       min-height: 44px;
     }
     .view-btn {
@@ -4278,7 +4216,7 @@
       <div class="panel" id="bani-flow-panel">
         <h3>
           <span class="panel-nav-spacer" aria-hidden="true"></span>
-          <span class="bani-chip chip-panel-title" data-chip-role="section-add" data-section-action="add-bani-flow">BANI FLOW</span>
+          <span class="bani-chip chip-panel-title">BANI FLOW</span>
           <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
@@ -4298,6 +4236,9 @@
             <span id="bani-subject-name"></span>
             <!-- ADR-128 D2: affordances (edit + add + wiki) inlined right of name chip -->
             <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
+              <button id="bani-subject-edit-btn" class="co-edit-chip panel-hdr-edit-btn"
+                      title="Edit" style="display:none">&#9998;</button>
+              <button id="bani-subject-add-btn" class="co-add-chip" style="display:none" title="Add a recording">+</button>
               <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
                  target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
             </div>
@@ -4352,7 +4293,7 @@
       <div id="layout-controls-float">
         <div class="lc-row-layout">
           <button id="btn-timeline" class="vp-btn vp-toggle" title="Toggle chronological timeline layout" onclick="vpToggleTimeline()"><i class="vp-icon">&#128336;</i> Timeline</button>
-          <button id="btn-relayout" class="vp-btn" title="Re-run Trinity layout" onclick="vpRelayout()"><i class="vp-icon">&#10227;</i> Re-layout</button>
+          <button id="btn-relayout" class="vp-btn" title="Re-run force-directed layout" onclick="vpRelayout()"><i class="vp-icon">&#10227;</i> Re-layout</button>
         </div>
         <div class="lc-row-filters">
           <!-- ADR-068: compact multi-select dropdowns (era + instrument) -->
@@ -4395,10 +4336,9 @@
       <div class="panel" id="musician-panel">
         <h3>
           <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-          <!-- ADR-144 Phase A: dblclick MUSICIAN header chip → add-musician form -->
-          <span class="musician-chip chip-panel-title"
-                data-chip-role="section-add"
-                data-section-action="add-musician">MUSICIAN</span>
+          <span class="musician-chip chip-panel-title">MUSICIAN</span>
+          <!-- ADR-108: + chip to add a new musician, always visible -->
+          <button class="co-add-chip" title="Add a new musician" onclick="openAddMusicianForm()" style="margin-left:4px">+</button>
           <span style="display:inline-flex;align-items:center;gap:4px">
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
             <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
@@ -4426,6 +4366,9 @@
           <!-- Row 2: lifespan + encircled edit + encircled wiki (ADR-128 D2) -->
           <div id="node-header-affordances" class="panel-header-affordances" style="display:none">
             <span id="node-lifespan"></span>
+            <!-- ADR-104 Track A / ADR-108: &#9998; chip rewired to openEditMusicianForm -->
+            <button id="node-edit-chip" class="co-edit-chip panel-hdr-edit-btn" title="Edit this musician"
+                    style="display:none">&#9998;</button>
             <a id="node-wiki-link" class="yt-ext-link panel-hdr-ext-link" href="#" target="_blank"
                style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
           </div>
@@ -4466,7 +4409,7 @@
 <button id="left-panel-toggle" title="Open / close Bani Flow panel"
         aria-pressed="false">&#9776; Bani Flow</button>
 <button id="bundle-download-btn" onclick="downloadBundle()" disabled
-        title="Download patch file (bani_add_bundle.json)">&#x2B07; Patch (0 ops)</button>
+        title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
 <button id="right-panel-toggle" title="Open / close Musician panel"
         aria-pressed="false">&#9776; Musician</button>
 

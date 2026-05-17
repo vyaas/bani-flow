@@ -1939,13 +1939,21 @@ function buildRecordingsList(nodeId, nodeData) {
         const bodyEls = [lecturerChip, ...subjectChips].filter(Boolean);
         if (hasSegments) {
           // Concert bracket — has its own internal chevron; render directly.
-          li.appendChild(bracketEl);
+          // bodyEls (lecturer + subjects) are injected into the collapsible
+          // concert-perf-list so they are hidden until the user expands the bracket.
           if (bodyEls.length > 0) {
-            const subjectsDiv = document.createElement('div');
-            subjectsDiv.className = 'lecdem-subjects-inline';
-            bodyEls.forEach(function (el) { subjectsDiv.appendChild(el); });
-            li.appendChild(subjectsDiv);
+            const segList = bracketEl.querySelector('.concert-perf-list');
+            if (segList) {
+              const preambleLi = document.createElement('li');
+              preambleLi.className = 'concert-perf-item lecdem-preamble';
+              const preambleChips = document.createElement('div');
+              preambleChips.className = 'lecdem-subjects-inline';
+              bodyEls.forEach(function (el) { preambleChips.appendChild(el); });
+              preambleLi.appendChild(preambleChips);
+              segList.insertBefore(preambleLi, segList.firstChild);
+            }
           }
+          li.appendChild(bracketEl);
         } else {
           // Flat row: always wrap in row-accordion. Empty bodyEls → phantom chevron.
           li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));

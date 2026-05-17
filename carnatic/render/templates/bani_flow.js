@@ -1169,14 +1169,14 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     li.appendChild(labelDiv);
   }
 
-  // ── Co-performers: chevron-right accordion ────────────────────────────────
+  // ── Co-performers: chevron-left accordion ─────────────────────────────────
   // Play button (trailingEl) always goes LAST in the header row — after the
   // co-performer chevron when present — so all play buttons share one column.
   const actsDiv = _buildPlayActsDiv(row);
   const cpChips = (row.coPerformers && row.coPerformers.length > 0)
     ? row.coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'raga', null); })
     : [];
-  const accordion = buildRowAccordion({ headerEl: primaryDiv, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right', trailingEl: actsDiv });
+  const accordion = buildRowAccordion({ headerEl: primaryDiv, bodyEls: cpChips, defaultCollapsed: true, trailingEl: actsDiv });
   accordion.classList.add('tree-leaf-coperformers-group');
   li.appendChild(accordion);
 
@@ -1363,14 +1363,14 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
         ? group.rows[0].coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'comp', null); })
         : [];
       if (cpChips.length > 0) {
-        li.appendChild(header);  // buildRowAccordion will move it
-        const accordion = buildRowAccordion({ headerEl: header, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right', trailingEl: actsDiv });
+        const accordion = buildRowAccordion({ headerEl: header, bodyEls: cpChips, defaultCollapsed: true, trailingEl: actsDiv });
         accordion.classList.add('tree-leaf-coperformers-group');
         li.appendChild(accordion);
       } else {
-        actsDiv.style.marginLeft = 'auto';
-        header.appendChild(actsDiv);
-        li.appendChild(header);
+        // No co-performers: phantom left chevron keeps play button aligned with rows that have one.
+        const accordion = buildRowAccordion({ headerEl: header, bodyEls: [], defaultCollapsed: true, trailingEl: actsDiv });
+        accordion.classList.add('tree-leaf-coperformers-group');
+        li.appendChild(accordion);
       }
     } else {
       // Multi-version: whole header bar toggles; artist chip stopPropagation handles its own click
@@ -1639,13 +1639,21 @@ function _renderBaniFlowLecdemStrip(type, id) {
     if (bracketEl) {
       if (hasSegments) {
         // Concert bracket — has its own internal chevron; render directly.
-        li.appendChild(bracketEl);
+        // bodyEls (lecturer + subjects) are injected into the collapsible
+        // concert-perf-list so they are hidden until the user expands the bracket.
         if (bodyEls.length > 0) {
-          const subjectsDiv = document.createElement('div');
-          subjectsDiv.className = 'lecdem-subjects-inline';
-          bodyEls.forEach(function (el) { subjectsDiv.appendChild(el); });
-          li.appendChild(subjectsDiv);
+          const segList = bracketEl.querySelector('.concert-perf-list');
+          if (segList) {
+            const preambleLi = document.createElement('li');
+            preambleLi.className = 'concert-perf-item lecdem-preamble';
+            const preambleChips = document.createElement('div');
+            preambleChips.className = 'lecdem-subjects-inline';
+            bodyEls.forEach(function (el) { preambleChips.appendChild(el); });
+            preambleLi.appendChild(preambleChips);
+            segList.insertBefore(preambleLi, segList.firstChild);
+          }
         }
+        li.appendChild(bracketEl);
       } else {
         // Flat row: always wrap in row-accordion. Empty bodyEls → phantom chevron.
         li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
