@@ -72,6 +72,7 @@ from carnatic.writer import (
     PATCHABLE_EDGE_FIELDS,
     PATCHABLE_RAGA_FIELDS,
     PATCHABLE_COMPOSITION_FIELDS,
+    PATCHABLE_RECORDING_FIELDS,  # ADR-143 §6
     WriteResult,
 )
 
@@ -618,6 +619,8 @@ def _process_recordings(
         op = rec.get("op", "create")
 
         if op == "annotate":
+            # ADR-143 §6: annotate_recording is just add_note with entity_type='recording';
+            # the dedicated writer method is a facade kept for symmetry with the chip Edit form.
             result = writer.add_note(
                 entity_type="recording", entity_id=rec.get("id", ""),
                 note_text=rec.get("note", {}).get("text", ""),
@@ -631,7 +634,7 @@ def _process_recordings(
             else:                errors  += 1
             continue
 
-        # ── ADR-101: append a performance to an existing recording session ──
+        # ── ADR-143 §6: append a performer / segment / subject to a recording ──
         if op == "append":
             import re as _re
             rec_id    = rec.get("id")
@@ -641,6 +644,60 @@ def _process_recordings(
                 print(f"  ERROR  recording append missing 'id' or 'array': {rec}")
                 errors += 1
                 continue
+
+            # ADR-143 vocabulary: array='segments' or array='performers' (optionally
+            # qualified with session_index in the value envelope). These dispatch to
+            # the recording-as-entity facades rather than the legacy session-indexed verbs.
+            if array_sel == "segments":
+                result = writer.append_to_recording_segments(
+                    recording_id=rec_id,
+                    segment=value if isinstance(value, dict) else {},
+                    session_index=rec.get("session_index"),
+                    recordings_path=recordings_path,
+                    compositions_path=comp_path or _default_compositions_path(),
+                    ragas_path=ragas_path or _default_ragas_path(),
+                )
+                _print_result(result)
+                if result.ok:       added   += 1
+                elif result.skipped: skipped += 1
+                else:                errors  += 1
+                continue
+
+            if array_sel == "performers":
+                result = writer.append_to_recording_performers(
+                    recording_id=rec_id,
+                    performer=value if isinstance(value, dict) else {},
+                    session_index=rec.get("session_index"),
+                    recordings_path=recordings_path,
+                )
+                _print_result(result)
+                if result.ok:       added   += 1
+                elif result.skipped: skipped += 1
+                else:                errors  += 1
+                continue
+
+            # subjects.raga_ids / subjects.composition_ids / subjects.musician_ids
+            # — the writer returns a structured refusal until the architectural
+            # question "recording subjects vs. lecdem-only" is resolved (see
+            # .clinerules Open questions 2026-05-16).
+            if array_sel.startswith("subjects."):
+                subject_kind = array_sel.split(".", 1)[1]
+                subject_id = value if isinstance(value, str) else (
+                    value.get("id") if isinstance(value, dict) else ""
+                )
+                result = writer.append_to_recording_subject(
+                    recording_id=rec_id,
+                    subject_kind=subject_kind,
+                    subject_id=subject_id,
+                    recordings_path=recordings_path,
+                )
+                _print_result(result)
+                if result.ok:       added   += 1
+                elif result.skipped: skipped += 1
+                else:                errors  += 1
+                continue
+
+            # ── Legacy ADR-101 path: array selector sessions[N].performances ──
             m_sel = _re.match(r"sessions\[(\d+)\]\.performances$", array_sel)
             if not m_sel:
                 print(f"  ERROR  recording append: unsupported array selector {array_sel!r}")
@@ -661,7 +718,7 @@ def _process_recordings(
             else:                errors  += 1
             continue
 
-        # ── ADR-101: patch a field on an existing recording performance ─────
+        # ── ADR-143 §6: patch a top-level recording field or a segment by timestamp ──
         if op == "patch":
             import re as _re
             rec_id = rec.get("id")
@@ -671,6 +728,40 @@ def _process_recordings(
                 print(f"  ERROR  recording patch missing 'id' or 'field': {rec}")
                 errors += 1
                 continue
+
+            # ADR-143 §6 top-level field: bare field name in PATCHABLE_RECORDING_FIELDS.
+            if field in PATCHABLE_RECORDING_FIELDS:
+                result = writer.patch_recording(
+                    recording_id=rec_id,
+                    field=field,
+                    value=value,
+                    recordings_path=recordings_path,
+                )
+                _print_result(result)
+                if result.ok:       added   += 1
+                elif result.skipped: skipped += 1
+                else:                errors  += 1
+                continue
+
+            # ADR-143 §6 per-segment patch by timestamp: segments[HH:MM:SS].field
+            m_seg = _re.match(r"segments\[([0-9:]+)\]\.(.+)$", field)
+            if m_seg:
+                start      = m_seg.group(1)
+                seg_field  = m_seg.group(2)
+                result = writer.patch_recording_segment(
+                    recording_id=rec_id,
+                    start=start,
+                    field=seg_field,
+                    value=value,
+                    recordings_path=recordings_path,
+                )
+                _print_result(result)
+                if result.ok:       added   += 1
+                elif result.skipped: skipped += 1
+                else:                errors  += 1
+                continue
+
+            # ── Legacy ADR-101 path: sessions[N].performances[M].field by index ──
             m_sel = _re.match(
                 r"sessions\[(\d+)\]\.performances\[(\d+)\]\.(.*)", field
             )
