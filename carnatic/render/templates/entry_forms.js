@@ -1086,36 +1086,102 @@ function buildMusicianForm() {
 
   // ADR-145 D2: born/died removed from create form — secondary metadata set by Librarian.
 
-  // Era + Tradition chips on one row
+  // ADR-146 D3: Era chip selector (replaces <select>)
   const eraOpts = ['trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'];
-  const eraSel = efSelect('ef_mus_era', eraOpts, false);
+  const _eraLabels = {
+    trinity:        'Trinity',
+    bridge:         'Bridge',
+    golden_age:     'Golden Age',
+    disseminator:   'Disseminators',
+    living_pillars: 'Living Pillars',
+    contemporary:   'Contemporary',
+  };
+  const eraHiddenInp = document.createElement('input');
+  eraHiddenInp.type = 'hidden'; eraHiddenInp.id = 'ef_mus_era'; eraHiddenInp.value = eraOpts[0];
+  const eraChipsRow = document.createElement('div');
+  eraChipsRow.className = 'ef-era-chips-row';
+  eraOpts.forEach((era, i) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'ef-era-chip' + (i === 0 ? ' ef-era-chip--active' : '');
+    chip.dataset.era = era;
+    chip.textContent = _eraLabels[era] || era;
+    const col = (typeof THEME !== 'undefined' && THEME.era && THEME.era[era]) || '';
+    if (col) chip.style.setProperty('--ef-era-chip-color', col);
+    chip.addEventListener('click', () => {
+      eraChipsRow.querySelectorAll('.ef-era-chip').forEach(c => c.classList.remove('ef-era-chip--active'));
+      chip.classList.add('ef-era-chip--active');
+      eraHiddenInp.value = era;
+      win.dispatchEvent(new Event('change'));
+    });
+    eraChipsRow.appendChild(chip);
+  });
+
+  // ADR-146 D1: Tradition chips — independent multi-select (both can be active)
   const carnBtn = document.createElement('button');
   carnBtn.type = 'button'; carnBtn.className = 'ef-trad-chip ef-trad-chip--active';
   carnBtn.textContent = 'Carnatic'; carnBtn.dataset.trad = 'carnatic';
   const hindBtn = document.createElement('button');
   hindBtn.type = 'button'; hindBtn.className = 'ef-trad-chip';
   hindBtn.textContent = 'Hindustani'; hindBtn.dataset.trad = 'hindustani';
-  const tradInput = document.createElement('input');
-  tradInput.type = 'hidden'; tradInput.id = 'ef_mus_tradition'; tradInput.value = 'carnatic';
   [carnBtn, hindBtn].forEach(btn => {
     btn.addEventListener('click', () => {
-      carnBtn.classList.toggle('ef-trad-chip--active', btn === carnBtn);
-      hindBtn.classList.toggle('ef-trad-chip--active', btn === hindBtn);
-      tradInput.value = btn.dataset.trad;
+      btn.classList.toggle('ef-trad-chip--active');
+      // At-least-one guard: snap back to carnatic if both deselected
+      if (!carnBtn.classList.contains('ef-trad-chip--active') &&
+          !hindBtn.classList.contains('ef-trad-chip--active')) {
+        carnBtn.classList.add('ef-trad-chip--active');
+      }
       win.dispatchEvent(new Event('change'));
     });
   });
+
   const eraWrap = document.createElement('div');
   eraWrap.className = 'ef-era-trad-row';
-  eraWrap.appendChild(eraSel);
+  eraWrap.appendChild(eraChipsRow);
+  const tradSep = document.createElement('span');
+  tradSep.style.cssText = 'display:inline-block;width:1px;height:16px;background:var(--border);align-self:center;flex-shrink:0;';
+  eraWrap.appendChild(tradSep);
   eraWrap.appendChild(carnBtn);
   eraWrap.appendChild(hindBtn);
-  eraWrap.appendChild(tradInput);
+  eraWrap.appendChild(eraHiddenInp);
   body.appendChild(efRow('Era', true, null, eraWrap));
 
+  // ADR-146 D4: Instrument chip selector (replaces <select>)
   const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
-  const instrSel = efSelect('ef_mus_instr', instrOpts, false);
-  body.appendChild(efRow('Instrument', true, null, instrSel));
+  const _instrLabels = {
+    vocal:         'Vocal',
+    veena:         'Veena',
+    violin:        'Violin',
+    flute:         'Flute',
+    mridangam:     'Mridangam',
+    bharatanatyam: 'Bharatanatyam',
+    ghatam:        'Ghatam',
+    other:         'Other',
+  };
+  const instrHiddenInp = document.createElement('input');
+  instrHiddenInp.type = 'hidden'; instrHiddenInp.id = 'ef_mus_instr'; instrHiddenInp.value = instrOpts[0];
+  const instrChipsRow = document.createElement('div');
+  instrChipsRow.className = 'ef-instr-chips-row';
+  instrOpts.forEach((instr, i) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'ef-instr-chip' + (i === 0 ? ' ef-instr-chip--active' : '');
+    chip.dataset.instr = instr;
+    if (typeof makeInstrBadge === 'function') chip.appendChild(makeInstrBadge(instr, 11));
+    const lblSpan = document.createElement('span');
+    lblSpan.textContent = _instrLabels[instr] || instr;
+    chip.appendChild(lblSpan);
+    chip.addEventListener('click', () => {
+      instrChipsRow.querySelectorAll('.ef-instr-chip').forEach(c => c.classList.remove('ef-instr-chip--active'));
+      chip.classList.add('ef-instr-chip--active');
+      instrHiddenInp.value = instr;
+      win.dispatchEvent(new Event('change'));
+    });
+    instrChipsRow.appendChild(chip);
+  });
+  instrChipsRow.appendChild(instrHiddenInp);
+  body.appendChild(efRow('Instrument', true, null, instrChipsRow));
 
   // ADR-097 §5: Bani / Gharana removed from create form.
   body.appendChild(efSourceFields('ef_mus'));
@@ -1806,12 +1872,18 @@ function generateMusicianJson(win) {
     youtube.push(entry);
   });
 
+  // ADR-146 D1: collect traditions from active chips
+  const traditions = [...win.querySelectorAll('.ef-trad-chip.ef-trad-chip--active')]
+    .map(b => b.dataset.trad).filter(Boolean);
+  if (!traditions.length) traditions.push('carnatic');
+
   const nodeJson = {
     id,
     label,
     sources: [inferred],
     era,
     instrument: instr,
+    traditions,
     bani: bani || null,
     youtube,
   };
