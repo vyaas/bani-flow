@@ -308,6 +308,7 @@ def render_html(
     search       = _load("search.js")
     entry_forms  = _load("entry_forms.js")
     roles_js     = _load("roles.js")
+    edit_form_spec = _load("edit_form_spec.js")  # ADR-143 §4: chip Edit-form metadata
     empty_tut    = _load("empty_tutorials.js")
     mobile       = _load("mobile.js")
 
@@ -371,6 +372,7 @@ def render_html(
         bani_flow,
         search,
         roles_js,      # ← before entry_forms: defines window.PERFORMER_ROLES (ADR-071)
+        edit_form_spec,  # ← ADR-143 §4: defines window.editFormSpec for the chip Edit form
         entry_forms,   # ← needs graphData + wireDrag/nextSpawnPosition/topZ
         empty_tut,     # ← ADR-086: empty-panel tutorials; needs helpEmptyPanels + bani_flow + media_player
         mobile,        # ← LAST: exposes peekBottomSheet/dismissBottomSheet globals

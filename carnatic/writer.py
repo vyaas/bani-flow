@@ -100,6 +100,20 @@ PATCHABLE_RECORDING_PERFORMANCE_FIELDS = {
     "composition_id", "raga_id", "tala", "composer_id", "display_title", "notes",
 }
 
+# ADR-143 §2 / §6: scalar top-level fields on a recording file that the
+# chip-as-object Edit form may patch. Pinned against the current schema
+# (carnatic/data/recordings/*.json). Additive: appending a new scalar to the
+# schema only requires extending this set — no further ADR is needed
+# (ADR-143 §3, last paragraph).
+PATCHABLE_RECORDING_FIELDS = {
+    "title",
+    "short_title",
+    "date",           # ISO 8601 date string (ADR-143's "year" analogue)
+    "venue",
+    "occasion",       # ADR-143's "notes_summary" analogue
+    "url",            # top-level YouTube URL
+}
+
 
 # ── WriteResult ────────────────────────────────────────────────────────────────
 
@@ -1894,6 +1908,291 @@ class CarnaticWriter:
             "[PERF~]",
             f"patched: {recording_id} s{session_index}/p{performance_index}  "
             f"{field}: {old_value!r} → {perf[field]!r}",
+        )
+
+    # ── ADR-143 §6: recording-as-entity write verbs ──────────────────────────
+    #
+    # These methods treat a recording file as a first-class field-shaped entity
+    # (ADR-143 §Context). They are thin facades over existing recording-internal
+    # operations (add_recording_performance, patch_recording_performance,
+    # add_note) where possible; the new methods add the entity-level patch +
+    # bounded-append surface the chip-as-object dispatcher (ADR-142) requires.
+    #
+    # Scope note: ADR-143 §2 lists `subjects.raga_ids[]`, `subjects.composition_ids[]`,
+    # `subjects.musician_ids[]` as bounded-append targets on recordings. In the
+    # current schema, subjects live on lecdems INSIDE `musicians/*.json.lecdems[]`,
+    # not on top-level `recordings/*.json` files. `append_to_recording_subject`
+    # therefore returns a structured error pending an architectural decision on
+    # whether to migrate subjects to recordings, or to route subject appends to
+    # the musician lecdem entry by id. See .clinerules open question.
+
+    def patch_recording(
+        self,
+        *,
+        recording_id: str,
+        field: str,
+        value: Any,
+        recordings_path: Path | None = None,
+    ) -> WriteResult:
+        """Update a single scalar field on a recording file. ADR-143 §6.
+
+        Whitelisted by PATCHABLE_RECORDING_FIELDS. `id` and `video_id` are
+        immutable (natural keys). Returns the before→after summary on success.
+        """
+        if field in ("id", "video_id"):
+            return _err(f"{field} is immutable — cannot be patched")
+        if field not in PATCHABLE_RECORDING_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a recording\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_RECORDING_FIELDS))}"
+            )
+
+        rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+        rec_file = rp / f"{recording_id}.json"
+        if not rec_file.exists():
+            return _err(f"recording_id \"{recording_id}\" does not exist in recordings/")
+
+        rec = json.loads(rec_file.read_text(encoding="utf-8"))
+        old_value = rec.get(field)
+        rec[field] = value if value not in (None, "null", "") else None
+
+        _atomic_write(rec_file, rec)
+        return _ok(
+            "[REC~]",
+            f"patched: {recording_id}  {field}: {old_value!r} → {rec[field]!r}",
+        )
+
+    def append_to_recording_segments(
+        self,
+        *,
+        recording_id: str,
+        segment: dict,
+        session_index: int | None = None,
+        recordings_path: Path | None = None,
+        compositions_path: Path | None = None,
+        ragas_path: Path | None = None,
+    ) -> WriteResult:
+        """Append a segment to a recording. ADR-143 §2 / §6.
+
+        "Segment" is ADR-143 vocabulary for what the current schema calls a
+        `sessions[].performances[]` entry. This method is a facade over
+        `add_recording_performance`. When the recording has exactly one session
+        and `session_index` is None, the method auto-targets session 1; for
+        multi-session recordings, `session_index` is required.
+        """
+        rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+        rec_file = rp / f"{recording_id}.json"
+        if not rec_file.exists():
+            return _err(f"recording_id \"{recording_id}\" does not exist in recordings/")
+
+        rec = json.loads(rec_file.read_text(encoding="utf-8"))
+        sessions = rec.get("sessions", [])
+        if not sessions:
+            return _err(f"recording \"{recording_id}\" has no sessions[] to append a segment to")
+        if session_index is None:
+            if len(sessions) == 1:
+                session_index = sessions[0].get("session_index", 1)
+            else:
+                return _err(
+                    f"recording \"{recording_id}\" has {len(sessions)} sessions; "
+                    f"session_index is required to disambiguate the append target"
+                )
+
+        return self.add_recording_performance(
+            recording_id=recording_id,
+            session_index=session_index,
+            performance_dict=segment,
+            recordings_path=rp,
+            compositions_path=compositions_path,
+            ragas_path=ragas_path,
+        )
+
+    def patch_recording_segment(
+        self,
+        *,
+        recording_id: str,
+        start: str,
+        field: str,
+        value: Any,
+        recordings_path: Path | None = None,
+    ) -> WriteResult:
+        """Patch a single field on a segment, selected by start timestamp. ADR-143 §2.
+
+        `start` is the segment's `timestamp` (e.g., "00:14:32"). Searches across
+        all sessions. If two segments share the start (data error), the patch
+        refuses with an ambiguity message.
+        """
+        if field not in PATCHABLE_RECORDING_PERFORMANCE_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a recording segment\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_RECORDING_PERFORMANCE_FIELDS))}"
+            )
+
+        rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+        rec_file = rp / f"{recording_id}.json"
+        if not rec_file.exists():
+            return _err(f"recording_id \"{recording_id}\" does not exist in recordings/")
+
+        rec = json.loads(rec_file.read_text(encoding="utf-8"))
+        sessions = rec.get("sessions", [])
+        matches: list[tuple[int, dict]] = []
+        for sess in sessions:
+            sidx = sess.get("session_index")
+            for perf in (sess.get("performances") or []):
+                if perf.get("timestamp") == start:
+                    matches.append((sidx, perf))
+
+        if not matches:
+            return _err(
+                f"no segment with start={start!r} found in recording \"{recording_id}\""
+            )
+        if len(matches) > 1:
+            locs = ", ".join(
+                f"s{sidx}/p{perf.get('performance_index')}" for sidx, perf in matches
+            )
+            return _err(
+                f"ambiguous segment selector: start={start!r} matches {len(matches)} "
+                f"segments in \"{recording_id}\" ({locs}); resolve duplicate timestamps "
+                f"before patching"
+            )
+
+        sidx, perf = matches[0]
+        old_value = perf.get(field)
+        perf[field] = value if value not in (None, "null", "") else None
+
+        _atomic_write(rec_file, rec)
+        return _ok(
+            "[SEG~]",
+            f"patched: {recording_id} segment@{start}  "
+            f"{field}: {old_value!r} → {perf[field]!r}",
+        )
+
+    def append_to_recording_performers(
+        self,
+        *,
+        recording_id: str,
+        performer: dict,
+        session_index: int | None = None,
+        recordings_path: Path | None = None,
+    ) -> WriteResult:
+        """Append a performer to a session's performers[]. ADR-143 §2.
+
+        `performer` must be a dict with at least `musician_id` and `role`.
+        When the recording has exactly one session and `session_index` is None,
+        the method auto-targets session 1; for multi-session recordings,
+        `session_index` is required.
+        """
+        if not isinstance(performer, dict):
+            return _err("performer must be a dict with 'musician_id' and 'role'")
+        if not performer.get("musician_id"):
+            return _err("performer.musician_id is required")
+        if not performer.get("role"):
+            return _err("performer.role is required")
+
+        rp = recordings_path or (Path(__file__).parent / "data" / "recordings")
+        rec_file = rp / f"{recording_id}.json"
+        if not rec_file.exists():
+            return _err(f"recording_id \"{recording_id}\" does not exist in recordings/")
+
+        rec = json.loads(rec_file.read_text(encoding="utf-8"))
+        sessions = rec.get("sessions", [])
+        if not sessions:
+            return _err(f"recording \"{recording_id}\" has no sessions[]")
+
+        if session_index is None:
+            if len(sessions) == 1:
+                session = sessions[0]
+                session_index = session.get("session_index", 1)
+            else:
+                return _err(
+                    f"recording \"{recording_id}\" has {len(sessions)} sessions; "
+                    f"session_index is required"
+                )
+        else:
+            session = next(
+                (s for s in sessions if s.get("session_index") == session_index),
+                None,
+            )
+            if session is None:
+                return _err(
+                    f"session_index {session_index} not found in recording \"{recording_id}\""
+                )
+
+        performers = session.setdefault("performers", [])
+        # Idempotence-of-set: refuse duplicate (musician_id, role) pairs.
+        for p in performers:
+            if (p.get("musician_id") == performer["musician_id"]
+                    and p.get("role") == performer["role"]):
+                return _skip(
+                    f"performer ({performer['musician_id']}, {performer['role']}) "
+                    f"already present in {recording_id} session {session_index}"
+                )
+
+        performers.append({
+            "musician_id": performer["musician_id"],
+            "role": performer["role"],
+        })
+
+        _atomic_write(rec_file, rec)
+        return _ok(
+            "[PERFORMER+]",
+            f"appended performer ({performer['musician_id']}, {performer['role']}) "
+            f"to {recording_id} session {session_index}",
+        )
+
+    def append_to_recording_subject(
+        self,
+        *,
+        recording_id: str,
+        subject_kind: str,
+        subject_id: str,
+        recordings_path: Path | None = None,
+    ) -> WriteResult:
+        """ADR-143 §2 subject-append op — currently unsupported on top-level recordings.
+
+        The current data schema places subjects on lecdems INSIDE
+        `musicians/*.json.lecdems[]`, not on top-level `recordings/*.json`. This
+        method refuses with an explanatory error so callers (the chip dispatcher,
+        the bundle ingester) get a structured failure rather than a silent drop.
+
+        Resolution requires an architectural decision: either migrate `subjects`
+        to top-level recordings, or route subject-append ops to the owning
+        musician's lecdem entry by composite selector. See .clinerules open
+        question (logged 2026-05-16 by Coder).
+        """
+        valid_kinds = {"raga_ids", "composition_ids", "musician_ids"}
+        if subject_kind not in valid_kinds:
+            return _err(
+                f"subject_kind \"{subject_kind}\" is not valid\n"
+                f"       Permitted: {', '.join(sorted(valid_kinds))}"
+            )
+        return _err(
+            f"append_to_recording_subject is not yet supported: subjects live on "
+            f"musician lecdem entries (musicians/*.json.lecdems[*].subjects.{subject_kind}), "
+            f"not on top-level recordings/{recording_id}.json. Architectural "
+            f"decision pending (ADR-143 §2 vs current schema)."
+        )
+
+    def annotate_recording(
+        self,
+        *,
+        recording_id: str,
+        note_text: str,
+        source_url: str | None = None,
+        added_at: str | None = None,
+        recordings_path: Path | None = None,
+    ) -> WriteResult:
+        """Append a note to a recording's notes[]. ADR-143 §6.
+
+        Thin facade over `add_note(entity_type='recording', ...)`.
+        """
+        return self.add_note(
+            entity_type="recording",
+            entity_id=recording_id,
+            note_text=note_text,
+            source_url=source_url,
+            added_at=added_at,
+            recordings_path=recordings_path,
         )
 
     def add_note(
