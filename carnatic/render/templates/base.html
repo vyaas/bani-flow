@@ -2157,10 +2157,37 @@
   }
   .raga-chip.chip-panel-title:hover,
   .comp-chip.chip-panel-title:hover,
-  .musician-chip.chip-panel-title:hover,
   .lecdem-chip.chip-panel-title:hover {
     filter: none;
     outline: none;
+  }
+  /* ADR-145 Phase A: musician + bani panel-title chips signal "add" with pencil
+     glyph on hover. position:relative lets ::after sit outside the chip's flow
+     without altering its width or height. cursor switches to pointer on hover. */
+  .musician-chip.chip-panel-title,
+  .bani-chip.chip-panel-title {
+    position: relative;
+  }
+  .musician-chip.chip-panel-title:hover,
+  .bani-chip.chip-panel-title:hover {
+    cursor: pointer;
+  }
+  .musician-chip.chip-panel-title::after,
+  .bani-chip.chip-panel-title::after {
+    content: "✎";
+    position: absolute;
+    top: -7px;
+    right: -5px;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  .musician-chip.chip-panel-title:hover::after,
+  .bani-chip.chip-panel-title:hover::after {
+    opacity: 1;
   }
   /* ADR-144 Phase A: section-add chips signal "add" with dashed outline on hover.
      Dashed vs solid distinguishes "add" from "edit" at a glance. */
@@ -2205,6 +2232,7 @@
     cursor: default;
     text-transform: uppercase;
     vertical-align: middle;
+    /* position: relative is set above in the shared ADR-145 rule */
   }
 
   /* ── ADR-127 D5: Non-chip section header label (Concerts, Other recordings) ──
@@ -3227,6 +3255,36 @@
   /* conditional field hiding */
   .ef-row[data-show-if] { display: none; }
   .ef-row[data-show-if].ef-visible { display: grid; }
+
+  /* ── ADR-145: tradition toggle chips (Carnatic / Hindustani on one line) ── */
+  .ef-trad-chip {
+    display: inline-flex; align-items: center;
+    padding: 3px 9px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--fg-muted);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
+    white-space: nowrap;
+  }
+  .ef-trad-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .ef-trad-chip--active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+  }
+
+  /* ── ADR-145: era+tradition combined row ── */
+  .ef-era-trad-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .ef-era-trad-row .ef-select { flex: 1; min-width: 110px; }
 
   /* ADR-115: Tradition segmented control (Add Raga form) */
   .segmented-control {

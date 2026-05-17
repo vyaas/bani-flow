@@ -1051,6 +1051,9 @@ function buildBaniFlowPickerForm() {
 }
 
 // ── Musician form ─────────────────────────────────────────────────────────────
+// ADR-145: compact layout — born/died removed, tradition chips on era row,
+//          wiki link inline with Display Name, chip-based guru/shishya edges,
+//          "Add to Patch" as primary CTA (no per-form download).
 
 function buildMusicianForm() {
   const win = createEntryWindow('Add Musician');
@@ -1062,32 +1065,59 @@ function buildMusicianForm() {
   // ── Section A: Node fields ────────────────────────────────────────────────
   body.appendChild(efSection('Node Fields'));
 
+  // Display Name row — wiki link button appears once Source URL is filled
   const labelInp = efInput('ef_mus_label', 'text', 'e.g. Semmangudi Srinivasa Iyer', null);
-  body.appendChild(efRow('Display Name', true, null, labelInp));
+  const wikiLinkBtn = document.createElement('a');
+  wikiLinkBtn.href = '#'; wikiLinkBtn.target = '_blank'; wikiLinkBtn.rel = 'noopener noreferrer';
+  wikiLinkBtn.className = 'node-wiki-link';
+  wikiLinkBtn.title = 'Open source URL';
+  wikiLinkBtn.textContent = '↗';
+  wikiLinkBtn.style.cssText = 'display:none;font-size:0.85rem;margin-left:4px;vertical-align:middle;text-decoration:none;flex-shrink:0;';
+  wikiLinkBtn.addEventListener('click', e => e.stopPropagation());
+  const nameRow = document.createElement('div');
+  nameRow.style.cssText = 'display:flex;align-items:center;gap:4px;width:100%;';
+  nameRow.appendChild(labelInp);
+  nameRow.appendChild(wikiLinkBtn);
+  body.appendChild(efRow('Display Name', true, null, nameRow));
 
   const idRow = efIdRow('ef_mus_id', 'ef_mus_label', existingIds);
   body.appendChild(idRow);
   labelInp.addEventListener('input', idRow._updateId);
 
-  const bornInp = efInput('ef_mus_born', 'number', 'e.g. 1908', null);
-  bornInp.min = 1600; bornInp.max = 2030;
-  body.appendChild(efRow('Born (year)', false, null, bornInp));
+  // ADR-145 D2: born/died removed from create form — secondary metadata set by Librarian.
 
-  const diedInp = efInput('ef_mus_died', 'number', 'leave blank if living', null);
-  diedInp.min = 1600; diedInp.max = 2030;
-  body.appendChild(efRow('Died (year)', false, null, diedInp));
-
+  // Era + Tradition chips on one row
   const eraOpts = ['trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'];
   const eraSel = efSelect('ef_mus_era', eraOpts, false);
-  body.appendChild(efRow('Era', true, null, eraSel));
+  const carnBtn = document.createElement('button');
+  carnBtn.type = 'button'; carnBtn.className = 'ef-trad-chip ef-trad-chip--active';
+  carnBtn.textContent = 'Carnatic'; carnBtn.dataset.trad = 'carnatic';
+  const hindBtn = document.createElement('button');
+  hindBtn.type = 'button'; hindBtn.className = 'ef-trad-chip';
+  hindBtn.textContent = 'Hindustani'; hindBtn.dataset.trad = 'hindustani';
+  const tradInput = document.createElement('input');
+  tradInput.type = 'hidden'; tradInput.id = 'ef_mus_tradition'; tradInput.value = 'carnatic';
+  [carnBtn, hindBtn].forEach(btn => {
+    btn.addEventListener('click', () => {
+      carnBtn.classList.toggle('ef-trad-chip--active', btn === carnBtn);
+      hindBtn.classList.toggle('ef-trad-chip--active', btn === hindBtn);
+      tradInput.value = btn.dataset.trad;
+      win.dispatchEvent(new Event('change'));
+    });
+  });
+  const eraWrap = document.createElement('div');
+  eraWrap.className = 'ef-era-trad-row';
+  eraWrap.appendChild(eraSel);
+  eraWrap.appendChild(carnBtn);
+  eraWrap.appendChild(hindBtn);
+  eraWrap.appendChild(tradInput);
+  body.appendChild(efRow('Era', true, null, eraWrap));
 
   const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
   const instrSel = efSelect('ef_mus_instr', instrOpts, false);
   body.appendChild(efRow('Instrument', true, null, instrSel));
 
-  // ADR-097 §5: Bani / Gharana removed from create form — bani is a
-  // librarian-set property, not a contributor-asserted field at intake.
-
+  // ADR-097 §5: Bani / Gharana removed from create form.
   body.appendChild(efSourceFields('ef_mus'));
 
   // ── Section B: YouTube entries ────────────────────────────────────────────
@@ -1101,37 +1131,35 @@ function buildMusicianForm() {
   body.appendChild(addYtBtn);
   addYtBtn.addEventListener('click', () => addYoutubeBlock(ytContainer, win));
 
-  // ── Section C: Guru-Shishya edges ─────────────────────────────────────────
+  // ── Section C: Guru-Shishya edges (chip-row, ADR-145 D3) ──────────────────
   body.appendChild(efSection('Guru-Shishya Edges'));
 
   const edgesContainer = document.createElement('div');
   edgesContainer.id = 'ef_mus_edges';
   body.appendChild(edgesContainer);
 
-  const addGuruBtn = efAddBtn('+ Add Guru (this musician is shishya of…)');
-  body.appendChild(addGuruBtn);
-  addGuruBtn.addEventListener('click', () => addEdgeBlock(edgesContainer, 'guru', win));
+  buildEdgeChipSection(edgesContainer, 'guru',    win);
+  buildEdgeChipSection(edgesContainer, 'shishya', win);
 
-  const addShishyaBtn = efAddBtn('+ Add Shishya (this musician is guru of…)');
-  body.appendChild(addShishyaBtn);
-  addShishyaBtn.addEventListener('click', () => addEdgeBlock(edgesContainer, 'shishya', win));
+  // ── Preview pre (lives in body, above footer) ─────────────────────────────
+  const previewPre = document.createElement('pre');
+  previewPre.className = 'ef-preview-pre';
+  body.appendChild(previewPre);
 
   // ── Footer ────────────────────────────────────────────────────────────────
   const footer = win.querySelector('.ew-footer');
-  const dlBtn = document.createElement('button');
-  dlBtn.className = 'ef-download-btn';
-  dlBtn.textContent = '⬇ Download JSON';
-  dlBtn.disabled = true;
+
+  // Primary CTA: Add to Patch (ADR-145 D1)
+  const addPatchBtn = document.createElement('button');
+  addPatchBtn.className = 'ef-download-btn';
+  addPatchBtn.textContent = '+ Add to Patch';
+  addPatchBtn.disabled = true;
 
   const previewBtn = document.createElement('button');
   previewBtn.className = 'ef-preview-btn';
   previewBtn.textContent = 'Preview JSON';
 
-  const previewPre = document.createElement('pre');
-  previewPre.className = 'ef-preview-pre';
-  body.appendChild(previewPre);
-
-  footer.appendChild(dlBtn);
+  footer.appendChild(addPatchBtn);
   footer.appendChild(previewBtn);
 
   function validate() {
@@ -1139,10 +1167,17 @@ function buildMusicianForm() {
     const id      = idRow._idInput.value.trim();
     const era     = eraSel.value;
     const instr   = instrSel.value;
-    const srcUrl  = win.querySelector('#ef_mus_source_url')   ? win.querySelector('#ef_mus_source_url').value.trim()   : '';
+    const srcUrl  = win.querySelector('#ef_mus_source_url') ? win.querySelector('#ef_mus_source_url').value.trim() : '';
     const dupId   = existingIds.includes(id);
     const ok = label && id && era && instr && srcUrl && !dupId;
-    dlBtn.disabled = !ok;
+    addPatchBtn.disabled = !ok;
+    // Update wiki link button
+    if (srcUrl) {
+      wikiLinkBtn.href = srcUrl;
+      wikiLinkBtn.style.display = '';
+    } else {
+      wikiLinkBtn.style.display = 'none';
+    }
     if (previewPre.style.display !== 'none') updatePreview();
   }
 
@@ -1163,17 +1198,243 @@ function buildMusicianForm() {
     if (!open) updatePreview();
   });
 
-  dlBtn.addEventListener('click', () => {
-    const { nodeJson, edgesJson } = generateMusicianJson(win);
-    const id = nodeJson.id;
-    downloadJson(id + '.json', nodeJson);
-    if (edgesJson) {
-      setTimeout(() => downloadJson('_edges.json', edgesJson), 300);
-    }
-    showMusicianSuccess(win, id, !!edgesJson);
+  // ADR-145 D1: stage into patch bundle instead of downloading per-entity file
+  addPatchBtn.addEventListener('click', () => {
+    const { nodeJson, newEdges } = generateMusicianJson(win);
+    addToBundle('musicians', nodeJson);
+    newEdges.forEach(e => addToBundle('edges', e));
+    showMusicianPatchSuccess(win, nodeJson.id, newEdges.length);
   });
 
   return win;
+}
+
+// ── ADR-145 D3: edge chip section builder ────────────────────────────────────
+// Builds a compact chip row for gurus or shishyas.
+
+function buildEdgeChipSection(containerEl, direction, formWin) {
+  const label = direction === 'guru' ? 'Gurus' : 'Shishyas';
+
+  const rowEl = document.createElement('div');
+  rowEl.className = 'ef-edge-chip-row';
+  rowEl.dataset.direction = direction;
+  rowEl.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:4px;min-height:28px;margin-bottom:6px;';
+
+  const lbl = document.createElement('span');
+  lbl.style.cssText = 'font-size:0.63rem;font-weight:700;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.08em;min-width:62px;flex-shrink:0;';
+  lbl.textContent = label;
+  rowEl.appendChild(lbl);
+
+  const chipsArea = document.createElement('div');
+  chipsArea.className = 'ef-edge-chips-area';
+  chipsArea.style.cssText = 'display:flex;flex-wrap:wrap;gap:3px;flex:1;align-items:center;';
+  rowEl.appendChild(chipsArea);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.style.cssText = 'font-size:0.65rem;padding:2px 7px;border-radius:3px;border:1px dashed var(--border-strong);background:transparent;color:var(--fg-muted);cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;';
+  addBtn.textContent = '+ ' + (direction === 'guru' ? 'Add Guru' : 'Add Shishya');
+  addBtn.addEventListener('mouseenter', () => { addBtn.style.borderColor = 'var(--accent)'; addBtn.style.color = 'var(--accent)'; });
+  addBtn.addEventListener('mouseleave', () => { addBtn.style.borderColor = 'var(--border-strong)'; addBtn.style.color = 'var(--fg-muted)'; });
+  rowEl.appendChild(addBtn);
+
+  containerEl.appendChild(rowEl);
+
+  function addChip(data) {
+    const chip = document.createElement('span');
+    chip.className = 'ef-edge-chip';
+    chip.style.cssText = 'display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;background:var(--bg-input);border:1px solid var(--border-strong);font-size:0.72rem;max-width:130px;overflow:hidden;user-select:none;cursor:pointer;';
+    chip.title = 'Double-click to edit edge details';
+    chip._edgeData = { ...data };
+
+    const nameSpan = document.createElement('span');
+    nameSpan.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    nameSpan.textContent = data.otherLabel || data.otherId;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.textContent = '×';
+    removeBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--fg-muted);padding:0;font-size:0.8rem;line-height:1;flex-shrink:0;';
+    removeBtn.addEventListener('mouseenter', () => { removeBtn.style.color = 'var(--accent-danger)'; });
+    removeBtn.addEventListener('mouseleave', () => { removeBtn.style.color = 'var(--fg-muted)'; });
+    removeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      chip.remove();
+      if (formWin) formWin.dispatchEvent(new Event('input'));
+    });
+
+    chip.appendChild(nameSpan);
+    chip.appendChild(removeBtn);
+    chipsArea.appendChild(chip);
+
+    // Double-click (time-based, matching chip_dblclick.js pattern)
+    let lastTap = 0;
+    chip.addEventListener('click', e => {
+      if (e.target === removeBtn) return;
+      const now = Date.now();
+      if (now - lastTap < 350) {
+        openEdgePopover(direction, chip._edgeData, newData => {
+          chip._edgeData = { ...newData };
+          nameSpan.textContent = newData.otherLabel || newData.otherId;
+          if (formWin) formWin.dispatchEvent(new Event('input'));
+        }, chip);
+      }
+      lastTap = now;
+    });
+
+    if (formWin) formWin.dispatchEvent(new Event('input'));
+    return chip;
+  }
+
+  addBtn.addEventListener('click', () => {
+    openEdgePopover(direction, null, data => addChip(data), addBtn);
+  });
+
+  rowEl._chipsArea  = chipsArea;
+  rowEl._addChip    = addChip;
+  return rowEl;
+}
+
+// ── ADR-145 D3: inline edge detail popover ───────────────────────────────────
+
+function openEdgePopover(direction, prefill, onConfirm, anchorEl) {
+  // Remove any existing popover
+  const existing = document.querySelector('.ef-edge-popover');
+  if (existing) existing.remove();
+
+  const pop = document.createElement('div');
+  pop.className = 'ef-edge-popover';
+  pop.style.cssText = 'position:fixed;background:var(--bg-panel);border:1px solid var(--border-strong);border-radius:6px;padding:10px 12px;min-width:220px;max-width:280px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.5);';
+
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-size:0.63rem;font-weight:700;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;';
+  hdr.textContent = prefill ? 'Edit Edge' : (direction === 'guru' ? 'Add Guru' : 'Add Shishya');
+  pop.appendChild(hdr);
+
+  // Musician picker — native select for compactness inside a popover
+  const nodeOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+  const picker = document.createElement('select');
+  picker.className = 'ef-select';
+  picker.style.cssText = 'width:100%;font-size:0.75rem;margin-bottom:6px;';
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = ''; emptyOpt.textContent = '— pick musician —';
+  picker.appendChild(emptyOpt);
+  nodeOpts.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.value; opt.textContent = o.label;
+    picker.appendChild(opt);
+  });
+  if (prefill && prefill.otherId) picker.value = prefill.otherId;
+  pop.appendChild(picker);
+
+  // Collapsible details section
+  const detailsToggle = document.createElement('button');
+  detailsToggle.type = 'button';
+  detailsToggle.style.cssText = 'font-size:0.65rem;color:var(--fg-muted);background:none;border:none;cursor:pointer;padding:0;margin-bottom:4px;font-family:inherit;';
+  detailsToggle.textContent = '▸ Details (confidence, source, note)';
+  pop.appendChild(detailsToggle);
+
+  const detailsEl = document.createElement('div');
+  detailsEl.style.cssText = 'display:none;margin-bottom:6px;';
+
+  function makeDetailField(lbl, type, placeholder, val) {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:4px;';
+    const l = document.createElement('span');
+    l.style.cssText = 'font-size:0.63rem;color:var(--fg-muted);min-width:68px;flex-shrink:0;';
+    l.textContent = lbl;
+    const inp = document.createElement('input');
+    inp.type = type; inp.className = 'ef-input';
+    inp.style.cssText = 'flex:1;font-size:0.72rem;padding:3px 6px;';
+    inp.placeholder = placeholder;
+    if (val != null) inp.value = val;
+    if (type === 'number') { inp.min = '0'; inp.max = '1'; inp.step = '0.01'; }
+    wrap.appendChild(l); wrap.appendChild(inp);
+    detailsEl.appendChild(wrap);
+    return inp;
+  }
+
+  const confInp = makeDetailField('Confidence', 'number', '0.90',
+    (prefill && prefill.confidence != null) ? prefill.confidence : '0.90');
+  const srcInp  = makeDetailField('Source URL', 'text',   'https://…',
+    (prefill && prefill.source_url) ? prefill.source_url : null);
+  const noteInp = makeDetailField('Note',       'text',   'e.g. principal guru',
+    (prefill && prefill.note) ? prefill.note : null);
+
+  pop.appendChild(detailsEl);
+
+  detailsToggle.addEventListener('click', () => {
+    const open = detailsEl.style.display !== 'none';
+    detailsEl.style.display = open ? 'none' : 'block';
+    detailsToggle.textContent = open ? '▸ Details (confidence, source, note)' : '▾ Details';
+  });
+  // Auto-open details when editing a prefilled edge with detail data
+  if (prefill && (prefill.source_url || prefill.note || (prefill.confidence != null && prefill.confidence !== 0.90))) {
+    detailsEl.style.display = 'block';
+    detailsToggle.textContent = '▾ Details';
+  }
+
+  // Confirm / Cancel
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:6px;margin-top:8px;';
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.type = 'button'; confirmBtn.className = 'ef-download-btn';
+  confirmBtn.style.cssText = 'flex:1;font-size:0.72rem;padding:4px 0;';
+  confirmBtn.textContent = prefill ? 'Update' : 'Add';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button'; cancelBtn.className = 'ef-preview-btn';
+  cancelBtn.style.cssText = 'font-size:0.72rem;padding:4px 8px;';
+  cancelBtn.textContent = 'Cancel';
+
+  cancelBtn.addEventListener('click', () => pop.remove());
+  confirmBtn.addEventListener('click', () => {
+    const otherId = picker.value;
+    if (!otherId) { picker.style.borderColor = 'var(--accent-danger)'; return; }
+    picker.style.borderColor = '';
+    const otherLabel = (nodeOpts.find(o => o.value === otherId) || {}).label || otherId;
+    onConfirm({
+      otherId, otherLabel, direction,
+      confidence: parseFloat(confInp.value) || 0.90,
+      source_url: srcInp.value.trim()  || null,
+      note:       noteInp.value.trim() || null,
+    });
+    pop.remove();
+  });
+
+  btnRow.appendChild(confirmBtn);
+  btnRow.appendChild(cancelBtn);
+  pop.appendChild(btnRow);
+
+  document.body.appendChild(pop);
+
+  // Position near anchor
+  if (anchorEl) {
+    const rect = anchorEl.getBoundingClientRect();
+    let top  = rect.bottom + 6;
+    let left = rect.left;
+    if (left + 290 > window.innerWidth)  left = window.innerWidth - 296;
+    if (top  + 320 > window.innerHeight) top  = rect.top - 326;
+    pop.style.top  = top  + 'px';
+    pop.style.left = left + 'px';
+  } else {
+    pop.style.top = '100px';
+    pop.style.left = '50%';
+    pop.style.transform = 'translateX(-50%)';
+  }
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', function closePop(e) {
+      if (!pop.contains(e.target) && e.target !== anchorEl) {
+        pop.remove();
+        document.removeEventListener('click', closePop, true);
+      }
+    }, true);
+  }, 60);
+
+  return pop;
 }
 
 // ── YouTube entry block ───────────────────────────────────────────────────────
@@ -1505,18 +1766,16 @@ function addEdgeBlock(container, direction, formWin, prefillData = null) {
 }
 
 // ── generateMusicianJson ──────────────────────────────────────────────────────
+// ADR-145: born/died removed from form; edges collected from chip rows.
 
 function generateMusicianJson(win) {
   const id      = win.querySelector('#ef_mus_id')           ? win.querySelector('#ef_mus_id').value.trim()           : '';
   const label   = win.querySelector('#ef_mus_label')        ? win.querySelector('#ef_mus_label').value.trim()        : '';
-  const born    = win.querySelector('#ef_mus_born')         ? win.querySelector('#ef_mus_born').value                : '';
-  const died    = win.querySelector('#ef_mus_died')         ? win.querySelector('#ef_mus_died').value                : '';
   const era     = win.querySelector('#ef_mus_era')          ? win.querySelector('#ef_mus_era').value                 : '';
   const instr   = win.querySelector('#ef_mus_instr')        ? win.querySelector('#ef_mus_instr').value               : '';
   const srcUrl  = win.querySelector('#ef_mus_source_url')   ? win.querySelector('#ef_mus_source_url').value.trim()   : '';
   const inferred = inferSource(srcUrl);
-  // ADR-097 §5: bani removed from create form. The field stays in the schema
-  // (set later via patch by a librarian) but is not asked at intake.
+  // ADR-097 §5 + ADR-145: bani and born/died removed from create form.
   const bani    = '';
 
   // YouTube entries
@@ -1538,10 +1797,8 @@ function generateMusicianJson(win) {
     if (year)    entry.year           = parseInt(year, 10);
     if (version) entry.version        = version;
     if (tala)    entry.tala           = tala;
-    // ADR-070: optional performers[] (host auto-injected when any accompanist present)
     const performers = collectYoutubePerformers(block, id, instr);
     if (performers) entry.performers = performers;
-    // ADR-082: lecdem entry
     if (isLecdem) {
       entry.kind     = 'lecdem';
       entry.subjects = collectLecdemSubjects(block);
@@ -1553,38 +1810,71 @@ function generateMusicianJson(win) {
     id,
     label,
     sources: [inferred],
-    born:  born  ? parseInt(born,  10) : null,
-    died:  died  ? parseInt(died,  10) : null,
     era,
     instrument: instr,
     bani: bani || null,
     youtube,
   };
 
-  // Edges
+  // Edges — collected from chip rows (ADR-145 D3)
   const newEdges = [];
-  win.querySelectorAll('#ef_mus_edges .ef-repeat-block').forEach(block => {
-    const direction = block.dataset.direction;
-    const selects   = block.querySelectorAll('select');
-    const inputs    = block.querySelectorAll('input:not([data-combobox-filter])');
-    const otherId   = selects[0] ? selects[0].value : '';
-    const conf      = inputs[0]  ? parseFloat(inputs[0].value) : 0.90;
-    const edgeSrc   = inputs[1]  ? inputs[1].value.trim()      : '';
-    const note      = inputs[2]  ? inputs[2].value.trim()      : '';
-    if (!otherId) return;
-    const source = direction === 'guru' ? otherId : id;
-    const target = direction === 'guru' ? id      : otherId;
-    newEdges.push({ source, target, confidence: conf, source_url: edgeSrc, note: note || null });
+  win.querySelectorAll('#ef_mus_edges .ef-edge-chip-row').forEach(row => {
+    const direction = row.dataset.direction;
+    row.querySelectorAll('.ef-edge-chip').forEach(chip => {
+      const d = chip._edgeData;
+      if (!d || !d.otherId) return;
+      const source = direction === 'guru' ? d.otherId : id;
+      const target = direction === 'guru' ? id        : d.otherId;
+      newEdges.push({
+        source, target,
+        confidence: d.confidence != null ? d.confidence : 0.90,
+        source_url: d.source_url || null,
+        note:       d.note       || null,
+      });
+    });
   });
 
-  const edgesJson = newEdges.length > 0
-    ? [...(graphData.edges || []), ...newEdges]
-    : null;
-
-  return { nodeJson, edgesJson };
+  return { nodeJson, newEdges };
 }
 
-// ── showMusicianSuccess ───────────────────────────────────────────────────────
+// ── showMusicianPatchSuccess — ADR-145 ────────────────────────────────────────
+
+function showMusicianPatchSuccess(win, id, edgeCount) {
+  const body = win.querySelector('.ew-body');
+  body.innerHTML = '';
+
+  const msg = document.createElement('div');
+  msg.className = 'ef-success';
+  const edgeNote = edgeCount > 0 ? ` and ${edgeCount} edge${edgeCount > 1 ? 's' : ''}` : '';
+  msg.innerHTML = `
+    <strong>✓ Added <code>${id}</code>${edgeNote} to the patch</strong>
+    <ol>
+      <li>Continue adding musicians or recordings</li>
+      <li>When done, click <strong>⬇ Patch (N ops)</strong> in the toolbar to download</li>
+      <li>Run: <code>bani-add bani_add_bundle.json</code></li>
+      <li>Run: <code>bani-render</code></li>
+    </ol>
+  `;
+  body.appendChild(msg);
+
+  const footer = win.querySelector('.ew-footer');
+  footer.innerHTML = '';
+
+  const addAnotherBtn = document.createElement('button');
+  addAnotherBtn.className = 'ef-download-btn';
+  addAnotherBtn.textContent = '+ Add Another Musician';
+  addAnotherBtn.addEventListener('click', () => { win.remove(); buildMusicianForm(); });
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'ef-preview-btn';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => win.remove());
+
+  footer.appendChild(addAnotherBtn);
+  footer.appendChild(closeBtn);
+}
+
+// ── showMusicianSuccess (legacy — kept for any callers still using download path)
 
 function showMusicianSuccess(win, id, hasEdges) {
   const body = win.querySelector('.ew-body');
@@ -1624,7 +1914,10 @@ function showMusicianSuccess(win, id, hasEdges) {
   againBtn.className = 'ef-preview-btn';
   againBtn.textContent = 'Download again';
   againBtn.addEventListener('click', () => {
-    const { nodeJson, edgesJson } = generateMusicianJson(win);
+    const { nodeJson, newEdges } = generateMusicianJson(win);
+    const edgesJson = newEdges && newEdges.length > 0
+      ? [...(graphData.edges || []), ...newEdges]
+      : null;
     downloadJson(id + '.json', nodeJson);
     if (edgesJson) setTimeout(() => downloadJson('_edges.json', edgesJson), 300);
   });
