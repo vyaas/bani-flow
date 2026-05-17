@@ -1009,9 +1009,45 @@ function openEntryForm(type, target) {
     case 'composer':            buildComposerForm();           break;
     case 'edit':                buildEditForm();               break;
     case 'segment':             buildSegmentForm(target || {}); break;
+    case 'bani-flow-picker':    buildBaniFlowPickerForm();     break;
+    case 'add-composition':     openAddCompositionForm(target || {}); break;
     // legacy alias — kept for backwards compat
     case 'youtube':             buildMusicianRecordingsForm(); break;
   }
+}
+
+// ── Bani Flow picker ──────────────────────────────────────────────────────────
+// Tiny 2-button modal: choose Raga or Composition. Triggered by dblclick on
+// the BANI FLOW panel-title chip (section-action: add-bani-flow).
+function buildBaniFlowPickerForm() {
+  const win = createEntryWindow('Add to Bani Flow');
+  if (!win) return;
+  const body = win.querySelector('.ew-body');
+
+  const intro = document.createElement('p');
+  intro.style.cssText = 'margin:0 0 14px;font-size:0.8rem;color:var(--fg-muted);';
+  intro.textContent = 'What would you like to add?';
+  body.appendChild(intro);
+
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:10px;';
+
+  const ragaBtn = document.createElement('button');
+  ragaBtn.type = 'button';
+  ragaBtn.className = 'ef-preview-btn';
+  ragaBtn.textContent = '\u266a Add Raga';
+  ragaBtn.addEventListener('click', () => { win.remove(); buildRagaForm(); });
+
+  const compBtn = document.createElement('button');
+  compBtn.type = 'button';
+  compBtn.className = 'ef-preview-btn';
+  compBtn.textContent = '\u266b Add Composition';
+  compBtn.addEventListener('click', () => { win.remove(); buildCompositionForm(); });
+
+  btnRow.appendChild(ragaBtn);
+  btnRow.appendChild(compBtn);
+  body.appendChild(btnRow);
+  return win;
 }
 
 // ── Musician form ─────────────────────────────────────────────────────────────

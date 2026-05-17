@@ -723,10 +723,8 @@
     font-size: 0.72rem; color: var(--fg-muted); font-style: italic;
   }
 
-  /* ADR-103 §6: co-located add (+) and edit (✎) chips on panel section headers.
-     Used by ADR-104 (✎ on panel headers), ADR-105 (+ on Compositions),
-     ADR-106 (+ on Janyas), ADR-107 (+ on Concerts). */
-  .co-add-chip, .co-edit-chip {
+  /* ADR-103 §6: encircled edit (✎) chip on panel section headers. */
+  .co-edit-chip {
     display: inline-flex; align-items: center; justify-content: center;
     width: 28px; height: 28px; border-radius: 50%;
     border: 1px solid var(--border); background: var(--bg-panel);
@@ -735,11 +733,11 @@
     transition: border-color 0.12s, color 0.12s;
     font-family: inherit; padding: 0; position: relative;
   }
-  .co-add-chip:hover, .co-edit-chip:hover {
+  .co-edit-chip:hover {
     border-color: var(--accent); color: var(--accent);
   }
-  .co-add-chip::after, .co-edit-chip::after { content: ''; position: absolute; inset: -8px; }
-  /* Rec section header: left-justified label, + button pinned right via margin-left:auto.
+  .co-edit-chip::after { content: ''; position: absolute; inset: -8px; }
+  /* Rec section header: left-justified label.
      ADR-128 D9: entire row is the click affordance for collapse/expand; chevron
      functions as an indicator. Inner buttons stop propagation so they keep their
      own behavior. */
@@ -753,8 +751,6 @@
     user-select: none;
   }
   .rec-section-header-row:hover { color: var(--fg); }
-  /* Pin the + add button to the right edge of any section header. */
-  .rec-section-header-row > .co-add-chip { margin-left: auto; }
   /* Indent section bodies under their header for visual hierarchy. */
   .section-body { padding-left: var(--hier-indent-step, 14px); }
   .section-body[hidden] { padding-left: 0; }
@@ -1832,11 +1828,11 @@
      (graph_view.js) rely on absolute positioning from a higher ancestor; any
      `position` declaration on the chip itself becomes its own containing
      block and collapses overlay chips to document-flow positions. */
-  [data-chip-role][data-entity-type][data-entity-id] { cursor: pointer; }
-  [data-chip-role][data-entity-type][data-entity-id]:hover {
+  [data-chip-role="panel-title"][data-entity-type][data-entity-id] { cursor: pointer; }
+  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
     box-shadow: inset 0 0 0 1px var(--fg-muted, currentColor);
   }
-  [data-chip-role][data-entity-type][data-entity-id]:hover::after {
+  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after {
     content: " ✎";
     font-size: 0.85em;
     opacity: 0.55;
@@ -3307,7 +3303,7 @@
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
     /* .vp-btn excluded: same visual size as .filter-dropdown-btn (both are pill controls) */
-    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn) {
+    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn) {
       min-height: 44px;
     }
     .view-btn {
@@ -4282,7 +4278,7 @@
       <div class="panel" id="bani-flow-panel">
         <h3>
           <span class="panel-nav-spacer" aria-hidden="true"></span>
-          <span class="bani-chip chip-panel-title">BANI FLOW</span>
+          <span class="bani-chip chip-panel-title" data-chip-role="section-add" data-section-action="add-bani-flow">BANI FLOW</span>
           <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
@@ -4403,8 +4399,6 @@
           <span class="musician-chip chip-panel-title"
                 data-chip-role="section-add"
                 data-section-action="add-musician">MUSICIAN</span>
-          <!-- ADR-108: + chip to add a new musician, always visible (retired in Phase D) -->
-          <button class="co-add-chip" title="Add a new musician" onclick="openAddMusicianForm()" style="margin-left:4px">+</button>
           <span style="display:inline-flex;align-items:center;gap:4px">
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
             <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>

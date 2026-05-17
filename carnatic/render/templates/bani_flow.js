@@ -1266,8 +1266,9 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     const compTypeChip = document.createElement('span');
     compTypeChip.className = 'comp-chip chip-section-hdr';
     compTypeChip.textContent = 'Compositions';
-    // ADR-142 §1: Compositions section-header chip
-    if (typeof applyChipRole === 'function') applyChipRole(compTypeChip, 'section-header', 'composition');
+    // ADR-142 §1 / ADR-144: Compositions section-add chip (dblclick opens add-composition form)
+    if (typeof applyChipRole === 'function') applyChipRole(compTypeChip, 'section-add', 'composition');
+    compTypeChip.dataset.sectionAction = 'add-composition';
     const { sectionEl: compSec, bodyEl: compSecBody } = buildSection({
       headerChip: compTypeChip,
       count: compGroups.length,
@@ -1283,6 +1284,9 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     const _miscChip = document.createElement('span');
     _miscChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-recordings';
     _miscChip.textContent = 'MISC';
+    // ADR-144: MISC section-add chip (dblclick opens add-recording form)
+    if (typeof applyChipRole === 'function') applyChipRole(_miscChip, 'section-add', 'recording');
+    _miscChip.dataset.sectionAction = 'add-recording';
     const { sectionEl: otherSec, bodyEl: otherSecBody } = buildSection({
       headerChip: _miscChip,
       headerSuffixText: '',
@@ -1602,8 +1606,9 @@ function _renderBaniFlowLecdemStrip(type, id) {
   const hdrChip = document.createElement('span');
   hdrChip.className = 'lecdem-chip chip-section-hdr';
   hdrChip.textContent = 'Lecdems';
-  // ADR-142 §1: Lecdems section-header chip (Bani Flow panel)
-  if (typeof applyChipRole === 'function') applyChipRole(hdrChip, 'section-header', 'recording');
+  // ADR-142 §1 / ADR-144: Lecdems section-add chip (dblclick opens add-lecdem form, unscoped)
+  if (typeof applyChipRole === 'function') applyChipRole(hdrChip, 'section-add', 'recording');
+  hdrChip.dataset.sectionAction = 'add-lecdem';
   // ADR-128 D3+D11: buildSection. Subject context (raga / composition) is
   // already the panel subject — the suffix "on {subjectName}" was redundant.
   const { sectionEl: lecdemSectionWrap, bodyEl: lecdemListBody } = buildSection({

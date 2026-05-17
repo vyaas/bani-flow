@@ -97,7 +97,7 @@ function _wdpAdjacentPosition(offsetParentEl) {
 function nextSpawnPosition() {
   const offset = (spawnCount % 8) * 28;
   spawnCount += 1;
-  const mainEl = document.getElementById('main');
+  const mainEl = document.getElementById('cy-wrap');
   const mw = mainEl ? mainEl.offsetWidth  : 800;
   const mh = mainEl ? mainEl.offsetHeight : 600;
   const pw = 480; // default player width
@@ -1056,20 +1056,6 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   const countDiv = document.createElement('div');
   countDiv.className = 'concert-count';
   countDiv.textContent = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
-
-  // ADR-101: ＋ button to add a timestamped segment — inline on the title row
-  if (typeof openEntryForm === 'function') {
-    const addConcertSegBtn = document.createElement('button');
-    addConcertSegBtn.className = 'rec-play-btn';
-    addConcertSegBtn.title = 'Add segment to this recording';
-    addConcertSegBtn.textContent = '＋';
-    addConcertSegBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
-    addConcertSegBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      openEntryForm('segment', { kind: 'recording', id: concert.recording_id, session_index: 1 });
-    });
-    titleRow.appendChild(addConcertSegBtn);
-  }
 
   // ▶ play-from-beginning button — opens the first track of the concert at 00:00:00
   const _firstPerfVid = (() => {
@@ -2105,6 +2091,10 @@ function buildRecordingsList(nodeId, nodeData) {
     const _compsChip = document.createElement('span');
     _compsChip.className = 'comp-chip chip-section-hdr';
     _compsChip.textContent = 'Compositions';
+    // ADR-144: Compositions section-add chip — dblclick opens add-composition form pre-scoped to this musician
+    if (typeof applyChipRole === 'function') applyChipRole(_compsChip, 'section-add', 'composition');
+    _compsChip.dataset.sectionAction = 'add-composition';
+    _compsChip.dataset.musicianId   = nodeId;
     const { sectionEl: compSection, bodyEl: compBody } = buildSection({
       headerChip: _compsChip,
       count: composerComps.length,

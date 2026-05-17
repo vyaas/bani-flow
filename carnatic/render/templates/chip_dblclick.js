@@ -41,11 +41,12 @@
 
   // ADR-144 Phase A: section-action → openEntryForm type + options factory
   const SECTION_ACTION_TO_ENTRY = {
-    'add-musician':  function ()           { return { type: 'musician',             opts: null }; },
-    'add-lecdem':    function (musicianId) { return { type: 'musician_recordings',  opts: { nodeId: musicianId, kind: 'lecdem'  } }; },
-    'add-concert':   function (musicianId) { return { type: 'musician_recordings',  opts: { nodeId: musicianId, kind: 'concert' } }; },
-    'add-recording': function (musicianId) { return { type: 'musician_recordings',  opts: { nodeId: musicianId, kind: 'direct'  } }; },
-    'add-bani-flow': function ()           { return { type: 'bani-flow-picker',     opts: null }; },
+    'add-musician':    function ()           { return { type: 'musician',            opts: null }; },
+    'add-lecdem':      function (musicianId) { return { type: 'musician_recordings', opts: musicianId ? { nodeId: musicianId, kind: 'lecdem'  } : { kind: 'lecdem'  } }; },
+    'add-concert':     function (musicianId) { return { type: 'musician_recordings', opts: musicianId ? { nodeId: musicianId, kind: 'concert' } : { kind: 'concert' } }; },
+    'add-recording':   function (musicianId) { return { type: 'musician_recordings', opts: musicianId ? { nodeId: musicianId, kind: 'direct'  } : { kind: 'direct'  } }; },
+    'add-bani-flow':   function ()           { return { type: 'bani-flow-picker',    opts: null }; },
+    'add-composition': function (musicianId) { return { type: 'add-composition',     opts: musicianId ? { musicianId } : null }; },
   };
 
   let lastEntityKey = null;   // `${entityType}|${entityId}` OR `section-add|<action>|<musicianId>` of last click target
@@ -57,7 +58,7 @@
     try { if (localStorage.getItem('baniDblClickHinted')) return; } catch (e) { return; }
     const hint = document.createElement('div');
     hint.className = 'dblclick-hint';
-    hint.textContent = 'Double-click any chip to edit; double-click section labels to add';
+    hint.textContent = 'Double-click panel headers to edit; double-click section labels to add';
     document.body.appendChild(hint);
 
     function dismiss() {
@@ -134,8 +135,17 @@
       return;
     }
     const entityType = chip.dataset.entityType;
-    const entityId = chip.dataset.entityId;
+    const entityId   = chip.dataset.entityId;
+    const chipRole   = chip.dataset.chipRole;
     if (!entityType || !entityId) return;
+    // Only panel-title chips are dblclick-editable. Entity chips in trail rows,
+    // lecdem subjects, lineage lists etc. are navigation-only.
+    if (chipRole !== 'panel-title') {
+      // Still track for single-click nav — but do not enter edit mode.
+      lastEntityKey = entityType + '|' + entityId;
+      lastClickTime = Date.now();
+      return;
+    }
     const key = entityType + '|' + entityId;
     const now = Date.now();
     if (lastEntityKey === key && (now - lastClickTime) <= DBL_CLICK_MS) {
