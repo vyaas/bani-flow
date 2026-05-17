@@ -2091,7 +2091,6 @@ function buildRecordingsList(nodeId, nodeData) {
       headerChip: _compsChip,
       count: composerComps.length,
     });
-    });
     compSection.classList.add('comp-section');
 
     if (composerComps.length > 0) {
