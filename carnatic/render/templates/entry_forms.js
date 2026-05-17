@@ -1001,7 +1001,7 @@ function createEntryWindow(title) {
 
 function openEntryForm(type, target) {
   switch (type) {
-    case 'musician_recordings': buildMusicianRecordingsForm(); break;
+    case 'musician_recordings': buildMusicianRecordingsForm(target || {}); break;
     case 'musician':            buildMusicianForm();           break;
     case 'raga':                buildRagaForm();               break;
     case 'composition':         buildCompositionForm();        break;
@@ -5248,7 +5248,13 @@ function buildAddYouTubeToMusicianForm(musicianId) {
 // Existing call-sites (openEntryForm('musician_recordings'), showBundleSuccess)
 // are preserved. The "Musician / Recordings" global bar button still calls this
 // until ADR-111 removes it.
-function buildMusicianRecordingsForm() { return buildAddMusicianForm(); }
+// ADR-144 Phase A: when opts.nodeId is present, delegate to buildFocusedYouTubeForm
+// so the form opens pre-scoped to that musician (kind pre-fill is informational only
+// until addYoutubeBlock supports a defaultKind parameter).
+function buildMusicianRecordingsForm(opts) {
+  if (opts && opts.nodeId) return buildFocusedYouTubeForm(opts.nodeId);
+  return buildAddMusicianForm();
+}
 
 // ── ADR-108: Co-located entry points for musician panel ───────────────────────
 

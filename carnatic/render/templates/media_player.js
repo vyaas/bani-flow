@@ -1249,6 +1249,9 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     compChip.className = 'comp-chip';
     compChip.textContent = compObj.title || compId;
     compChip.title = (compObj.title || compId) + ' — Explore in Bani Flow';
+    // ADR-144 Phase B: annotate comp chip with its entity id so chip_dblclick.js
+    // finds it first (innermost) rather than falling through to the row-block li.
+    if (typeof applyChipRole === 'function') applyChipRole(compChip, 'entity', 'composition', compId);
     compChip.addEventListener('click', e => {
       e.stopPropagation();
       compChip.classList.add('chip-tapped');
@@ -1270,6 +1273,11 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
   if (recCount === 1) {
     // ── Single recording: inline year + play on the right ─────────────────
     const p = sortedPerfs[0];
+    // ADR-144 Phase B: annotate li as row-block affordance.
+    // Dblclick on the row (not on a chip) opens the recording edit form.
+    if (p.video_id && typeof applyChipRole === 'function') {
+      applyChipRole(li, 'row-block', 'recording', p.video_id);
+    }
     const actsDiv = document.createElement('div');
     actsDiv.className = 'tree-comp-acts';
     if (p.date) {
@@ -1854,8 +1862,10 @@ function buildRecordingsList(nodeId, nodeData) {
     const lsHdrChip = document.createElement('span');
     lsHdrChip.className = 'lecdem-chip chip-section-hdr';
     lsHdrChip.textContent = 'Lecdems';
-    // ADR-142 §1: LECDEMS section-header chip (Add Lecdem on dblclick — Phase B)
-    if (typeof applyChipRole === 'function') applyChipRole(lsHdrChip, 'section-header', 'recording');
+    // ADR-144 Phase A: dblclick LECDEMS header → add-lecdem form pre-scoped to this musician
+    if (typeof applyChipRole === 'function') applyChipRole(lsHdrChip, 'section-add', 'recording');
+    lsHdrChip.dataset.sectionAction = 'add-lecdem';
+    lsHdrChip.dataset.musicianId   = nodeId;
     const { sectionEl: lsSection, bodyEl: lsBody } = buildSection({
       headerChip: lsHdrChip,
       count: lecdemCount,
@@ -2009,6 +2019,10 @@ function buildRecordingsList(nodeId, nodeData) {
   const _concertsChip = document.createElement('span');
   _concertsChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-concerts';
   _concertsChip.textContent = 'CONCERTS';
+  // ADR-144 Phase A: dblclick CONCERTS header → add-concert form pre-scoped to this musician
+  if (typeof applyChipRole === 'function') applyChipRole(_concertsChip, 'section-add', 'recording');
+  _concertsChip.dataset.sectionAction = 'add-concert';
+  _concertsChip.dataset.musicianId   = nodeId;
   const { sectionEl: concertSection, bodyEl: concertBody } = buildSection({
     headerChip: _concertsChip,
     count: concerts.length,
@@ -2043,6 +2057,10 @@ function buildRecordingsList(nodeId, nodeData) {
   const _recordingsChip = document.createElement('span');
   _recordingsChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-recordings';
   _recordingsChip.textContent = 'RECORDINGS';
+  // ADR-144 Phase A: dblclick RECORDINGS header → add-recording form pre-scoped to this musician
+  if (typeof applyChipRole === 'function') applyChipRole(_recordingsChip, 'section-add', 'recording');
+  _recordingsChip.dataset.sectionAction = 'add-recording';
+  _recordingsChip.dataset.musicianId   = nodeId;
   _ragaHdrLabel.appendChild(_recordingsChip);
   _ragaHdrLabel.appendChild(document.createTextNode(' by '));
   const ragaTypeChip = document.createElement('span');

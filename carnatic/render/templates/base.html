@@ -2156,6 +2156,19 @@
     outline: none;
     text-decoration: none;
   }
+  /* ADR-144 Phase A: section-add chips signal “add” with dashed outline on hover.
+     Dashed vs solid distinguishes “add” from “edit” at a glance. */
+  [data-chip-role="section-add"]:hover {
+    outline: 1px dashed var(--accent);
+    cursor: pointer;
+  }
+  /* ADR-144 Phase B: single-recording row-block affordance.
+     cursor:context-menu signals “secondary action” without claiming the row is a link. */
+  [data-chip-role="row-block"] { cursor: context-menu; }
+  [data-chip-role="row-block"]:hover {
+    outline: 1px dashed var(--accent);
+    border-radius: 3px;
+  }
   /* Neutral vocabulary chip — white-on-black contrast.
      Used for non-domain words promoted to chip status (Concerts, Recordings, Compositions)
      so they share scale and weight with the colored vocabulary chips alongside them. */
@@ -4386,8 +4399,11 @@
       <div class="panel" id="musician-panel">
         <h3>
           <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-          <span class="musician-chip chip-panel-title">MUSICIAN</span>
-          <!-- ADR-108: + chip to add a new musician, always visible -->
+          <!-- ADR-144 Phase A: dblclick MUSICIAN header chip → add-musician form -->
+          <span class="musician-chip chip-panel-title"
+                data-chip-role="section-add"
+                data-section-action="add-musician">MUSICIAN</span>
+          <!-- ADR-108: + chip to add a new musician, always visible (retired in Phase D) -->
           <button class="co-add-chip" title="Add a new musician" onclick="openAddMusicianForm()" style="margin-left:4px">+</button>
           <span style="display:inline-flex;align-items:center;gap:4px">
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
