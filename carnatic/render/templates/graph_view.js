@@ -262,10 +262,6 @@ const cy = cytoscape({
     },
     { selector: '.faded',      style: { 'opacity': THEME.opacityFaded } },
     { selector: '.chip-faded', style: { 'opacity': THEME.opacityFaded } },
-    // Edges are invisible by default; override the generic .faded/.chip-faded rules
-    // (element+class specificity beats class-only, so these always win)
-    { selector: 'edge.faded',      style: { 'opacity': 0 } },
-    { selector: 'edge.chip-faded', style: { 'opacity': 0 } },
     // ADR-055: dim nodes that have no playable content (recordings or compositions)
     { selector: 'node[is_listenable = 0]', style: {
         'opacity': 0.25,
@@ -669,7 +665,7 @@ function _buildOverlayChip(node) {
   const tint = THEME.eraTintCss(d.era || null);
   const chip = document.createElement('span');
   chip.className = 'musician-chip cy-overlay-chip';
-  if (TRINITY_IDS.has(node.id()) || node.id() === 'vina_dhanammal') chip.classList.add('chip-trinity');
+  if (TRINITY_IDS.has(node.id())) chip.classList.add('chip-trinity');
   chip.style.setProperty('--chip-era-bg', tint.bg);
   chip.style.setProperty('--chip-era-border', tint.border);
   // ADR-114: visually distinguish Hindustani musician chips with cool-colour border
@@ -681,8 +677,6 @@ function _buildOverlayChip(node) {
   chip.appendChild(document.createTextNode(d.label));
   chip.title = d.label + (d.lifespan ? ' · ' + d.lifespan : '');
   chip.dataset.nodeId = node.id();
-  // ADR-142 §1: canvas overlay chip is an entity chip for the musician
-  if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'musician', node.id());
   // Forward chip clicks to the underlying cy node so the chip behaves
   // exactly like tapping the disc (focus + open panel).
   chip.addEventListener('click', evt => {
@@ -772,25 +766,24 @@ function applyZoomLabels() {
     const tier       = n.data('label_tier');
     const selected   = n.selected();
     const isTrinity  = TRINITY_IDS.has(n.id());
-    const isAnchor   = isTrinity || n.id() === 'vina_dhanammal';
     const isFocused  = n.id() === focusedId;
     const isNeighbor = neighborIds.has(n.id());
 
-    // Default (no filters): show Trinity + Vina Dhanammal, the focused node, and its direct neighbors.
+    // Default (no filters): show Trinity, the focused node, and its direct neighbors.
     // Filtered / zoomed: use tier-based zoom thresholds.
     const show = defaultView
-      ? (isAnchor || isFocused || isNeighbor)
+      ? (isTrinity || isFocused || isNeighbor)
       : (selected ||
          tier === 0 ||
          (tier === 1 && z >= 0.35) ||
          (tier === 2 && z >= 0.60));
     chip.classList.toggle('chip-hidden', !show);
 
-    // Default view only: dim every node that is not an anchor (Trinity or Vina Dhanammal),
-    // not focused, and not a direct neighbor of the focused node.
+    // Default view only: dim every node that is not Trinity, not focused,
+    // and not a direct neighbor of the focused node.
     // In filter mode, applyChipFilters() owns chip-faded — don't clobber it.
     if (defaultView) {
-      n.toggleClass('chip-faded', !isAnchor && !isFocused && !isNeighbor);
+      n.toggleClass('chip-faded', !isTrinity && !isFocused && !isNeighbor);
     }
   });
 
@@ -1148,8 +1141,6 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   nameChip.appendChild(document.createTextNode(d.label));
   nameChip.title = 'Pan to ' + d.label + ' on graph (' + (d.instrument || '') + ')';
   nameChip.onclick = () => orientToNode(node.id());
-  // ADR-142 §1: panel-title chip for the Musician panel
-  if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', node.id());
   nameEl.appendChild(nameChip);
 
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
@@ -1171,9 +1162,18 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
-  // ADR-128 D2: show affordances row (lifespan + wiki) whenever a node is selected
+  // ADR-128 D2: show affordances row (lifespan + wiki + edit) whenever a node is selected
   const _nodeAffordances = document.getElementById('node-header-affordances');
   if (_nodeAffordances) _nodeAffordances.style.display = '';
+  // ADR-104 Track A: show ✎ stub chip on musician panel header
+  const _editChip = document.getElementById('node-edit-chip');
+  if (_editChip) {
+    _editChip.style.display = 'inline-flex';
+    _editChip.onclick = function(e) {
+      e.stopPropagation();
+      if (typeof openEditForm === 'function') openEditForm({ entityType: 'musician', id: d.id });
+    };
+  }
   // ADR-086: subject loaded → dismiss empty-panel tutorial
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
@@ -1184,8 +1184,6 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   recFilter.dispatchEvent(new Event('input'));
 
   buildRecordingsList(d.id, d);
-  const _rightScroll = document.getElementById('right-scroll');
-  if (_rightScroll) _rightScroll.scrollTop = 0;
   // ADR-137: populate Gurus / Shishyas lineage sections
   buildLineagePanel(d.id);
 
@@ -1202,13 +1200,6 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   // the second tap (see node-tap handler below).
   if (revealPanel && typeof window.setPanelState === 'function') {
     window.setPanelState('MUSICIAN');
-  }
-
-  // ADR-142 §1 Phase A: tag any chip in the freshly-rebuilt Musician panel
-  // that didn't get an explicit applyChipRole at its construction site.
-  // Behaviour-neutral; the dispatcher (Phase B) reads these attributes.
-  if (typeof tagUntaggedChips === 'function') {
-    tagUntaggedChips(document.body);
   }
 }
 
@@ -1259,7 +1250,6 @@ function _openMusicianPanelForTransit(transitId) {
   }
   nameChip.appendChild(document.createTextNode(d.label || transitId));
   nameEl.appendChild(nameChip);
-  if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', transitId);
 
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
@@ -1277,6 +1267,14 @@ function _openMusicianPanelForTransit(transitId) {
   document.getElementById('edge-info').style.display = 'none';
   const _affordances = document.getElementById('node-header-affordances');
   if (_affordances) _affordances.style.display = '';
+  const _editChip = document.getElementById('node-edit-chip');
+  if (_editChip) {
+    _editChip.style.display = 'inline-flex';
+    _editChip.onclick = function (e) {
+      e.stopPropagation();
+      if (typeof openEditForm === 'function') openEditForm({ entityType: 'musician', id: transitId });
+    };
+  }
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
@@ -1285,8 +1283,6 @@ function _openMusicianPanelForTransit(transitId) {
   recFilter.dispatchEvent(new Event('input'));
 
   buildRecordingsList(transitId, d);
-  const _rightScrollT = document.getElementById('right-scroll');
-  if (_rightScrollT) _rightScrollT.scrollTop = 0;
   // ADR-137: populate Gurus / Shishyas lineage sections
   buildLineagePanel(transitId);
 
@@ -1765,6 +1761,8 @@ cy.on('tap', evt => {
   if (_lgPopBgTap) _lgPopBgTap.style.display = 'none';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  const _bgTapEditChip = document.getElementById('node-edit-chip');
+  if (_bgTapEditChip) { _bgTapEditChip.style.display = 'none'; _bgTapEditChip.onclick = null; }
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   // Note: era/instrument dropdown filters are intentionally NOT cleared on background tap —
@@ -1793,120 +1791,24 @@ window.clearMusicianPanel = function () {
   if (_lgPopReset) _lgPopReset.style.display = 'none';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  const _clearEditChip = document.getElementById('node-edit-chip');
+  if (_clearEditChip) { _clearEditChip.style.display = 'none'; _clearEditChip.onclick = null; }
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   if (typeof clearAllChipFilters === 'function') clearAllChipFilters();
   if (typeof applyZoomLabels === 'function') applyZoomLabels();
 };
 
-// ── Trinity triangle layout ───────────────────────────────────────────────────
-// Places the three Trinity composers at equilateral triangle vertices, locks
-// them, then re-runs cose so all other nodes cluster around the anchors.
-// Radius is computed from the current container size so the triangle fills the
-// viewport; after the layout settles, cy.fit() is called to maximise real estate.
-// Vertex angles (y-axis points DOWN in Cytoscape, so −π/2 = top)
-const _TRINITY_VERTS = {
-  tyagaraja:           -Math.PI / 2,                  // top
-  muthuswami_dikshitar: -Math.PI / 2 + (2 * Math.PI / 3), // bottom-right
-  shyama_shastri:       -Math.PI / 2 + (4 * Math.PI / 3), // bottom-left
-};
-
-function applyTrinityTriangleLayout() {
-  cy.nodes().unlock();
-
-  const R  = 550;   // triangle circumradius
-  const cx = 0, cy_ = 0;
-
-  const CENTRE_ID  = 'vina_dhanammal';
-  const _anchorIds = new Set([...TRINITY_IDS, CENTRE_ID]);
-
-  // ── Fixed anchor positions ────────────────────────────────────────────────
-  const anchorPos = {};
-  TRINITY_IDS.forEach(id => {
-    const a = _TRINITY_VERTS[id];
-    anchorPos[id] = { x: cx + R * Math.cos(a), y: cy_ + R * Math.sin(a) };
-    cy.getElementById(id).position(anchorPos[id]).lock();
-  });
-  const cp = cy.getElementById(CENTRE_ID);
-  if (cp.length) {
-    anchorPos[CENTRE_ID] = { x: cx, y: cy_ };
-    cp.position({ x: cx, y: cy_ }).lock();
-  }
-
-  // ── BFS ordering so students land near their guru ─────────────────────────
-  const ordered = [];
-  const bfsVisited = new Set(_anchorIds);
-  const bfsQ = [...TRINITY_IDS];
-  while (bfsQ.length) {
-    const id = bfsQ.shift();
-    cy.getElementById(id).connectedEdges().connectedNodes().forEach(nb => {
-      const nid = nb.id();
-      if (!bfsVisited.has(nid)) {
-        bfsVisited.add(nid);
-        ordered.push(nid);
-        bfsQ.push(nid);
-      }
-    });
-  }
-  cy.nodes().forEach(n => { if (!bfsVisited.has(n.id())) ordered.push(n.id()); });
-
-  // ── Poisson disc sampling within the circumscribed circle ────────────────
-  // Each node tries MAX_TRIES random positions and picks the first that is
-  // at least MIN_DIST from every already-placed node.  This guarantees spacing
-  // without any physics.  Fallback: golden-angle spiral from centre.
-  const MIN_DIST  = 44;   // min gap between any two nodes (graph units)
-  const MAX_TRIES = 60;
-  const placed    = Object.values(anchorPos);  // collision check includes anchors
-  const positions = { ...anchorPos };
-
-  ordered.forEach(nid => {
-    let pos = null;
-    for (let t = 0; t < MAX_TRIES; t++) {
-      const a  = Math.random() * 2 * Math.PI;
-      const r  = R * Math.sqrt(Math.random());   // uniform-area distribution
-      const px = cx + r * Math.cos(a);
-      const py = cy_ + r * Math.sin(a);
-      let ok = true;
-      for (const p of placed) {
-        const dx = px - p.x, dy = py - p.y;
-        if (dx * dx + dy * dy < MIN_DIST * MIN_DIST) { ok = false; break; }
-      }
-      if (ok) { pos = { x: px, y: py }; break; }
-    }
-    if (!pos) {
-      // Fallback: golden-angle spiral — guaranteed non-overlapping for large n
-      const i  = placed.length;
-      const r  = MIN_DIST * Math.sqrt(i);
-      const a  = i * (137.508 * Math.PI / 180);
-      pos = { x: cx + r * Math.cos(a), y: cy_ + r * Math.sin(a) };
-    }
-    positions[nid] = pos;
-    placed.push(pos);
-  });
-
-  // ── Preset layout — no physics, pure position assignment ─────────────────
-  cy.style().selector('edge[kind = "transitive"]')
-    .style({ 'control-point-distances': 30 }).update();
-
-  cy.layout({
-    name: 'preset',
-    positions: node => positions[node.id()] || { x: cx, y: cy_ },
-    animate: true,
-    animationDuration: 800,
-    fit: true,
-    padding: 60,
-  }).on('layoutstop', () => {
-    cy.fit(undefined, 60);
-    if (typeof applyZoomLabels === 'function') applyZoomLabels();
-  }).run();
-}
-
-
 // ── controls ──────────────────────────────────────────────────────────────────
 function relayout() {
   if (currentLayout === 'timeline') { applyTimelineLayout(); return; }
-  // Trinity is the base graph state — always re-run the trinity layout.
-  currentLayout = 'trinity';
-  applyTrinityTriangleLayout();
+  // ADR-138: reset transitive-edge control-point distance to cose default (30).
+  cy.style().selector('edge[kind = "transitive"]')
+    .style({ 'control-point-distances': 30 }).update();
+  cy.layout({
+    name: 'cose', animate: true, animationDuration: 600, randomize: false,
+    nodeRepulsion: () => 8000, idealEdgeLength: () => 120,
+    gravity: 0.25, numIter: 500,
+  }).run();
 }
 
 // ── Auto-relayout on browser resize ───────────────────────────────────────────
