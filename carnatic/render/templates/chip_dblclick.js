@@ -41,6 +41,32 @@
   let lastEntityKey = null;   // `${entityType}|${entityId}` of last click target
   let lastClickTime = 0;
 
+  // ── ADR-142 Phase E: first-use discoverability hint ──────────────────────
+  // Shows once, gated by localStorage. Dismissed by click, keydown, or 3.5s.
+  function _showDblClickHint() {
+    try { if (localStorage.getItem('baniDblClickHinted')) return; } catch (e) { return; }
+    const hint = document.createElement('div');
+    hint.className = 'dblclick-hint';
+    hint.textContent = 'Double-click any chip to edit';
+    document.body.appendChild(hint);
+
+    function dismiss() {
+      hint.classList.add('dh-fading');
+      setTimeout(function () { if (hint.parentNode) hint.parentNode.removeChild(hint); }, 370);
+      document.removeEventListener('click', dismiss, true);
+      document.removeEventListener('keydown', dismiss, true);
+      try { localStorage.setItem('baniDblClickHinted', '1'); } catch (e) {}
+    }
+
+    setTimeout(dismiss, 3500);
+    // Brief delay before wiring dismiss listeners so the current dblclick
+    // gesture doesn't immediately trigger dismissal.
+    setTimeout(function () {
+      document.addEventListener('click', dismiss, true);
+      document.addEventListener('keydown', dismiss, true);
+    }, 200);
+  }
+
   function handleChipClick(e) {
     const chip = e.target && e.target.closest
       ? e.target.closest('[data-entity-type][data-entity-id]')
@@ -67,6 +93,7 @@
       if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
       const formKey = ENTITY_TYPE_TO_FORM_KEY[entityType] || entityType;
       openEditForm({ entityType: formKey, id: entityId });
+      _showDblClickHint();  // ADR-142 Phase E: first-use hint
       return;
     }
     lastEntityKey = key;

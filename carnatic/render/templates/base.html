@@ -1844,6 +1844,29 @@
     pointer-events: none;
   }
 
+  /* ── ADR-142 Phase E: first-use double-click discoverability hint ─────────
+     Appears once on first chip dblclick gesture; dismissed by click/keydown
+     or after 3.5s; gated by localStorage 'baniDblClickHinted'. */
+  .dblclick-hint {
+    position: fixed;
+    bottom: calc(var(--chrome-bottom, 64px) + 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    color: var(--fg);
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    z-index: 9998;
+    pointer-events: none;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.35s ease;
+  }
+  .dblclick-hint.dh-fading { opacity: 0; }
+
   /* ── ADR-057: Composer chip — same shape as musician-chip,
      but uses ♯ glyph to mark "composer (compositions, not recordings)".  */
   .composer-chip {
