@@ -324,6 +324,7 @@ def render_html(
     search       = _load("search.js")
     entry_forms  = _load("entry_forms.js")
     roles_js     = _load("roles.js")
+    chip_dblclick = _load("chip_dblclick.js")  # ADR-142 Phase δ: dblclick chip → openEditForm
     empty_tut    = _load("empty_tutorials.js")
     mobile       = _load("mobile.js")
 
@@ -388,6 +389,7 @@ def render_html(
         search,
         roles_js,      # ← before entry_forms: defines window.PERFORMER_ROLES (ADR-071)
         entry_forms,   # ← needs graphData + wireDrag/nextSpawnPosition/topZ
+        chip_dblclick, # ← ADR-142 δ: needs openEditForm from entry_forms.js
         empty_tut,     # ← ADR-086: empty-panel tutorials; needs helpEmptyPanels + bani_flow + media_player
         mobile,        # ← LAST: exposes peekBottomSheet/dismissBottomSheet globals
         "</script>",
