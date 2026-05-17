@@ -433,6 +433,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     subjectName.className = 'raga-chip';
     subjectIcon.style.display = 'none';  // chip ::before provides the ◈ icon
     subjectName.textContent = raga ? raga.name : id;
+    // ADR-142 §1: panel-title chip for the Raga panel
+    if (typeof applyChipRole === 'function') applyChipRole(subjectName, 'panel-title', 'raga', id);
     if (subjectAddBtn && typeof openAddYouTubeFormForRaga === 'function') {
       subjectAddBtn.style.display = '';
       subjectAddBtn.title = 'Add a recording for ' + (raga ? raga.name : id);
@@ -1335,6 +1337,8 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     const compTypeChip = document.createElement('span');
     compTypeChip.className = 'comp-chip chip-section-hdr';
     compTypeChip.textContent = 'Compositions';
+    // ADR-142 §1: Compositions section-header chip
+    if (typeof applyChipRole === 'function') applyChipRole(compTypeChip, 'section-header', 'composition');
     const { sectionEl: compSec, bodyEl: compSecBody } = buildSection({
       headerChip: compTypeChip,
       count: compGroups.length,
@@ -1620,6 +1624,13 @@ function triggerBaniSearch(type, id) {
       !window._wheelOriginatedTrigger) {
     orientRagaWheel(type, id);
   }
+
+  // ADR-142 §1 Phase A: tag any chip in the freshly-rebuilt panel that didn't
+  // get an explicit applyChipRole at its construction site. Behaviour-neutral
+  // metadata only; the dispatcher (Phase B) reads these attributes.
+  if (typeof tagUntaggedChips === 'function') {
+    tagUntaggedChips(document.body);
+  }
 }
 
 // ── ADR-081: Lecdem strip for the Bani Flow panel ────────────────────────────
@@ -1662,6 +1673,8 @@ function _renderBaniFlowLecdemStrip(type, id) {
   const hdrChip = document.createElement('span');
   hdrChip.className = 'lecdem-chip chip-section-hdr';
   hdrChip.textContent = 'Lecdems';
+  // ADR-142 §1: Lecdems section-header chip (Bani Flow panel)
+  if (typeof applyChipRole === 'function') applyChipRole(hdrChip, 'section-header', 'recording');
   // ADR-128 D3+D11: buildSection. Subject context (raga / composition) is
   // already the panel subject — the suffix "on {subjectName}" was redundant.
   const { sectionEl: lecdemSectionWrap, bodyEl: lecdemListBody } = buildSection({

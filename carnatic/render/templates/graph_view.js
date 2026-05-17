@@ -681,6 +681,8 @@ function _buildOverlayChip(node) {
   chip.appendChild(document.createTextNode(d.label));
   chip.title = d.label + (d.lifespan ? ' · ' + d.lifespan : '');
   chip.dataset.nodeId = node.id();
+  // ADR-142 §1: canvas overlay chip is an entity chip for the musician
+  if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'musician', node.id());
   // Forward chip clicks to the underlying cy node so the chip behaves
   // exactly like tapping the disc (focus + open panel).
   chip.addEventListener('click', evt => {
@@ -1146,6 +1148,8 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   nameChip.appendChild(document.createTextNode(d.label));
   nameChip.title = 'Pan to ' + d.label + ' on graph (' + (d.instrument || '') + ')';
   nameChip.onclick = () => orientToNode(node.id());
+  // ADR-142 §1: panel-title chip for the Musician panel
+  if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', node.id());
   nameEl.appendChild(nameChip);
 
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
@@ -1207,6 +1211,13 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   // the second tap (see node-tap handler below).
   if (revealPanel && typeof window.setPanelState === 'function') {
     window.setPanelState('MUSICIAN');
+  }
+
+  // ADR-142 §1 Phase A: tag any chip in the freshly-rebuilt Musician panel
+  // that didn't get an explicit applyChipRole at its construction site.
+  // Behaviour-neutral; the dispatcher (Phase B) reads these attributes.
+  if (typeof tagUntaggedChips === 'function') {
+    tagUntaggedChips(document.body);
   }
 }
 

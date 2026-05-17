@@ -114,10 +114,26 @@ def _render_help_md(md_text: str) -> str:
         return line.startswith('```')
 
     def _inline(text: str) -> str:
-        # Chip tags first (before bold/italic so e.g. **<cr>X<cr>Y** parses cleanly)
-        text = re.sub(r'<cm>(.*?)<cm>', r'<span class="musician-chip" data-preface-label="\1">\1</span>', text)
-        text = re.sub(r'<cr>(.*?)<cr>', r'<span class="raga-chip" data-preface-raga="\1">\1</span>', text)
-        text = re.sub(r'<cc>(.*?)<cc>', r'<span class="comp-chip" data-preface-comp="\1">\1</span>', text)
+        # Chip tags first (before bold/italic so e.g. **<cr>X<cr>Y** parses cleanly).
+        # ADR-142 §1: every chip carries data-chip-role + data-entity-type so the
+        # double-click dispatcher (Phase B) can route to the right add/edit form.
+        # Preface labels have no entity-id (they reference labels, not nodes);
+        # tagUntaggedChips will not overwrite the explicit role set here.
+        text = re.sub(
+            r'<cm>(.*?)<cm>',
+            r'<span class="musician-chip" data-chip-role="entity" data-entity-type="musician" data-preface-label="\1">\1</span>',
+            text,
+        )
+        text = re.sub(
+            r'<cr>(.*?)<cr>',
+            r'<span class="raga-chip" data-chip-role="entity" data-entity-type="raga" data-preface-raga="\1">\1</span>',
+            text,
+        )
+        text = re.sub(
+            r'<cc>(.*?)<cc>',
+            r'<span class="comp-chip" data-chip-role="entity" data-entity-type="composition" data-preface-comp="\1">\1</span>',
+            text,
+        )
         text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
         text = re.sub(r'_(.+?)_', r'<em>\1</em>', text)
         return text

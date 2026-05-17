@@ -357,3 +357,64 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
 
   return chips;
 }
+
+// ── ADR-142 §1: chip-role taxonomy ────────────────────────────────────────────
+// Every chip in the system carries three data attributes so the double-click
+// dispatcher (Phase B+, not yet wired) can route to the correct add/edit form
+// without per-chip onclick configuration.
+//
+//   data-chip-role    ∈ {'panel-title', 'section-header', 'entity'}
+//   data-entity-type  ∈ {'musician', 'raga', 'composition', 'recording', 'edge'}
+//   data-entity-id    stable id of the entity (entity-role chips only)
+//
+// Phase A scope (this file): set the attributes only. No behaviour change.
+//
+// CSS-class → entity-type map for the defensive defaulter.
+const _CHIP_CLASS_TO_ENTITY_TYPE = {
+  'musician-chip': 'musician',
+  'composer-chip': 'musician',   // composer is a musician
+  'lineage-chip':  'musician',   // lineage chips render musicians (gurus / shishyas)
+  'raga-chip':     'raga',
+  'comp-chip':     'composition',
+  'lecdem-chip':   'recording',
+  'recording-chip':'recording',  // future class for promoted concert/lecdem/misc titles
+};
+
+// applyChipRole — set the ADR-142 §1 attributes on a chip.
+// Safe to call multiple times; later calls overwrite earlier ones.
+//   chip        HTMLElement (required)
+//   role        one of 'panel-title' | 'section-header' | 'entity' (required)
+//   entityType  one of the entity-type strings above (required for entity / section-header)
+//   entityId    string (entity-role only); falsy values are omitted
+function applyChipRole(chip, role, entityType, entityId) {
+  if (!chip || !chip.dataset) return chip;
+  if (role) chip.dataset.chipRole = role;
+  if (entityType) chip.dataset.entityType = entityType;
+  if (entityId) chip.dataset.entityId = entityId;
+  return chip;
+}
+
+// tagUntaggedChips — defensive defaulter (ADR-142 Phase A safety net).
+// Walks rootEl's subtree and, for any chip element missing data-chip-role,
+// sets role='entity' and infers data-entity-type from the chip's CSS class.
+// Does NOT set data-entity-id (id requires construction-time context).
+// Construction sites that own the id should call applyChipRole explicitly.
+function tagUntaggedChips(rootEl) {
+  if (!rootEl || typeof rootEl.querySelectorAll !== 'function') return;
+  const selector = Object.keys(_CHIP_CLASS_TO_ENTITY_TYPE)
+    .map(function (cls) { return '.' + cls; })
+    .join(', ');
+  const chips = rootEl.querySelectorAll(selector);
+  for (let i = 0; i < chips.length; i++) {
+    const chip = chips[i];
+    if (chip.dataset.chipRole) continue;  // already tagged explicitly
+    chip.dataset.chipRole = 'entity';
+    if (chip.dataset.entityType) continue;
+    for (const cls in _CHIP_CLASS_TO_ENTITY_TYPE) {
+      if (chip.classList.contains(cls)) {
+        chip.dataset.entityType = _CHIP_CLASS_TO_ENTITY_TYPE[cls];
+        break;
+      }
+    }
+  }
+}
