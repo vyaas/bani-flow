@@ -1,12 +1,32 @@
 # ADR-143: Bundle as Object-Oriented Patch File — Per-Chip-Type Patch Coverage
 
-**Status**: Accepted
+**Status**: Accepted (amended 2026-05-16 — subjects restricted to lecdems)
 **Date**: 2026-05-16
 **Accepted**: 2026-05-16
 **Author**: Graph Architect
 **Depends on**: ADR-016 (writer validation as single source of truth), ADR-083 (bundle as canonical write channel), ADR-085 (self-replicating curation loop), ADR-097 (bundle deltas + unified edit forms)
 **Couples with**: ADR-142 (chip as object — double-click opens the object's form)
 **Extends**: ADR-097 §§2–3 (the op matrix); accelerates ADR-097 from Proposed to required by the time ADR-142 ships.
+
+---
+
+## Amendment 2026-05-16 — Subjects are lecdem-only
+
+The original draft of §§2, 3, and 5 listed `subjects.raga_ids[]`, `subjects.composition_ids[]`, and `subjects.musician_ids[]` as bounded-append targets on the **recording** chip. Resolved on implementation: **subjects remain a lecdem-only concept**. They live on `musicians/*.json.lecdems[*].subjects` and are appended through the owning musician chip (which already exposes `youtube[vid].subjects.*` per §3 row 1). The recording chip's Edit form therefore does **not** surface `subjects.*` append targets.
+
+Rationale: the current schema places `subjects` on lecdem entries inside the owning musician file, not on top-level `recordings/*.json`. Migrating subjects to top-level recordings would (a) duplicate state already keyed by the musician–lecdem relationship, and (b) require a write path that ignores the musician owner, weakening provenance. Routing through the musician chip preserves ownership and stays within the existing schema.
+
+Effect on this ADR's matrices:
+
+- §2 example "Append a subject to a recording" is **withdrawn**.
+- §3 Recording row `appendable`: `segments[]`, `performers[]` (subjects removed).
+- §5 invariants 4–5 still hold for `segments[]`/`performers[]`; subject ops on recordings are rejected at the writer.
+
+Implementation:
+
+- `writer.append_to_recording_subject` is retained as a hard refusal (not deleted) so v2 bundles authored against the original draft fail with a clear, actionable message pointing to the musician–lecdem location.
+- `editFormSpec.recording.appendable` lists only `['segments', 'performers']`.
+- The Phase γ bundle dispatcher routes `op=append, array='subjects.*'` on a recording to the refusal so the failure surfaces at ingest, not silently.
 
 ---
 

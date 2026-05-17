@@ -37,15 +37,16 @@ window.editFormSpec = {
     annotatable: true,
   },
   recording: {
-    // ADR-143 §6: new in this commit. Mirrors PATCHABLE_RECORDING_FIELDS.
+    // ADR-143 §6: mirrors writer.py PATCHABLE_RECORDING_FIELDS.
     patchable:   ['title', 'short_title', 'date', 'venue', 'occasion', 'url'],
-    // ADR-143 §2 bounded-append targets. `subjects.*` rejected by the writer
-    // pending an architectural decision (see writer.append_to_recording_subject
-    // and the .clinerules open question logged 2026-05-16); they are listed
-    // here so the Edit-form renderer can show them as disabled-with-tooltip
-    // rather than silently omit them.
-    appendable:  ['segments', 'performers',
-                  'subjects.raga_ids', 'subjects.composition_ids', 'subjects.musician_ids'],
+    // ADR-143 amendment 2026-05-16: subjects.* are deliberately omitted from
+    // the recording chip's append surface. Subjects are a lecdem-only concept
+    // and live on musicians[].lecdems[*].subjects — append them through the
+    // owning musician chip, not through the recording chip. The writer's
+    // append_to_recording_subject method returns a hard refusal so any v2
+    // bundle authored against the original draft of ADR-143 fails with a
+    // clear, actionable message rather than writing nowhere.
+    appendable:  ['segments', 'performers'],
     annotatable: true,
   },
   edge: {

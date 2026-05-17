@@ -1918,13 +1918,15 @@ class CarnaticWriter:
     # add_note) where possible; the new methods add the entity-level patch +
     # bounded-append surface the chip-as-object dispatcher (ADR-142) requires.
     #
-    # Scope note: ADR-143 §2 lists `subjects.raga_ids[]`, `subjects.composition_ids[]`,
-    # `subjects.musician_ids[]` as bounded-append targets on recordings. In the
-    # current schema, subjects live on lecdems INSIDE `musicians/*.json.lecdems[]`,
-    # not on top-level `recordings/*.json` files. `append_to_recording_subject`
-    # therefore returns a structured error pending an architectural decision on
-    # whether to migrate subjects to recordings, or to route subject appends to
-    # the musician lecdem entry by id. See .clinerules open question.
+    # Scope note: ADR-143 §2 originally listed `subjects.raga_ids[]`,
+    # `subjects.composition_ids[]`, `subjects.musician_ids[]` as bounded-append
+    # targets on the recording chip. Resolved 2026-05-16 (ADR-143 amendment):
+    # subjects remain a lecdem-only concept — they live on
+    # `musicians/*.json.lecdems[*].subjects` and are appended via the lecdem's
+    # owning musician chip, not via the recording chip. The recording-chip
+    # Edit form does not surface subjects.* targets; `append_to_recording_subject`
+    # remains as a hard refusal so v2 bundles authored against the old draft
+    # of ADR-143 fail with a clear, actionable message.
 
     def patch_recording(
         self,
@@ -2148,17 +2150,18 @@ class CarnaticWriter:
         subject_id: str,
         recordings_path: Path | None = None,
     ) -> WriteResult:
-        """ADR-143 §2 subject-append op — currently unsupported on top-level recordings.
+        """ADR-143 §2 subject-append op — NOT SUPPORTED on top-level recordings.
 
-        The current data schema places subjects on lecdems INSIDE
-        `musicians/*.json.lecdems[]`, not on top-level `recordings/*.json`. This
-        method refuses with an explanatory error so callers (the chip dispatcher,
-        the bundle ingester) get a structured failure rather than a silent drop.
+        Resolved 2026-05-16 (ADR-143 amendment): subjects are a lecdem-only
+        concept. They live on `musicians/*.json.lecdems[*].subjects` and are
+        appended through the lecdem's owning musician chip, not through the
+        recording chip's Edit form. The recording chip therefore does not
+        surface subjects.* append targets.
 
-        Resolution requires an architectural decision: either migrate `subjects`
-        to top-level recordings, or route subject-append ops to the owning
-        musician's lecdem entry by composite selector. See .clinerules open
-        question (logged 2026-05-16 by Coder).
+        This method is kept (rather than deleted) so that v2 bundles authored
+        against the original draft of ADR-143 — or any future caller that
+        misroutes a subject append — fails with a clear, actionable message
+        rather than silently writing nowhere.
         """
         valid_kinds = {"raga_ids", "composition_ids", "musician_ids"}
         if subject_kind not in valid_kinds:
@@ -2167,10 +2170,12 @@ class CarnaticWriter:
                 f"       Permitted: {', '.join(sorted(valid_kinds))}"
             )
         return _err(
-            f"append_to_recording_subject is not yet supported: subjects live on "
-            f"musician lecdem entries (musicians/*.json.lecdems[*].subjects.{subject_kind}), "
-            f"not on top-level recordings/{recording_id}.json. Architectural "
-            f"decision pending (ADR-143 §2 vs current schema)."
+            f"append_to_recording_subject is not supported on top-level recordings: "
+            f"subjects are a lecdem-only concept and live on "
+            f"musicians/*.json.lecdems[*].subjects.{subject_kind}. "
+            f"To add a subject for recording {recording_id}, locate the owning "
+            f"musician's lecdem entry and append there. "
+            f"(ADR-143 amendment 2026-05-16: subjects restricted to lecdems.)"
         )
 
     def annotate_recording(

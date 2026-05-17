@@ -340,9 +340,10 @@ def test_append_subject_returns_structured_refusal(tmp_path):
         recordings_path=rec_dir,
     )
     assert not r.exit_ok
-    # Must mention the architectural reason so the bundle ingester surfaces a
-    # helpful error instead of a silent drop (ADR-143 §6 contract).
-    assert "Architectural decision pending" in r.message
+    # ADR-143 amendment 2026-05-16: subjects are lecdem-only; the refusal
+    # message must point the caller at the lecdem location so misrouted
+    # bundles get an actionable error.
+    assert "not supported" in r.message
     assert "lecdem" in r.message.lower()
 
 

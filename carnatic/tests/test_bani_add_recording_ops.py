@@ -141,7 +141,10 @@ def test_dispatcher_append_subject_refused_with_message(tmp_path, capsys):
     )
     assert errors == 1
     captured = capsys.readouterr().out
-    assert "Architectural decision pending" in captured
+    # ADR-143 amendment 2026-05-16: subjects are lecdem-only; the dispatcher
+    # must surface the writer's actionable "not supported" message.
+    assert "not supported" in captured
+    assert "lecdem" in captured.lower()
 
 
 def test_dispatcher_annotate(tmp_path):
