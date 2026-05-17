@@ -323,8 +323,15 @@ const INSTRUMENT_SHAPES = {
   veena:         'diamond',
   violin:        'rectangle',
   flute:         'triangle',
+  bansuri:       'triangle',
   mridangam:     'hexagon',
+  ghatam:        'hexagon',
+  khanjira:      'hexagon',
   bharatanatyam: 'ellipse',
+  gottuvadyam:   'diamond',
+  sitar:         'diamond',
+  sarod:         'diamond',
+  other:         'ellipse',
 };
 
 // ── Outline-only SVG shape icons ──────────────────────────────────────────────
@@ -1150,8 +1157,6 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', node.id());
   nameEl.appendChild(nameChip);
 
-  document.getElementById('node-lifespan').textContent = d.lifespan || '';
-
   // ADR-069: instrument badge is now inside the name chip — hide the standalone
   // shape icon to avoid the redundant double-circle next to the name.
   const shapeIcon = document.getElementById('node-shape-icon');
@@ -1169,9 +1174,6 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
-  // ADR-128 D2: show affordances row (lifespan + wiki) whenever a node is selected
-  const _nodeAffordances = document.getElementById('node-header-affordances');
-  if (_nodeAffordances) _nodeAffordances.style.display = '';
   // ADR-086: subject loaded → dismiss empty-panel tutorial
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
@@ -1256,8 +1258,6 @@ function _openMusicianPanelForTransit(transitId) {
   if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', transitId);
   nameEl.appendChild(nameChip);
 
-  document.getElementById('node-lifespan').textContent = d.lifespan || '';
-
   const wikiLink = document.getElementById('node-wiki-link');
   const primarySrc = d.sources && d.sources.length > 0 ? d.sources[0] : null;
   if (primarySrc) {
@@ -1270,8 +1270,6 @@ function _openMusicianPanelForTransit(transitId) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
-  const _affordances = document.getElementById('node-header-affordances');
-  if (_affordances) _affordances.style.display = '';
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
@@ -1745,10 +1743,7 @@ cy.on('tap', evt => {
   _currentPanelNodeId = null;   // clear focus so applyZoomLabels re-dims everything
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—'; // clear chip
-  document.getElementById('node-lifespan').textContent      = '';
   document.getElementById('node-wiki-link').style.display   = 'none';
-  const _nodeAffordancesBgTap = document.getElementById('node-header-affordances');
-  if (_nodeAffordancesBgTap) _nodeAffordancesBgTap.style.display = 'none';
   document.getElementById('rec-filter').style.display       = 'none';
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';
@@ -1773,10 +1768,7 @@ window.clearMusicianPanel = function () {
   _currentPanelNodeId = null;   // clear focus so applyZoomLabels re-dims everything
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—';
-  document.getElementById('node-lifespan').textContent      = '';
   document.getElementById('node-wiki-link').style.display   = 'none';
-  const _nodeAffordancesReset = document.getElementById('node-header-affordances');
-  if (_nodeAffordancesReset) _nodeAffordancesReset.style.display = 'none';
   document.getElementById('rec-filter').style.display       = 'none';
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';

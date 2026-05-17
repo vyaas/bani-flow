@@ -435,8 +435,6 @@
     font-size: var(--subject-size);
     padding: var(--subject-padding);
   }
-  #node-header-affordances { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 2px 0; }
-  #node-lifespan { font-size: 0.78rem; color: var(--fg-muted); }
   /* Legacy plain-link style kept for backward compat; new affordances use .yt-ext-link */
   .node-wiki-link {
     flex-shrink: 0;
@@ -4529,11 +4527,7 @@
             <span id="node-name">&mdash;</span>
             <!-- ADR-137: lineage popup trigger -->
             <button id="lineage-popup-btn" class="lineage-popup-btn" style="display:none" title="Gurus &amp; Shishyas">&#8645;</button>
-          </div>
-          <!-- Row 2: lifespan + encircled edit + encircled wiki (ADR-128 D2) -->
-          <div id="node-header-affordances" class="panel-header-affordances" style="display:none">
-            <span id="node-lifespan"></span>
-            <!-- ADR-104 Track A / ADR-108: edit rewired to chip dblclick (ADR-142) -->
+            <!-- wiki link inline with chip row (birth/death years removed) -->
             <a id="node-wiki-link" class="yt-ext-link panel-hdr-ext-link" href="#" target="_blank"
                style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
           </div>

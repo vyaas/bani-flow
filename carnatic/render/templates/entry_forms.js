@@ -1055,8 +1055,9 @@ function buildBaniFlowPickerForm() {
 //          wiki link inline with Display Name, chip-based guru/shishya edges,
 //          "Add to Patch" as primary CTA (no per-form download).
 
-function buildMusicianForm() {
-  const win = createEntryWindow('Add Musician');
+function buildMusicianForm({ prefill = null } = {}) {
+  const isEdit = !!prefill;
+  const win = createEntryWindow(isEdit ? 'Edit Musician' : 'Add Musician');
   if (!win) return;
   const body = win.querySelector('.ew-body');
 
@@ -1065,8 +1066,15 @@ function buildMusicianForm() {
   // ── Section A: Node fields ────────────────────────────────────────────────
   body.appendChild(efSection('Node Fields'));
 
-  // Display Name row — wiki link button appears once Source URL is filled
+  // Display Name row — born/died compact inputs inline (ADR-147), wiki link once URL filled
   const labelInp = efInput('ef_mus_label', 'text', 'e.g. Semmangudi Srinivasa Iyer', null);
+  labelInp.style.flex = '1';
+  const bornInp = efInput('ef_mus_born', 'number', 'born', null);
+  bornInp.min = '1600'; bornInp.max = '2030';
+  bornInp.style.width = '56px'; bornInp.style.flexShrink = '0'; bornInp.style.textAlign = 'center';
+  const diedInp = efInput('ef_mus_died', 'number', 'died', null);
+  diedInp.min = '1600'; diedInp.max = '2030';
+  diedInp.style.width = '56px'; diedInp.style.flexShrink = '0'; diedInp.style.textAlign = 'center';
   const wikiLinkBtn = document.createElement('a');
   wikiLinkBtn.href = '#'; wikiLinkBtn.target = '_blank'; wikiLinkBtn.rel = 'noopener noreferrer';
   wikiLinkBtn.className = 'node-wiki-link';
@@ -1077,14 +1085,16 @@ function buildMusicianForm() {
   const nameRow = document.createElement('div');
   nameRow.style.cssText = 'display:flex;align-items:center;gap:4px;width:100%;';
   nameRow.appendChild(labelInp);
+  nameRow.appendChild(bornInp);
+  nameRow.appendChild(diedInp);
   nameRow.appendChild(wikiLinkBtn);
   body.appendChild(efRow('Display Name', true, null, nameRow));
 
   const idRow = efIdRow('ef_mus_id', 'ef_mus_label', existingIds);
   body.appendChild(idRow);
-  labelInp.addEventListener('input', idRow._updateId);
+  if (!isEdit) labelInp.addEventListener('input', idRow._updateId);
 
-  // ADR-145 D2: born/died removed from create form — secondary metadata set by Librarian.
+  // ADR-147: born/died now inline in Display Name row (optional; needed for timeline).
 
   // ADR-146 D3: Era chip selector (replaces <select>)
   const eraOpts = ['trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'];
@@ -1147,16 +1157,21 @@ function buildMusicianForm() {
   eraWrap.appendChild(eraHiddenInp);
   body.appendChild(efRow('Era', true, null, eraWrap));
 
-  // ADR-146 D4: Instrument chip selector (replaces <select>)
-  const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
+  // ADR-146 D4: Instrument chip selector — all instruments present in the database
+  const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'bansuri', 'mridangam', 'ghatam', 'khanjira', 'gottuvadyam', 'sitar', 'sarod', 'bharatanatyam', 'other'];
   const _instrLabels = {
     vocal:         'Vocal',
     veena:         'Veena',
     violin:        'Violin',
     flute:         'Flute',
+    bansuri:       'Bansuri',
     mridangam:     'Mridangam',
-    bharatanatyam: 'Bharatanatyam',
     ghatam:        'Ghatam',
+    khanjira:      'Khanjira',
+    gottuvadyam:   'Gottuvadyam',
+    sitar:         'Sitar',
+    sarod:         'Sarod',
+    bharatanatyam: 'Bharatanatyam',
     other:         'Other',
   };
   const instrHiddenInp = document.createElement('input');
@@ -1204,8 +1219,66 @@ function buildMusicianForm() {
   edgesContainer.id = 'ef_mus_edges';
   body.appendChild(edgesContainer);
 
-  buildEdgeChipSection(edgesContainer, 'guru',    win);
-  buildEdgeChipSection(edgesContainer, 'shishya', win);
+  const guruRow    = buildEdgeChipSection(edgesContainer, 'guru',    win);
+  const shishyaRow = buildEdgeChipSection(edgesContainer, 'shishya', win);
+
+  // ── Pre-fill in edit mode (ADR-147) ────────────────────────────────────────
+  if (isEdit) {
+    labelInp.value = prefill.label || '';
+    if (prefill.born) bornInp.value = prefill.born;
+    if (prefill.died) diedInp.value = prefill.died;
+    // ID: lock permanently — node IDs are immutable (CLAUDE.md)
+    const idInput = idRow._idInput;
+    if (idInput) {
+      idInput.value    = prefill.id;
+      idInput.readOnly = true;
+      idInput.style.opacity = '0.6';
+      const editBtn = idRow.querySelector('.ef-id-edit-btn');
+      if (editBtn) editBtn.style.display = 'none';
+    }
+    // Era chip
+    if (prefill.era) {
+      eraChipsRow.querySelectorAll('.ef-era-chip').forEach(c => c.classList.remove('ef-era-chip--active'));
+      const eraChip = eraChipsRow.querySelector(`[data-era="${prefill.era}"]`);
+      if (eraChip) { eraChip.classList.add('ef-era-chip--active'); eraHiddenInp.value = prefill.era; }
+    }
+    // Instrument chip
+    if (prefill.instrument) {
+      instrChipsRow.querySelectorAll('.ef-instr-chip').forEach(c => c.classList.remove('ef-instr-chip--active'));
+      const instrChip = instrChipsRow.querySelector(`[data-instr="${prefill.instrument}"]`);
+      if (instrChip) { instrChip.classList.add('ef-instr-chip--active'); instrHiddenInp.value = prefill.instrument; }
+    }
+    // Tradition chips
+    const prefillTrad = prefill.traditions || ['carnatic'];
+    carnBtn.classList.toggle('ef-trad-chip--active', prefillTrad.includes('carnatic'));
+    hindBtn.classList.toggle('ef-trad-chip--active', prefillTrad.includes('hindustani'));
+    // Source URL
+    const srcUrlInp = win.querySelector('#ef_mus_source_url');
+    if (srcUrlInp && prefill.sources && prefill.sources.length > 0) {
+      const first = prefill.sources[0];
+      const url = (typeof first === 'string') ? first : (first.url || '');
+      srcUrlInp.value = url;
+      if (url) { wikiLinkBtn.href = url; wikiLinkBtn.style.display = ''; }
+    }
+    // Hidden prefill-ID for generateMusicianJson to detect edit mode
+    const prefillIdInp = document.createElement('input');
+    prefillIdInp.type = 'hidden'; prefillIdInp.id = 'ef_mus_prefill_id'; prefillIdInp.value = prefill.id;
+    body.appendChild(prefillIdInp);
+    // Edit-mode note
+    const editNote = document.createElement('p');
+    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+    editNote.textContent = 'Only changed fields and new edges are included in the patch.';
+    body.appendChild(editNote);
+    // Pre-fill existing edge chips
+    (graphData.edges || []).filter(e => e.source === prefill.id || e.target === prefill.id).forEach(e => {
+      const direction = e.target === prefill.id ? 'guru' : 'shishya';
+      const otherId   = direction === 'guru' ? e.source : e.target;
+      const otherNode = (graphData.nodes || []).find(n => n.id === otherId);
+      const row = direction === 'guru' ? guruRow : shishyaRow;
+      row._addChip({ otherId, otherLabel: otherNode ? otherNode.label : otherId, direction,
+        confidence: e.confidence, source_url: e.source_url, note: e.note, _prefilled: true });
+    });
+  }
 
   // ── Preview pre (lives in body, above footer) ─────────────────────────────
   const previewPre = document.createElement('pre');
@@ -1215,10 +1288,10 @@ function buildMusicianForm() {
   // ── Footer ────────────────────────────────────────────────────────────────
   const footer = win.querySelector('.ew-footer');
 
-  // Primary CTA: Add to Patch (ADR-145 D1)
+  // Primary CTA: Add to Patch (add mode) / Update Patch (edit mode) — ADR-145 D1, ADR-147
   const addPatchBtn = document.createElement('button');
   addPatchBtn.className = 'ef-download-btn';
-  addPatchBtn.textContent = '+ Add to Patch';
+  addPatchBtn.textContent = isEdit ? 'Update Patch' : '+ Add to Patch';
   addPatchBtn.disabled = true;
 
   const previewBtn = document.createElement('button');
@@ -1229,20 +1302,31 @@ function buildMusicianForm() {
   footer.appendChild(previewBtn);
 
   function validate() {
-    const label   = labelInp.value.trim();
-    const id      = idRow._idInput.value.trim();
-    const era     = eraSel.value;
-    const instr   = instrSel.value;
-    const srcUrl  = win.querySelector('#ef_mus_source_url') ? win.querySelector('#ef_mus_source_url').value.trim() : '';
-    const dupId   = existingIds.includes(id);
-    const ok = label && id && era && instr && srcUrl && !dupId;
-    addPatchBtn.disabled = !ok;
+    const label  = labelInp.value.trim();
+    const id     = idRow._idInput ? idRow._idInput.value.trim() : '';
+    const era    = eraHiddenInp.value;
+    const instr  = instrHiddenInp.value;
+    const srcUrl = win.querySelector('#ef_mus_source_url') ? win.querySelector('#ef_mus_source_url').value.trim() : '';
     // Update wiki link button
-    if (srcUrl) {
-      wikiLinkBtn.href = srcUrl;
-      wikiLinkBtn.style.display = '';
+    if (srcUrl) { wikiLinkBtn.href = srcUrl; wikiLinkBtn.style.display = ''; }
+    else        { wikiLinkBtn.style.display = 'none'; }
+    if (isEdit) {
+      const origNode = (graphData.nodes || []).find(n => n.id === prefill.id) || prefill;
+      const born = bornInp.value ? parseInt(bornInp.value, 10) : null;
+      const died = diedInp.value ? parseInt(diedInp.value, 10) : null;
+      const curTrad  = [...win.querySelectorAll('.ef-trad-chip.ef-trad-chip--active')].map(b => b.dataset.trad).filter(Boolean);
+      const origTrad = (origNode.traditions || ['carnatic']).slice().sort();
+      const changed = label !== (origNode.label || '') ||
+                      born  !== (origNode.born  || null) ||
+                      died  !== (origNode.died  || null) ||
+                      era   !== (origNode.era   || '') ||
+                      instr !== (origNode.instrument || '') ||
+                      JSON.stringify([...curTrad].sort()) !== JSON.stringify(origTrad);
+      const hasNewEdges = [...win.querySelectorAll('.ef-edge-chip')].some(c => c._edgeData && !c._edgeData._prefilled);
+      addPatchBtn.disabled = !changed && !hasNewEdges;
     } else {
-      wikiLinkBtn.style.display = 'none';
+      const dupId = existingIds.includes(id);
+      addPatchBtn.disabled = !(label && id && era && instr && srcUrl && !dupId);
     }
     if (previewPre.style.display !== 'none') updatePreview();
   }
@@ -1264,10 +1348,12 @@ function buildMusicianForm() {
     if (!open) updatePreview();
   });
 
-  // ADR-145 D1: stage into patch bundle instead of downloading per-entity file
+  // ADR-145 D1 / ADR-147: stage into patch bundle (add = new node, edit = patch op)
   addPatchBtn.addEventListener('click', () => {
     const { nodeJson, newEdges } = generateMusicianJson(win);
-    addToBundle('musicians', nodeJson);
+    if (!isEdit || Object.keys(nodeJson.fields || {}).length > 0) {
+      addToBundle('musicians', nodeJson);
+    }
     newEdges.forEach(e => addToBundle('edges', e));
     showMusicianPatchSuccess(win, nodeJson.id, newEdges.length);
   });
@@ -1308,10 +1394,25 @@ function buildEdgeChipSection(containerEl, direction, formWin) {
 
   function addChip(data) {
     const chip = document.createElement('span');
-    chip.className = 'ef-edge-chip';
-    chip.style.cssText = 'display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;background:var(--bg-input);border:1px solid var(--border-strong);font-size:0.72rem;max-width:130px;overflow:hidden;user-select:none;cursor:pointer;';
+    chip.className = 'ef-edge-chip musician-chip';
+    // Apply era tint + instrument badge from the referenced musician node
+    const otherNode = (graphData.nodes || []).find(n => n.id === data.otherId);
+    if (otherNode && typeof THEME !== 'undefined' && typeof THEME.eraTintCss === 'function') {
+      const tint = THEME.eraTintCss(otherNode.era || null);
+      chip.style.setProperty('--chip-era-bg', tint.bg);
+      chip.style.setProperty('--chip-era-border', tint.border);
+    } else {
+      chip.style.setProperty('--chip-era-bg', 'var(--bg-input)');
+      chip.style.setProperty('--chip-era-border', 'var(--border-strong)');
+    }
+    chip.style.maxWidth = '160px';
+    chip.style.overflow = 'hidden';
+    if (data._prefilled) chip.style.opacity = '0.75';
     chip.title = 'Double-click to edit edge details';
     chip._edgeData = { ...data };
+    if (otherNode && otherNode.instrument && typeof makeInstrBadge === 'function') {
+      chip.appendChild(makeInstrBadge(otherNode.instrument, 11));
+    }
 
     const nameSpan = document.createElement('span');
     nameSpan.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
@@ -1832,7 +1933,7 @@ function addEdgeBlock(container, direction, formWin, prefillData = null) {
 }
 
 // ── generateMusicianJson ──────────────────────────────────────────────────────
-// ADR-145: born/died removed from form; edges collected from chip rows.
+// ADR-145 / ADR-147: edges from chip rows; born/died inline; edit mode → patch op.
 
 function generateMusicianJson(win) {
   const id      = win.querySelector('#ef_mus_id')           ? win.querySelector('#ef_mus_id').value.trim()           : '';
@@ -1840,8 +1941,11 @@ function generateMusicianJson(win) {
   const era     = win.querySelector('#ef_mus_era')          ? win.querySelector('#ef_mus_era').value                 : '';
   const instr   = win.querySelector('#ef_mus_instr')        ? win.querySelector('#ef_mus_instr').value               : '';
   const srcUrl  = win.querySelector('#ef_mus_source_url')   ? win.querySelector('#ef_mus_source_url').value.trim()   : '';
+  const bornRaw = win.querySelector('#ef_mus_born')         ? win.querySelector('#ef_mus_born').value                : '';
+  const diedRaw = win.querySelector('#ef_mus_died')         ? win.querySelector('#ef_mus_died').value                : '';
+  const born    = bornRaw ? parseInt(bornRaw, 10) : null;
+  const died    = diedRaw ? parseInt(diedRaw, 10) : null;
   const inferred = inferSource(srcUrl);
-  // ADR-097 §5 + ADR-145: bani and born/died removed from create form.
   const bani    = '';
 
   // YouTube entries
@@ -1877,6 +1981,36 @@ function generateMusicianJson(win) {
     .map(b => b.dataset.trad).filter(Boolean);
   if (!traditions.length) traditions.push('carnatic');
 
+  // ADR-147: detect edit mode via hidden prefill-id input
+  const prefillId = win.querySelector('#ef_mus_prefill_id') ? win.querySelector('#ef_mus_prefill_id').value : '';
+  if (prefillId) {
+    // EDIT MODE: produce patch item — only changed fields
+    const origNode = (graphData.nodes || []).find(n => n.id === prefillId) || {};
+    const fields = {};
+    if (label !== (origNode.label || ''))          fields.label      = label;
+    if (born  !== (origNode.born  || null))        fields.born       = born;
+    if (died  !== (origNode.died  || null))        fields.died       = died;
+    if (era   !== (origNode.era   || ''))          fields.era        = era;
+    if (instr !== (origNode.instrument || ''))     fields.instrument = instr;
+    const origTrad = (origNode.traditions || ['carnatic']).slice().sort();
+    if (JSON.stringify([...traditions].sort()) !== JSON.stringify(origTrad)) fields.traditions = traditions;
+
+    // Only non-prefilled chips become new edges
+    const newEdges = [];
+    win.querySelectorAll('#ef_mus_edges .ef-edge-chip-row').forEach(row => {
+      const direction = row.dataset.direction;
+      row.querySelectorAll('.ef-edge-chip').forEach(chip => {
+        const d = chip._edgeData;
+        if (!d || !d.otherId || d._prefilled) return;
+        const source = direction === 'guru' ? d.otherId : prefillId;
+        const target = direction === 'guru' ? prefillId : d.otherId;
+        newEdges.push({ source, target, confidence: d.confidence != null ? d.confidence : 0.90, source_url: d.source_url || null, note: d.note || null });
+      });
+    });
+    return { nodeJson: { op: 'patch', id: prefillId, fields }, newEdges };
+  }
+
+  // ADD MODE
   const nodeJson = {
     id,
     label,
@@ -1884,11 +2018,13 @@ function generateMusicianJson(win) {
     era,
     instrument: instr,
     traditions,
+    born,
+    died,
     bani: bani || null,
     youtube,
   };
 
-  // Edges — collected from chip rows (ADR-145 D3)
+  // Edges — all chips (no prefilled in add mode)
   const newEdges = [];
   win.querySelectorAll('#ef_mus_edges .ef-edge-chip-row').forEach(row => {
     const direction = row.dataset.direction;
@@ -6198,10 +6334,10 @@ function openEditMusicianForm(nodeId) {
   const node = (graphData.nodes || []).find(n => n.id === nodeId);
   if (!node) {
     // Fallback: open empty add form if node not found
-    buildAddMusicianForm();
+    buildMusicianForm();
     return;
   }
-  buildAddMusicianForm({ prefill: node });
+  buildMusicianForm({ prefill: node });
 }
 
 // ── Add YouTube Recording for a specific Composition ─────────────────────────
