@@ -4695,6 +4695,101 @@ function _openGenericEditForm(entityType, id) {
     body.appendChild(stageNoteBtn);
   }
 
+  // ── APPEND SEGMENT (recording only) ───────────────────────────────────────
+  if (entityType === 'recording' && spec.appendable.indexOf('segments') >= 0) {
+    body.appendChild(efSection('Append Segment'));
+
+    // Offset time inputs (H:M:S)
+    const timeWrap = document.createElement('div');
+    timeWrap.style.cssText = 'display:flex;gap:6px;align-items:center;';
+    function _numInp(ph, w) {
+      const i = document.createElement('input');
+      i.type = 'number'; i.min = '0'; i.className = 'ef-input';
+      i.placeholder = ph; i.style.width = w || '64px'; i.style.textAlign = 'center';
+      return i;
+    }
+    const hInp = _numInp('HH', '56px');
+    const mInp = _numInp('MM', '56px');
+    const sInp = _numInp('SS', '56px');
+    [document.createTextNode('h '), hInp, document.createTextNode(' m '), mInp,
+     document.createTextNode(' s '), sInp].forEach(n => timeWrap.appendChild(n));
+    body.appendChild(efRow('Start time', false, 'HH MM SS offset into video', timeWrap));
+
+    const segCompOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+    const segCbComp   = efCombobox(null, segCompOpts, 'composition', win);
+    body.appendChild(efRow('Composition', false, '', segCbComp));
+
+    const segRagaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
+    const segCbRaga   = efCombobox(null, segRagaOpts, 'raga', win);
+    body.appendChild(efRow('Raga', false, '', segCbRaga));
+
+    const segTalaOpts = (window.talaData || []).map(t => ({ value: t.id, label: t.label || t.id }));
+    const segTalaSel  = efCombobox(null, segTalaOpts, 'tala', win, { freeText: true });
+    body.appendChild(efRow('Tala', false, '', segTalaSel));
+
+    const segTitleInp = document.createElement('input');
+    segTitleInp.type = 'text'; segTitleInp.className = 'ef-input';
+    segTitleInp.placeholder = 'e.g. Alapana in Bhairavi';
+    body.appendChild(efRow('Display title', false, '', segTitleInp));
+
+    const stageSegBtn = document.createElement('button');
+    stageSegBtn.className = 'ef-download-btn';
+    stageSegBtn.type = 'button';
+    stageSegBtn.textContent = '+ Stage Segment \u2192 bundle';
+    stageSegBtn.style.marginTop = '6px';
+    stageSegBtn.addEventListener('click', function () {
+      const h = parseInt(hInp.value, 10) || 0;
+      const m = parseInt(mInp.value, 10) || 0;
+      const s = parseInt(sInp.value, 10) || 0;
+      const hasTime = hInp.value !== '' || mInp.value !== '' || sInp.value !== '';
+      const compId  = segCbComp.getValue();
+      const ragaId  = segCbRaga.getValue();
+      const tala    = segTalaSel.getValue();
+      const title   = segTitleInp.value.trim();
+      if (!hasTime && !compId && !ragaId && !title) return;
+      const value = { offset_seconds: h * 3600 + m * 60 + s };
+      if (compId)  value.composition_id  = compId;
+      if (ragaId)  value.raga_id         = ragaId;
+      if (tala)    value.tala            = tala;
+      if (title)   value.display_title   = title;
+      addToBundle('recordings', { op: 'append', id: id, array: 'segments', value: value });
+      const orig = stageSegBtn.textContent;
+      stageSegBtn.textContent = '\u2713 Staged';
+      setTimeout(function () { stageSegBtn.textContent = orig; }, 1400);
+    });
+    body.appendChild(stageSegBtn);
+  }
+
+  // ── APPEND PERFORMER (recording only) ─────────────────────────────────────
+  if (entityType === 'recording' && spec.appendable.indexOf('performers') >= 0) {
+    body.appendChild(efSection('Append Performer'));
+
+    const perfMusOpts = (graphData.musicians || []).map(m => ({ value: m.id, label: m.label || m.id }));
+    const perfCbMus   = efCombobox(null, perfMusOpts, 'musician', win);
+    body.appendChild(efRow('Musician', true, '', perfCbMus));
+
+    const perfRoleOpts = (window.PERFORMER_ROLES || ['vocal', 'violin', 'mridangam'])
+      .map(function (r) { return typeof r === 'string' ? { value: r, label: r } : r; });
+    const perfCbRole = efCombobox(null, perfRoleOpts, null, win, { freeText: true });
+    body.appendChild(efRow('Role', true, '', perfCbRole));
+
+    const stagePerfBtn = document.createElement('button');
+    stagePerfBtn.className = 'ef-download-btn';
+    stagePerfBtn.type = 'button';
+    stagePerfBtn.textContent = '+ Stage Performer \u2192 bundle';
+    stagePerfBtn.style.marginTop = '6px';
+    stagePerfBtn.addEventListener('click', function () {
+      const musId = perfCbMus.getValue();
+      const role  = perfCbRole.getValue();
+      if (!musId || !role) return;
+      addToBundle('recordings', { op: 'append', id: id, array: 'performers', value: { musician_id: musId, role: role } });
+      const orig = stagePerfBtn.textContent;
+      stagePerfBtn.textContent = '\u2713 Staged';
+      setTimeout(function () { stagePerfBtn.textContent = orig; }, 1400);
+    });
+    body.appendChild(stagePerfBtn);
+  }
+
   // ── Reminder: download the patch file ────────────────────────────────────
   const hint = document.createElement('p');
   hint.style.cssText = 'margin:14px 0 4px;font-size:0.73rem;color:var(--fg-muted);line-height:1.4;';
