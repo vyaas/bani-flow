@@ -413,6 +413,8 @@ function _buildMusicianChipForFooter(nodeId, artistName) {
   chip.className = 'musician-chip';
   chip.style.setProperty('--chip-era-bg',     tint.bg);
   chip.style.setProperty('--chip-era-border', tint.border);
+  // ADR-142 §1: entity chip for the musician (player footer)
+  if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'musician', nodeId);
   // ADR-069: instrument badge
   if (nodeId && typeof cy !== 'undefined' && typeof makeInstrBadge === 'function') {
     const instrKey = (node && node.length) ? node.data('instrument') : null;
@@ -743,6 +745,11 @@ function buildComposerChip(compositionId) {
   chip.className = 'composer-chip';
   chip.textContent = composerObj.name;
 
+  // ADR-142 §1: composer-chip is an entity chip for the musician
+  if (typeof applyChipRole === 'function') {
+    applyChipRole(chip, 'entity', 'musician', composerObj.musician_node_id || '');
+  }
+
   const eraId = composerObj.musician_node_id
     ? (cy.getElementById(composerObj.musician_node_id).data('era') || null)
     : null;
@@ -796,6 +803,8 @@ function buildLecdemChip(ref) {
   chip.textContent = ref.label || 'Lecture-Demo';
   chip.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
   chip.dataset.videoId = ref.video_id;
+  // ADR-142 §1: lecdem chip is an entity chip for the recording
+  if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'recording', ref.video_id);
   chip.addEventListener('click', e => {
     e.stopPropagation();
     chip.classList.add('chip-tapped');
@@ -889,6 +898,8 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
     mchip.style.setProperty('--chip-era-border', tint.border);
     mchip.textContent = name;
     mchip.title = name + ' — Open Musician panel';
+    // ADR-142 §1: lecdem-subject musician chip is an entity chip
+    if (typeof applyChipRole === 'function') applyChipRole(mchip, 'entity', 'musician', musicianId);
     mchip.addEventListener('click', e => {
       e.stopPropagation();
       mchip.classList.add('chip-tapped');
@@ -1011,6 +1022,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     chip.className = 'musician-chip chip-secondary';
     chip.style.setProperty('--chip-era-bg', tint.bg);
     chip.style.setProperty('--chip-era-border', tint.border);
+    // ADR-142 §1: co-performer chip is an entity chip for the musician
+    if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'musician', pf.musicianId || '');
     // ADR-069: instrument badge
     if (pf.musicianId && typeof makeInstrBadge === 'function') {
       const instrKey = cy.getElementById(pf.musicianId).data('instrument');
@@ -1860,6 +1873,8 @@ function buildRecordingsList(nodeId, nodeData) {
     const lsHdrChip = document.createElement('span');
     lsHdrChip.className = 'lecdem-chip chip-section-hdr';
     lsHdrChip.textContent = 'Lecdems';
+    // ADR-142 §1: LECDEMS section-header chip (Add Lecdem on dblclick — Phase B)
+    if (typeof applyChipRole === 'function') applyChipRole(lsHdrChip, 'section-header', 'recording');
     const { sectionEl: lsSection, bodyEl: lsBody } = buildSection({
       headerChip: lsHdrChip,
       count: lecdemCount,
