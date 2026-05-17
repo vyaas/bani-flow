@@ -1268,6 +1268,7 @@ function _openMusicianPanelForTransit(transitId) {
   }
   nameChip.appendChild(document.createTextNode(d.label || transitId));
   nameEl.appendChild(nameChip);
+  if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', transitId);
 
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
