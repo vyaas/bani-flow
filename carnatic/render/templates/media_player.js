@@ -998,9 +998,11 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   titleRow.className = 'concert-title-row';
 
   const titleSpan = document.createElement('span');
-  titleSpan.className = 'concert-title';
+  titleSpan.className = 'concert-title recording-chip';
   titleSpan.textContent = concert.short_title || concert.title;
   if (concert.title) titleSpan.title = concert.title;
+  if (concert.recording_id && typeof applyChipRole === 'function')
+    applyChipRole(titleSpan, 'entity', 'recording', concert.recording_id);
 
   const dateSpan = document.createElement('span');
   dateSpan.className = 'concert-date';
@@ -1510,9 +1512,11 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
   } else {
     const labelText = p.display_title || p.short_title || p.title || 'Untitled';
     const labelSpan = document.createElement('span');
-    labelSpan.className = 'yt-label-chip';
+    labelSpan.className = 'yt-label-chip recording-chip';
     labelSpan.textContent = labelText;
     labelSpan.title = labelText;
+    if (p.video_id && typeof applyChipRole === 'function')
+      applyChipRole(labelSpan, 'entity', 'recording', p.video_id);
     chipsDiv.appendChild(labelSpan);
   }
 
@@ -1594,9 +1598,11 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     row.className = 'trail-row2';
 
     const labelSpan = document.createElement('span');
-    labelSpan.className = 'lecdem-label-chip';
+    labelSpan.className = 'lecdem-label-chip recording-chip';
     labelSpan.textContent = ref.label || 'Lecture-Demo';
     labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+    if (ref.video_id && typeof applyChipRole === 'function')
+      applyChipRole(labelSpan, 'entity', 'recording', ref.video_id);
     row.appendChild(labelSpan);
 
     const actsDiv = document.createElement('div');
@@ -1677,8 +1683,10 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   titleRow.className = 'concert-title-row';
 
   const titleSpan = document.createElement('span');
-  titleSpan.className = 'concert-title lecdem-title';
+  titleSpan.className = 'concert-title lecdem-title recording-chip';
   titleSpan.textContent = ref.label || 'Lecture-Demo';
+  if (ref.video_id && typeof applyChipRole === 'function')
+    applyChipRole(titleSpan, 'entity', 'recording', ref.video_id);
   titleRow.appendChild(titleSpan);
 
   if (ref.year) {

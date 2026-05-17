@@ -38,7 +38,7 @@ function _updateBundleBtn() {
   if (!btn) return;
   const prevTotal = parseInt(btn.dataset.prevTotal || '0', 10);
   const total = Object.values(baniBundle).reduce((s, arr) => s + arr.length, 0);
-  btn.textContent = `⬇ Bundle (${total} item${total === 1 ? '' : 's'})`;
+  btn.textContent = `⬇ Patch (${total} op${total === 1 ? '' : 's'})`;
   btn.disabled = total === 0;
   btn.classList.toggle('entry-btn-active', total > 0);
   // ADR-129 D2: pulse animation when first item is added
@@ -4498,24 +4498,211 @@ function _inferPerformerRole(instrument) {
   return ROLE_OPTIONS.find(r => instr.includes(r)) || 'vocal';
 }
 
-// ADR-104 Track A stub / ADR-108 rewire.
-// Musician type is now handled by openEditMusicianForm (ADR-108).
-// Other entity types retain the coming-soon stub until their edit forms ship.
+// ADR-097 Phase C / ADR-142 chip-as-object dispatch.
+// Musician type delegates to openEditMusicianForm (ADR-108, richer form).
+// Raga / composition / recording / edge use the generic patch form below,
+// driven by window.editFormSpec (ADR-143 §4).
 function openEditForm({ entityType, id } = {}) {
   if (entityType === 'musician' && id) {
     openEditMusicianForm(id);
     return;
   }
-  const LABELS = { musician: 'Musician', raga: 'Raga', comp: 'Composition', composer: 'Composer' };
-  const typeLabel = LABELS[entityType] || 'Entity';
-  const win = createEntryWindow('Edit ' + typeLabel);
+  return _openGenericEditForm(entityType, id);
+}
+
+// ── Generic patch / annotate form (ADR-097 Phase C) ──────────────────────────
+// Renders a PATCH FIELD block and (when annotatable) an ADD NOTE block.
+// Entity data is read from graphData; ops are staged into baniBundle.
+function _openGenericEditForm(entityType, id) {
+  // ── entity-type config ────────────────────────────────────────────────────
+  const ENTITY_CONFIG = {
+    raga: {
+      bucket:  'ragas',
+      lookup:  () => (graphData.ragas || []).find(r => r.id === id),
+      labelFn: e  => e.name  || id,
+      chipClass: 'raga-chip',
+    },
+    comp: {
+      bucket:  'compositions',
+      lookup:  () => (graphData.compositions || []).find(c => c.id === id),
+      labelFn: e  => e.title || id,
+      chipClass: 'comp-chip',
+    },
+    composition: {
+      bucket:  'compositions',
+      lookup:  () => (graphData.compositions || []).find(c => c.id === id),
+      labelFn: e  => e.title || id,
+      chipClass: 'comp-chip',
+    },
+    recording: {
+      bucket:  'recordings',
+      lookup:  () => (graphData.recordings || []).find(r => r.id === id),
+      labelFn: e  => e.short_title || e.title || id,
+      chipClass: 'neutral-chip',
+    },
+    edge: {
+      bucket:  'edges',
+      lookup:  () => (graphData.edges || []).find(
+                 e => (e.source + '__' + e.target) === id || e.id === id),
+      labelFn: e  => (e.source || '') + ' \u2192 ' + (e.target || ''),
+      chipClass: 'lineage-chip',
+    },
+  };
+
+  const config = ENTITY_CONFIG[entityType];
+  if (!config) {
+    const win = createEntryWindow('Edit');
+    if (!win) return null;
+    const body = win.querySelector('.ew-body');
+    const msg = document.createElement('p');
+    msg.style.cssText = 'margin:12px 0;font-size:0.82rem;color:var(--fg-muted);';
+    msg.textContent = 'Edit form not available for entity type: ' + entityType;
+    body.appendChild(msg);
+    return win;
+  }
+
+  // Resolve entity and spec
+  const spec      = (window.editFormSpec || {})[entityType] ||
+                    (entityType === 'comp' ? (window.editFormSpec || {}).composition : null) ||
+                    { patchable: [], appendable: [], annotatable: false };
+  const entity    = config.lookup();
+  const entityLabel = entity ? config.labelFn(entity) : id;
+
+  const win  = createEntryWindow('Edit \u2014 ' + entityLabel);
   if (!win) return null;
-  const body = win.querySelector('.ew-body');
-  const msg = document.createElement('p');
-  msg.style.cssText = 'margin:12px 0; font-size:0.82rem; color:var(--fg-muted); line-height:1.5;';
-  msg.innerHTML = '<strong style="color:var(--fg)">Edit form coming with ADR-097\u00a0Phase\u00a0C.</strong><br>'
-    + 'Use the + chips on each panel to add new entries in the meantime.';
-  body.appendChild(msg);
+  const body   = win.querySelector('.ew-body');
+  const footer = win.querySelector('.ew-footer');
+
+  // ── Entity identity badge ─────────────────────────────────────────────────
+  const badge = document.createElement('span');
+  badge.className = config.chipClass + ' chip';
+  badge.style.cssText = 'display:inline-block;margin-bottom:10px;cursor:default;pointer-events:none;';
+  badge.textContent = entityLabel;
+  body.appendChild(badge);
+
+  if (!entity) {
+    const warn = document.createElement('p');
+    warn.style.cssText = 'font-size:0.8rem;color:var(--fg-muted);margin:6px 0 12px;';
+    warn.textContent = 'Entity \u201c' + id + '\u201d not found in loaded graph data. '
+      + 'Run bani-render to refresh, or add it first via the \u201c+\u201d chips.';
+    body.appendChild(warn);
+    return win;
+  }
+
+  // ── Current field values (read-only summary) ──────────────────────────────
+  if (spec.patchable.length > 0) {
+    const summary = document.createElement('div');
+    summary.style.cssText = 'margin-bottom:10px;padding-bottom:10px;'
+      + 'border-bottom:1px solid var(--border);font-size:0.74rem;color:var(--fg-muted);';
+    let hasAny = false;
+    spec.patchable.forEach(field => {
+      const val = entity[field];
+      if (val === undefined || val === null || val === '') return;
+      hasAny = true;
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:6px;margin:2px 0;';
+      const k = document.createElement('span');
+      k.style.cssText = 'font-weight:600;min-width:88px;flex-shrink:0;';
+      k.textContent = field;
+      const v = document.createElement('span');
+      v.style.cssText = 'word-break:break-all;';
+      v.textContent   = String(val);
+      row.appendChild(k);
+      row.appendChild(v);
+      summary.appendChild(row);
+    });
+    if (hasAny) body.appendChild(summary);
+  }
+
+  // ── PATCH FIELD ───────────────────────────────────────────────────────────
+  if (spec.patchable.length > 0) {
+    body.appendChild(efSection('Patch Field'));
+
+    const fieldSel = efSelect('ef_patch_field_' + entityType,
+      spec.patchable.map(f => ({ value: f, label: f })), false);
+    fieldSel.style.width = '100%';
+    body.appendChild(efRow('Field', true, '', fieldSel));
+
+    const valueInput = document.createElement('input');
+    valueInput.type        = 'text';
+    valueInput.className   = 'ef-input';
+    valueInput.placeholder = 'new value';
+    body.appendChild(efRow('New value', true, '', valueInput));
+
+    // Auto-fill value input when field changes
+    fieldSel.addEventListener('change', () => {
+      const fv = fieldSel.value;
+      valueInput.value = (fv && entity[fv] != null) ? String(entity[fv]) : '';
+    });
+    // Seed with first field
+    if (spec.patchable[0]) {
+      fieldSel.value = spec.patchable[0];
+      fieldSel.dispatchEvent(new Event('change'));
+    }
+
+    const stagePatchBtn = document.createElement('button');
+    stagePatchBtn.className   = 'ef-download-btn';
+    stagePatchBtn.type        = 'button';
+    stagePatchBtn.textContent = '+ Stage Patch \u2192 bundle';
+    stagePatchBtn.style.marginTop = '6px';
+    stagePatchBtn.addEventListener('click', () => {
+      const field = fieldSel.value;
+      if (!field) { return; }
+      const value = valueInput.value.trim();
+      addToBundle(config.bucket, { op: 'patch', id, field, value });
+      const orig = stagePatchBtn.textContent;
+      stagePatchBtn.textContent = '\u2713 Staged';
+      setTimeout(() => { stagePatchBtn.textContent = orig; }, 1400);
+    });
+    body.appendChild(stagePatchBtn);
+  }
+
+  // ── ADD NOTE ──────────────────────────────────────────────────────────────
+  if (spec.annotatable) {
+    body.appendChild(efSection('Add Note'));
+
+    const noteTA = document.createElement('textarea');
+    noteTA.className   = 'ef-input';
+    noteTA.placeholder = 'note text\u2026';
+    noteTA.rows        = 3;
+    noteTA.style.cssText = 'width:100%;resize:vertical;box-sizing:border-box;';
+    body.appendChild(efRow('Note', false, '', noteTA));
+
+    const noteUrl = document.createElement('input');
+    noteUrl.type        = 'url';
+    noteUrl.className   = 'ef-input';
+    noteUrl.placeholder = 'https://\u2026 (optional source URL)';
+    body.appendChild(efRow('Source URL', false, '', noteUrl));
+
+    const stageNoteBtn = document.createElement('button');
+    stageNoteBtn.className   = 'ef-download-btn';
+    stageNoteBtn.type        = 'button';
+    stageNoteBtn.textContent = '+ Stage Note \u2192 bundle';
+    stageNoteBtn.style.marginTop = '6px';
+    stageNoteBtn.addEventListener('click', () => {
+      const text = noteTA.value.trim();
+      if (!text) return;
+      const item = { op: 'annotate', id, text };
+      const src  = noteUrl.value.trim();
+      if (src) item.source_url = src;
+      addToBundle(config.bucket, item);
+      const orig = stageNoteBtn.textContent;
+      stageNoteBtn.textContent = '\u2713 Staged';
+      noteTA.value   = '';
+      noteUrl.value  = '';
+      setTimeout(() => { stageNoteBtn.textContent = orig; }, 1400);
+    });
+    body.appendChild(stageNoteBtn);
+  }
+
+  // ── Reminder: download the patch file ────────────────────────────────────
+  const hint = document.createElement('p');
+  hint.style.cssText = 'margin:14px 0 4px;font-size:0.73rem;color:var(--fg-muted);line-height:1.4;';
+  hint.innerHTML = 'After staging, click <strong>\u2b07 Patch</strong> to download '
+    + '<code>bani_add_bundle.json</code>, then run <code>bani-add bani_add_bundle.json</code> '
+    + 'and <code>bani-render</code> to apply.';
+  body.appendChild(hint);
+
   return win;
 }
 // Called from the + chip on the Janyas panel header.

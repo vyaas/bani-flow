@@ -1832,6 +1832,7 @@
      (graph_view.js) rely on absolute positioning from a higher ancestor; any
      `position` declaration on the chip itself becomes its own containing
      block and collapses overlay chips to document-flow positions. */
+  [data-chip-role][data-entity-type][data-entity-id] { cursor: pointer; }
   [data-chip-role][data-entity-type][data-entity-id]:hover {
     box-shadow: inset 0 0 0 1px var(--fg-muted, currentColor);
   }
@@ -4438,7 +4439,7 @@
 <button id="left-panel-toggle" title="Open / close Bani Flow panel"
         aria-pressed="false">&#9776; Bani Flow</button>
 <button id="bundle-download-btn" onclick="downloadBundle()" disabled
-        title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
+        title="Download patch file (bani_add_bundle.json)">&#x2B07; Patch (0 ops)</button>
 <button id="right-panel-toggle" title="Open / close Musician panel"
         aria-pressed="false">&#9776; Musician</button>
 
