@@ -13,7 +13,7 @@
 //   externalUrl      string (optional) — if present, renders encircled ↗ link
 //   externalLabel    string (optional) — tooltip for ext link
 //   onEdit           function (optional) — if present, renders encircled ✎ button
-function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLabel, onEdit } = {}) {
+function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLabel } = {}) {
   const root = document.createElement('div');
   root.className = 'panel-header-root';
 
@@ -36,19 +36,6 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
       sub.appendChild(subtitleContent);
     }
     row2.appendChild(sub);
-  }
-
-  if (typeof onEdit === 'function') {
-    const editBtn = document.createElement('button');
-    editBtn.type = 'button';
-    editBtn.className = 'co-edit-chip panel-hdr-edit-btn';
-    editBtn.title = 'Edit';
-    editBtn.textContent = '\u270e'; // ✎
-    editBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      onEdit(e);
-    });
-    row2.appendChild(editBtn);
   }
 
   if (externalUrl) {
@@ -79,7 +66,7 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 //   onAdd            function (optional) — if provided, renders a + button
 //   addTitle         string (optional) — tooltip for + button
 //   defaultCollapsed boolean (default false)
-function buildSection({ headerChip, headerSuffixText, count, onAdd, addTitle, defaultCollapsed = false } = {}) {
+function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCollapsed = false } = {}) {
   const sectionEl = document.createElement('section');
 
   const headerEl = document.createElement('div');
@@ -100,20 +87,6 @@ function buildSection({ headerChip, headerSuffixText, count, onAdd, addTitle, de
   if (headerSuffixText) labelWrap.appendChild(document.createTextNode(headerSuffixText));
   if (count != null) labelWrap.appendChild(document.createTextNode(' (' + count + ')'));
   headerEl.appendChild(labelWrap);
-
-  // + add button (optional)
-  if (typeof onAdd === 'function') {
-    const addBtn = document.createElement('button');
-    addBtn.type = 'button';
-    addBtn.className = 'co-add-chip';
-    addBtn.textContent = '+';
-    addBtn.title = addTitle || 'Add';
-    addBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      onAdd(e);
-    });
-    headerEl.appendChild(addBtn);
-  }
 
   sectionEl.appendChild(headerEl);
 

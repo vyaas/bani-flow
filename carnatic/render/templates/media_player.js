@@ -1633,19 +1633,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     });
     actsDiv.appendChild(playBtn);
 
-    if (typeof buildLecdemEditForm === 'function') {
-      const editBtn = document.createElement('button');
-      editBtn.className = 'rec-play-btn';
-      editBtn.title = 'Edit lecdem';
-      editBtn.textContent = '✎';
-      editBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;';
-      editBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        buildLecdemEditForm(ref, nodeId);
-      });
-      actsDiv.appendChild(editBtn);
-    }
-
     row.appendChild(actsDiv);
     return row;
   }
@@ -1711,20 +1698,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, 0, ref.label || 'Lecture-Demo', allTracks, { nodeId });
   });
   titleRow.appendChild(lecdemPlayBtn);
-
-  // ✎ edit button inline on the title row
-  if (typeof buildLecdemEditForm === 'function') {
-    const editBtn = document.createElement('button');
-    editBtn.className = 'rec-play-btn';
-    editBtn.title = 'Edit lecdem';
-    editBtn.textContent = '\u270E';
-    editBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
-    editBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      buildLecdemEditForm(ref, nodeId);
-    });
-    titleRow.appendChild(editBtn);
-  }
 
   headerBody.appendChild(titleRow);
   headerBody.appendChild(countDiv);
@@ -1886,8 +1859,6 @@ function buildRecordingsList(nodeId, nodeData) {
     const { sectionEl: lsSection, bodyEl: lsBody } = buildSection({
       headerChip: lsHdrChip,
       count: lecdemCount,
-      onAdd: function() { if (typeof openAddLecdemToMusicianForm === 'function') openAddLecdemToMusicianForm(nodeId); },
-      addTitle: 'Add lecdem recording for ' + artistLabel,
     });
     lsSection.classList.add('lecdem-section');
     lsSection.dataset.section = 'lecdems';
@@ -2041,8 +2012,6 @@ function buildRecordingsList(nodeId, nodeData) {
   const { sectionEl: concertSection, bodyEl: concertBody } = buildSection({
     headerChip: _concertsChip,
     count: concerts.length,
-    onAdd: function() { if (typeof openAddRecordingForm === 'function') openAddRecordingForm({ musicianId: nodeId }); },
-    addTitle: 'Add a new concert featuring ' + artistLabel,
   });
   concertSection.dataset.section = 'concerts';
   concerts.forEach(concert => {
@@ -2083,8 +2052,6 @@ function buildRecordingsList(nodeId, nodeData) {
   const { sectionEl: ragaSection, bodyEl: ragaBody } = buildSection({
     headerChip: _ragaHdrLabel,
     count: allPerfs.length,
-    onAdd: function() { if (typeof openAddYouTubeToMusicianForm === 'function') openAddYouTubeToMusicianForm(nodeId); },
-    addTitle: 'Add YouTube recording for ' + artistLabel,
   });
   ragaSection.dataset.section = 'raga-recordings';
   if (allPerfs.length > 0) {
@@ -2123,16 +2090,7 @@ function buildRecordingsList(nodeId, nodeData) {
     const { sectionEl: compSection, bodyEl: compBody } = buildSection({
       headerChip: _compsChip,
       count: composerComps.length,
-      onAdd: function() {
-        if (typeof openAddCompositionForm === 'function') {
-          if (composerForNode) {
-            openAddCompositionForm({ composerId: composerForNode.id });
-          } else {
-            openAddCompositionForm({ musicianId: nodeId });
-          }
-        }
-      },
-      addTitle: compAddTitle,
+    });
     });
     compSection.classList.add('comp-section');
 
