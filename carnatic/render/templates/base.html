@@ -1823,6 +1823,25 @@
     text-decoration: underline;
   }
 
+  /* ── ADR-142 §1 Phase δ: edit-gesture affordance ──
+     Any chip carrying both data-entity-type and data-entity-id is double-click
+     editable (see chip_dblclick.js). On hover we show a tiny ✎ glyph and an
+     inset outline so users can discover the gesture without docs. Chips
+     without data-entity-id (preface chips, section headers) are unaffected. */
+  [data-chip-role][data-entity-type][data-entity-id] {
+    position: relative;
+  }
+  [data-chip-role][data-entity-type][data-entity-id]:hover {
+    box-shadow: inset 0 0 0 1px var(--fg-muted, currentColor);
+  }
+  [data-chip-role][data-entity-type][data-entity-id]:hover::after {
+    content: " ✎";
+    font-size: 0.85em;
+    opacity: 0.55;
+    margin-left: 2px;
+    pointer-events: none;
+  }
+
   /* ── ADR-057: Composer chip — same shape as musician-chip,
      but uses ♯ glyph to mark "composer (compositions, not recordings)".  */
   .composer-chip {
