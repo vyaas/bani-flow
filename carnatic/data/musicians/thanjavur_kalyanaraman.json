@@ -16,5 +16,13 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/7zO9tCyeQyI",
+      "label": "Kanakangaka Sukha Guha · Kanakāngi · adi",
+      "composition_id": "kanakangaka_sukha_guha",
+      "raga_id": "kanakangi",
+      "tala": "adi"
+    }
+  ]
 }

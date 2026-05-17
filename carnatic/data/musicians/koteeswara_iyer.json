@@ -1,6 +1,6 @@
 {
   "id": "koteeswara_iyer",
-  "label": "Harikesanallur Koteeswara Iyer",
+  "label": "Koteeswara Iyer",
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Koteeswara_Iyer",
@@ -8,8 +8,8 @@
       "type": "wikipedia"
     }
   ],
-  "born": 1870,
-  "died": 1936,
+  "born": 1869,
+  "died": 1938,
   "era": "bridge",
   "instrument": null,
   "traditions": [
