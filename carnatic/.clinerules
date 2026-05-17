@@ -696,3 +696,7 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-16: ADR-141 proposes graduated ERA_LANE_CENTRE spacing (proportional to era density) rather than uniform 220 px steps; total contemporary lane shifts from 1100 to 1750 graph-space units — verify cy.fit() zoom-out is acceptable before accepting the ADR.
 [AGENTS: graph-architect]
+- 2026-05-17: ADR-142 chip-as-object: `applyChipRole(chip, role, entityType, entityId)` must be called at EVERY chip construction site — `tagUntaggedChips()` only sets `data-entity-type` from CSS class, never `data-entity-id`, so chips without `applyChipRole` are silently ignored by `chip_dblclick.js` even when their entity-type is correct.
+- 2026-05-17: Transit musicians (_openMusicianPanelForTransit) need the same `applyChipRole(nameChip, 'panel-title', 'musician', transitId)` call as selectNode() — they are not in the cy graph but are fully browsable via panel navigation; missing this call left them uneditable via double-click.
+- 2026-05-17: When removing an onAdd callback block from a buildSection() call with nested if/else inside the callback, check carefully for orphaned closing `});` — the multi-level nesting (buildSection → onAdd → if/else) leaves an extra }); that causes "Unexpected token ')'" at render time.
+[AGENTS: carnatic-coder]

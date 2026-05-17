@@ -1171,18 +1171,9 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
-  // ADR-128 D2: show affordances row (lifespan + wiki + edit) whenever a node is selected
+  // ADR-128 D2: show affordances row (lifespan + wiki) whenever a node is selected
   const _nodeAffordances = document.getElementById('node-header-affordances');
   if (_nodeAffordances) _nodeAffordances.style.display = '';
-  // ADR-104 Track A: show ✎ stub chip on musician panel header
-  const _editChip = document.getElementById('node-edit-chip');
-  if (_editChip) {
-    _editChip.style.display = 'inline-flex';
-    _editChip.onclick = function(e) {
-      e.stopPropagation();
-      if (typeof openEditForm === 'function') openEditForm({ entityType: 'musician', id: d.id });
-    };
-  }
   // ADR-086: subject loaded → dismiss empty-panel tutorial
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
@@ -1268,6 +1259,7 @@ function _openMusicianPanelForTransit(transitId) {
   }
   nameChip.appendChild(document.createTextNode(d.label || transitId));
   nameEl.appendChild(nameChip);
+  if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', transitId);
 
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
@@ -1285,14 +1277,6 @@ function _openMusicianPanelForTransit(transitId) {
   document.getElementById('edge-info').style.display = 'none';
   const _affordances = document.getElementById('node-header-affordances');
   if (_affordances) _affordances.style.display = '';
-  const _editChip = document.getElementById('node-edit-chip');
-  if (_editChip) {
-    _editChip.style.display = 'inline-flex';
-    _editChip.onclick = function (e) {
-      e.stopPropagation();
-      if (typeof openEditForm === 'function') openEditForm({ entityType: 'musician', id: transitId });
-    };
-  }
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
@@ -1781,8 +1765,6 @@ cy.on('tap', evt => {
   if (_lgPopBgTap) _lgPopBgTap.style.display = 'none';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
-  const _bgTapEditChip = document.getElementById('node-edit-chip');
-  if (_bgTapEditChip) { _bgTapEditChip.style.display = 'none'; _bgTapEditChip.onclick = null; }
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   // Note: era/instrument dropdown filters are intentionally NOT cleared on background tap —
@@ -1811,8 +1793,6 @@ window.clearMusicianPanel = function () {
   if (_lgPopReset) _lgPopReset.style.display = 'none';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
-  const _clearEditChip = document.getElementById('node-edit-chip');
-  if (_clearEditChip) { _clearEditChip.style.display = 'none'; _clearEditChip.onclick = null; }
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('musician');
   if (typeof clearAllChipFilters === 'function') clearAllChipFilters();
   if (typeof applyZoomLabels === 'function') applyZoomLabels();

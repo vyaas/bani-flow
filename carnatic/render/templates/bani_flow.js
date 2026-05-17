@@ -170,11 +170,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   // ADR-128 D2: hide affordances row on reset
   const _baniAffordancesReset = document.getElementById('bani-header-affordances');
   if (_baniAffordancesReset) _baniAffordancesReset.style.display = 'none';
-  // also clear edit button
-  const _baniEditBtnReset = document.getElementById('bani-subject-edit-btn');
-  if (_baniEditBtnReset) { _baniEditBtnReset.style.display = 'none'; _baniEditBtnReset.onclick = null; }
-  const subjectAddBtn = document.getElementById('bani-subject-add-btn');
-  if (subjectAddBtn) { subjectAddBtn.style.display = 'none'; subjectAddBtn.onclick = null; }
   document.getElementById('bani-subject-aliases-row').style.display = 'none';
   document.getElementById('bani-subject-aliases-row').textContent = '';
   document.getElementById('bani-janyas-row').style.display = 'none';
@@ -192,6 +187,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   // Reset subject name chip styling from previous call
   subjectName.className = '';
+  // ADR-142: clear stale entity attributes so a previous raga/comp navigation
+  // cannot bleed through to the next panel type (fixes comp→khamas confusion).
+  delete subjectName.dataset.chipRole;
+  delete subjectName.dataset.entityType;
+  delete subjectName.dataset.entityId;
   subjectIcon.style.display = '';
 
   if (type === 'comp') {
@@ -201,33 +201,13 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
     // Row 1: composition title styled as a .comp-chip — visually matches trail + right sidebar
     subjectName.className = 'comp-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(subjectName, 'panel-title', 'composition', id);
     subjectIcon.style.display = 'none';  // chip ::before provides the icon
     subjectName.textContent = comp ? comp.title : id;
     const compSrc = comp && comp.sources && comp.sources[0];
     if (compSrc) {
       subjectLink.href = compSrc.url;
       subjectLink.style.display = 'inline';
-    }
-    // ADR-128 D2: wire edit button for comp subject
-    const _compEditBtn = document.getElementById('bani-subject-edit-btn');
-    if (_compEditBtn) {
-      _compEditBtn.style.display = 'inline-flex';
-      _compEditBtn.onclick = function(e) {
-        e.stopPropagation();
-        if (typeof openEditForm === 'function') openEditForm({ entityType: 'comp', id: id });
-      };
-    }
-    if (subjectAddBtn && typeof openAddYouTubeFormForComposition === 'function') {
-      subjectAddBtn.style.display = '';
-      subjectAddBtn.title = 'Add a recording for ' + (comp ? comp.title : id);
-      subjectAddBtn.onclick = function() {
-        openAddYouTubeFormForComposition({
-          compositionId: id,
-          ragaId: raga ? raga.id : null,
-          compositionTitle: comp ? comp.title : id,
-          ragaLabel: raga ? raga.name : null,
-        });
-      };
     }
     // Notes section (ADR-097 §7)
     if (_notesRow && comp && Array.isArray(comp.notes) && comp.notes.length > 0) {
@@ -243,6 +223,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       // Rendered as a .raga-chip badge — uniform with all other raga occurrences
       const ragaBtn = document.createElement('span');
       ragaBtn.className = 'raga-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(ragaBtn, 'entity', 'raga', raga.id);
       ragaBtn.textContent = raga.name;
       ragaBtn.title = 'Explore ' + raga.name + ' in Bani Flow';
       ragaBtn.addEventListener('click', e => {
@@ -341,6 +322,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       if (perfRaga) {
         const ragaBtn = document.createElement('span');
         ragaBtn.className = 'raga-chip';
+        if (typeof applyChipRole === 'function') applyChipRole(ragaBtn, 'entity', 'raga', perfRaga.id);
         ragaBtn.textContent = perfRaga.name;
         ragaBtn.title = 'Explore ' + perfRaga.name + ' in Bani Flow';
         ragaBtn.addEventListener('click', e => {
@@ -403,6 +385,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     if (ytRaga) {
       const ytRagaBtn = document.createElement('span');
       ytRagaBtn.className = 'raga-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(ytRagaBtn, 'entity', 'raga', ytRaga.id);
       ytRagaBtn.textContent = ytRaga.name;
       ytRagaBtn.title = 'Explore ' + ytRaga.name + ' in Bani Flow';
       ytRagaBtn.addEventListener('click', e => {
@@ -435,13 +418,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     subjectName.textContent = raga ? raga.name : id;
     // ADR-142 §1: panel-title chip for the Raga panel
     if (typeof applyChipRole === 'function') applyChipRole(subjectName, 'panel-title', 'raga', id);
-    if (subjectAddBtn && typeof openAddYouTubeFormForRaga === 'function') {
-      subjectAddBtn.style.display = '';
-      subjectAddBtn.title = 'Add a recording for ' + (raga ? raga.name : id);
-      subjectAddBtn.onclick = function() {
-        openAddYouTubeFormForRaga({ ragaId: id, ragaLabel: raga ? raga.name : id });
-      };
-    }
     if (raga && raga.notes) {
       subjectName.title = raga.notes;          // hover tooltip
     } else {
@@ -457,16 +433,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       subjectLink.href = ragaSrc.url;
       subjectLink.style.display = 'inline';
     }
-    // ADR-128 D2: wire edit button for raga subject
-    const _ragaEditBtn = document.getElementById('bani-subject-edit-btn');
-    if (_ragaEditBtn) {
-      _ragaEditBtn.style.display = 'inline-flex';
-      _ragaEditBtn.onclick = function(e) {
-        e.stopPropagation();
-        if (typeof openEditForm === 'function') openEditForm({ entityType: 'raga', id: id });
-      };
-    }
-
     // Row 2 (#bani-subject-sub): structural position
     subjectSub.innerHTML = '';
     if (raga && raga.is_melakarta) {
@@ -491,6 +457,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       // Parent raga as a .raga-chip — uniform with all other raga occurrences
       const parentLink = document.createElement('span');
       parentLink.className = 'raga-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(parentLink, 'entity', 'raga', raga.parent_raga);
       parentLink.textContent = parentName;
       parentLink.title = 'Explore ' + parentName + ' in Bani Flow';
       parentLink.addEventListener('click', e => {
@@ -539,23 +506,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
       janyasRow.style.display = 'block';
 
-      // ADR-106: + chip to add a janya under this melakarta
-      // Remove any previously-appended + chips (re-entrant navigation accumulates them)
-      janyasRow.querySelectorAll('.co-add-chip').forEach(el => el.remove());
-      const janyasAddChip = document.createElement('button');
-      janyasAddChip.type = 'button';
-      janyasAddChip.className = 'co-add-chip';
-      janyasAddChip.textContent = '+';
-      janyasAddChip.title = 'Add a janya raga under ' + (raga.name || id);
-      janyasAddChip.style.marginLeft = 'auto';
-      janyasAddChip.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (typeof openAddRagaForm === 'function') {
-          openAddRagaForm({ parentRagaId: id, mela: raga.melakarta });
-        }
-      });
-      janyasRow.insertBefore(janyasAddChip, janyasPanel);
-
       if (janyas.length > 0) {
 
         // Render filtered list of janya links — each as a .raga-chip
@@ -573,6 +523,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             visible.forEach(j => {
               const chip = document.createElement('span');
               chip.className = 'raga-chip';
+              if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', j.id);
               chip.textContent = j.name || j.id;
               chip.title = 'Explore ' + (j.name || j.id) + ' in Bani Flow';
               chip.addEventListener('click', e => {
@@ -653,19 +604,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
           chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', herId); });
           herRow.appendChild(chip);
         });
-        // ADR-115 §3a: + button to add a new HER linked to this Carnatic raga
-        herRow.querySelectorAll('.co-add-chip').forEach(el => el.remove());
-        const herAddBtn = document.createElement('button');
-        herAddBtn.type = 'button';
-        herAddBtn.className = 'co-add-chip';
-        herAddBtn.textContent = '+';
-        herAddBtn.title = 'Add a Hindustani equivalent for ' + (raga.name || id);
-        // ADR-128: + appears immediately after the equivalents (no margin-left:auto)
-        herAddBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (typeof openAddRagaFormHER === 'function') openAddRagaFormHER(id);
-        });
-        herRow.appendChild(herAddBtn);
         herRow.style.display = 'flex';
         herRow.style.alignItems = 'center';
       } else if (raga && raga.tradition === 'hindustani') {
@@ -679,24 +617,12 @@ function buildListeningTrail(type, id, matchedNodeIds) {
           const chip = document.createElement('span');
           chip.className = 'raga-chip';
           chip.dataset.ragaId = cr.id;
+          if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', cr.id);
           chip.textContent = cr.name || cr.id;
           chip.title = 'Explore Carnatic equivalent: ' + (cr.name || cr.id);
           chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', cr.id); });
           herRow.appendChild(chip);
         });
-        // ADR-115 §3b: + button to add a new Carnatic raga linked to this HER
-        herRow.querySelectorAll('.co-add-chip').forEach(el => el.remove());
-        const ceAddBtn = document.createElement('button');
-        ceAddBtn.type = 'button';
-        ceAddBtn.className = 'co-add-chip';
-        ceAddBtn.textContent = '+';
-        ceAddBtn.title = 'Add a Carnatic equivalent raga';
-        // ADR-128: + appears immediately after the equivalents (no margin-left:auto)
-        ceAddBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (typeof openAddRagaFormCarnatic === 'function') openAddRagaFormCarnatic();
-        });
-        herRow.appendChild(ceAddBtn);
         herRow.style.display = 'flex';
         herRow.style.alignItems = 'center';
       }
@@ -1001,6 +927,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   if (showCompChip) {
     const compChip = document.createElement('span');
     compChip.className = 'comp-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(compChip, 'entity', 'composition', trailComp.id);
     compChip.textContent = trailComp.title;
     compChip.title = 'Explore ' + trailComp.title + ' in Bani Flow';
     compChip.addEventListener('click', e => {
@@ -1014,6 +941,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   if (showRagaChip) {
     const ragaChip = document.createElement('span');
     ragaChip.className = 'raga-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(ragaChip, 'entity', 'raga', trailRagaId);
     ragaChip.textContent = trailRaga.name;
     ragaChip.title = 'Explore ' + trailRaga.name + ' in Bani Flow';
     ragaChip.addEventListener('click', e => {
@@ -1300,6 +1228,7 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
       textDiv.className = 'tree-header-text';
       const compChip = document.createElement('span');
       compChip.className = 'comp-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(compChip, 'entity', 'composition', group.cid);
       compChip.textContent = group.comp.title;
       compChip.title = 'Explore ' + group.comp.title + ' in Bani Flow';
       compChip.addEventListener('click', function(e) {

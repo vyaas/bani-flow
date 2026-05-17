@@ -1832,6 +1832,7 @@
      (graph_view.js) rely on absolute positioning from a higher ancestor; any
      `position` declaration on the chip itself becomes its own containing
      block and collapses overlay chips to document-flow positions. */
+  [data-chip-role][data-entity-type][data-entity-id] { cursor: pointer; }
   [data-chip-role][data-entity-type][data-entity-id]:hover {
     box-shadow: inset 0 0 0 1px var(--fg-muted, currentColor);
   }
@@ -4265,9 +4266,6 @@
             <span id="bani-subject-name"></span>
             <!-- ADR-128 D2: affordances (edit + add + wiki) inlined right of name chip -->
             <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
-              <button id="bani-subject-edit-btn" class="co-edit-chip panel-hdr-edit-btn"
-                      title="Edit" style="display:none">&#9998;</button>
-              <button id="bani-subject-add-btn" class="co-add-chip" style="display:none" title="Add a recording">+</button>
               <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
                  target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
             </div>
@@ -4395,9 +4393,6 @@
           <!-- Row 2: lifespan + encircled edit + encircled wiki (ADR-128 D2) -->
           <div id="node-header-affordances" class="panel-header-affordances" style="display:none">
             <span id="node-lifespan"></span>
-            <!-- ADR-104 Track A / ADR-108: &#9998; chip rewired to openEditMusicianForm -->
-            <button id="node-edit-chip" class="co-edit-chip panel-hdr-edit-btn" title="Edit this musician"
-                    style="display:none">&#9998;</button>
             <a id="node-wiki-link" class="yt-ext-link panel-hdr-ext-link" href="#" target="_blank"
                style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
           </div>
@@ -4438,7 +4433,7 @@
 <button id="left-panel-toggle" title="Open / close Bani Flow panel"
         aria-pressed="false">&#9776; Bani Flow</button>
 <button id="bundle-download-btn" onclick="downloadBundle()" disabled
-        title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
+        title="Download patch file (bani_add_bundle.json)">&#x2B07; Patch (0 ops)</button>
 <button id="right-panel-toggle" title="Open / close Musician panel"
         aria-pressed="false">&#9776; Musician</button>
 
