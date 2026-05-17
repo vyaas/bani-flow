@@ -262,6 +262,10 @@ const cy = cytoscape({
     },
     { selector: '.faded',      style: { 'opacity': THEME.opacityFaded } },
     { selector: '.chip-faded', style: { 'opacity': THEME.opacityFaded } },
+    // Edges are invisible by default; override the generic .faded/.chip-faded rules
+    // (element+class specificity beats class-only, so these always win)
+    { selector: 'edge.faded',      style: { 'opacity': 0 } },
+    { selector: 'edge.chip-faded', style: { 'opacity': 0 } },
     // ADR-055: dim nodes that have no playable content (recordings or compositions)
     { selector: 'node[is_listenable = 0]', style: {
         'opacity': 0.25,

@@ -105,7 +105,7 @@ const THEME = (() => {
 
     // Opacity states
     opacityFaded: 0.12,             // faded elements during bani filter
-    opacityEdge:  0.75,             // default edge opacity
+    opacityEdge:  0,                // default edge opacity — invisible until node click
 
     // ── Level 2: Typography ────────────────────────────────────────────────
     // VS Code uses proportional sans-serif for UI chrome,
