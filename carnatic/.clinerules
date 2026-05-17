@@ -705,3 +705,6 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-17: ADR-145 CSS pencil-affordance: splitting the shared `.raga-chip.chip-panel-title, .comp-chip.chip-panel-title, .musician-chip.chip-panel-title:hover { outline:none; filter:none; }` rule into per-type rules is the correct pattern when only some chip types need to deviate — leaving raga/comp in the original rule and extracting musician/bani chips into a new ADR-145 block with `::after` pseudo-element is cleaner than modifying the shared rule.
 [AGENTS: graph-architect, carnatic-coder]
+- 2026-05-17: When a Narayana Teertha composition from the Krishna Leela Tarangini is performed in a raga different from the canonical textual setting (e.g. Shuddha Sarang instead of Surati/Kedaragaula), record the performed raga — the oral tradition can re-set a composition freely; the karnatik textbook raga is just one transmission.
+- 2026-05-17: Shuddha Sarang has no Wikipedia page; ragajunglism.org is a reliable secondary source — use it with source-type "other" following the CLAUDE.md rule for HER ragas without standalone Wikipedia articles.
+- 2026-05-17: Phalamanjari is a rare audava-vakra janya of Kharaharapriya (mela 22); the parent-raga field should point to the 22nd melakarta (`kharaharapriya`), not the cakra root.

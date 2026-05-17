@@ -4536,7 +4536,7 @@ function buildLecdemEditForm(ref, nodeId) {
   urlInp.value = 'https://www.youtube.com/watch?v=' + vid;
   urlInp.readOnly = true;
   urlInp.style.cssText = (urlInp.style.cssText || '') + ';opacity:0.6;cursor:default;';
-  body.appendChild(efRow('YouTube URL', false, 'read-only', urlInp));
+  body.appendChild(efRow('YouTube URL', false, null, urlInp));
 
   // ── Subjects ──────────────────────────────────────────────────────────────
   const subjectSep = document.createElement('hr');
@@ -4801,7 +4801,7 @@ function buildLecdemEditForm(ref, nodeId) {
   const stageBtn = document.createElement('button');
   stageBtn.type = 'button';
   stageBtn.className = 'ef-download-btn';
-  stageBtn.textContent = '↪ Stage changes → patch';
+  stageBtn.textContent = 'Update Patch';
   stageBtn.addEventListener('click', () => {
     let count = 0;
     // Stage new subjects (skip originals)
@@ -4829,10 +4829,10 @@ function buildLecdemEditForm(ref, nodeId) {
     });
     if (count > 0) {
       stageBtn.textContent = `✓ Staged ${count} item${count > 1 ? 's' : ''}!`;
-      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → patch'; }, 1800);
+      setTimeout(() => { stageBtn.textContent = 'Update Patch'; }, 1800);
     } else {
       stageBtn.textContent = '(no new items)';
-      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → patch'; }, 1200);
+      setTimeout(() => { stageBtn.textContent = 'Update Patch'; }, 1200);
     }
   });
   foot.appendChild(stageBtn);
