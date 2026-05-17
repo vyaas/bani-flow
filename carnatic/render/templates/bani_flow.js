@@ -154,6 +154,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   const trail = document.getElementById('listening-trail');
   const trailList = document.getElementById('trail-list');
   trailList.innerHTML = '';
+  const _baniScroll = document.getElementById('bani-scroll');
+  if (_baniScroll) _baniScroll.scrollTop = 0;
 
   // ── Subject header (ADR-020) ──────────────────────────────────────────────
   const subjectHeader = document.getElementById('bani-subject-header');
@@ -1221,12 +1223,6 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     primaryDiv.appendChild(versionBadge);
   }
 
-  // ▶ + ↗ on the same line as the artist chip, pushed to far right
-  const actsDiv = _buildPlayActsDiv(row);
-  actsDiv.style.marginLeft = 'auto';
-  actsDiv.style.flexShrink = '0';
-  primaryDiv.appendChild(actsDiv);
-
   // ── Context label: shown at top of leaf, above the artist row ───────────
   let labelText = '';
   if (!suppressArtist && !row.track.composition_id && row.track.label) {
@@ -1244,12 +1240,13 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
   }
 
   // ── Co-performers: chevron-right accordion ────────────────────────────────
-  // Chevron on the RIGHT keeps the artist name at position 0 for all rows,
-  // whether or not they have accompanists (no left-indent misalignment).
+  // Play button (trailingEl) always goes LAST in the header row — after the
+  // co-performer chevron when present — so all play buttons share one column.
+  const actsDiv = _buildPlayActsDiv(row);
   const cpChips = (row.coPerformers && row.coPerformers.length > 0)
     ? row.coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'raga', null); })
     : [];
-  const accordion = buildRowAccordion({ headerEl: primaryDiv, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right' });
+  const accordion = buildRowAccordion({ headerEl: primaryDiv, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right', trailingEl: actsDiv });
   accordion.classList.add('tree-leaf-coperformers-group');
   li.appendChild(accordion);
 
@@ -1291,21 +1288,9 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     li.classList.add('tree-group-open');
     if (isSingle) li.classList.add('tree-group-single');
 
-    // ── Group header ──────────────────────────────────────────────────────────
+    // ── Group header — always open, no chevron, no toggle ─────────────────
     const header = document.createElement('div');
     header.className = 'tree-group-header';
-
-    // Chevron always functional — groups start open, user clicks to collapse.
-    const chevron = document.createElement('span');
-    chevron.setAttribute('aria-hidden', 'true');
-    chevron.className = 'section-collapse-btn';
-    chevron.textContent = '\u25bc';  // open by default
-    header.style.cursor = 'pointer';
-    header.addEventListener('click', function() {
-      const opened = li.classList.toggle('tree-group-open');
-      chevron.textContent = opened ? '\u25bc' : '\u25b6';
-    });
-    header.appendChild(chevron);
 
     if (group.comp) {
       // Composition chip + composer chip stacked in tree-header-text
@@ -1328,7 +1313,7 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     }
     // no-comp: section header already says "Other recordings (N)" — no label needed
 
-    // Only append header for comp groups or multi-child no-comp groups (chevron toggle)
+    // Only append header for comp groups or multi-child no-comp groups
     if (group.comp || !isSingle) {
       li.appendChild(header);
     }
@@ -1432,10 +1417,24 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
     header.appendChild(buildArtistSpan(group, true, 'comp', null));
 
     if (isSingle) {
-      // Single-version: inline ▶ + ↗ pushed to the right
+      // Single-version: ▶ pushed to the right.
+      // For rows with co-performers, the play button is passed as trailingEl so
+      // it stays LAST (after the co-performer chevron) — keeping all play buttons
+      // in one column regardless of whether a chevron is present.
       const actsDiv = _buildPlayActsDiv(group.rows[0]);
-      actsDiv.style.marginLeft = 'auto';
-      header.appendChild(actsDiv);
+      const cpChips = (group.rows[0].coPerformers && group.rows[0].coPerformers.length > 0)
+        ? group.rows[0].coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'comp', null); })
+        : [];
+      if (cpChips.length > 0) {
+        li.appendChild(header);  // buildRowAccordion will move it
+        const accordion = buildRowAccordion({ headerEl: header, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right', trailingEl: actsDiv });
+        accordion.classList.add('tree-leaf-coperformers-group');
+        li.appendChild(accordion);
+      } else {
+        actsDiv.style.marginLeft = 'auto';
+        header.appendChild(actsDiv);
+        li.appendChild(header);
+      }
     } else {
       // Multi-version: whole header bar toggles; artist chip stopPropagation handles its own click
       const chevron = document.createElement('span');
@@ -1446,19 +1445,7 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
       header.addEventListener('click', function() {
         li.classList.toggle('tree-group-open');
       });
-    }
-
-    li.appendChild(header);
-
-    // ADR-070: when a single-version row carries accompanists, wrap the header
-    // in a row-accordion so the entire artist row is the click affordance.
-    // buildRowAccordion(headerEl: header) moves header out of li via appendChild,
-    // so we simply append the accordion (not replaceChild).
-    if (isSingle && group.rows[0].coPerformers && group.rows[0].coPerformers.length > 0) {
-      const cpChips = group.rows[0].coPerformers.map(function(cp) { return buildArtistSpan(cp, false, 'comp', null); });
-      const accordion = buildRowAccordion({ headerEl: header, bodyEls: cpChips, defaultCollapsed: true, chevronPosition: 'right' });
-      accordion.classList.add('tree-leaf-coperformers-group');
-      li.appendChild(accordion);
+      li.appendChild(header);
     }
 
     // ── Children (multi-version only) ─────────────────────────────────────────

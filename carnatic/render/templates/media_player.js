@@ -1056,6 +1056,27 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     titleRow.appendChild(addConcertSegBtn);
   }
 
+  // ▶ play-from-beginning button — opens the first track of the concert at 00:00:00
+  const _firstPerfVid = (() => {
+    for (const sess of concert.sessions) {
+      const sorted = sess.perfs.slice().sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0));
+      if (sorted.length) return sorted[0].video_id;
+    }
+    return null;
+  })();
+  if (_firstPerfVid) {
+    const concertPlayBtn = document.createElement('button');
+    concertPlayBtn.className = 'rec-play-btn play-btn-concert';
+    concertPlayBtn.title = 'Play from beginning: ' + (concert.short_title || concert.title || 'Concert');
+    concertPlayBtn.textContent = '\u25B6';
+    concertPlayBtn.style.cssText = 'margin-left:auto;flex-shrink:0;';
+    concertPlayBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openOrFocusPlayer(_firstPerfVid, concert.short_title || concert.title, artistLabel, 0, concert.short_title || concert.title, [], { nodeId });
+    });
+    titleRow.appendChild(concertPlayBtn);
+  }
+
   headerBody.appendChild(titleRow);
   if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
   headerBody.appendChild(countDiv);
@@ -1080,9 +1101,27 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       li.dataset.vid = p.video_id;
       // ADR-052: container is not a click target; navigation lives in embedded chips.
 
-      // Row 1: composition chip (navigable) or plain title for non-composition entries
-      const row1 = document.createElement('div');
-      row1.className = 'rec-row1';
+      // ── Raga chip row (top, no tala — matches tree-comp-node aesthetic) ────
+      const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
+      if (ragaObj) {
+        const ragaChip = document.createElement('span');
+        ragaChip.className = 'raga-chip';
+        ragaChip.textContent = ragaObj.name;
+        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+        ragaChip.addEventListener('click', e => {
+          e.stopPropagation();
+          ragaChip.classList.add('chip-tapped');
+          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+          triggerBaniSearch('raga', p.raga_id);
+        });
+        li.appendChild(ragaChip);
+      } else if (!p.raga_id && p.raga_id !== undefined) {
+        // no raga — nothing to show at top
+      }
+
+      // ── Composition chip + play button (tree-comp-header aesthetic) ─────────
+      const compHeader = document.createElement('div');
+      compHeader.className = 'tree-comp-header';
       if (p.composition_id) {
         const comp = compositions.find(c => c.id === p.composition_id);
         const compChip = document.createElement('span');
@@ -1095,16 +1134,18 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('comp', p.composition_id);
         });
-        row1.appendChild(compChip);
+        compHeader.appendChild(compChip);
       } else {
         const titleEl = document.createElement('span');
         titleEl.className = 'yt-label-chip';
         const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[p.type] || '';
         titleEl.textContent = typeIcon + (p.display_title || '');
-        row1.appendChild(titleEl);
+        compHeader.appendChild(titleEl);
       }
 
-      // ▶ button — ADR-053: concert entries use dashed border
+      // ▶ button in tree-comp-acts (right-aligned, matches composition tree)
+      const actsDiv = document.createElement('div');
+      actsDiv.className = 'tree-comp-acts';
       const playBtn = document.createElement('button');
       playBtn.className = 'rec-play-btn play-btn-concert';
       playBtn.title = concert.short_title || concert.title || 'Concert';
@@ -1142,48 +1183,18 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null, tala: p.tala || null }
         );
       });
-      row1.appendChild(playBtn);
+      actsDiv.appendChild(playBtn);
+      compHeader.appendChild(actsDiv);
+      li.appendChild(compHeader);
 
-      // Row 2: raga chip + tala + timestamp link
-      const row2 = document.createElement('div');
-      row2.className = 'rec-row2';
-      const metaSpan = document.createElement('span');
-      metaSpan.className = 'rec-meta';
-      const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
-      const talaPart = p.tala || '';
-      if (ragaObj) {
-        const ragaChip = document.createElement('span');
-        ragaChip.className = 'raga-chip';
-        ragaChip.textContent = ragaObj.name;
-        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
-        ragaChip.addEventListener('click', e => {
-          e.stopPropagation();
-          ragaChip.classList.add('chip-tapped');
-          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
-          triggerBaniSearch('raga', p.raga_id);
-        });
-        metaSpan.appendChild(ragaChip);
-        if (talaPart) {
-          const ragaTalaDiv = document.createElement('div');
-          ragaTalaDiv.className = 'rec-raga-tala';
-          ragaTalaDiv.appendChild(ragaChip);  // moves ragaChip from metaSpan into the wrapper
-          const talaSpan = document.createElement('span');
-          talaSpan.className = 'trail-tala';
-          talaSpan.textContent = formatTala(talaPart);
-          ragaTalaDiv.appendChild(talaSpan);
-          metaSpan.appendChild(ragaTalaDiv);
-          // else: ragaChip stays as a direct child of metaSpan (already appended above)
-        }
-      } else if (p.raga_id || talaPart) {
-        metaSpan.textContent = [(ragaObj ? ragaObj.name : p.raga_id), formatTala(talaPart)].filter(Boolean).join(' · ');
-      }
+      // ── Composer chip (tree-comp-meta, indented below composition) ───────────
       const concertComposerChip = buildComposerChip(p.composition_id);
-      if (concertComposerChip) metaSpan.appendChild(concertComposerChip);
-
-      row2.appendChild(metaSpan);
-
-      li.appendChild(row1);
-      li.appendChild(row2);
+      if (concertComposerChip) {
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'tree-comp-meta';
+        metaDiv.appendChild(concertComposerChip);
+        li.appendChild(metaDiv);
+      }
       perfList.appendChild(li);
     });
   });
@@ -1238,17 +1249,11 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     compHeader.appendChild(titleSpan);
   }
 
-  // Left-chevron: phantom for single-recording, upgraded to functional in multi path.
-  const chevron = document.createElement('span');
-  chevron.className = 'section-collapse-btn row-accordion-chevron-phantom';
-  chevron.textContent = '\u25b6';
-  chevron.setAttribute('aria-hidden', 'true');
-  compHeader.prepend(chevron);
-
+  // No left-chevron. Acts (play button / right-chevron) always on the right via tree-comp-acts.
   const recCount = sortedPerfs.length;
 
   if (recCount === 1) {
-    // ── Single recording: inline year + play + link on the comp header row ─
+    // ── Single recording: inline year + play on the right ─────────────────
     const p = sortedPerfs[0];
     const actsDiv = document.createElement('div');
     actsDiv.className = 'tree-comp-acts';
@@ -1275,9 +1280,17 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     actsDiv.appendChild(playBtn);
     compHeader.appendChild(actsDiv);
   } else {
-    // ── Multiple recordings: left-chevron accordion (starts collapsed) ─────
-    chevron.classList.remove('row-accordion-chevron-phantom');
-    chevron.textContent = '\u25b6';  // collapsed by default
+    // ── Multiple recordings: right-chevron accordion (starts collapsed) ────
+    const actsDiv = document.createElement('div');
+    actsDiv.className = 'tree-comp-acts';
+
+    const chevron = document.createElement('button');
+    chevron.className = 'rec-play-btn tree-comp-chevron';
+    chevron.textContent = '\u25b6';  // ▶ collapsed by default
+    chevron.title = 'Show recordings';
+    actsDiv.appendChild(chevron);
+    compHeader.appendChild(actsDiv);
+
     compHeader.style.cursor = 'pointer';
     li.appendChild(compHeader);
 
@@ -1315,8 +1328,8 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       chipsDiv.appendChild(verSpan);
       row.appendChild(chipsDiv);
 
-      const actsDiv = document.createElement('div');
-      actsDiv.className = 'trail-acts';
+      const rowActsDiv = document.createElement('div');
+      rowActsDiv.className = 'trail-acts';
       const playBtn = document.createElement('button');
       playBtn.className = 'rec-play-btn play-btn-concert';
       playBtn.setAttribute('data-vid', p.video_id);
@@ -1331,8 +1344,8 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
           { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null, tala: p.tala || null }
         );
       });
-      actsDiv.appendChild(playBtn);
-      row.appendChild(actsDiv);
+      rowActsDiv.appendChild(playBtn);
+      row.appendChild(rowActsDiv);
 
       recLi.appendChild(row);
       recUl.appendChild(recLi);
@@ -1340,11 +1353,16 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
 
     li.appendChild(recUl);
 
-    // Entire comp-header row is the click affordance; interactive children stop propagation.
-    compHeader.addEventListener('click', function (e) {
-      if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
+    // Chevron button and full-row click both toggle the recording list.
+    const _toggle = function () {
       recUl.hidden = !recUl.hidden;
       chevron.textContent = recUl.hidden ? '\u25b6' : '\u25bc';
+      chevron.title = recUl.hidden ? 'Show recordings' : 'Hide recordings';
+    };
+    chevron.addEventListener('click', e => { e.stopPropagation(); _toggle(); });
+    compHeader.addEventListener('click', function (e) {
+      if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
+      _toggle();
     });
 
     return li;
@@ -1388,18 +1406,10 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
   const li = document.createElement('li');
   li.className = 'tree-group tree-group-open';
 
-  // ── Header: chevron + raga chip. ADR-128 D9: chevron is an indicator;
-  //    the entire header row is the toggle affordance.
+  // ── Header: raga chip only — always open, no chevron, no toggle.
+  //    Matches .comp-raga-header aesthetic (no gray bg, no collapse).
   const header = document.createElement('div');
   header.className = 'tree-group-header';
-
-  // Chevron indicator (uses .section-collapse-btn — the single source of truth
-  // for collapse indicators across all panel sections, ADR-128 D10)
-  const chev = document.createElement('span');
-  chev.className = 'section-collapse-btn';
-  chev.textContent = '\u25bc';  // ▼ open by default
-  chev.setAttribute('aria-hidden', 'true');
-  header.appendChild(chev);
 
   if (ragaId && ragaObj) {
     const ragaChip = document.createElement('span');
@@ -1419,14 +1429,6 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
     miscSpan.textContent = 'Misc';
     header.appendChild(miscSpan);
   }
-
-  // Whole-row click toggles open/closed; chevron is purely indicator.
-  header.addEventListener('click', function (e) {
-    // Don't toggle if click came from an interactive child (chip, button, link)
-    if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
-    const opened = li.classList.toggle('tree-group-open');
-    chev.textContent = opened ? '\u25bc' : '\u25b6';
-  });
 
   li.appendChild(header);
 
@@ -1677,12 +1679,24 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   countDiv.className = 'concert-count';
   countDiv.textContent = segments.length + (segments.length === 1 ? ' segment' : ' segments');
 
-  // ＋ and ✎ buttons inline on the title row
+  // ▶ play-from-beginning button — opens the lecdem video at 00:00:00
+  const lecdemPlayBtn = document.createElement('button');
+  lecdemPlayBtn.className = 'rec-play-btn play-btn-concert';
+  lecdemPlayBtn.title = 'Play from beginning: ' + (ref.label || 'Lecture-Demo');
+  lecdemPlayBtn.textContent = '\u25B6';
+  lecdemPlayBtn.style.cssText = 'margin-left:auto;flex-shrink:0;';
+  lecdemPlayBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, 0, ref.label || 'Lecture-Demo', allTracks, { nodeId });
+  });
+  titleRow.appendChild(lecdemPlayBtn);
+
+  // ✎ edit button inline on the title row
   if (typeof buildLecdemEditForm === 'function') {
     const editBtn = document.createElement('button');
     editBtn.className = 'rec-play-btn';
     editBtn.title = 'Edit lecdem';
-    editBtn.textContent = '✎';
+    editBtn.textContent = '\u270E';
     editBtn.style.cssText = 'font-size:0.75rem;opacity:0.7;flex-shrink:0;';
     editBtn.addEventListener('click', e => {
       e.stopPropagation();
@@ -2000,7 +2014,7 @@ function buildRecordingsList(nodeId, nodeData) {
   // ADR-128 D8 + D10: 'Concerts' promoted to neutral chip with microphone glyph.
   const _concertsChip = document.createElement('span');
   _concertsChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-concerts';
-  _concertsChip.textContent = 'Concerts';
+  _concertsChip.textContent = 'CONCERTS';
   const { sectionEl: concertSection, bodyEl: concertBody } = buildSection({
     headerChip: _concertsChip,
     count: concerts.length,
@@ -2036,7 +2050,7 @@ function buildRecordingsList(nodeId, nodeData) {
   const _ragaHdrLabel = document.createElement('span');
   const _recordingsChip = document.createElement('span');
   _recordingsChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-recordings';
-  _recordingsChip.textContent = 'Recordings';
+  _recordingsChip.textContent = 'RECORDINGS';
   _ragaHdrLabel.appendChild(_recordingsChip);
   _ragaHdrLabel.appendChild(document.createTextNode(' by '));
   const ragaTypeChip = document.createElement('span');

@@ -491,6 +491,15 @@
   .row-accordion-chevron-phantom {
     opacity: 0.2; pointer-events: none; cursor: default;
   }
+  /* Trailing acts element (play button) in accordion header — always rightmost;
+     must not grow (overrides the flex:1 catch-all) and must not shift left. */
+  .row-accordion-header > .trail-acts { flex: none; margin-left: 0; }
+  /* Right-chevron rows that also have a trailing play button: chip+chevron stay
+     natural width (left-anchored), spacer fills the gap, play anchors right.
+     Only applied when JS adds has-trail-right (body elements confirmed present).
+     width: auto overrides the explicit width:100% on .tree-leaf-primary. */
+  .row-accordion-header.has-trail-right > *:not(.row-accordion-chevron):not(.trail-acts):not(.row-accordion-spacer) { flex: 0 1 auto; width: auto; }
+  .row-accordion-spacer { flex: 1; }
   .row-accordion-body {
     display: flex; flex-wrap: wrap; gap: 4px;
     padding-top: 4px; padding-left: 22px;
@@ -536,23 +545,21 @@
 
   /* ── ADR-064: raga tree — raga-level groups in musician panel ── */
   #recordings-list li.tree-group {
-    padding: 0; border-bottom: none; gap: 0; list-style: none;
-    border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin: 4px 0;
+    padding: 0; border-bottom: none; gap: 0; list-style: none; margin: 4px 0;
   }
-  /* Spacing between boxed raga groups — box margin handles separation */
+  /* Flat separator between raga groups — matches .comp-raga-group style */
   #recordings-list li.tree-group + li.tree-group {
-    margin-top: 8px;
-    padding-top: 0;
-    border-top: none;
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
   }
   #recordings-list .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
-    padding: 6px 8px; border-bottom: 1px solid var(--border);
-    background: var(--bg-input);
-    cursor: pointer; user-select: none;
+    padding: 5px 0 4px;
+    border-bottom: 1px solid var(--border);
+    cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-  #recordings-list .tree-group-header:hover { background: var(--bg-active); }
   #recordings-list .rec-group-count {
     font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
   }
@@ -778,6 +785,9 @@
     display: flex; flex-direction: column; gap: 2px;
   }
   .concert-perf-item:last-child { border-bottom: none; }
+  /* Raga chip at top of a concert item: only as wide as its text. The
+     tree-comp-header below it stays full-width via its own width:100%. */
+  .concert-perf-item > .raga-chip { align-self: flex-start; }
   .concert-perf-item.playing .rec-title,
   .concert-perf-item.playing .yt-label-chip { color: var(--accent-sub); }
 
@@ -1427,7 +1437,6 @@
   .tree-group-header {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
     padding: 6px 8px; border-bottom: 1px solid var(--border);
-    background: var(--bg-input);
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }

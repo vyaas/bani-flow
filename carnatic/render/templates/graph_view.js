@@ -1185,6 +1185,8 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   recFilter.dispatchEvent(new Event('input'));
 
   buildRecordingsList(d.id, d);
+  const _rightScroll = document.getElementById('right-scroll');
+  if (_rightScroll) _rightScroll.scrollTop = 0;
   // ADR-137: populate Gurus / Shishyas lineage sections
   buildLineagePanel(d.id);
 
@@ -1284,6 +1286,8 @@ function _openMusicianPanelForTransit(transitId) {
   recFilter.dispatchEvent(new Event('input'));
 
   buildRecordingsList(transitId, d);
+  const _rightScrollT = document.getElementById('right-scroll');
+  if (_rightScrollT) _rightScrollT.scrollTop = 0;
   // ADR-137: populate Gurus / Shishyas lineage sections
   buildLineagePanel(transitId);
 

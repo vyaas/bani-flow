@@ -184,7 +184,7 @@ function buildSubjectGroup({ chips = [], defaultCollapsed = true, summaryText = 
 //   headerEl         DOM element — the always-visible primary row content
 //   bodyEls          array of DOM elements to show/hide
 //   defaultCollapsed boolean (default true)
-function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true, chevronPosition = 'left' } = {}) {
+function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true, chevronPosition = 'left', trailingEl = null } = {}) {
   const wrapEl = document.createElement('div');
   wrapEl.className = 'row-accordion';
 
@@ -213,13 +213,26 @@ function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true, ch
       chevron.classList.add('row-accordion-chevron-phantom');
     }
     headerRow.style.cursor = 'default';
+    if (trailingEl) headerRow.appendChild(trailingEl);
     return wrapEl;
   }
 
   // Right chevron: append after headerEl now that body is confirmed non-empty.
   if (chevronPosition === 'right') {
     headerRow.appendChild(chevron);
+    // When a trailing play button is also present, the chip+chevron pair should
+    // be left-anchored (natural width) with a spacer pushing the play button
+    // to the right — so the chevron visually neighbours the chip, not the play btn.
+    if (trailingEl) {
+      headerRow.classList.add('has-trail-right');
+      const spacer = document.createElement('span');
+      spacer.className = 'row-accordion-spacer';
+      headerRow.appendChild(spacer);
+    }
   }
+
+  // trailingEl (e.g. play button) always goes last — after the chevron.
+  if (trailingEl) headerRow.appendChild(trailingEl);
 
   chevron.textContent = defaultCollapsed ? '\u25b6' : '\u25bc';
   chevron.title = 'Expand / collapse';
