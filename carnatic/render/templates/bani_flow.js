@@ -1349,10 +1349,10 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     // the Musician panel uses, so the vocabulary is consistent across panels.
     const _miscChip = document.createElement('span');
     _miscChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-recordings';
-    _miscChip.textContent = 'Recordings';
+    _miscChip.textContent = 'MISC';
     const { sectionEl: otherSec, bodyEl: otherSecBody } = buildSection({
       headerChip: _miscChip,
-      headerSuffixText: ' (misc)',
+      headerSuffixText: '',
       count: otherGroups[0].rows.length,
     });
     // Render rows directly into the section body — buildSection already
