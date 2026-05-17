@@ -192,6 +192,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
   // Reset subject name chip styling from previous call
   subjectName.className = '';
+  // ADR-142: clear stale entity attributes so a previous raga/comp navigation
+  // cannot bleed through to the next panel type (fixes comp→khamas confusion).
+  delete subjectName.dataset.chipRole;
+  delete subjectName.dataset.entityType;
+  delete subjectName.dataset.entityId;
   subjectIcon.style.display = '';
 
   if (type === 'comp') {
@@ -201,6 +206,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 
     // Row 1: composition title styled as a .comp-chip — visually matches trail + right sidebar
     subjectName.className = 'comp-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(subjectName, 'panel-title', 'composition', id);
     subjectIcon.style.display = 'none';  // chip ::before provides the icon
     subjectName.textContent = comp ? comp.title : id;
     const compSrc = comp && comp.sources && comp.sources[0];
@@ -243,6 +249,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       // Rendered as a .raga-chip badge — uniform with all other raga occurrences
       const ragaBtn = document.createElement('span');
       ragaBtn.className = 'raga-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(ragaBtn, 'entity', 'raga', raga.id);
       ragaBtn.textContent = raga.name;
       ragaBtn.title = 'Explore ' + raga.name + ' in Bani Flow';
       ragaBtn.addEventListener('click', e => {
@@ -341,6 +348,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       if (perfRaga) {
         const ragaBtn = document.createElement('span');
         ragaBtn.className = 'raga-chip';
+        if (typeof applyChipRole === 'function') applyChipRole(ragaBtn, 'entity', 'raga', perfRaga.id);
         ragaBtn.textContent = perfRaga.name;
         ragaBtn.title = 'Explore ' + perfRaga.name + ' in Bani Flow';
         ragaBtn.addEventListener('click', e => {
@@ -403,6 +411,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     if (ytRaga) {
       const ytRagaBtn = document.createElement('span');
       ytRagaBtn.className = 'raga-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(ytRagaBtn, 'entity', 'raga', ytRaga.id);
       ytRagaBtn.textContent = ytRaga.name;
       ytRagaBtn.title = 'Explore ' + ytRaga.name + ' in Bani Flow';
       ytRagaBtn.addEventListener('click', e => {
@@ -491,6 +500,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       // Parent raga as a .raga-chip — uniform with all other raga occurrences
       const parentLink = document.createElement('span');
       parentLink.className = 'raga-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(parentLink, 'entity', 'raga', raga.parent_raga);
       parentLink.textContent = parentName;
       parentLink.title = 'Explore ' + parentName + ' in Bani Flow';
       parentLink.addEventListener('click', e => {
@@ -573,6 +583,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
             visible.forEach(j => {
               const chip = document.createElement('span');
               chip.className = 'raga-chip';
+              if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', j.id);
               chip.textContent = j.name || j.id;
               chip.title = 'Explore ' + (j.name || j.id) + ' in Bani Flow';
               chip.addEventListener('click', e => {
@@ -679,6 +690,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
           const chip = document.createElement('span');
           chip.className = 'raga-chip';
           chip.dataset.ragaId = cr.id;
+          if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', cr.id);
           chip.textContent = cr.name || cr.id;
           chip.title = 'Explore Carnatic equivalent: ' + (cr.name || cr.id);
           chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', cr.id); });
@@ -1001,6 +1013,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   if (showCompChip) {
     const compChip = document.createElement('span');
     compChip.className = 'comp-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(compChip, 'entity', 'composition', trailComp.id);
     compChip.textContent = trailComp.title;
     compChip.title = 'Explore ' + trailComp.title + ' in Bani Flow';
     compChip.addEventListener('click', e => {
@@ -1014,6 +1027,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   if (showRagaChip) {
     const ragaChip = document.createElement('span');
     ragaChip.className = 'raga-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(ragaChip, 'entity', 'raga', trailRagaId);
     ragaChip.textContent = trailRaga.name;
     ragaChip.title = 'Explore ' + trailRaga.name + ' in Bani Flow';
     ragaChip.addEventListener('click', e => {
@@ -1300,6 +1314,7 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
       textDiv.className = 'tree-header-text';
       const compChip = document.createElement('span');
       compChip.className = 'comp-chip';
+      if (typeof applyChipRole === 'function') applyChipRole(compChip, 'entity', 'composition', group.cid);
       compChip.textContent = group.comp.title;
       compChip.title = 'Explore ' + group.comp.title + ' in Bani Flow';
       compChip.addEventListener('click', function(e) {

@@ -291,6 +291,7 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
     const ragaName = ragaObj ? ragaObj.name : ragaId;
     const c = document.createElement('span');
     c.className = 'raga-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(c, 'entity', 'raga', ragaId);
     c.textContent = ragaName;
     c.title = 'Explore ' + ragaName + ' in Bani Flow';
     c.addEventListener('click', function (e) {
@@ -308,6 +309,7 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
     const compName = compObj ? compObj.title : compId;
     const c = document.createElement('span');
     c.className = 'comp-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(c, 'entity', 'composition', compId);
     c.textContent = compName;
     c.title = 'Explore ' + compName + ' in Bani Flow';
     c.addEventListener('click', function (e) {
@@ -325,6 +327,7 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
     const mLabel = (mNode && mNode.length) ? (mNode.data('label') || mid) : mid;
     const c = document.createElement('span');
     c.className = 'musician-chip';
+    if (typeof applyChipRole === 'function') applyChipRole(c, 'entity', 'musician', mid);
     c.textContent = mLabel;
     c.title = 'Open ' + mLabel + '\u2019s panel';
 
