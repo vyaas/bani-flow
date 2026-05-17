@@ -1392,18 +1392,16 @@
   #trail-list li.playing { color: var(--accent-sub); }
 
   /* ── ADR-061: tree-structured trail ──────────────────────────────── */
-  /* .tree-group is a boxed container with visible border */
+  /* .tree-group is a flat-separator group — mirrors #recordings-list style */
   #trail-list li.tree-group {
     padding: 0; border-bottom: none; gap: 0;
-    border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin: 4px 0;
+    list-style: none; margin: 4px 0;
   }
-  /* Reset :last-child override so the last group still has no border */
-  #trail-list li.tree-group:last-child { border-bottom: none; }
-  /* Spacing between boxed composition groups */
+  /* Flat horizontal separator between composition groups */
   #trail-list li.tree-group + li.tree-group {
-    margin-top: 8px;
-    padding-top: 0;
-    border-top: none;
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
   }
   /* Group header — flex row: chevron + primary chip + secondary info */
   .tree-group-header {
@@ -1412,6 +1410,9 @@
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
+  /* trail-list: no horizontal padding on group headers — play buttons align
+     to the right edge, matching #recordings-list .tree-group-header style. */
+  #trail-list .tree-group-header { padding: 5px 0 4px; }
   /* Chevron — circular icon button matching play/link size (ADR-065) */
   .tree-chevron {
     flex-shrink: 0;
@@ -1452,9 +1453,11 @@
   .tree-children { list-style: none; padding: 0; margin: 0; display: none; }
   .tree-group-open > .tree-children { display: block; }
   /* Leaf rows — inherits #trail-list li base styles but indented.
-     ADR-072: padding-left uses 2× --hier-indent-step (level 2 — lead musician). */
+     ADR-072: padding-left uses 2× --hier-indent-step (level 2 — lead musician).
+     border-left dashed rail mirrors .tree-rec-list .tree-leaf in musician panel. */
   #trail-list li.tree-leaf {
     padding: 4px 0 4px calc(var(--hier-indent-step) * 2);
+    border-left: 1px dashed var(--border);
   }
   /* Leaf primary row: [artist chip?] [version/ctx] [▶+↗ right] — no-wrap so acts stay inline.
      min-width:0 lets the chip child shrink past its intrinsic content width. */
@@ -1472,8 +1475,7 @@
     text-overflow: ellipsis;
   }
   /* Co-performers tag cloud — wrappable, below primary row.
-     ADR-072 (revised): no border rail — only the composition chip itself
-     should be visibly boxed; accompanists indent without an enclosing rule. */
+     ADR-072 (revised): accompanists indent without an enclosing rule. */
   .tree-leaf-coperformers {
     display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
     margin-top: 3px;
@@ -2284,7 +2286,7 @@
 
   /* ── ADR-081: Lecdem strip in the Bani Flow panel (above the trail) ──────── */
   #bani-lecdem-strip {
-    margin: 4px 14px 4px;
+    margin: 4px 0;
   }
 
   /* ── ADR-080: Lecdem section in musician panel ─────────────────────────── */
@@ -2316,7 +2318,7 @@
   }
   /* ── Lecdem row: same play-button pattern as tree-misc-leaf ── */
   .lecdem-row {
-    padding: 6px 8px 6px 0;
+    padding: 6px 0;
   }
   .lecdem-row .trail-row2 {
     flex-direction: row;
@@ -4568,7 +4570,7 @@
 <button id="left-panel-toggle" title="Open / close Bani Flow panel"
         aria-pressed="false">&#9776; Bani Flow</button>
 <button id="bundle-download-btn" onclick="downloadBundle()" disabled
-        title="Download bundle JSON">&#x2B07; Bundle (0 items)</button>
+        title="Download patch JSON">&#x2B07; Patch (0 items)</button>
 <button id="right-panel-toggle" title="Open / close Musician panel"
         aria-pressed="false">&#9776; Musician</button>
 

@@ -58,7 +58,7 @@ function downloadBundle() {
     generated_at:   new Date().toISOString(),
     items:          baniBundle,
   };
-  downloadJson('bani_add_bundle.json', bundle);
+  downloadJson('bani_add_patch.json', bundle);
 }
 
 // ── Utility functions ─────────────────────────────────────────────────────────
@@ -541,7 +541,7 @@ function buildRagaMiniForm(container, prefill, onAdd) {
   btnRow.style.cssText = 'display:flex;gap:6px;margin-top:6px;';
   const addBtn = document.createElement('button');
   addBtn.type = 'button'; addBtn.className = 'ef-download-btn'; addBtn.style.flex = '1';
-  addBtn.textContent = '+ Add raga to bundle';
+  addBtn.textContent = '+ Add raga to patch';
   const cancelBtn = document.createElement('button');
   cancelBtn.type = 'button'; cancelBtn.className = 'ef-preview-btn';
   cancelBtn.textContent = 'Cancel';
@@ -589,7 +589,7 @@ function buildComposerMiniForm(container, prefill, onAdd) {
   btnRow.style.cssText = 'display:flex;gap:6px;margin-top:6px;';
   const addBtn = document.createElement('button');
   addBtn.type = 'button'; addBtn.className = 'ef-download-btn'; addBtn.style.flex = '1';
-  addBtn.textContent = '+ Add composer to bundle';
+  addBtn.textContent = '+ Add composer to patch';
   const cancelBtn = document.createElement('button');
   cancelBtn.type = 'button'; cancelBtn.className = 'ef-preview-btn';
   cancelBtn.textContent = 'Cancel';
@@ -678,7 +678,7 @@ function buildCompositionMiniForm(container, prefill, onAdd) {
   btnRow.style.cssText = 'display:flex;gap:6px;margin-top:6px;';
   const addBtn = document.createElement('button');
   addBtn.type = 'button'; addBtn.className = 'ef-download-btn'; addBtn.style.flex = '1';
-  addBtn.textContent = '+ Add composition to bundle';
+  addBtn.textContent = '+ Add composition to patch';
   const cancelBtn = document.createElement('button');
   cancelBtn.type = 'button'; cancelBtn.className = 'ef-preview-btn';
   cancelBtn.textContent = 'Cancel';
@@ -2283,7 +2283,7 @@ function buildRagaForm() {
   const footer = win.querySelector('.ew-footer');
   const bundleBtn = document.createElement('button');
   bundleBtn.className = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.textContent = '+ Add to Patch';
   bundleBtn.disabled = true;
 
   const dlBtn = document.createElement('button');
@@ -2470,7 +2470,7 @@ function createInlineAddSection(containerEl, type, selectEl, formWin, onAdd) {
     addBtn.type      = 'button';
     addBtn.className = 'ef-download-btn';
     addBtn.style.marginTop = '6px';
-    addBtn.textContent = '+ Add raga to bundle';
+    addBtn.textContent = '+ Add raga to patch';
     subForm.appendChild(addBtn);
 
     addBtn.addEventListener('click', () => {
@@ -2522,7 +2522,7 @@ function createInlineAddSection(containerEl, type, selectEl, formWin, onAdd) {
     addBtn.type      = 'button';
     addBtn.className = 'ef-download-btn';
     addBtn.style.marginTop = '6px';
-    addBtn.textContent = '+ Add composer to bundle';
+    addBtn.textContent = '+ Add composer to patch';
     subForm.appendChild(addBtn);
 
     addBtn.addEventListener('click', () => {
@@ -2597,7 +2597,7 @@ function buildComposerForm() {
   const footer    = win.querySelector('.ew-footer');
   const bundleBtn = document.createElement('button');
   bundleBtn.className  = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.textContent = '+ Add to Patch';
   bundleBtn.disabled   = true;
 
   const dlBtn = document.createElement('button');
@@ -2715,7 +2715,7 @@ function buildCompositionForm() {
   const footer = win.querySelector('.ew-footer');
   const bundleBtn2 = document.createElement('button');
   bundleBtn2.className = 'ef-download-btn';
-  bundleBtn2.textContent = '+ Add to Bundle';
+  bundleBtn2.textContent = '+ Add to Patch';
   bundleBtn2.disabled = true;
 
   const dlBtn = document.createElement('button');
@@ -3150,10 +3150,10 @@ function showGenericSuccess(win, filename, directory) {
 
   if (directory === 'bundle') {
     msg.innerHTML = `
-      <strong>\u2713 Added <code>${filename}</code> to bundle</strong>
+      <strong>\u2713 Added <code>${filename}</code> to patch</strong>
       <p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">
-        When done, click <strong>\u2B07 Bundle</strong> in the footer to download
-        <code>bani_add_bundle.json</code>, then run:
+        When done, click <strong>\u2B07 Patch</strong> in the footer to download
+        <code>bani_add_patch.json</code>, then run:
       </p>
       <pre style="margin:6px 0;font-size:0.72rem;">bani-add bani_add_bundle.json\nbani-render</pre>
     `;
@@ -3325,7 +3325,7 @@ function _buildCombinedMusicianYouTubeForm() {
 
   const bundleBtn = document.createElement('button');
   bundleBtn.className  = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.textContent = '+ Add to Patch';
   bundleBtn.disabled   = true;
 
   const dlBtn = document.createElement('button');
@@ -3552,8 +3552,8 @@ function showBundleSuccess(win, id, mode) {
   msg.innerHTML = `
     <strong>\u2713 Added to bundle: ${desc}</strong>
     <p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">
-      When done adding items, click <strong>\u2B07 Bundle</strong> in the footer to download
-      <code>bani_add_bundle.json</code>, then run:
+      When done adding items, click <strong>\u2B07 Patch</strong> in the footer to download
+      <code>bani_add_patch.json</code>, then run:
     </p>
     <pre style="margin:6px 0;font-size:0.72rem;">bani-add bani_add_bundle.json\nbani-render</pre>
   `;
@@ -3986,7 +3986,7 @@ function buildSegmentForm(target) {
     const compLabel = compIdForBadge
       ? ((graphData.compositions || []).find(c => c.id === compIdForBadge) || {}).title || compIdForBadge
       : null;
-    badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s${compLabel ? ' · ' + compLabel : ''}). Download bundle to apply.`;
+    badge.textContent = `✓ Segment staged (offset ${seg.offset_seconds}s${compLabel ? ' · ' + compLabel : ''}). Download patch to apply.`;
     foot.appendChild(badge);
     stageBtn.disabled = true;
 
@@ -4171,7 +4171,7 @@ function buildEditForm() {
       patchBtn.type      = 'button';
       patchBtn.className = 'ef-add-btn';
       patchBtn.style.cssText = 'margin-top:6px;';
-      patchBtn.textContent   = '+ Stage patch \u2192 bundle';
+      patchBtn.textContent   = '+ Stage patch \u2192 patch';
       patchBtn.addEventListener('click', () => {
         const field = fieldSel.value;
         if (!field) { fieldSel.focus(); return; }
@@ -4201,7 +4201,7 @@ function buildEditForm() {
         addToBundle(meta.bucket, item);
         updateStageCount();
         patchBtn.textContent = '\u2713 Staged!';
-        setTimeout(() => { patchBtn.textContent = '+ Stage patch \u2192 bundle'; }, 1400);
+        setTimeout(() => { patchBtn.textContent = '+ Stage patch \u2192 patch'; }, 1400);
       });
       opsWrap.appendChild(patchBtn);
     }
@@ -4250,7 +4250,7 @@ function buildEditForm() {
       appendBtn.type      = 'button';
       appendBtn.className = 'ef-add-btn';
       appendBtn.style.cssText = 'margin-top:6px;';
-      appendBtn.textContent   = '+ Stage append \u2192 bundle';
+      appendBtn.textContent   = '+ Stage append \u2192 patch';
       appendBtn.addEventListener('click', () => {
         const arr      = arraySel.value;
         if (!arr) { arraySel.focus(); return; }
@@ -4293,7 +4293,7 @@ function buildEditForm() {
         }
         updateStageCount();
         appendBtn.textContent = '\u2713 Staged!';
-        setTimeout(() => { appendBtn.textContent = '+ Stage append \u2192 bundle'; }, 1400);
+        setTimeout(() => { appendBtn.textContent = '+ Stage append \u2192 patch'; }, 1400);
       });
       opsWrap.appendChild(appendBtn);
     }
@@ -4320,7 +4320,7 @@ function buildEditForm() {
       noteBtn.type      = 'button';
       noteBtn.className = 'ef-add-btn';
       noteBtn.style.cssText = 'margin-top:6px;';
-      noteBtn.textContent   = '+ Stage note \u2192 bundle';
+      noteBtn.textContent   = '+ Stage note \u2192 patch';
       noteBtn.addEventListener('click', () => {
         const text = ta.value.trim();
         if (!text) { ta.focus(); return; }
@@ -4334,7 +4334,7 @@ function buildEditForm() {
         ta.value = '';
         noteSrcInp.value = '';
         noteBtn.textContent = '\u2713 Staged!';
-        setTimeout(() => { noteBtn.textContent = '+ Stage note \u2192 bundle'; }, 1400);
+        setTimeout(() => { noteBtn.textContent = '+ Stage note \u2192 patch'; }, 1400);
       });
       opsWrap.appendChild(noteBtn);
     }
@@ -4460,7 +4460,7 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
   stageBtn.type = 'button';
   stageBtn.className = 'ef-add-btn';
   stageBtn.style.cssText = 'margin-top:6px;margin-left:6px;';
-  stageBtn.textContent = '↪ Stage additions → bundle';
+  stageBtn.textContent = '↪ Stage additions → patch';
   stageBtn.addEventListener('click', () => {
     let count = 0;
     staged.forEach(({ axis, id }, key) => {
@@ -4476,10 +4476,10 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
     });
     if (count > 0) {
       stageBtn.textContent = `✓ Staged ${count} addition${count > 1 ? 's' : ''}!`;
-      setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1800);
+      setTimeout(() => { stageBtn.textContent = '↪ Stage additions → patch'; }, 1800);
     } else {
       stageBtn.textContent = '(no new items)';
-      setTimeout(() => { stageBtn.textContent = '↪ Stage additions → bundle'; }, 1200);
+      setTimeout(() => { stageBtn.textContent = '↪ Stage additions → patch'; }, 1200);
     }
   });
   body.appendChild(stageBtn);
@@ -4505,6 +4505,31 @@ function buildLecdemEditForm(ref, nodeId) {
   if (!win) return;
   const body = win.querySelector('.ew-body');
   const foot = win.querySelector('.ew-footer');
+
+  // ── Musician identity row (era-tinted, read-only) ─────────────────────────
+  const node = (graphData.nodes || []).find(n => n.id === nodeId);
+  const musRow = document.createElement('div');
+  musRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
+  const musLabel = document.createElement('span');
+  musLabel.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
+  musLabel.textContent = 'Musician';
+  const musChip = document.createElement('span');
+  musChip.className = 'musician-chip';
+  musChip.style.cursor = 'default';
+  if (node) {
+    const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(node.era || null) : { bg: '', border: '' };
+    musChip.style.setProperty('--chip-era-bg', tint.bg);
+    musChip.style.setProperty('--chip-era-border', tint.border);
+    if (node.instrument && typeof makeInstrBadge === 'function') {
+      musChip.appendChild(makeInstrBadge(node.instrument));
+    }
+    musChip.appendChild(document.createTextNode(node.label));
+  } else {
+    musChip.textContent = nodeId || '—';
+  }
+  musRow.appendChild(musLabel);
+  musRow.appendChild(musChip);
+  body.appendChild(musRow);
 
   // ── URL (read-only — video_id is the stable key) ──────────────────────────
   const urlInp = efInput(null, 'text', '');
@@ -4552,24 +4577,26 @@ function buildLecdemEditForm(ref, nodeId) {
     originalKeys.add(key);
   });
 
-  const subjectsHeading = document.createElement('div');
-  subjectsHeading.style.cssText = 'font-size:0.68rem;color:var(--fg-sub);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;';
-  subjectsHeading.textContent = 'Subjects';
-  body.appendChild(subjectsHeading);
+  body.appendChild(efSection('Subjects'));
 
   const chipsWrap = document.createElement('div');
-  chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;min-height:22px;';
+  chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;';
   body.appendChild(chipsWrap);
+
+  const subjectCombo = efCombobox(null, allSubjectOpts, null, win);
+  subjectCombo.style.flex = '1';
+  const addSubjectBtn = document.createElement('button');
+  addSubjectBtn.type = 'button'; addSubjectBtn.textContent = '+';
+  addSubjectBtn.className = 'ef-add-btn';
+  addSubjectBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;';
+  const subjectInputRow = document.createElement('div');
+  subjectInputRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
+  subjectInputRow.appendChild(subjectCombo);
+  subjectInputRow.appendChild(addSubjectBtn);
+  body.appendChild(subjectInputRow);
 
   function redrawSubjectChips() {
     chipsWrap.innerHTML = '';
-    if (staged.size === 0) {
-      const empty = document.createElement('span');
-      empty.style.cssText = 'opacity:0.4;font-size:0.75rem;';
-      empty.textContent = '(none)';
-      chipsWrap.appendChild(empty);
-      return;
-    }
     staged.forEach(({ axis, id, label }, key) => {
       const chip = document.createElement('span');
       chip.className = (chipClassMap[axis] || 'raga-chip');
@@ -4585,11 +4612,6 @@ function buildLecdemEditForm(ref, nodeId) {
   }
   redrawSubjectChips();
 
-  const subjectCombo = efCombobox(null, allSubjectOpts, null, win);
-  body.appendChild(efRow('Add subject', false, null, subjectCombo));
-
-  const addSubjectBtn = efAddBtn('+ Add');
-  addSubjectBtn.style.marginTop = '4px';
   addSubjectBtn.addEventListener('click', () => {
     const compositeVal = subjectCombo.getValue ? subjectCombo.getValue() : '';
     if (!compositeVal || staged.has(compositeVal)) return;
@@ -4602,7 +4624,6 @@ function buildLecdemEditForm(ref, nodeId) {
     redrawSubjectChips();
     if (subjectCombo.setValue) subjectCombo.setValue('');
   });
-  body.appendChild(addSubjectBtn);
 
   // ── Time segments ─────────────────────────────────────────────────────────
   const segmentSep = document.createElement('hr');
@@ -4620,13 +4641,74 @@ function buildLecdemEditForm(ref, nodeId) {
   function addSegCard(prefill) {
     const card = document.createElement('div');
     card.className = 'ef-seg-card';
-    card.style.cssText = 'border:1px solid var(--border-soft);border-radius:4px;padding:8px 10px;margin-bottom:8px;background:var(--bg-input);';
+    card.style.cssText = 'display:flex;gap:8px;align-items:center;border-bottom:1px dashed var(--border-soft);padding:6px 2px;margin-bottom:4px;flex-wrap:wrap;';
+
+    // ── Left: subject chips + inline search ────────────────────────────────
+    const subjectsArea = document.createElement('div');
+    subjectsArea.style.cssText = 'flex:1;display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:0;';
+
+    const segStaged = new Map();
+
+    const segSubjCombo = efCombobox(null, allSubjectOpts, null, win);
+    segSubjCombo.style.flex = '1';
+    segSubjCombo.style.minWidth = '80px';
+    const segAddBtn = document.createElement('button');
+    segAddBtn.type = 'button'; segAddBtn.textContent = '+';
+    segAddBtn.className = 'ef-add-btn';
+    segAddBtn.style.cssText = 'flex-shrink:0;width:24px;height:24px;padding:0;font-size:1rem;line-height:1;';
+    const segComboWrapper = document.createElement('div');
+    segComboWrapper.style.cssText = 'display:flex;gap:4px;align-items:center;flex:1;min-width:80px;';
+    segComboWrapper.appendChild(segSubjCombo);
+    segComboWrapper.appendChild(segAddBtn);
+
+    function redrawSegChips() {
+      subjectsArea.innerHTML = '';
+      segStaged.forEach(({ axis, id, label }, key) => {
+        const chip = document.createElement('span');
+        chip.className = chipClassMap[axis] || 'raga-chip';
+        chip.style.cssText = 'cursor:pointer;font-size:0.72rem;';
+        chip.textContent = label + ' ×';
+        chip.addEventListener('click', () => { segStaged.delete(key); redrawSegChips(); });
+        subjectsArea.appendChild(chip);
+      });
+      subjectsArea.appendChild(segComboWrapper);
+    }
+
+    if (prefill) {
+      if (prefill.raga_id) {
+        const opt = ragaOpts.find(o => o.value === prefill.raga_id);
+        segStaged.set('raga_ids::' + prefill.raga_id, { axis: 'raga_ids', id: prefill.raga_id, label: opt ? opt.label : prefill.raga_id });
+      }
+      if (prefill.composition_id) {
+        const opt = compOpts.find(o => o.value === prefill.composition_id);
+        segStaged.set('composition_ids::' + prefill.composition_id, { axis: 'composition_ids', id: prefill.composition_id, label: opt ? opt.label : prefill.composition_id });
+      }
+    }
+    redrawSegChips();
+    card.appendChild(subjectsArea);
+
+    segAddBtn.addEventListener('click', () => {
+      const compositeVal = segSubjCombo.getValue ? segSubjCombo.getValue() : '';
+      if (!compositeVal || segStaged.has(compositeVal)) return;
+      const sep = compositeVal.indexOf('::');
+      if (sep < 0) return;
+      const axis = compositeVal.slice(0, sep);
+      const id   = compositeVal.slice(sep + 2);
+      const opt  = (optListMap[axis] || []).find(o => o.value === id);
+      segStaged.set(compositeVal, { axis, id, label: opt ? opt.label : id });
+      redrawSegChips();
+      if (segSubjCombo.setValue) segSubjCombo.setValue('');
+    });
+
+    // ── Right: timestamp + remove ──────────────────────────────────────────
+    const timeArea = document.createElement('div');
+    timeArea.style.cssText = 'flex-shrink:0;display:flex;gap:3px;align-items:center;';
 
     function makeNum(ph, maxVal) {
       const inp = document.createElement('input');
       inp.type = 'number'; inp.min = '0'; inp.max = String(maxVal);
       inp.placeholder = ph; inp.className = 'ef-input';
-      inp.style.cssText = 'width:56px;text-align:center;';
+      inp.style.cssText = 'width:44px;text-align:center;padding:2px 4px;';
       return inp;
     }
     function segLbl(t) {
@@ -4648,114 +4730,22 @@ function buildLecdemEditForm(ref, nodeId) {
 
     const remBtn = document.createElement('button');
     remBtn.type = 'button'; remBtn.title = 'Remove segment';
-    remBtn.style.cssText = 'margin-left:auto;flex-shrink:0;background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1rem;padding:0 4px;line-height:1;';
+    remBtn.style.cssText = 'background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1rem;padding:0 2px;line-height:1;margin-left:2px;';
     remBtn.textContent = '×';
     remBtn.addEventListener('mouseover', () => { remBtn.style.color = 'var(--accent-danger)'; });
     remBtn.addEventListener('mouseout',  () => { remBtn.style.color = 'var(--fg-muted)'; });
     remBtn.addEventListener('click', () => card.remove());
 
-    const timeRow = document.createElement('div');
-    timeRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;';
-    timeRow.appendChild(hInp); timeRow.appendChild(segLbl('h'));
-    timeRow.appendChild(mInp); timeRow.appendChild(segLbl('m'));
-    timeRow.appendChild(sInp); timeRow.appendChild(segLbl('s'));
-    timeRow.appendChild(remBtn);
-    card.appendChild(timeRow);
-
-    // Subject tags for this segment
-    const segStaged = new Map();
-    const segChipsWrap = document.createElement('div');
-    segChipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;min-height:20px;margin-bottom:6px;';
-    function redrawSegChips() {
-      segChipsWrap.innerHTML = '';
-      if (segStaged.size === 0) {
-        const em = document.createElement('span');
-        em.style.cssText = 'opacity:0.4;font-size:0.72rem;';
-        em.textContent = '(none)';
-        segChipsWrap.appendChild(em);
-        return;
-      }
-      segStaged.forEach(({ axis, id, label }, key) => {
-        const chip = document.createElement('span');
-        chip.className = chipClassMap[axis] || 'raga-chip';
-        chip.style.cssText = 'cursor:pointer;font-size:0.72rem;';
-        chip.textContent = label + ' ×';
-        chip.addEventListener('click', () => { segStaged.delete(key); redrawSegChips(); });
-        segChipsWrap.appendChild(chip);
-      });
-    }
-
-    if (prefill) {
-      if (prefill.raga_id) {
-        const opt = ragaOpts.find(o => o.value === prefill.raga_id);
-        segStaged.set('raga_ids::' + prefill.raga_id, { axis: 'raga_ids', id: prefill.raga_id, label: opt ? opt.label : prefill.raga_id });
-      }
-      if (prefill.composition_id) {
-        const opt = compOpts.find(o => o.value === prefill.composition_id);
-        segStaged.set('composition_ids::' + prefill.composition_id, { axis: 'composition_ids', id: prefill.composition_id, label: opt ? opt.label : prefill.composition_id });
-      }
-    }
-    redrawSegChips();
-    card.appendChild(segChipsWrap);
-
-    const segSubjCombo = efCombobox(null, allSubjectOpts, null, win);
-    segSubjCombo.style.flex = '1';
-    const segTagBtn = document.createElement('button');
-    segTagBtn.type = 'button'; segTagBtn.textContent = '+ Tag';
-    segTagBtn.className = 'ef-add-btn';
-    segTagBtn.addEventListener('click', () => {
-      const compositeVal = segSubjCombo.getValue ? segSubjCombo.getValue() : '';
-      if (!compositeVal || segStaged.has(compositeVal)) return;
-      const sep = compositeVal.indexOf('::');
-      if (sep < 0) return;
-      const axis = compositeVal.slice(0, sep);
-      const id   = compositeVal.slice(sep + 2);
-      const opt  = (optListMap[axis] || []).find(o => o.value === id);
-      segStaged.set(compositeVal, { axis, id, label: opt ? opt.label : id });
-      redrawSegChips();
-      if (segSubjCombo.setValue) segSubjCombo.setValue('');
-    });
-    card.appendChild(efRow('Add tag', false, null, segSubjCombo));
-    card.appendChild(segTagBtn);
-
-    // Tala + Kind
-    const talaInp = document.createElement('input');
-    talaInp.type = 'text'; talaInp.className = 'ef-input';
-    talaInp.placeholder = 'tala (e.g. ādi)';
-    talaInp.style.flex = '1';
-    if (prefill && prefill.tala) talaInp.value = prefill.tala;
-    const kindSel = document.createElement('select');
-    kindSel.className = 'ef-select'; kindSel.style.flex = '1';
-    [
-      ['', '— kind —'], ['kriti', 'Kriti'], ['varnam', 'Varnam'],
-      ['padam', 'Padam'], ['javali', 'Jāvaḷi'], ['tillana', 'Tillāna'],
-      ['alapana', 'Ālāpana'], ['tanam', 'Tānam'], ['niraval', 'Nirval'],
-      ['kalpanaswaram', 'Kalpanāswaram'], ['tani', 'Tani āvartana'],
-      ['other', 'Other'],
-    ].forEach(([v, l]) => {
-      const opt = document.createElement('option');
-      opt.value = v; opt.textContent = l;
-      kindSel.appendChild(opt);
-    });
-    if (prefill && prefill.kind) kindSel.value = prefill.kind;
-    const tkRow = document.createElement('div');
-    tkRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;';
-    tkRow.appendChild(talaInp); tkRow.appendChild(kindSel);
-    card.appendChild(tkRow);
-
-    const notesInp = document.createElement('input');
-    notesInp.type = 'text'; notesInp.className = 'ef-input';
-    notesInp.placeholder = 'notes (optional)';
-    if (prefill && prefill.notes) notesInp.value = prefill.notes;
-    card.appendChild(notesInp);
+    timeArea.appendChild(hInp); timeArea.appendChild(segLbl('h'));
+    timeArea.appendChild(mInp); timeArea.appendChild(segLbl('m'));
+    timeArea.appendChild(sInp); timeArea.appendChild(segLbl('s'));
+    timeArea.appendChild(remBtn);
+    card.appendChild(timeArea);
 
     card._hInp   = hInp;
     card._mInp   = mInp;
     card._sInp   = sInp;
     card._staged = segStaged;
-    card._tala   = talaInp;
-    card._kind   = kindSel;
-    card._notes  = notesInp;
 
     segRows.appendChild(card);
     hInp.focus();
@@ -4773,12 +4763,21 @@ function buildLecdemEditForm(ref, nodeId) {
 
   const yearInp = efInput(null, 'number', 'e.g. 1965', null);
   yearInp.min = 1900; yearInp.max = 2030;
+  yearInp.style.width = '80px';
   if (ref.year) yearInp.value = ref.year;
-  body.appendChild(efRow('Year', false, null, yearInp));
-
   const lblInp = efInput(null, 'text', 'label', null);
   if (ref.label) lblInp.value = ref.label;
-  body.appendChild(efRow('Label', false, 'optional', lblInp));
+  const yearLblRow = document.createElement('div');
+  yearLblRow.style.cssText = 'display:flex;gap:10px;align-items:flex-start;';
+  const yearCell = document.createElement('div');
+  yearCell.style.flexShrink = '0';
+  yearCell.appendChild(efRow('Year', false, null, yearInp));
+  const lblCell = document.createElement('div');
+  lblCell.style.flex = '1';
+  lblCell.appendChild(efRow('Label', false, 'optional', lblInp));
+  yearLblRow.appendChild(yearCell);
+  yearLblRow.appendChild(lblCell);
+  body.appendChild(yearLblRow);
 
   // ── Footer ────────────────────────────────────────────────────────────────
   function collectNewSegments() {
@@ -4795,12 +4794,6 @@ function buildLecdemEditForm(ref, nodeId) {
         else if (axis === 'composition_ids') seg.composition_id = id;
         else if (axis === 'musician_ids')    seg.musician_id = id;
       });
-      const tala = card._tala.value.trim();
-      if (tala) seg.tala = tala;
-      const kind = card._kind.value;
-      if (kind) seg.kind = kind;
-      const notes = card._notes.value.trim();
-      if (notes) seg.notes = notes;
       segs.push(seg);
     });
     return segs;
@@ -4809,7 +4802,7 @@ function buildLecdemEditForm(ref, nodeId) {
   const stageBtn = document.createElement('button');
   stageBtn.type = 'button';
   stageBtn.className = 'ef-download-btn';
-  stageBtn.textContent = '↪ Stage changes → bundle';
+  stageBtn.textContent = '↪ Stage changes → patch';
   stageBtn.addEventListener('click', () => {
     let count = 0;
     // Stage new subjects (skip originals)
@@ -4837,10 +4830,10 @@ function buildLecdemEditForm(ref, nodeId) {
     });
     if (count > 0) {
       stageBtn.textContent = `✓ Staged ${count} item${count > 1 ? 's' : ''}!`;
-      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → bundle'; }, 1800);
+      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → patch'; }, 1800);
     } else {
       stageBtn.textContent = '(no new items)';
-      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → bundle'; }, 1200);
+      setTimeout(() => { stageBtn.textContent = '↪ Stage changes → patch'; }, 1200);
     }
   });
   foot.appendChild(stageBtn);
@@ -4977,7 +4970,7 @@ function openAddCompositionForm({ composerId, musicianId } = {}) {
         body.innerHTML = '';
         const msg = document.createElement('div');
         msg.className = 'ef-success';
-        msg.innerHTML = '<strong>\u2713 Two items added to bundle:</strong>'
+        msg.innerHTML = '<strong>\u2713 Two items added to patch:</strong>'
           + '<ul style="margin:6px 0;padding-left:1.2em;font-size:0.72rem;">'
           + '<li>Composer record: <code>' + companionId + '</code></li>'
           + '<li>Composition: <code>' + compObj.id + '</code></li>'
@@ -5180,7 +5173,7 @@ function _openGenericEditForm(entityType, id) {
     const stagePatchBtn = document.createElement('button');
     stagePatchBtn.className   = 'ef-download-btn';
     stagePatchBtn.type        = 'button';
-    stagePatchBtn.textContent = '+ Stage Patch \u2192 bundle';
+    stagePatchBtn.textContent = '+ Stage Patch \u2192 patch';
     stagePatchBtn.style.marginTop = '6px';
     stagePatchBtn.addEventListener('click', () => {
       const field = fieldSel.value;
@@ -5214,7 +5207,7 @@ function _openGenericEditForm(entityType, id) {
     const stageNoteBtn = document.createElement('button');
     stageNoteBtn.className   = 'ef-download-btn';
     stageNoteBtn.type        = 'button';
-    stageNoteBtn.textContent = '+ Stage Note \u2192 bundle';
+    stageNoteBtn.textContent = '+ Stage Note \u2192 patch';
     stageNoteBtn.style.marginTop = '6px';
     stageNoteBtn.addEventListener('click', () => {
       const text = noteTA.value.trim();
@@ -5272,7 +5265,7 @@ function _openGenericEditForm(entityType, id) {
     const stageSegBtn = document.createElement('button');
     stageSegBtn.className = 'ef-download-btn';
     stageSegBtn.type = 'button';
-    stageSegBtn.textContent = '+ Stage Segment \u2192 bundle';
+    stageSegBtn.textContent = '+ Stage Segment \u2192 patch';
     stageSegBtn.style.marginTop = '6px';
     stageSegBtn.addEventListener('click', function () {
       const h = parseInt(hInp.value, 10) || 0;
@@ -5313,7 +5306,7 @@ function _openGenericEditForm(entityType, id) {
     const stagePerfBtn = document.createElement('button');
     stagePerfBtn.className = 'ef-download-btn';
     stagePerfBtn.type = 'button';
-    stagePerfBtn.textContent = '+ Stage Performer \u2192 bundle';
+    stagePerfBtn.textContent = '+ Stage Performer \u2192 patch';
     stagePerfBtn.style.marginTop = '6px';
     stagePerfBtn.addEventListener('click', function () {
       const musId = perfCbMus.getValue();
@@ -5536,7 +5529,7 @@ function buildAddMusicianForm({ prefill = null } = {}) {
     // Edit-mode note
     const editNote = document.createElement('p');
     editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
-    editNote.textContent = 'Only changed fields are included in the patch bundle item.';
+    editNote.textContent = 'Only changed fields are included in the patch item.';
     body.appendChild(editNote);
   }
 
@@ -5545,7 +5538,7 @@ function buildAddMusicianForm({ prefill = null } = {}) {
 
   const bundleBtn = document.createElement('button');
   bundleBtn.className  = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.textContent = '+ Add to Patch';
   bundleBtn.disabled   = true;
 
   const previewBtn = document.createElement('button');
@@ -5789,7 +5782,10 @@ function buildAddYouTubeToMusicianForm(musicianId) {
 // so the form opens pre-scoped to that musician (kind pre-fill is informational only
 // until addYoutubeBlock supports a defaultKind parameter).
 function buildMusicianRecordingsForm(opts) {
-  if (opts && opts.nodeId) return buildFocusedYouTubeForm(opts.nodeId);
+  if (opts && opts.nodeId) {
+    if (opts.kind === 'lecdem') return buildFocusedLecdemForm(opts.nodeId);
+    return buildFocusedYouTubeForm(opts.nodeId);
+  }
   return buildAddMusicianForm();
 }
 
@@ -5855,7 +5851,7 @@ function buildFocusedYouTubeForm(musicianId) {
 
   const bundleBtn = document.createElement('button');
   bundleBtn.className  = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.textContent = '+ Add to Patch';
   bundleBtn.disabled   = true;
 
   const dlBtn = document.createElement('button');
@@ -5952,7 +5948,7 @@ function buildFocusedYouTubeForm(musicianId) {
       addToBundle('musicians', { op: 'append', id: musicianId, array: 'youtube', value: data.youtube });
       bundleBtn.disabled = true;
       bundleBtn.textContent = '✓ Added';
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Bundle'; }, 2000);
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Patch'; }, 2000);
     }
   });
 
@@ -5972,12 +5968,29 @@ function buildFocusedLecdemForm(musicianId) {
   const body = win.querySelector('.ew-body');
   const node = (graphData.nodes || []).find(n => n.id === musicianId);
 
-  // ── Musician read-only chip ───────────────────────────────────────────────
+  // ── Musician identity row (read-only, era-tinted) ────────────────────────
+  const musRow = document.createElement('div');
+  musRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
+  const musLabel = document.createElement('span');
+  musLabel.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
+  musLabel.textContent = 'Musician';
   const musicianChip = document.createElement('span');
   musicianChip.className = 'musician-chip';
-  musicianChip.style.cssText = 'cursor:default;align-self:flex-start;';
-  musicianChip.textContent = node ? node.label : musicianId;
-  body.appendChild(efRow('Musician', false, null, musicianChip));
+  musicianChip.style.cursor = 'default';
+  if (node) {
+    const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(node.era || null) : { bg: '', border: '' };
+    musicianChip.style.setProperty('--chip-era-bg', tint.bg);
+    musicianChip.style.setProperty('--chip-era-border', tint.border);
+    if (node.instrument && typeof makeInstrBadge === 'function') {
+      musicianChip.appendChild(makeInstrBadge(node.instrument));
+    }
+    musicianChip.appendChild(document.createTextNode(node.label));
+  } else {
+    musicianChip.textContent = musicianId;
+  }
+  musRow.appendChild(musLabel);
+  musRow.appendChild(musicianChip);
+  body.appendChild(musRow);
 
   // ── URL (required) ────────────────────────────────────────────────────────
   const urlInp = efInput(null, 'text', 'https://youtu.be/…');
@@ -6000,24 +6013,26 @@ function buildFocusedLecdemForm(musicianId) {
   const chipClassMap = { raga_ids: 'raga-chip', composition_ids: 'comp-chip', musician_ids: 'musician-chip' };
   const staged = new Map(); // compositeKey → { axis, id, label }
 
-  const subjectsHeading = document.createElement('div');
-  subjectsHeading.style.cssText = 'font-size:0.68rem;color:var(--fg-sub);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;';
-  subjectsHeading.textContent = 'Subjects';
-  body.appendChild(subjectsHeading);
+  body.appendChild(efSection('Subjects'));
 
   const chipsWrap = document.createElement('div');
-  chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;min-height:22px;';
+  chipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;';
   body.appendChild(chipsWrap);
+
+  const subjectCombo = efCombobox(null, allSubjectOpts, null, win);
+  subjectCombo.style.flex = '1';
+  const addSubjectBtn = document.createElement('button');
+  addSubjectBtn.type = 'button'; addSubjectBtn.textContent = '+';
+  addSubjectBtn.className = 'ef-add-btn';
+  addSubjectBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;';
+  const subjectInputRow = document.createElement('div');
+  subjectInputRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
+  subjectInputRow.appendChild(subjectCombo);
+  subjectInputRow.appendChild(addSubjectBtn);
+  body.appendChild(subjectInputRow);
 
   function redrawSubjectChips() {
     chipsWrap.innerHTML = '';
-    if (staged.size === 0) {
-      const empty = document.createElement('span');
-      empty.style.cssText = 'opacity:0.4;font-size:0.75rem;';
-      empty.textContent = '(none)';
-      chipsWrap.appendChild(empty);
-      return;
-    }
     staged.forEach(({ axis, id, label }, key) => {
       const chip = document.createElement('span');
       chip.className = chipClassMap[axis] || 'raga-chip';
@@ -6030,11 +6045,6 @@ function buildFocusedLecdemForm(musicianId) {
   }
   redrawSubjectChips();
 
-  const subjectCombo = efCombobox(null, allSubjectOpts, null, win);
-  body.appendChild(efRow('Add subject', false, null, subjectCombo));
-
-  const addSubjectBtn = efAddBtn('+ Add');
-  addSubjectBtn.style.marginTop = '4px';
   addSubjectBtn.addEventListener('click', () => {
     const compositeVal = subjectCombo.getValue ? subjectCombo.getValue() : '';
     if (!compositeVal || staged.has(compositeVal)) return;
@@ -6048,7 +6058,6 @@ function buildFocusedLecdemForm(musicianId) {
     redrawSubjectChips();
     if (subjectCombo.setValue) subjectCombo.setValue('');
   });
-  body.appendChild(addSubjectBtn);
 
   // ── Time segments ─────────────────────────────────────────────────────────
   const segmentSep = document.createElement('hr');
@@ -6066,14 +6075,64 @@ function buildFocusedLecdemForm(musicianId) {
   addSegBtn.addEventListener('click', () => {
     const card = document.createElement('div');
     card.className = 'ef-seg-card';
-    card.style.cssText = 'border:1px solid var(--border-soft);border-radius:4px;padding:8px 10px;margin-bottom:8px;background:var(--bg-input);';
+    card.style.cssText = 'display:flex;gap:8px;align-items:center;border-bottom:1px dashed var(--border-soft);padding:6px 2px;margin-bottom:4px;flex-wrap:wrap;';
 
-    // ── Time: HH / MM / SS ─────────────────────────────────────────────────
+    // ── Left: subject chips + inline search ────────────────────────────────
+    const subjectsArea = document.createElement('div');
+    subjectsArea.style.cssText = 'flex:1;display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:0;';
+
+    const segStaged = new Map();
+
+    const segSubjCombo = efCombobox(null, allSubjectOpts, null, win);
+    segSubjCombo.style.flex = '1';
+    segSubjCombo.style.minWidth = '80px';
+    const segAddBtn = document.createElement('button');
+    segAddBtn.type = 'button'; segAddBtn.textContent = '+';
+    segAddBtn.className = 'ef-add-btn';
+    segAddBtn.style.cssText = 'flex-shrink:0;width:24px;height:24px;padding:0;font-size:1rem;line-height:1;';
+    const segComboWrapper = document.createElement('div');
+    segComboWrapper.style.cssText = 'display:flex;gap:4px;align-items:center;flex:1;min-width:80px;';
+    segComboWrapper.appendChild(segSubjCombo);
+    segComboWrapper.appendChild(segAddBtn);
+
+    function redrawSegChips() {
+      subjectsArea.innerHTML = '';
+      segStaged.forEach(({ axis, id, label }, key) => {
+        const chip = document.createElement('span');
+        chip.className = chipClassMap[axis] || 'raga-chip';
+        chip.style.cssText = 'cursor:pointer;font-size:0.72rem;';
+        chip.textContent = label + ' ×';
+        chip.addEventListener('click', () => { segStaged.delete(key); redrawSegChips(); });
+        subjectsArea.appendChild(chip);
+      });
+      subjectsArea.appendChild(segComboWrapper);
+    }
+    redrawSegChips();
+    card.appendChild(subjectsArea);
+
+    segAddBtn.addEventListener('click', () => {
+      const compositeVal = segSubjCombo.getValue ? segSubjCombo.getValue() : '';
+      if (!compositeVal || segStaged.has(compositeVal)) return;
+      const sep = compositeVal.indexOf('::');
+      if (sep < 0) return;
+      const axis = compositeVal.slice(0, sep);
+      const id   = compositeVal.slice(sep + 2);
+      const optListMap = { raga_ids: ragaOpts, composition_ids: compOpts, musician_ids: musOpts };
+      const opt = (optListMap[axis] || []).find(o => o.value === id);
+      segStaged.set(compositeVal, { axis, id, label: opt ? opt.label : id });
+      redrawSegChips();
+      if (segSubjCombo.setValue) segSubjCombo.setValue('');
+    });
+
+    // ── Right: timestamp + remove ──────────────────────────────────────────
+    const timeArea = document.createElement('div');
+    timeArea.style.cssText = 'flex-shrink:0;display:flex;gap:3px;align-items:center;';
+
     function makeNum(ph, maxVal) {
       const inp = document.createElement('input');
       inp.type = 'number'; inp.min = '0'; inp.max = String(maxVal);
       inp.placeholder = ph; inp.className = 'ef-input';
-      inp.style.cssText = 'width:56px;text-align:center;';
+      inp.style.cssText = 'width:44px;text-align:center;padding:2px 4px;';
       return inp;
     }
     function segLbl(t) {
@@ -6088,103 +6147,23 @@ function buildFocusedLecdemForm(musicianId) {
 
     const remBtn = document.createElement('button');
     remBtn.type = 'button'; remBtn.title = 'Remove segment';
-    remBtn.style.cssText = 'margin-left:auto;flex-shrink:0;background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1rem;padding:0 4px;line-height:1;';
+    remBtn.style.cssText = 'background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:1rem;padding:0 2px;line-height:1;margin-left:2px;';
     remBtn.textContent = '×';
     remBtn.addEventListener('mouseover', () => { remBtn.style.color = 'var(--accent-danger)'; });
     remBtn.addEventListener('mouseout',  () => { remBtn.style.color = 'var(--fg-muted)'; });
     remBtn.addEventListener('click', () => card.remove());
 
-    const timeRow = document.createElement('div');
-    timeRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;';
-    timeRow.appendChild(hInp); timeRow.appendChild(segLbl('h'));
-    timeRow.appendChild(mInp); timeRow.appendChild(segLbl('m'));
-    timeRow.appendChild(sInp); timeRow.appendChild(segLbl('s'));
-    timeRow.appendChild(remBtn);
-    card.appendChild(timeRow);
-
-    // ── Subjects: reuse allSubjectOpts / ragaOpts / compOpts / musOpts / chipClassMap ─
-    const segStaged = new Map();
-    const segChipsWrap = document.createElement('div');
-    segChipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;min-height:20px;margin-bottom:6px;';
-    function redrawSegChips() {
-      segChipsWrap.innerHTML = '';
-      if (segStaged.size === 0) {
-        const em = document.createElement('span');
-        em.style.cssText = 'opacity:0.4;font-size:0.72rem;';
-        em.textContent = '(none)';
-        segChipsWrap.appendChild(em);
-        return;
-      }
-      segStaged.forEach(({ axis, id, label }, key) => {
-        const chip = document.createElement('span');
-        chip.className = chipClassMap[axis] || 'raga-chip';
-        chip.style.cssText = 'cursor:pointer;font-size:0.72rem;';
-        chip.textContent = label + ' ×';
-        chip.addEventListener('click', () => { segStaged.delete(key); redrawSegChips(); });
-        segChipsWrap.appendChild(chip);
-      });
-    }
-    redrawSegChips();
-    card.appendChild(segChipsWrap);
-
-    const segSubjCombo = efCombobox(null, allSubjectOpts, null, win);
-    segSubjCombo.style.flex = '1';
-    const segTagBtn = document.createElement('button');
-    segTagBtn.type = 'button'; segTagBtn.textContent = '+ Tag';
-    segTagBtn.className = 'ef-add-btn';
-    segTagBtn.addEventListener('click', () => {
-      const compositeVal = segSubjCombo.getValue ? segSubjCombo.getValue() : '';
-      if (!compositeVal || segStaged.has(compositeVal)) return;
-      const sep = compositeVal.indexOf('::');
-      if (sep < 0) return;
-      const axis = compositeVal.slice(0, sep);
-      const id   = compositeVal.slice(sep + 2);
-      const optListMap = { raga_ids: ragaOpts, composition_ids: compOpts, musician_ids: musOpts };
-      const opt = (optListMap[axis] || []).find(o => o.value === id);
-      segStaged.set(compositeVal, { axis, id, label: opt ? opt.label : id });
-      redrawSegChips();
-      if (segSubjCombo.setValue) segSubjCombo.setValue('');
-    });
-    card.appendChild(efRow('Add tag', false, null, segSubjCombo));
-    card.appendChild(segTagBtn);
-
-    // ── Tala + Kind ────────────────────────────────────────────────────────
-    const talaInp = document.createElement('input');
-    talaInp.type = 'text'; talaInp.className = 'ef-input';
-    talaInp.placeholder = 'tala (e.g. ādi)';
-    talaInp.style.flex = '1';
-    const kindSel = document.createElement('select');
-    kindSel.className = 'ef-select'; kindSel.style.flex = '1';
-    [
-      ['', '— kind —'], ['kriti', 'Kriti'], ['varnam', 'Varnam'],
-      ['padam', 'Padam'], ['javali', 'Jāvaḷi'], ['tillana', 'Tillāna'],
-      ['alapana', 'Ālāpana'], ['tanam', 'Tānam'], ['niraval', 'Nirval'],
-      ['kalpanaswaram', 'Kalpanāswaram'], ['tani', 'Tani āvartana'],
-      ['other', 'Other'],
-    ].forEach(([v, l]) => {
-      const opt = document.createElement('option');
-      opt.value = v; opt.textContent = l;
-      kindSel.appendChild(opt);
-    });
-    const tkRow = document.createElement('div');
-    tkRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;';
-    tkRow.appendChild(talaInp); tkRow.appendChild(kindSel);
-    card.appendChild(tkRow);
-
-    // ── Notes ──────────────────────────────────────────────────────────────
-    const notesInp = document.createElement('input');
-    notesInp.type = 'text'; notesInp.className = 'ef-input';
-    notesInp.placeholder = 'notes (optional)';
-    card.appendChild(notesInp);
+    timeArea.appendChild(hInp); timeArea.appendChild(segLbl('h'));
+    timeArea.appendChild(mInp); timeArea.appendChild(segLbl('m'));
+    timeArea.appendChild(sInp); timeArea.appendChild(segLbl('s'));
+    timeArea.appendChild(remBtn);
+    card.appendChild(timeArea);
 
     // Stash references for collectSegments()
     card._hInp   = hInp;
     card._mInp   = mInp;
     card._sInp   = sInp;
     card._staged = segStaged;
-    card._tala   = talaInp;
-    card._kind   = kindSel;
-    card._notes  = notesInp;
 
     segRows.appendChild(card);
     hInp.focus();
@@ -6197,44 +6176,95 @@ function buildFocusedLecdemForm(musicianId) {
 
   const yearInp = efInput(null, 'number', 'e.g. 1965', null);
   yearInp.min = 1900; yearInp.max = 2030;
-  body.appendChild(efRow('Year', false, null, yearInp));
-
+  yearInp.style.width = '80px';
   const lblInp = efInput(null, 'text', 'auto-generated from raga subjects if empty', null);
-  body.appendChild(efRow('Label', false, 'optional', lblInp));
+  const yearLblRow = document.createElement('div');
+  yearLblRow.style.cssText = 'display:flex;gap:10px;align-items:flex-start;';
+  const yearCell = document.createElement('div');
+  yearCell.style.flexShrink = '0';
+  yearCell.appendChild(efRow('Year', false, null, yearInp));
+  const lblCell = document.createElement('div');
+  lblCell.style.flex = '1';
+  lblCell.appendChild(efRow('Label', false, 'optional', lblInp));
+  yearLblRow.appendChild(yearCell);
+  yearLblRow.appendChild(lblCell);
+  body.appendChild(yearLblRow);
 
-  // ── Accompanists ──────────────────────────────────────────────────────────
-  const perfContainer = document.createElement('div');
-  perfContainer.style.cssText = 'margin-top:8px;padding-top:8px;border-top:1px dashed var(--border-soft);';
-  const perfHeading = document.createElement('div');
-  perfHeading.style.cssText = 'font-size:0.7rem;font-weight:600;color:var(--fg-muted);margin-bottom:4px;';
-  perfHeading.textContent = 'Accompanists';
-  perfContainer.appendChild(perfHeading);
-  const perfRows = document.createElement('div');
-  perfRows.className = 'ef-performers-rows';
-  perfContainer.appendChild(perfRows);
-  const addPerfBtn = efAddBtn('+ Add Accompanist');
-  perfContainer.appendChild(addPerfBtn);
-  addPerfBtn.addEventListener('click', () => addYoutubePerformerBlock(perfRows, win));
-  body.appendChild(perfContainer);
+  // ── Accompanists (chip-based) ─────────────────────────────────────────────
+  const perfSep = document.createElement('hr');
+  perfSep.className = 'ef-group-sep';
+  body.appendChild(perfSep);
+  body.appendChild(efSection('Accompanists'));
+
+  const perfChips = new Map(); // musician_id → { id, label, instrument }
+  const perfChipsWrap = document.createElement('div');
+  perfChipsWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;';
+  body.appendChild(perfChipsWrap);
+
+  const perfMusOpts = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+  const perfCombo = efCombobox(null, perfMusOpts, null, win);
+  perfCombo.style.flex = '1';
+  const addPerfBtn = document.createElement('button');
+  addPerfBtn.type = 'button'; addPerfBtn.textContent = '+';
+  addPerfBtn.className = 'ef-add-btn';
+  addPerfBtn.style.cssText = 'flex-shrink:0;width:28px;height:28px;padding:0;font-size:1.1rem;line-height:1;';
+  const perfInputRow = document.createElement('div');
+  perfInputRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;';
+  perfInputRow.appendChild(perfCombo);
+  perfInputRow.appendChild(addPerfBtn);
+  body.appendChild(perfInputRow);
+
+  function redrawPerfChips() {
+    perfChipsWrap.innerHTML = '';
+    perfChips.forEach(({ id, label }, key) => {
+      const chip = document.createElement('span');
+      chip.className = 'musician-chip';
+      chip.style.cursor = 'pointer';
+      const perfNode = (graphData.nodes || []).find(n => n.id === id);
+      if (perfNode) {
+        const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(perfNode.era || null) : { bg: '', border: '' };
+        chip.style.setProperty('--chip-era-bg', tint.bg);
+        chip.style.setProperty('--chip-era-border', tint.border);
+        if (perfNode.instrument && typeof makeInstrBadge === 'function') {
+          chip.appendChild(makeInstrBadge(perfNode.instrument));
+        }
+      }
+      chip.appendChild(document.createTextNode(label + ' ×'));
+      chip.title = 'Remove ' + label;
+      chip.addEventListener('click', () => { perfChips.delete(key); redrawPerfChips(); });
+      perfChipsWrap.appendChild(chip);
+    });
+  }
+
+  addPerfBtn.addEventListener('click', () => {
+    const id = perfCombo.getValue ? perfCombo.getValue() : '';
+    if (!id || perfChips.has(id)) return;
+    const perfNode = (graphData.nodes || []).find(n => n.id === id);
+    const label = perfNode ? (perfNode.label || id) : id;
+    const instrument = perfNode ? (perfNode.instrument || 'vocal') : 'vocal';
+    perfChips.set(id, { id, label, instrument });
+    redrawPerfChips();
+    if (perfCombo.setValue) perfCombo.setValue('');
+  });
 
   // ── Footer ────────────────────────────────────────────────────────────────
   const footer = win.querySelector('.ew-footer');
 
-  const previewBtn = document.createElement('button');
-  previewBtn.className = 'ef-preview-btn';
-  previewBtn.textContent = 'Preview JSON';
+  const bundleBtn = document.createElement('button');
+  bundleBtn.className = 'ef-download-btn';
+  bundleBtn.textContent = '+ Add to Patch';
 
   const dlBtn = document.createElement('button');
   dlBtn.className = 'ef-preview-btn';
   dlBtn.textContent = '⬇ Standalone JSON';
 
-  const bundleBtn = document.createElement('button');
-  bundleBtn.className = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  const previewBtn = document.createElement('button');
+  previewBtn.className = 'ef-preview-btn';
+  previewBtn.textContent = 'Preview JSON';
 
-  footer.appendChild(previewBtn);
-  footer.appendChild(dlBtn);
   footer.appendChild(bundleBtn);
+  footer.appendChild(dlBtn);
+  footer.appendChild(previewBtn);
 
   const previewPre = document.createElement('pre');
   previewPre.className = 'ef-preview-pre';
@@ -6255,12 +6285,6 @@ function buildFocusedLecdemForm(musicianId) {
         else if (axis === 'composition_ids') seg.composition_id = id;
         else if (axis === 'musician_ids')    seg.musician_id = id;
       });
-      const tala = card._tala.value.trim();
-      if (tala) seg.tala = tala;
-      const kind = card._kind.value;
-      if (kind) seg.kind = kind;
-      const notes = card._notes.value.trim();
-      if (notes) seg.notes = notes;
       segs.push(seg);
     });
     return segs;
@@ -6278,10 +6302,16 @@ function buildFocusedLecdemForm(musicianId) {
     const subjects = { raga_ids: [], composition_ids: [], musician_ids: [] };
     staged.forEach(({ axis, id }) => { subjects[axis].push(id); });
     const hostNode_ = (graphData.nodes || []).find(n => n.id === musicianId);
-    const hostInstrument = hostNode_ ? hostNode_.instrument : 'vocal';
-    const performers = (typeof collectYoutubePerformers === 'function')
-      ? collectYoutubePerformers({ querySelector: s => perfRows.querySelector(s), querySelectorAll: s => perfRows.querySelectorAll(s) }, musicianId, hostInstrument)
-      : null;
+    const hostInstrument = hostNode_ ? (hostNode_.instrument || 'vocal') : 'vocal';
+    let performers = null;
+    if (perfChips.size > 0) {
+      const perfs = [];
+      if (!perfChips.has(musicianId)) {
+        perfs.push({ musician_id: musicianId, role: hostInstrument });
+      }
+      perfChips.forEach(({ id, instrument }) => { perfs.push({ musician_id: id, role: instrument }); });
+      performers = perfs;
+    }
     const entry = { url, label: lbl, kind: 'lecdem', subjects };
     if (year) entry.year = parseInt(year, 10);
     const segs = collectSegments();
@@ -6403,7 +6433,7 @@ function openAddYouTubeFormForComposition({ compositionId, ragaId, compositionTi
 
   const bundleBtn = document.createElement('button');
   bundleBtn.className  = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.textContent = '+ Add to Patch';
   bundleBtn.disabled   = true;
 
   const dlBtn = document.createElement('button');
@@ -6508,7 +6538,7 @@ function openAddYouTubeFormForComposition({ compositionId, ragaId, compositionTi
       items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
       bundleBtn.textContent = '✓ Added';
       bundleBtn.disabled = true;
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Bundle'; }, 2000);
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Patch'; }, 2000);
     }
   });
 
@@ -6566,7 +6596,7 @@ function openAddYouTubeFormForRaga({ ragaId, ragaLabel } = {}) {
 
   const bundleBtn = document.createElement('button');
   bundleBtn.className  = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Bundle';
+  bundleBtn.textContent = '+ Add to Patch';
   bundleBtn.disabled   = true;
 
   const dlBtn = document.createElement('button');
@@ -6671,7 +6701,7 @@ function openAddYouTubeFormForRaga({ ragaId, ragaLabel } = {}) {
       items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
       bundleBtn.textContent = '✓ Added';
       bundleBtn.disabled = true;
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Bundle'; }, 2000);
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Patch'; }, 2000);
     }
   });
 

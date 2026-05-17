@@ -1594,9 +1594,23 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     const labelSpan = document.createElement('span');
     labelSpan.className = 'lecdem-label-chip recording-chip';
     labelSpan.textContent = ref.label || 'Lecture-Demo';
-    labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo';
+    labelSpan.title = (ref.label || 'Lecture-Demo') + ' — Watch lecture-demo · Double-click to edit';
     if (ref.video_id && typeof applyChipRole === 'function')
       applyChipRole(labelSpan, 'entity', 'recording', ref.video_id);
+    // Double-click → Edit Lecdem form
+    if (nodeId) {
+      let _ldDblTap = 0;
+      labelSpan.addEventListener('click', e => {
+        e.stopPropagation();
+        const now = Date.now();
+        if (now - _ldDblTap < 400) {
+          _ldDblTap = 0;
+          if (typeof buildLecdemEditForm === 'function') buildLecdemEditForm(ref, nodeId);
+        } else {
+          _ldDblTap = now;
+        }
+      });
+    }
     row.appendChild(labelSpan);
 
     const actsDiv = document.createElement('div');
@@ -1666,8 +1680,23 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   const titleSpan = document.createElement('span');
   titleSpan.className = 'concert-title lecdem-title recording-chip';
   titleSpan.textContent = ref.label || 'Lecture-Demo';
+  titleSpan.title = (ref.label || 'Lecture-Demo') + ' — Double-click to edit';
   if (ref.video_id && typeof applyChipRole === 'function')
     applyChipRole(titleSpan, 'entity', 'recording', ref.video_id);
+  // Double-click → Edit Lecdem form
+  if (nodeId) {
+    let _ldDblTap2 = 0;
+    titleSpan.addEventListener('click', e => {
+      e.stopPropagation();
+      const now = Date.now();
+      if (now - _ldDblTap2 < 400) {
+        _ldDblTap2 = 0;
+        if (typeof buildLecdemEditForm === 'function') buildLecdemEditForm(ref, nodeId);
+      } else {
+        _ldDblTap2 = now;
+      }
+    });
+  }
   titleRow.appendChild(titleSpan);
 
   if (ref.year) {
