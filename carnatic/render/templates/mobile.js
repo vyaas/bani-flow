@@ -239,11 +239,6 @@
     if (typeof cy !== 'undefined') {
       setTimeout(function () { cy.resize(); }, 50);
     }
-    // If raga wheel is active, redraw with corrected canvas dimensions
-    if (typeof currentView !== 'undefined' && currentView === 'raga' &&
-        typeof drawRagaWheel === 'function') {
-      setTimeout(function () { drawRagaWheel(); }, 80);
-    }
   }
 
   function _applyPinState() {
