@@ -931,14 +931,38 @@
               var matching = (musicianToPerformances[subjectId] || []).filter(function (p) {
                 return p.raga_id === refs.raga_id && p.composition_id === refs.composition_id;
               });
-              // ADR-147 polish v3: fallback — if the subject has no recording
-              // of this comp in this raga, surface the first available rendering
-              // from compositionToPerf so the row still carries a play button
-              // instead of dangling chipless.
-              if (!matching.length && typeof compositionToPerf !== 'undefined') {
-                matching = (compositionToPerf[refs.composition_id] || []).filter(function (p) {
-                  return p.raga_id === refs.raga_id;
-                }).slice(0, 1);
+              // ADR-147 polish v3: if no session-based recording matches, fall
+              // through to the musician node's own youtube[] array — these are
+              // standalone YouTube links curated on the musician file and are
+              // NOT folded into musicianToPerformances (which is built only
+              // from recordings/*.json session files). Without this fallback,
+              // a tutorial row referencing a raga+composition that the subject
+              // has only as a youtube[] entry would render chipless with no
+              // play button (the failure mode the user caught on the atana row).
+              if (!matching.length && typeof graphData !== 'undefined') {
+                const node = (graphData.nodes || []).find(function (n) { return n.id === subjectId; });
+                const ytList = (node && node.youtube) || [];
+                matching = ytList
+                  .filter(function (yt) {
+                    return yt.raga_id === refs.raga_id && yt.composition_id === refs.composition_id;
+                  })
+                  .map(function (yt) {
+                    var vid = '';
+                    if (yt.url) {
+                      var m = String(yt.url).match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+                      if (m) vid = m[1];
+                    }
+                    return {
+                      video_id:       vid,
+                      display_title:  yt.label || '',
+                      short_title:    yt.label || '',
+                      raga_id:        yt.raga_id || null,
+                      composition_id: yt.composition_id || null,
+                      offset_seconds: 0,
+                      recording_id:   null,
+                    };
+                  })
+                  .filter(function (p) { return p.video_id; });
               }
               matching.forEach(function (perf) {
                 const vLine = _el('div', 'pt-v5-version-line');
@@ -1236,21 +1260,22 @@
     if (!subject || !subject.id) return;
     if (slot === 'bani') {
       // Only auto-load if no subject is already pinned in the bani panel.
+      // #listening-trail is display:none until a subject is loaded, so its
+      // computed display is the most reliable empty-state signal.
       const trail = document.getElementById('listening-trail');
-      const alreadyLoaded = trail && trail.style.display !== 'none';
-      if (alreadyLoaded) return;
+      const cs = trail ? window.getComputedStyle(trail).display : 'none';
+      if (cs !== 'none') return;
       if (typeof triggerBaniSearch === 'function') {
         try { triggerBaniSearch(subject.kind || 'raga', subject.id); } catch (_) {}
       }
     } else if (slot === 'musician') {
-      // Only auto-load if no musician is currently selected.
-      const nodeInfo = document.getElementById('node-info');
-      const recPanel = document.getElementById('recordings-panel');
-      const alreadyLoaded = (recPanel && recPanel.style.display !== 'none') ||
-        (nodeInfo && nodeInfo.style.display !== 'none' &&
-         (document.getElementById('node-name') || {}).textContent &&
-         (document.getElementById('node-name')).textContent.trim() !== '—');
-      if (alreadyLoaded) return;
+      // Empty state: #node-name shows the em-dash placeholder (—, U+2014).
+      // Don't rely on #node-info display because CSS keeps it visible even
+      // before a node is selected; the placeholder text is the truth.
+      const nameEl = document.getElementById('node-name');
+      const txt = nameEl ? (nameEl.textContent || '').trim() : '';
+      const empty = !txt || txt === '—' || txt === '-';
+      if (!empty) return;
       _orientToMusician(subject.id);
     }
   }

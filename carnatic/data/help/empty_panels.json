@@ -117,8 +117,8 @@
           },
           {
             "row_kind": "recording_tree",
-            "data_refs": { "raga_id": "harikambhoji", "composition_id": "enduku_nirdaya" },
-            "annotation": "{comp:enduku_nirdaya} — a {musician:tyagaraja} kriti in {raga:harikambhoji}, the 28th mela. Where Begada was hushed and devotional, Harikambhoji is bright and pleading. Two ragas, two moods, the same voice — the recordings tree is how that range becomes visible."
+            "data_refs": { "raga_id": "atana", "composition_id": "ilalo_pranatartihara" },
+            "annotation": "{comp:ilalo_pranatartihara} — another {musician:tyagaraja} kriti, this one in {raga:atana}. Where Begada was hushed and devotional, Atana is heroic and declamatory — the same voice can hold both. The recordings tree is how that range becomes visible: tap a version's ▶ to hear that one specifically."
           }
         ]
       },
