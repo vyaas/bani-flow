@@ -9,7 +9,7 @@
       },
       {
         "position": "above_her_strip",
-        "text": "{raga:reetigowla} has no Hindustani equivalent. Most ragas don't. When they do, the resemblance is in the swaras — not the sound. {raga:darbari_kanada} (Carnatic, in the {raga:natabhairavi} swara-bucket) is mirrored by Hindustani {raga:darbari} — same notes, two entirely different musical worlds. Look for the cool blue ↔ chip on those ragas."
+        "text": "{raga:reetigowla} has no Hindustani equivalent. Most Carnatic ragas don't. When they do, the resemblance is in the swaras — not the sound. {raga:darbari_kanada} (Carnatic, in the {raga:natabhairavi} swara-bucket) is mirrored by Hindustani {raga:darbari} — same notes, two entirely different musical worlds. Look for the cool blue ↔ chip on those ragas."
       },
       {
         "position": "above_filter",
@@ -24,7 +24,7 @@
           {
             "row_kind": "lecdem",
             "data_refs": { "lecdem_musician_id": "david_shulman", "lecdem_video_id": "yjbAbMu8mzY", "lecdem_url": "https://youtu.be/yjbAbMu8mzY", "lecdem_label": "How to Put Together a Goddess out of Musical Scales" },
-            "annotation": "Meaning and context. {musician:david_shulman} is a Sanskritist and a Carnatic vocalist; his lecture reads {raga:reetigowla} as Dikshitar reads it — as a vessel for a goddess. Hear what the raga means before you hear what it sounds like."
+            "annotation": "Meaning and context. {musician:david_shulman} is a Sanskritist and Musicologist ; his lecture reads {raga:reetigowla} as Dikshitar reads it — as a vessel for a goddess. Hear what the raga means (meant?) before you hear what it sounds like."
           },
           {
             "row_kind": "lecdem",
@@ -113,7 +113,7 @@
           {
             "row_kind": "recording_tree",
             "data_refs": { "raga_id": "begada", "composition_id": "abhimanamennedu" },
-            "annotation": "{musician:ramnad_krishnan} in {raga:begada} is said to be unparalleled. {comp:abhimanamennedu} — a kriti of Patnam Subramanya Iyer — appears here with each surviving version stacked underneath. Tap a version's ▶ to hear that one specifically; tap the composition chip to open {raga:begada}'s full Bani Flow trail across every musician in the graph who has recorded in it."
+            "annotation": "{musician:ramnad_krishnan} in {raga:begada} is said to be unparalleled. {comp:abhimanamennedu} — a kriti of {musician:patnam_subramanya_iyer} — appears here with each surviving version stacked underneath. Tap a version's ▶ to hear that one specifically; tap the composition chip to open {raga:begada}'s full Bani Flow trail across every musician in the graph who has recorded in it."
           },
           {
             "row_kind": "recording_tree",
