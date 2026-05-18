@@ -1,26 +1,19 @@
 {
   "schema_version": 5,
-  "intro_ribbon": "Worked example — tap any chip to follow the trail, or use the search above to begin your own.",
   "bani_flow_panel": {
     "subject": { "kind": "raga", "id": "reetigowla" },
     "header_annotations": [
       {
-        "position": "above_raga_chip",
-        "text": "This is the raga header. Every Bani Flow trail opens with the raga (or composition) you chose — here, {raga:reetigowla}. The ↗ opens the Wikipedia page."
-      },
-      {
         "position": "above_janya_row",
-        "text": "{raga:reetigowla} is a janya — a 'derived' raga — born from the 22nd mela, {raga:kharaharapriya}. A mela is a parent scale, complete with all seven swaras in fixed order; a janya selects, skips, twists, or curves through those swaras to become its own personality. Tap {raga:kharaharapriya} to climb up to the parent and see its other children — {raga:reetigowla}'s siblings.",
-        "janya_of": "kharaharapriya"
+        "text": "Bani Flow panels open with a raga (or composition). The chip above is {raga:reetigowla}, a raga associated with the 22nd mela {raga:kharaharapriya}. A mela is simply a label for a swara-bucket — the raga that carries the mela's name is no more special than any other raga in the same bucket. Tap {raga:kharaharapriya} to swap the panel over to it and see the other ragas grouped under the same swara-set."
       },
       {
         "position": "above_her_strip",
-        "text": "{raga:reetigowla} has no Hindustani equivalent. Most ragas don't. But some do — and when they do, the resemblance is in the swaras, not in the sound. {raga:darbari_kanada} (Carnatic, a janya of the 20th mela {raga:natabhairavi}) is mirrored by Hindustani {raga:darbari} — same notes, two entirely different musical worlds. Look for the cool blue ↔ chip on those ragas.",
-        "her_example": { "carnatic_id": "darbari_kanada", "hindustani_id": "darbari", "mela_id": "natabhairavi" }
+        "text": "{raga:reetigowla} has no Hindustani equivalent. Most ragas don't. When they do, the resemblance is in the swaras — not the sound. {raga:darbari_kanada} (Carnatic, in the {raga:natabhairavi} swara-bucket) is mirrored by Hindustani {raga:darbari} — same notes, two entirely different musical worlds. Look for the cool blue ↔ chip on those ragas."
       },
       {
         "position": "above_filter",
-        "text": "As the trail grows, the filter narrows it. Type a composition name, a musician's name, or a raga to focus this panel on a slice of the trail. The filter is shape-preserving — sections collapse if empty, but the tree structure stays intact."
+        "text": "The Filter trail input above narrows the sections below by composition name, musician name, or raga. The tree structure stays intact — sections collapse if empty."
       }
     ],
     "sections": [
@@ -70,23 +63,19 @@
     ],
     "closing_note": {
       "icon": "wheel",
-      "text": "Every play button ▶ opens the floating YouTube player. Tap {raga:kharaharapriya} to climb the mela wheel — the wheel will rotate to centre the 22nd mela and {raga:reetigowla} will be highlighted as one of its children. The tradition has two faces: this panel is the raga face, the wheel is the modal face, and they speak to each other through every chip you tap."
+      "text": "Every play button ▶ opens the floating YouTube player. Tap {raga:kharaharapriya} to climb the mela wheel — the wheel will rotate to centre the 22nd-mela swara-bucket and the ragas inside it become reachable in one tap. The tradition has two faces: this panel is the raga face, the wheel is the modal face, and they speak to each other through every chip you tap."
     }
   },
   "musician_panel": {
     "subject": { "kind": "musician", "id": "ramnad_krishnan" },
     "header_annotations": [
       {
-        "position": "above_musician_chip",
-        "text": "This is the musician header. The ↥ 4 is the lineage depth — {musician:ramnad_krishnan} sits four generations downstream from the root of his bani. The ↗ opens his Wikipedia page. Every musician in the graph has a Wikipedia source — the curation rule is absolute."
-      },
-      {
         "position": "beside_era_dot",
-        "text": "The coloured bar on the left of the chip encodes the era. Six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. {musician:ramnad_krishnan} (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record."
+        "text": "The chip above is {musician:ramnad_krishnan}. The coloured bar on its left encodes the era — six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. Ramnad Krishnan (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record. The ↥ 4 reads as 'four generations downstream from the root of his bani'. Every musician in the graph cites a Wikipedia source — the curation rule is absolute."
       },
       {
         "position": "above_filter",
-        "text": "The filter narrows the recordings list by raga, composition, or co-performer name. The sections below collapse and reform around your query without losing their tree shape."
+        "text": "The Filter recordings input above narrows the sections below by raga, composition, or co-performer name. Sections collapse and reform around your query without losing their tree shape."
       }
     ],
     "sections": [
@@ -97,7 +86,7 @@
           {
             "row_kind": "lecdem",
             "data_refs": { "lecdem_musician_id": "savita_narasimhan", "lecdem_subject_musician_id": "ramnad_krishnan", "lecdem_video_id": "taMZcVu0fh8", "lecdem_url": "https://youtu.be/taMZcVu0fh8", "lecdem_label": "On Ramnad Krishnan" },
-            "annotation": "A lec-dem about {musician:ramnad_krishnan} hosted on {musician:savita_narasimhan}'s profile but surfaced here because Ramnad Krishnan is its subject. This is how lecdems are indexed: by host and by subject, so they appear wherever their meaning lives. Begin a musician's profile with the lecdems — let someone introduce you before the recordings begin."
+            "annotation": "A lec-dem about {musician:ramnad_krishnan} hosted on {musician:savita_narasimhan}'s profile but surfaced here because Ramnad Krishnan is its subject. Lecdems are indexed by host and by subject, so they appear wherever their meaning lives. Begin a musician's profile with the lecdems — let someone introduce you before the recordings begin."
           }
         ]
       },
@@ -128,24 +117,19 @@
           },
           {
             "row_kind": "recording_tree",
-            "data_refs": { "raga_id": "atana", "composition_id": "ilalo_pranatartihara" },
-            "annotation": "{comp:ilalo_pranatartihara} — a {musician:tyagaraja} kriti in {raga:atana}, the bold, heroic janya of {raga:kharaharapriya} that the Tyagaraja school made its own. {musician:ramnad_krishnan} takes it at the brisk, declarative tempo Atana invites — a different face of the same voice that sang Begada at devotional rest."
+            "data_refs": { "raga_id": "harikambhoji", "composition_id": "enduku_nirdaya" },
+            "annotation": "{comp:enduku_nirdaya} — a {musician:tyagaraja} kriti in {raga:harikambhoji}, the 28th mela. Where Begada was hushed and devotional, Harikambhoji is bright and pleading. Two ragas, two moods, the same voice — the recordings tree is how that range becomes visible."
           }
         ]
       },
       {
         "kind": "compositions_empty",
-        "section_gloss": "This section lists compositions authored by this musician. {musician:ramnad_krishnan} was a performer of immense range but not a composer — so this section is empty. Open the panel of one of the Trinity instead — {musician:tyagaraja}, {musician:muthuswami_dikshitar}, or {musician:shyama_shastri} — and watch this section bloom into hundreds of works, each one a door into a raga.",
-        "trinity_chips": [
-          { "kind": "musician", "id": "tyagaraja", "label": "Tyagaraja" },
-          { "kind": "musician", "id": "muthuswami_dikshitar", "label": "Muthuswami Dikshitar" },
-          { "kind": "musician", "id": "shyama_shastri", "label": "Shyama Shastri" }
-        ]
+        "section_gloss": "This section lists compositions authored by this musician. {musician:ramnad_krishnan} was a performer of immense range but not a composer — so this section is empty. Open the panel of one of the Trinity instead — {musician:tyagaraja}, {musician:muthuswami_dikshitar}, or {musician:shyama_shastri} — and watch this section bloom into hundreds of works, each one a door into a raga."
       }
     ],
     "closing_note": {
       "icon": "graph",
-      "text": "Every chip you tap in this panel echoes across the canvas. Tap a raga chip and the mela wheel rotates to centre its parent mela. Tap a musician chip and the Guru-Shishya graph lights up the lineage — the chain of teachers and students through which this artist learnt and taught. The graph is sparse on purpose: only musicians connected by a documented relationship appear. The tradition is a forest, not a list."
+      "text": "Every chip you tap in this panel echoes across the canvas. Tap a raga chip and the mela wheel rotates to centre its swara-bucket. Tap a musician chip and the Guru-Shishya graph lights up the lineage — the chain of teachers and students through which this artist learnt and taught. The graph is sparse on purpose: only musicians connected by a documented relationship appear. The tradition is a forest, not a list."
     }
   }
 }
