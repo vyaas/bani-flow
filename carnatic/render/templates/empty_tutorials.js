@@ -942,18 +942,18 @@
               if (!matching.length && typeof graphData !== 'undefined') {
                 const node = (graphData.nodes || []).find(function (n) { return n.id === subjectId; });
                 const ytList = (node && node.youtube) || [];
+                // NB: graphData.nodes[*].youtube is mapped in html_generator.py
+                // from cytoscape e.data.tracks (graph_builder.py), so each entry
+                // already has `vid` (11-char YouTube id) extracted — no URL
+                // parsing needed. Fields: vid, label, composition_id, raga_id,
+                // year, version, tala, performers.
                 matching = ytList
                   .filter(function (yt) {
                     return yt.raga_id === refs.raga_id && yt.composition_id === refs.composition_id;
                   })
                   .map(function (yt) {
-                    var vid = '';
-                    if (yt.url) {
-                      var m = String(yt.url).match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
-                      if (m) vid = m[1];
-                    }
                     return {
-                      video_id:       vid,
+                      video_id:       yt.vid || '',
                       display_title:  yt.label || '',
                       short_title:    yt.label || '',
                       raga_id:        yt.raga_id || null,
@@ -1389,12 +1389,79 @@
     });
   }
 
-  // ── Initial paint: both panels are empty on first load ───────────────────
+  // ── Initial paint: "hello world" state ───────────────────────────────────
+  // ADR-147 polish v4 (user request): the page should open with both
+  // tutorial subjects already populating their panels AND both help decks
+  // visible — a guided home screen rather than two blank panels.
+  //
+  // Sequence (order matters):
+  //   1. Render and show tutorials so dataset.rendered=1 (cheap, sync).
+  //   2. Wait for cy to be ready (poll for cy + cy.nodes().length>0); raga
+  //      arrays (ragas, compositions) are inlined as globals at render time
+  //      so they're always available, but cy backs both selectNode (right
+  //      panel) and parts of applyBaniFilter (trail list rendering).
+  //   3. Load the bani subject via triggerBaniSearch — populates the
+  //      sticky-zone subject header + janya row + trail filter, fills the
+  //      scroll-zone listening trail.
+  //   4. Load the musician subject via selectNode — populates the
+  //      sticky-zone musician chip + wiki link, fills the scroll-zone
+  //      recordings panel. selectNode auto-dismisses any active help
+  //      overlay, which is why we open help AFTER, not before.
+  //   5. Enter help on both panels. _enterHelp hides the scroll-zone
+  //      children (trail, recordings list) and shows the tutorial deck on
+  //      top, while the sticky-zone subject headers stay visible above the
+  //      deck. _ensureDemoSubjectLoaded inside _enterHelp is now idempotent
+  //      against this case — its empty-state checks see the populated panel
+  //      and skip the re-load.
+  function _bootHelloWorld() {
+    if (!helpEmptyPanels) return;
+    // Bani subject (reetigowla by default — kind='raga')
+    const baniBlock = helpEmptyPanels.bani_flow_panel || null;
+    const baniSubject = baniBlock && baniBlock.subject;
+    if (baniSubject && baniSubject.id && typeof triggerBaniSearch === 'function') {
+      try { triggerBaniSearch(baniSubject.kind || 'raga', baniSubject.id); } catch (_) {}
+    }
+    // Musician subject (ramnad_krishnan by default). Use selectNode
+    // directly rather than _orientToMusician — the latter forces a
+    // switchView('graph'), but the default boot view is the raga wheel
+    // and we don't want to override the user's first impression of the
+    // canvas. selectNode populates the right sidebar regardless of view.
+    const muBlock = helpEmptyPanels.musician_panel || null;
+    const muSubject = muBlock && muBlock.subject;
+    if (muSubject && muSubject.id && typeof cy !== 'undefined' &&
+        typeof selectNode === 'function') {
+      const n = cy.getElementById(muSubject.id);
+      if (n && n.length) {
+        try { selectNode(n); } catch (_) {}
+      }
+    }
+    // Now show the help decks on top. selectNode + applyBaniFilter both
+    // call dismissPanelHelp internally, so any prior help state was
+    // already cleared; entering fresh is safe.
+    if (!_helpState.bani)     _enterHelp('bani');
+    if (!_helpState.musician) _enterHelp('musician');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     if (!helpEmptyPanels) return;
-    window.showPanelTutorial('bani');
-    window.showPanelTutorial('musician');
     _tintPrefaceChips();
+    // Pre-render both tutorial DOMs so the deck containers exist before
+    // _enterHelp tries to flip them visible. _ensureRendered is idempotent.
+    _ensureRendered('bani');
+    _ensureRendered('musician');
+    // Poll for cy + node count > 0 before booting the hello-world state.
+    // cy is constructed at module load time but populates asynchronously
+    // (layout + ready callbacks). Most pages hit ready within ~100 ms.
+    var attempts = 0;
+    (function tick() {
+      const cyReady = (typeof cy !== 'undefined') && cy.nodes && cy.nodes().length > 0;
+      if (cyReady || attempts >= 100) {  // ≈5 s cap
+        _bootHelloWorld();
+        return;
+      }
+      attempts += 1;
+      setTimeout(tick, 50);
+    })();
   });
 })();
 
