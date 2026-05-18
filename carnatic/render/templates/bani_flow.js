@@ -24,6 +24,45 @@ function showGraphAbsentToast(name) {
 
 let activeBaniFilter = null; // { type: 'comp'|'raga'|'perf'|'yt', id: string }
 
+// ── Bani Flow panel history (ADR-148) ────────────────────────────────────────
+let _currentBaniSubject = { type: null, id: null };
+const baniHistory = { back: [], forward: [] };
+const BANI_HISTORY_MAX = 5;
+
+function _updateBaniNavButtons() {
+  const backBtn = document.getElementById('bani-back-btn');
+  const fwdBtn  = document.getElementById('bani-fwd-btn');
+  if (backBtn) backBtn.disabled = baniHistory.back.length === 0;
+  if (fwdBtn)  fwdBtn.disabled  = baniHistory.forward.length === 0;
+}
+
+function baniBack() {
+  if (!baniHistory.back.length) return;
+  const target = baniHistory.back.pop();
+  if (_currentBaniSubject.type) {
+    baniHistory.forward.unshift({ type: _currentBaniSubject.type, id: _currentBaniSubject.id });
+    if (baniHistory.forward.length > BANI_HISTORY_MAX) baniHistory.forward.pop();
+  }
+  triggerBaniSearch(target.type, target.id, true);
+}
+
+function baniForward() {
+  if (!baniHistory.forward.length) return;
+  const target = baniHistory.forward.shift();
+  if (_currentBaniSubject.type) {
+    baniHistory.back.push({ type: _currentBaniSubject.type, id: _currentBaniSubject.id });
+    if (baniHistory.back.length > BANI_HISTORY_MAX) baniHistory.back.shift();
+  }
+  triggerBaniSearch(target.type, target.id, true);
+}
+
+(function() {
+  const _baniBackBtn = document.getElementById('bani-back-btn');
+  const _baniFwdBtn  = document.getElementById('bani-fwd-btn');
+  if (_baniBackBtn) _baniBackBtn.addEventListener('click', baniBack);
+  if (_baniFwdBtn)  _baniFwdBtn.addEventListener('click', baniForward);
+})();
+
 function applyBaniFilter(type, id) {
   activeBaniFilter = { type, id };
 
@@ -161,24 +200,19 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   const subjectHeader = document.getElementById('bani-subject-header');
   const subjectName   = document.getElementById('bani-subject-name');
   const subjectLink   = document.getElementById('bani-subject-link');
-  const subjectSub    = document.getElementById('bani-subject-sub');
   const subjectIcon   = document.getElementById('bani-subject-icon');
 
-  subjectSub.innerHTML = '';
   subjectLink.style.display = 'none';
   subjectLink.href = '#';
   // ADR-128 D2: hide affordances row on reset
   const _baniAffordancesReset = document.getElementById('bani-header-affordances');
   if (_baniAffordancesReset) _baniAffordancesReset.style.display = 'none';
-  document.getElementById('bani-subject-aliases-row').style.display = 'none';
-  document.getElementById('bani-subject-aliases-row').textContent = '';
-  document.getElementById('bani-janyas-row').style.display = 'none';
-  document.getElementById('bani-janyas-panel').style.display = 'none';
-  document.getElementById('bani-janyas-list').innerHTML = '';
-  document.getElementById('bani-janyas-filter').value = '';
-  // Reset HER row (ADR-113)
-  const _herRow = document.getElementById('bani-her-row');
-  if (_herRow) { _herRow.innerHTML = ''; _herRow.style.display = 'none'; }
+  // ADR-149: hide popup button and popup on reset
+  const _popupBtnReset = document.getElementById('bani-subject-popup-btn');
+  if (_popupBtnReset) _popupBtnReset.style.display = 'none';
+  const _popupReset = document.getElementById('bani-subject-popup');
+  if (_popupReset) { _popupReset.style.display = 'none'; _popupReset.innerHTML = ''; }
+  // Hide [Hindustani] prefix (ADR-113)
   const _herPrefix = document.getElementById('bani-her-prefix');
   if (_herPrefix) _herPrefix.style.display = 'none';
   // Reset notes row (ADR-097 §7)
@@ -214,88 +248,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       const notesEl = buildNotesSection(comp.notes);
       if (notesEl) { _notesRow.appendChild(notesEl); _notesRow.style.display = ''; }
     }
-
-    // Row 2: raga (linked) · tala · composer (linked to graph node if available)
-    const parts = [];
-
-    if (raga) {
-      // Raga name → in-app navigation: summon raga into Bani Flow + raga wheel
-      // Rendered as a .raga-chip badge — uniform with all other raga occurrences
-      const ragaBtn = document.createElement('span');
-      ragaBtn.className = 'raga-chip';
-      if (typeof applyChipRole === 'function') applyChipRole(ragaBtn, 'entity', 'raga', raga.id);
-      ragaBtn.textContent = raga.name;
-      ragaBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        triggerBaniSearch('raga', raga.id);
-      });
-      parts.push(ragaBtn);
-    }
-
-    if (comp && comp.tala) {
-      const talaSpan = document.createElement('span');
-      talaSpan.className = 'trail-tala';
-      talaSpan.textContent = formatTala(comp.tala);
-      parts.push(talaSpan);
-    }
-
-    if (composer) {
-      const eraId = composer.musician_node_id
-        ? ((graphData.nodes || []).find(n => n.id === composer.musician_node_id) || {}).era || null
-        : null;
-      const tint = THEME.eraTintCss(eraId);
-      const composerChip = document.createElement('span');
-      composerChip.className = 'composer-chip';
-      composerChip.textContent = composer.name;
-      composerChip.style.setProperty('--chip-era-bg', tint.bg);
-      composerChip.style.setProperty('--chip-era-border', tint.border);
-      if (composer.musician_node_id) {
-        const n = cy.getElementById(composer.musician_node_id);
-        if (n && n.length) {
-          composerChip.className += ' chip-navigable';
-          composerChip.title = composer.name + ' — Open Musician panel';
-          composerChip.addEventListener('click', e => {
-            e.stopPropagation();
-            composerChip.classList.add('chip-tapped');
-            setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
-            if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
-              orientToNode(composer.musician_node_id);
-            } else {
-              selectNode(n);
-            }
-            if (typeof window.setPanelState === 'function') {
-              setTimeout(() => window.setPanelState('MUSICIAN'), 50);
-            }
-          });
-        } else {
-          // musician_node_id set but not in the cy graph (transit/culled node) — open panel from raw data
-          composerChip.className += ' chip-navigable';
-          composerChip.title = composer.name + ' — Open Musician panel';
-          composerChip.addEventListener('click', e => {
-            e.stopPropagation();
-            composerChip.classList.add('chip-tapped');
-            setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
-            if (typeof _openMusicianPanelForTransit === 'function') {
-              _openMusicianPanelForTransit(composer.musician_node_id);
-            }
-          });
-        }
-      } else {
-        composerChip.title = composer.name;
-      }
-      parts.push(composerChip);
-    }
-
-    // Join with ' · ' separators
-    parts.forEach((part, i) => {
-      subjectSub.appendChild(part);
-      if (i < parts.length - 1) {
-        const sep = document.createElement('span');
-        sep.textContent = ' \u00b7 ';
-        sep.style.color = 'var(--gray)';
-        subjectSub.appendChild(sep);
-      }
-    });
+    // ADR-149: popup button shows raga + composer + performer count
+    _setupBaniSubjectPopupBtn('comp', id, { comp, raga, composer });
 
   } else if (type === 'perf') {
     // ── Single structured performance (from raga wheel click) ──────────────────
@@ -432,195 +386,13 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       subjectLink.href = ragaSrc.url;
       subjectLink.style.display = 'inline';
     }
-    // Row 2 (#bani-subject-sub): structural position
-    subjectSub.innerHTML = '';
-    if (raga && raga.is_melakarta) {
-      // Mela raga: show mela number and cakra
-      const mela_num  = raga.melakarta;
-      const cakra_num = raga.cakra;
-      const cakra_name = CAKRA_NAMES[cakra_num] || String(cakra_num);
-      if (mela_num && cakra_num) {
-        const melaSpan = document.createElement('span');
-        melaSpan.textContent = `Mela ${mela_num} \u00b7 Cakra ${cakra_num} \u2014 ${cakra_name}`;
-        subjectSub.appendChild(melaSpan);
-      }
-    } else if (raga && raga.parent_raga) {
-      // Janya raga: show parent mela as a clickable link
-      const parentRaga = ragas.find(r => r.id === raga.parent_raga);
-      const parentName = parentRaga ? parentRaga.name : raga.parent_raga;
-      // "Janya of" label
-      const janyaOfText = document.createElement('span');
-      janyaOfText.textContent = 'Janya of\u00a0';
-      janyaOfText.style.color = 'var(--fg-muted)';
-      subjectSub.appendChild(janyaOfText);
-      // Parent raga as a .raga-chip — uniform with all other raga occurrences
-      const parentLink = document.createElement('span');
-      parentLink.className = 'raga-chip';
-      if (typeof applyChipRole === 'function') applyChipRole(parentLink, 'entity', 'raga', raga.parent_raga);
-      parentLink.textContent = parentName;
-      parentLink.addEventListener('click', e => {
-        e.stopPropagation();
-        triggerBaniSearch('raga', raga.parent_raga);
-      });
-      subjectSub.appendChild(parentLink);
-    } else if (raga && raga.tradition === 'hindustani') {
-      // ADR-113: HER raga — show Thaat (replaces mela/janya-of for Hindustani ragas)
-      if (raga.thaat) {
-        const thaatLabel = document.createElement('span');
-        thaatLabel.textContent = 'Thaat:\u00a0';
-        thaatLabel.style.color = 'var(--fg-muted)';
-        subjectSub.appendChild(thaatLabel);
-        const thaatValue = document.createElement('span');
-        thaatValue.textContent = raga.thaat.charAt(0).toUpperCase() + raga.thaat.slice(1);
-        subjectSub.appendChild(thaatValue);
-      }
-    }
-    // (if neither: sub-label is empty — graceful degradation)
-
     // Notes section (ADR-097 §7) — array-shaped notes only; string notes stay as tooltip
     if (_notesRow && raga && Array.isArray(raga.notes) && raga.notes.length > 0) {
       const notesEl = buildNotesSection(raga.notes);
       if (notesEl) { _notesRow.appendChild(notesEl); _notesRow.style.display = ''; }
     }
-
-    // Row 4 (#bani-janyas-row): janyas filter + list (mela ragas only)
-    const janyasRow    = document.getElementById('bani-janyas-row');
-    const janyasPanel  = document.getElementById('bani-janyas-panel');
-    const janyasList   = document.getElementById('bani-janyas-list');
-    const janyasToggle = document.getElementById('bani-janyas-toggle');
-    const janyasCount  = document.getElementById('bani-janyas-count');
-    const janyasFilter = document.getElementById('bani-janyas-filter');
-    janyasRow.style.display = 'none';
-    janyasPanel.style.display = 'none';
-    janyasList.innerHTML = '';
-    janyasFilter.value = '';
-
-    if (raga && raga.is_melakarta) {
-      const janyas = ragas.filter(r => r.parent_raga === id);
-      janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-
-      // ADR-106: always show the row when it's a melakarta (even with 0 janyas, for the + chip)
-      janyasCount.textContent = `(${janyas.length})`;
-      janyasToggle.textContent = '\u25b6\u00a0\u25c8 Janyas';
-      janyasRow.style.display = 'block';
-
-      if (janyas.length > 0) {
-
-        // Render filtered list of janya links — each as a .raga-chip
-        // ADR-113: janyas with HERs get a .janya-with-her wrapper + secondary her-chip
-        function renderJanyaList(filter) {
-          janyasList.innerHTML = '';
-          const q = filter.trim().toLowerCase();
-          const visible = q ? janyas.filter(j => (j.name || j.id).toLowerCase().includes(q)) : janyas;
-          if (visible.length === 0) {
-            const empty = document.createElement('span');
-            empty.className = 'bani-janyas-empty';
-            empty.textContent = 'no match';
-            janyasList.appendChild(empty);
-          } else {
-            visible.forEach(j => {
-              const chip = document.createElement('span');
-              chip.className = 'raga-chip';
-              if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', j.id);
-              chip.textContent = j.name || j.id;
-              chip.addEventListener('click', e => {
-                e.stopPropagation();
-                triggerBaniSearch('raga', j.id);
-              });
-              const herEqs = j.hindustani_equivalents || [];
-              if (herEqs.length > 0) {
-                // Wrap chip + HER chips in a column stack
-                const wrapper = document.createElement('span');
-                wrapper.className = 'janya-with-her';
-                wrapper.appendChild(chip);
-                herEqs.forEach(herId => {
-                  const herRaga = ragas.find(r => r.id === herId);
-                  if (!herRaga) return;
-                  const herChip = document.createElement('span');
-                  herChip.className = 'her-chip her-chip--secondary';
-                  herChip.dataset.ragaId = herId;
-                  herChip.textContent = '\u2194\u00a0' + (herRaga.name || herId);
-                  herChip.addEventListener('click', e => {
-                    e.stopPropagation();
-                    triggerBaniSearch('raga', herId);
-                  });
-                  wrapper.appendChild(herChip);
-                });
-                janyasList.appendChild(wrapper);
-              } else {
-                chip.style.display = 'inline-flex';
-                chip.style.margin = '2px 3px';
-                janyasList.appendChild(chip);
-              }
-            });
-          }
-        }
-
-        renderJanyaList('');
-
-        // Live filter on input
-        janyasFilter.oninput = () => renderJanyaList(janyasFilter.value);
-
-        // Toggle behaviour
-        janyasToggle.onclick = () => {
-          const open = janyasPanel.style.display !== 'none';
-          janyasPanel.style.display = open ? 'none' : 'block';
-          janyasToggle.textContent = open ? '\u25b6\u00a0\u25c8 Janyas' : '\u25bc\u00a0\u25c8 Janyas';
-          if (!open) {
-            janyasFilter.value = '';
-            renderJanyaList('');
-            janyasFilter.focus();
-          }
-        };
-      }
-    }
-
-    // Row 5 (#bani-her-row): ADR-113 HER row
-    // – For Carnatic ragas: show "Hindustani equivalents" HER chips + + button (ADR-115)
-    // – For HER ragas (tradition:hindustani): show "Carnatic equivalents" chips + + button
-    const herRow = document.getElementById('bani-her-row');
-    if (herRow) {
-      herRow.innerHTML = '';
-      herRow.style.display = 'none';
-      if (raga && raga.tradition !== 'hindustani') {
-        // Carnatic raga — show HER row always (even with 0 equivalents) for + discoverability
-        const herLabel = document.createElement('span');
-        herLabel.className = 'her-label';
-        herLabel.textContent = 'Hindustani equivalents:\u00a0';
-        herRow.appendChild(herLabel);
-        const herEqs = raga.hindustani_equivalents || [];
-        herEqs.forEach(herId => {
-          const herRaga = ragas.find(r => r.id === herId);
-          if (!herRaga) return;
-          const chip = document.createElement('span');
-          chip.className = 'her-chip';
-          chip.dataset.ragaId = herId;
-          chip.textContent = '\u2194\u00a0' + (herRaga.name || herId);
-          chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', herId); });
-          herRow.appendChild(chip);
-        });
-        herRow.style.display = 'flex';
-        herRow.style.alignItems = 'center';
-      } else if (raga && raga.tradition === 'hindustani') {
-        // HER raga — show Carnatic equivalents row
-        const carnaticEqs = ragas.filter(r => r.hindustani_equivalents && r.hindustani_equivalents.includes(id));
-        const ceLabel = document.createElement('span');
-        ceLabel.className = 'her-label';
-        ceLabel.textContent = 'Carnatic equivalents:\u00a0';
-        herRow.appendChild(ceLabel);
-        carnaticEqs.forEach(cr => {
-          const chip = document.createElement('span');
-          chip.className = 'raga-chip';
-          chip.dataset.ragaId = cr.id;
-          if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', cr.id);
-          chip.textContent = cr.name || cr.id;
-          chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', cr.id); });
-          herRow.appendChild(chip);
-        });
-        herRow.style.display = 'flex';
-        herRow.style.alignItems = 'center';
-      }
-    }
+    // ADR-149: popup button shows mela family / HER equivalents
+    _setupBaniSubjectPopupBtn('raga', id, { raga });
   }
 
   subjectHeader.style.display = 'block';
@@ -1481,21 +1253,331 @@ function clearBaniFilter() {
   document.getElementById('bani-subject-header').style.display = 'none';
   const _bfStrip = document.getElementById('bani-lecdem-strip');
   if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
-  document.getElementById('bani-subject-aliases-row').style.display = 'none';
-  document.getElementById('bani-subject-aliases-row').textContent = '';
-  document.getElementById('bani-janyas-row').style.display = 'none';
-  document.getElementById('bani-janyas-panel').style.display = 'none';
-  document.getElementById('bani-janyas-list').innerHTML = '';
-  document.getElementById('bani-janyas-filter').value = '';
-  const _clearHerRow = document.getElementById('bani-her-row');
-  if (_clearHerRow) { _clearHerRow.innerHTML = ''; _clearHerRow.style.display = 'none'; }
+  // ADR-149: hide popup button and popup
+  const _bfPopupBtn = document.getElementById('bani-subject-popup-btn');
+  if (_bfPopupBtn) _bfPopupBtn.style.display = 'none';
+  const _bfPopup = document.getElementById('bani-subject-popup');
+  if (_bfPopup) { _bfPopup.style.display = 'none'; _bfPopup.innerHTML = ''; }
   const _clearHerPrefix = document.getElementById('bani-her-prefix');
   if (_clearHerPrefix) _clearHerPrefix.style.display = 'none';
+  // ADR-148: reset navigation history
+  baniHistory.back = [];
+  baniHistory.forward = [];
+  _currentBaniSubject = { type: null, id: null };
+  _updateBaniNavButtons();
   applyZoomLabels();
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('bani');
   // Mutual exclusion: clear chip filters when Bani Flow filter clears
   clearAllChipFilters();
+}
+
+// ── ADR-149: Bani subject popup button ───────────────────────────────────────
+// Shared popup for raga family (janya/mela/HER context) and composition metadata.
+// Reuses .lineage-popup-btn + .lineage-popup CSS and the popup positioning pattern
+// from _setupLineagePopupBtn / _populatePopup in graph_view.js:1086–1118.
+
+const _baniSubjectPop = document.getElementById('bani-subject-popup');
+
+// Outside-click dismissal (shared across both popup uses)
+document.addEventListener('click', function(e) {
+  const btn = document.getElementById('bani-subject-popup-btn');
+  if (_baniSubjectPop && _baniSubjectPop.style.display !== 'none') {
+    if (!_baniSubjectPop.contains(e.target) && e.target !== btn) {
+      _baniSubjectPop.style.display = 'none';
+    }
+  }
+});
+
+/**
+ * Build popup content for a raga: mela family chips (section 1) + HER chips (section 2).
+ * @param {string} ragaId
+ * @param {object} raga  — raga data object
+ * @param {Array}  allRagas
+ */
+function _buildRagaFamilyPopupContent(ragaId, raga, allRagas) {
+  _baniSubjectPop.innerHTML = '';
+
+  function makeChip(r, cls) {
+    const chip = document.createElement('span');
+    chip.className = cls;
+    chip.textContent = r.name || r.id;
+    chip.addEventListener('click', function(e) {
+      e.stopPropagation();
+      _baniSubjectPop.style.display = 'none';
+      triggerBaniSearch('raga', r.id);
+    });
+    return chip;
+  }
+
+  if (raga && raga.tradition === 'hindustani') {
+    // HER raga: show Carnatic equivalents
+    const carnaticEqs = allRagas.filter(r => r.hindustani_equivalents && r.hindustani_equivalents.includes(ragaId));
+    const hdr = document.createElement('div');
+    hdr.className = 'lineage-pop-hdr';
+    hdr.textContent = 'Carnatic equivalents (' + carnaticEqs.length + ')';
+    _baniSubjectPop.appendChild(hdr);
+    const row = document.createElement('div');
+    row.className = 'lineage-chip-row';
+    if (carnaticEqs.length === 0) {
+      const none = document.createElement('span');
+      none.style.color = 'var(--fg3)';
+      none.style.fontSize = '0.82em';
+      none.textContent = 'None recorded';
+      row.appendChild(none);
+    } else {
+      carnaticEqs.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      carnaticEqs.forEach(r => row.appendChild(makeChip(r, 'raga-chip')));
+    }
+    _baniSubjectPop.appendChild(row);
+    return;
+  }
+
+  // Determine the mela and sibling janyas
+  let melaRaga = null;
+  let janyas    = [];
+
+  if (raga && raga.is_melakarta) {
+    melaRaga = raga;
+    janyas   = allRagas.filter(r => r.parent_raga === ragaId);
+  } else if (raga && raga.parent_raga) {
+    melaRaga = allRagas.find(r => r.id === raga.parent_raga) || null;
+    janyas   = allRagas.filter(r => r.parent_raga === raga.parent_raga && r.id !== ragaId);
+  }
+
+  janyas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+  // Section 1: Carnatic (mela chip if janya, then siblings/janyas)
+  const carnaticItems = [];
+  if (melaRaga && !raga.is_melakarta) carnaticItems.push({ r: melaRaga, cls: 'raga-chip' });
+  janyas.forEach(j => carnaticItems.push({ r: j, cls: 'raga-chip' }));
+
+  const hdr1 = document.createElement('div');
+  hdr1.className = 'lineage-pop-hdr';
+  hdr1.textContent = (raga && raga.is_melakarta ? 'Janyas' : 'Mela family') +
+                     ' (' + carnaticItems.length + ')';
+  _baniSubjectPop.appendChild(hdr1);
+  const row1 = document.createElement('div');
+  row1.className = 'lineage-chip-row';
+  if (carnaticItems.length === 0) {
+    const none = document.createElement('span');
+    none.style.color = 'var(--fg3)';
+    none.style.fontSize = '0.82em';
+    none.textContent = 'None recorded';
+    row1.appendChild(none);
+  } else {
+    carnaticItems.forEach(item => row1.appendChild(makeChip(item.r, item.cls)));
+  }
+  _baniSubjectPop.appendChild(row1);
+
+  // Section 2: Hindustani equivalents (current raga's own HER)
+  const herEqs = (raga && raga.hindustani_equivalents) ? raga.hindustani_equivalents : [];
+  const herRagas = herEqs.map(hid => allRagas.find(r => r.id === hid)).filter(Boolean);
+
+  const sep = document.createElement('hr');
+  sep.className = 'lineage-pop-sep';
+  _baniSubjectPop.appendChild(sep);
+
+  const hdr2 = document.createElement('div');
+  hdr2.className = 'lineage-pop-hdr';
+  hdr2.textContent = 'Hindustani equivalents (' + herRagas.length + ')';
+  _baniSubjectPop.appendChild(hdr2);
+  const row2 = document.createElement('div');
+  row2.className = 'lineage-chip-row';
+  if (herRagas.length === 0) {
+    const none = document.createElement('span');
+    none.style.color = 'var(--fg3)';
+    none.style.fontSize = '0.82em';
+    none.textContent = 'None recorded';
+    row2.appendChild(none);
+  } else {
+    herRagas.forEach(hr => {
+      const chip = document.createElement('span');
+      chip.className = 'her-chip';
+      chip.dataset.ragaId = hr.id;
+      chip.textContent = '\u2194\u00a0' + (hr.name || hr.id);
+      chip.addEventListener('click', function(e) {
+        e.stopPropagation();
+        _baniSubjectPop.style.display = 'none';
+        triggerBaniSearch('raga', hr.id);
+      });
+      row2.appendChild(chip);
+    });
+  }
+  _baniSubjectPop.appendChild(row2);
+}
+
+/**
+ * Build popup content for a composition: raga chip + tala text + composer chip.
+ * @param {object} comp
+ * @param {object|null} raga
+ * @param {object|null} composer
+ */
+function _buildCompPopupContent(comp, raga, composer) {
+  _baniSubjectPop.innerHTML = '';
+
+  if (raga) {
+    const hdr = document.createElement('div');
+    hdr.className = 'lineage-pop-hdr';
+    hdr.textContent = 'Raga';
+    _baniSubjectPop.appendChild(hdr);
+    const row = document.createElement('div');
+    row.className = 'lineage-chip-row';
+    const ragaChip = document.createElement('span');
+    ragaChip.className = 'raga-chip';
+    ragaChip.textContent = raga.name;
+    ragaChip.addEventListener('click', function(e) {
+      e.stopPropagation();
+      _baniSubjectPop.style.display = 'none';
+      triggerBaniSearch('raga', raga.id);
+    });
+    row.appendChild(ragaChip);
+    if (comp && comp.tala) {
+      const talaSpan = document.createElement('span');
+      talaSpan.className = 'trail-tala';
+      talaSpan.textContent = formatTala(comp.tala);
+      row.appendChild(talaSpan);
+    }
+    _baniSubjectPop.appendChild(row);
+  }
+
+  if (composer) {
+    const sep = document.createElement('hr');
+    sep.className = 'lineage-pop-sep';
+    _baniSubjectPop.appendChild(sep);
+    const hdr2 = document.createElement('div');
+    hdr2.className = 'lineage-pop-hdr';
+    hdr2.textContent = 'Composer';
+    _baniSubjectPop.appendChild(hdr2);
+    const row2 = document.createElement('div');
+    row2.className = 'lineage-chip-row';
+
+    const eraId = composer.musician_node_id
+      ? ((graphData.nodes || []).find(n => n.id === composer.musician_node_id) || {}).era || null
+      : null;
+    const tint = THEME.eraTintCss(eraId);
+    const composerChip = document.createElement('span');
+    composerChip.className = 'composer-chip chip-navigable';
+    composerChip.textContent = composer.name;
+    composerChip.style.setProperty('--chip-era-bg', tint.bg);
+    composerChip.style.setProperty('--chip-era-border', tint.border);
+    composerChip.title = composer.name + ' — Open Musician panel';
+    composerChip.addEventListener('click', function(e) {
+      e.stopPropagation();
+      _baniSubjectPop.style.display = 'none';
+      composerChip.classList.add('chip-tapped');
+      setTimeout(() => composerChip.classList.remove('chip-tapped'), 200);
+      if (composer.musician_node_id) {
+        const n = cy.getElementById(composer.musician_node_id);
+        if (n && n.length) {
+          if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
+            orientToNode(composer.musician_node_id);
+          } else {
+            selectNode(n);
+          }
+          if (typeof window.setPanelState === 'function') {
+            setTimeout(() => window.setPanelState('MUSICIAN'), 50);
+          }
+        } else if (typeof _openMusicianPanelForTransit === 'function') {
+          _openMusicianPanelForTransit(composer.musician_node_id);
+        }
+      }
+    });
+    row2.appendChild(composerChip);
+    _baniSubjectPop.appendChild(row2);
+  }
+}
+
+/**
+ * Wire up #bani-subject-popup-btn for the current raga or composition subject.
+ * @param {'raga'|'comp'} type
+ * @param {string} id
+ * @param {object} ctx  — { raga } or { comp, raga, composer }
+ */
+function _setupBaniSubjectPopupBtn(type, id, ctx) {
+  const btn = document.getElementById('bani-subject-popup-btn');
+  if (!btn) return;
+
+  let count = 0;
+  let title = '';
+
+  if (type === 'raga') {
+    const raga     = ctx.raga;
+    const allRagas = window._baniRagas || ragas;
+
+    if (raga && raga.tradition === 'hindustani') {
+      const ceqs = allRagas.filter(r => r.hindustani_equivalents && r.hindustani_equivalents.includes(id));
+      count = ceqs.length;
+      title = count + ' Carnatic equivalent' + (count !== 1 ? 's' : '');
+    } else if (raga && raga.is_melakarta) {
+      const janyaCount = allRagas.filter(r => r.parent_raga === id).length;
+      const herCount   = (raga.hindustani_equivalents || []).length;
+      count = janyaCount + herCount;
+      title = janyaCount + ' janya' + (janyaCount !== 1 ? 's' : '') +
+              (herCount > 0 ? ', ' + herCount + ' Hindustani equivalent' + (herCount !== 1 ? 's' : '') : '');
+    } else if (raga && raga.parent_raga) {
+      const melaCount    = 1;
+      const siblingCount = allRagas.filter(r => r.parent_raga === raga.parent_raga && r.id !== id).length;
+      const herCount     = (raga.hindustani_equivalents || []).length;
+      count = melaCount + siblingCount + herCount;
+      title = '1 mela, ' + siblingCount + ' sibling' + (siblingCount !== 1 ? 's' : '') +
+              (herCount > 0 ? ', ' + herCount + ' Hindustani equivalent' + (herCount !== 1 ? 's' : '') : '');
+    } else {
+      // Standalone raga with no mela relationship — show HER only
+      const herCount = (raga && raga.hindustani_equivalents ? raga.hindustani_equivalents : []).length;
+      count = herCount;
+      title = herCount + ' Hindustani equivalent' + (herCount !== 1 ? 's' : '');
+    }
+
+    btn.textContent = '\u25c8\u00a0' + count;  // ◈ N
+    btn.title = title;
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      if (_baniSubjectPop.style.display !== 'none') { _baniSubjectPop.style.display = 'none'; return; }
+      _buildRagaFamilyPopupContent(id, raga, allRagas);
+      _positionBaniPopup(btn);
+    };
+
+  } else if (type === 'comp') {
+    const { comp, raga, composer } = ctx;
+    // Count distinct musicians with a track matching this composition_id
+    const performerIds = new Set();
+    cy.nodes().forEach(n => {
+      const tracks = n.data('tracks') || [];
+      if (tracks.some(t => t.composition_id === id)) performerIds.add(n.id());
+    });
+    count = performerIds.size;
+    const ragaName     = raga ? raga.name : '';
+    const composerName = composer ? composer.name : '';
+    title = count + ' musician' + (count !== 1 ? 's' : '') +
+            (ragaName ? ' \u00b7 ' + ragaName : '') +
+            (composerName ? ' \u00b7 ' + composerName : '');
+
+    btn.textContent = count;
+    btn.title = title;
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      if (_baniSubjectPop.style.display !== 'none') { _baniSubjectPop.style.display = 'none'; return; }
+      _buildCompPopupContent(comp, raga, composer);
+      _positionBaniPopup(btn);
+    };
+  }
+
+  btn.style.display = count > 0 ? 'inline-flex' : 'none';
+}
+
+function _positionBaniPopup(btn) {
+  // popup is position:fixed — viewport-relative coords, matching MUSICIAN popup pattern.
+  _baniSubjectPop.style.display = 'block';
+  var rect = btn.getBoundingClientRect();
+  var pw   = _baniSubjectPop.offsetWidth  || 200;
+  var ph   = _baniSubjectPop.offsetHeight || 100;
+  var left = rect.left;
+  var top  = rect.bottom + 5;
+  if (left + pw > window.innerWidth)  left = window.innerWidth  - pw - 8;
+  if (top  + ph > window.innerHeight) top  = rect.top - ph - 5;
+  _baniSubjectPop.style.left = Math.max(4, left) + 'px';
+  _baniSubjectPop.style.top  = Math.max(4, top)  + 'px';
 }
 
 /**
@@ -1509,7 +1591,16 @@ function clearBaniFilter() {
  *   - 'perf': "recording_id::performance_index"
  *   - 'yt':   "vid::ragaId"
  */
-function triggerBaniSearch(type, id) {
+function triggerBaniSearch(type, id, fromHistory = false) {
+  // ADR-148: push current subject to history before navigating
+  if (!fromHistory && _currentBaniSubject.type) {
+    baniHistory.back.push({ type: _currentBaniSubject.type, id: _currentBaniSubject.id });
+    if (baniHistory.back.length > BANI_HISTORY_MAX) baniHistory.back.shift();
+    baniHistory.forward = [];
+  }
+  _currentBaniSubject = { type, id };
+  _updateBaniNavButtons();
+
   const searchInput = document.getElementById('bani-search-input');
   if (type === 'perf') {
     // Single structured performance — label from perfToPerf lookup

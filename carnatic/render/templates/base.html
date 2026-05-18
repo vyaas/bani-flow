@@ -1292,10 +1292,10 @@
     flex-shrink: 0;
   }
   #bani-subject-name-row {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px;
   }
   #bani-subject-name-row .panel-header-affordances {
-    margin-left: auto; padding: 0; flex-wrap: nowrap;
+    padding: 0; flex-wrap: nowrap;
   }
   #bani-subject-name {
     font-size: 0.85rem; color: var(--accent); font-weight: bold;
@@ -4637,9 +4637,12 @@
     <div id="bani-sticky">
       <div class="panel" id="bani-flow-panel">
         <h3>
-          <span class="panel-nav-spacer" aria-hidden="true"></span>
+          <button id="bani-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
           <span class="bani-chip chip-panel-title" data-chip-role="section-add" data-section-action="add-bani-flow">BANI FLOW</span>
-          <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
+          <span style="display:inline-flex;align-items:center;gap:4px">
+            <button id="bani-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+            <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
+          </span>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
           <input id="bani-search-input" class="search-input panel-search" type="text"
@@ -4656,28 +4659,16 @@
             <span id="bani-subject-icon" class="bani-subject-icon"></span>
             <span id="bani-her-prefix" style="display:none">[Hindustani]</span>
             <span id="bani-subject-name"></span>
-            <!-- ADR-128 D2: affordances (edit + add + wiki) inlined right of name chip -->
+            <!-- ADR-149: popup button (family ragas / comp metadata) -->
+            <button id="bani-subject-popup-btn" class="lineage-popup-btn"
+                    style="display:none" title=""></button>
+            <!-- ADR-128 D2: affordances (wiki) inlined right of name chip -->
             <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
               <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
                  target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
             </div>
           </div>
-          <div id="bani-subject-sub"></div>
-          <!-- Row 3: aliases (ADR-022) -->
-          <div id="bani-subject-aliases-row" style="display:none"></div>
-          <!-- Row 4: janyas toggle + filter + list (ADR-022, mela ragas only) -->
-          <div id="bani-janyas-row" style="display:none">
-            <span id="bani-janyas-toggle" class="bani-janyas-toggle">&#9654; Janyas</span>
-            <span id="bani-janyas-count" class="bani-janyas-count"></span>
-            <div id="bani-janyas-panel" style="display:none">
-              <input id="bani-janyas-filter" type="text"
-                     placeholder="filter janyas&#8230;" autocomplete="off" spellcheck="false">
-              <div id="bani-janyas-list" class="bani-janyas-list"></div>
-            </div>
-          </div>
-          <!-- Row 5 (ADR-113): Hindustani equivalents / Carnatic equivalents HER row -->
-          <div id="bani-her-row" style="display:none"></div>
-          <!-- Row 6: notes[] section (ADR-097 §7, shown when entity has notes array) -->
+          <!-- notes[] section (ADR-097 §7, shown when entity has notes array) -->
           <div id="bani-notes-row" style="display:none"></div>
         </div>
         <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
@@ -4830,6 +4821,8 @@
 
 <!-- ADR-137: Lineage floating popup (populated by _setupLineagePopupBtn) -->
 <div id="lineage-popup" class="lineage-popup" style="display:none"></div>
+<!-- ADR-149: Bani subject popup (raga family / comp metadata) -->
+<div id="bani-subject-popup" class="lineage-popup" style="display:none"></div>
 
 <!-- ADR-034: scrim overlay behind left drawer (display managed by mobile.js) -->
 <div id="left-drawer-scrim" aria-hidden="true"></div>
