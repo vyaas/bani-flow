@@ -753,21 +753,55 @@
 
     // ── play button delegating to production openOrFocusPlayer ─────────────
     // perfLike: any object with video_id, display_title, offset_seconds,
-    // optional recording_id (→ playlist), short_title (→ concert header).
+    // optional recording_id (→ playlist), short_title (→ concert header),
+    // optional performers[] (→ overrides subjectId as the nodeId).
+    // ADR-147: button class and playlist assembly match buildTrailItem exactly —
+    // dashed border for concert entries, full flat-map playlist identical to
+    // the production bani_flow.js click handler.
     function _playFromPerf(perfLike, fallbackArtist) {
-      const btn = _el('button', 'rec-play-btn play-btn-direct', '\u25b6');
+      const isConcert = !!(perfLike.recording_id);
+      const btn = _el('button', 'rec-play-btn ' + (isConcert ? 'play-btn-concert' : 'play-btn-direct'), '\u25b6');
       btn.type = 'button';
-      btn.title = 'Play';
+      btn.title = isConcert
+        ? ('Part of: ' + (perfLike.short_title || perfLike.concert_title || ''))
+        : 'Play';
       btn.addEventListener('click', function (evt) {
         evt.stopPropagation();
         if (typeof openOrFocusPlayer !== 'function') return;
+        const perfNodeId = (perfLike.performers && perfLike.performers[0] &&
+                            perfLike.performers[0].musician_id)
+          ? perfLike.performers[0].musician_id
+          : subjectId;
         const recId = perfLike.recording_id || null;
-        const tracks = (recId && typeof _buildConcertTracksFor === 'function')
-          ? _buildConcertTracksFor(recId, subjectId)
-          : [];
+        // Production-identical flat approach: flatten all musicians' performances,
+        // deduplicate by session_index::performance_index, sort by offset_seconds.
+        // Matches the buildTrailItem click handler in bani_flow.js exactly.
+        const tracks = [];
+        if (recId && typeof musicianToPerformances !== 'undefined') {
+          const allPerfs = Object.values(musicianToPerformances).flat();
+          const seenKeys = {};
+          allPerfs.forEach(function (sp) {
+            if (sp.recording_id !== recId) return;
+            const k = (sp.session_index || 0) + '::' + (sp.performance_index || 0);
+            if (seenKeys[k]) return;
+            seenKeys[k] = true;
+            const rObj = (sp.raga_id && typeof ragas !== 'undefined')
+              ? ragas.find(function (r) { return r.id === sp.raga_id; }) : null;
+            tracks.push({
+              offset_seconds: sp.offset_seconds  || 0,
+              display_title:  sp.display_title   || '',
+              raga_id:        sp.raga_id         || null,
+              raga_name:      rObj ? rObj.name   : (sp.raga_id || ''),
+              tala:           sp.tala            || null,
+              timestamp:      sp.timestamp       || '00:00',
+              composition_id: sp.composition_id  || null,
+            });
+          });
+          tracks.sort(function (a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
+        }
         const concertTitle = perfLike.short_title || perfLike.concert_title || '';
         const meta = {
-          nodeId:        subjectId,
+          nodeId:        perfNodeId,
           ragaId:        perfLike.raga_id || null,
           compositionId: perfLike.composition_id || null,
         };
@@ -782,6 +816,50 @@
         );
       });
       return btn;
+    }
+
+    // Convert a compositionToPerf / musicianToPerformances entry into the
+    // row format expected by the production buildTrailItem function.
+    // This lets composition_tree and recording_tree delegate rendering
+    // entirely to the production function — same buttons, same playlist
+    // logic, same chips — without any custom divergent code.
+    function _perfToRow(perf) {
+      var performers = perf.performers || [];
+      var primary = null;
+      for (var i = 0; i < performers.length; i++) {
+        if (performers[i].role === 'vocal') { primary = performers[i]; break; }
+      }
+      if (!primary) primary = performers[0] || null;
+      var nodeId = (primary && primary.musician_id) || null;
+      var pNode  = (nodeId && typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null;
+      var pExists = pNode && pNode.length > 0;
+      var artistLabel = pExists
+        ? (pNode.data('label') || nodeId)
+        : ((primary && primary.unmatched_name) || nodeId || perf.title || '');
+      return {
+        nodeId:      nodeId,
+        artistLabel: artistLabel,
+        lifespan:    pExists ? pNode.data('lifespan') : null,
+        track: {
+          vid:            perf.video_id        || '',
+          label:          perf.display_title   || '',
+          year:           perf.date ? parseInt(perf.date) : null,
+          offset_seconds: perf.offset_seconds  || 0,
+          composition_id: perf.composition_id  || null,
+          recording_id:   perf.recording_id    || null,
+          short_title:    perf.short_title     || '',
+          concert_title:  perf.title           || '',
+          timestamp:      perf.timestamp       || '00:00',
+          raga_id:        perf.raga_id         || null,
+          tala:           perf.tala            || null,
+          version:        perf.version         || null,
+        },
+        isStructured:  !!(perf.recording_id),
+        perfKey:       (perf.recording_id      || '') + '::' +
+                       (perf.session_index     || 0)  + '::' +
+                       (perf.performance_index || 0),
+        allPerformers: performers,
+      };
     }
 
     // ── intro ribbon ───────────────────────────────────────────────────────
@@ -866,7 +944,10 @@
             }
 
           } else if (rk === 'composition_tree') {
-            // composition chip + composer chip + per-musician version rows
+            // composition chip + composer chip + per-musician version rows.
+            // Each musician row delegates to buildTrailItem — the production
+            // bani_flow.js renderer — so button style, playlist assembly, and
+            // all chips are pixel-identical to the live listening trail.
             const compLine = _el('div', 'pt-v5-comp-line');
             compLine.appendChild(_compChipV5(refs.composition_id));
             if (refs.composer_id) compLine.appendChild(_musicianChipV5(refs.composer_id, null, { composer: true }));
@@ -875,17 +956,19 @@
               ? (compositionToPerf[refs.composition_id] || []) : [];
             const seen = {};
             perfs.forEach(function (perf) {
-              const mid = (perf.performers || [])[0] && perf.performers[0].musician_id;
-              const key = mid + '::' + perf.recording_id + '::' + (perf.offset_seconds || 0);
-              if (!mid || seen[key]) return;
-              seen[key] = true;
-              const perfLine = _el('div', 'pt-v5-perf-line');
-              perfLine.appendChild(_musicianChipV5(mid));
-              if (perf.video_id) {
-                const btn = _playFromPerf(perf, (nodes.find(function (n) { return n.id === mid; }) || {}).label);
-                perfLine.appendChild(btn);
+              if (!perf.video_id) return;
+              const row = _perfToRow(perf);
+              if (!row.nodeId || seen[row.perfKey]) return;
+              seen[row.perfKey] = true;
+              if (typeof buildTrailItem === 'function') {
+                rowDiv.appendChild(buildTrailItem(row, 'comp', refs.composition_id, null));
+              } else {
+                // graceful fallback if production function unavailable
+                const perfLine = _el('div', 'pt-v5-perf-line');
+                perfLine.appendChild(_musicianChipV5(row.nodeId));
+                perfLine.appendChild(_playFromPerf(perf, row.artistLabel));
+                rowDiv.appendChild(perfLine);
               }
-              rowDiv.appendChild(perfLine);
             });
 
           } else if (rk === 'misc_entry') {
@@ -960,15 +1043,28 @@
                       composition_id: yt.composition_id || null,
                       offset_seconds: 0,
                       recording_id:   null,
+                      // Provide performers so _perfToRow resolves the correct
+                      // nodeId (subjectId) instead of falling back to null.
+                      performers:     [{ musician_id: subjectId }],
                     };
                   })
                   .filter(function (p) { return p.video_id; });
               }
+              // Delegate each version row to buildTrailItem — the production
+              // renderer — so button style, playlist assembly, and chips are
+              // identical to the live musician panel.
               matching.forEach(function (perf) {
-                const vLine = _el('div', 'pt-v5-version-line');
-                vLine.appendChild(_el('span', 'pt-v5-version-label', perf.short_title || perf.display_title || ''));
-                if (perf.video_id) vLine.appendChild(_playFromPerf(perf, subjectLabel));
-                rowDiv.appendChild(vLine);
+                if (!perf.video_id) return;
+                if (typeof buildTrailItem === 'function') {
+                  const row = _perfToRow(perf);
+                  rowDiv.appendChild(buildTrailItem(row, 'raga', refs.raga_id, null));
+                } else {
+                  // graceful fallback if production function unavailable
+                  const vLine = _el('div', 'pt-v5-version-line');
+                  vLine.appendChild(_el('span', 'pt-v5-version-label', perf.short_title || perf.display_title || ''));
+                  if (perf.video_id) vLine.appendChild(_playFromPerf(perf, subjectLabel));
+                  rowDiv.appendChild(vLine);
+                }
               });
             }
           }
