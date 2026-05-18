@@ -514,7 +514,9 @@
       "label": "Manodharma III: Alapana (Part 2)",
       "kind": "lecdem",
       "subjects": {
-        "raga_ids": [],
+        "raga_ids": [
+          "bhairavi"
+        ],
         "composition_ids": [],
         "musician_ids": []
       },
