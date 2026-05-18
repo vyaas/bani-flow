@@ -373,18 +373,22 @@
     margin-bottom: 10px;
     text-align: center;
   }
-  /* ADR-066: Musician Panel history nav buttons */
-  #musician-panel h3 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  /* Bani Flow panel title — flex row to host reset button */
+  /* ADR-066: Panel header nav layout — back/fwd grouped left, title centered, help isolated right.
+     grid-template-columns: 1fr auto 1fr — center col is auto (chip's natural width, no stretch),
+     flanking cols grow equally so the title is geometrically centered in the h3. */
+  #musician-panel h3,
   #bani-flow-panel > h3 {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    text-align: left;
+  }
+  #musician-panel h3 > span:first-child,
+  #bani-flow-panel > h3 > span:first-child {
+    justify-self: start;
+  }
+  #musician-panel h3 > button:last-child,
+  #bani-flow-panel > h3 > button:last-child {
+    justify-self: end;
   }
   .panel-nav-spacer {
     display: inline-block;
@@ -4637,12 +4641,12 @@
     <div id="bani-sticky">
       <div class="panel" id="bani-flow-panel">
         <h3>
-          <button id="bani-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-          <span class="bani-chip chip-panel-title" data-chip-role="section-add" data-section-action="add-bani-flow">BANI FLOW</span>
           <span style="display:inline-flex;align-items:center;gap:4px">
+            <button id="bani-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
             <button id="bani-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-            <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
           </span>
+          <span class="bani-chip chip-panel-title" data-chip-role="section-add" data-section-action="add-bani-flow">BANI FLOW</span>
+          <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
           <input id="bani-search-input" class="search-input panel-search" type="text"
@@ -4747,16 +4751,16 @@
     <div id="right-sticky">
       <div class="panel" id="musician-panel">
         <h3>
-          <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
+          <span style="display:inline-flex;align-items:center;gap:4px">
+            <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
+            <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+          </span>
           <!-- ADR-144 Phase A: dblclick MUSICIAN header chip → add-musician form -->
           <span class="musician-chip chip-panel-title"
                 data-chip-role="section-add"
                 data-section-action="add-musician">MUSICIAN</span>
           <!-- + button removed (retired by ADR-142 Phase D) -->
-          <span style="display:inline-flex;align-items:center;gap:4px">
-            <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-            <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
-          </span>
+          <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
           <input id="musician-search-input" class="search-input panel-search" type="text"
