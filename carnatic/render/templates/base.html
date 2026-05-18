@@ -631,6 +631,17 @@
   .concert-chevron::before { font-size: 0.62rem; content: '\25B6'; }
   .concert-bracket.expanded .concert-chevron::before { content: '\25BC'; }
 
+  /* ── tree-comp-chevron: plain expand/collapse arrow, never a play circle ── */
+  .tree-comp-chevron {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: 18px; height: 18px;
+    background: none; border: none; padding: 0;
+    color: var(--fg-muted); font-size: 0.62rem;
+    cursor: pointer; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tree-comp-chevron:hover { color: var(--accent); }
+
   .concert-header-body { flex: 1; min-width: 0; }
 
   .concert-title-row {
@@ -1857,6 +1868,128 @@
     margin-left: 2px;
     pointer-events: none;
   }
+  /* ADR-144 Phase C / ADR-145 Phase B: panel-scoped entity chips get the
+     positioned pencil aesthetic (top-right corner, fade in) matching the
+     MUSICIAN panel-title. Scoped to sidebar IDs so graph-overlay chips
+     (graph_view.js) — which share the same data-attribute selector but live
+     outside these containers — are unaffected by position:relative.
+     Right sidebar: broad rule (all entity chips with IDs).
+     Left sidebar / WDP: panel-title only — entity chips in trail rows, raga
+     janya lists, HER equivalents, composer/performer badges are navigation-only. */
+  #right-sidebar [data-chip-role][data-entity-type][data-entity-id],
+  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id],
+  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id] {
+    position: relative;
+  }
+  #right-sidebar [data-chip-role][data-entity-type][data-entity-id]::after,
+  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after,
+  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after {
+    content: "✎";
+    position: absolute;
+    top: -7px;
+    right: -5px;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  #right-sidebar [data-chip-role][data-entity-type][data-entity-id]:hover,
+  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover,
+  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
+    box-shadow: none;
+    outline: 1px dashed var(--accent);
+  }
+  #right-sidebar [data-chip-role][data-entity-type][data-entity-id]:hover::after,
+  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after,
+  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after {
+    opacity: 1;
+  }
+  /* ─ Right-sidebar exclusions: navigable chips that do not afford editing ─── */
+  /* LECDEMS subject chips: .lecdem-subjects-inline = bracket rows,
+     .row-accordion-body = flat accordion rows (raga/comp/musician badges). */
+  #right-sidebar .lecdem-subjects-inline [data-chip-role][data-entity-type][data-entity-id],
+  #right-sidebar .lecdem-row .row-accordion-body [data-chip-role][data-entity-type][data-entity-id] { position: static; }
+  #right-sidebar .lecdem-subjects-inline [data-chip-role][data-entity-type][data-entity-id]::after,
+  #right-sidebar .lecdem-row .row-accordion-body [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
+  #right-sidebar .lecdem-subjects-inline [data-chip-role][data-entity-type][data-entity-id]:hover,
+  #right-sidebar .lecdem-row .row-accordion-body [data-chip-role][data-entity-type][data-entity-id]:hover {
+    outline: none; box-shadow: none;
+  }
+  /* Concert/lecdem bracket: suppress inner track list and co-performer badges.
+     The bracket title chip (double-click to edit) keeps the positioned pencil. */
+  #right-sidebar .concert-bracket .concert-perf-list [data-chip-role][data-entity-type][data-entity-id],
+  #right-sidebar .concert-bracket .concert-performers [data-chip-role][data-entity-type][data-entity-id] { position: static; }
+  #right-sidebar .concert-bracket .concert-perf-list [data-chip-role][data-entity-type][data-entity-id]::after,
+  #right-sidebar .concert-bracket .concert-performers [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
+  #right-sidebar .concert-bracket .concert-perf-list [data-chip-role][data-entity-type][data-entity-id]:hover,
+  #right-sidebar .concert-bracket .concert-performers [data-chip-role][data-entity-type][data-entity-id]:hover {
+    outline: none; box-shadow: none;
+  }
+  /* Chips inside recording row-blocks (.trail-chips within .tree-leaf) */
+  #right-sidebar .tree-leaf .trail-chips [data-chip-role][data-entity-type][data-entity-id] { position: static; }
+  #right-sidebar .tree-leaf .trail-chips [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
+  #right-sidebar .tree-leaf .trail-chips [data-chip-role][data-entity-type][data-entity-id]:hover {
+    outline: none; box-shadow: none;
+  }
+  /* Chips inside recording composition nodes: inner comp/raga/composer chips
+     navigate; the outer li (row-block) is the edit target. */
+  #right-sidebar .tree-comp-node [data-chip-role][data-entity-type][data-entity-id] { position: static; }
+  #right-sidebar .tree-comp-node [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
+  #right-sidebar .tree-comp-node [data-chip-role][data-entity-type][data-entity-id]:hover { outline: none; box-shadow: none; }
+  /* Multiple-version recording rows (.tree-leaf[data-vid]) in right-sidebar:
+     each version row affords double-click edit just like other row-blocks. */
+  #right-sidebar .tree-leaf[data-vid] { position: relative; }
+  #right-sidebar .tree-leaf[data-vid]::after {
+    content: "✎"; position: absolute; top: -7px; right: -5px;
+    font-size: 9px; line-height: 1; color: var(--accent);
+    opacity: 0; pointer-events: none; transition: opacity 0.15s;
+  }
+  #right-sidebar .tree-leaf[data-vid]:hover { outline: 1px dashed var(--accent); border-radius: 3px; }
+  #right-sidebar .tree-leaf[data-vid]:hover::after { opacity: 1; }
+  /* Right-sidebar: suppress class-based hover for navigation-only chips
+     (COMPOSITIONS section items and in-recording trail chips). */
+  #right-sidebar .comp-raga-header .raga-chip:hover,
+  #right-sidebar .comp-raga-item .comp-chip:hover,
+  #right-sidebar .trail-chips .comp-chip:hover,
+  #right-sidebar .trail-chips .raga-chip:hover { filter: none; outline: none; }
+  /* ─ Bani-flow trail item rows: row-block aesthetic on the whole li ─────────
+     li[data-vid] in #left-sidebar are recording rows; position:relative and
+     pencil must be declared here (the entity rule above is panel-title only). */
+  #left-sidebar li[data-vid] { position: relative; }
+  #left-sidebar li[data-vid]::after {
+    content: "✎";
+    position: absolute;
+    top: -7px;
+    right: -5px;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  #left-sidebar li[data-vid]:hover { outline: 1px dashed var(--accent); border-radius: 3px; }
+  #left-sidebar li[data-vid]:hover::after { opacity: 1; }
+  /* Left-sidebar navigation chips: suppress edit-suggesting hover effects.
+     Only the panel-title chip (the main subject) should show edit animation. */
+  #left-sidebar .raga-chip:not([data-chip-role="panel-title"]):hover,
+  #left-sidebar .comp-chip:not([data-chip-role="panel-title"]):hover,
+  #left-sidebar .her-chip:hover { filter: none; outline: none; }
+  #left-sidebar [data-chip-role="entity"][data-entity-type]:not([data-entity-type="recording"])[data-entity-id]:hover { box-shadow: none; }
+  #left-sidebar [data-chip-role="entity"][data-entity-type]:not([data-entity-type="recording"])[data-entity-id]:hover::after { content: none; }
+  /* Lecdem recording chips in bani-flow strip: positioned pencil */
+  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id] { position: relative; }
+  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]::after {
+    content: "✎"; position: absolute; top: -7px; right: -5px;
+    font-size: 9px; line-height: 1; color: var(--accent);
+    opacity: 0; pointer-events: none; transition: opacity 0.15s;
+  }
+  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]:hover {
+    box-shadow: none; outline: 1px dashed var(--accent);
+  }
+  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]:hover::after { opacity: 1; }
 
   /* ── ADR-142 Phase E: first-use double-click discoverability hint ───────────
      Appears once on first chip dblclick gesture; dismissed by click/keydown
@@ -2198,13 +2331,33 @@
     opacity: 1;
   }
   /* ADR-144 Phase A: section-add chips signal "add" with dashed outline on hover.
-     Dashed vs solid distinguishes "add" from "edit" at a glance. */
+     Dashed vs solid distinguishes "add" from "edit" at a glance.
+     Phase C: extend positioned pencil glyph to all section-add chips (covers
+     LECDEMS, CONCERTS, RECORDINGS, COMPOSITIONS — not only .musician-chip). The
+     class-specific ADR-145 rules above remain; their higher specificity wins
+     for MUSICIAN/BANI FLOW with no conflict. */
+  [data-chip-role="section-add"] { position: relative; }
+  [data-chip-role="section-add"]::after {
+    content: "✎";
+    position: absolute;
+    top: -7px;
+    right: -5px;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
   [data-chip-role="section-add"]:hover {
     outline: 1px dashed var(--accent);
     cursor: pointer;
   }
+  [data-chip-role="section-add"]:hover::after { opacity: 1; }
   /* ADR-144 Phase B: single-recording row-block affordance.
-     cursor:context-menu signals "secondary action" without claiming the row is a link. */
+     cursor:context-menu signals "secondary action" without claiming the row is a link.
+     Pencil is inherited from the panel-scoped entity rule above (row-blocks carry
+     all three data attrs and live inside #right-sidebar). */
   [data-chip-role="row-block"] { cursor: context-menu; }
   [data-chip-role="row-block"]:hover {
     outline: 1px dashed var(--accent);
@@ -3537,9 +3690,9 @@
     #right-sidebar { grid-column: 3; grid-row: 1; }
 
     /* Pin-state variants driven by classes set in mobile.js */
-    #main.right-pinned              { grid-template-columns: 0px 1fr var(--right-panel-width, 280px); }
-    #main.left-pinned               { grid-template-columns: var(--left-panel-width, 280px) 1fr 0px; }
-    #main.left-pinned.right-pinned  { grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px); }
+    /* Left panel always overlays the canvas (never pushes it into the grid). */
+    /* Only the right panel allocates a grid column when pinned. */
+    #main.right-pinned { grid-template-columns: 0px 1fr var(--right-panel-width, 280px); }
 
     /* ADR-129: Inset floating (unpinned) panels so they never overlap the top/bottom chrome */
     #left-sidebar:not(.panel-pinned),
@@ -3563,6 +3716,18 @@
       overflow-y: auto;
     }
     #right-sidebar.panel-pinned { border-left:  2px solid var(--border-strong); border-right: none; }
+
+    /* Left panel: always overlay even when "pinned" — never enters grid flow.
+       Overrides the shared panel-pinned rule above (same specificity, later wins).
+       position and transform need !important to beat the shared rule's declarations. */
+    #left-sidebar.panel-pinned {
+      position: absolute !important;
+      transform: translateX(0) !important;
+      top: var(--chrome-top); bottom: var(--chrome-bottom);
+      left: 0; z-index: 200;
+      box-shadow: 4px 0 16px rgba(0,0,0,0.3);
+      margin-top: 0; margin-bottom: 0;
+    }
 
     /* Canvas column must not collapse below a usable width */
     /* ADR-129: canvas fills viewport edge-to-edge — floating chrome overlays it

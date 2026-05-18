@@ -221,7 +221,7 @@ function efCombobox(id, options, type, formWin, opts) {
   const textInp = document.createElement('input');
   textInp.type = 'text';
   textInp.className = 'ef-input ef-combobox-input';
-  textInp.placeholder = 'Type to search…';
+  textInp.placeholder = (opts && opts.placeholder) ? opts.placeholder : 'Type to search…';
   textInp.setAttribute('data-combobox-filter', 'true');
   textInp.autocomplete = 'off';
   textInp.style.paddingRight = '30px';
@@ -465,7 +465,8 @@ function efCombobox(id, options, type, formWin, opts) {
 
 // ── Solidify-on-select: when a combobox value is chosen, replace the input
 // with a chip showing the selected label and a × to clear it. ─────────────────
-function attachSolidifyBehavior(wrap, formWin) {
+function attachSolidifyBehavior(wrap, formWin, opts) {
+  const chipClass = (opts && opts.chipClass) ? opts.chipClass : 'ef-solidified-chip';
   wrap.addEventListener('change', function() {
     const val = wrap.getValue();
     // Value cleared — remove any existing chip, restore input
@@ -486,7 +487,7 @@ function attachSolidifyBehavior(wrap, formWin) {
     wrap._solidChip = null;
     const lbl = wrap.getLabel ? wrap.getLabel() : val;
     const chip = document.createElement('span');
-    chip.className = 'ef-solidified-chip';
+    chip.className = chipClass;
     const chipText = document.createTextNode(lbl);
     chip.appendChild(chipText);
     const clearX = document.createElement('button');
@@ -1606,57 +1607,128 @@ function openEdgePopover(direction, prefill, onConfirm, anchorEl) {
 
 // ── YouTube entry block ───────────────────────────────────────────────────────
 
-function addYoutubeBlock(container, formWin) {
+function addYoutubeBlock(container, formWin, prefill) {
   const block = document.createElement('div');
   block.className = 'ef-repeat-block ef-youtube-block';
 
-  const removeBtn = document.createElement('button');
-  removeBtn.type = 'button';
-  removeBtn.className = 'ef-repeat-remove';
-  removeBtn.textContent = '×';
-  removeBtn.addEventListener('click', () => {
-    block.remove();
-    formWin.dispatchEvent(new Event('input'));
-  });
-  block.appendChild(removeBtn);
+  block.style.paddingTop = '10px';
 
-  // ── PRIMARY FIELDS ────────────────────────────────────────────────────────
-  const urlInp = efInput(null, 'text', 'https://youtu.be/…');
-  block.appendChild(efRow('YouTube URL', true, null, urlInp));
+  // ── URL + Version rows ─────────────────────────────────────────────────────
+  // Each row: [URL flex:1] [version ~72px] [+ or × button]
+  const urlVerRows = document.createElement('div');
+  urlVerRows.className = 'ef-url-ver-rows';
+  urlVerRows.style.cssText = 'margin-bottom:6px;';
+  block.appendChild(urlVerRows);
 
+  function makeUrlVerRow(isFirst, initUrl, initVer) {
+    const row = document.createElement('div');
+    row.className = 'ef-url-ver-row';
+    row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
+
+    if (isFirst) {
+      const urlLbl = document.createElement('label');
+      urlLbl.style.cssText = 'font-size:0.68rem;color:var(--fg-sub);text-transform:uppercase;letter-spacing:0.08em;flex-shrink:0;width:var(--ef-label-width,80px);padding-top:6px;line-height:1.3;';
+      urlLbl.innerHTML = 'URL <span style="color:var(--accent-danger);margin-left:2px;">*</span>';
+      row.appendChild(urlLbl);
+    } else {
+      const spacer = document.createElement('div');
+      spacer.style.cssText = 'flex-shrink:0;width:var(--ef-label-width,80px);';
+      row.appendChild(spacer);
+    }
+
+    const urlInp = efInput(null, 'text', 'https://youtu.be/…');
+    urlInp.style.cssText = 'flex:1;min-width:0;';
+    urlInp.dataset.field = 'url';
+    if (initUrl) urlInp.value = initUrl;
+    if (isFirst && prefill && prefill.is_concert_track) {
+      urlInp.readOnly = true;
+      urlInp.classList.add('ef-readonly');
+      urlInp.title = 'URL is shared across all concert tracks — read-only';
+    }
+    row.appendChild(urlInp);
+
+    const verInp = efInput(null, 'text', isFirst ? 'e.g. v1' : 'v' + (urlVerRows.querySelectorAll('.ef-url-ver-row').length + 1));
+    verInp.style.cssText = 'width:72px;flex-shrink:0;';
+    verInp.dataset.field = 'version';
+    if (initVer) verInp.value = initVer;
+    row.appendChild(verInp);
+
+    if (isFirst) {
+      const addVerBtn = document.createElement('button');
+      addVerBtn.type = 'button';
+      addVerBtn.className = 'ef-add-btn';
+      addVerBtn.title = 'Add another version (v2, v3…)';
+      addVerBtn.textContent = '+';
+      addVerBtn.style.cssText = 'flex-shrink:0;width:26px;height:26px;padding:0;font-size:1rem;line-height:1;margin-bottom:0;';
+      addVerBtn.addEventListener('click', () => {
+        const vCount = urlVerRows.querySelectorAll('.ef-url-ver-row').length;
+        urlVerRows.appendChild(makeUrlVerRow(false, '', 'v' + (vCount + 1)));
+        if (formWin) formWin.dispatchEvent(new Event('input'));
+      });
+      if (prefill && prefill.is_concert_track) addVerBtn.style.display = 'none';
+      row.appendChild(addVerBtn);
+    } else {
+      const remVerBtn = document.createElement('button');
+      remVerBtn.type = 'button';
+      remVerBtn.title = 'Remove this version';
+      remVerBtn.textContent = '×';
+      remVerBtn.style.cssText = 'flex-shrink:0;width:26px;height:26px;padding:0;font-size:1rem;line-height:1;margin-bottom:0;background:transparent;border:1px solid var(--border-strong);color:var(--fg-muted);cursor:pointer;border-radius:3px;font-family:inherit;';
+      remVerBtn.addEventListener('click', () => {
+        row.remove();
+        if (formWin) formWin.dispatchEvent(new Event('input'));
+      });
+      row.appendChild(remVerBtn);
+    }
+    return row;
+  }
+
+  urlVerRows.appendChild(makeUrlVerRow(true, prefill && prefill.url ? prefill.url : '', ''));
+  if (prefill && prefill.is_concert_track) {
+    const concertNote = document.createElement('div');
+    concertNote.style.cssText = 'font-size:0.63rem;color:var(--fg-muted);margin:2px 0 4px;font-style:italic;';
+    concertNote.textContent = 'URL shared across all tracks in this concert — read-only.';
+    urlVerRows.appendChild(concertNote);
+  }
+
+  // ── Composition + Raga (same line) ────────────────────────────────────────
   const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
-  const compSel = efCombobox(null, compOpts, 'composition', formWin);
-  const compRow = efRow('Composition', false, null, compSel);
-  block.appendChild(compRow);
-  attachSolidifyBehavior(compSel, formWin);
-
   const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
-  const ragaSel = efCombobox(null, ragaOpts, 'raga', formWin);
-  const ragaRow = efRow('Raga', false, 'auto-filled from composition', ragaSel);
-  block.appendChild(ragaRow);
-  attachSolidifyBehavior(ragaSel, formWin);
 
-  // ADR-115: [Hindustani] tag in raga row (hidden until HER raga selected)
+  const compSel = efCombobox(null, compOpts, 'composition', formWin, { placeholder: 'e.g. Rama Nee Samanamevaru' });
+  compSel.style.cssText = 'flex:1;min-width:100px;';
+  attachSolidifyBehavior(compSel, formWin, { chipClass: 'comp-chip' });
+
+  const ragaSel = efCombobox(null, ragaOpts, 'raga', formWin, { placeholder: 'e.g. Kharaharapriya' });
+  ragaSel.style.cssText = 'flex:1;min-width:100px;';
+  attachSolidifyBehavior(ragaSel, formWin, { chipClass: 'raga-chip' });
+
+  // ADR-115: [Hindustani] tag (hidden until HER raga selected)
   const herTag = document.createElement('span');
   herTag.className = 'her-chip her-chip--secondary';
-  herTag.style.cssText = 'display:none;margin-left:6px;font-size:0.62rem;';
+  herTag.style.cssText = 'display:none;flex-shrink:0;font-size:0.62rem;';
   herTag.textContent = '[Hindustani]';
-  ragaRow.appendChild(herTag);
 
-  // Auto-fill raga when composition is selected
   wireCompRagaAutofill(compSel, ragaSel, null, formWin);
   block._compSel = compSel;
   block._ragaSel = ragaSel;
 
-  // ── Tala ──────────────────────────────────────────────────────────────────
+  // ── Comp · Raga · Tala triplet (unlabelled — chip type makes each field implicit) ────────
   const talaOpts = (window.talaData || []).map(t => ({
     value: t.id, label: t.label, searchTerms: t.searchTerms || '',
   }));
-  const talaSel = efCombobox(null, talaOpts, 'tala', formWin, { freeText: true });
-  const talaRow = efRow('Tala', false, null, talaSel);
-  block.appendChild(talaRow);
+  const talaSel = efCombobox(null, talaOpts, 'tala', formWin, { freeText: true, placeholder: 'e.g. Rupakam' });
+  talaSel.style.cssText = 'flex:1;min-width:80px;';
   attachSolidifyBehavior(talaSel, formWin);
   block._talaSel = talaSel;
+
+  const compRagaRow = document.createElement('div');
+  compRagaRow.className = 'ef-comp-raga-row';
+  compRagaRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;min-height:28px;';
+  compRagaRow.appendChild(compSel);
+  compRagaRow.appendChild(ragaSel);
+  compRagaRow.appendChild(talaSel);
+  compRagaRow.appendChild(herTag);
+  block.appendChild(compRagaRow);
 
   // ADR-115: HER kind row — shown when a Hindustani raga is selected
   const herKindOpts = [
@@ -1677,13 +1749,13 @@ function addYoutubeBlock(container, formWin) {
   const compExpander = document.createElement('button');
   compExpander.type = 'button';
   compExpander.className = 'ef-add-btn';
-  compExpander.style.cssText = 'display:none;font-size:0.64rem;padding:2px 8px;width:auto;opacity:0.7;';
+  compExpander.style.cssText = 'display:none;font-size:0.64rem;padding:2px 8px;width:auto;opacity:0.7;margin-bottom:4px;';
   compExpander.textContent = '+ add composition (rare for HER)';
   compExpander.addEventListener('click', () => {
-    compRow.style.display = '';
+    compRagaRow.style.display = '';
     compExpander.style.display = 'none';
   });
-  block.insertBefore(compExpander, compRow.nextSibling);
+  block.appendChild(compExpander);
 
   // ADR-115: HER mode handler — fires when raga selection changes
   ragaSel.addEventListener('change', () => {
@@ -1693,31 +1765,40 @@ function addYoutubeBlock(container, formWin) {
     block._herMode = isHer;
     herTag.style.display  = isHer ? '' : 'none';
     herKindRow.style.display = isHer ? '' : 'none';
-    talaRow.style.display = isHer ? 'none' : '';
     if (isHer) {
-      compRow.style.display = 'none';
+      compRagaRow.style.display = 'none';
       compExpander.style.display = '';
     } else {
-      compRow.style.display = '';
+      compRagaRow.style.display = '';
       compExpander.style.display = 'none';
     }
     if (formWin) formWin.dispatchEvent(new Event('input'));
   });
 
-  // ── Secondary fields (separated from primary) ─────────────────────────────
+  // ── Secondary fields separator ─────────────────────────────────────────────
   const groupSep = document.createElement('hr');
   groupSep.className = 'ef-group-sep';
   block.appendChild(groupSep);
 
+  // ── Year + Label (same line) ───────────────────────────────────────────────
   const yearInp = efInput(null, 'number', 'e.g. 1965', null);
   yearInp.min = 1900; yearInp.max = 2030;
-  block.appendChild(efRow('Year', false, null, yearInp));
+  yearInp.style.cssText = 'width:90px;flex-shrink:0;';
+  yearInp.dataset.field = 'year';
 
-  const versionInp = efInput(null, 'text', 'e.g. live, studio, 1965 version', null);
-  block.appendChild(efRow('Version', false, null, versionInp));
+  const lblInp = efInput(null, 'text', 'optional', null);
+  lblInp.style.cssText = 'flex:1;min-width:0;';
+  lblInp.dataset.field = 'label';
 
-  const lblInp = efInput(null, 'text', 'auto-generated if empty: composition · raga · tala', null);
-  block.appendChild(efRow('Label', false, 'optional — auto-generated from composition · raga · tala', lblInp));
+  const yearLblRow = document.createElement('div');
+  yearLblRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:6px;';
+  const ylLbl = document.createElement('label');
+  ylLbl.style.cssText = 'font-size:0.68rem;color:var(--fg-sub);text-transform:uppercase;letter-spacing:0.08em;flex-shrink:0;width:var(--ef-label-width,80px);padding-top:6px;line-height:1.3;';
+  ylLbl.textContent = 'Label';
+  yearLblRow.appendChild(ylLbl);
+  yearLblRow.appendChild(lblInp);
+  yearLblRow.appendChild(yearInp);
+  block.appendChild(yearLblRow);
 
   // ── Accompanists subsection (ADR-070 / ADR-071) ──────────────────────────
   const perfContainer = document.createElement('div');
@@ -1729,11 +1810,6 @@ function addYoutubeBlock(container, formWin) {
   perfHeading.textContent = 'Accompanists';
   perfContainer.appendChild(perfHeading);
 
-  const perfHint = document.createElement('div');
-  perfHint.style.cssText = 'font-size:0.65rem;color:var(--fg-muted);margin-bottom:6px;';
-  perfHint.textContent = 'Lead artist (this musician) is added automatically. Add accompanying violinists, mridangists, etc.';
-  perfContainer.appendChild(perfHint);
-
   const perfRows = document.createElement('div');
   perfRows.className = 'ef-performers-rows';
   perfContainer.appendChild(perfRows);
@@ -1743,6 +1819,23 @@ function addYoutubeBlock(container, formWin) {
   addPerfBtn.addEventListener('click', () => addYoutubePerformerBlock(perfRows, formWin));
 
   block.appendChild(perfContainer);
+
+  // ── Prefill ──────────────────────────────────────────────────────────────
+  if (prefill) {
+    if (prefill.composition_id && compSel.setValue) {
+      const compObj = (graphData.compositions || []).find(c => c.id === prefill.composition_id);
+      compSel.setValue(prefill.composition_id, compObj ? compObj.title : prefill.composition_id);
+    }
+    if (prefill.raga_id && ragaSel.setValue) {
+      const ragaObj = (graphData.ragas || []).find(r => r.id === prefill.raga_id);
+      ragaSel.setValue(prefill.raga_id, ragaObj ? ragaObj.name : prefill.raga_id);
+    }
+    if (prefill.tala && talaSel.setValue) {
+      talaSel.setValue(prefill.tala, prefill.tala);
+    }
+    if (prefill.year) yearInp.value = prefill.year;
+    if (prefill.label) lblInp.value = prefill.label;
+  }
 
   container.appendChild(block);
   formWin.dispatchEvent(new Event('input'));
@@ -5800,6 +5893,13 @@ function buildMusicianRecordingsForm(opts) {
     }
     return buildFocusedLecdemForm(null, prefill);
   }
+  // Raga/comp context from bani-flow panel (no pre-locked musician)
+  if (opts && !opts.nodeId && opts.subjectType && opts.subjectId) {
+    const prefillOpts = opts.subjectType === 'raga'
+      ? { prefillRagaId: opts.subjectId }
+      : { prefillYoutube: { composition_id: opts.subjectId } };
+    return buildFocusedYouTubeForm(null, prefillOpts);
+  }
   return buildAddMusicianForm();
 }
 
@@ -5816,35 +5916,49 @@ function openAddMusicianForm() {
 // baggage. Reuses addYoutubeBlock() for field composition with full dropdowns,
 // composition→raga auto-fill, year, tala, and accompanists.
 
-function buildFocusedYouTubeForm(musicianId) {
-  const node = (graphData.nodes || []).find(n => n.id === musicianId);
-  const label = node ? (node.label || musicianId) : musicianId;
+function buildFocusedYouTubeForm(musicianId, opts) {
+  opts = opts || {};
+  const node = musicianId ? (graphData.nodes || []).find(n => n.id === musicianId) : null;
 
   const win  = createEntryWindow('Add YouTube Recordings');
   if (!win) return;
   const body = win.querySelector('.ew-body');
 
-  // ── Musician identity row (read-only) ──────────────────────────────────────
+  // musCombo_ is set only when no pre-locked musician (raga-panel / bani-flow context).
+  let musCombo_ = null;
+
+  // ── Musician identity row ─────────────────────────────────────────────────
   const musRow = document.createElement('div');
   musRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
   const musLabel = document.createElement('span');
   musLabel.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
   musLabel.textContent = 'Musician';
-  const musChip = document.createElement('span');
-  musChip.className = 'musician-chip';
+
   if (node) {
+    // Pre-locked musician chip (musician-panel context)
+    const musChip = document.createElement('span');
+    musChip.className = 'musician-chip';
+    musChip.style.cursor = 'default';
     const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(node.era || null) : { bg: '', border: '' };
     musChip.style.setProperty('--chip-era-bg', tint.bg);
     musChip.style.setProperty('--chip-era-border', tint.border);
     if (node.instrument && typeof makeInstrBadge === 'function') {
       musChip.appendChild(makeInstrBadge(node.instrument));
     }
-    musChip.appendChild(document.createTextNode(label));
+    musChip.appendChild(document.createTextNode(node.label || musicianId));
+    musRow.appendChild(musLabel);
+    musRow.appendChild(musChip);
   } else {
-    musChip.textContent = label;
+    // No pre-locked musician (bani-flow / raga-panel context) — show dropdown
+    const musOpts_ = (graphData.nodes || []).map(n => ({ value: n.id, label: n.label }));
+    musCombo_ = efCombobox(null, musOpts_, null, win);
+    musCombo_.style.flex = '1';
+    musRow.appendChild(musLabel);
+    musRow.appendChild(musCombo_);
+    if (musCombo_.addEventListener) {
+      musCombo_.addEventListener('change', () => win.dispatchEvent(new Event('input')));
+    }
   }
-  musRow.appendChild(musLabel);
-  musRow.appendChild(musChip);
   body.appendChild(musRow);
 
   // ── YouTube entries ────────────────────────────────────────────────────────
@@ -5853,19 +5967,18 @@ function buildFocusedYouTubeForm(musicianId) {
   ytContainer.id = 'efy_youtube';
   body.appendChild(ytContainer);
 
-  // Auto-open the first block so the user can start typing immediately.
-  addYoutubeBlock(ytContainer, win);
-
-  const addAnotherBtn = efAddBtn('+ Add another video');
-  addAnotherBtn.addEventListener('click', () => addYoutubeBlock(ytContainer, win));
-  body.appendChild(addAnotherBtn);
+  // Auto-open the first block (with optional prefill data).
+  const prefillBlock = opts.prefillYoutube
+    ? Object.assign({}, opts.prefillYoutube)
+    : (opts.prefillRagaId ? { raga_id: opts.prefillRagaId } : null);
+  addYoutubeBlock(ytContainer, win, prefillBlock);
 
   // ── Footer ─────────────────────────────────────────────────────────────────
   const footer = win.querySelector('.ew-footer');
 
   const bundleBtn = document.createElement('button');
   bundleBtn.className  = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Patch';
+  bundleBtn.textContent = 'Update Patch';
   bundleBtn.disabled   = true;
 
   const dlBtn = document.createElement('button');
@@ -5885,22 +5998,25 @@ function buildFocusedYouTubeForm(musicianId) {
   footer.appendChild(dlBtn);
   footer.appendChild(previewBtn);
 
+  // ── Resolve musician ID at collection time ─────────────────────────────────
+  function getEffectiveMusicianId() {
+    return musicianId || (musCombo_ && musCombo_.getValue ? musCombo_.getValue() : '') || '';
+  }
+
   // ── JSON builder ───────────────────────────────────────────────────────────
   function collectYoutube() {
+    const effId = getEffectiveMusicianId();
     const entries = [];
-    const hostNode_ = (graphData.nodes || []).find(n => n.id === musicianId);
+    const hostNode_ = effId ? (graphData.nodes || []).find(n => n.id === effId) : null;
     const hostInstrument = hostNode_ ? hostNode_.instrument : 'vocal';
     win.querySelectorAll('#efy_youtube .ef-youtube-block').forEach(block => {
-      const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-      const url      = inputs[0] ? inputs[0].value.trim() : '';
-      const year     = inputs[1] ? inputs[1].value        : '';
-      const version  = inputs[2] ? inputs[2].value.trim() : '';
-      let   lbl      = inputs[3] ? inputs[3].value.trim() : '';
-      const compId   = block._compSel ? block._compSel.getValue() : '';
-      const ragaId   = block._ragaSel ? block._ragaSel.getValue() : '';
-      const tala     = block._talaSel ? block._talaSel.getValue() : '';
-      if (!url) return;
-      // Auto-generate label if empty
+      const compId = block._compSel ? block._compSel.getValue() : '';
+      const ragaId = block._ragaSel ? block._ragaSel.getValue() : '';
+      const tala   = block._talaSel ? block._talaSel.getValue() : '';
+      const yearInp_ = block.querySelector('[data-field="year"]');
+      const lblInp_  = block.querySelector('[data-field="label"]');
+      const year = yearInp_ ? yearInp_.value : '';
+      let   lbl  = lblInp_  ? lblInp_.value.trim() : '';
       if (!lbl) {
         const parts = [
           block._compSel ? block._compSel.getLabel() : '',
@@ -5909,33 +6025,43 @@ function buildFocusedYouTubeForm(musicianId) {
         ].filter(Boolean);
         lbl = parts.join(' · ');
       }
-      const entry = { url, label: lbl };
-      if (compId)  entry.composition_id = compId;
-      if (ragaId)  entry.raga_id        = ragaId;
-      if (year)    entry.year           = parseInt(year, 10);
-      if (version) entry.version        = version;
-      if (tala)    entry.tala           = tala;
-      // ADR-115: HER mode — emit kind from the HER kind selector
-      if (block._herMode && block._herKindSel) {
-        entry.kind = block._herKindSel.value || 'raga_alap';
-      }
       const performers = (typeof collectYoutubePerformers === 'function')
-        ? collectYoutubePerformers(block, musicianId, hostInstrument)
+        ? collectYoutubePerformers(block, effId, hostInstrument)
         : null;
-      if (performers) entry.performers = performers;
-      entries.push(entry);
+      // Each URL+version row within the block produces one entry sharing
+      // composition/raga/tala/year/label/performers.
+      block.querySelectorAll('.ef-url-ver-row').forEach(verRow => {
+        const urlInp_ = verRow.querySelector('[data-field="url"]');
+        const verInp_ = verRow.querySelector('[data-field="version"]');
+        const url     = urlInp_ ? urlInp_.value.trim() : '';
+        const version = verInp_ ? verInp_.value.trim() : '';
+        if (!url) return;
+        const entry = { url, label: lbl };
+        if (compId)  entry.composition_id = compId;
+        if (ragaId)  entry.raga_id        = ragaId;
+        if (year)    entry.year           = parseInt(year, 10);
+        if (version) entry.version        = version;
+        if (tala)    entry.tala           = tala;
+        if (block._herMode && block._herKindSel) {
+          entry.kind = block._herKindSel.value || 'raga_alap';
+        }
+        if (performers) entry.performers = performers;
+        entries.push(entry);
+      });
     });
     return entries;
   }
 
   function buildBundleItem() {
-    return { type: 'youtube_append', musician_id: musicianId, youtube: collectYoutube() };
+    const effId = getEffectiveMusicianId();
+    return { type: 'youtube_append', musician_id: effId, youtube: collectYoutube() };
   }
 
   function updateButtons() {
     const hasEntries = win.querySelectorAll('#efy_youtube .ef-youtube-block').length > 0;
-    bundleBtn.disabled = !hasEntries;
-    dlBtn.disabled     = !hasEntries;
+    const hasMusicianId = !!getEffectiveMusicianId();
+    bundleBtn.disabled = !hasEntries || !hasMusicianId;
+    dlBtn.disabled     = !hasEntries || !hasMusicianId;
   }
 
   win.addEventListener('input', updateButtons);
@@ -5947,10 +6073,11 @@ function buildFocusedYouTubeForm(musicianId) {
   dlBtn.addEventListener('click', () => {
     const data = buildBundleItem();
     if (!data.youtube.length) return;
+    const effId = getEffectiveMusicianId();
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'youtube_' + musicianId + '.json';
+    a.download = 'youtube_' + (effId || 'unknown') + '.json';
     a.click();
     URL.revokeObjectURL(a.href);
   });
@@ -5958,11 +6085,12 @@ function buildFocusedYouTubeForm(musicianId) {
   bundleBtn.addEventListener('click', () => {
     const data = buildBundleItem();
     if (!data.youtube.length) return;
+    const effId = getEffectiveMusicianId();
     if (typeof addToBundle === 'function') {
-      addToBundle('musicians', { op: 'append', id: musicianId, array: 'youtube', value: data.youtube });
+      addToBundle('musicians', { op: 'append', id: effId, array: 'youtube', value: data.youtube });
       bundleBtn.disabled = true;
       bundleBtn.textContent = '✓ Added';
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Patch'; }, 2000);
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = 'Update Patch'; }, 2000);
     }
   });
 
@@ -5973,6 +6101,17 @@ function buildFocusedYouTubeForm(musicianId) {
 function openAddYouTubeToMusicianForm(musicianId) {
   buildFocusedYouTubeForm(musicianId);
 }
+
+// ── Edit an existing YouTube recording (dblclick on recording row) ─────────────
+// videoId     — the YouTube video ID (bare, not full URL)
+// musicianId  — the musician who owns this recording (may be null for bani-flow context)
+// prefillData — partial recording fields: { composition_id, raga_id, year, label, tala }
+function openEditYoutubeForm(videoId, musicianId, prefillData) {
+  const url = 'https://www.youtube.com/watch?v=' + videoId;
+  const prefill = Object.assign({ url }, prefillData || {});
+  buildFocusedYouTubeForm(musicianId || null, { prefillYoutube: prefill });
+}
+window.openEditYoutubeForm = openEditYoutubeForm;
 
 // ── Focused Lecdem Form ───────────────────────────────────────────────────────
 

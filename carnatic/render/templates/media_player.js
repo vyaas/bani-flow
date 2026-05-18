@@ -956,6 +956,29 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
   return footer.hasChildNodes() ? footer : null;
 }
 
+// ── _buildConcertTracksFor — ordered playerTracks for a named concert bracket ─
+// Used by composition-tree and misc-leaf rows so the in-player track selector
+// always shows the full setlist when a recording carries a recording_id.
+function _buildConcertTracksFor(recordingId, nodeId) {
+  if (!recordingId) return [];
+  return (musicianToPerformances[nodeId] || [])
+    .filter(sp => sp.recording_id === recordingId)
+    .slice()
+    .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0))
+    .map(sp => {
+      const spRagaObj = sp.raga_id ? ragas.find(r => r.id === sp.raga_id) : null;
+      return {
+        offset_seconds: sp.offset_seconds || 0,
+        display_title:  sp.display_title || '',
+        raga_id:        sp.raga_id || null,
+        raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
+        tala:           sp.tala || null,
+        timestamp:      sp.timestamp || '00:00',
+        composition_id: sp.composition_id || null,
+      };
+    });
+}
+
 // ── buildConcertBracket — build one concert bracket DOM element ───────────────
 function buildConcertBracket(concert, nodeId, artistLabel) {
   // Collect all performers across all sessions, deduplicated, excluding self
@@ -1001,8 +1024,10 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   titleSpan.className = 'concert-title recording-chip';
   titleSpan.textContent = concert.short_title || concert.title;
   if (concert.title) titleSpan.title = concert.title;
+  // 'panel-title' role enables the chip_dblclick.js dblclick-to-edit gesture
+  // (single click still falls through to toggleConcert via the header onclick).
   if (concert.recording_id && typeof applyChipRole === 'function')
-    applyChipRole(titleSpan, 'entity', 'recording', concert.recording_id);
+    applyChipRole(titleSpan, 'panel-title', 'recording', concert.recording_id);
 
   const dateSpan = document.createElement('span');
   dateSpan.className = 'concert-date';
@@ -1067,13 +1092,31 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   })();
   if (_firstPerfVid) {
     const concertPlayBtn = document.createElement('button');
-    concertPlayBtn.className = 'rec-play-btn play-btn-concert';
+    concertPlayBtn.className = 'rec-play-btn play-btn-direct';
     concertPlayBtn.title = 'Play from beginning: ' + (concert.short_title || concert.title || 'Concert');
     concertPlayBtn.textContent = '\u25B6';
     concertPlayBtn.style.cssText = 'margin-left:auto;flex-shrink:0;';
     concertPlayBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(_firstPerfVid, concert.short_title || concert.title, artistLabel, 0, concert.short_title || concert.title, [], { nodeId });
+      const _allTracks = [];
+      concert.sessions.forEach(sess => {
+        sess.perfs.slice()
+          .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0))
+          .forEach(sp => {
+            const spRagaObj = sp.raga_id ? ragas.find(r => r.id === sp.raga_id) : null;
+            _allTracks.push({
+              offset_seconds: sp.offset_seconds || 0,
+              display_title:  sp.display_title || '',
+              raga_id:        sp.raga_id || null,
+              raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
+              tala:           sp.tala || null,
+              timestamp:      sp.timestamp || '00:00',
+              composition_id: sp.composition_id || null,
+            });
+          });
+      });
+      _allTracks.sort((a, b) => a.offset_seconds - b.offset_seconds);
+      openOrFocusPlayer(_firstPerfVid, concert.short_title || concert.title, artistLabel, 0, concert.short_title || concert.title, _allTracks, { nodeId });
     });
     titleRow.appendChild(concertPlayBtn);
   }
@@ -1267,6 +1310,21 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     if (p.video_id && typeof applyChipRole === 'function') {
       applyChipRole(li, 'row-block', 'recording', p.video_id);
     }
+    // Dblclick wiring for this single-recording composition row
+    if (p.video_id) {
+      li.addEventListener('dblclick', function(e) {
+        if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip')) return;
+        e.stopPropagation();
+        if (typeof openEditYoutubeForm === 'function') {
+          openEditYoutubeForm(p.video_id, nodeId, {
+            composition_id:  p.composition_id || null,
+            raga_id:         p.raga_id        || null,
+            year:            p.date ? parseInt(p.date, 10) : null,
+            is_concert_track: !!p.recording_id || undefined,
+          });
+        }
+      });
+    }
     const actsDiv = document.createElement('div');
     actsDiv.className = 'tree-comp-acts';
     if (p.date) {
@@ -1276,7 +1334,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       actsDiv.appendChild(yearSpan);
     }
     const playBtn = document.createElement('button');
-    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.className = p.recording_id ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
     playBtn.setAttribute('data-vid', p.video_id);
     playBtn.title = p.short_title || p.title || 'Play';
     playBtn.textContent = '\u25B6';
@@ -1285,7 +1343,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       openOrFocusPlayer(
         p.video_id, p.display_title, artistLabel,
         p.offset_seconds > 0 ? p.offset_seconds : undefined,
-        p.short_title || p.title, [],
+        p.short_title || p.title, _buildConcertTracksFor(p.recording_id, nodeId),
         { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null, tala: p.tala || null }
       );
     });
@@ -1297,7 +1355,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     actsDiv.className = 'tree-comp-acts';
 
     const chevron = document.createElement('button');
-    chevron.className = 'rec-play-btn tree-comp-chevron';
+    chevron.className = 'tree-comp-chevron';
     chevron.textContent = '\u25b6';  // ▶ collapsed by default
     chevron.title = 'Show recordings';
     actsDiv.appendChild(chevron);
@@ -1343,7 +1401,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       const rowActsDiv = document.createElement('div');
       rowActsDiv.className = 'trail-acts';
       const playBtn = document.createElement('button');
-      playBtn.className = 'rec-play-btn play-btn-concert';
+      playBtn.className = p.recording_id ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
       playBtn.setAttribute('data-vid', p.video_id);
       playBtn.title = p.short_title || p.title || 'Play';
       playBtn.textContent = '\u25B6';
@@ -1352,7 +1410,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
         openOrFocusPlayer(
           p.video_id, p.display_title, artistLabel,
           p.offset_seconds > 0 ? p.offset_seconds : undefined,
-          p.short_title || p.title, [],
+          p.short_title || p.title, _buildConcertTracksFor(p.recording_id, nodeId),
           { nodeId, ragaId: p.raga_id || null, compositionId: p.composition_id || null, tala: p.tala || null }
         );
       });
@@ -1360,6 +1418,23 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       row.appendChild(rowActsDiv);
 
       recLi.appendChild(row);
+
+      // Dblclick to edit this recording version
+      if (p.video_id) {
+        recLi.addEventListener('dblclick', function(e) {
+          if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip')) return;
+          e.stopPropagation();
+          if (typeof openEditYoutubeForm === 'function') {
+            openEditYoutubeForm(p.video_id, nodeId, {
+              composition_id:  p.composition_id || null,
+              raga_id:         p.raga_id        || null,
+              year:            p.date ? parseInt(p.date, 10) : null,
+              is_concert_track: !!p.recording_id || undefined,
+            });
+          }
+        });
+      }
+
       recUl.appendChild(recLi);
     });
 
@@ -1439,6 +1514,9 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
     const miscSpan = document.createElement('span');
     miscSpan.className = 'rec-group-label rec-unknown';
     miscSpan.textContent = 'Misc';
+    miscSpan.dataset.sectionAction = 'add-recording';
+    miscSpan.dataset.musicianId = nodeId;
+    if (typeof applyChipRole === 'function') applyChipRole(miscSpan, 'section-add', 'recording');
     header.appendChild(miscSpan);
   }
 
@@ -1484,6 +1562,8 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
   li.className = 'tree-leaf tree-misc-leaf';
   li.dataset.vid = p.video_id;
   if (playerRegistry.has(p.video_id)) li.classList.add('playing');
+  if (p.video_id && typeof applyChipRole === 'function')
+    applyChipRole(li, 'row-block', 'recording', p.video_id);
 
   const row = document.createElement('div');
   row.className = 'trail-row2';
@@ -1528,7 +1608,7 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
   const actsDiv = document.createElement('div');
   actsDiv.className = 'trail-acts';
   const playBtn = document.createElement('button');
-  playBtn.className = 'rec-play-btn play-btn-concert';
+  playBtn.className = p.recording_id ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
   playBtn.setAttribute('data-vid', p.video_id);
   playBtn.title = p.display_title || p.short_title || p.title || 'Play';
   playBtn.textContent = '\u25B6';
@@ -1537,7 +1617,7 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
     openOrFocusPlayer(
       p.video_id, p.display_title, artistLabel,
       p.offset_seconds > 0 ? p.offset_seconds : undefined,
-      p.short_title || p.title, [],
+      p.short_title || p.title, _buildConcertTracksFor(p.recording_id, nodeId),
       { nodeId, ragaId: null, compositionId: p.composition_id || null, tala: p.tala || null }
     );
   });
@@ -1545,6 +1625,24 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
   row.appendChild(actsDiv);
 
   li.appendChild(row);
+
+  // ── Dblclick to edit this YouTube recording ────────────────────────────────
+  if (p.video_id) {
+    li.addEventListener('dblclick', function(e) {
+      if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip')) return;
+      e.stopPropagation();
+      if (typeof openEditYoutubeForm === 'function') {
+        openEditYoutubeForm(p.video_id, nodeId, {
+          composition_id:  p.composition_id || null,
+          raga_id:         p.raga_id        || null,
+          year:            p.date ? parseInt(p.date, 10) : null,
+          label:           p.display_title  || p.short_title || '',
+          is_concert_track: !!p.recording_id || undefined,
+        });
+      }
+    });
+  }
+
   return li;
 }
 
@@ -1620,7 +1718,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     actsDiv.className = 'trail-acts';
 
     const playBtn = document.createElement('button');
-    playBtn.className = 'rec-play-btn play-btn-concert';
+    playBtn.className = 'rec-play-btn play-btn-direct';
     playBtn.setAttribute('data-vid', ref.video_id);
     playBtn.title = ref.label || 'Play';
     playBtn.textContent = '\u25B6';
@@ -1715,7 +1813,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
 
   // ▶ play-from-beginning button — opens the lecdem video at 00:00:00
   const lecdemPlayBtn = document.createElement('button');
-  lecdemPlayBtn.className = 'rec-play-btn play-btn-concert';
+  lecdemPlayBtn.className = 'rec-play-btn play-btn-direct';
   lecdemPlayBtn.title = 'Play from beginning: ' + (ref.label || 'Lecture-Demo');
   lecdemPlayBtn.textContent = '\u25B6';
   lecdemPlayBtn.style.cssText = 'margin-left:auto;flex-shrink:0;';

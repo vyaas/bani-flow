@@ -226,7 +226,8 @@
 
   function _applyLeftPinState() {
     if (sidebar)  sidebar.classList.toggle('panel-pinned', leftPinned);
-    if (mainEl)   mainEl.classList.toggle('left-pinned', leftPinned);
+    // left-pinned class intentionally NOT toggled on mainEl — left panel always
+    // overlays the canvas and never allocates a grid column (see base.html CSS).
     if (leftPanelToggle) {
       leftPanelToggle.classList.toggle('float-toggle-active', leftPinned);
       leftPanelToggle.setAttribute('aria-pressed', String(leftPinned));

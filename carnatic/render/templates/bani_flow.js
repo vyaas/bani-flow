@@ -225,7 +225,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       ragaBtn.className = 'raga-chip';
       if (typeof applyChipRole === 'function') applyChipRole(ragaBtn, 'entity', 'raga', raga.id);
       ragaBtn.textContent = raga.name;
-      ragaBtn.title = 'Explore ' + raga.name + ' in Bani Flow';
       ragaBtn.addEventListener('click', e => {
         e.stopPropagation();
         triggerBaniSearch('raga', raga.id);
@@ -459,7 +458,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       parentLink.className = 'raga-chip';
       if (typeof applyChipRole === 'function') applyChipRole(parentLink, 'entity', 'raga', raga.parent_raga);
       parentLink.textContent = parentName;
-      parentLink.title = 'Explore ' + parentName + ' in Bani Flow';
       parentLink.addEventListener('click', e => {
         e.stopPropagation();
         triggerBaniSearch('raga', raga.parent_raga);
@@ -525,7 +523,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
               chip.className = 'raga-chip';
               if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', j.id);
               chip.textContent = j.name || j.id;
-              chip.title = 'Explore ' + (j.name || j.id) + ' in Bani Flow';
               chip.addEventListener('click', e => {
                 e.stopPropagation();
                 triggerBaniSearch('raga', j.id);
@@ -543,7 +540,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
                   herChip.className = 'her-chip her-chip--secondary';
                   herChip.dataset.ragaId = herId;
                   herChip.textContent = '\u2194\u00a0' + (herRaga.name || herId);
-                  herChip.title = 'Explore Hindustani equivalent: ' + (herRaga.name || herId);
                   herChip.addEventListener('click', e => {
                     e.stopPropagation();
                     triggerBaniSearch('raga', herId);
@@ -600,7 +596,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
           chip.className = 'her-chip';
           chip.dataset.ragaId = herId;
           chip.textContent = '\u2194\u00a0' + (herRaga.name || herId);
-          chip.title = 'Explore Hindustani equivalent: ' + (herRaga.name || herId);
           chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', herId); });
           herRow.appendChild(chip);
         });
@@ -619,7 +614,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
           chip.dataset.ragaId = cr.id;
           if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'raga', cr.id);
           chip.textContent = cr.name || cr.id;
-          chip.title = 'Explore Carnatic equivalent: ' + (cr.name || cr.id);
           chip.addEventListener('click', e => { e.stopPropagation(); triggerBaniSearch('raga', cr.id); });
           herRow.appendChild(chip);
         });
@@ -1180,6 +1174,27 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
   accordion.classList.add('tree-leaf-coperformers-group');
   li.appendChild(accordion);
 
+  // ── Dblclick to edit recording ─────────────────────────────────────────────
+  const _vid        = row.track.vid;
+  const _isConcert  = !!(row.isStructured && row.track.recording_id);
+  const _recordingId = row.track.recording_id || null;
+  if (_vid) {
+    li.addEventListener('dblclick', function(e) {
+      if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip')) return;
+      e.stopPropagation();
+      if (typeof openEditYoutubeForm === 'function') {
+        openEditYoutubeForm(_vid, row.nodeId || null, {
+          composition_id:  row.track.composition_id || null,
+          raga_id:         row.track.raga_id        || null,
+          year:            row.track.year           || null,
+          label:           row.track.label          || '',
+          tala:            row.track.tala           || null,
+          is_concert_track: _isConcert || undefined,
+        });
+      }
+    });
+  }
+
   return li;
 }
 
@@ -1277,20 +1292,23 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     trailList.appendChild(compSec);
   }
 
-  // ── Other recordings section ──────────────────────────────────────────────
-  if (otherGroups.length > 0) {
+  // ── Other recordings section — always shown (even when count=0) for dblclick-to-add ─
+  {
     // ADR-128 D11: 'Recordings' neutral chip + ' (misc)' suffix — same chip as
     // the Musician panel uses, so the vocabulary is consistent across panels.
     const _miscChip = document.createElement('span');
     _miscChip.className = 'neutral-chip chip-section-hdr has-glyph neutral-chip-recordings';
     _miscChip.textContent = 'MISC';
-    // ADR-144: MISC section-add chip (dblclick opens add-recording form)
+    // ADR-144: MISC section-add chip (dblclick opens add-recording form pre-scoped to this raga)
     if (typeof applyChipRole === 'function') applyChipRole(_miscChip, 'section-add', 'recording');
     _miscChip.dataset.sectionAction = 'add-recording';
+    _miscChip.dataset.subjectType   = 'raga';
+    _miscChip.dataset.subjectId     = trailRagaId || '';
+    const miscCount = otherGroups.length > 0 ? otherGroups[0].rows.length : 0;
     const { sectionEl: otherSec, bodyEl: otherSecBody } = buildSection({
       headerChip: _miscChip,
       headerSuffixText: '',
-      count: otherGroups[0].rows.length,
+      count: miscCount,
     });
     // Render rows directly into the section body — buildSection already
     // provides the collapsible header. _renderGroup would emit a redundant
