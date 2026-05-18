@@ -864,11 +864,144 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
             help_data = None
         if help_data:
             _schema_version = help_data.get("schema_version", 1)
-            if _schema_version > 4:
+            if _schema_version > 5:
                 errors.append(
-                    f"help/empty_panels.json: schema_version {_schema_version} > 4; "
+                    f"help/empty_panels.json: schema_version {_schema_version} > 5; "
                     f"update cli.py to handle the new schema"
                 )
+            elif _schema_version == 5:
+                # ── ADR-147: schema_version 5 — worked-example tutorials ──────────
+                _STRICT_VIDEO_ID_RE_V5 = re.compile(r"^[A-Za-z0-9_-]{11}$")
+                _YOUTUBE_URL_RE = re.compile(r"youtube\.com|youtu\.be")
+                _KNOWN_RECORDING_REF_IDS = {r["id"] for r in g.get_all_recording_refs()}
+                _KNOWN_BANI_SECTION_KINDS = {"lecdems", "compositions", "misc"}
+                _KNOWN_MUSICIAN_SECTION_KINDS = {"lecdems", "concerts", "recordings", "compositions_empty"}
+
+                def _is_non_empty_string_v5(v: object) -> bool:
+                    return isinstance(v, str) and bool(v.strip())
+
+                # intro_ribbon
+                if not _is_non_empty_string_v5(help_data.get("intro_ribbon")):
+                    errors.append("help/empty_panels.json: intro_ribbon must be a non-empty string")
+
+                _panel_subjects = {
+                    "bani_flow_panel": ("raga", known_raga_ids),
+                    "musician_panel":  ("musician", known_musician_ids),
+                }
+                for panel_key, (expected_kind, id_set) in _panel_subjects.items():
+                    panel = help_data.get(panel_key)
+                    if not isinstance(panel, dict):
+                        errors.append(f"help/empty_panels.json: {panel_key} must be an object")
+                        continue
+                    pw = f"help/empty_panels.json:{panel_key}"
+
+                    # subject
+                    subj = panel.get("subject") or {}
+                    subj_id = subj.get("id")
+                    if subj.get("kind") != expected_kind:
+                        errors.append(f"{pw}.subject.kind: expected '{expected_kind}'")
+                    if subj_id not in id_set:
+                        errors.append(f"{pw}.subject.id: '{subj_id}' not found")
+
+                    # header_annotations
+                    for ai, ann in enumerate(panel.get("header_annotations") or []):
+                        aw = f"{pw}.header_annotations[{ai}]"
+                        if not _is_non_empty_string_v5(ann.get("text")):
+                            errors.append(f"{aw}.text: must be a non-empty string")
+                        if not _is_non_empty_string_v5(ann.get("position")):
+                            errors.append(f"{aw}.position: must be a non-empty string")
+
+                    # sections
+                    allowed_section_kinds = (
+                        _KNOWN_BANI_SECTION_KINDS
+                        if panel_key == "bani_flow_panel"
+                        else _KNOWN_MUSICIAN_SECTION_KINDS
+                    )
+                    for si, section in enumerate(panel.get("sections") or []):
+                        sw = f"{pw}.sections[{si}]"
+                        s_kind = section.get("kind")
+                        if s_kind not in allowed_section_kinds:
+                            errors.append(f"{sw}.kind: '{s_kind}' not in {sorted(allowed_section_kinds)}")
+                            continue
+                        if s_kind != "compositions_empty":
+                            if not _is_non_empty_string_v5(section.get("section_gloss")):
+                                errors.append(f"{sw}.section_gloss: must be a non-empty string")
+                        for ri, row in enumerate(section.get("rows") or []):
+                            rw = f"{sw}.rows[{ri}]"
+                            row_kind = row.get("row_kind")
+                            refs = row.get("data_refs") or {}
+                            if not _is_non_empty_string_v5(row.get("annotation")):
+                                errors.append(f"{rw}.annotation: must be a non-empty string")
+
+                            if row_kind == "lecdem":
+                                mid = refs.get("lecdem_musician_id")
+                                vid = str(refs.get("lecdem_video_id") or "")
+                                url = str(refs.get("lecdem_url") or "")
+                                if mid not in known_musician_ids:
+                                    errors.append(f"{rw}.data_refs.lecdem_musician_id: '{mid}' not in musicians")
+                                if not _STRICT_VIDEO_ID_RE_V5.fullmatch(vid):
+                                    errors.append(f"{rw}.data_refs.lecdem_video_id: '{vid}' not 11-char alphanumeric")
+                                if not _YOUTUBE_URL_RE.search(url):
+                                    errors.append(f"{rw}.data_refs.lecdem_url: must be a YouTube URL")
+
+                            elif row_kind == "composition_tree":
+                                cid = refs.get("composition_id")
+                                rid = refs.get("raga_id")
+                                comp_id = refs.get("composer_id")
+                                if cid not in known_composition_ids:
+                                    errors.append(f"{rw}.data_refs.composition_id: '{cid}' not in compositions")
+                                if rid not in known_raga_ids:
+                                    errors.append(f"{rw}.data_refs.raga_id: '{rid}' not in ragas")
+                                if comp_id is not None and comp_id not in known_musician_ids:
+                                    errors.append(f"{rw}.data_refs.composer_id: '{comp_id}' not in musicians")
+
+                            elif row_kind == "misc_entry":
+                                mid = refs.get("misc_musician_id")
+                                vid = str(refs.get("video_id") or "")
+                                if mid not in known_musician_ids:
+                                    errors.append(f"{rw}.data_refs.misc_musician_id: '{mid}' not in musicians")
+                                if not _STRICT_VIDEO_ID_RE_V5.fullmatch(vid):
+                                    errors.append(f"{rw}.data_refs.video_id: '{vid}' not 11-char alphanumeric")
+
+                            elif row_kind == "concert":
+                                rec_id = refs.get("recording_id")
+                                vid = str(refs.get("video_id") or "")
+                                if rec_id not in _KNOWN_RECORDING_REF_IDS:
+                                    errors.append(f"{rw}.data_refs.recording_id: '{rec_id}' not in recording_refs")
+                                if not _STRICT_VIDEO_ID_RE_V5.fullmatch(vid):
+                                    errors.append(f"{rw}.data_refs.video_id: '{vid}' not 11-char alphanumeric")
+
+                            elif row_kind == "recording_tree":
+                                rid = refs.get("raga_id")
+                                cid = refs.get("composition_id")
+                                if rid not in known_raga_ids:
+                                    errors.append(f"{rw}.data_refs.raga_id: '{rid}' not in ragas")
+                                if cid not in known_composition_ids:
+                                    errors.append(f"{rw}.data_refs.composition_id: '{cid}' not in compositions")
+
+                            else:
+                                errors.append(f"{rw}.row_kind: '{row_kind}' is not a recognised row kind")
+
+                        # compositions_empty section: validate trinity_chips
+                        if s_kind == "compositions_empty":
+                            for ti, chip in enumerate(section.get("trinity_chips") or []):
+                                tid = chip.get("id")
+                                if tid not in known_musician_ids:
+                                    errors.append(f"{sw}.trinity_chips[{ti}].id: '{tid}' not in musicians")
+
+                    # closing_note
+                    cn = panel.get("closing_note") or {}
+                    if not _is_non_empty_string_v5(cn.get("text")):
+                        errors.append(f"{pw}.closing_note.text: must be a non-empty string")
+                    chip = cn.get("chip")
+                    if chip is not None:
+                        chip_kind = chip.get("kind")
+                        chip_id   = chip.get("id")
+                        if chip_kind == "raga" and chip_id not in known_raga_ids:
+                            errors.append(f"{pw}.closing_note.chip.id: raga '{chip_id}' not in ragas")
+                        elif chip_kind == "musician" and chip_id not in known_musician_ids:
+                            errors.append(f"{pw}.closing_note.chip.id: musician '{chip_id}' not in musicians")
+
             else:
                 # panel_target value that would self-reference each panel block
                 _PANEL_TARGET_FORBIDDEN = {

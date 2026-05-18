@@ -593,15 +593,248 @@
     return div.children.length ? div : null;
   }
 
+  // ── ADR-147: schema_version 5 — worked-example renderer ─────────────────
+  // Renders each panel as a section-by-section worked example with interleaved
+  // annotations. All chips are live — clicking navigates the real app.
+  function _renderIntoV5(container, block, slot) {
+    const subjectId = (block.subject || {}).id;
+
+    function _ann(text) {
+      return _el('div', 'pt-annotation', text || '');
+    }
+
+    function _playBtnV5(videoId, label, offsetSeconds) {
+      const btn = _el('button', 'tree-play-btn rec-play-btn', '\u25b6');
+      btn.type = 'button';
+      btn.title = 'Play';
+      btn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (typeof openPlayer === 'function') openPlayer(videoId, label || '', offsetSeconds || 0);
+      });
+      return btn;
+    }
+
+    function _extLinkV5(url) {
+      const a = document.createElement('a');
+      a.className = 'tree-ext-link yt-ext-link';
+      a.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
+      a.href = url || '#';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.title = 'Open source';
+      a.addEventListener('click', function (evt) { evt.stopPropagation(); });
+      return a;
+    }
+
+    function _musicianChipV5(musicianId, label) {
+      const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+      const node  = nodes.find(function (n) { return n.id === musicianId; });
+      const chip  = _el('span', 'musician-chip', label || (node ? node.label : musicianId));
+      _applyEraTint(chip, musicianId);
+      chip.style.cursor = 'pointer';
+      chip.addEventListener('click', function () { _onMusician(musicianId); });
+      return chip;
+    }
+
+    function _ragaChipV5(ragaId, label) {
+      const r = (typeof ragas !== 'undefined' ? ragas : []).find(function (r) { return r.id === ragaId; });
+      const chip = _el('span', 'raga-chip', label || (r ? (r.name || ragaId) : ragaId));
+      chip.style.cursor = 'pointer';
+      chip.addEventListener('click', function () { _onRaga(ragaId, {}); });
+      return chip;
+    }
+
+    function _compChipV5(compId, label) {
+      const c = (typeof compositions !== 'undefined' ? compositions : []).find(function (c) { return c.id === compId; });
+      const chip = _el('span', 'comp-chip', label || (c ? (c.title || compId) : compId));
+      chip.style.cursor = 'pointer';
+      chip.addEventListener('click', function () { _onComposition(compId, {}); });
+      return chip;
+    }
+
+    function _sectionHdr(label, cls) {
+      return _el('span', 'neutral-chip chip-section-hdr ' + (cls || ''), label);
+    }
+
+    // intro ribbon
+    if (helpEmptyPanels && helpEmptyPanels.intro_ribbon) {
+      container.appendChild(_el('div', 'pt-intro-ribbon', helpEmptyPanels.intro_ribbon));
+    }
+
+    // header annotations
+    (block.header_annotations || []).forEach(function (ann) {
+      const strip = _ann(ann.text);
+      strip.dataset.position = ann.position || '';
+      container.appendChild(strip);
+    });
+
+    // sections
+    (block.sections || []).forEach(function (section) {
+      const sk = section.kind;
+      const sectionDiv = _el('div', 'pt-v5-section pt-v5-section--' + sk);
+
+      // section header
+      var hdrCls = 'neutral-chip-recordings';
+      if (sk === 'lecdems') hdrCls = 'neutral-chip-lecdems';
+      var hdrLabel = ({
+        lecdems:            'LECDEMS',
+        compositions:       'COMPOSITIONS',
+        misc:               'MISC',
+        concerts:           'CONCERTS',
+        recordings:         'RECORDINGS',
+        compositions_empty: 'COMPOSITIONS (0)',
+      })[sk] || sk.toUpperCase();
+      const hdrRow = _el('div', 'pt-v5-section-hdr');
+      hdrRow.appendChild(_sectionHdr(hdrLabel, hdrCls));
+      sectionDiv.appendChild(hdrRow);
+
+      // section_gloss
+      if (section.section_gloss) sectionDiv.appendChild(_ann(section.section_gloss));
+
+      if (sk === 'compositions_empty') {
+        // trinity chips
+        const trinityDiv = _el('div', 'pt-v5-trinity-chips');
+        (section.trinity_chips || []).forEach(function (chip) {
+          trinityDiv.appendChild(_musicianChipV5(chip.id, chip.label));
+        });
+        sectionDiv.appendChild(trinityDiv);
+      } else {
+        (section.rows || []).forEach(function (row) {
+          const rowDiv = _el('div', 'pt-v5-row');
+          const rk   = row.row_kind;
+          const refs = row.data_refs || {};
+
+          if (rk === 'lecdem') {
+            const lineDiv = _el('div', 'pt-v5-lecdem-line');
+            lineDiv.appendChild(_musicianChipV5(refs.lecdem_musician_id));
+            if (refs.lecdem_subject_musician_id) {
+              // "about" variant: hosted by X, about subject
+              lineDiv.appendChild(_el('span', 'pt-v5-lecdem-about', '\u00a0on ' + (refs.lecdem_label || '')));
+            } else if (refs.lecdem_label) {
+              lineDiv.appendChild(_el('span', 'pt-v5-lecdem-label', refs.lecdem_label));
+            }
+            if (refs.lecdem_video_id) lineDiv.appendChild(_playBtnV5(refs.lecdem_video_id, refs.lecdem_label));
+            if (refs.lecdem_url)      lineDiv.appendChild(_extLinkV5(refs.lecdem_url));
+            rowDiv.appendChild(lineDiv);
+
+          } else if (rk === 'composition_tree') {
+            const compLine = _el('div', 'pt-v5-comp-line');
+            compLine.appendChild(_compChipV5(refs.composition_id));
+            if (refs.composer_id) {
+              const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+              const node  = nodes.find(function (n) { return n.id === refs.composer_id; });
+              const composerChip = _el('span', 'musician-chip musician-chip--composer',
+                node ? node.label : refs.composer_id);
+              composerChip.style.cursor = 'pointer';
+              composerChip.addEventListener('click', function () { _onMusician(refs.composer_id); });
+              compLine.appendChild(composerChip);
+            }
+            rowDiv.appendChild(compLine);
+            // performers who recorded this composition
+            const perfs = (typeof compositionToPerf !== 'undefined')
+              ? (compositionToPerf[refs.composition_id] || []) : [];
+            var seenPerf = {};
+            perfs.forEach(function (perf) {
+              const primary = (perf.performers || [])[0];
+              const mid = primary ? primary.musician_id : null;
+              const key = mid + '::' + perf.recording_id;
+              if (!mid || seenPerf[key]) return;
+              seenPerf[key] = true;
+              const perfLine = _el('div', 'pt-v5-perf-line');
+              perfLine.appendChild(_musicianChipV5(mid));
+              if (perf.video_id) perfLine.appendChild(_playBtnV5(perf.video_id, perf.display_title, perf.offset_seconds));
+              rowDiv.appendChild(perfLine);
+            });
+
+          } else if (rk === 'misc_entry') {
+            const miscLine = _el('div', 'pt-v5-misc-line');
+            miscLine.appendChild(_musicianChipV5(refs.misc_musician_id));
+            if (refs.misc_label) miscLine.appendChild(_el('span', 'pt-v5-misc-label', refs.misc_label));
+            if (refs.video_id)   miscLine.appendChild(_playBtnV5(refs.video_id, refs.misc_label, refs.offset_seconds || 0));
+            rowDiv.appendChild(miscLine);
+
+          } else if (rk === 'concert') {
+            const rec = (typeof recordings !== 'undefined' ? recordings : [])
+              .find(function (r) { return r.id === refs.recording_id; });
+            const titleText = rec ? (rec.short_title || rec.title) : (refs.recording_id || '');
+            const concertLine = _el('div', 'pt-v5-concert-line');
+            concertLine.appendChild(_el('span', 'pt-v5-concert-title', '\u266a\u00a0' + titleText));
+            if (refs.video_id) concertLine.appendChild(_playBtnV5(refs.video_id, titleText));
+            rowDiv.appendChild(concertLine);
+            if (rec && rec.sessions) {
+              var coPerformers = [];
+              rec.sessions.forEach(function (sess) {
+                (sess.performers || []).forEach(function (p) {
+                  if (p.musician_id && p.musician_id !== subjectId &&
+                      !coPerformers.some(function (x) { return x.musician_id === p.musician_id; })) {
+                    coPerformers.push(p);
+                  }
+                });
+              });
+              if (coPerformers.length) {
+                const perfLine = _el('div', 'pt-v5-concert-performers');
+                coPerformers.forEach(function (p) { perfLine.appendChild(_musicianChipV5(p.musician_id)); });
+                rowDiv.appendChild(perfLine);
+              }
+            }
+
+          } else if (rk === 'recording_tree') {
+            const ragaLine = _el('div', 'pt-v5-raga-line');
+            ragaLine.appendChild(_ragaChipV5(refs.raga_id));
+            rowDiv.appendChild(ragaLine);
+            const compLine2 = _el('div', 'pt-v5-comp-line');
+            compLine2.appendChild(_compChipV5(refs.composition_id));
+            rowDiv.appendChild(compLine2);
+            if (subjectId && typeof musicianToPerformances !== 'undefined') {
+              var matching = (musicianToPerformances[subjectId] || []).filter(function (p) {
+                return p.raga_id === refs.raga_id && p.composition_id === refs.composition_id;
+              });
+              matching.forEach(function (perf) {
+                const vLine = _el('div', 'pt-v5-version-line');
+                vLine.appendChild(_el('span', 'pt-v5-version-label', perf.short_title || ''));
+                if (perf.video_id) vLine.appendChild(_playBtnV5(perf.video_id, perf.display_title, perf.offset_seconds));
+                rowDiv.appendChild(vLine);
+              });
+            }
+          }
+
+          sectionDiv.appendChild(rowDiv);
+          if (row.annotation) {
+            const rowAnn = _ann(row.annotation);
+            rowAnn.classList.add('pt-annotation--row');
+            sectionDiv.appendChild(rowAnn);
+          }
+        });
+      }
+      container.appendChild(sectionDiv);
+    });
+
+    // closing note
+    const cn = block.closing_note || {};
+    if (cn.text) {
+      const cnDiv = _el('div', 'pt-v5-closing-note');
+      if (cn.icon === 'wheel') cnDiv.appendChild(_el('span', 'pt-v5-closing-icon', '\u2609'));
+      else if (cn.icon === 'graph') cnDiv.appendChild(_el('span', 'pt-v5-closing-icon', '\u29c9'));
+      cnDiv.appendChild(_el('span', 'pt-v5-closing-text', cn.text));
+      if (cn.chip && cn.chip.kind === 'raga') {
+        cnDiv.appendChild(_ragaChipV5(cn.chip.id, cn.chip.label));
+      }
+      container.appendChild(cnDiv);
+    }
+  }
+
   function _renderInto(container, block, slot) {
     container.innerHTML = '';
 
     const schemaVersion = (typeof helpEmptyPanels !== 'undefined' && helpEmptyPanels)
       ? (helpEmptyPanels.schema_version || 1)
       : 1;
-    if (schemaVersion > 4) {
+    if (schemaVersion > 5) {
       container.appendChild(_el('p', 'pt-upgrade',
         'Tutorial data schema (' + schemaVersion + ') is newer than this render. Please update.'));
+      return;
+    } else if (schemaVersion === 5) {
+      _renderIntoV5(container, block, slot);
       return;
     }
 

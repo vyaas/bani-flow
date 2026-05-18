@@ -710,3 +710,8 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-17: When a Narayana Teertha composition from the Krishna Leela Tarangini is performed in a raga different from the canonical textual setting (e.g. Shuddha Sarang instead of Surati/Kedaragaula), record the performed raga — the oral tradition can re-set a composition freely; the karnatik textbook raga is just one transmission.
 - 2026-05-17: Shuddha Sarang has no Wikipedia page; ragajunglism.org is a reliable secondary source — use it with source-type "other" following the CLAUDE.md rule for HER ragas without standalone Wikipedia articles.
 - 2026-05-17: Phalamanjari is a rare audava-vakra janya of Kharaharapriya (mela 22); the parent-raga field should point to the 22nd melakarta (`kharaharapriya`), not the cakra root.
+
+- 2026-05-17: ADR-147 worked-example tutorials (schema_version 5): empty_panels.json sections must include `section_gloss` on each section and `annotation` on each row — the JS renderer interleaves these as `.pt-annotation` strips between chips, so omitting them leaves the sections structurally visible but unannotated.
+[AGENTS: librarian]
+- 2026-05-17: ADR-147 v5 renderer design: `_renderIntoV5` is a self-contained function with nested helpers (_playBtnV5, _extLinkV5, _musicianChipV5, etc.) defined inside its scope; this avoids name collisions with v4 helpers and makes the v5 code portable across schema bumps without touching existing functions.
+[AGENTS: carnatic-coder]
