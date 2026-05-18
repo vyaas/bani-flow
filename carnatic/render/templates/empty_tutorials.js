@@ -595,88 +595,195 @@
 
   // ── ADR-147: schema_version 5 — worked-example renderer ─────────────────
   // Renders each panel as a section-by-section worked example with interleaved
-  // annotations. All chips are live — clicking navigates the real app.
+  // annotations. Delegates to production builders wherever possible so chips
+  // and brackets are visually indistinguishable from the live panels:
+  //   · _buildLecdemBracket / _buildLecturerChip / buildRowAccordion (lecdems)
+  //   · buildConcertBracket (musician-panel concerts)
+  //   · openOrFocusPlayer (every play button — full header/footer/playlist)
+  // Annotations support inline-chip tokens:
+  //   {raga:id}, {musician:id}, {comp:id}, {composer:id}, {era:eraId}, {her:cid|hid}
   function _renderIntoV5(container, block, slot) {
     const subjectId = (block.subject || {}).id;
+    const nodes     = (typeof graphData !== 'undefined' && graphData.nodes) || [];
+    const subjectNode = nodes.find(function (n) { return n.id === subjectId; });
+    const subjectLabel = subjectNode ? subjectNode.label : subjectId;
 
-    function _ann(text) {
-      return _el('div', 'pt-annotation', text || '');
-    }
-
-    function _playBtnV5(videoId, label, offsetSeconds) {
-      const btn = _el('button', 'tree-play-btn rec-play-btn', '\u25b6');
-      btn.type = 'button';
-      btn.title = 'Play';
-      btn.addEventListener('click', function (evt) {
-        evt.stopPropagation();
-        if (typeof openPlayer === 'function') openPlayer(videoId, label || '', offsetSeconds || 0);
-      });
-      return btn;
-    }
-
-    function _extLinkV5(url) {
-      const a = document.createElement('a');
-      a.className = 'tree-ext-link yt-ext-link';
-      a.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
-      a.href = url || '#';
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.title = 'Open source';
-      a.addEventListener('click', function (evt) { evt.stopPropagation(); });
-      return a;
-    }
-
-    function _musicianChipV5(musicianId, label) {
-      const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
-      const node  = nodes.find(function (n) { return n.id === musicianId; });
-      const chip  = _el('span', 'musician-chip', label || (node ? node.label : musicianId));
+    // ── chip factories (reuse production CSS classes) ──────────────────────
+    function _musicianChipV5(musicianId, label, opts) {
+      opts = opts || {};
+      const node = nodes.find(function (n) { return n.id === musicianId; });
+      const cls  = opts.composer ? 'musician-chip musician-chip--composer' : 'musician-chip';
+      const chip = _el('span', cls, label || (node ? node.label : musicianId));
       _applyEraTint(chip, musicianId);
       chip.style.cursor = 'pointer';
-      chip.addEventListener('click', function () { _onMusician(musicianId); });
+      chip.addEventListener('click', function (e) {
+        e.stopPropagation(); _onMusician(musicianId);
+      });
       return chip;
     }
-
     function _ragaChipV5(ragaId, label) {
       const r = (typeof ragas !== 'undefined' ? ragas : []).find(function (r) { return r.id === ragaId; });
       const chip = _el('span', 'raga-chip', label || (r ? (r.name || ragaId) : ragaId));
       chip.style.cursor = 'pointer';
-      chip.addEventListener('click', function () { _onRaga(ragaId, {}); });
+      chip.addEventListener('click', function (e) {
+        e.stopPropagation(); _onRaga(ragaId, {});
+      });
       return chip;
     }
-
     function _compChipV5(compId, label) {
       const c = (typeof compositions !== 'undefined' ? compositions : []).find(function (c) { return c.id === compId; });
       const chip = _el('span', 'comp-chip', label || (c ? (c.title || compId) : compId));
       chip.style.cursor = 'pointer';
-      chip.addEventListener('click', function () { _onComposition(compId, {}); });
+      chip.addEventListener('click', function (e) {
+        e.stopPropagation(); _onComposition(compId, {});
+      });
       return chip;
     }
-
-    function _sectionHdr(label, cls) {
-      return _el('span', 'neutral-chip chip-section-hdr ' + (cls || ''), label);
+    function _eraChipV5(eraId) {
+      const labelMap = {
+        trinity: 'Trinity', bridge: 'Bridge', golden_age: 'Golden Age',
+        disseminator: 'Disseminator', living_pillars: 'Living Pillars', contemporary: 'Contemporary',
+      };
+      const chip = _el('span', 'pt-era-chip', labelMap[eraId] || eraId);
+      const tint = (typeof THEME !== 'undefined')
+        ? THEME.eraTintCss(eraId)
+        : { bg: 'transparent', border: 'var(--border-strong)' };
+      chip.style.setProperty('--chip-era-bg',     tint.bg);
+      chip.style.setProperty('--chip-era-border', tint.border);
+      return chip;
+    }
+    function _herStripV5(carnaticId, hindustaniId) {
+      const wrap = _el('span', 'pt-her-strip');
+      wrap.appendChild(_ragaChipV5(carnaticId));
+      wrap.appendChild(_el('span', 'pt-her-arrow', '\u2194'));
+      wrap.appendChild(_ragaChipV5(hindustaniId));
+      return wrap;
     }
 
-    // intro ribbon
+    // ── annotation token parser: text with inline {kind:id} chips ─────────
+    // Returns a <span> with mixed text/chip children. Used for every block of
+    // prose so that every raga / musician / composition / era / HER mention
+    // is a live, clickable chip — never plain text.
+    const TOKEN_RE = /\{(raga|musician|comp|composer|era|her):([^}]+)\}/g;
+    function _renderAnnotationInto(text, parent) {
+      if (!text) return;
+      var last = 0, m;
+      TOKEN_RE.lastIndex = 0;
+      while ((m = TOKEN_RE.exec(text)) !== null) {
+        if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+        const kind = m[1], id = m[2];
+        if      (kind === 'raga')     parent.appendChild(_ragaChipV5(id));
+        else if (kind === 'comp')     parent.appendChild(_compChipV5(id));
+        else if (kind === 'musician') parent.appendChild(_musicianChipV5(id));
+        else if (kind === 'composer') parent.appendChild(_musicianChipV5(id, null, { composer: true }));
+        else if (kind === 'era')      parent.appendChild(_eraChipV5(id));
+        else if (kind === 'her') {
+          const parts = id.split('|');
+          parent.appendChild(_herStripV5(parts[0], parts[1]));
+        } else {
+          parent.appendChild(document.createTextNode(m[0]));
+        }
+        last = TOKEN_RE.lastIndex;
+      }
+      if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+    }
+    function _ann(text, extraCls) {
+      const d = _el('div', 'pt-annotation' + (extraCls ? ' ' + extraCls : ''));
+      _renderAnnotationInto(text, d);
+      return d;
+    }
+
+    // ── section header (uppercase chip with section glyph) ────────────────
+    function _sectionHdr(label, sectionKind) {
+      const glyphMap = {
+        lecdems:    'neutral-chip-recordings',  // closest visual glyph available
+        compositions: 'neutral-chip-compositions',
+        misc:       'neutral-chip-recordings',
+        concerts:   'neutral-chip-concerts',
+        recordings: 'neutral-chip-recordings',
+        compositions_empty: 'neutral-chip-compositions',
+      };
+      const modifier = glyphMap[sectionKind] || 'neutral-chip-recordings';
+      return _el('span', 'neutral-chip chip-section-hdr has-glyph ' + modifier, label);
+    }
+
+    // ── concert builder: assemble a concert object from musicianToPerformances ──
+    // Mirrors the structure consumed by the production buildConcertBracket().
+    function _buildConcertForSubject(recordingId) {
+      if (typeof musicianToPerformances === 'undefined') return null;
+      const matches = (musicianToPerformances[subjectId] || [])
+        .filter(function (p) { return p.recording_id === recordingId; });
+      if (!matches.length) return null;
+      const sessionsMap = new Map();
+      matches.forEach(function (p) {
+        const si = p.session_index || 0;
+        if (!sessionsMap.has(si)) {
+          sessionsMap.set(si, { session_index: si, performers: p.performers || [], perfs: [] });
+        }
+        sessionsMap.get(si).perfs.push(p);
+      });
+      const p0 = matches[0];
+      return {
+        recording_id: p0.recording_id,
+        title:        p0.title || '',
+        short_title:  p0.short_title || p0.title || recordingId,
+        date:         p0.date || '',
+        sessions:     Array.from(sessionsMap.values()).sort(function (a, b) {
+          return (a.session_index || 0) - (b.session_index || 0);
+        }),
+      };
+    }
+
+    // ── play button delegating to production openOrFocusPlayer ─────────────
+    // perfLike: any object with video_id, display_title, offset_seconds,
+    // optional recording_id (→ playlist), short_title (→ concert header).
+    function _playFromPerf(perfLike, fallbackArtist) {
+      const btn = _el('button', 'rec-play-btn play-btn-direct', '\u25b6');
+      btn.type = 'button';
+      btn.title = 'Play';
+      btn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        if (typeof openOrFocusPlayer !== 'function') return;
+        const recId = perfLike.recording_id || null;
+        const tracks = (recId && typeof _buildConcertTracksFor === 'function')
+          ? _buildConcertTracksFor(recId, subjectId)
+          : [];
+        const concertTitle = perfLike.short_title || perfLike.concert_title || '';
+        const meta = {
+          nodeId:        subjectId,
+          ragaId:        perfLike.raga_id || null,
+          compositionId: perfLike.composition_id || null,
+        };
+        openOrFocusPlayer(
+          perfLike.video_id,
+          perfLike.display_title || perfLike.label || '',
+          fallbackArtist || subjectLabel,
+          perfLike.offset_seconds || 0,
+          concertTitle,
+          tracks,
+          meta
+        );
+      });
+      return btn;
+    }
+
+    // ── intro ribbon ───────────────────────────────────────────────────────
     if (helpEmptyPanels && helpEmptyPanels.intro_ribbon) {
       container.appendChild(_el('div', 'pt-intro-ribbon', helpEmptyPanels.intro_ribbon));
     }
 
-    // header annotations
+    // ── header annotations (with chip tokens) ──────────────────────────────
     (block.header_annotations || []).forEach(function (ann) {
       const strip = _ann(ann.text);
       strip.dataset.position = ann.position || '';
       container.appendChild(strip);
     });
 
-    // sections
+    // ── sections ───────────────────────────────────────────────────────────
     (block.sections || []).forEach(function (section) {
       const sk = section.kind;
       const sectionDiv = _el('div', 'pt-v5-section pt-v5-section--' + sk);
-
-      // section header
-      var hdrCls = 'neutral-chip-recordings';
-      if (sk === 'lecdems') hdrCls = 'neutral-chip-lecdems';
-      var hdrLabel = ({
+      const hdrLabel = ({
         lecdems:            'LECDEMS',
         compositions:       'COMPOSITIONS',
         misc:               'MISC',
@@ -685,14 +792,12 @@
         compositions_empty: 'COMPOSITIONS (0)',
       })[sk] || sk.toUpperCase();
       const hdrRow = _el('div', 'pt-v5-section-hdr');
-      hdrRow.appendChild(_sectionHdr(hdrLabel, hdrCls));
+      hdrRow.appendChild(_sectionHdr(hdrLabel, sk));
       sectionDiv.appendChild(hdrRow);
 
-      // section_gloss
       if (section.section_gloss) sectionDiv.appendChild(_ann(section.section_gloss));
 
       if (sk === 'compositions_empty') {
-        // trinity chips
         const trinityDiv = _el('div', 'pt-v5-trinity-chips');
         (section.trinity_chips || []).forEach(function (chip) {
           trinityDiv.appendChild(_musicianChipV5(chip.id, chip.label));
@@ -705,77 +810,92 @@
           const refs = row.data_refs || {};
 
           if (rk === 'lecdem') {
-            const lineDiv = _el('div', 'pt-v5-lecdem-line');
-            lineDiv.appendChild(_musicianChipV5(refs.lecdem_musician_id));
-            if (refs.lecdem_subject_musician_id) {
-              // "about" variant: hosted by X, about subject
-              lineDiv.appendChild(_el('span', 'pt-v5-lecdem-about', '\u00a0on ' + (refs.lecdem_label || '')));
-            } else if (refs.lecdem_label) {
-              lineDiv.appendChild(_el('span', 'pt-v5-lecdem-label', refs.lecdem_label));
+            // Delegate to production _buildLecdemBracket. Find the matching
+            // ref in the appropriate index (about-raga for bani panel,
+            // about-musician for musician panel) so the bracket carries all
+            // tags, segments, and subject chips just like the live panel.
+            const lecturerId    = refs.lecdem_musician_id;
+            const lecturerLabel = (function () {
+              const n = nodes.find(function (n) { return n.id === lecturerId; });
+              return n ? n.label : lecturerId;
+            })();
+            var ref = null;
+            const aboutRaga      = (typeof lecdemsAboutRaga !== 'undefined' ? lecdemsAboutRaga : {})[subjectId] || [];
+            const aboutMusician  = (typeof lecdemsAboutMusician !== 'undefined' ? lecdemsAboutMusician : {})[subjectId] || [];
+            const byLecturer     = (typeof lecdemsBy !== 'undefined' ? lecdemsBy : {})[lecturerId] || [];
+            const pools = [aboutRaga, aboutMusician, byLecturer];
+            for (var i = 0; i < pools.length && !ref; i++) {
+              ref = pools[i].find(function (r) { return r.video_id === refs.lecdem_video_id; });
             }
-            if (refs.lecdem_video_id) lineDiv.appendChild(_playBtnV5(refs.lecdem_video_id, refs.lecdem_label));
-            if (refs.lecdem_url)      lineDiv.appendChild(_extLinkV5(refs.lecdem_url));
-            rowDiv.appendChild(lineDiv);
+            if (ref && typeof _buildLecdemBracket === 'function') {
+              const bracket = _buildLecdemBracket(ref, lecturerId, lecturerLabel);
+              if (bracket) rowDiv.appendChild(bracket);
+            } else {
+              // graceful fallback: chip + label + production play button
+              const line = _el('div', 'pt-v5-lecdem-line');
+              line.appendChild(_musicianChipV5(lecturerId));
+              if (refs.lecdem_label) line.appendChild(_el('span', 'pt-v5-lecdem-label', '\u00a0' + refs.lecdem_label));
+              line.appendChild(_playFromPerf({
+                video_id:      refs.lecdem_video_id,
+                display_title: refs.lecdem_label,
+                offset_seconds: 0,
+              }, lecturerLabel));
+              rowDiv.appendChild(line);
+            }
 
           } else if (rk === 'composition_tree') {
+            // composition chip + composer chip + per-musician version rows
             const compLine = _el('div', 'pt-v5-comp-line');
             compLine.appendChild(_compChipV5(refs.composition_id));
-            if (refs.composer_id) {
-              const nodes = (typeof graphData !== 'undefined' && graphData.nodes) || [];
-              const node  = nodes.find(function (n) { return n.id === refs.composer_id; });
-              const composerChip = _el('span', 'musician-chip musician-chip--composer',
-                node ? node.label : refs.composer_id);
-              composerChip.style.cursor = 'pointer';
-              composerChip.addEventListener('click', function () { _onMusician(refs.composer_id); });
-              compLine.appendChild(composerChip);
-            }
+            if (refs.composer_id) compLine.appendChild(_musicianChipV5(refs.composer_id, null, { composer: true }));
             rowDiv.appendChild(compLine);
-            // performers who recorded this composition
             const perfs = (typeof compositionToPerf !== 'undefined')
               ? (compositionToPerf[refs.composition_id] || []) : [];
-            var seenPerf = {};
+            const seen = {};
             perfs.forEach(function (perf) {
-              const primary = (perf.performers || [])[0];
-              const mid = primary ? primary.musician_id : null;
-              const key = mid + '::' + perf.recording_id;
-              if (!mid || seenPerf[key]) return;
-              seenPerf[key] = true;
+              const mid = (perf.performers || [])[0] && perf.performers[0].musician_id;
+              const key = mid + '::' + perf.recording_id + '::' + (perf.offset_seconds || 0);
+              if (!mid || seen[key]) return;
+              seen[key] = true;
               const perfLine = _el('div', 'pt-v5-perf-line');
               perfLine.appendChild(_musicianChipV5(mid));
-              if (perf.video_id) perfLine.appendChild(_playBtnV5(perf.video_id, perf.display_title, perf.offset_seconds));
+              if (perf.video_id) {
+                const btn = _playFromPerf(perf, (nodes.find(function (n) { return n.id === mid; }) || {}).label);
+                perfLine.appendChild(btn);
+              }
               rowDiv.appendChild(perfLine);
             });
 
           } else if (rk === 'misc_entry') {
             const miscLine = _el('div', 'pt-v5-misc-line');
             miscLine.appendChild(_musicianChipV5(refs.misc_musician_id));
-            if (refs.misc_label) miscLine.appendChild(_el('span', 'pt-v5-misc-label', refs.misc_label));
-            if (refs.video_id)   miscLine.appendChild(_playBtnV5(refs.video_id, refs.misc_label, refs.offset_seconds || 0));
+            if (refs.misc_raga_id)  miscLine.appendChild(_ragaChipV5(refs.misc_raga_id));
+            if (refs.misc_label)    miscLine.appendChild(_el('span', 'pt-v5-misc-label', refs.misc_label));
+            if (refs.video_id) {
+              const artistNode = nodes.find(function (n) { return n.id === refs.misc_musician_id; });
+              miscLine.appendChild(_playFromPerf({
+                video_id:       refs.video_id,
+                display_title:  refs.misc_label || '',
+                offset_seconds: refs.offset_seconds || 0,
+                recording_id:   refs.recording_id || null,
+                raga_id:        refs.misc_raga_id || null,
+              }, artistNode ? artistNode.label : ''));
+            }
             rowDiv.appendChild(miscLine);
 
           } else if (rk === 'concert') {
-            const rec = (typeof recordings !== 'undefined' ? recordings : [])
-              .find(function (r) { return r.id === refs.recording_id; });
-            const titleText = rec ? (rec.short_title || rec.title) : (refs.recording_id || '');
-            const concertLine = _el('div', 'pt-v5-concert-line');
-            concertLine.appendChild(_el('span', 'pt-v5-concert-title', '\u266a\u00a0' + titleText));
-            if (refs.video_id) concertLine.appendChild(_playBtnV5(refs.video_id, titleText));
-            rowDiv.appendChild(concertLine);
-            if (rec && rec.sessions) {
-              var coPerformers = [];
-              rec.sessions.forEach(function (sess) {
-                (sess.performers || []).forEach(function (p) {
-                  if (p.musician_id && p.musician_id !== subjectId &&
-                      !coPerformers.some(function (x) { return x.musician_id === p.musician_id; })) {
-                    coPerformers.push(p);
-                  }
-                });
-              });
-              if (coPerformers.length) {
-                const perfLine = _el('div', 'pt-v5-concert-performers');
-                coPerformers.forEach(function (p) { perfLine.appendChild(_musicianChipV5(p.musician_id)); });
-                rowDiv.appendChild(perfLine);
-              }
+            // Delegate to production buildConcertBracket so the row is
+            // pixel-identical to the live musician panel.
+            const concert = _buildConcertForSubject(refs.recording_id);
+            if (concert && typeof buildConcertBracket === 'function') {
+              const bracket = buildConcertBracket(concert, subjectId, subjectLabel);
+              if (bracket) rowDiv.appendChild(bracket);
+            } else {
+              // graceful fallback
+              const line = _el('div', 'pt-v5-concert-line');
+              line.appendChild(_el('span', 'pt-v5-concert-title',
+                '\u266a\u00a0' + (concert ? concert.short_title : refs.recording_id)));
+              rowDiv.appendChild(line);
             }
 
           } else if (rk === 'recording_tree') {
@@ -786,13 +906,13 @@
             compLine2.appendChild(_compChipV5(refs.composition_id));
             rowDiv.appendChild(compLine2);
             if (subjectId && typeof musicianToPerformances !== 'undefined') {
-              var matching = (musicianToPerformances[subjectId] || []).filter(function (p) {
+              const matching = (musicianToPerformances[subjectId] || []).filter(function (p) {
                 return p.raga_id === refs.raga_id && p.composition_id === refs.composition_id;
               });
               matching.forEach(function (perf) {
                 const vLine = _el('div', 'pt-v5-version-line');
-                vLine.appendChild(_el('span', 'pt-v5-version-label', perf.short_title || ''));
-                if (perf.video_id) vLine.appendChild(_playBtnV5(perf.video_id, perf.display_title, perf.offset_seconds));
+                vLine.appendChild(_el('span', 'pt-v5-version-label', perf.short_title || perf.display_title || ''));
+                if (perf.video_id) vLine.appendChild(_playFromPerf(perf, subjectLabel));
                 rowDiv.appendChild(vLine);
               });
             }
@@ -800,25 +920,24 @@
 
           sectionDiv.appendChild(rowDiv);
           if (row.annotation) {
-            const rowAnn = _ann(row.annotation);
-            rowAnn.classList.add('pt-annotation--row');
-            sectionDiv.appendChild(rowAnn);
+            sectionDiv.appendChild(_ann(row.annotation, 'pt-annotation--row'));
           }
         });
       }
       container.appendChild(sectionDiv);
     });
 
-    // closing note
+    // ── closing note (chip-stacked above text, no excess gray) ─────────────
     const cn = block.closing_note || {};
     if (cn.text) {
       const cnDiv = _el('div', 'pt-v5-closing-note');
-      if (cn.icon === 'wheel') cnDiv.appendChild(_el('span', 'pt-v5-closing-icon', '\u2609'));
-      else if (cn.icon === 'graph') cnDiv.appendChild(_el('span', 'pt-v5-closing-icon', '\u29c9'));
-      cnDiv.appendChild(_el('span', 'pt-v5-closing-text', cn.text));
-      if (cn.chip && cn.chip.kind === 'raga') {
-        cnDiv.appendChild(_ragaChipV5(cn.chip.id, cn.chip.label));
-      }
+      const head  = _el('div', 'pt-v5-closing-head');
+      if (cn.icon === 'wheel')      head.appendChild(_el('span', 'pt-v5-closing-icon', '\u2609'));
+      else if (cn.icon === 'graph') head.appendChild(_el('span', 'pt-v5-closing-icon', '\u29c9'));
+      cnDiv.appendChild(head);
+      const body = _el('div', 'pt-v5-closing-text');
+      _renderAnnotationInto(cn.text, body);
+      cnDiv.appendChild(body);
       container.appendChild(cnDiv);
     }
   }
