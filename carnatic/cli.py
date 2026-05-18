@@ -880,9 +880,11 @@ def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
                 def _is_non_empty_string_v5(v: object) -> bool:
                     return isinstance(v, str) and bool(v.strip())
 
-                # intro_ribbon
-                if not _is_non_empty_string_v5(help_data.get("intro_ribbon")):
-                    errors.append("help/empty_panels.json: intro_ribbon must be a non-empty string")
+                # intro_ribbon — optional in v5 (ADR-147 polish v3 dropped the
+                # meta "Worked example..." ribbon in favour of an inline live
+                # subject header). Validate only if present.
+                if "intro_ribbon" in help_data and not _is_non_empty_string_v5(help_data.get("intro_ribbon")):
+                    errors.append("help/empty_panels.json: intro_ribbon, if present, must be a non-empty string")
 
                 _panel_subjects = {
                     "bani_flow_panel": ("raga", known_raga_ids),

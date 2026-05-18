@@ -89,19 +89,36 @@
         currentView !== 'graph') {
       switchView('graph');
     }
-    const n = (typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null;
-    if (!n || !n.length) return;
-    setTimeout(function () {
+    // Poll for the graph view to become active before orienting — switchView is
+    // async and Cytoscape needs a beat to lay out before fit() can centre the
+    // node. Without this, clicks during a view transition fall through to a
+    // bare selectNode() which updates the panel but leaves the viewport stuck
+    // wherever it was, parking the chosen node in a corner.
+    var attempts = 0;
+    (function tick() {
+      const ready = (typeof currentView !== 'undefined' && currentView === 'graph') ||
+                    attempts >= 12;
+      attempts += 1;
+      if (!ready) { setTimeout(tick, 50); return; }
+      const n = (typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null;
+      if (!n || !n.length) return;
       if (typeof orientToNode === 'function' &&
           typeof currentView !== 'undefined' && currentView === 'graph') {
         orientToNode(nodeId);
-      } else if (typeof selectNode === 'function') {
-        selectNode(n);
+      } else {
+        if (typeof selectNode === 'function') selectNode(n);
+        // Belt and braces: even if orientToNode wasn't reached, force a
+        // centred fit so the node is unmistakably in the middle.
+        if (typeof cy !== 'undefined' && cy.animate) {
+          try {
+            cy.animate({ fit: { eles: n.closedNeighborhood(), padding: 80 }, duration: 350 });
+          } catch (_) {}
+        }
       }
       if (typeof window.setPanelState === 'function') {
         window.setPanelState('MUSICIAN');
       }
-    }, 70);
+    })();
   }
 
   function _onMusician(id) {
@@ -798,11 +815,16 @@
       if (section.section_gloss) sectionDiv.appendChild(_ann(section.section_gloss));
 
       if (sk === 'compositions_empty') {
-        const trinityDiv = _el('div', 'pt-v5-trinity-chips');
-        (section.trinity_chips || []).forEach(function (chip) {
-          trinityDiv.appendChild(_musicianChipV5(chip.id, chip.label));
-        });
-        sectionDiv.appendChild(trinityDiv);
+        // ADR-147 polish v3: trinity_chips array removed — the three names are
+        // now woven into section_gloss as inline {musician:...} chips so they
+        // sit in narrative prose, not in a separate redundant chip row.
+        if (section.trinity_chips && section.trinity_chips.length) {
+          const trinityDiv = _el('div', 'pt-v5-trinity-chips');
+          section.trinity_chips.forEach(function (chip) {
+            trinityDiv.appendChild(_musicianChipV5(chip.id, chip.label));
+          });
+          sectionDiv.appendChild(trinityDiv);
+        }
       } else {
         (section.rows || []).forEach(function (row) {
           const rowDiv = _el('div', 'pt-v5-row');
@@ -906,9 +928,18 @@
             compLine2.appendChild(_compChipV5(refs.composition_id));
             rowDiv.appendChild(compLine2);
             if (subjectId && typeof musicianToPerformances !== 'undefined') {
-              const matching = (musicianToPerformances[subjectId] || []).filter(function (p) {
+              var matching = (musicianToPerformances[subjectId] || []).filter(function (p) {
                 return p.raga_id === refs.raga_id && p.composition_id === refs.composition_id;
               });
+              // ADR-147 polish v3: fallback — if the subject has no recording
+              // of this comp in this raga, surface the first available rendering
+              // from compositionToPerf so the row still carries a play button
+              // instead of dangling chipless.
+              if (!matching.length && typeof compositionToPerf !== 'undefined') {
+                matching = (compositionToPerf[refs.composition_id] || []).filter(function (p) {
+                  return p.raga_id === refs.raga_id;
+                }).slice(0, 1);
+              }
               matching.forEach(function (perf) {
                 const vLine = _el('div', 'pt-v5-version-line');
                 vLine.appendChild(_el('span', 'pt-v5-version-label', perf.short_title || perf.display_title || ''));
@@ -1193,7 +1224,39 @@
     if (btn) btn.classList.remove('panel-help-active');
   }
 
+  function _ensureDemoSubjectLoaded(slot) {
+    // ADR-147 polish v3: when the user opens help on an empty panel, first
+    // populate the panel with the tutorial's demo subject so the live header
+    // (raga chip + janya row + HER strip + filter, or musician chip + filter)
+    // sits ABOVE the deck. Pointer-text annotations finally have something to
+    // point at, and the deck becomes a guided tour over real, populated UI
+    // rather than a free-floating brochure.
+    const block = _block(slot);
+    const subject = block && block.subject;
+    if (!subject || !subject.id) return;
+    if (slot === 'bani') {
+      // Only auto-load if no subject is already pinned in the bani panel.
+      const trail = document.getElementById('listening-trail');
+      const alreadyLoaded = trail && trail.style.display !== 'none';
+      if (alreadyLoaded) return;
+      if (typeof triggerBaniSearch === 'function') {
+        try { triggerBaniSearch(subject.kind || 'raga', subject.id); } catch (_) {}
+      }
+    } else if (slot === 'musician') {
+      // Only auto-load if no musician is currently selected.
+      const nodeInfo = document.getElementById('node-info');
+      const recPanel = document.getElementById('recordings-panel');
+      const alreadyLoaded = (recPanel && recPanel.style.display !== 'none') ||
+        (nodeInfo && nodeInfo.style.display !== 'none' &&
+         (document.getElementById('node-name') || {}).textContent &&
+         (document.getElementById('node-name')).textContent.trim() !== '—');
+      if (alreadyLoaded) return;
+      _orientToMusician(subject.id);
+    }
+  }
+
   function _enterHelp(slot) {
+    _ensureDemoSubjectLoaded(slot);
     const tutorialId = SLOT_TO_CONTAINER_ID[slot];
     const containers = SLOT_TO_CONTAINERS[slot] || [];
     const hidden = [];
