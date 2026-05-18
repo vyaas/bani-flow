@@ -2234,8 +2234,9 @@ function showMusicianSuccess(win, id, hasEdges) {
 
 // ── Raga form ─────────────────────────────────────────────────────────────────
 
-function buildRagaForm() {
-  const win = createEntryWindow('Add Raga');
+function buildRagaForm({ prefill = null } = {}) {
+  const isEdit = !!prefill;
+  const win = createEntryWindow(isEdit ? 'Edit Raga' : 'Add Raga');
   if (!win) return;
   const body = win.querySelector('.ew-body');
 
@@ -2268,7 +2269,7 @@ function buildRagaForm() {
 
   const idRow = efIdRow('ef_raga_id', 'ef_raga_name', existingIds);
   body.appendChild(idRow);
-  nameInp.addEventListener('input', idRow._updateId);
+  if (!isEdit) nameInp.addEventListener('input', idRow._updateId);
 
   const aliasInp = efInput('ef_raga_aliases', 'text', 'Arabi, Aravi (comma-separated)', null);
   body.appendChild(efRow('Aliases', false, 'comma-separated', aliasInp));
@@ -2301,6 +2302,16 @@ function buildRagaForm() {
   const carnEqRow = efRow('Carnatic Equivalent', false, 'links this HER to a Carnatic raga (optional)', carnEqSel);
   carnEqRow.style.display = 'none';
   body.appendChild(carnEqRow);
+
+  // Carnatic-only edit mode — add a Hindustani equivalent to this raga
+  const _hindRagaOpts = (graphData.ragas || [])
+    .filter(r => r.tradition === 'hindustani')
+    .map(r => ({ value: r.id, label: r.name || r.id }));
+  const hindEqSel = efCombobox('ef_raga_hind_equiv', _hindRagaOpts, null, win);
+  attachSolidifyBehavior(hindEqSel, win, { chipClass: 'raga-chip' });
+  const hindEqRow = efRow('Add Hindustani Equivalent', false, 'appends to hindustani_equivalents (edit only)', hindEqSel);
+  hindEqRow.style.display = 'none';
+  body.appendChild(hindEqRow);
 
   const melaOpts = [
     { value: 'false', label: 'No — Janya raga' },
@@ -2372,17 +2383,116 @@ function buildRagaForm() {
 
   body.appendChild(efSourceFields('ef_raga'));
 
+  // ── Pre-fill in edit mode ─────────────────────────────────────────────────
+  if (isEdit) {
+    // Tradition — pre-select and lock (changing tradition has downstream consequences)
+    _tradition = prefill.tradition || 'carnatic';
+    _carnaticBtn.classList.toggle('active', _tradition === 'carnatic');
+    _hindustaniBtn.classList.toggle('active', _tradition === 'hindustani');
+    tradControl.style.pointerEvents = 'none';
+    tradControl.style.opacity = '0.7';
+    _applyRagaTraditionDisplay();
+
+    // Name / Aliases / Notes
+    nameInp.value  = prefill.name  || '';
+    aliasInp.value = (prefill.aliases || []).join(', ');
+    notesInp.value = prefill.notes || '';
+
+    // Source URL (first source)
+    const srcUrlInp = win.querySelector('#ef_raga_source_url');
+    if (srcUrlInp) {
+      const src = prefill.sources && prefill.sources[0];
+      srcUrlInp.value = (typeof src === 'string') ? src : (src && src.url ? src.url : '');
+    }
+
+    // Is Melakarta → set, then fire change to wire conditional rows
+    melaSel.value = prefill.is_melakarta ? 'true' : 'false';
+    melaSel.dispatchEvent(new Event('change'));
+    if (prefill.is_melakarta) {
+      if (prefill.melakarta != null) melaNumInp.value = prefill.melakarta;
+      if (prefill.cakra      != null) cakraInp.value   = prefill.cakra;
+    } else {
+      if (prefill.parent_raga) parentSel.value = prefill.parent_raga;
+    }
+
+    // Hindustani-only fields
+    if (_tradition === 'hindustani' && prefill.thaat) thaatSel.value = prefill.thaat;
+
+    // Mela ragas: structural fields are fixed — only aliases, notes, HERs, source URL are editable
+    if (prefill.is_melakarta) {
+      nameInp.readOnly = true;
+      nameInp.style.opacity = '0.6';
+      melaSel.disabled = true;
+      melaSel.style.opacity = '0.6';
+      melaNumInp.readOnly = true;
+      melaNumInp.style.opacity = '0.6';
+      cakraInp.readOnly = true;
+      cakraInp.style.opacity = '0.6';
+      const melaNote = document.createElement('p');
+      melaNote.style.cssText = 'font-size:0.68rem;color:var(--accent,#c8a84b);margin:0 0 8px;padding:4px 8px;background:var(--bg-input);border-radius:4px;border-left:2px solid var(--accent,#c8a84b);';
+      melaNote.textContent = 'Melakarta — structural fields are fixed. Only aliases, notes, Hindustani equivalents and source URL are editable.';
+      body.insertBefore(melaNote, tradRow);
+    }
+
+    // Carnatic-only edit field: add a Hindustani equivalent
+    if (_tradition === 'carnatic') {
+      hindEqRow.style.display = '';
+      // Show already-linked HERs as read-only chips above the combobox
+      const _existingHers = prefill.hindustani_equivalents || [];
+      if (_existingHers.length) {
+        const hersLabel = document.createElement('p');
+        hersLabel.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:0 0 4px;';
+        hersLabel.textContent = 'Already linked:';
+        const hersWrap = document.createElement('div');
+        hersWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;';
+        _existingHers.forEach(herId => {
+          const her = (graphData.ragas || []).find(r => r.id === herId);
+          const chip = document.createElement('span');
+          chip.className = 'raga-chip';
+          chip.style.cursor = 'default';
+          chip.textContent = her ? (her.name || herId) : herId;
+          hersWrap.appendChild(chip);
+        });
+        hindEqRow.parentNode.insertBefore(hersLabel, hindEqRow);
+        hindEqRow.parentNode.insertBefore(hersWrap, hindEqRow);
+      }
+    }
+
+    // Lock ID (node IDs are permanent per CLAUDE.md)
+    const idInput = idRow._idInput;
+    if (idInput) {
+      idInput.value    = prefill.id;
+      idInput.readOnly = true;
+      idInput.style.opacity = '0.6';
+      const editBtn = idRow.querySelector('.ef-id-edit-btn');
+      if (editBtn) editBtn.style.display = 'none';
+    }
+
+    // Hidden prefill-id for generateRagaJson to detect edit mode
+    const prefillIdInp = document.createElement('input');
+    prefillIdInp.type = 'hidden'; prefillIdInp.id = 'ef_raga_prefill_id';
+    prefillIdInp.value = prefill.id;
+    body.appendChild(prefillIdInp);
+
+    // Edit-mode note
+    const editNote = document.createElement('p');
+    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+    editNote.textContent = 'Only changed fields are included in the patch.';
+    body.appendChild(editNote);
+  }
+
   // Footer
   const footer = win.querySelector('.ew-footer');
   const bundleBtn = document.createElement('button');
   bundleBtn.className = 'ef-download-btn';
-  bundleBtn.textContent = '+ Add to Patch';
+  bundleBtn.textContent = isEdit ? 'Update Patch' : '+ Add to Patch';
   bundleBtn.disabled = true;
 
   const dlBtn = document.createElement('button');
   dlBtn.className = 'ef-preview-btn';
   dlBtn.textContent = '⬇ Standalone JSON';
   dlBtn.disabled = true;
+  if (isEdit) dlBtn.style.display = 'none';
 
   const previewBtn = document.createElement('button');
   previewBtn.className = 'ef-preview-btn';
@@ -2400,7 +2510,7 @@ function buildRagaForm() {
     const name    = nameInp.value.trim();
     const id      = idRow._idInput.value.trim();
     const srcUrl  = win.querySelector('#ef_raga_source_url')   ? win.querySelector('#ef_raga_source_url').value.trim()   : '';
-    const dupId   = existingIds.includes(id);
+    const dupId   = !isEdit && existingIds.includes(id);
     const ok = name && id && srcUrl && !dupId;
     bundleBtn.disabled = !ok;
     dlBtn.disabled     = !ok;
@@ -2425,17 +2535,27 @@ function buildRagaForm() {
 
   bundleBtn.addEventListener('click', () => {
     const obj = generateRagaJson(win);
-    // ADR-115: dual-emission for HER creation — emit create + append back-link atomically
-    const carnEqVal = win.querySelector('#ef_raga_carnatic_equiv')
-      ? win.querySelector('#ef_raga_carnatic_equiv').value
-      : '';
-    if (obj.tradition === 'hindustani' && carnEqVal) {
+    if (isEdit) {
+      // Edit mode: patch op + optional Hindustani equivalent append
       addToBundle('ragas', obj);
-      addToBundle('ragas', { op: 'append', id: carnEqVal, field: 'hindustani_equivalents', value: obj.id });
+      const hindEqVal = win.querySelector('#ef_raga_hind_equiv') ? win.querySelector('#ef_raga_hind_equiv').value : '';
+      if (hindEqVal) {
+        addToBundle('ragas', { op: 'append', id: obj.id, field: 'hindustani_equivalents', value: hindEqVal });
+      }
+      showGenericSuccess(win, obj.id, 'bundle');
     } else {
-      addToBundle('ragas', obj);
+      // ADR-115: dual-emission for HER creation — emit create + append back-link atomically
+      const carnEqVal = win.querySelector('#ef_raga_carnatic_equiv')
+        ? win.querySelector('#ef_raga_carnatic_equiv').value
+        : '';
+      if (obj.tradition === 'hindustani' && carnEqVal) {
+        addToBundle('ragas', obj);
+        addToBundle('ragas', { op: 'append', id: carnEqVal, field: 'hindustani_equivalents', value: obj.id });
+      } else {
+        addToBundle('ragas', obj);
+      }
+      showGenericSuccess(win, obj.id, 'bundle');
     }
-    showGenericSuccess(win, obj.id, 'bundle');
   });
 
   dlBtn.addEventListener('click', () => {
@@ -2469,6 +2589,31 @@ function generateRagaJson(win) {
   const aliasArr = aliases
     ? aliases.split(',').map(s => s.trim()).filter(Boolean)
     : [];
+
+  // Edit mode: detect via hidden prefill-id, produce patch op with only changed fields
+  const prefillId = win.querySelector('#ef_raga_prefill_id') ? win.querySelector('#ef_raga_prefill_id').value : '';
+  if (prefillId) {
+    const orig = (graphData.ragas || []).find(r => r.id === prefillId) || {};
+    const fields = {};
+    if (name !== (orig.name || ''))                                        fields.name        = name;
+    if (JSON.stringify(aliasArr) !== JSON.stringify(orig.aliases || []))   fields.aliases     = aliasArr;
+    if (notes !== (orig.notes || ''))                                      fields.notes       = notes || null;
+    if (isMela !== (orig.is_melakarta || false))                           fields.is_melakarta = isMela;
+    if (tradition === 'carnatic') {
+      const newMela = isMela && melaNum ? parseInt(melaNum, 10) : null;
+      const newCakra = isMela && cakra  ? parseInt(cakra,   10) : null;
+      const newParent = !isMela && parent ? parent : null;
+      if (newMela   !== (orig.melakarta   || null)) fields.melakarta   = newMela;
+      if (newCakra  !== (orig.cakra       || null)) fields.cakra       = newCakra;
+      if (newParent !== (orig.parent_raga || null)) fields.parent_raga = newParent;
+    }
+    if (tradition === 'hindustani') {
+      if ((thaat || null) !== (orig.thaat || null)) fields.thaat = thaat || null;
+    }
+    const origSrcUrl = orig.sources && orig.sources[0] ? (typeof orig.sources[0] === 'string' ? orig.sources[0] : orig.sources[0].url || '') : '';
+    if (srcUrl !== origSrcUrl) fields.sources = [inferSource(srcUrl)];
+    return { op: 'patch', id: prefillId, fields };
+  }
 
   if (tradition === 'hindustani') {
     return {
@@ -5540,11 +5685,16 @@ function _inferPerformerRole(instrument) {
 
 // ADR-097 Phase C / ADR-142 chip-as-object dispatch.
 // Musician type delegates to openEditMusicianForm (ADR-108, richer form).
-// Raga / composition / recording / edge use the generic patch form below,
+// Raga type delegates to openEditRagaForm (rich pre-filled form, matches Add Raga UX).
+// Composition / recording / edge use the generic patch form below,
 // driven by window.editFormSpec (ADR-143 §4).
 function openEditForm({ entityType, id, musicianId } = {}) {
   if (entityType === 'musician' && id) {
     openEditMusicianForm(id);
+    return;
+  }
+  if (entityType === 'raga' && id) {
+    openEditRagaForm(id);
     return;
   }
   if (entityType === 'recording' && id) {
@@ -6969,6 +7119,16 @@ function openEditMusicianForm(nodeId) {
     return;
   }
   buildMusicianForm({ prefill: node });
+}
+
+function openEditRagaForm(ragaId) {
+  const raga = (graphData.ragas || []).find(r => r.id === ragaId);
+  if (!raga) {
+    // Fallback: open empty add form if raga not found
+    buildRagaForm();
+    return;
+  }
+  buildRagaForm({ prefill: raga });
 }
 
 // ── Add YouTube Recording for a specific Composition ─────────────────────────
