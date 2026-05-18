@@ -165,7 +165,8 @@
       e.stopPropagation();
       if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
       const formKey = ENTITY_TYPE_TO_FORM_KEY[entityType] || entityType;
-      openEditForm({ entityType: formKey, id: entityId });
+      const musicianId = chip.dataset.musicianId || null;
+      openEditForm({ entityType: formKey, id: entityId, musicianId });
       _showDblClickHint();  // ADR-142 Phase E: first-use hint
       return;
     }

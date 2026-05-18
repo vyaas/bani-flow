@@ -1026,8 +1026,10 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   if (concert.title) titleSpan.title = concert.title;
   // 'panel-title' role enables the chip_dblclick.js dblclick-to-edit gesture
   // (single click still falls through to toggleConcert via the header onclick).
-  if (concert.recording_id && typeof applyChipRole === 'function')
+  if (concert.recording_id && typeof applyChipRole === 'function') {
     applyChipRole(titleSpan, 'panel-title', 'recording', concert.recording_id);
+    titleSpan.dataset.musicianId = nodeId;  // passed to buildEditConcertForm via openEditForm
+  }
 
   const dateSpan = document.createElement('span');
   dateSpan.className = 'concert-date';

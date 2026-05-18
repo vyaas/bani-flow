@@ -3232,6 +3232,424 @@ function generateRecordingJson(win) {
   };
 }
 
+// ── Concert track block ───────────────────────────────────────────────────────
+// One performance (piece) within a concert. Mirrors the YouTube block's
+// Composition · Raga · Tala triplet + Label row, but replaces "year" with a
+// Timestamp field (MM:SS or HH:MM:SS → auto-computes hidden offset_seconds).
+// No URL field — the concert URL is shared at the top level.
+
+function buildConcertTrackBlock(formWin, prefill) {
+  const block = document.createElement('div');
+  block.className = 'ef-repeat-block ef-concert-track-block';
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'ef-repeat-remove';
+  removeBtn.textContent = '×';
+  removeBtn.addEventListener('click', () => {
+    block.remove();
+    if (formWin) formWin.dispatchEvent(new Event('input'));
+  });
+  block.appendChild(removeBtn);
+
+  // ── Composition · Raga · Tala triplet ─────────────────────────────────────
+  const compOpts = (graphData.compositions || []).map(c => ({ value: c.id, label: c.title || c.id }));
+  const ragaOpts = (graphData.ragas || []).map(r => ({ value: r.id, label: r.name || r.id }));
+  const talaOpts = (window.talaData || []).map(t => ({
+    value: t.id, label: t.label, searchTerms: t.searchTerms || '',
+  }));
+
+  const compSel = efCombobox(null, compOpts, 'composition', formWin, { placeholder: 'e.g. Vatapi Ganapatim' });
+  compSel.style.cssText = 'flex:1;min-width:100px;';
+  attachSolidifyBehavior(compSel, formWin, { chipClass: 'comp-chip' });
+
+  const ragaSel = efCombobox(null, ragaOpts, 'raga', formWin, { placeholder: 'e.g. Hamsadhwani' });
+  ragaSel.style.cssText = 'flex:1;min-width:100px;';
+  attachSolidifyBehavior(ragaSel, formWin, { chipClass: 'raga-chip' });
+
+  const talaSel = efCombobox(null, talaOpts, 'tala', formWin, { freeText: true, placeholder: 'e.g. Rupakam' });
+  talaSel.style.cssText = 'flex:1;min-width:80px;';
+  attachSolidifyBehavior(talaSel, formWin);
+
+  wireCompRagaAutofill(compSel, ragaSel, null, formWin);
+  block._compSel = compSel;
+  block._ragaSel = ragaSel;
+  block._talaSel = talaSel;
+
+  const compRagaRow = document.createElement('div');
+  compRagaRow.className = 'ef-comp-raga-row';
+  compRagaRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;min-height:28px;';
+  compRagaRow.appendChild(compSel);
+  compRagaRow.appendChild(ragaSel);
+  compRagaRow.appendChild(talaSel);
+  block.appendChild(compRagaRow);
+
+  // ── Separator ─────────────────────────────────────────────────────────────
+  const sep = document.createElement('hr');
+  sep.className = 'ef-group-sep';
+  block.appendChild(sep);
+
+  // ── Label · Timestamp row (mirrors YouTube "Label · Year" row) ────────────
+  const lblInp = efInput(null, 'text', 'display title (optional)');
+  lblInp.style.cssText = 'flex:1;min-width:0;';
+  lblInp.dataset.field = 'display_title';
+
+  const tsInp = efInput(null, 'text', 'MM:SS or HH:MM:SS');
+  tsInp.style.cssText = 'width:120px;flex-shrink:0;';
+  tsInp.dataset.field = 'timestamp';
+
+  // Hidden offset_seconds: auto-computed from timestamp on blur
+  const offsetInp = document.createElement('input');
+  offsetInp.type = 'hidden';
+  offsetInp.dataset.field = 'offset_seconds';
+  block.appendChild(offsetInp);
+  block._offsetInp = offsetInp;
+
+  tsInp.addEventListener('blur', () => {
+    if (tsInp.value.trim() && typeof timestampToSeconds === 'function') {
+      offsetInp.value = timestampToSeconds(tsInp.value.trim());
+    }
+    if (formWin) formWin.dispatchEvent(new Event('input'));
+  });
+
+  const tsLblRow = document.createElement('div');
+  tsLblRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:6px;';
+  const tsLabel = document.createElement('label');
+  tsLabel.style.cssText = 'font-size:0.68rem;color:var(--fg-sub);text-transform:uppercase;letter-spacing:0.08em;flex-shrink:0;width:var(--ef-label-width,80px);padding-top:6px;line-height:1.3;';
+  tsLabel.textContent = 'Label';
+  tsLblRow.appendChild(tsLabel);
+  tsLblRow.appendChild(lblInp);
+  tsLblRow.appendChild(tsInp);
+  block.appendChild(tsLblRow);
+
+  // ── Prefill ────────────────────────────────────────────────────────────────
+  if (prefill) {
+    if (prefill.composition_id && compSel.setValue) {
+      const c = (graphData.compositions || []).find(x => x.id === prefill.composition_id);
+      compSel.setValue(prefill.composition_id, c ? (c.title || c.id) : prefill.composition_id);
+    }
+    if (prefill.raga_id && ragaSel.setValue) {
+      const r = (graphData.ragas || []).find(x => x.id === prefill.raga_id);
+      ragaSel.setValue(prefill.raga_id, r ? (r.name || r.id) : prefill.raga_id);
+    }
+    if (prefill.tala && talaSel.setValue) {
+      talaSel.setValue(prefill.tala, prefill.tala);
+    }
+    if (prefill.timestamp) tsInp.value = prefill.timestamp;
+    if (prefill.offset_seconds != null) offsetInp.value = prefill.offset_seconds;
+    if (prefill.display_title) lblInp.value = prefill.display_title;
+  }
+
+  return block;
+}
+
+// ── Add / Edit Concert Recording form ────────────────────────────────────────
+// Opens when clicking the CONCERTS section chip (Add mode, musicianId set)
+// or from pencil edit on a concert title chip (Edit mode, opts.recording set).
+// Layout mirrors buildFocusedYouTubeForm with concert adaptations:
+//   - URL is a single plain field (no version rows, no + button)
+//   - Timestamp replaces year in track blocks
+//   - Accompanists listed at top, shared across all tracks in one segment
+//   - Rare multi-segment case via "+ Add Segment"
+
+function buildAddConcertForm(musicianId, opts) {
+  opts = opts || {};
+  const rec    = opts.recording || null;   // prefill recording object (edit mode)
+  const isEdit = !!rec;
+  const node   = musicianId ? (graphData.nodes || []).find(n => n.id === musicianId) : null;
+
+  const win = createEntryWindow(isEdit ? 'Edit Concert Recording' : 'Add Concert Recording');
+  if (!win) return;
+  const body   = win.querySelector('.ew-body');
+  const footer = win.querySelector('.ew-footer');
+
+  // ── Musician identity row ─────────────────────────────────────────────────
+  if (node) {
+    const musRow = document.createElement('div');
+    musRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);';
+    const musLbl = document.createElement('span');
+    musLbl.style.cssText = 'font-size:0.72rem;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;';
+    musLbl.textContent = 'Musician';
+    const musChip = document.createElement('span');
+    musChip.className = 'musician-chip';
+    musChip.style.cursor = 'default';
+    const tint = (typeof THEME !== 'undefined') ? THEME.eraTintCss(node.era || null) : { bg: '', border: '' };
+    musChip.style.setProperty('--chip-era-bg', tint.bg);
+    musChip.style.setProperty('--chip-era-border', tint.border);
+    if (node.instrument && typeof makeInstrBadge === 'function') {
+      musChip.appendChild(makeInstrBadge(node.instrument));
+    }
+    musChip.appendChild(document.createTextNode(node.label || musicianId));
+    musRow.appendChild(musLbl);
+    musRow.appendChild(musChip);
+    body.appendChild(musRow);
+  }
+
+  // ── Concert header fields ─────────────────────────────────────────────────
+  const titleInp    = efInput('ef_crec_title', 'text', 'e.g. Music Academy Annual Conference 1959');
+  body.appendChild(efRow('Title', true, null, titleInp));
+
+  const urlInp = efInput('ef_crec_url', 'text', 'https://youtu.be/…');
+  body.appendChild(efRow('YouTube URL', true, null, urlInp));
+
+  const dateInp     = efInput('ef_crec_date', 'text', '1960-01-04 or 1967 or 1960s');
+  body.appendChild(efRow('Date', false, 'ISO 8601 partial', dateInp));
+
+  const venueInp    = efInput('ef_crec_venue', 'text', 'e.g. Music Academy, Chennai');
+  body.appendChild(efRow('Venue', false, null, venueInp));
+
+  const occasionInp = efInput('ef_crec_occasion', 'text', 'e.g. 31st Annual Music Conference');
+  body.appendChild(efRow('Occasion', false, null, occasionInp));
+
+  // ── Segment container ─────────────────────────────────────────────────────
+  const segmentsContainer = document.createElement('div');
+  segmentsContainer.className = 'ef-concert-segments-container';
+  body.appendChild(segmentsContainer);
+
+  // Builds one segment block (primary = inline, additional = boxed).
+  function buildSegmentBlock(segPrefill, isFirst) {
+    const segBlock = document.createElement('div');
+    segBlock.className = isFirst
+      ? 'ef-concert-segment ef-concert-segment--primary'
+      : 'ef-concert-segment ef-repeat-block';
+    if (!isFirst) {
+      segBlock.style.marginTop = '12px';
+      const segHdr = document.createElement('div');
+      segHdr.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;';
+      const segCount = segmentsContainer.querySelectorAll('.ef-concert-segment').length + 1;
+      const segLbl = document.createElement('span');
+      segLbl.style.cssText = 'font-size:0.65rem;font-weight:bold;color:var(--fg-muted);text-transform:uppercase;letter-spacing:0.08em;';
+      segLbl.textContent = 'Segment ' + segCount;
+      const remSegBtn = document.createElement('button');
+      remSegBtn.type = 'button';
+      remSegBtn.textContent = '×';
+      remSegBtn.style.cssText = 'background:transparent;border:1px solid var(--border-soft);color:var(--fg-muted);width:22px;height:22px;border-radius:3px;cursor:pointer;font-size:0.85rem;line-height:1;';
+      remSegBtn.addEventListener('click', () => { segBlock.remove(); win.dispatchEvent(new Event('input')); });
+      segHdr.appendChild(segLbl);
+      segHdr.appendChild(remSegBtn);
+      segBlock.appendChild(segHdr);
+    }
+
+    // ── Accompanists sub-section ──────────────────────────────────────────
+    const accSep = document.createElement('hr');
+    accSep.className = 'ef-group-sep';
+    segBlock.appendChild(accSep);
+    segBlock.appendChild(efSection('Accompanists'));
+
+    const perfRows = document.createElement('div');
+    perfRows.className = 'ef-performers-rows';
+    segBlock.appendChild(perfRows);
+
+    const addAccBtn = efAddBtn('+ Add Accompanist');
+    segBlock.appendChild(addAccBtn);
+    addAccBtn.addEventListener('click', () => addYoutubePerformerBlock(perfRows, win));
+
+    if (segPrefill && segPrefill.performers) {
+      segPrefill.performers.forEach(pf => {
+        if (pf.musician_id === musicianId) return;   // skip self
+        addYoutubePerformerBlock(perfRows, win);
+        const row = perfRows.lastElementChild;
+        if (row && row._musSel && row._musSel.setValue && pf.musician_id) {
+          const n = (graphData.nodes || []).find(x => x.id === pf.musician_id);
+          row._musSel.setValue(pf.musician_id, n ? (n.label || pf.musician_id) : pf.musician_id);
+        }
+        if (row && row._roleSel && row._roleSel.setValue && pf.role) {
+          row._roleSel.setValue(pf.role, pf.role);
+        }
+      });
+    }
+
+    // ── Tracks sub-section ────────────────────────────────────────────────
+    const trackSep = document.createElement('hr');
+    trackSep.className = 'ef-group-sep';
+    segBlock.appendChild(trackSep);
+    segBlock.appendChild(efSection('Tracks'));
+
+    const tracksContainer = document.createElement('div');
+    tracksContainer.className = 'ef-concert-tracks-container';
+    segBlock.appendChild(tracksContainer);
+
+    const addTrackBtn = efAddBtn('+ Add Track');
+    segBlock.appendChild(addTrackBtn);
+    addTrackBtn.addEventListener('click', () => {
+      tracksContainer.appendChild(buildConcertTrackBlock(win, null));
+      win.dispatchEvent(new Event('input'));
+    });
+
+    const initPerfs = (segPrefill && segPrefill.performances) ? segPrefill.performances : [];
+    if (initPerfs.length) {
+      initPerfs.forEach(perf => tracksContainer.appendChild(buildConcertTrackBlock(win, perf)));
+    } else {
+      tracksContainer.appendChild(buildConcertTrackBlock(win, null));
+    }
+
+    return segBlock;
+  }
+
+  // Render segments
+  const firstSegPrefill = rec && rec.sessions && rec.sessions[0] ? rec.sessions[0] : null;
+  segmentsContainer.appendChild(buildSegmentBlock(firstSegPrefill, true));
+  if (rec && rec.sessions && rec.sessions.length > 1) {
+    rec.sessions.slice(1).forEach(sess => segmentsContainer.appendChild(buildSegmentBlock(sess, false)));
+  }
+
+  const addSegBtn = efAddBtn('+ Add Segment');
+  addSegBtn.style.marginTop = '10px';
+  body.appendChild(addSegBtn);
+  addSegBtn.addEventListener('click', () => {
+    segmentsContainer.appendChild(buildSegmentBlock(null, false));
+    win.dispatchEvent(new Event('input'));
+  });
+
+  // ── Footer buttons ────────────────────────────────────────────────────────
+  const bundleBtn = document.createElement('button');
+  bundleBtn.className  = 'ef-download-btn';
+  bundleBtn.textContent = 'Update Patch';
+  bundleBtn.disabled   = true;
+
+  const previewBtn = document.createElement('button');
+  previewBtn.className  = 'ef-preview-btn';
+  previewBtn.textContent = 'Preview JSON';
+
+  const previewPre = document.createElement('pre');
+  previewPre.className = 'ef-preview-pre';
+  body.appendChild(previewPre);
+
+  footer.appendChild(bundleBtn);
+  footer.appendChild(previewBtn);
+
+  // ── Data collection ───────────────────────────────────────────────────────
+  function collectConcertData() {
+    const recTitle    = titleInp.value.trim();
+    const recUrl      = urlInp.value.trim();
+    const recDate     = dateInp.value.trim();
+    const recVenue    = venueInp.value.trim();
+    const recOccasion = occasionInp.value.trim();
+
+    // Preserve existing id in edit mode; generate from title for new recordings
+    let recId = (isEdit && rec && rec.id) ? rec.id : '';
+    if (!recId && recTitle) {
+      recId = recTitle.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
+        .slice(0, 60);
+    }
+
+    const videoId = (typeof extractVideoId === 'function') ? extractVideoId(recUrl) : '';
+
+    const sessions = [];
+    segmentsContainer.querySelectorAll('.ef-concert-segment').forEach((segBlock, si) => {
+      // Always prepend the primary musician as first performer
+      const performers = [];
+      if (musicianId) {
+        const pNode   = (graphData.nodes || []).find(n => n.id === musicianId);
+        const pRole   = pNode ? _inferPerformerRole(pNode.instrument || '') : 'vocal';
+        performers.push({ musician_id: musicianId, role: pRole });
+      }
+      segBlock.querySelectorAll('.ef-performers-rows .ef-performer-row').forEach(row => {
+        const musId = row._musSel && row._musSel.getValue ? row._musSel.getValue() : '';
+        const role  = row._roleSel && row._roleSel.getValue ? row._roleSel.getValue() : '';
+        if (musId) performers.push({ musician_id: musId, role: role || 'vocal' });
+      });
+
+      const performances = [];
+      let perfIdx = 1;
+      segBlock.querySelectorAll('.ef-concert-track-block').forEach(trackBlock => {
+        const tsInp_    = trackBlock.querySelector('[data-field="timestamp"]');
+        const offInp_   = trackBlock.querySelector('[data-field="offset_seconds"]');
+        const dispInp_  = trackBlock.querySelector('[data-field="display_title"]');
+        const compId    = trackBlock._compSel ? trackBlock._compSel.getValue() : '';
+        const ragaId    = trackBlock._ragaSel ? trackBlock._ragaSel.getValue() : '';
+        const tala      = trackBlock._talaSel ? trackBlock._talaSel.getValue() : '';
+        const ts        = tsInp_   ? tsInp_.value.trim()        : '';
+        const offset    = offInp_  ? parseInt(offInp_.value, 10) : 0;
+        const dispTitle = dispInp_ ? dispInp_.value.trim()       : '';
+        performances.push({
+          performance_index: perfIdx++,
+          timestamp:         ts || '00:00',
+          offset_seconds:    isNaN(offset) ? 0 : offset,
+          composition_id:    compId    || null,
+          raga_id:           ragaId    || null,
+          tala:              tala      || null,
+          display_title:     dispTitle || null,
+        });
+      });
+
+      sessions.push({ session_index: si + 1, performers, performances });
+    });
+
+    return {
+      id:         recId,
+      video_id:   videoId || null,
+      url:        recUrl   || null,
+      title:      recTitle  || null,
+      date:       recDate   || null,
+      venue:      recVenue  || null,
+      occasion:   recOccasion || null,
+      sources:    recUrl ? [{ url: recUrl, label: 'YouTube', type: 'youtube' }] : [],
+      sessions,
+    };
+  }
+
+  function validate() {
+    bundleBtn.disabled = !(titleInp.value.trim() && urlInp.value.trim());
+    if (previewPre.style.display !== 'none') {
+      try { previewPre.textContent = JSON.stringify(collectConcertData(), null, 2); } catch (e) {}
+    }
+  }
+
+  win.addEventListener('input',  validate);
+  win.addEventListener('change', validate);
+
+  previewBtn.addEventListener('click', () => {
+    const open = previewPre.style.display !== 'none';
+    previewPre.style.display = open ? 'none' : 'block';
+    previewBtn.textContent   = open ? 'Preview JSON' : 'Hide Preview';
+    if (!open) {
+      try { previewPre.textContent = JSON.stringify(collectConcertData(), null, 2); } catch (e) {}
+    }
+  });
+
+  bundleBtn.addEventListener('click', () => {
+    const obj = collectConcertData();
+    if (!obj.title || !obj.url) return;
+    if (typeof addToBundle === 'function') {
+      addToBundle('recordings', { op: 'upsert', value: obj });
+      bundleBtn.disabled   = true;
+      bundleBtn.textContent = '✓ Added';
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = 'Update Patch'; }, 2000);
+    }
+  });
+
+  // Pre-fill header fields in edit mode
+  if (rec) {
+    if (rec.title)    titleInp.value    = rec.title;
+    if (rec.url)      urlInp.value      = rec.url;
+    if (rec.date)     dateInp.value     = rec.date;
+    if (rec.venue)    venueInp.value    = rec.venue;
+    if (rec.occasion) occasionInp.value = rec.occasion;
+  }
+
+  return win;
+}
+
+// ── Open Edit Concert form ────────────────────────────────────────────────────
+// Called from openEditForm when entityType === 'recording' and recording has
+// sessions (i.e. is a concert, not a simple youtube entry).
+
+function buildEditConcertForm(recordingId, musicianId) {
+  const rec = (graphData.recordings || []).find(r => r.id === recordingId);
+  if (!rec) return _openGenericEditForm('recording', recordingId);
+
+  // If musicianId not passed from context, infer from first session's first performer
+  let resolvedMusicianId = musicianId || null;
+  if (!resolvedMusicianId && rec.sessions && rec.sessions[0] && rec.sessions[0].performers) {
+    const first = rec.sessions[0].performers[0];
+    if (first && first.musician_id) resolvedMusicianId = first.musician_id;
+  }
+  return buildAddConcertForm(resolvedMusicianId, { recording: rec });
+}
+
 // ── Generic post-download success panel ───────────────────────────────────────
 
 function showGenericSuccess(win, filename, directory) {
@@ -5124,10 +5542,16 @@ function _inferPerformerRole(instrument) {
 // Musician type delegates to openEditMusicianForm (ADR-108, richer form).
 // Raga / composition / recording / edge use the generic patch form below,
 // driven by window.editFormSpec (ADR-143 §4).
-function openEditForm({ entityType, id } = {}) {
+function openEditForm({ entityType, id, musicianId } = {}) {
   if (entityType === 'musician' && id) {
     openEditMusicianForm(id);
     return;
+  }
+  if (entityType === 'recording' && id) {
+    const rec = (graphData.recordings || []).find(r => r.id === id);
+    if (rec && rec.sessions && rec.sessions.length) {
+      return buildEditConcertForm(id, musicianId || null);
+    }
   }
   return _openGenericEditForm(entityType, id);
 }
@@ -5882,6 +6306,9 @@ function buildMusicianRecordingsForm(opts) {
         prefill = [{ axis, id: opts.subjectId }];
       }
       return buildFocusedLecdemForm(opts.nodeId, prefill);
+    }
+    if (opts.kind === 'concert') {
+      return buildAddConcertForm(opts.nodeId);
     }
     return buildFocusedYouTubeForm(opts.nodeId);
   }
