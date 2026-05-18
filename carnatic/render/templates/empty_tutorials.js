@@ -681,7 +681,7 @@
     // Returns a <span> with mixed text/chip children. Used for every block of
     // prose so that every raga / musician / composition / era / HER mention
     // is a live, clickable chip — never plain text.
-    const TOKEN_RE = /\{(raga|musician|comp|composer|era|her):([^}]+)\}/g;
+    const TOKEN_RE = /\{(raga|musician|comp|composer|era|her|view):([^}]+)\}/g;
     function _renderAnnotationInto(text, parent) {
       if (!text) return;
       var last = 0, m;
@@ -694,7 +694,12 @@
         else if (kind === 'musician') parent.appendChild(_musicianChipV5(id));
         else if (kind === 'composer') parent.appendChild(_musicianChipV5(id, null, { composer: true }));
         else if (kind === 'era')      parent.appendChild(_eraChipV5(id));
-        else if (kind === 'her') {
+        else if (kind === 'view') {
+          // Inline reference to a view tab — matches active .view-btn visually.
+          const viewLabels = { mela_janya: 'Mela-Janya', guru_shishya: 'Guru-Shishya' };
+          parent.appendChild(_el('span', 'pt-inline-view-btn', viewLabels[id] || id));
+          if (id === 'guru_shishya') parent.appendChild(document.createTextNode(' tree'));
+        } else if (kind === 'her') {
           const parts = id.split('|');
           parent.appendChild(_herStripV5(parts[0], parts[1]));
         } else {
@@ -711,14 +716,20 @@
     }
 
     // ── section header (uppercase chip with section glyph) ────────────────
+    // Use the same chip classes as the production panels (bani_flow.js line
+    // 1282 for compositions, line 1625 for lecdems, media_player.js line 2146
+    // for concerts/recordings) so the colour matches the live panels exactly.
     function _sectionHdr(label, sectionKind) {
+      if (sectionKind === 'compositions' || sectionKind === 'compositions_empty') {
+        return _el('span', 'comp-chip chip-section-hdr', label);
+      }
+      if (sectionKind === 'lecdems') {
+        return _el('span', 'lecdem-chip chip-section-hdr', label);
+      }
       const glyphMap = {
-        lecdems:    'neutral-chip-recordings',  // closest visual glyph available
-        compositions: 'neutral-chip-compositions',
         misc:       'neutral-chip-recordings',
         concerts:   'neutral-chip-concerts',
         recordings: 'neutral-chip-recordings',
-        compositions_empty: 'neutral-chip-compositions',
       };
       const modifier = glyphMap[sectionKind] || 'neutral-chip-recordings';
       return _el('span', 'neutral-chip chip-section-hdr has-glyph ' + modifier, label);
@@ -884,10 +895,11 @@
         misc:               'MISC',
         concerts:           'CONCERTS',
         recordings:         'RECORDINGS',
-        compositions_empty: 'COMPOSITIONS (0)',
+        compositions_empty: 'COMPOSITIONS',
       })[sk] || sk.toUpperCase();
       const hdrRow = _el('div', 'pt-v5-section-hdr');
       hdrRow.appendChild(_sectionHdr(hdrLabel, sk));
+      if (sk === 'compositions_empty') hdrRow.appendChild(document.createTextNode(' (0)'));
       sectionDiv.appendChild(hdrRow);
 
       if (section.section_gloss) sectionDiv.appendChild(_ann(section.section_gloss));
@@ -945,31 +957,76 @@
 
           } else if (rk === 'composition_tree') {
             // composition chip + composer chip + per-musician version rows.
-            // Each musician row delegates to buildTrailItem — the production
-            // bani_flow.js renderer — so button style, playlist assembly, and
-            // all chips are pixel-identical to the live listening trail.
+            // Leaves delegate to buildTreeLeaf (production renderer) wrapped
+            // in a .tree-rec-list so indentation and dashed rail CSS apply.
             const compLine = _el('div', 'pt-v5-comp-line');
             compLine.appendChild(_compChipV5(refs.composition_id));
             if (refs.composer_id) compLine.appendChild(_musicianChipV5(refs.composer_id, null, { composer: true }));
             rowDiv.appendChild(compLine);
+            const treeList = document.createElement('ul');
+            treeList.className = 'tree-rec-list';
+            const seen = {};
+            // Tier 1: session recordings from compositionToPerf index.
             const perfs = (typeof compositionToPerf !== 'undefined')
               ? (compositionToPerf[refs.composition_id] || []) : [];
-            const seen = {};
             perfs.forEach(function (perf) {
               if (!perf.video_id) return;
               const row = _perfToRow(perf);
               if (!row.nodeId || seen[row.perfKey]) return;
               seen[row.perfKey] = true;
-              if (typeof buildTrailItem === 'function') {
-                rowDiv.appendChild(buildTrailItem(row, 'comp', refs.composition_id, null));
+              if (typeof buildTreeLeaf === 'function') {
+                treeList.appendChild(buildTreeLeaf(row, null, false));
               } else {
-                // graceful fallback if production function unavailable
-                const perfLine = _el('div', 'pt-v5-perf-line');
-                perfLine.appendChild(_musicianChipV5(row.nodeId));
-                perfLine.appendChild(_playFromPerf(perf, row.artistLabel));
-                rowDiv.appendChild(perfLine);
+                const li = document.createElement('li');
+                li.appendChild(_musicianChipV5(row.nodeId));
+                li.appendChild(_playFromPerf(perf, row.artistLabel));
+                treeList.appendChild(li);
               }
             });
+            // Tier 3: youtube[] entries on musician nodes for this composition —
+            // these are standalone links not folded into session files, so they
+            // don't appear in compositionToPerf. Mirrors buildListeningTrail's
+            // first pass in bani_flow.js.
+            if (typeof graphData !== 'undefined') {
+              (graphData.nodes || []).forEach(function (node) {
+                (node.youtube || []).forEach(function (yt) {
+                  if (!yt.vid || yt.composition_id !== refs.composition_id) return;
+                  const ytKey = (node.id || '') + '::yt::' + yt.vid;
+                  if (seen[ytKey]) return;
+                  seen[ytKey] = true;
+                  const ytPerf = {
+                    // unmatched_name carries the display label for musicians
+                    // that have no lineage edges and are thus absent from cy.
+                    performers:        [{ musician_id: node.id, unmatched_name: node.label || node.id }],
+                    video_id:          yt.vid,
+                    display_title:     yt.label || '',
+                    short_title:       '',
+                    title:             '',
+                    date:              yt.year ? String(yt.year) : '',
+                    session_index:     null,
+                    performance_index: null,
+                    offset_seconds:    0,
+                    recording_id:      null,
+                    raga_id:           yt.raga_id  || null,
+                    composition_id:    yt.composition_id || null,
+                    tala:              yt.tala     || null,
+                    version:           yt.version  || null,
+                    timestamp:         '00:00',
+                  };
+                  const ytRow = _perfToRow(ytPerf);
+                  if (!ytRow.nodeId) return;
+                  if (typeof buildTreeLeaf === 'function') {
+                    treeList.appendChild(buildTreeLeaf(ytRow, null, false));
+                  } else {
+                    const li = document.createElement('li');
+                    li.appendChild(_musicianChipV5(ytRow.nodeId));
+                    li.appendChild(_playFromPerf(ytPerf, ytRow.artistLabel));
+                    treeList.appendChild(li);
+                  }
+                });
+              });
+            }
+            rowDiv.appendChild(treeList);
 
           } else if (rk === 'misc_entry') {
             const miscLine = _el('div', 'pt-v5-misc-line');
@@ -1007,29 +1064,26 @@
             const ragaLine = _el('div', 'pt-v5-raga-line');
             ragaLine.appendChild(_ragaChipV5(refs.raga_id));
             rowDiv.appendChild(ragaLine);
+            // Comp chip + play button on the same row (image-4 style).
+            // The play button is pushed to the right with margin-left:auto.
             const compLine2 = _el('div', 'pt-v5-comp-line');
             compLine2.appendChild(_compChipV5(refs.composition_id));
-            rowDiv.appendChild(compLine2);
+            // Composer chip on a second indented line (dashed, like production).
+            const composerLine = refs.composer_id
+              ? _el('div', 'pt-v5-comp-line')
+              : null;
+            if (composerLine) {
+              composerLine.style.marginLeft = 'var(--hier-indent-step, 16px)';
+              composerLine.appendChild(_musicianChipV5(refs.composer_id, null, { composer: true }));
+            }
             if (subjectId && typeof musicianToPerformances !== 'undefined') {
               var matching = (musicianToPerformances[subjectId] || []).filter(function (p) {
                 return p.raga_id === refs.raga_id && p.composition_id === refs.composition_id;
               });
-              // ADR-147 polish v3: if no session-based recording matches, fall
-              // through to the musician node's own youtube[] array — these are
-              // standalone YouTube links curated on the musician file and are
-              // NOT folded into musicianToPerformances (which is built only
-              // from recordings/*.json session files). Without this fallback,
-              // a tutorial row referencing a raga+composition that the subject
-              // has only as a youtube[] entry would render chipless with no
-              // play button (the failure mode the user caught on the atana row).
+              // youtube[] fallback for perfs not in session files.
               if (!matching.length && typeof graphData !== 'undefined') {
                 const node = (graphData.nodes || []).find(function (n) { return n.id === subjectId; });
                 const ytList = (node && node.youtube) || [];
-                // NB: graphData.nodes[*].youtube is mapped in html_generator.py
-                // from cytoscape e.data.tracks (graph_builder.py), so each entry
-                // already has `vid` (11-char YouTube id) extracted — no URL
-                // parsing needed. Fields: vid, label, composition_id, raga_id,
-                // year, version, tala, performers.
                 matching = ytList
                   .filter(function (yt) {
                     return yt.raga_id === refs.raga_id && yt.composition_id === refs.composition_id;
@@ -1043,30 +1097,23 @@
                       composition_id: yt.composition_id || null,
                       offset_seconds: 0,
                       recording_id:   null,
-                      // Provide performers so _perfToRow resolves the correct
-                      // nodeId (subjectId) instead of falling back to null.
                       performers:     [{ musician_id: subjectId }],
                     };
                   })
                   .filter(function (p) { return p.video_id; });
               }
-              // Delegate each version row to buildTrailItem — the production
-              // renderer — so button style, playlist assembly, and chips are
-              // identical to the live musician panel.
-              matching.forEach(function (perf) {
-                if (!perf.video_id) return;
-                if (typeof buildTrailItem === 'function') {
-                  const row = _perfToRow(perf);
-                  rowDiv.appendChild(buildTrailItem(row, 'raga', refs.raga_id, null));
-                } else {
-                  // graceful fallback if production function unavailable
-                  const vLine = _el('div', 'pt-v5-version-line');
-                  vLine.appendChild(_el('span', 'pt-v5-version-label', perf.short_title || perf.display_title || ''));
-                  if (perf.video_id) vLine.appendChild(_playFromPerf(perf, subjectLabel));
-                  rowDiv.appendChild(vLine);
-                }
-              });
+              // Single play button for the first available perf — matches the
+              // production raga-panel style (image 4) where each composition
+              // row has one ▶ at the far right, not a sub-list of versions.
+              const firstPerf = matching.find(function (p) { return p.video_id; });
+              if (firstPerf) {
+                const btn = _playFromPerf(firstPerf, subjectLabel);
+                btn.style.marginLeft = 'auto';
+                compLine2.appendChild(btn);
+              }
             }
+            rowDiv.appendChild(compLine2);
+            if (composerLine) rowDiv.appendChild(composerLine);
           }
 
           sectionDiv.appendChild(rowDiv);
@@ -1082,11 +1129,18 @@
     const cn = block.closing_note || {};
     if (cn.text) {
       const cnDiv = _el('div', 'pt-v5-closing-note');
-      const head  = _el('div', 'pt-v5-closing-head');
-      if (cn.icon === 'wheel')      head.appendChild(_el('span', 'pt-v5-closing-icon', '\u2609'));
-      else if (cn.icon === 'graph') head.appendChild(_el('span', 'pt-v5-closing-icon', '\u29c9'));
-      cnDiv.appendChild(head);
       const body = _el('div', 'pt-v5-closing-text');
+      // Favicon as inline icon before the text — reads the document's injected
+      // <link rel="icon"> href so it stays in sync with the render pipeline.
+      const _faviconEl = document.querySelector('link[rel="icon"]');
+      if (_faviconEl && _faviconEl.href) {
+        const iconImg = document.createElement('img');
+        iconImg.className = 'pt-v5-closing-icon';
+        iconImg.src = _faviconEl.href;
+        iconImg.alt = '';
+        iconImg.setAttribute('aria-hidden', 'true');
+        body.appendChild(iconImg);
+      }
       _renderAnnotationInto(cn.text, body);
       cnDiv.appendChild(body);
       container.appendChild(cnDiv);

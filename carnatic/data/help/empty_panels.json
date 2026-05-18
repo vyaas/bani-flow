@@ -13,7 +13,7 @@
       },
       {
         "position": "above_filter",
-        "text": "The Filter trail input above narrows the sections below by composition name, musician name, or raga. The tree structure stays intact — sections collapse if empty."
+        "text": "The \"Filter trail\" input above narrows the sections below by composition name, musician name, or raga. The tree structure stays intact — sections collapse if empty."
       }
     ],
     "sections": [
@@ -24,17 +24,17 @@
           {
             "row_kind": "lecdem",
             "data_refs": { "lecdem_musician_id": "david_shulman", "lecdem_video_id": "yjbAbMu8mzY", "lecdem_url": "https://youtu.be/yjbAbMu8mzY", "lecdem_label": "How to Put Together a Goddess out of Musical Scales" },
-            "annotation": "Meaning and context. {musician:david_shulman} is a Sanskritist and Musicologist ; his lecture reads {raga:reetigowla} as Dikshitar reads it — as a vessel for a goddess. Hear what the raga means (meant?) before you hear what it sounds like."
+            "annotation": "Meaning and context: {musician:david_shulman} is a Sanskritist and Musicologist ; his lecture reads {raga:reetigowla} as Dikshitar reads it — as a vessel for a goddess. Hear what the raga means (meant?) before you hear what it sounds like."
           },
           {
             "row_kind": "lecdem",
             "data_refs": { "lecdem_musician_id": "seetha_rajan", "lecdem_video_id": "oG6RRKJpTqQ", "lecdem_url": "https://www.youtube.com/watch?v=oG6RRKJpTqQ", "lecdem_label": "A Musical Exploration — Abhogi, Sriranjani, Ritigaula, Kanada and more" },
-            "annotation": "Relationship to other ragas. {musician:seetha_rajan} sits {raga:reetigowla} beside its neighbours — Abhogi, Sriranjani, Kanada — and shows how a swara of difference makes a world of difference. The clearest possible answer to 'how do these ragas, which share so many notes, not sound the same?'"
+            "annotation": "Relationship to other ragas: {musician:seetha_rajan} sits {raga:reetigowla} beside its neighbours — Abhogi, Sriranjani, Kanada — and shows how a swara of difference makes a world of difference. The clearest possible answer to 'how do these ragas, which share so many notes, not sound the same?'"
           },
           {
             "row_kind": "lecdem",
             "data_refs": { "lecdem_musician_id": "tm_krishna", "lecdem_video_id": "zDi6s4Q3sEo", "lecdem_url": "https://youtu.be/zDi6s4Q3sEo", "lecdem_label": "In The Classroom — Part 1" },
-            "annotation": "Practice — how to improvise inside a raga. {musician:tm_krishna}'s classroom is the rasika's classroom too. Watch the alapana take shape phrase by phrase: this is improvisation as architecture, not ornament."
+            "annotation": "Practice a.k.a how to improvise inside a raga: {musician:tm_krishna}'s classroom is the rasika's classroom too. Watch the alapana take shape phrase by phrase: this is improvisation as architecture, not ornament."
           }
         ]
       },
@@ -63,7 +63,7 @@
     ],
     "closing_note": {
       "icon": "wheel",
-      "text": "Every play button ▶ opens the floating YouTube player. Tap {raga:kharaharapriya} to climb the mela wheel — the wheel will rotate to centre the 22nd-mela swara-bucket and the ragas inside it become reachable in one tap. The tradition has two faces: this panel is the raga face, the wheel is the modal face, and they speak to each other through every chip you tap."
+      "text": "Every play button ▶ opens the floating YouTube player. Tap {raga:kharaharapriya} to climb the {view:mela_janya} wheel — the wheel will rotate to centre the 22nd-mela swara-bucket and the ragas inside it become reachable in one tap. The tradition has two faces: this panel is the raga face, the {view:mela_janya} is the modal face, and they speak to each other through every chip you tap."
     }
   },
   "musician_panel": {
@@ -112,13 +112,8 @@
         "rows": [
           {
             "row_kind": "recording_tree",
-            "data_refs": { "raga_id": "begada", "composition_id": "abhimanamennedu" },
-            "annotation": "{musician:ramnad_krishnan} in {raga:begada} is said to be unparalleled. {comp:abhimanamennedu} — a kriti of {musician:patnam_subramanya_iyer} — appears here with each surviving version stacked underneath. Tap a version's ▶ to hear that one specifically; tap the composition chip to open {raga:begada}'s full Bani Flow trail across every musician in the graph who has recorded in it."
-          },
-          {
-            "row_kind": "recording_tree",
-            "data_refs": { "raga_id": "atana", "composition_id": "ilalo_pranatartihara" },
-            "annotation": "{comp:ilalo_pranatartihara} — another {musician:tyagaraja} kriti, this one in {raga:atana}. Where Begada was hushed and devotional, Atana is heroic and declamatory — the same voice can hold both. The recordings tree is how that range becomes visible: tap a version's ▶ to hear that one specifically."
+            "data_refs": { "raga_id": "begada", "composition_id": "abhimanamennedu", "composer_id": "patnam_subramanya_iyer" },
+            "annotation": "{musician:ramnad_krishnan} in {raga:begada} is said to be unparalleled. {comp:abhimanamennedu} — a kriti of {musician:patnam_subramanya_iyer} — is one of the compositions he recorded in this raga. Tap ▶ to hear it; tap the composition chip to open {raga:begada}'s full Bani Flow trail across every musician in the graph who has recorded in it."
           }
         ]
       },
@@ -129,7 +124,7 @@
     ],
     "closing_note": {
       "icon": "graph",
-      "text": "Every chip you tap in this panel echoes across the canvas. Tap a raga chip and the mela wheel rotates to centre its swara-bucket. Tap a musician chip and the Guru-Shishya graph lights up the lineage — the chain of teachers and students through which this artist learnt and taught. The graph is sparse on purpose: only musicians connected by a documented relationship appear. The tradition is a forest, not a list."
+      "text": "Every chip you tap in this panel echoes across the canvas. Tap a raga chip and the {view:mela_janya} wheel rotates to centre its swara-bucket. Tap a musician chip and the {view:guru_shishya} lights up the lineage — the chain of teachers and students through which this artist learnt and taught. The {view:guru_shishya} is sparse on purpose: only musicians connected by a documented relationship appear. The tradition is a forest, not a list."
     }
   }
 }
