@@ -4,12 +4,8 @@
     "subject": { "kind": "raga", "id": "reetigowla" },
     "header_annotations": [
       {
-        "position": "above_janya_row",
-        "text": "Bani Flow panels open with a raga (or composition). The chip above is {raga:reetigowla}, a raga associated with the 22nd mela {raga:kharaharapriya}. A mela is simply a label for a swara-bucket — the raga that carries the mela's name is no more special than any other raga in the same bucket. Tap {raga:kharaharapriya} to swap the panel over to it and see the other ragas grouped under the same swara-set."
-      },
-      {
-        "position": "above_her_strip",
-        "text": "{raga:reetigowla} has no Hindustani equivalent. Most Carnatic ragas don't. When they do, the resemblance is in the swaras — not the sound. {raga:darbari_kanada} (Carnatic, in the {raga:natabhairavi} swara-bucket) is mirrored by Hindustani {raga:darbari} — same notes, two entirely different musical worlds. Look for the cool blue ↔ chip on those ragas."
+        "position": "above_subject_btn",
+        "text": "Bani Flow panels open with a raga (or composition). The chip above is {raga:reetigowla}, a janya of the 22nd mela {raga:kharaharapriya}. The ◈ 25 beside it opens the mela-family popup: the mela, 24 sibling janyas, and any Hindustani equivalents — each tappable to pivot the panel. For a composition subject, the counter shows the number of musicians who have recorded it; the popup shows the raga, tala, and composer."
       },
       {
         "position": "above_filter",

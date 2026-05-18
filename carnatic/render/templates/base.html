@@ -424,7 +424,9 @@
   }
 
   /* ── node header — ADR-128 D2: two-row layout (chip row + affordances row) ── */
-  #node-info { padding: 8px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  #node-info { padding: 8px 14px; flex-shrink: 0; }
+  /* ── bani subject info — mirrors #node-info: chip row + trail filter as one unit ── */
+  #bani-info { padding: 8px 14px; flex-shrink: 0; }
   #node-header { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
   #node-header-chip-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px; }
   /* #node-name is now a transparent wrapper — the .musician-chip inside it carries all styles */
@@ -1287,8 +1289,7 @@
   #listening-trail { display: none; margin-top: 8px; }
   /* ── bani subject header (ADR-020) ── */
   #bani-subject-header {
-    padding: 8px 0 6px;
-    border-bottom: 1px solid var(--border);
+    padding: 0 0 6px;
     flex-shrink: 0;
   }
   #bani-subject-name-row {
@@ -1575,7 +1576,6 @@
   /* ── panel-level search bars ── */
   .panel-search-wrap {
     padding: 8px 14px 0;
-    border-bottom: 1px solid var(--border);
   }
   .panel-search {
     width: 100% !important;
@@ -4653,27 +4653,29 @@
             searching all compositions
           </div>
         </div>
-        <!-- Subject header — shown when a raga/composition is selected (ADR-020) -->
-        <div id="bani-subject-header" style="display:none">
-          <div id="bani-subject-name-row">
-            <span id="bani-subject-icon" class="bani-subject-icon"></span>
-            <span id="bani-her-prefix" style="display:none">[Hindustani]</span>
-            <span id="bani-subject-name"></span>
-            <!-- ADR-149: popup button (family ragas / comp metadata) -->
-            <button id="bani-subject-popup-btn" class="lineage-popup-btn"
-                    style="display:none" title=""></button>
-            <!-- ADR-128 D2: affordances (wiki) inlined right of name chip -->
-            <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
-              <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
-                 target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
+        <!-- bani-info: chip row + trail filter as one unit, mirrors #node-info (ADR-020) -->
+        <div id="bani-info" style="display:none">
+          <div id="bani-subject-header">
+            <div id="bani-subject-name-row">
+              <span id="bani-subject-icon" class="bani-subject-icon"></span>
+              <span id="bani-her-prefix" style="display:none">[Hindustani]</span>
+              <span id="bani-subject-name"></span>
+              <!-- ADR-149: popup button (family ragas / comp metadata) -->
+              <button id="bani-subject-popup-btn" class="lineage-popup-btn"
+                      style="display:none" title=""></button>
+              <!-- ADR-128 D2: affordances (wiki) inlined right of name chip -->
+              <div id="bani-header-affordances" class="panel-header-affordances" style="display:none">
+                <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
+                   target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
+              </div>
             </div>
+            <!-- notes[] section (ADR-097 §7, shown when entity has notes array) -->
+            <div id="bani-notes-row" style="display:none"></div>
           </div>
-          <!-- notes[] section (ADR-097 §7, shown when entity has notes array) -->
-          <div id="bani-notes-row" style="display:none"></div>
+          <!-- Filter — below the chip row, above the trail list -->
+          <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
+                 style="display:none" autocomplete="off" spellcheck="false" />
         </div>
-        <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
-        <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
-               style="display:none" autocomplete="off" spellcheck="false" />
       </div>
     </div>
     <!-- ── scrollable zone: lecdem strip (ADR-081) + trail list ── -->
@@ -4765,7 +4767,6 @@
             searching all {node_count} musicians
           </div>
         </div>
-      </div>
       <div id="node-info">
         <div id="node-header">
           <!-- Row 1: musician chip (ADR-128 D2) -->
@@ -4782,7 +4783,7 @@
         <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
                style="display:none" autocomplete="off" spellcheck="false" />
       </div>
-    </div>
+      </div>
     <!-- ── scrollable zone: recordings + edge info ── -->
     <div id="right-scroll">
       <!-- ADR-086: empty-panel tutorial (shown when no node selected) -->

@@ -175,6 +175,7 @@ function applyBaniFilter(type, id) {
   });
 
   // Build listening trail
+  document.getElementById('bani-info').style.display = '';
   buildListeningTrail(type, id, matchedNodeIds);
 
   document.getElementById('trail-filter').style.display = 'block';
@@ -395,7 +396,6 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     _setupBaniSubjectPopupBtn('raga', id, { raga });
   }
 
-  subjectHeader.style.display = 'block';
   // ADR-128 D2: show affordances row (wiki link + edit button) when a subject is loaded
   const _baniAffordances = document.getElementById('bani-header-affordances');
   if (_baniAffordances) _baniAffordances.style.display = '';
@@ -1247,10 +1247,9 @@ function clearBaniFilter() {
   activeBaniFilter = null;
   cy.elements().removeClass('faded highlighted bani-match');
   document.getElementById('bani-search-input').value = '';
-  document.getElementById('trail-filter').style.display = 'none';
+  document.getElementById('bani-info').style.display = 'none';
   document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
-  document.getElementById('bani-subject-header').style.display = 'none';
   const _bfStrip = document.getElementById('bani-lecdem-strip');
   if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
   // ADR-149: hide popup button and popup
@@ -1540,13 +1539,18 @@ function _setupBaniSubjectPopupBtn(type, id, ctx) {
 
   } else if (type === 'comp') {
     const { comp, raga, composer } = ctx;
-    // Count distinct musicians with a track matching this composition_id
-    const performerIds = new Set();
-    cy.nodes().forEach(n => {
-      const tracks = n.data('tracks') || [];
-      if (tracks.some(t => t.composition_id === id)) performerIds.add(n.id());
+    // Count = distinct legacy flat-track vids + structured PerformanceRefs.
+    // Do NOT use cy (the lineage graph) — recording data is independent of it.
+    // elements[] covers all musician nodes including those with no lineage edges.
+    const legacyVids = new Set();
+    elements.forEach(function(el) {
+      if (el.data.source) return; // skip edge elements
+      (el.data.tracks || []).forEach(function(t) {
+        if (t.composition_id === id && t.vid) legacyVids.add(t.vid);
+      });
     });
-    count = performerIds.size;
+    const structPerfs = (typeof compositionToPerf !== 'undefined' ? compositionToPerf[id] : null) || [];
+    count = legacyVids.size + structPerfs.length;
     const ragaName     = raga ? raga.name : '';
     const composerName = composer ? composer.name : '';
     title = count + ' musician' + (count !== 1 ? 's' : '') +
