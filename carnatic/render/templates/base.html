@@ -360,6 +360,10 @@
     flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0;
   }
   .panel { padding: 12px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  /* ADR-011: recordings-panel is the first content zone — cancel .panel top padding so the
+     first section header sits flush with the left panel's equivalent #bani-lecdem-strip
+     (which uses margin: 4px 0 only). Lateral padding (14px) and border-bottom are kept. */
+  #recordings-panel { padding-top: 0; }
   .panel h3 {
     font-size: 0.72rem; color: var(--fg-sub);
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
@@ -2456,9 +2460,12 @@
   }
 
   /* ── ADR-080: Lecdem section in musician panel ─────────────────────────── */
+  /* ADR-011: margin-top and padding-top removed — buildSection()'s .rec-section-header-row
+     already provides margin-top: 4px, matching the left panel's #bani-lecdem-strip spacing.
+     No outer wrapper should add extra vertical spacing on top of the ground-truth rule. */
   .lecdem-section {
-    margin-top: 4px;
-    padding-top: 4px;
+    margin-top: 0;
+    padding-top: 0;
   }
   .lecdem-section-header {
     display: flex; align-items: center; justify-content: space-between;
