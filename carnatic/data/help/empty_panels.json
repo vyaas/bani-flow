@@ -1,326 +1,222 @@
 {
-  "schema_version": 4,
-  "musician_panel": {
-    "chip_catalogue": [
+  "schema_version": 5,
+  "intro_ribbon": "Worked example — tap any chip to follow the trail, or use the search above to begin your own.",
+  "bani_flow_panel": {
+    "subject": {
+      "kind": "raga",
+      "id": "reetigowla"
+    },
+    "header_annotations": [
       {
-        "css_class": "comp-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "composition_row",
-          "comp_id": "parulanna_matta",
-          "comp_label": "Parulanna Matta",
-          "raga_id": "kapi",
-          "raga_label": "Kapi",
-          "tala": "Rupakam",
-          "composer_id": "dharmapuri_subbaraya_iyer",
-          "composer_label": "Dharmapuri Subbaraya Iyer"
-        },
-        "effect": "A composition row names the raga (Kapi), the tala, and the composer — Dharmapuri Subbaraya Iyer, who wrote songs directly for Veenai Dhanammal herself. Tapping the raga opens its complete Bani Flow trail in the right panel."
+        "position": "above_raga_chip",
+        "text": "This is the raga header. Every Bani Flow trail opens with the raga (or composition) you chose. The ↗ opens the Wikipedia page for the raga."
       },
       {
-        "css_class": "raga-chip",
-        "example_kind": "raga",
-        "example_id": "begada",
-        "example_label": "Begada",
-        "effect": "Begada is a rakti raga — a mode of deep emotional saturation — central to the Dhanammal bani. Ramnad Krishnan's rendering of Begada is said to be unparalleled. Tapping a raga chip opens its Bani Flow trail: every musician in the graph who has recorded in that raga."
+        "position": "above_janya_row",
+        "text": "Reetigowla is a janya — a ‘derived’ raga — born from the 22nd mela, Kharaharapriya. A mela is a parent scale, complete with all seven swaras in fixed order; a janya selects, skips, twists, or curves through those swaras to become its own personality. Tap the Kharaharapriya chip to climb up to the parent and see its other children — Reetigowla’s siblings.",
+        "janya_of": "kharaharapriya"
       },
       {
-        "css_class": "lecdem-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "recording_row",
-          "chip_label": "♪ Poonamallee 1965",
-          "play_label": "Ramnad Krishnan — Poonamallee 1965 (full concert)",
-          "artist_label": "Ramnad Krishnan",
-          "recording_id": "poonamallee_1965",
-          "video_id": "_rj8fHJiSLA",
-          "youtube_url": "https://www.youtube.com/watch?v=_rj8fHJiSLA",
-          "performers": [
-            {
-              "id": "ramnad_krishnan",
-              "label": "Ramnad Krishnan"
-            },
-            {
-              "id": "tn_krishnan",
-              "label": "TN Krishnan"
-            },
-            {
-              "id": "vellore_ramabhadran",
-              "label": "Vellore G. Ramabhadran"
-            }
-          ]
-        },
-        "effect": "A concert row opens a scrollable setlist — every piece in that evening's programme, playable in sequence. Ramnad Krishnan at Poonamallee (1965): student of T. Brinda, carrying the Dhanammal bani in full flight. ▶ opens the player; ↗ opens YouTube."
+        "position": "above_her_strip",
+        "text": "Reetigowla has no Hindustani equivalent. Most ragas don’t. But some do — and when they do, the resemblance is in the swaras, not in the sound. Darbari Kanada (Carnatic, a janya of the 20th mela Natabhairavi) is mirrored by Hindustani Darbari — same notes, two entirely different musical worlds. Look for the cool blue ↔ chip on those ragas.",
+        "her_example": {
+          "carnatic_id": "darbari_kanada",
+          "hindustani_id": "darbari",
+          "mela_id": "natabhairavi"
+        }
       },
       {
-        "css_class": "lecdem-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "lecdem_row",
-          "chip_label": "✎ Manodharma: Part One",
-          "play_label": "Manodharma — A Lec-Dem Part One (TM Krishna)",
-          "video_id": "Va7kZP434LE",
-          "youtube_url": "https://www.youtube.com/watch?v=Va7kZP434LE",
-          "performers": [
-            {
-              "id": "tm_krishna",
-              "label": "TM Krishna"
-            }
-          ]
-        },
-        "effect": "Lec-dem rows appear at the top of a musician's profile. TM Krishna's Manodharma — three lectures on improvisation — is the finest available introduction to how a performer thinks inside a raga: where the freedom is, what it is constrained by, and why it sounds the way it does. Begin here."
-      },
-      {
-        "css_class": "lecdem-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "lecdem_row",
-          "chip_label": "✎ Manodharma: Part Two",
-          "play_label": "Manodharma — A Lec-Dem Part Two (TM Krishna)",
-          "video_id": "iaZJSah3NyE",
-          "youtube_url": "https://www.youtube.com/watch?v=iaZJSah3NyE",
-          "performers": [
-            {
-              "id": "tm_krishna",
-              "label": "TM Krishna"
-            }
-          ]
-        },
-        "effect": "Part Two: how alapana gives way to the composed kriti, and how kalpana swara — improvised melodic phrases on solmisation syllables — are woven into the performance structure."
-      },
-      {
-        "css_class": "lecdem-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "lecdem_row",
-          "chip_label": "✎ Manodharma: Part Three",
-          "play_label": "Manodharma — A Lec-Dem Part Three (TM Krishna)",
-          "video_id": "6jMvw76Zprw",
-          "youtube_url": "https://www.youtube.com/watch?v=6jMvw76Zprw",
-          "performers": [
-            {
-              "id": "tm_krishna",
-              "label": "TM Krishna"
-            }
-          ]
-        },
-        "effect": "Part Three: the accompanying musicians — violinist and mridangist — and the dialogic improvisation (thani avartanam, svarakalpana) that makes Carnatic music a conversation, not a recitation."
+        "position": "above_filter",
+        "text": "As the trail grows, the filter narrows it. Type a composition name, a musician’s name, or a raga to focus this panel on a slice of the trail. The filter is shape-preserving — sections collapse if empty, but the tree structure stays intact."
       }
     ],
-    "cross_panel_seeds": {
-      "prompt": "The Dhanammal bani lives most vividly in its signature ragas. Open their trail — and see who in the lineage has sung them:",
-      "closing_note": "In Guru-Shishya view, every node in the lineage graph leads here — tap any musician to load their profile. Once loaded, type in the filter bar above ↑ to narrow recordings by raga or composition.",
-      "panel_target": "bani",
-      "items": [
-        {
-          "kind": "raga",
-          "id": "begada",
-          "label": "Begada",
-          "note": "rakti · the signature mode of the Dhanammal bani"
-        },
-        {
-          "kind": "raga",
-          "id": "sahana",
-          "label": "Sahana",
-          "note": "rakti · a raga Brinda carried like no other"
-        }
-      ]
-    },
-    "view_section": {
-      "label": "The tradition lives in two forms:",
-      "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
-      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
-      "raga_note_composers": [
-        {
-          "id": "tyagaraja",
-          "label": "Tyagaraja"
-        },
-        {
-          "id": "muthuswami_dikshitar",
-          "label": "Muthuswami Dikshitar"
-        },
-        {
-          "id": "shyama_shastri",
-          "label": "Shyama Shastri"
-        }
-      ],
-      "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion",
-      "wheel_note": "In Mela-Janya view, tapping a raga also illuminates it on the 72-mela wheel — you can see which parent mela governs this raga and navigate to its siblings."
-    }
-  },
-  "bani_flow_panel": {
-    "chip_catalogue": [
+    "sections": [
       {
-        "css_class": "musician-chip",
-        "example_kind": "musician",
-        "example_id": "madurai_mani_iyer",
-        "example_label": "Madurai Mani Iyer",
-        "effect": "A musician chip loads their Bani Flow trail — recordings, lecdems, compositions — into this (right) panel. The Guru-Shishya graph on the left highlights their lineage connections. Madurai Mani Iyer (1912–1968): Sangeetha Kalanidhi 1959, one of the golden age's most fully realised vocal voices — celebrated for kalpana swarams, neraval, and alapana of rare lucidity."
+        "kind": "lecdems",
+        "section_gloss": "Lecture-demonstrations are how Carnatic musicians teach themselves to listeners. Before recordings, knowledge of a raga moved guru-to-shishya only; now it moves through these — and they remain the fastest doorway in.",
+        "rows": [
+          {
+            "row_kind": "lecdem",
+            "data_refs": {
+              "lecdem_musician_id": "david_shulman",
+              "lecdem_url": "https://youtu.be/yjbAbMu8mzY",
+              "lecdem_video_id": "yjbAbMu8mzY",
+              "lecdem_label": "How to Put Together a Goddess out of Musical Scales"
+            },
+            "annotation": "Meaning and context. Shulman is a Sanskritist and a Carnatic vocalist; his lecture reads Reetigowla as Dikshitar reads it — as a vessel for a goddess. Hear what the raga means before you hear what it sounds like."
+          },
+          {
+            "row_kind": "lecdem",
+            "data_refs": {
+              "lecdem_musician_id": "seetha_rajan",
+              "lecdem_url": "https://www.youtube.com/watch?v=oG6RRKJpTqQ",
+              "lecdem_video_id": "oG6RRKJpTqQ",
+              "lecdem_label": "A Musical Exploration — Abhogi, Sriranjani, Ritigaula, Kanada and more"
+            },
+            "annotation": "Relationship to other ragas. Seetha Rajan sits Reetigowla beside its neighbours — Abhogi, Sriranjani, Kanada — and shows how a swara of difference makes a world of difference. The clearest possible answer to ‘how do these ragas, which share so many notes, not sound the same?’"
+          },
+          {
+            "row_kind": "lecdem",
+            "data_refs": {
+              "lecdem_musician_id": "tm_krishna",
+              "lecdem_url": "https://youtu.be/zDi6s4Q3sEo",
+              "lecdem_video_id": "zDi6s4Q3sEo",
+              "lecdem_label": "In The Classroom — Part 1"
+            },
+            "annotation": "Practice — how to improvise inside a raga. TM Krishna’s classroom is the rasika’s classroom too. Watch the alapana take shape phrase by phrase: this is improvisation as architecture, not ornament."
+          }
+        ]
       },
       {
-        "css_class": "comp-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "composition_row",
-          "comp_id": "muripemu_kalige",
-          "comp_label": "Muripemu Kalige",
-          "raga_id": "mukhari",
-          "raga_label": "Mukhari",
-          "tala": "Adi",
-          "composer_id": "tyagaraja",
-          "composer_label": "Tyagaraja"
-        },
-        "effect": "A composition row carries its raga (Mukhari), tala (Adi), and composer (Tyagaraja) — all clickable. A composition is the structured vessel through which a raga's personality becomes audible; each musician's rendering reveals a different face of the same mode."
+        "kind": "compositions",
+        "section_gloss": "A composition is the structured vessel through which a raga’s personality becomes audible. Each renderer reveals a different face of the same mode — same notes, same words, different soul.",
+        "rows": [
+          {
+            "row_kind": "composition_tree",
+            "data_refs": {
+              "composition_id": "janani_ninnuvina",
+              "raga_id": "reetigowla",
+              "composer_id": "subbaraya_sastri"
+            },
+            "annotation": "The composition row carries — top to bottom — the composition (orange), its composer (dotted-outline orange), and the musicians who have recorded it in this raga (era-tinted). The play button ▶ on a musician row launches that specific rendering. The composer chip is itself navigable — tap it to see everything Subbaraya Sastri ever wrote."
+          }
+        ]
       },
       {
-        "css_class": "lecdem-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "lecdem_row",
-          "chip_label": "Gamaka I",
-          "play_label": "Gamaka I — Lakshmi Sreeram",
-          "video_id": "nBAez2kdElo",
-          "youtube_url": "https://www.youtube.com/watch?v=nBAez2kdElo",
-          "raga_tags": [],
-          "performers": [
-            {
-              "id": "lakshmi_sreeram",
-              "label": "Lakshmi Sreeram"
-            }
-          ]
-        },
-        "effect": "Gamaka — the ornamental inflection of a swara — is what makes Carnatic music sound the way it does. Without gamaka, a raga is a scale; with it, a single note becomes an emotion. Lakshmi Sreeram's lecture series covers the grammar of gamaka from first principles: this is where good listening begins."
-      },
-      {
-        "css_class": "trail-acts",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "action_row",
-          "play_label": "Muripemu Kalige · Mukhari — TM Krishna, Parallel Lines Bangalore 2020",
-          "video_id": "NfaWuqmljKM",
-          "youtube_url": "https://www.youtube.com/watch?v=NfaWuqmljKM",
-          "play_note": "play in the floating player",
-          "link_note": "open source"
-        },
-        "effect": ""
-      },
-      {
-        "css_class": "lecdem-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "lecdem_row",
-          "chip_label": "Understanding Raga I",
-          "play_label": "Understanding Raga - Part I — Lakshmi Sreeram",
-          "video_id": "C50lNHXE4RY",
-          "youtube_url": "https://www.youtube.com/watch?v=C50lNHXE4RY",
-          "raga_tags": [],
-          "performers": [
-            {
-              "id": "lakshmi_sreeram",
-              "label": "Lakshmi Sreeram"
-            }
-          ]
-        },
-        "effect": "The raga chips on a lec-dem are interactive — tapping them focuses that raga on the Mela-Janya wheel. A raga heard and explained in a lecture becomes a navigable node in the modal world. Lakshmi Sreeram's lecture on raga is the clearest available account of what a raga is — not a scale, but a personality; not a set of notes, but a way of moving between them."
-      },
-      {
-        "css_class": "her-chip",
-        "example_kind": "demo_row",
-        "example_id": null,
-        "example_label": null,
-        "demo_row": {
-          "type": "her_row",
-          "carnatic_raga_id": "darbari_kanada",
-          "carnatic_label": "Darbari Kanada",
-          "her_id": "darbari",
-          "her_label": "Darbari"
-        },
-        "effect_parts": [
-          {"type": "text", "text": "The cool blue ↔ chip marks a Hindustani Equivalent Raga — same swaras, different musical world. The most direct comparison is free-form: "},
-          {"type": "musician_play", "artist_id": "sanjay_subrahmanyan", "artist_label": "Sanjay Subrahmanyan", "chip_class": "raga-chip", "video_id": "Sdx2JhC5yrg", "play_label": "Sanjay Subrahmanyan — Ragam Tanam Pallavi · Darbari Kanada"},
-          {"type": "text", "text": " in Darbari Kanada moves architecturally — alapana, tanam, pallavi — each stage building on the last. "},
-          {"type": "musician_play", "artist_id": "bhimsen_joshi", "artist_label": "Bhimsen Joshi", "chip_class": "her-chip", "video_id": "1aRdlGtxj0g", "play_label": "Bhimsen Joshi — Alap · Darbari"},
-          {"type": "text", "text": " in Darbari is a single inward arc — the raga breathes slowly outward, each swara dwelt in. Same swaras. Entirely different sense of time."}
+        "kind": "misc",
+        "section_gloss": "Material that doesn’t fit a composition — alapana sketches, ragam-tanam, untitled fragments. The unsorted shelf of the tradition: often where the most uninhibited listening lives.",
+        "rows": [
+          {
+            "row_kind": "misc_entry",
+            "data_refs": {
+              "misc_musician_id": "md_ramanathan",
+              "misc_label": "Reetigowla — Alapana Sketch",
+              "misc_raga_id": "reetigowla",
+              "recording_id": "air_bangalore_1964_md_ramanathan",
+              "video_id": "fXTv1tSQrGw",
+              "offset_seconds": 0
+            },
+            "annotation": "An alapana is a raga thinking out loud — no composition, no tala, no destination. Hear MD Ramanathan move through Reetigowla in his unmistakable slow tempo: each swara dwelt in, the gamaka thick and patient. This is the raga as raga."
+          }
         ]
       }
     ],
-    "cross_panel_seeds": {
-      "prompt": "Three artists. One bani — the Dhanammal school of sound, transmitted grandmother to granddaughter to shishya across a century:",
-      "search_note": "Use the filter bar above ↑ to narrow recordings by raga or composition name once a subject is loaded — the same bar that navigates you here.",
-      "panel_target": "musician",
-      "items": [
-        {
-          "kind": "musician",
-          "id": "vina_dhanammal",
-          "label": "Vina Dhanammal",
-          "note": "1867–1938 · veena · source of the bani"
-        },
-        {
-          "kind": "musician",
-          "id": "t_brinda",
-          "label": "T. Brinda",
-          "note": "1912–1996 · vocal · Dhanammal's granddaughter, Sangeetha Kalanidhi 1976"
-        },
-        {
-          "kind": "musician",
-          "id": "ramnad_krishnan",
-          "label": "Ramnad Krishnan",
-          "note": "1918–1973 · vocal · student of Brinda, master of Begada and Sahana"
-        }
-      ]
-    },
-    "view_section": {
-      "label": "The tradition lives in two forms:",
-      "graph_note": "Guru-Shishya — each node a musician, each edge the teaching relationship through which music is transmitted in the aural-oral tradition",
-      "raga_note": "Mela-Janya — the modal world of Carnatic music: 72 parent scales give rise to ragas, but it is the composers",
-      "raga_note_composers": [
-        {
-          "id": "tyagaraja",
-          "label": "Tyagaraja"
-        },
-        {
-          "id": "muthuswami_dikshitar",
-          "label": "Muthuswami Dikshitar"
-        },
-        {
-          "id": "shyama_shastri",
-          "label": "Shyama Shastri"
-        }
-      ],
-      "raga_note_suffix": "who gave each raga its individual character through thousands of kritis composed over a lifetime of devotion"
+    "closing_note": {
+      "icon": "wheel",
+      "text": "Every play button ▶ opens the floating YouTube player at the bottom-right. Tap the Kharaharapriya chip above to climb the mela wheel — the wheel will rotate to centre the 22nd mela and Reetigowla will be highlighted as one of its children. The tradition has two faces: this panel is the raga face, the wheel is the modal face, and they speak to each other through every chip you tap.",
+      "chip": {
+        "kind": "raga",
+        "id": "kharaharapriya",
+        "label": "Kharaharapriya"
+      }
     }
   },
-  "mechanics_bullets": [
-    {
-      "id": "her_intro",
-      "type": "mechanics_bullet",
-      "text": "Cool blue chip with ↔ is a Hindustani equivalent — same swaras, different aesthetic. Click to hear the difference."
+  "musician_panel": {
+    "subject": {
+      "kind": "musician",
+      "id": "ramnad_krishnan"
+    },
+    "header_annotations": [
+      {
+        "position": "above_musician_chip",
+        "text": "This is the musician header. The ↥ 4 is the lineage depth — Ramnad Krishnan sits four generations downstream from the root of his bani. The ↗ opens his Wikipedia page. Every musician in the graph has a Wikipedia source — the curation rule is absolute."
+      },
+      {
+        "position": "beside_era_dot",
+        "text": "The coloured bar on the left of the chip encodes the era — golden-age, disseminator, contemporary, living. Ramnad Krishnan (1918–1973) belongs to the disseminator generation: the artists who carried the bani out of the gurukula and onto record."
+      },
+      {
+        "position": "above_filter",
+        "text": "The filter narrows the recordings list by raga, composition, or co-performer name. The sections below collapse and reform around your query without losing their tree shape."
+      }
+    ],
+    "sections": [
+      {
+        "kind": "lecdems",
+        "section_gloss": "Lectures about a musician — appreciations, oral histories, technical analyses of the artist’s style. These appear at the top of the panel because a musician is best entered through someone who has thought hard about them.",
+        "rows": [
+          {
+            "row_kind": "lecdem",
+            "data_refs": {
+              "lecdem_musician_id": "savita_narasimhan",
+              "lecdem_subject_musician_id": "ramnad_krishnan",
+              "lecdem_url": "https://youtu.be/taMZcVu0fh8",
+              "lecdem_video_id": "taMZcVu0fh8",
+              "lecdem_label": "On Ramnad Krishnan"
+            },
+            "annotation": "A lec-dem about Ramnad Krishnan is hosted on Savita Narasimhan’s profile but surfaced here because Ramnad Krishnan is its subject. This is how lecdems are indexed: by host and by subject, so they appear wherever their meaning lives. Begin a musician’s profile with the lecdems — let someone introduce you before the recordings begin."
+          }
+        ]
+      },
+      {
+        "kind": "concerts",
+        "section_gloss": "Full-evening recordings, grouped by the night they happened. A concert is its own unit of attention — a single bow, an arc of pieces chosen for that hall on that day. Open a concert and listen the way the audience listened.",
+        "rows": [
+          {
+            "row_kind": "concert",
+            "data_refs": {
+              "recording_id": "poonamallee_1965",
+              "video_id": "_rj8fHJiSLA"
+            },
+            "annotation": "Poonamallee 1965. Sung at Srinivasa Farms on the outskirts of Madras, on the occasion of Alathur Sivasubramania Iyer receiving the Sangita Kalanidhi. The chips below the title are the accompanying musicians — violin and mridangam — each itself a node in the graph: tap one to open that musician’s own panel. The piece-count tells you how many performances are nested inside; the ▶ opens the entire concert as a setlist in the floating player."
+          },
+          {
+            "row_kind": "concert",
+            "data_refs": {
+              "recording_id": "wesleyan_1967_ramnad_krishnan",
+              "video_id": "AnNb0zRmauM"
+            },
+            "annotation": "Wesleyan 1967. Recorded at Wesleyan University in the United States with T. Viswanathan on flute — one of the first Carnatic concerts on a Western university stage. Co-performers whose chips appear muted are present in the recording metadata but not yet linked to a node in our graph: a curation invitation. Every concert is also an invitation to widen the lineage."
+          }
+        ]
+      },
+      {
+        "kind": "recordings",
+        "section_gloss": "Every individual rendering Ramnad Krishnan has on record, grouped first by raga, then by composition, then by version (different concerts, different years, different moods). Read it like a tree: the raga is the room, the composition is the door, the version is the way he walked through it that evening.",
+        "rows": [
+          {
+            "row_kind": "recording_tree",
+            "data_refs": {
+              "raga_id": "begada",
+              "composition_id": "abhimanamennedu"
+            },
+            "annotation": "Ramnad Krishnan in Begada is said to be unparalleled. Abhimanamennedu — a kriti of Patnam Subramanya Iyer — appears here with each surviving version stacked underneath. Tap a version’s ▶ to hear that one specifically; tap the composition chip to open Begada’s full Bani Flow trail across every musician in the graph who has recorded in it."
+          },
+          {
+            "row_kind": "recording_tree",
+            "data_refs": {
+              "raga_id": "huseni",
+              "composition_id": "ilalo_priyudu"
+            },
+            "annotation": "A padam of Kshetrayya in Huseni — Telugu, slow, sensual, the genre Ramnad Krishnan inherited directly through T. Brinda and the Dhanammal bani. Where the kriti speaks of god, the padam speaks as the lover. Two ragas, two genres, the same voice — the recordings tree is how that range becomes visible."
+          }
+        ]
+      },
+      {
+        "kind": "compositions_empty",
+        "section_gloss": "This section lists compositions authored by this musician. Ramnad Krishnan was a performer of immense range but not a composer — so this section is empty. Open the panel of one of the Trinity instead — Tyagaraja, Muthuswami Dikshitar, or Shyama Shastri — and watch this section bloom into hundreds of works, each one a door into a raga.",
+        "trinity_chips": [
+          {
+            "kind": "musician",
+            "id": "tyagaraja",
+            "label": "Tyagaraja"
+          },
+          {
+            "kind": "musician",
+            "id": "muthuswami_dikshitar",
+            "label": "Muthuswami Dikshitar"
+          },
+          {
+            "kind": "musician",
+            "id": "shyama_shastri",
+            "label": "Shyama Shastri"
+          }
+        ]
+      }
+    ],
+    "closing_note": {
+      "icon": "graph",
+      "text": "Every chip you tap in this panel echoes across the canvas. Tap a raga chip and the mela wheel rotates to centre its parent mela. Tap a musician chip and the Guru-Shishya graph lights up the lineage — the chain of teachers and students through which this artist learnt and taught. The graph is sparse on purpose: only musicians connected by a documented relationship appear. The tradition is a forest, not a list."
     }
-  ],
-  "help_cards": [
-    {
-      "id": "her_card",
-      "type": "help_card",
-      "title": "Hindustani Equivalent Ragas",
-      "body": "Some Carnatic ragas share their swaras with a Hindustani counterpart that sounds entirely different. Look for the cool blue chip with ↔ — click it to hear the same swaras inhabited by another tradition."
-    }
-  ]
+  }
 }
