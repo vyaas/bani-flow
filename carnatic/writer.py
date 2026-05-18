@@ -88,7 +88,7 @@ VALID_TRADITIONS = {"carnatic", "hindustani"}
 PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "traditions"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
 PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes", "katapayadi"}
-PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language"}
+PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language", "notes", "composer_id", "raga_id"}
 
 
 # ADR-101: patchable fields for lecdem segments and recording performances
@@ -1754,6 +1754,7 @@ class CarnaticWriter:
         composition_id: str,
         field: str,
         value: Any,
+        ragas_path: Path | None = None,
         graph_path: Path | None = None,
     ) -> WriteResult:
         """Update a single field on an existing composition. ADR-097 §3."""
@@ -1764,6 +1765,15 @@ class CarnaticWriter:
                 f"field \"{field}\" is not patchable on a composition\n"
                 f"       Permitted fields: {', '.join(sorted(PATCHABLE_COMPOSITION_FIELDS))}"
             )
+        # FK validation for relational ID fields
+        if field == "composer_id" and value not in (None, "null", ""):
+            known_musician_ids = {n["id"] for n in _load_all_nodes(_default_musicians_path())}
+            if value not in known_musician_ids:
+                return _err(f"composer_id \"{value}\" does not exist in musicians[]")
+        if field == "raga_id" and value not in (None, "null", ""):
+            known_raga_ids = {r["id"] for r in _load_all_ragas(compositions_path, ragas_path)}
+            if value not in known_raga_ids:
+                return _err(f"raga_id \"{value}\" does not exist in ragas[]")
         comps = _load_all_compositions(compositions_path)
         comp = next((c for c in comps if c["id"] == composition_id), None)
         if comp is None:

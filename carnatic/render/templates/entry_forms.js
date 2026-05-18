@@ -2912,8 +2912,9 @@ function buildComposerForm() {
 
 // ── Composition form ──────────────────────────────────────────────────────────
 
-function buildCompositionForm() {
-  const win = createEntryWindow('Add Composition');
+function buildCompositionForm({ prefill = null } = {}) {
+  const isEdit = !!prefill;
+  const win = createEntryWindow(isEdit ? 'Edit Composition' : 'Add Composition');
   if (!win) return;
   const body = win.querySelector('.ew-body');
 
@@ -2926,7 +2927,7 @@ function buildCompositionForm() {
 
   const idRow = efIdRow('ef_comp_id', 'ef_comp_title', existingIds);
   body.appendChild(idRow);
-  titleInp.addEventListener('input', idRow._updateId);
+  if (!isEdit) titleInp.addEventListener('input', idRow._updateId);
 
   const composerOpts = (graphData.composers || []).map(c => ({ value: c.id, label: c.name || c.id }));
   const composerSel = efCombobox('ef_comp_composer', composerOpts, 'composer', win);
@@ -2949,17 +2950,87 @@ function buildCompositionForm() {
 
   body.appendChild(efSourceFields('ef_comp'));
 
+  // ── Pre-fill in edit mode ─────────────────────────────────────────────────
+  if (isEdit) {
+    titleInp.value = prefill.title || '';
+
+    // ID — read-only (node IDs are permanent per CLAUDE.md)
+    const idInput = idRow._idInput;
+    if (idInput) {
+      idInput.value    = prefill.id;
+      idInput.readOnly = true;
+      idInput.style.opacity = '0.6';
+      const editBtn = idRow.querySelector('.ef-id-edit-btn');
+      if (editBtn) editBtn.style.display = 'none';
+    }
+
+    // Composer combobox
+    if (prefill.composer_id) {
+      const composerObj = (graphData.composers || []).find(c => c.id === prefill.composer_id);
+      const composerLabel = composerObj ? (composerObj.name || prefill.composer_id) : prefill.composer_id;
+      const composerWrap = composerSel.parentElement || composerSel.closest('.ef-combobox-wrap') || composerSel;
+      if (typeof composerWrap.setValue === 'function') composerWrap.setValue(prefill.composer_id, composerLabel);
+      else if (typeof composerSel.setValue === 'function') composerSel.setValue(prefill.composer_id, composerLabel);
+    }
+
+    // Raga combobox
+    if (prefill.raga_id) {
+      const ragaObj = (graphData.ragas || []).find(r => r.id === prefill.raga_id);
+      const ragaLabel = ragaObj ? (ragaObj.name || prefill.raga_id) : prefill.raga_id;
+      const ragaWrap = ragaSel.parentElement || ragaSel.closest('.ef-combobox-wrap') || ragaSel;
+      if (typeof ragaWrap.setValue === 'function') ragaWrap.setValue(prefill.raga_id, ragaLabel);
+      else if (typeof ragaSel.setValue === 'function') ragaSel.setValue(prefill.raga_id, ragaLabel);
+    }
+
+    // Tala combobox
+    if (prefill.tala) {
+      const talaWrap = talaSel.parentElement || talaSel.closest('.ef-combobox-wrap') || talaSel;
+      if (typeof talaWrap.setValue === 'function') talaWrap.setValue(prefill.tala, prefill.tala);
+      else if (typeof talaSel.setValue === 'function') talaSel.setValue(prefill.tala, prefill.tala);
+    }
+
+    // Language — data stores lowercase (e.g. "telugu"); options use capitalised labels.
+    if (prefill.language) {
+      const cap = prefill.language.charAt(0).toUpperCase() + prefill.language.slice(1).toLowerCase();
+      langSel.value = cap;
+    }
+
+    // Notes
+    notesInp.value = prefill.notes || '';
+
+    // Source URL — first entry from sources[]
+    const srcUrlInp = win.querySelector('#ef_comp_source_url');
+    if (srcUrlInp) {
+      const src = prefill.sources && prefill.sources[0];
+      srcUrlInp.value = (typeof src === 'string') ? src : (src && src.url ? src.url : '');
+    }
+
+    // Hidden prefill-id for generateCompositionJson edit-mode detection
+    const prefillIdInp = document.createElement('input');
+    prefillIdInp.type  = 'hidden';
+    prefillIdInp.id    = 'ef_comp_prefill_id';
+    prefillIdInp.value = prefill.id;
+    body.appendChild(prefillIdInp);
+
+    // Edit-mode note
+    const editNote = document.createElement('p');
+    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+    editNote.textContent = 'Only changed fields are included in the patch.';
+    body.appendChild(editNote);
+  }
+
   // Footer
   const footer = win.querySelector('.ew-footer');
   const bundleBtn2 = document.createElement('button');
   bundleBtn2.className = 'ef-download-btn';
-  bundleBtn2.textContent = '+ Add to Patch';
+  bundleBtn2.textContent = isEdit ? 'Update Patch' : '+ Add to Patch';
   bundleBtn2.disabled = true;
 
   const dlBtn = document.createElement('button');
   dlBtn.className = 'ef-preview-btn';
   dlBtn.textContent = '⬇ Standalone JSON';
   dlBtn.disabled = true;
+  if (isEdit) dlBtn.style.display = 'none';
 
   const previewBtn = document.createElement('button');
   previewBtn.className = 'ef-preview-btn';
@@ -2976,11 +3047,19 @@ function buildCompositionForm() {
   function validate() {
     const title      = titleInp.value.trim();
     const id         = idRow._idInput.value.trim();
-    const composerId = composerSel.getValue();
-    const ragaId     = ragaSel.getValue();
-    const dupId      = existingIds.includes(id);
+    const composerId = composerSel.getValue ? composerSel.getValue() : composerSel.value;
+    const ragaId     = ragaSel.getValue     ? ragaSel.getValue()     : ragaSel.value;
+    const dupId      = !isEdit && existingIds.includes(id);
     const ok = title && id && composerId && ragaId && !dupId;
-    bundleBtn2.disabled = !ok;
+    // In edit mode, require at least one field to have actually changed.
+    let hasChanges = true;
+    if (isEdit && ok) {
+      try {
+        const patch = generateCompositionJson(win);
+        hasChanges = !!(patch.fields && Object.keys(patch.fields).length > 0);
+      } catch(e) { hasChanges = false; }
+    }
+    bundleBtn2.disabled = !(ok && hasChanges);
     dlBtn.disabled      = !ok;
     if (previewPre.style.display !== 'none') updatePreview();
   }
@@ -2994,6 +3073,9 @@ function buildCompositionForm() {
   win.addEventListener('input', validate);
   win.addEventListener('change', validate);
 
+  // Seed initial validation state (pre-filled fields don't fire 'input')
+  if (isEdit) validate();
+
   previewBtn.addEventListener('click', () => {
     const open = previewPre.style.display !== 'none';
     previewPre.style.display = open ? 'none' : 'block';
@@ -3004,7 +3086,7 @@ function buildCompositionForm() {
   bundleBtn2.addEventListener('click', () => {
     const obj = generateCompositionJson(win);
     addToBundle('compositions', obj);
-    showGenericSuccess(win, obj.id, 'bundle');
+    showGenericSuccess(win, obj.id || prefill && prefill.id, 'bundle');
   });
 
   dlBtn.addEventListener('click', () => {
@@ -3026,6 +3108,24 @@ function generateCompositionJson(win) {
   const notes      = win.querySelector('#ef_comp_notes')        ? win.querySelector('#ef_comp_notes').value.trim()        : '';
   const srcUrl     = win.querySelector('#ef_comp_source_url')   ? win.querySelector('#ef_comp_source_url').value.trim()   : '';
   // ADR-097 §4: source label/type inferred from URL host.
+
+  // Edit mode: detect via hidden prefill-id; produce patch op with only changed fields.
+  const prefillId = win.querySelector('#ef_comp_prefill_id') ? win.querySelector('#ef_comp_prefill_id').value : '';
+  if (prefillId) {
+    const orig = (graphData.compositions || []).find(c => c.id === prefillId) || {};
+    const fields = {};
+    if (title      !== (orig.title       || ''))  fields.title       = title;
+    if (composerId !== (orig.composer_id || ''))  fields.composer_id = composerId || null;
+    if (ragaId     !== (orig.raga_id     || ''))  fields.raga_id     = ragaId     || null;
+    if (tala       !== (orig.tala        || ''))  fields.tala        = tala       || null;
+    if (lang.toLowerCase() !== (orig.language || '').toLowerCase()) fields.language = lang || null;
+    if (notes      !== (orig.notes       || ''))  fields.notes       = notes      || null;
+    const origSrcUrl = orig.sources && orig.sources[0]
+      ? (typeof orig.sources[0] === 'string' ? orig.sources[0] : (orig.sources[0].url || ''))
+      : '';
+    if (srcUrl !== origSrcUrl) fields.sources = srcUrl ? [inferSource(srcUrl)] : [];
+    return { op: 'patch', id: prefillId, fields };
+  }
 
   return {
     id,
@@ -5697,6 +5797,10 @@ function openEditForm({ entityType, id, musicianId } = {}) {
     openEditRagaForm(id);
     return;
   }
+  if ((entityType === 'comp' || entityType === 'composition') && id) {
+    openEditCompositionForm(id);
+    return;
+  }
   if (entityType === 'recording' && id) {
     const rec = (graphData.recordings || []).find(r => r.id === id);
     if (rec && rec.sessions && rec.sessions.length) {
@@ -7129,6 +7233,16 @@ function openEditRagaForm(ragaId) {
     return;
   }
   buildRagaForm({ prefill: raga });
+}
+
+function openEditCompositionForm(compId) {
+  const comp = (graphData.compositions || []).find(c => c.id === compId);
+  if (!comp) {
+    // Fallback: open empty add form if composition not found
+    buildCompositionForm();
+    return;
+  }
+  buildCompositionForm({ prefill: comp });
 }
 
 // ── Add YouTube Recording for a specific Composition ─────────────────────────
