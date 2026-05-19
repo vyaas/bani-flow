@@ -12,7 +12,7 @@ function _setMediaSession(label, artist, iframe) {
   navigator.mediaSession.metadata = new MediaMetadata({
     title:  label  || '',
     artist: artist || '',
-    artwork: [{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+    artwork: [{ src: new URL('icons/icon-192.png', location.href).href, sizes: '192x192', type: 'image/png' }],
   });
   const postCmd = (func) => () => {
     try { iframe.contentWindow?.postMessage(
@@ -22,6 +22,34 @@ function _setMediaSession(label, artist, iframe) {
   navigator.mediaSession.setActionHandler('play',  postCmd('playVideo'));
   navigator.mediaSession.setActionHandler('pause', postCmd('pauseVideo'));
   navigator.mediaSession.setActionHandler('stop',  postCmd('stopVideo'));
+}
+
+// Re-claim mediaSession whenever YouTube's iframe overrides it.
+// YouTube sets its own mediaSession from the youtube.com origin the moment
+// playback starts, which redirects the Android notification back to Chrome.
+// With enablejsapi=1 the iframe sends postMessage state-change events here;
+// we listen for playerState=1 (playing) and re-assert after a short delay.
+function _initYTMessageListener() {
+  if (window._baniYTMsgBound) return;
+  window._baniYTMsgBound = true;
+  window.addEventListener('message', (e) => {
+    if (typeof e.data !== 'string') return;
+    let msg;
+    try { msg = JSON.parse(e.data); } catch (_) { return; }
+    // playerState 1 = playing; arrives either as info.playerState or onStateChange info
+    const state = msg?.info?.playerState ?? (msg?.event === 'onStateChange' ? msg?.info : null);
+    if (state !== 1) return;
+    // Match the event to its player instance by iframe contentWindow
+    let target = null;
+    for (const [, inst] of playerRegistry) {
+      if (inst.iframe && inst.iframe.contentWindow === e.source) { target = inst; break; }
+    }
+    if (!target) return;
+    const label  = target.titleEl?.textContent?.trim() || target.meta?.displayTitle || '';
+    const artist = target.meta?.artistName || '';
+    // Short delay so we override YouTube's claim, not the other way round
+    setTimeout(() => _setMediaSession(label, artist, target.iframe), 150);
+  });
 }
 
 function _clearMediaSession() {
@@ -3111,4 +3139,6 @@ function _updateMiniDots(mp) {
 
   mp.strip.querySelector('.mp-mini-info').appendChild(dots);
 }
+
+_initYTMessageListener();
 
