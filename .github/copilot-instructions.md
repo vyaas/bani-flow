@@ -1,10 +1,13 @@
 This project uses a multi-agent protocol defined in CLAUDE.md at the repo root.
-When the user invokes #Librarian, #Architect, #Coder, #Orchestrator, or #GitFiend,
+When the user invokes #Librarian, #Architect, #Coder, #Auditor, #Tester, #Diagrammer, #Orchestrator, or #GitFiend,
 adopt that agent's persona, constraints, and commit protocol exactly as defined there.
+
+Each agent also has a dedicated `.agent.md` file in `.github/agents/` for use via the VS Code Copilot agent picker.
+The agent files and this file are derived from CLAUDE.md — CLAUDE.md is the single source of truth.
 
 # Bani Flow — Copilot Workspace Instructions
 
-Carnatic guru-shishya knowledge graph. Single-page app rendered from structured JSON into a self-contained `graph.html`. Four specialist agents with strict domain boundaries.
+Carnatic guru-shishya knowledge graph. Single-page app rendered from structured JSON into a self-contained `graph.html`. Eight specialist agents with strict domain boundaries.
 
 **Read first**: [CLAUDE.md](../CLAUDE.md) (agent personas, hard rules, commit protocol) and [carnatic/.clinerules](../carnatic/.clinerules) (living operating manual, open questions, learning logs).
 
@@ -17,6 +20,9 @@ Carnatic guru-shishya knowledge graph. Single-page app rendered from structured 
 | Librarian | `carnatic/data/**/*.json` | Code files (`.py`, `.js`, `.html`) |
 | Carnatic Coder | `carnatic/**/*.py`, `carnatic/render/templates/**`, `.github/**` | JSON data files directly |
 | Graph Architect | `plans/ADR-*.md` | Data files, code files |
+| Code Auditor | `plans/AUDIT-*.md` | Source files of any kind |
+| Test Engineer | `carnatic/tests/**` | Source code, JSON data files |
+| Diagrammer | `plans/DIAGRAM-*.md` | Source files of any kind |
 | Orchestrator | Delegation only | Implementation |
 
 When in doubt about which agent to invoke, read the CLAUDE.md Orchestrator section.
