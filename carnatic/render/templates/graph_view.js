@@ -1174,7 +1174,9 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
-  // ADR-086: subject loaded → dismiss empty-panel tutorial
+  // ADR-086: subject loaded → dismiss empty-panel tutorial.
+  // selectNode is only reached via direct canvas tap or orientToNode — both
+  // intentional navigations that should always dismiss the tutorial.
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
@@ -1270,6 +1272,8 @@ function _openMusicianPanelForTransit(transitId) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
+  // Transit panel: reached only via orientToNode or direct interaction, never
+  // from help-mode chips.  Always dismiss the tutorial.
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 

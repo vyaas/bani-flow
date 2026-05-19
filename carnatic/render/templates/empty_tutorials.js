@@ -67,23 +67,79 @@
   }
 
   function _onComposition(id, opts) {
-    if (opts && opts.previewOnly) {
-      _previewWheel('comp', id);
-      return;
-    }
+    // Chip navigation from help panels is disabled for consistency — clicking
+    // out of the tutorial would overwrite it without a clear way back.
+    const _inHelp = typeof window.isPanelHelpActive === 'function' && window.isPanelHelpActive();
+    if (_inHelp) return;
+    if (opts && opts.previewOnly) { _previewWheel('comp', id); return; }
     if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', id);
   }
 
   function _onRaga(id, opts) {
-    if (opts && opts.previewOnly) {
-      _previewWheel('raga', id);
-      return;
-    }
+    // Chip navigation from help panels is disabled for consistency — clicking
+    // out of the tutorial would overwrite it without a clear way back.
+    const _inHelp = typeof window.isPanelHelpActive === 'function' && window.isPanelHelpActive();
+    if (_inHelp) return;
+    if (opts && opts.previewOnly) { _previewWheel('raga', id); return; }
     if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', id);
   }
 
   function _orientToMusician(nodeId) {
+    return _orientToMusicianWithMode(nodeId, { preserveHelpPanel: false });
+  }
+
+  function _focusMusicianInGraphOnly(nodeId) {
     if (!nodeId) return;
+    const _wasInGraph = typeof currentView !== 'undefined' && currentView === 'graph';
+
+    function _doFocus() {
+      if (typeof cy === 'undefined') return;
+      const n = cy.getElementById(nodeId);
+      if (!n || !n.length) {
+        // Transit node — highlight the transitive edge(s) that contain it
+        const transitEdges = cy.edges('[kind = "transitive"]').filter(function(e) {
+          return (e.data('transit') || []).indexOf(nodeId) >= 0;
+        });
+        if (transitEdges.length > 0) {
+          cy.elements().addClass('faded');
+          transitEdges.removeClass('faded').addClass('highlighted');
+          transitEdges.connectedNodes().removeClass('faded');
+          cy.animate({ fit: { eles: transitEdges.connectedNodes(), padding: 80 },
+                       duration: 500, easing: 'ease-in-out-cubic' });
+        }
+        return;
+      }
+      if (typeof focusNode === 'function') {
+        focusNode(n);
+      } else {
+        cy.elements().addClass('faded');
+        n.removeClass('faded');
+        n.connectedEdges().removeClass('faded').addClass('highlighted');
+        n.connectedEdges().connectedNodes().removeClass('faded');
+        cy.animate({ fit: { eles: n.closedNeighborhood(), padding: 80 }, duration: 350 });
+      }
+    }
+
+    if (_wasInGraph) {
+      _doFocus();
+    } else {
+      if (typeof switchView === 'function') switchView('graph');
+      // Defer focus until after the Trinity preset layout completes (~800 ms).
+      // layoutstop's own cy.fit() would override our neighbourhood zoom if we
+      // called focusNode immediately.
+      if (typeof cy !== 'undefined') {
+        cy.one('layoutstop', function() { setTimeout(_doFocus, 30); });
+      }
+    }
+  }
+
+  function _orientToMusicianWithMode(nodeId, opts) {
+    if (!nodeId) return;
+    const preserveHelpPanel = !!(opts && opts.preserveHelpPanel);
+    if (preserveHelpPanel) {
+      _focusMusicianInGraphOnly(nodeId);
+      return;
+    }
     if (typeof switchView === 'function' &&
         typeof currentView !== 'undefined' &&
         currentView !== 'graph') {
@@ -122,7 +178,9 @@
   }
 
   function _onMusician(id) {
-    _orientToMusician(id);
+    // Musician chip navigation from help panels is disabled — the chip-faded /
+    // faded dual-opacity conflict cannot be resolved without closing the tutorial.
+    // Raga and composition chips use _previewWheel and work correctly.
   }
 
   function _onComposer(composerId) {
@@ -131,7 +189,7 @@
       ? composers.find(c => c.id === composerId)
       : null;
     if (composer && composer.musician_node_id) {
-      _orientToMusician(composer.musician_node_id);
+      _orientToMusicianWithMode(composer.musician_node_id, { preserveHelpPanel: true });
     }
   }
 
@@ -1464,6 +1522,11 @@
   // already know they're about to write into the panel.
   window.dismissPanelHelp = function (slot) {
     if (_helpState[slot]) _exitHelp(slot);
+  };
+
+  window.isPanelHelpActive = function (slot) {
+    if (slot === 'bani' || slot === 'musician') return !!_helpState[slot];
+    return !!_helpState.bani || !!_helpState.musician;
   };
 
   // ── Wire preface chips: era tint + background navigation ─────────────────
