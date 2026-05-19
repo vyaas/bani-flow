@@ -1905,16 +1905,34 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     row1.className = 'rec-row1';
 
     const ragaObj = seg.raga_id ? ragas.find(r => r.id === seg.raga_id) : null;
-    const talaPart = seg.tala || '';
-    const segLabel = seg.display_title || (ragaObj ? ragaObj.name : null) || seg.raga_id || seg.kind || 'Segment';
+    const segLabel = (ragaObj ? ragaObj.name : null) || seg.raga_id || seg.composition_id || '';
 
-    // Row 1: composition chip (navigable) if tagged, otherwise plain label
+    // Row 1: subject chips only — raga then composition, no form-type labels
+    if (ragaObj) {
+      const ragaChip = document.createElement('span');
+      ragaChip.className = 'raga-chip';
+      ragaChip.textContent = ragaObj.name;
+      ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
+      ragaChip.addEventListener('click', e => {
+        e.stopPropagation();
+        ragaChip.classList.add('chip-tapped');
+        setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
+        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', seg.raga_id);
+      });
+      row1.appendChild(ragaChip);
+    } else if (seg.raga_id) {
+      const ragaChip = document.createElement('span');
+      ragaChip.className = 'raga-chip';
+      ragaChip.textContent = seg.raga_id;
+      row1.appendChild(ragaChip);
+    }
+
     if (seg.composition_id) {
       const comp = (typeof compositions !== 'undefined' ? compositions : []).find(c => c.id === seg.composition_id);
       const compChip = document.createElement('span');
       compChip.className = 'comp-chip';
-      compChip.textContent = comp ? comp.title : (seg.display_title || '');
-      compChip.title = (comp ? comp.title : (seg.display_title || '')) + ' — Explore in Bani Flow';
+      compChip.textContent = comp ? comp.title : seg.composition_id;
+      compChip.title = (comp ? comp.title : seg.composition_id) + ' — Explore in Bani Flow';
       compChip.addEventListener('click', e => {
         e.stopPropagation();
         compChip.classList.add('chip-tapped');
@@ -1922,11 +1940,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
         if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', seg.composition_id);
       });
       row1.appendChild(compChip);
-    } else {
-      const titleEl = document.createElement('span');
-      titleEl.className = 'yt-label-chip';
-      titleEl.textContent = seg.display_title || seg.kind || 'Segment';
-      row1.appendChild(titleEl);
     }
 
     const playBtn = document.createElement('button');
@@ -1966,47 +1979,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     row1.appendChild(playBtn);
 
     li.appendChild(row1);
-
-    // Row 2: raga chip + tala + composer chip — only when at least one is present
-    if (ragaObj || seg.raga_id || talaPart || seg.composition_id) {
-      const row2 = document.createElement('div');
-      row2.className = 'rec-row2';
-      const metaSpan = document.createElement('span');
-      metaSpan.className = 'rec-meta';
-
-      if (ragaObj) {
-        const ragaChip = document.createElement('span');
-        ragaChip.className = 'raga-chip';
-        ragaChip.textContent = ragaObj.name;
-        ragaChip.title = 'Explore ' + ragaObj.name + ' in Bani Flow';
-        ragaChip.addEventListener('click', e => {
-          e.stopPropagation();
-          ragaChip.classList.add('chip-tapped');
-          setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
-          if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', seg.raga_id);
-        });
-        if (talaPart) {
-          const ragaTalaDiv = document.createElement('div');
-          ragaTalaDiv.className = 'rec-raga-tala';
-          ragaTalaDiv.appendChild(ragaChip);
-          const talaSpan = document.createElement('span');
-          talaSpan.className = 'trail-tala';
-          talaSpan.textContent = formatTala(talaPart);
-          ragaTalaDiv.appendChild(talaSpan);
-          metaSpan.appendChild(ragaTalaDiv);
-        } else {
-          metaSpan.appendChild(ragaChip);
-        }
-      } else if (seg.raga_id || talaPart) {
-        metaSpan.textContent = [(seg.raga_id), formatTala(talaPart)].filter(Boolean).join(' · ');
-      }
-
-      const composerChip = buildComposerChip(seg.composition_id);
-      if (composerChip) metaSpan.appendChild(composerChip);
-
-      row2.appendChild(metaSpan);
-      li.appendChild(row2);
-    }
 
     segList.appendChild(li);
   });

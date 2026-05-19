@@ -5505,10 +5505,24 @@ function buildLecdemEditForm(ref, nodeId) {
 
     segRows.appendChild(card);
     hInp.focus();
+    return card;
   }
 
-  // Pre-fill existing segments as display cards
-  (ref.segments || []).forEach(seg => addSegCard(seg));
+  // Pre-fill existing segments as read-only reference cards (not staged for patch)
+  (ref.segments || []).forEach(seg => {
+    const card = addSegCard(seg);
+    card._isOriginal = true;
+    card._hInp.readOnly = true;
+    card._mInp.readOnly = true;
+    card._sInp.readOnly = true;
+    card.style.opacity = '0.55';
+    // Hide the subject combo so user can't add subjects to an existing segment
+    const comboWrap = card.querySelector('.ef-seg-card > div > div:last-child');
+    if (comboWrap) comboWrap.style.display = 'none';
+    // Update remove button title to clarify it only hides from view
+    const remBtnEl = card.querySelector('button[title="Remove segment"]');
+    if (remBtnEl) remBtnEl.title = 'Hide from view (does not remove from data)';
+  });
 
   addSegBtn.addEventListener('click', () => addSegCard(null));
 
@@ -5538,6 +5552,7 @@ function buildLecdemEditForm(ref, nodeId) {
   function collectNewSegments() {
     const segs = [];
     segRows.querySelectorAll('.ef-seg-card').forEach(card => {
+      if (card._isOriginal) return;  // skip pre-filled existing segments
       const h = parseInt(card._hInp.value, 10) || 0;
       const m = parseInt(card._mInp.value, 10) || 0;
       const s = parseInt(card._sInp.value, 10) || 0;
