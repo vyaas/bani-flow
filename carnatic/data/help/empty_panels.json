@@ -5,7 +5,7 @@
     "header_annotations": [
       {
         "position": "above_subject_btn",
-        "text": "Bani Flow panels open with a raga (or composition). The chip above is {raga:reetigowla}, a janya of the 22nd mela {raga:kharaharapriya}. The ◈ 25 beside it opens the mela-family popup: the mela, 24 sibling janyas, and any Hindustani equivalents — each tappable to pivot the panel. For a composition subject, the counter shows the number of musicians who have recorded it; the popup shows the raga, tala, and composer."
+        "text": "The \"Bani Flow\" panel opens with a raga (or composition). The chip above is {raga:reetigowla}, a janya of the 22nd mela {raga:kharaharapriya}. The ◈ 25 beside it opens the mela-family popup: the mela, 24 sibling janyas, and any Hindustani equivalents — each tappable to pivot the panel. For a composition subject, the counter shows the number of musicians who have recorded it; the popup shows the raga, tala, and composer."
       },
       {
         "position": "above_filter",
@@ -20,12 +20,12 @@
           {
             "row_kind": "lecdem",
             "data_refs": { "lecdem_musician_id": "david_shulman", "lecdem_video_id": "yjbAbMu8mzY", "lecdem_url": "https://youtu.be/yjbAbMu8mzY", "lecdem_label": "How to Put Together a Goddess out of Musical Scales" },
-            "annotation": "Meaning and context: {musician:david_shulman} is a Sanskritist and Musicologist ; his lecture reads {raga:reetigowla} as Dikshitar reads it — as a vessel for a goddess. Hear what the raga means (meant?) before you hear what it sounds like."
+            "annotation": "Meaning and context: {musician:david_shulman} is a Sanskritist and Musicologist ; his lecture reads {raga:reetigowla} as Dikshitar possibly read it — as a vessel for a goddess. Hear what the raga means (meant?) before you hear what it sounds like."
           },
           {
             "row_kind": "lecdem",
             "data_refs": { "lecdem_musician_id": "seetha_rajan", "lecdem_video_id": "oG6RRKJpTqQ", "lecdem_url": "https://www.youtube.com/watch?v=oG6RRKJpTqQ", "lecdem_label": "A Musical Exploration — Abhogi, Sriranjani, Ritigaula, Kanada and more" },
-            "annotation": "Relationship to other ragas: {musician:seetha_rajan} sits {raga:reetigowla} beside its neighbours — Abhogi, Sriranjani, Kanada — and shows how a swara of difference makes a world of difference. The clearest possible answer to 'how do these ragas, which share so many notes, not sound the same?'"
+            "annotation": "Relationship to other ragas: {musician:seetha_rajan} sits {raga:reetigowla} beside its neighbours — {raga:abhogi}, {raga:sriranjani}, {raga:kaanada} — and shows how a swara of difference makes a world of difference. The clearest possible answer to 'how do these ragas, which share so many notes, not sound the same?'"
           },
           {
             "row_kind": "lecdem",
@@ -41,13 +41,13 @@
           {
             "row_kind": "composition_tree",
             "data_refs": { "composition_id": "janani_ninnuvina", "raga_id": "reetigowla", "composer_id": "subbaraya_sastri" },
-            "annotation": "The composition row carries — top to bottom — the composition ({comp:janani_ninnuvina}), its composer ({musician:subbaraya_sastri}, dotted-outline), and the musicians who have recorded it in {raga:reetigowla} (era-tinted). The play button ▶ on a musician row launches that specific rendering. The composer chip is itself navigable — tap it to see everything Subbaraya Sastri ever wrote."
+            "annotation": "The composition row carries — top to bottom — the composition ({comp:janani_ninnuvina}), its composer ({musician:subbaraya_sastri}), and the musicians who have recorded it in {raga:reetigowla}. The play button ▶ on a musician row launches that specific rendering. The composer chip is itself navigable — tap it to see everything Subbaraya Sastri ever wrote."
           }
         ]
       },
       {
         "kind": "misc",
-        "section_gloss": "Material that doesn't fit a composition — alapana sketches, ragam-tanam, untitled fragments. The unsorted shelf of the tradition: often where the most uninhibited listening lives.",
+        "section_gloss": "Material that doesn't fit a composition — alapana sketches, Ragam-Tanam-Pallavis (RTPs), untitled fragments. The unsorted shelf of the tradition: often where the most uninhibited listening lives.",
         "rows": [
           {
             "row_kind": "misc_entry",
@@ -67,7 +67,7 @@
     "header_annotations": [
       {
         "position": "beside_era_dot",
-        "text": "The chip above is {musician:ramnad_krishnan}. The coloured bar on its left encodes the era — six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. Ramnad Krishnan (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record. The ↥ 4 reads as 'four generations downstream from the root of his bani'. Every musician in the graph cites a Wikipedia source — the curation rule is absolute."
+        "text": "The chip above is {musician:ramnad_krishnan}. The colour encodes the era — six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. Ramnad Krishnan (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record. The ↥ 4 reads as 'four generations downstream from the root of his bani'."
       },
       {
         "position": "above_filter",
@@ -98,7 +98,7 @@
           {
             "row_kind": "concert",
             "data_refs": { "recording_id": "wesleyan_1967_ramnad_krishnan", "video_id": "AnNb0zRmauM" },
-            "annotation": "Wesleyan 1967. Recorded at Wesleyan University in the United States with T. Viswanathan on flute — one of the first Carnatic concerts on a Western university stage. Co-performers whose chips appear muted are present in the recording metadata but not yet linked to a node in our graph: a curation invitation. Every concert is also an invitation to widen the lineage."
+            "annotation": "Wesleyan 1967: Recorded at Wesleyan University in the United States with T. Viswanathan on flute — one of the first Carnatic concerts on a Western university stage. Co-performers whose chips appear muted are present in the recording metadata but not yet linked to a node in our graph: a curation invitation. Every concert is also an invitation to widen the lineage."
           }
         ]
       },
