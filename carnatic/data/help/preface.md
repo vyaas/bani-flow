@@ -11,16 +11,12 @@ Whose sonic forms are myriad
 And Oceanic in depth
 Revealed to those who _listen_
 And let their ears be _haunted_
-A struggle in this tyranny of images
-And algorithm driven habit forming
-O is there any hope for _listening_?
-Even in Mylapore?
 
 For this is **Art Music**
 > _Art is a way to make feelings happen_
 Brian Eno called it!
 Every Raga is a vessel of emotion
-Every rendition an Art object
+Every rendition is an Art object
 <cr>Reetigowla<cr> summons terror and hope in a world remote from mine
 <cr>Surutti<cr> paints a heron disappearing its serene frame into an orange sunrise
 <cr>Khamas<cr> evokes deep and enduring sky blue joy
@@ -44,21 +40,21 @@ From Guru to Shishya to Guru
 This is how _Bani_ flows
 Mutated by aesthetic preferences
 Survived by the test of Time
-Bejewelled by the Genius of the Trinity
-Carnatic Music's own Cambrian Explosion
+Bejewelled by the Trinity
+Carnatic Music's own Cambrian Explosion of genius
 <cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, <cm>Shyama Shastri<cm>
 
 For this is an **Post-notational Music**
 Whose essences cannot be grasped textually
-For the sound does not travel by page
+The sound does not travel by page
 But by _Raga Bhava_
 Never for the eyes, only for the ears
-For this Music is a masterclass in _emotional abstraction_
+For here is a masterclass in _emotional abstraction_
 Whose isomorphisms do not emerge from symbols
 They emerge from _emotions_
 
 For this is emphatically **NOT Pop Music**
-It does not exist to please you
+It does not seek to please you
 It aspires to a higher Truth
 It does not try to be Beautiful
 But instead shines a brilliant light 
@@ -69,22 +65,26 @@ Along the principle axes of Carnatic Music
 By <cm>Musician<cm>, <cc>Composition<cc>, and <cr>Raga<cr>
 Resonate in the Sruti soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Brinda<cm>
 Revel in the profound and subtle differences between <cr>Kalyani<cr> and <cr>Shankarabharanam<cr>
-Draw inspiration from the passionate lecture-demonstrations of <cm>TM Krishna<cm> and <cm>Sriram Parasuram<cm>
+Get inspired by the passionate lecture-demonstrations of <cm>TM Krishna<cm> and <cm>Sriram Parasuram<cm>
 
 This is not an evangalism
 Singing, playing, performing will all thrive
 Make no mistake
 Carnatic Music is _not_ endangered
+Mylapore and Cleveland will see to that!
 
-But listening _is_
+But listening _is_ endangered
+In this tyranny of images
+And algorithm driven habit forming
+_Even in Mylapore_
+_Especially in Cleveland_
 
 Bani-flow's mission is simple:
 > Provide a no nonsense navigable interface to explore Carnatic Music
 > Enable frictionless immersion in its abstractions
 
 So that you (and I) can simply _listen_
-So that the remaining friction
-Is only in our minds
+So that the remaining friction is only in our minds
 Which I can do nothing about
 Except remind you (and I) to just _listen_
 
