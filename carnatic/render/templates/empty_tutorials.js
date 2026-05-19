@@ -1571,6 +1571,12 @@
     if (baniSubject && baniSubject.id && typeof triggerBaniSearch === 'function') {
       try { triggerBaniSearch(baniSubject.kind || 'raga', baniSubject.id); } catch (_) {}
     }
+    // Clear the bani search input — help panels should open with an empty bar
+    // so the user is invited to type rather than having to backspace a preset value.
+    // triggerBaniSearch already called applyBaniFilter(id) so the trail is fully
+    // populated; the input value is cosmetic labelling only.
+    const _baniInput = document.getElementById('bani-search-input');
+    if (_baniInput) _baniInput.value = '';
     // Musician subject (ramnad_krishnan by default). Use selectNode
     // directly rather than _orientToMusician — the latter forces a
     // switchView('graph'), but the default boot view is the raga wheel
