@@ -1635,35 +1635,10 @@ function triggerBaniSearch(type, id, fromHistory = false) {
   _currentBaniSubject = { type, id };
   _updateBaniNavButtons();
 
-  const searchInput = document.getElementById('bani-search-input');
-  if (type === 'perf') {
-    // Single structured performance — label from perfToPerf lookup
-    const perfRefs = perfToPerf[id] || [];
-    const ref = perfRefs[0] || null;
-    if (searchInput && ref) {
-      searchInput.value = '\u25b6 ' + (ref.display_title || ref.title || id);
-    }
-  } else if (type === 'yt') {
-    // YouTube-only entry — derive short title from track label
-    const ytVid = id.split('::')[0];
-    let ytLabel = '';
-    ytLabel = resolveYtLabel(ytVid);
-    const ytShort = ytLabel
-      ? (ytLabel.indexOf(' \u00b7 ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' \u00b7 ')).trim()
-        : ytLabel.indexOf(' - ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' - ')).trim()
-        : ytLabel)
-      : id;
-    if (searchInput) searchInput.value = '\u25b6 ' + ytShort;
-  } else {
-    const entity = type === 'raga'
-      ? ragas.find(r => r.id === id)
-      : compositions.find(c => c.id === id);
-    if (searchInput && entity) {
-      const label = entity.name || entity.title || id;
-      const prefix = type === 'raga' ? '\u25c8 ' : '\u266a ';
-      searchInput.value = prefix + label;
-    }
-  }
+  // The search input is a pure input widget — the current subject is shown
+  // in #bani-subject-name (populated by applyBaniFilter below). Writing a
+  // label back here would overwrite whatever the user typed and make every
+  // chip click pollute the search bar. See AUDIT-002.
   applyBaniFilter(type, id);
 
   // ADR-042: open the Bani Flow (left) drawer on mobile so the user sees
