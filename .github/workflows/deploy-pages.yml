@@ -42,9 +42,13 @@ jobs:
 
       - name: Prepare Pages artifact
         run: |
-          mkdir -p _site
+          mkdir -p _site/icons
           cp carnatic/graph.html _site/index.html
           cp assets/preview.png _site/preview.png
+          cp assets/manifest.webmanifest _site/manifest.webmanifest
+          cp assets/sw.js _site/sw.js
+          cp assets/icons/icon-192.png _site/icons/icon-192.png
+          cp assets/icons/icon-512.png _site/icons/icon-512.png
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

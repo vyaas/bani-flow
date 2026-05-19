@@ -1,0 +1,29 @@
+{
+  "name": "Bani Flow — Carnatic Music Explorer",
+  "short_name": "Bani Flow",
+  "description": "A navigable knowledge graph of the Carnatic guru-shishya tradition. Explore musicians, ragas, and compositions by lineage.",
+  "start_url": "/bani-flow/",
+  "scope": "/bani-flow/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1d2021",
+  "background_color": "#282828",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
