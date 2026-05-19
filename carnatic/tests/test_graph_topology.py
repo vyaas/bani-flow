@@ -49,6 +49,21 @@ _KNOWN_ISOLATES: frozenset[str] = frozenset({
     "nikhil_banerjee",       # Sitar; Hindustani; no recordings yet
     "hariprasad_chaurasia",  # Bansuri; Hindustani; no recordings yet
     "ajoy_chakrabarty",      # Vocal; Hindustani; no recordings yet
+    # ── Performer data gaps: known musicians with no youtube/recordings added yet
+    "kumaresh_rajagopalan",  # Violin; contemporary; prominent performer — Librarian to add recordings
+    "rs_jayalakshmi",        # Veena; living_pillars era — Librarian to add recordings
+    # ── Composition gaps: poet-saints whose works are Carnatic repertoire but
+    #    no compositions referencing them have been added yet
+    "thayumanavar",          # Tamil saint-poet 1705; kirtanams in repertoire — Librarian to add compositions
+    "basava",                # Lingayat saint 1131; vachanas sung in concerts — Librarian to add compositions
+    "perumal_murugan",       # Tamil poet b.1966; poems set to music — Librarian to add compositions or verify significance
+    # ── Thin nodes: no birth year, no recordings, significance unverified
+    "madurai_srinivasa_iyengar",       # Vocal; golden_age; no birth year — Librarian to verify and add data
+    "t_kesavulu",                      # Violin; golden_age; no birth year — Librarian to verify and add data
+    "dv_gundappa",                     # Kannada poet/philosopher; not a musician per se — Librarian to verify significance
+    # ── Unresolved open questions (see carnatic/.clinerules)
+    "nagapatnam_veeraswamy_pillai",    # Vocal; bridge era; no Wikipedia article found — review for removal
+    "tarangampadi_panchanada_iyer",    # No era/instrument/born; completely sparse — review for removal
 })
 
 
@@ -58,6 +73,7 @@ def test_no_completely_isolated_nodes(graph: CarnaticGraph) -> None:
       - a guru-shishya edge (source or target)
       - a structured recording (primary_musician_ids)
       - a legacy youtube[] entry on their own node
+      - a composition's composer_id (ADR-110: composers are musicians)
 
     Pure isolates (none of the above) are a data quality signal.
     Nodes that only have youtube[] entries are considered connected during
@@ -86,7 +102,15 @@ def test_no_completely_isolated_nodes(graph: CarnaticGraph) -> None:
         if node.get("youtube"):
             youtube_nodes.add(node["id"])
 
-    connected = edge_nodes | recording_nodes | youtube_nodes
+    # ADR-110: composers are musicians; a composer_id reference on any composition
+    # counts as a valid connection — these nodes are not isolated.
+    composer_nodes: set[str] = set()
+    for comp in graph.get_all_compositions():
+        cid = comp.get("composer_id")
+        if cid:
+            composer_nodes.add(cid)
+
+    connected = edge_nodes | recording_nodes | youtube_nodes | composer_nodes
 
     unexpected_isolates = [
         node["id"]
@@ -94,7 +118,7 @@ def test_no_completely_isolated_nodes(graph: CarnaticGraph) -> None:
         if node["id"] not in connected and node["id"] not in _KNOWN_ISOLATES
     ]
     assert not unexpected_isolates, (
-        f"New isolated nodes detected (no edges, no recordings, no youtube[]): "
+        f"New isolated nodes detected (no edges, no recordings, no youtube[], no composer_id): "
         f"{unexpected_isolates}\n"
         f"If intentional, add them to _KNOWN_ISOLATES in test_graph_topology.py."
     )
