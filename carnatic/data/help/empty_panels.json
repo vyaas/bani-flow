@@ -67,7 +67,7 @@
     "header_annotations": [
       {
         "position": "beside_era_dot",
-        "text": "The chip above is {musician:ramnad_krishnan}. The colour encodes the era — six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. Ramnad Krishnan (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record. The ↥4 is the sum of all guru-shishya relations and is in indication of connectedness in our database."
+        "text": "The chip above is {musician:ramnad_krishnan}. The colour encodes the era — six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. Ramnad Krishnan (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record. The ↥4 is the sum of all guru-shishya relations and is an indication of connectedness in our database."
       },
       {
         "position": "above_filter",
