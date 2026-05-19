@@ -4,9 +4,37 @@ const playerRegistry = new Map();
 let topZ = 800;
 let spawnCount = 0;
 
+// ── Media Session API — claim the notification for the PWA activity ───────────
+// Without this, the Android mini-player notification is owned by the Chrome
+// browser activity, so tapping it returns to Chrome instead of the installed PWA.
+function _setMediaSession(label, artist, iframe) {
+  if (!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title:  label  || '',
+    artist: artist || '',
+    artwork: [{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+  });
+  const postCmd = (func) => () => {
+    try { iframe.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func, args: [] }), '*');
+    } catch (_) {}
+  };
+  navigator.mediaSession.setActionHandler('play',  postCmd('playVideo'));
+  navigator.mediaSession.setActionHandler('pause', postCmd('pauseVideo'));
+  navigator.mediaSession.setActionHandler('stop',  postCmd('stopVideo'));
+}
+
+function _clearMediaSession() {
+  if (!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = null;
+  ['play', 'pause', 'stop'].forEach(a => {
+    try { navigator.mediaSession.setActionHandler(a, null); } catch (_) {}
+  });
+}
+
 function ytEmbedUrl(vid, startSeconds) {
   const t = (startSeconds && startSeconds > 0) ? `&start=${startSeconds}` : '';
-  return `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0${t}`;
+  return `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0&enablejsapi=1${t}`;
 }
 
 function ytDirectUrl(vid, startSeconds) {
@@ -608,6 +636,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     instance.iframe.src = '';
     el.remove();
     playerRegistry.delete(vid);
+    _clearMediaSession();
     refreshPlayingIndicators();
   });
 
@@ -668,6 +697,7 @@ function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTit
       existing.iframe.src = '';
       existing.el.remove();
       playerRegistry.delete(vid);
+      _clearMediaSession();
       refreshPlayingIndicators();
     }
     return;
@@ -678,6 +708,7 @@ function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTit
   } else {
     const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
     playerRegistry.set(vid, p);
+    _setMediaSession(trackLabel, artistName, p.iframe);
     refreshPlayingIndicators();
     // Position player next to the Wheel Detail Panel when a raga context is present.
     if (meta && meta.ragaId) {
@@ -2943,6 +2974,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     el: mp.el, iframe: mp.iframe, titleEl: mp.bar.querySelector('.mp-title'),
     tracklistEl: mp.tracklistDiv, vid, _isMobileSingleton: true,
   });
+  _setMediaSession(trackLabel, artistName, iframe);
   refreshPlayingIndicators();
 }
 
@@ -3009,6 +3041,7 @@ function _closeMobilePlayer() {
   for (const [key, val] of playerRegistry) {
     if (val._isMobileSingleton) { playerRegistry.delete(key); break; }
   }
+  _clearMediaSession();
   refreshPlayingIndicators();
 
   // Restore panel state if we were in full mode
