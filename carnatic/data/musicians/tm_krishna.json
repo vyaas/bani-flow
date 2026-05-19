@@ -650,9 +650,56 @@
         {
           "offset_seconds": 210,
           "raga_id": "begada",
-          "kind": "alapana",
           "segment_index": 1,
           "timestamp": "03:30"
+        },
+        {
+          "offset_seconds": 770,
+          "raga_id": "atana",
+          "segment_index": 2,
+          "timestamp": "12:50"
+        },
+        {
+          "offset_seconds": 910,
+          "raga_id": "latangi",
+          "segment_index": 3,
+          "timestamp": "15:10"
+        },
+        {
+          "offset_seconds": 985,
+          "raga_id": "malavi",
+          "segment_index": 4,
+          "timestamp": "16:25"
+        },
+        {
+          "offset_seconds": 1200,
+          "raga_id": "shankarabharanam",
+          "segment_index": 5,
+          "timestamp": "20:00"
+        },
+        {
+          "offset_seconds": 1590,
+          "raga_id": "kambhoji",
+          "segment_index": 6,
+          "timestamp": "26:30"
+        },
+        {
+          "offset_seconds": 1860,
+          "raga_id": "ananda_bhairavi",
+          "segment_index": 7,
+          "timestamp": "31:00"
+        },
+        {
+          "offset_seconds": 2130,
+          "raga_id": "kalyani",
+          "segment_index": 8,
+          "timestamp": "35:30"
+        },
+        {
+          "offset_seconds": 2340,
+          "raga_id": "kambhoji",
+          "segment_index": 9,
+          "timestamp": "39:00"
         }
       ]
     },
