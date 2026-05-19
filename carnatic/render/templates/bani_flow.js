@@ -1,8 +1,46 @@
 // ── Bani Flow ─────────────────────────────────────────────────────────────────
 
-// Build a node-id → born-year map for fallback sort
+// Build a node-id → born-year map for fallback sort (ADR-150: iterate elements[], not cy.nodes())
 const nodeBorn = {};
-cy.nodes().forEach(n => { nodeBorn[n.id()] = n.data('born'); });
+elements.forEach(function(e) {
+  if (!e.data.source && e.data.id) nodeBorn[e.data.id] = e.data.born;
+});
+
+/**
+ * resolveNode(id) — ADR-150: canonical two-step musician data lookup.
+ * Tries cy first (connected musicians with layout data),
+ * falls back to elements[] (transit/isolated musicians).
+ * Returns a unified object with a .data(key) method, or null if not found.
+ */
+function resolveNode(id) {
+  if (!id) return null;
+  const cyNode = cy.getElementById(id);
+  if (cyNode && cyNode.length) return cyNode;
+  const raw = elements.find(function(e) { return !e.data.source && e.data.id === id; });
+  if (!raw) return null;
+  return {
+    length: 1,
+    data: function(key) {
+      if (key === undefined) return raw.data;
+      return raw.data[key];
+    },
+    _raw: raw.data,
+  };
+}
+
+// resolveYtLabel(vid) — ADR-150: find a track label by YouTube video id from elements[].
+// Replaces two duplicate cy.nodes().forEach(...) yt-label lookup blocks (F-004).
+function resolveYtLabel(vid) {
+  for (var i = 0; i < elements.length; i++) {
+    var e = elements[i];
+    if (e.data.source) continue;
+    var tracks = e.data.tracks || [];
+    for (var j = 0; j < tracks.length; j++) {
+      if (tracks[j].vid === vid) return tracks[j].label || '';
+    }
+  }
+  return '';
+}
 
 // Format a tala string for display: snake_case → Title Case with spaces
 // e.g. 'khanda_chapu' → 'Khanda Chapu', 'adi' → 'Adi'
@@ -85,9 +123,11 @@ function applyBaniFilter(type, id) {
     // YouTube-only entry: id = "vid::ragaId" — find nodes that have this vid in tracks[]
     const [ytVid] = id.split('::');
     const nodeSet = new Set();
-    cy.nodes().forEach(n => {
-      const tracks = n.data('tracks') || [];
-      if (tracks.some(t => t.vid === ytVid)) nodeSet.add(n.id());
+    // ADR-150: iterate elements[] so transit musicians with yt tracks are included
+    elements.forEach(function(e) {
+      if (e.data.source) return;
+      var tracks = e.data.tracks || [];
+      if (tracks.some(function(t) { return t.vid === ytVid; })) nodeSet.add(e.data.id);
     });
     matchedNodeIds = [...nodeSet];
   } else if (type === 'madhyama') {
@@ -314,12 +354,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const [ytVid, ytRagaId] = id.split('::');
     // Find the track label from any node that has this vid
     let ytLabel = '', ytRagaName = '';
-    cy.nodes().forEach(n => {
-      if (ytLabel) return;
-      const tracks = n.data('tracks') || [];
-      const t = tracks.find(tr => tr.vid === ytVid);
-      if (t) ytLabel = t.label || '';
-    });
+    ytLabel = resolveYtLabel(ytVid);
     const ytRaga = ytRagaId ? ragas.find(r => r.id === ytRagaId) : null;
     ytRagaName = ytRaga ? ytRaga.name : (ytRagaId || '');
 
@@ -489,8 +524,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const primaryPerformer = p.performers.find(pf => pf.role === 'vocal') || p.performers[0];
     let artistLabel, nodeId, born, pNode;
     if (primaryPerformer && primaryPerformer.musician_id) {
-      pNode = cy.getElementById(primaryPerformer.musician_id);
-      artistLabel = (pNode && pNode.data('label')) || primaryPerformer.unmatched_name || p.title;
+      pNode = resolveNode(primaryPerformer.musician_id);
+      artistLabel = (pNode ? pNode.data('label') : null) || primaryPerformer.unmatched_name || p.title;
       nodeId = primaryPerformer.musician_id;
       born   = pNode ? pNode.data('born') : null;
     } else {
@@ -558,14 +593,14 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       row.coPerformers = [];
       row.allPerformers.forEach(pf => {
         if (pf.musician_id === row.nodeId) return; // skip primary
-        const coNode = pf.musician_id ? cy.getElementById(pf.musician_id) : null;
-        const coLabel = (coNode && coNode.length) ? coNode.data('label') : (pf.unmatched_name || null);
+        const coNode = resolveNode(pf.musician_id);
+        const coLabel = coNode ? coNode.data('label') : (pf.unmatched_name || null);
         if (!coLabel || UNKNOWN_LABELS.has(coLabel)) return; // skip unknown/placeholder names
         row.coPerformers.push({
           nodeId:      pf.musician_id || null,
           artistLabel: coLabel,
-          color:       (coNode && coNode.length) ? coNode.data('color') : null,
-          shape:       (coNode && coNode.length) ? coNode.data('shape') : null,
+          color:       coNode ? coNode.data('color') : null,
+          shape:       coNode ? coNode.data('shape') : null,
         });
       });
     }
@@ -1193,13 +1228,9 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
 function buildArtistSpan(artistRow, isPrimary, type, id) {
   const span = document.createElement('span');
 
-  // Derive era/instrument from the Cytoscape node first; fall back to raw elements
-  // for musicians with no lineage edges (isolated — not in _cyElements).
-  const _cyNode = artistRow.nodeId ? cy.getElementById(artistRow.nodeId) : null;
-  const _rawEl  = (_cyNode && _cyNode.length) ? null
-    : (artistRow.nodeId ? elements.find(function(e) { return !e.data.source && e.data.id === artistRow.nodeId; }) : null);
-  const eraId = (_cyNode && _cyNode.length) ? (_cyNode.data('era') || null)
-    : (_rawEl ? (_rawEl.data.era || null) : null);
+  // ADR-150: resolve era/instrument via resolveNode (tries cy first, then elements[])
+  const _node = resolveNode(artistRow.nodeId);
+  const eraId = _node ? (_node.data('era') || null) : null;
   const tint = THEME.eraTintCss(eraId);
   span.style.setProperty('--chip-era-bg', tint.bg);
   span.style.setProperty('--chip-era-border', tint.border);
@@ -1208,8 +1239,7 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
   span.className = isPrimary ? 'musician-chip' : 'musician-chip chip-secondary';
 
   // ADR-069: instrument badge — resolve from node data (cy or raw elements)
-  const instrKey = (_cyNode && _cyNode.length) ? _cyNode.data('instrument')
-    : (_rawEl ? _rawEl.data.instrument : null);
+  const instrKey = _node ? _node.data('instrument') : null;
   if (instrKey && typeof makeInstrBadge === 'function') {
     span.appendChild(makeInstrBadge(instrKey, isPrimary ? 13 : 11));
   }
@@ -1617,12 +1647,7 @@ function triggerBaniSearch(type, id, fromHistory = false) {
     // YouTube-only entry — derive short title from track label
     const ytVid = id.split('::')[0];
     let ytLabel = '';
-    cy.nodes().forEach(n => {
-      if (ytLabel) return;
-      const tracks = n.data('tracks') || [];
-      const t = tracks.find(tr => tr.vid === ytVid);
-      if (t) ytLabel = t.label || '';
-    });
+    ytLabel = resolveYtLabel(ytVid);
     const ytShort = ytLabel
       ? (ytLabel.indexOf(' \u00b7 ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' \u00b7 ')).trim()
         : ytLabel.indexOf(' - ') > 0 ? ytLabel.slice(0, ytLabel.indexOf(' - ')).trim()

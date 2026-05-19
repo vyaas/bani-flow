@@ -723,3 +723,7 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-19: AUDIT-001: `cy.getElementById(id).data(field)` is used as the sole data-resolution path in 12 sites across `bani_flow.js`, `media_player.js`, and `panel_components.js`; transit musicians (ADR-138) are silently invisible or crash `buildRecordingsList` (TypeError on `undefined.tracks`) because the `elements[]`-fallback fix from ADR-138 was only applied locally in `buildArtistSpan` and never lifted into a named `resolveNode(id)` helper used everywhere.
 [AGENTS: code-auditor]
+- 2026-05-19: DIAGRAM-001 data-schema diagram: the `diagrams/` root directory was created (user preference) rather than `plans/`; note this diverges from the CLAUDE.md convention of `plans/DIAGRAM-NNN-*.md` — update the convention if diagrams/ becomes the standard location for all future diagrams.
+[AGENTS: diagrammer]
+- 2026-05-19: ADR-150 implemented; resolveNode() centralises cy+elements[] two-step lookup; all 12 cy-panel coupling sites fixed across bani_flow.js, media_player.js, panel_components.js.
+[AGENTS: carnatic-coder]

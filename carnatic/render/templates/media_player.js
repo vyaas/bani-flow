@@ -401,11 +401,12 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
 // nodeId may be null if only artistName is known (renders chip without navigation).
 function _buildMusicianChipForFooter(nodeId, artistName) {
   if (!nodeId && !artistName) return null;
-  const node = (nodeId && typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null;
-  const name = (node && node.length) ? (node.data('label') || artistName || nodeId)
-                                     : (artistName || nodeId);
+  // ADR-150: resolveNode tries cy first, falls back to elements[] for transit musicians
+  const node = (nodeId && typeof resolveNode === 'function') ? resolveNode(nodeId)
+    : ((nodeId && typeof cy !== 'undefined') ? cy.getElementById(nodeId) : null);
+  const name = node ? (node.data('label') || artistName || nodeId) : (artistName || nodeId);
   if (!name) return null;
-  const eraId = (node && node.length) ? (node.data('era') || null) : null;
+  const eraId = node ? (node.data('era') || null) : null;
   const tint  = (typeof THEME !== 'undefined')
     ? THEME.eraTintCss(eraId)
     : { bg: 'transparent', border: 'var(--border-strong)' };
@@ -416,8 +417,8 @@ function _buildMusicianChipForFooter(nodeId, artistName) {
   // ADR-142 §1: entity chip for the musician (player footer)
   if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'musician', nodeId);
   // ADR-069: instrument badge
-  if (nodeId && typeof cy !== 'undefined' && typeof makeInstrBadge === 'function') {
-    const instrKey = (node && node.length) ? node.data('instrument') : null;
+  if (nodeId && typeof makeInstrBadge === 'function') {
+    const instrKey = node ? node.data('instrument') : null;
     if (instrKey) chip.appendChild(makeInstrBadge(instrKey));
   }
   chip.appendChild(document.createTextNode(name));
@@ -426,7 +427,8 @@ function _buildMusicianChipForFooter(nodeId, artistName) {
     e.stopPropagation();
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
-    if (node && node.length) {
+    if (node && !node._raw) {
+      // Real cy node — zoom/orient in graph view
       if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
         orientToNode(nodeId);
       } else if (typeof selectNode === 'function') {
@@ -750,9 +752,10 @@ function buildComposerChip(compositionId) {
     applyChipRole(chip, 'entity', 'musician', composerObj.musician_node_id || '');
   }
 
-  const eraId = composerObj.musician_node_id
-    ? (cy.getElementById(composerObj.musician_node_id).data('era') || null)
-    : null;
+  // ADR-150: use resolveNode for era-tint so transit composers are also tinted
+  const _compNode = composerObj.musician_node_id && typeof resolveNode === 'function'
+    ? resolveNode(composerObj.musician_node_id) : null;
+  const eraId = _compNode ? (_compNode.data('era') || null) : null;
   const tint = THEME.eraTintCss(eraId);
   chip.style.setProperty('--chip-era-bg', tint.bg);
   chip.style.setProperty('--chip-era-border', tint.border);
@@ -886,9 +889,10 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
   });
 
   musicianIds.forEach(musicianId => {
-    const node  = (typeof cy !== 'undefined') ? cy.getElementById(musicianId) : null;
-    const name  = (node && node.length) ? node.data('label') : musicianId;
-    const eraId = (node && node.length) ? (node.data('era') || null) : null;
+    const node  = (typeof resolveNode === 'function') ? resolveNode(musicianId)
+      : ((typeof cy !== 'undefined') ? cy.getElementById(musicianId) : null);
+    const name  = node ? node.data('label') : musicianId;
+    const eraId = node ? (node.data('era') || null) : null;
     const tint  = (typeof THEME !== 'undefined')
       ? THEME.eraTintCss(eraId)
       : { bg: 'transparent', border: 'var(--border-strong)' };
@@ -904,7 +908,8 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
       e.stopPropagation();
       mchip.classList.add('chip-tapped');
       setTimeout(() => mchip.classList.remove('chip-tapped'), 200);
-      if (node && node.length) {
+      if (node && !node._raw) {
+        // Real cy node — zoom/orient in graph view
         if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
           orientToNode(musicianId);
         } else if (typeof selectNode === 'function') {
@@ -993,8 +998,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       if (coPerformerMap.has(key)) return;
       let label;
       if (pf.musician_id) {
-        const node = cy.getElementById(pf.musician_id);
-        label = (node && node.length > 0) ? (node.data('label') || pf.musician_id) : pf.musician_id;
+        const node = typeof resolveNode === 'function' ? resolveNode(pf.musician_id) : cy.getElementById(pf.musician_id);
+        label = node ? (node.data('label') || pf.musician_id) : pf.musician_id;
       } else {
         label = pf.unmatched_name || '?';
       }
@@ -1043,9 +1048,9 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   performersDiv.className = 'concert-performers';
   [...coPerformerMap.values()].forEach((pf, idx) => {
     if (idx > 0) performersDiv.appendChild(document.createTextNode(' '));
-    const eraId = pf.musicianId
-      ? (cy.getElementById(pf.musicianId).data('era') || null)
-      : null;
+    // ADR-150: use resolveNode for era/instrument to include transit co-performers
+    const _pfNode = pf.musicianId && typeof resolveNode === 'function' ? resolveNode(pf.musicianId) : null;
+    const eraId = _pfNode ? (_pfNode.data('era') || null) : null;
     const tint = THEME.eraTintCss(eraId);
     const chip = document.createElement('span');
     chip.className = 'musician-chip chip-secondary';
@@ -1055,7 +1060,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     if (typeof applyChipRole === 'function') applyChipRole(chip, 'entity', 'musician', pf.musicianId || '');
     // ADR-069: instrument badge
     if (pf.musicianId && typeof makeInstrBadge === 'function') {
-      const instrKey = cy.getElementById(pf.musicianId).data('instrument');
+      const instrKey = _pfNode ? _pfNode.data('instrument') : null;
       if (instrKey) chip.appendChild(makeInstrBadge(instrKey, 11));
     }
     chip.appendChild(document.createTextNode(pf.label));
@@ -1935,7 +1940,9 @@ function buildRecordingsList(nodeId, nodeData) {
   const recFilter = document.getElementById('rec-filter');
   recList.innerHTML = '';
 
-  const nd = nodeData || cy.getElementById(nodeId).data();
+  // ADR-150: resolveNode falls back to elements[] for transit musicians; avoids
+  // cy.getElementById().data() crash when nodeId is not in cy (F-011).
+  const nd = nodeData || (typeof resolveNode === 'function' ? (resolveNode(nodeId)?._raw) : null) || {};
   const legacyTracks    = nd.tracks || [];
   const structuredPerfs = musicianToPerformances[nodeId] || [];
   const artistLabel     = nd.label || '';
@@ -2347,10 +2354,11 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
   chip.textContent = lecturerLabel;
   chip.title = 'Open ' + lecturerLabel + "'s panel";
 
-  // Era-tint from cytoscape node (same pattern as other musician chips)
-  const lNode = (typeof cy !== 'undefined') ? cy.getElementById(lecturerId) : null;
-  if (lNode && lNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
-    const eraId = lNode.data('era') || null;
+  // ADR-150: use resolveNode for era-tint so transit lecturers also get tinted
+  const _lNodeData = (typeof resolveNode === 'function') ? resolveNode(lecturerId)
+    : ((typeof cy !== 'undefined') ? cy.getElementById(lecturerId) : null);
+  if (_lNodeData && typeof THEME !== 'undefined' && THEME.eraTintCss) {
+    const eraId = _lNodeData.data('era') || null;
     const tint  = THEME.eraTintCss(eraId);
     chip.style.setProperty('--chip-era-bg',     tint.bg);
     chip.style.setProperty('--chip-era-border', tint.border);
@@ -2364,6 +2372,7 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
     if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
       orientToNode(lecturerId);
     }
+    const lNode = (typeof cy !== 'undefined') ? cy.getElementById(lecturerId) : null;
     if (lNode && lNode.length && typeof selectNode === 'function') {
       selectNode(lNode);
       if (typeof window.setPanelState === 'function') {

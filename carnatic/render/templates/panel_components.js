@@ -296,8 +296,10 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
 
   musicianIds.forEach(function (mid) {
     if (mid === excludeMusicianId) return;
-    const mNode  = (typeof cy !== 'undefined') ? cy.getElementById(mid) : null;
-    const mLabel = (mNode && mNode.length) ? (mNode.data('label') || mid) : mid;
+    // ADR-150: resolveNode tries cy first, falls back to elements[] for transit musicians
+    const mNode  = (typeof resolveNode === 'function') ? resolveNode(mid)
+      : ((typeof cy !== 'undefined') ? cy.getElementById(mid) : null);
+    const mLabel = mNode ? (mNode.data('label') || mid) : mid;
     const c = document.createElement('span');
     c.className = 'musician-chip';
     if (typeof applyChipRole === 'function') applyChipRole(c, 'entity', 'musician', mid);
@@ -305,7 +307,7 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
     c.title = 'Open ' + mLabel + '\u2019s panel';
 
     // Era-tint — same pattern as all other musician chips
-    if (mNode && mNode.length && typeof THEME !== 'undefined' && THEME.eraTintCss) {
+    if (mNode && typeof THEME !== 'undefined' && THEME.eraTintCss) {
       const tint = THEME.eraTintCss(mNode.data('era') || null);
       c.style.setProperty('--chip-era-bg',     tint.bg);
       c.style.setProperty('--chip-era-border', tint.border);
@@ -318,7 +320,8 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
       if (typeof orientToNode === 'function' && typeof currentView !== 'undefined' && currentView === 'graph') {
         orientToNode(mid);
       }
-      if (mNode && mNode.length && typeof selectNode === 'function') {
+      if (mNode && !mNode._raw && typeof selectNode === 'function') {
+        // Real cy node — select it in the graph
         selectNode(mNode);
         if (typeof window.setPanelState === 'function') {
           setTimeout(function () { window.setPanelState('MUSICIAN'); }, 50);
