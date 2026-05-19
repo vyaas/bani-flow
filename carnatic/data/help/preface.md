@@ -18,13 +18,13 @@ Even in Mylapore?
 
 For this is **Art Music**
 > _Art is a way to make feelings happen_
-(Brian Eno called it)
+Brian Eno called it!
 Every Raga is a vessel of emotion
 Every rendition an Art object
 <cr>Reetigowla<cr> summons terror and hope in a world remote from mine
-<cr>Surutti<cr> paints a heron disappearing its frame into an orange sunrise
+<cr>Surutti<cr> paints a heron disappearing its serene frame into an orange sunrise
 <cr>Khamas<cr> evokes deep and enduring sky blue joy
-<cr>Begada<cr> invites Beauty and Reconciliation unconditionally
+<cr>Begada<cr> invites beauty and reconciliation unconditionally, undeservedly
 
 ```bani-formula
 (My life)   Experiences + (Carnatic) Music = (My unique)   Feelings
@@ -48,27 +48,23 @@ Bejewelled by the Genius of the Trinity
 Carnatic Music's own Cambrian Explosion
 <cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, <cm>Shyama Shastri<cm>
 
-For this is an **Anti-notation Music**
-Whose essence cannot be grasped textually
-You can read hundreds of pages
-On the descriptive and prescriptive aesthetics of <cr>Thodi<cr>
-And still not know what it sounds like!
+For this is an **Post-notational Music**
+Whose essences cannot be grasped textually
 For the sound does not travel by page
-You cannot analytically capture it
-Fourier transforming an _alapana_
-Loses the plot
-For this Music is a masterclass in _abstraction_
+But by _Raga Bhava_
+Never for the eyes, only for the ears
+For this Music is a masterclass in _emotional abstraction_
 Whose isomorphisms do not emerge from symbols
 They emerge from _emotions_
 
-For this is emphatically **not Pop Music**
+For this is emphatically **NOT Pop Music**
 It does not exist to please you
 It aspires to a higher Truth
 It does not try to be Beautiful
 But instead shines a brilliant light 
 On what Beauty itself is
 
-So I invite you to browse this library of youtube links
+So I invite you to browse this growing library of youtube links
 Along the principle axes of Carnatic Music
 By <cm>Musician<cm>, <cc>Composition<cc>, and <cr>Raga<cr>
 Resonate in the Sruti soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Brinda<cm>
@@ -101,12 +97,12 @@ Just _listen_
 		<img class="hd-author-avatar" src="https://0.gravatar.com/avatar/03842f7bd424c71064035f5ac4b8e32626b72d758dc4d73028160a2d0ebe1c5d?size=256&d=initials" alt="Vyaas" loading="lazy" referrerpolicy="no-referrer" />
 		<span class="hd-author-copy">
 			<span class="hd-author-name">Vyaas</span>
-			<span class="hd-author-tagline">Curator · Maintainer</span>
+			<span class="hd-author-tagline">Curator · Maintainer · Rasika</span>
 		</span>
 	</a>
 	<div class="hd-project-box">
 		<span class="hd-project-kicker">Project</span>
-		<a class="hd-project-link" href="https://github.com/vyaas/bani-flow" target="_blank" rel="noopener noreferrer">github.com/vyaas/bani_flow</a>
+		<a class="hd-project-link" href="https://github.com/vyaas/bani-flow" target="_blank" rel="noopener noreferrer">github.com/vyaas/bani-flow</a>
 		<span class="hd-project-note">Source, issues, and the contribution path live here.</span>
 	</div>
 </div>
