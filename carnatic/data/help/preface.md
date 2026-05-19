@@ -80,7 +80,7 @@ _Even in Mylapore_
 _Especially in Cleveland_
 
 Bani-flow's mission is simple:
-> Provide a no nonsense navigable interface to explore Carnatic Music
+> Provide a no-nonsense navigable interface to explore Carnatic Music
 > Enable frictionless immersion in its abstractions
 
 So that you (and I) can simply _listen_
