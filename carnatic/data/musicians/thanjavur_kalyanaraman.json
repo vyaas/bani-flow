@@ -18,11 +18,23 @@
   "bani": null,
   "youtube": [
     {
-      "url": "https://youtu.be/yIJyWzE1DYo", 
+      "url": "https://youtu.be/yIJyWzE1DYo",
       "label": "Kanakangaka Sukha Guha · Kanakāngi · adi",
       "composition_id": "kanakangaka_sukha_guha",
       "raga_id": "kanakangi",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/7zO9tCyeQyI",
+      "label": "Tharunam Ithe · Ratnāngi",
+      "composition_id": "tharunam_ithe",
+      "raga_id": "ratnangi"
+    },
+    {
+      "url": "https://youtu.be/St1rdOduz7w",
+      "label": "Ganamurte · Gānamūrti",
+      "composition_id": "ganamurte",
+      "raga_id": "ganamurti"
     }
   ]
 }

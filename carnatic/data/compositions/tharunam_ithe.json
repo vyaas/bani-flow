@@ -1,0 +1,13 @@
+{
+  "id": "tharunam_ithe",
+  "title": "Tharunam Ithe",
+  "composer_id": "koteeswara_iyer",
+  "raga_id": "ratnangi",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Koteeswara_Iyer",
+      "label": "Wikipedia",
+      "type": "wikipedia"
+    }
+  ]
+}
