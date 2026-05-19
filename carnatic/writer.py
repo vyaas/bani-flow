@@ -1144,6 +1144,17 @@ class CarnaticWriter:
         known_raga_ids  = {r["id"] for r in _load_all_ragas(_cp, _rp)}
 
         existing = entry.get("segments") or []
+
+        # Dedup guard: reject if a segment at the same offset already exists
+        incoming_offset = segment_dict.get("offset_seconds")
+        if incoming_offset is not None and any(
+            s.get("offset_seconds") == int(incoming_offset) for s in existing
+        ):
+            return _skip(
+                f"segment at offset {incoming_offset}s already exists in "
+                f"{musician_id}.youtube[{vid}].segments — skipping duplicate"
+            )
+
         prev_offset = existing[-1]["offset_seconds"] if existing else None
 
         err = _validate_segment_dict(
