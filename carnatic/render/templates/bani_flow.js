@@ -228,11 +228,7 @@ function applyBaniFilter(type, id) {
 }
 
 function buildListeningTrail(type, id, matchedNodeIds) {
-  // ADR-086: subject loaded → dismiss empty-panel tutorial.
-  // When bani help is active (user is in tutorial mode), return early so the
-  // trail never replaces the tutorial content.  Callers that want wheel-only
-  // preview should route through _previewWheel / syncRagaWheelToFilter instead.
-  if ((typeof window.isPanelHelpActive === 'function') && window.isPanelHelpActive('bani')) return;
+  // ADR-086: subject loaded → dismiss empty-panel tutorial
   if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('bani');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('bani');
   const trail = document.getElementById('listening-trail');
@@ -1656,8 +1652,7 @@ function triggerBaniSearch(type, id, fromHistory = false) {
   // immediately closes the panel with setPanelState('IDLE').
   // The 50 ms delay lets the native click resolve against the pre-open DOM.
   // ADR-046: open Bani Flow (left) drawer on all screen widths
-  if (!(typeof window.isPanelHelpActive === 'function' && window.isPanelHelpActive('bani')) &&
-      typeof window.setPanelState === 'function') {
+  if (typeof window.setPanelState === 'function') {
     setTimeout(function () { window.setPanelState('TRAIL'); }, 50);
   }
 
