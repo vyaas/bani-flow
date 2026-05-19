@@ -1202,18 +1202,7 @@ function buildMusicianForm({ prefill = null } = {}) {
   // ADR-097 §5: Bani / Gharana removed from create form.
   body.appendChild(efSourceFields('ef_mus'));
 
-  // ── Section B: YouTube entries ────────────────────────────────────────────
-  body.appendChild(efSection('YouTube Entries'));
-
-  const ytContainer = document.createElement('div');
-  ytContainer.id = 'ef_mus_youtube';
-  body.appendChild(ytContainer);
-
-  const addYtBtn = efAddBtn('+ Add YouTube Entry');
-  body.appendChild(addYtBtn);
-  addYtBtn.addEventListener('click', () => addYoutubeBlock(ytContainer, win));
-
-  // ── Section C: Guru-Shishya edges (chip-row, ADR-145 D3) ──────────────────
+  // ── Section B: Guru-Shishya edges (chip-row, ADR-145 D3) ─────────────────
   body.appendChild(efSection('Guru-Shishya Edges'));
 
   const edgesContainer = document.createElement('div');
@@ -2041,34 +2030,6 @@ function generateMusicianJson(win) {
   const inferred = inferSource(srcUrl);
   const bani    = '';
 
-  // YouTube entries
-  const youtube = [];
-  win.querySelectorAll('.ef-youtube-block').forEach(block => {
-    const inputs   = block.querySelectorAll(':scope > .ef-row input:not([data-combobox-filter])');
-    const url      = inputs[0] ? inputs[0].value.trim() : '';
-    const lbl      = inputs[1] ? inputs[1].value.trim() : '';
-    const year     = inputs[2] ? inputs[2].value        : '';
-    const version  = inputs[3] ? inputs[3].value.trim() : '';
-    const tala     = inputs[4] ? inputs[4].value.trim() : '';
-    const isLecdem = block._lecdemCheck && block._lecdemCheck.checked;
-    const compId   = (!isLecdem && block._compSel) ? block._compSel.getValue() : '';
-    const ragaId   = (!isLecdem && block._ragaSel) ? block._ragaSel.getValue() : '';
-    if (!url) return;
-    const entry = { url, label: lbl };
-    if (compId)  entry.composition_id = compId;
-    if (ragaId)  entry.raga_id        = ragaId;
-    if (year)    entry.year           = parseInt(year, 10);
-    if (version) entry.version        = version;
-    if (tala)    entry.tala           = tala;
-    const performers = collectYoutubePerformers(block, id, instr);
-    if (performers) entry.performers = performers;
-    if (isLecdem) {
-      entry.kind     = 'lecdem';
-      entry.subjects = collectLecdemSubjects(block);
-    }
-    youtube.push(entry);
-  });
-
   // ADR-146 D1: collect traditions from active chips
   const traditions = [...win.querySelectorAll('.ef-trad-chip.ef-trad-chip--active')]
     .map(b => b.dataset.trad).filter(Boolean);
@@ -2114,7 +2075,6 @@ function generateMusicianJson(win) {
     born,
     died,
     bani: bani || null,
-    youtube,
   };
 
   // Edges — all chips (no prefilled in add mode)
