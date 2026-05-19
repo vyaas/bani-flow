@@ -5,7 +5,7 @@
     "header_annotations": [
       {
         "position": "above_subject_btn",
-        "text": "The \"Bani Flow\" panel opens with a raga (or composition). The chip above is {raga:reetigowla}, a janya of the 22nd mela {raga:kharaharapriya}. The ◈ 25 beside it opens the mela-family popup: the mela, 24 sibling janyas, and any Hindustani equivalents — each tappable to pivot the panel. For a composition subject, the counter shows the number of musicians who have recorded it; the popup shows the raga, tala, and composer."
+        "text": "The \"Bani Flow\" panel opens with a raga (or composition). The chip above is {raga:reetigowla}, a janya of the 22nd mela {raga:kharaharapriya}. The ◈25 beside it opens the mela-family popup: the mela, 24 sibling janyas, and any Hindustani equivalents — each tappable to pivot the panel. For a composition subject, the counter shows the number of musicians who have recorded it; the popup shows the raga, tala, and composer."
       },
       {
         "position": "above_filter",
@@ -67,11 +67,11 @@
     "header_annotations": [
       {
         "position": "beside_era_dot",
-        "text": "The chip above is {musician:ramnad_krishnan}. The colour encodes the era — six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. Ramnad Krishnan (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record. The ↥ 4 reads as 'four generations downstream from the root of his bani'."
+        "text": "The chip above is {musician:ramnad_krishnan}. The colour encodes the era — six eras run from earliest to living: {era:trinity}, {era:bridge}, {era:golden_age}, {era:disseminator}, {era:living_pillars}, {era:contemporary}. Ramnad Krishnan (1918–1973) belongs to the {era:disseminator} generation: the artists who carried the bani out of the gurukula and onto record. The ↥4 is the sum of all guru-shishya relations and is in indication of connectedness in our database."
       },
       {
         "position": "above_filter",
-        "text": "The Filter recordings input above narrows the sections below by raga, composition, or co-performer name. Sections collapse and reform around your query without losing their tree shape."
+        "text": "The \"Filter recordings\" input above narrows the sections below by raga, composition, or co-performer name. Sections collapse and reform around your query without losing their tree shape."
       }
     ],
     "sections": [
