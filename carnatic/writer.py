@@ -71,8 +71,6 @@ VALID_ERAS = {
     "contemporary",
 }
 
-VALID_SOURCE_TYPES = {"wikipedia", "pdf", "article", "archive", "other"}
-
 # ADR-114: expanded instrument vocabulary (Carnatic + Hindustani)
 VALID_INSTRUMENTS = {
     # Carnatic instruments (pre-existing)
@@ -87,7 +85,7 @@ VALID_TRADITIONS = {"carnatic", "hindustani"}
 
 PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "traditions"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
-PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes", "katapayadi"}
+PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes", "katapayadi", "sources"}
 PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language", "notes", "composer_id", "raga_id"}
 
 
@@ -664,7 +662,6 @@ class CarnaticWriter:
         instrument: str | None = None,
         source_url: str,
         source_label: str,
-        source_type: str,
         born: int | None = None,
         died: int | None = None,
         bani: str | None = None,
@@ -677,12 +674,6 @@ class CarnaticWriter:
             return _err(
                 f"--era \"{era}\" is not a valid era value\n"
                 f"       Valid values: {', '.join(sorted(VALID_ERAS))}"
-            )
-        # Validate source_type
-        if source_type not in VALID_SOURCE_TYPES:
-            return _err(
-                f"--source-type \"{source_type}\" is not a valid source type\n"
-                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
             )
         # Validate traditions (ADR-114)
         effective_traditions = traditions if traditions is not None else ["carnatic"]
@@ -710,7 +701,7 @@ class CarnaticWriter:
         node: dict[str, Any] = {
             "id":         id,
             "label":      label,
-            "sources":    [{"url": source_url, "label": source_label, "type": source_type}],
+            "sources":    [{"url": source_url, "label": source_label}],
             "born":       born,
             "died":       died,
             "era":        era,
@@ -733,7 +724,6 @@ class CarnaticWriter:
         instrument: str,
         source_url: str,
         source_label: str,
-        source_type: str,
         born: int | None = None,
         died: int | None = None,
         era: str | None = None,
@@ -748,12 +738,6 @@ class CarnaticWriter:
         Warns (does not error) on unknown instrument values.
         Idempotent: refuses to overwrite unless force=True.
         """
-        # Validate source_type
-        if source_type not in VALID_SOURCE_TYPES:
-            return _err(
-                f"--source-type \"{source_type}\" is not a valid source type\n"
-                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
-            )
         # Validate era when provided
         if era is not None and era not in VALID_ERAS:
             return _err(
@@ -785,7 +769,7 @@ class CarnaticWriter:
         node: dict[str, Any] = {
             "id":         id,
             "label":      label,
-            "sources":    [{"url": source_url, "label": source_label, "type": source_type}],
+            "sources":    [{"url": source_url, "label": source_label}],
             "born":       born,
             "died":       died,
             "era":        era,
@@ -1355,16 +1339,9 @@ class CarnaticWriter:
         musician_id: str,
         url: str,
         label: str,
-        type: str,
         graph_path: Path | None = None,
     ) -> WriteResult:
         """Append a source object to an existing musician node's sources[] array."""
-        if type not in VALID_SOURCE_TYPES:
-            return _err(
-                f"--type \"{type}\" is not a valid source type\n"
-                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
-            )
-
         nodes = _load_all_nodes(musicians_path)
 
         node = next((n for n in nodes if n["id"] == musician_id), None)
@@ -1378,10 +1355,10 @@ class CarnaticWriter:
 
         if "sources" not in node:
             node["sources"] = []
-        node["sources"].append({"url": url, "label": label, "type": type})
+        node["sources"].append({"url": url, "label": label})
 
         _write_node(musicians_path, node)
-        return _ok("[SOURCE+]", f"{musician_id} — \"{label}\" ({type})")
+        return _ok("[SOURCE+]", f"{musician_id} — \"{label}\"")
 
     def remove_edge(
         self,
@@ -1506,7 +1483,6 @@ class CarnaticWriter:
         name: str,
         source_url: str,
         source_label: str,
-        source_type: str,
         aliases: list[str] | None = None,
         melakarta: int | None = None,
         parent_raga: str | None = None,
@@ -1525,11 +1501,6 @@ class CarnaticWriter:
             return _err(
                 f"--tradition \"{tradition}\" is not valid\n"
                 f"       Valid values: carnatic, hindustani"
-            )
-        if source_type not in VALID_SOURCE_TYPES:
-            return _err(
-                f"--source-type \"{source_type}\" is not a valid source type\n"
-                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
             )
         if melakarta is not None and not (1 <= melakarta <= 72):
             return _err(f"--melakarta {melakarta} is out of range [1, 72]")
@@ -1551,7 +1522,7 @@ class CarnaticWriter:
             "aliases":     aliases or [],
             "melakarta":   melakarta,
             "parent_raga": parent_raga,
-            "sources":     [{"url": source_url, "label": source_label, "type": source_type}],
+            "sources":     [{"url": source_url, "label": source_label}],
         }
         if notes is not None:
             raga["notes"] = notes
@@ -1575,7 +1546,6 @@ class CarnaticWriter:
         language: str | None = None,
         source_url: str | None = None,
         source_label: str | None = None,
-        source_type: str | None = None,
         notes: str | None = None,
         ragas_path: Path | None = None,
         graph_path: Path | None = None,
@@ -1587,18 +1557,12 @@ class CarnaticWriter:
                      musicians/ (composer_id is a musician ID per ADR-110).
         Legacy mode: rewrites the monolithic compositions.json.
         """
-        if source_type is not None and source_type not in VALID_SOURCE_TYPES:
-            return _err(
-                f"--source-type \"{source_type}\" is not a valid source type\n"
-                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
-            )
-
         existing_comp_ids = {c["id"] for c in _load_all_compositions(compositions_path)}
         if id in existing_comp_ids:
             return _skip(f"{id} already exists in compositions[]")
 
         known_musician_ids = {n["id"] for n in _load_all_nodes(_default_musicians_path())}
-        if composer_id not in known_musician_ids:
+        if composer_id is not None and composer_id not in known_musician_ids:
             return _err(f"--composer-id \"{composer_id}\" does not exist in musicians[]")
 
         known_raga_ids = {r["id"] for r in _load_all_ragas(compositions_path, ragas_path)}
@@ -1619,8 +1583,6 @@ class CarnaticWriter:
             sources_entry: dict[str, Any] = {"url": source_url}
             if source_label is not None:
                 sources_entry["label"] = source_label
-            if source_type is not None:
-                sources_entry["type"] = source_type
             composition["sources"] = [sources_entry]
         if notes is not None:
             composition["notes"] = notes
@@ -1689,8 +1651,6 @@ class CarnaticWriter:
         """
         if field == "id":
             return _err("id is immutable — cannot be patched")
-        if field == "sources":
-            return _err("sources is immutable via patch-raga — use add-source instead")
         if field not in PATCHABLE_RAGA_FIELDS:
             return _err(
                 f"field \"{field}\" is not patchable on a raga\n"
@@ -1747,6 +1707,12 @@ class CarnaticWriter:
                     return _err(f"melakarta must be an integer (1–72) or \"null\", got \"{value}\"")
                 if not (1 <= coerced <= 72):
                     return _err(f"melakarta {coerced} is out of range [1, 72]")
+
+        elif field == "sources":
+            if value in (None, "null", ""):
+                coerced = []
+            elif isinstance(value, list):
+                coerced = value
 
         # Apply patch — find the raga object and mutate it
         raga = next(r for r in ragas if r["id"] == raga_id)
@@ -2323,7 +2289,6 @@ class CarnaticWriter:
         name: str,
         source_url: str,
         source_label: str,
-        source_type: str,
         aliases: list[str] | None = None,
         thaat: str | None = None,
         notes: str | None = None,
@@ -2343,11 +2308,6 @@ class CarnaticWriter:
             )
         if not source_url:
             return _err("--source-url is required for HER ragas")
-        if source_type not in VALID_SOURCE_TYPES:
-            return _err(
-                f"--source-type \"{source_type}\" is not a valid source type\n"
-                f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
-            )
 
         ragas = _load_all_ragas(compositions_path, ragas_path)
         existing_ids = {r["id"] for r in ragas}
@@ -2376,7 +2336,7 @@ class CarnaticWriter:
             "is_melakarta":         False,
             "thaat":                thaat,
             "carnatic_equivalents": [],
-            "sources":              [{"url": source_url, "label": source_label, "type": source_type}],
+            "sources":              [{"url": source_url, "label": source_label}],
         }
         if notes is not None:
             raga["notes"] = notes

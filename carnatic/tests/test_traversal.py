@@ -180,7 +180,7 @@ def test_get_compositions_by_composer_tyagaraja(graph: CarnaticGraph) -> None:
     assert len(comps) >= 5  # at least the Pancharatna kritis
     comp_ids = {c["id"] for c in comps}
     assert "jagadananda_karaka" in comp_ids
-    assert "entharo_mahanubhavulu" in comp_ids
+    assert "endaro_mahanubhavulu" in comp_ids
 
 
 def test_musicians_who_performed_maakelara(graph: CarnaticGraph) -> None:

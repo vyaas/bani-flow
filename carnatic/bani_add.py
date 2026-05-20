@@ -121,11 +121,30 @@ def _process_ragas(
         op = r.get("op", "create")
 
         if op == "patch":
-            raga_id = r.get("id")
-            field   = r.get("field")
-            value   = r.get("value")
-            if not raga_id or not field:
-                print(f"  ERROR  raga patch missing 'id' or 'field': {r}")
+            raga_id     = r.get("id")
+            fields_dict = r.get("fields")
+            field       = r.get("field")
+            value       = r.get("value")
+            if not raga_id:
+                print(f"  ERROR  raga patch missing 'id': {r}")
+                errors += 1
+                continue
+            if fields_dict and isinstance(fields_dict, dict):
+                patch_errors = 0
+                for f_name, f_value in fields_dict.items():
+                    result = writer.patch_raga(
+                        comp_path, raga_id=raga_id, field=f_name, value=f_value,
+                        ragas_path=ragas_path,
+                    )
+                    _print_result(result)
+                    if result.ok:        added   += 1
+                    elif result.skipped: skipped += 1
+                    else:                patch_errors += 1
+                if patch_errors:
+                    errors += 1
+                continue
+            if not field:
+                print(f"  ERROR  raga patch missing 'field' or 'fields': {r}")
                 errors += 1
                 continue
             result = writer.patch_raga(
@@ -156,7 +175,6 @@ def _process_ragas(
                     name=r["name"],
                     source_url=src.get("url", ""),
                     source_label=src.get("label", ""),
-                    source_type=src.get("type", "other"),
                     aliases=r.get("aliases"),
                     thaat=r.get("thaat"),
                     notes=r.get("notes"),
@@ -169,7 +187,6 @@ def _process_ragas(
                     name=r["name"],
                     source_url=src.get("url", ""),
                     source_label=src.get("label", ""),
-                    source_type=src.get("type", "other"),
                     aliases=r.get("aliases"),
                     melakarta=r.get("melakarta"),
                     parent_raga=r.get("parent_raga"),
@@ -473,7 +490,6 @@ def _process_musicians(
             instrument=m.get("instrument", "vocal"),
             source_url=src.get("url", ""),
             source_label=src.get("label", ""),
-            source_type=src.get("type", "other"),
             born=m.get("born"),
             died=m.get("died"),
             bani=m.get("bani"),
@@ -549,11 +565,29 @@ def _process_compositions(
         op = c.get("op", "create")
 
         if op == "patch":
-            comp_id = c.get("id")
-            field   = c.get("field")
-            value   = c.get("value")
-            if not comp_id or not field:
-                print(f"  ERROR  composition patch missing 'id' or 'field': {c}")
+            comp_id     = c.get("id")
+            fields_dict = c.get("fields")
+            field       = c.get("field")
+            value       = c.get("value")
+            if not comp_id:
+                print(f"  ERROR  composition patch missing 'id': {c}")
+                errors += 1
+                continue
+            if fields_dict and isinstance(fields_dict, dict):
+                patch_errors = 0
+                for f_name, f_value in fields_dict.items():
+                    result = writer.patch_composition(
+                        comp_path, composition_id=comp_id, field=f_name, value=f_value,
+                    )
+                    _print_result(result)
+                    if result.ok:        added   += 1
+                    elif result.skipped: skipped += 1
+                    else:                patch_errors += 1
+                if patch_errors:
+                    errors += 1
+                continue
+            if not field:
+                print(f"  ERROR  composition patch missing 'field' or 'fields': {c}")
                 errors += 1
                 continue
             result = writer.patch_composition(
@@ -585,7 +619,6 @@ def _process_compositions(
                 language=c.get("language"),
                 source_url=src.get("url"),
                 source_label=src.get("label"),
-                source_type=src.get("type"),
                 notes=c.get("notes"),
                 ragas_path=ragas_path,
             )

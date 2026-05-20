@@ -67,7 +67,7 @@ def build_elements(graph: dict, listenable_set: set | None = None,
         # Sources: new schema (sources array) with legacy fallback
         raw_sources = node.get("sources", [])
         if not raw_sources and node.get("wikipedia"):
-            raw_sources = [{"url": node["wikipedia"], "label": "Wikipedia", "type": "wikipedia"}]
+            raw_sources = [{"url": node["wikipedia"], "label": "Wikipedia"}]
         primary_url = raw_sources[0]["url"] if raw_sources else ""
 
         # ADR-055: listenable flag; ADR-110: composer flag — musician is composer if their id

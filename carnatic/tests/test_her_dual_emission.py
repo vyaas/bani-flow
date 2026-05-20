@@ -113,7 +113,7 @@ def test_dual_emission_both_succeed(tmp_path: pytest.TempPathFactory) -> None:
 # ── test 2: first item fails → second item is never attempted ─────────────────
 
 def test_dual_emission_create_fails_no_append(tmp_path: pytest.TempPathFactory) -> None:
-    """If the HER create fails (bad source_type), append is not attempted."""
+    """If the HER create fails (missing source_url), append is not attempted."""
     musicians_dir, compositions_dir, ragas_dir = _make_sandbox(tmp_path)
     w = CarnaticWriter()
 
@@ -123,7 +123,7 @@ def test_dual_emission_create_fails_no_append(tmp_path: pytest.TempPathFactory) 
             "id": "bad_her",
             "name": "Bad HER",
             "tradition": "hindustani",
-            "sources": [{"url": "https://en.wikipedia.org/wiki/Bad", "label": "Wikipedia", "type": "invalid_type"}],
+            "sources": [{"url": "", "label": "Wikipedia"}],
         },
         {
             "op": "append",
@@ -135,8 +135,8 @@ def test_dual_emission_create_fails_no_append(tmp_path: pytest.TempPathFactory) 
 
     added, skipped, errors = _process_ragas(bundle_ragas, w, compositions_dir, ragas_dir)
 
-    # First item fails (invalid source_type) → error counted
-    assert errors >= 1, "Expected at least 1 error from bad source_type"
+    # First item fails (missing source_url) → error counted
+    assert errors >= 1, "Expected at least 1 error from missing source_url"
 
     # Second item also fails because bad_her doesn't exist yet → another error
     # Carnatic raga must NOT have bad_her linked

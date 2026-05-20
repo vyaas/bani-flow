@@ -223,8 +223,10 @@ def render_html(
     # the template JS files can reference them as globals.
     elements_json            = json.dumps(elements, indent=2, ensure_ascii=False)
     ragas_json               = json.dumps(comp_data.get("ragas", []), indent=2, ensure_ascii=False)
-    # ADR-110: composers are now musician nodes; derive list for JS backward-compat (c.name / c.id)
-    _composer_nodes = [e["data"] for e in elements if e["data"].get("is_composer") and not e["data"].get("source")]
+    # ADR-110: composers are now musician nodes; all musician nodes are potential composers.
+    # Use field-presence check ("is_composer" in data) rather than truthy value so that
+    # musicians who have not yet been referenced as composer_id still appear in the dropdown.
+    _composer_nodes = [e["data"] for e in elements if "is_composer" in e["data"] and not e["data"].get("source")]
     composers_list  = [{"id": d["id"], "name": d.get("label", d["id"]), "born": d.get("born"), "died": d.get("died"), "musician_node_id": d["id"]} for d in _composer_nodes]
     composers_json           = json.dumps(composers_list, indent=2, ensure_ascii=False)
     compositions_json        = json.dumps(comp_data.get("compositions", []), indent=2, ensure_ascii=False)

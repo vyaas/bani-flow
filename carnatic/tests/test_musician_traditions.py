@@ -65,7 +65,6 @@ def test_hindustani_traditions_validates(tmp_path: Path) -> None:
         instrument="sitar",
         source_url="https://en.wikipedia.org/wiki/Ravi_Shankar",
         source_label="Wikipedia",
-        source_type="wikipedia",
         born=1920,
         also_carnatic=False,
     )
@@ -90,7 +89,6 @@ def test_cross_tradition_validates(tmp_path: Path) -> None:
         instrument="sarod",
         source_url="https://en.wikipedia.org/wiki/Ali_Akbar_Khan",
         source_label="Wikipedia",
-        source_type="wikipedia",
         born=1922,
         also_carnatic=True,
     )
@@ -127,7 +125,6 @@ def test_missing_traditions_backward_compat(tmp_path: Path) -> None:
         instrument="vocal",
         source_url="https://en.wikipedia.org/wiki/Test2",
         source_label="Wikipedia",
-        source_type="wikipedia",
     )
     assert result.ok, f"Expected ok=True, got: {result.message}"
     written = json.loads((musicians_dir / "new_musician.json").read_text(encoding="utf-8"))

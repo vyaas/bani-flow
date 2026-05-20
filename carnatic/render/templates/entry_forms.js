@@ -2683,7 +2683,7 @@ function createInlineAddSection(containerEl, type, selectEl, formWin, onAdd) {
         is_melakarta: isMela,
         cakra:        null,
         parent_raga:  !isMela && parentSel.value ? parentSel.value : null,
-        sources:      srcInp.value.trim() ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
+        sources:      srcInp.value.trim() ? [inferSource(srcInp.value.trim())] : [],
         notes:        null,
       };
       addToBundle('ragas', item);
@@ -2732,7 +2732,7 @@ function createInlineAddSection(containerEl, type, selectEl, formWin, onAdd) {
         musician_node_id: null,
         born:    null,
         died:    null,
-        sources: srcInp.value.trim() ? [{ url: srcInp.value.trim(), label: 'Wikipedia', type: 'wikipedia' }] : [],
+        sources: srcInp.value.trim() ? [inferSource(srcInp.value.trim())] : [],
       };
       if (eraSel.value) item.era = eraSel.value;
       addToBundle('composers', item);
@@ -2823,8 +2823,7 @@ function buildComposerForm() {
     const srcUrl  = win.querySelector('#ef_cmp_source_url')   ? win.querySelector('#ef_cmp_source_url').value.trim()   : '';
     // ADR-097 §4: source label/type inferred from URL host.
     return {
-      id, name,
-      musician_node_id: null,
+      id, label: name,
       born:    born ? parseInt(born, 10) : null,
       died:    died ? parseInt(died, 10) : null,
       sources: srcUrl ? [inferSource(srcUrl)] : [],
@@ -2857,7 +2856,7 @@ function buildComposerForm() {
 
   bundleBtn.addEventListener('click', () => {
     const obj = buildJson();
-    addToBundle('composers', obj);
+    addToBundle('musicians', obj);
     showGenericSuccess(win, obj.id, 'bundle');
   });
 

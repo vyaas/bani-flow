@@ -717,6 +717,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-17: When a Narayana Teertha composition from the Krishna Leela Tarangini is performed in a raga different from the canonical textual setting (e.g. Shuddha Sarang instead of Surati/Kedaragaula), record the performed raga — the oral tradition can re-set a composition freely; the karnatik textbook raga is just one transmission.
 - 2026-05-17: Shuddha Sarang has no Wikipedia page; ragajunglism.org is a reliable secondary source — use it with source-type "other" following the CLAUDE.md rule for HER ragas without standalone Wikipedia articles.
 - 2026-05-17: Phalamanjari is a rare audava-vakra janya of Kharaharapriya (mela 22); the parent-raga field should point to the 22nd melakarta (`kharaharapriya`), not the cakra root.
+- 2026-05-19: AUDIT-005: removing a validated parameter from writer.py requires updating PATCHABLE_*_FIELDS, edit_form_spec.js (ADR-143 drift test catches the mismatch), all call sites in bani_add.py and write_cli.py, and the two inline sub-form objects in entry_forms.js that hardcoded the removed field. [AGENTS: carnatic-coder]
 
 - 2026-05-17: ADR-147 worked-example tutorials (schema_version 5): empty_panels.json sections must include `section_gloss` on each section and `annotation` on each row — the JS renderer interleaves these as `.pt-annotation` strips between chips, so omitting them leaves the sections structurally visible but unannotated.
 [AGENTS: librarian]
@@ -728,3 +729,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: diagrammer]
 - 2026-05-19: ADR-150 implemented; resolveNode() centralises cy+elements[] two-step lookup; all 12 cy-panel coupling sites fixed across bani_flow.js, media_player.js, panel_components.js.
 [AGENTS: carnatic-coder]
+- 2026-05-19: AUDIT-005: VALID_SOURCE_TYPES is a closed whitelist that the data has already outgrown (7 non-whitelisted types in production); the raga patch handler in bani_add.py reads "field" (singular) but the Edit Raga form emits "fields" (dict), causing immediate failure; patch_raga hard-refuses "sources" with no add-source-to-raga pathway; the render layer never reads source.type — it is written but never consumed downstream.
+[AGENTS: code-auditor]

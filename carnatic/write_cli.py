@@ -136,7 +136,6 @@ def cmd_add_musician(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult
         instrument=args.instrument,
         source_url=args.source_url,
         source_label=args.source_label,
-        source_type=args.source_type,
         born=born,
         died=died,
         bani=args.bani,
@@ -156,7 +155,6 @@ def cmd_add_hindustani_musician(w: CarnaticWriter, args: argparse.Namespace) -> 
         instrument=args.instrument,
         source_url=args.source_url,
         source_label=args.source_label,
-        source_type=args.source_type,
         born=born,
         died=died,
         era=args.era,
@@ -259,7 +257,6 @@ def cmd_add_source(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         musician_id=args.musician_id,
         url=args.url,
         label=args.label,
-        type=args.type,
         graph_path=_graph_path(),
     )
 
@@ -303,7 +300,6 @@ def cmd_add_raga(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         name=args.name,
         source_url=args.source_url,
         source_label=args.source_label,
-        source_type=args.source_type,
         aliases=aliases,
         melakarta=melakarta,
         parent_raga=args.parent_raga,
@@ -358,7 +354,6 @@ def cmd_add_her(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         name=args.name,
         source_url=args.source_url,
         source_label=args.source_label,
-        source_type=args.source_type,
         aliases=aliases,
         thaat=args.thaat,
         notes=args.notes,
@@ -414,8 +409,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--instrument",   default=None,  help="Instrument (vocal, veena, violin, … ; optional for composers)")
     p.add_argument("--source-url",   required=True,  dest="source_url",  help="Primary source URL")
     p.add_argument("--source-label", required=True,  dest="source_label", help="Source label (e.g. Wikipedia)")
-    p.add_argument("--source-type",  required=True,  dest="source_type",
-                   help="Source type: wikipedia|pdf|article|archive|other")
+    p.add_argument("--source-type",  default=None,  dest="source_type",
+                   help="Source type (optional; e.g. wikipedia, article, archive)")
     p.add_argument("--born",         default=None,   help="Birth year (integer)")
     p.add_argument("--died",         default=None,   help="Death year (integer)")
     p.add_argument("--bani",         default=None,   help="Bani/style lineage label")
@@ -432,8 +427,8 @@ def _build_parser() -> argparse.ArgumentParser:
                         "unknown values emit a WARNING but are not rejected")
     p.add_argument("--source-url",   required=True,  dest="source_url",  help="Primary source URL")
     p.add_argument("--source-label", required=True,  dest="source_label", help="Source label (e.g. Wikipedia)")
-    p.add_argument("--source-type",  required=True,  dest="source_type",
-                   help="Source type: wikipedia|pdf|article|archive|other")
+    p.add_argument("--source-type",  default=None,  dest="source_type",
+                   help="Source type (optional; e.g. wikipedia, article, archive)")
     p.add_argument("--born",         default=None,   help="Birth year (integer)")
     p.add_argument("--died",         default=None,   help="Death year (integer)")
     p.add_argument("--era",          default=None,
@@ -502,8 +497,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--musician-id", required=True, dest="musician_id", help="Musician node id")
     p.add_argument("--url",         required=True,                     help="Source URL")
     p.add_argument("--label",       required=True,                     help="Source label")
-    p.add_argument("--type",        required=True,
-                   help="Source type: wikipedia|pdf|article|archive|other")
+    p.add_argument("--type",        default=None,
+                   help="Source type (optional; e.g. wikipedia, article, archive)")
 
     # ── remove-edge ───────────────────────────────────────────────────────────
     p = sub.add_parser("remove-edge", help="Remove a guru-shishya edge from musicians.json")
@@ -531,8 +526,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--name",         required=True,              help="Canonical raga name")
     p.add_argument("--source-url",   required=True, dest="source_url",   help="Primary source URL")
     p.add_argument("--source-label", required=True, dest="source_label", help="Source label")
-    p.add_argument("--source-type",  required=True, dest="source_type",
-                   help="Source type: wikipedia|pdf|article|archive|other")
+    p.add_argument("--source-type",  default=None, dest="source_type",
+                   help="Source type (optional; e.g. wikipedia, article, archive)")
     p.add_argument("--aliases",      default=None,  help="Comma-separated alias names")
     p.add_argument("--melakarta",    default=None,  help="Melakarta number [1–72]")
     p.add_argument("--parent-raga",  default=None,  dest="parent_raga", help="Parent raga id")
@@ -573,8 +568,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--name",         required=True,              help="Canonical raga name")
     p.add_argument("--source-url",   required=True, dest="source_url",   help="Primary source URL (Wikipedia required)")
     p.add_argument("--source-label", required=True, dest="source_label", help="Source label")
-    p.add_argument("--source-type",  required=True, dest="source_type",
-                   help="Source type: wikipedia|pdf|article|archive|other")
+    p.add_argument("--source-type",  default=None, dest="source_type",
+                   help="Source type (optional; e.g. wikipedia, article, archive)")
     p.add_argument("--thaat",        default=None,  help="Thaat (Hindustani parent scale, optional)")
     p.add_argument("--aliases",      default=None,  help="Comma-separated alias names")
     p.add_argument("--notes",        default=None,  help="Free-text musicological notes")

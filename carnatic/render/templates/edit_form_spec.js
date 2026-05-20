@@ -27,7 +27,7 @@ window.editFormSpec = {
     annotatable: true,
   },
   raga: {
-    patchable:   ['name', 'parent_raga', 'melakarta', 'is_melakarta', 'cakra', 'notes', 'katapayadi'],
+    patchable:   ['name', 'parent_raga', 'melakarta', 'is_melakarta', 'cakra', 'notes', 'katapayadi', 'sources'],
     appendable:  ['aliases', 'sources'],
     annotatable: true,
   },

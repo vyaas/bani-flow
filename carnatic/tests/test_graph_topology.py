@@ -58,6 +58,7 @@ _KNOWN_ISOLATES: frozenset[str] = frozenset({
     "basava",                # Lingayat saint 1131; vachanas sung in concerts — Librarian to add compositions
     "perumal_murugan",       # Tamil poet b.1966; poems set to music — Librarian to add compositions or verify significance
     # ── Thin nodes: no birth year, no recordings, significance unverified
+    "ns_chidambaram",                  # Vocal; living_pillars; no compositions or recordings yet — Librarian to add
     "madurai_srinivasa_iyengar",       # Vocal; golden_age; no birth year — Librarian to verify and add data
     "t_kesavulu",                      # Violin; golden_age; no birth year — Librarian to verify and add data
     "dv_gundappa",                     # Kannada poet/philosopher; not a musician per se — Librarian to verify significance
