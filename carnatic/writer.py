@@ -83,7 +83,7 @@ VALID_INSTRUMENTS = {
 # ADR-114: musician tradition values
 VALID_TRADITIONS = {"carnatic", "hindustani"}
 
-PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "traditions"}
+PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "traditions", "sources"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
 PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes", "katapayadi", "sources"}
 PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language", "notes", "composer_id", "raga_id", "sources"}
@@ -1422,6 +1422,8 @@ class CarnaticWriter:
                     f"       Valid values: {', '.join(sorted(VALID_TRADITIONS))}"
                 )
             coerced = value
+        elif field == "sources":
+            coerced = [] if value in (None, "null", "") else value
 
         nodes = _load_all_nodes(musicians_path)
 

@@ -22,7 +22,7 @@
 
 window.editFormSpec = {
   musician: {
-    patchable:   ['label', 'born', 'died', 'era', 'instrument', 'bani', 'traditions'],
+    patchable:   ['label', 'born', 'died', 'era', 'instrument', 'bani', 'traditions', 'sources'],
     appendable:  ['youtube', 'sources', 'youtube_performers', 'youtube_subjects'],
     annotatable: true,
   },
