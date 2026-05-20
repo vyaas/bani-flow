@@ -3,13 +3,13 @@
   "title": "Manavinaalakincha Raadate",
   "composer_id": "tyagaraja",
   "raga_id": "nalinakanthi",
-  "tala": "Adi",
+  "tala": "deshadi",
   "language": "Telugu",
   "sources": [
     {
-      "url": "https://en.wikipedia.org/wiki/Manavinaalakincha_Raadate",
-      "label": "Wikipedia",
-      "type": "wikipedia"
+      "url": "https://www.shivkumar.org/music/manavyala.htm",
+      "label": "www.shivkumar.org",
+      "type": "other"
     }
   ],
   "notes": "Tyagaraja kriti in Nalinakanthi raga."
