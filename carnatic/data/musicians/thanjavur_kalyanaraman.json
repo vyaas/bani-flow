@@ -42,6 +42,59 @@
       "composition_id": "pariyachakama",
       "raga_id": "vanaspati",
       "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/FPolA6HJ6MU",
+      "label": "Evarito Ne Delpudu · Mānavati · adi",
+      "composition_id": "evarito_ne_delpudu",
+      "raga_id": "manavati",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/q12WxmnUnQo",
+      "label": "Vadivei Muruga · Tanarupi · adi",
+      "composition_id": "vadivei_muruga",
+      "raga_id": "tanarupi",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/a-iyxBbkm-4",
+      "label": "Vandarul Nee Taa · Senāvati · misra_capu",
+      "composition_id": "vandarul_nee_taa",
+      "raga_id": "senavati",
+      "tala": "misra_capu"
+    },
+    {
+      "url": "https://youtu.be/rXPfeLcY4PM",
+      "label": "Enduku Daya Radu · Thodi",
+      "composition_id": "enduku_daya_radu",
+      "raga_id": "thodi"
+    },
+    {
+      "url": "https://youtu.be/srnn2t_0cVs",
+      "label": "Ne Mora Pettite · Rūpavati · rupakam",
+      "composition_id": "ne_mora_pettite",
+      "raga_id": "rupavati",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/lMAFTDBuRAc",
+      "label": "Naada Nilai · Gāyakapriyā",
+      "composition_id": "naada_nilai",
+      "raga_id": "gayakapriya"
+    },
+    {
+      "url": "https://youtu.be/Jjjf15LZOOY",
+      "label": "Sugunamule Cheppukonti · Chakravakam",
+      "composition_id": "sugunamule_cheppukonti",
+      "raga_id": "chakravakam"
+    },
+    {
+      "url": "https://youtu.be/0GNr0rDTBLc",
+      "label": "Muddumomu Elagu · Sūryakāntam · adi",
+      "composition_id": "muddumomu_elagu",
+      "raga_id": "suryakantam",
+      "tala": "adi"
     }
   ]
 }

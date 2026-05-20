@@ -2,7 +2,14 @@
   "id": "kanjadalayatakshi",
   "title": "Kanjadalayatakshi",
   "composer_id": "muthuswami_dikshitar",
-  "raga_id": "manohari",
+  "raga_id": "kamala_manohari",
   "tala": "adi",
-  "language": "sanskrit"
+  "language": "sanskrit",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c1057.shtml",
+      "label": "karnatik.com",
+      "type": "article"
+    }
+  ]
 }

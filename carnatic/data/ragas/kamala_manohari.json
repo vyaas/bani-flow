@@ -1,0 +1,14 @@
+{
+  "id": "kamala_manohari",
+  "name": "Kamala Manohari",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "sarasangi",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragask.shtml#kamalA%20manOhari",
+      "label": "karnatik.com"
+    }
+  ]
+}
