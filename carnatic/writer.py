@@ -86,7 +86,7 @@ VALID_TRADITIONS = {"carnatic", "hindustani"}
 PATCHABLE_MUSICIAN_FIELDS = {"label", "born", "died", "era", "instrument", "bani", "traditions"}
 PATCHABLE_EDGE_FIELDS = {"confidence", "source_url", "note"}
 PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "cakra", "notes", "katapayadi", "sources"}
-PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language", "notes", "composer_id", "raga_id"}
+PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language", "notes", "composer_id", "raga_id", "sources"}
 
 
 # ADR-101: patchable fields for lecdem segments and recording performances
@@ -1756,9 +1756,15 @@ class CarnaticWriter:
         if comp is None:
             return _err(f"composition_id \"{composition_id}\" does not exist in compositions[]")
         old_value = comp.get(field)
-        comp[field] = value if value not in (None, "null", "") else None
+        # Coerce sources to list
+        if field == "sources":
+            coerced: Any = [] if value in (None, "null", "") else value
+        else:
+            coerced = value if value not in (None, "null", "") else None
+        comp[field] = coerced
         _write_composition(compositions_path, comp)
         return _ok("[COMP~]", f"patched: {composition_id}  {field}: {old_value!r} → {comp[field]!r}")
+
 
     # ── ADR-101: recording performance write verbs ────────────────────────────
 

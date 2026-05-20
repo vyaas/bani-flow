@@ -32,7 +32,7 @@ window.editFormSpec = {
     annotatable: true,
   },
   composition: {
-    patchable:   ['title', 'tala', 'language', 'notes', 'composer_id', 'raga_id'],
+    patchable:   ['title', 'tala', 'language', 'notes', 'composer_id', 'raga_id', 'sources'],
     appendable:  ['sources'],
     annotatable: true,
   },
