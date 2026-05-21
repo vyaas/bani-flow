@@ -684,7 +684,7 @@ function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
 
   if (chipEl) {
     chipEl.classList.add('wdp-selected');
-    chipEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    chipEl.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
   // Mark the active comp chip (already in the DOM — find it by data-id selector).
   if (activeCompId) {
@@ -730,6 +730,18 @@ function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
         panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
       }
       chip.classList.add('wdp-active');
+      // Scroll the parent janya chip to the top so the raga anchor is always
+      // visible above its compositions. For mela-direct comps (no janya), scroll
+      // the comp chip itself to the top.
+      const _compGroup = chip.closest('.wdp-comp-group');
+      if (_compGroup) {
+        const _janyaChip = _compGroup.previousElementSibling;
+        if (_janyaChip && _janyaChip.classList.contains('wdp-raga')) {
+          _janyaChip.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        }
+      } else {
+        chip.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }
       window._wheelSyncInProgress = true;
       window._wheelOriginatedTrigger = true;
       if (!item._isPerf) {
@@ -2508,7 +2520,7 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
           const activeChip = panel.querySelector('.wdp-chip.wdp-comp[data-id="' + CSS.escape(targetCompId) + '"]');
           if (activeChip) {
             activeChip.classList.add('wdp-active');
-            activeChip.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            activeChip.scrollIntoView({ block: 'start', behavior: 'smooth' });
           }
         }
         window._wheelSyncInProgress = false;

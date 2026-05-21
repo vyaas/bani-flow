@@ -731,3 +731,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 - 2026-05-19: AUDIT-005: VALID_SOURCE_TYPES is a closed whitelist that the data has already outgrown (7 non-whitelisted types in production); the raga patch handler in bani_add.py reads "field" (singular) but the Edit Raga form emits "fields" (dict), causing immediate failure; patch_raga hard-refuses "sources" with no add-source-to-raga pathway; the render layer never reads source.type — it is written but never consumed downstream.
 [AGENTS: code-auditor]
+- 2026-05-20: AUDIT-006: `scrollIntoView({ block: "nearest" })` in the WDP is the root cause of both reported scroll issues — janya and mela-direct comp chips land at the bottom of the WDP body because "nearest" only ensures visibility, not top-alignment; changing to `block: "start"` fixes both cases; the bani-flow scroll reset via `_baniScroll.scrollTop = 0` in `buildListeningTrail` is already correct and requires no change.
+[AGENTS: code-auditor]
