@@ -450,11 +450,8 @@ function _positionWdpAtMela(melaNum) {
   const lx = g.cx + rHead * Math.cos(thetaRad);
   const ly = g.cy + rHead * Math.sin(thetaRad);
 
-  // Apply viewport transform: rotate -> scale -> translate.
-  const rot = s.rotation;
-  const dx = lx - g.cx, dy = ly - g.cy;
-  const rx = Math.cos(rot) * dx - Math.sin(rot) * dy + g.cx;
-  const ry = Math.sin(rot) * dx + Math.cos(rot) * dy + g.cy;
+  const rx = lx;
+  const ry = ly;
   const screenX = rx * s.scale + s.panX;
   const screenY = ry * s.scale + s.panY;
 
@@ -507,11 +504,8 @@ function _animateWheelToMela(melaNum, durationMs) {
   const thetaRad = (thetaDeg - 90) * Math.PI / 180;
   const lx = g.cx + rMid * Math.cos(thetaRad);
   const ly = g.cy + rMid * Math.sin(thetaRad);
-  // Apply rotation only (scale/translate folded into the pan target formula)
-  const rot = s.rotation;
-  const dx = lx - g.cx, dy = ly - g.cy;
-  const rx = Math.cos(rot) * dx - Math.sin(rot) * dy + g.cx;
-  const ry = Math.sin(rot) * dx + Math.cos(rot) * dy + g.cy;
+  const rx = lx;
+  const ry = ly;
   // Compute target pan to centre the WDP panel (not just the anchor point).
   // Half-panel offsets shift the anchor so the panel's visual centre lands at
   // the viewport centre. cornerOffsets derived from the same quadrant rule as
@@ -988,29 +982,20 @@ let _animRafId = null;  // current _animateToTarget rAF handle (cancelled on new
 // (defined outside the IIFE) can read/write them for the pan animation.
 let _dragging = false, _dragStartX = 0, _dragStartY = 0, _dragVX = 0, _dragVY = 0;
 let _dragMoved = false;
-let _gestureMode = null; // 'pan' | 'rotate' | 'pinch' | null
-let _rotateStartAngle = 0, _rotateStartRotation = 0;
+let _gestureMode = null; // 'pan' | 'pinch' | null
 
 const RagaWheel = {
   _state: {
     panX: 0,
     panY: 0,
     scale: 1,
-    rotation: 0,
   },
   _geometry: {
     cx: 0,
     cy: 0,
-    rOuter: 0,
   },
   _clampScale(v) {
     return Math.min(4.0, Math.max(0.5, v));
-  },
-  _normaliseRotation(rad) {
-    let r = rad;
-    while (r > Math.PI) r -= Math.PI * 2;
-    while (r < -Math.PI) r += Math.PI * 2;
-    return r;
   },
   pan(dx, dy) {
     this._state.panX += dx;
@@ -1029,39 +1014,23 @@ const RagaWheel = {
     this._state.scale = newScale;
     this._applyTransform();
   },
-  rotate(dTheta, anchor) {
-    if (!isFinite(dTheta)) return;
-    this._state.rotation = this._normaliseRotation(this._state.rotation + dTheta);
-    this._applyTransform();
-  },
   fit() {
     this._state.panX = 0;
     this._state.panY = 0;
     this._state.scale = 1;
-    this._state.rotation = 0;
     this._applyTransform();
     _closeWheelDetailPanel();
     _clearWheelLightUp();
   },
   centreOn(targetX, targetY, targetScale) { /* zoom-to-mela retired (ADR-124) */ },
-  alignLabelTo(angleRad) {
-    this._state.rotation = this._normaliseRotation(-angleRad);
-    this._applyTransform();
-  },
-  isRimDrag(svgX, svgY) {
-    const dx = svgX - this._geometry.cx;
-    const dy = svgY - this._geometry.cy;
-    return Math.hypot(dx, dy) > this._geometry.rOuter;
-  },
   _applyTransform() {
     const vp = document.getElementById('wheel-viewport');
     if (!vp) return;
     const s = this._state;
     const g = this._geometry;
-    const deg = s.rotation * 180 / Math.PI;
     vp.setAttribute(
       'transform',
-      `translate(${s.panX},${s.panY}) scale(${s.scale}) rotate(${deg} ${g.cx} ${g.cy})`
+      `translate(${s.panX},${s.panY}) scale(${s.scale})`
     );
     // ADR-140: reposition the WDP to stay anchored to its mela on every frame
     if (_wdpMelaNum !== null) _positionWdpAtMela(_wdpMelaNum);
@@ -1329,7 +1298,6 @@ window.drawRagaWheel = function() {
   // Restore saved pan/zoom and record geometry for gesture handlers
   RagaWheel._geometry.cx = cx;
   RagaWheel._geometry.cy = cy;
-  RagaWheel._geometry.rOuter = R_MUSC;
   RagaWheel._geometry.rMela  = R_MELA;  // ADR-140: needed by _positionWdpAtMela
   _applyTransform();
 
@@ -1359,14 +1327,6 @@ window.drawRagaWheel = function() {
       _dragMoved = false;
       _dragStartX = e.clientX; _dragStartY = e.clientY;
       _dragVX = RagaWheel._state.panX; _dragVY = RagaWheel._state.panY;
-      if (e.pointerType !== 'mouse' && (e.target === bg || e.target === svg)) {
-        const p = _toSvgPoint(svg, e.clientX, e.clientY);
-        if (RagaWheel.isRimDrag(p.x, p.y)) {
-          _gestureMode = 'rotate';
-          _rotateStartAngle = Math.atan2(p.y - RagaWheel._geometry.cy, p.x - RagaWheel._geometry.cx);
-          _rotateStartRotation = RagaWheel._state.rotation;
-        }
-      }
       if (e.pointerType !== 'mouse') _startTapHoldTimer(e);
       svg.style.cursor = 'grabbing';
     } else if (_activePointers.size === 2) {
@@ -1386,13 +1346,6 @@ window.drawRagaWheel = function() {
       if (!_dragMoved && Math.hypot(dx, dy) > 5) { _dragMoved = true; _cancelTapHoldTimer(); }
       RagaWheel._state.panX = _dragVX + dx;
       RagaWheel._state.panY = _dragVY + dy;
-      _applyTransform();
-    } else if (_activePointers.size === 1 && _dragging && _gestureMode === 'rotate') {
-      const p = _toSvgPoint(svg, e.clientX, e.clientY);
-      const currentAngle = Math.atan2(p.y - RagaWheel._geometry.cy, p.x - RagaWheel._geometry.cx);
-      const delta = currentAngle - _rotateStartAngle;
-      RagaWheel._state.rotation = RagaWheel._normaliseRotation(_rotateStartRotation + delta);
-      if (!_dragMoved && Math.abs(delta) > (2 * Math.PI / 180)) { _dragMoved = true; _cancelTapHoldTimer(); }
       _applyTransform();
     } else if (_activePointers.size === 2 && _pinchStartDist !== null) {
       const newDist = _getPinchDistance();
