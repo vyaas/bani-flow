@@ -823,8 +823,28 @@ def _process_recordings(
             else:                errors  += 1
             continue
 
+        # ── upsert: write full recording body, creating or overwriting ─────────
+        if op == "upsert":
+            rec_data = rec.get("value", rec)
+            rec_id = rec_data.get("id")
+            if not rec_id:
+                print("  ERROR  recording missing 'id'")
+                errors += 1
+                continue
+            dest = recordings_path / f"{rec_id}.json"
+            existed = dest.exists()
+            try:
+                _atomic_write_recording(recordings_path, rec_data)
+                label = "[REC~]  updated" if existed else "[REC+]  added"
+                print(f"  {label}: {rec_id}")
+                added += 1
+            except Exception as exc:
+                print(f"  ERROR  could not write recording {rec_id}: {exc}")
+                errors += 1
+            continue
+
         if op not in ("create", None):  # reject unknown ops
-            print(f"  ERROR  recording item has unknown op '{op}'. Known ops: create, annotate, append, patch.")
+            print(f"  ERROR  recording item has unknown op '{op}'. Known ops: create, upsert, annotate, append, patch.")
             errors += 1
             continue
 
