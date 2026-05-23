@@ -828,7 +828,10 @@ def _process_recordings(
             errors += 1
             continue
 
-        rec_id = rec.get("id")
+        # Unwrap value-envelope: v2 bundles emit { op: "create", value: {...} };
+        # v1 bundles are flat { id: ..., ... } with no op key — both are handled.
+        rec_data = rec.get("value", rec)
+        rec_id = rec_data.get("id")
         if not rec_id:
             print("  ERROR  recording missing 'id'")
             errors += 1
@@ -839,7 +842,7 @@ def _process_recordings(
             skipped += 1
             continue
         try:
-            _atomic_write_recording(recordings_path, rec)
+            _atomic_write_recording(recordings_path, rec_data)
             print(f"  [REC+]  added: {rec_id}")
             added += 1
         except Exception as exc:

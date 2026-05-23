@@ -1,0 +1,38 @@
+{
+  "id": "musiri_chamber_concert_for_july_2022",
+  "video_id": "farijs1nzak",
+  "url": "https://youtu.be/farijs1nzak",
+  "title": "Musiri Chamber Concert for July 2022",
+  "date": "2022",
+  "venue": null,
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/farijs1nzak",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "tm_krishna",
+          "role": "vocal"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "venkatasaila_vihara",
+          "raga_id": "hamir_kalyani",
+          "tala": null,
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}

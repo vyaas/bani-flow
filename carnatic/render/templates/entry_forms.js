@@ -3818,10 +3818,10 @@ function buildAddConcertForm(musicianId, opts) {
     const obj = collectConcertData();
     if (!obj.title || !obj.url) return;
     if (typeof addToBundle === 'function') {
-      addToBundle('recordings', { op: 'upsert', value: obj });
+      addToBundle('recordings', { op: isEdit ? 'annotate' : 'create', value: obj });
       bundleBtn.disabled   = true;
       bundleBtn.textContent = '✓ Added';
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = 'Update Patch'; }, 2000);
+      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = isEdit ? 'Update Patch' : '+ Add to Patch'; }, 2000);
     }
   });
 
