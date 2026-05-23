@@ -708,6 +708,14 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
     });
   }
 
+  // Watch on YouTube — refresh href with current offset just before the user clicks.
+  const ytLinkEl = el.querySelector('.mp-yt-link');
+  if (ytLinkEl) {
+    ytLinkEl.addEventListener('mouseenter', () => {
+      ytLinkEl.href = ytDirectUrl(vid, instance.currentOffset || 0);
+    });
+  }
+
   // Wire track list toggle and populate track items
   if (hasTracks && instance.tracklistEl) {
     const trackUl = buildPlayerTrackList(vid, tracks, instance);
@@ -2961,6 +2969,17 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
           showCopyLinkToast('Permalink copied!');
         });
       }
+    });
+  }
+
+  // Watch on YouTube — refresh href with current offset just before the user clicks.
+  const mobileYtLink = mp.bar.querySelector('.mp-yt-link');
+  if (mobileYtLink) {
+    mobileYtLink.addEventListener('touchstart', () => {
+      mobileYtLink.href = ytDirectUrl(mp.vid, mp.currentOffset || 0);
+    }, { passive: true });
+    mobileYtLink.addEventListener('mouseenter', () => {
+      mobileYtLink.href = ytDirectUrl(mp.vid, mp.currentOffset || 0);
     });
   }
 
