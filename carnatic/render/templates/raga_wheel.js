@@ -166,6 +166,26 @@ function hideRagaWheel() {
 // Shim retained so call-site change is minimal and future ADRs can re-introduce cakra colour.
 function getCakraColor(_n) { return THEME.bgPanel; }
 
+// ── Viewport-responsive zoom cap ──────────────────────────────────────────────
+// At ZOOM_MAX the WDP (228px wide, scales with s.scale) occupies exactly
+// (viewport_min − 80px), leaving ≥80px of accessible SVG so the user can
+// always scroll/pinch out even with the panel open.
+// Note: this whole block becomes dead code once ADR-124 deletes pan/zoom.
+function _computeWheelZoomMax() {
+  const WDP_WIDTH = 228;    // CSS fixed width of #wheel-detail-panel
+  const ACCESSIBLE_PX = 80; // min SVG strip to keep reachable
+  const minDim = Math.min(window.innerWidth, window.innerHeight);
+  return Math.max(1.2, Math.min(4.0, (minDim - ACCESSIBLE_PX) / WDP_WIDTH));
+}
+window.addEventListener('resize', () => {
+  const maxScale = _computeWheelZoomMax();
+  if (RagaWheel._state.scale > maxScale) {
+    RagaWheel._state.scale = maxScale;
+    const wheelEl = document.getElementById('raga-wheel');
+    if (wheelEl && wheelEl.style.display !== 'none') RagaWheel._applyTransform();
+  }
+}, { passive: true });
+
 function svgEl(tag, attrs) {
   const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
@@ -995,7 +1015,7 @@ const RagaWheel = {
     cy: 0,
   },
   _clampScale(v) {
-    return Math.min(4.0, Math.max(0.5, v));
+    return Math.min(_computeWheelZoomMax(), Math.max(0.5, v));
   },
   pan(dx, dy) {
     this._state.panX += dx;
@@ -1300,6 +1320,8 @@ window.drawRagaWheel = function() {
   RagaWheel._geometry.cy = cy;
   RagaWheel._geometry.rMela  = R_MELA;  // ADR-140: needed by _positionWdpAtMela
   _applyTransform();
+  // Clamp any persisted scale to the current viewport's max (handles resize-before-draw)
+  RagaWheel._state.scale = RagaWheel._clampScale(RagaWheel._state.scale);
 
   // ESC key clears light-up — registered once per draw via AbortController
   document.addEventListener('keydown', (e) => {
@@ -1307,7 +1329,7 @@ window.drawRagaWheel = function() {
   }, { signal: _signal });
 
   // ── Pan/zoom gesture handlers (wheel scroll, pointer drag, pinch) ─────────
-  const ZOOM_MIN = 0.5, ZOOM_MAX = 4.0;
+  const ZOOM_MIN = 0.5, ZOOM_MAX = _computeWheelZoomMax();
   svg.addEventListener('wheel', (e) => {
     e.preventDefault();
     const delta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 50);

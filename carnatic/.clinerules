@@ -733,3 +733,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: code-auditor]
 - 2026-05-20: AUDIT-006: `scrollIntoView({ block: "nearest" })` in the WDP is the root cause of both reported scroll issues — janya and mela-direct comp chips land at the bottom of the WDP body because "nearest" only ensures visibility, not top-alignment; changing to `block: "start"` fixes both cases; the bani-flow scroll reset via `_baniScroll.scrollTop = 0` in `buildListeningTrail` is already correct and requires no change.
 [AGENTS: code-auditor]
+- 2026-05-22: AUDIT-007: the `buildAddConcertForm` function in entry_forms.js emits `op: 'upsert'` unconditionally — the only non-ADR-097 op in the entire template; the `isEdit` variable was declared and used for the window title and pre-fill block but never wired into the op dispatch, leaving both create and edit paths emitting an op that bani_add.py has no handler for.
+[AGENTS: code-auditor]

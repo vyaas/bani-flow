@@ -160,6 +160,13 @@ const _cyElements = elements.filter(function (el) {
 const cy = cytoscape({
   container: document.getElementById('cy'),
   elements:  _cyElements,
+  minZoom: 0.1,
+  maxZoom: (() => {
+    // Scale with the smaller viewport dimension so deep zooms don't leave the
+    // user unable to reach an empty graph area to pinch/scroll out from.
+    const minDim = Math.min(window.innerWidth, window.innerHeight);
+    return Math.min(5.0, Math.max(2.0, minDim / 150));
+  })(),
   style: [
     {
       selector: 'node',
