@@ -136,6 +136,32 @@
       "label": "Evvare Ramayya · Gāngeyabhuśani",
       "composition_id": "evvare_ramayya",
       "raga_id": "gangeyabhusani"
+    },
+    {
+      "url": "https://youtu.be/0i-BKp4XZ5Q",
+      "label": "Paramathmudu · Vāgadhīśvari · adi",
+      "composition_id": "paramathmudu",
+      "raga_id": "vagadhisvari",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/SypvvLYsxUs",
+      "label": "Paramukhamadeno · Śūlini · adi",
+      "composition_id": "paramukhamadeno",
+      "raga_id": "sulini",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/qQ5N-xOutUM",
+      "label": "Arul Seyya · Rasikapriyā",
+      "composition_id": "arul_seyya",
+      "raga_id": "rasikapriya"
+    },
+    {
+      "url": "https://youtu.be/PNrMycGhfB0",
+      "label": "Karudhiyadhu Ellam · Hemavati",
+      "composition_id": "karudhiyadhu_ellam",
+      "raga_id": "hemavati"
     }
   ]
 }

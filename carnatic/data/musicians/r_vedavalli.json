@@ -29,6 +29,25 @@
       "composition_id": "soundara_rajam_ashraye",
       "raga_id": "brindavana_saranga",
       "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/AH6TiMmG8cI",
+      "label": "Handling of Raga Atana",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "atana"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://youtu.be/OtfoAPR57ZI",
+      "label": "Narada Gana · Atana · adi",
+      "composition_id": "narada_gana",
+      "raga_id": "atana",
+      "tala": "adi"
     }
   ]
 }

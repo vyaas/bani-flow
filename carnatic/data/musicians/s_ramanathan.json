@@ -16,5 +16,18 @@
     "carnatic"
   ],
   "bani": "mixed",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/6-MbcAYqVUI",
+      "label": "On Raga Lakshana",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "surutti"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    }
+  ]
 }
