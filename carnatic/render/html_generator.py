@@ -330,6 +330,7 @@ def render_html(
     chip_dblclick = _load("chip_dblclick.js")    # ADR-142 Phase δ: dblclick chip → openEditForm
     empty_tut    = _load("empty_tutorials.js")
     mobile       = _load("mobile.js")
+    permalink    = _load("permalink.js")         # ADR-151: URL hash restoration (LAST)
 
     # ── Substitute placeholders in base.html ──────────────────────────────────
     base = base.replace("{node_count}", str(node_count))
@@ -395,7 +396,8 @@ def render_html(
         entry_forms,   # ← needs graphData + wireDrag/nextSpawnPosition/topZ
         chip_dblclick, # ← ADR-142 δ: needs openEditForm from entry_forms.js
         empty_tut,     # ← ADR-086: empty-panel tutorials; needs helpEmptyPanels + bani_flow + media_player
-        mobile,        # ← LAST: exposes peekBottomSheet/dismissBottomSheet globals
+        mobile,        # ← exposes peekBottomSheet/dismissBottomSheet globals
+        permalink,     # ← ADR-151: permalink restoration; needs all globals above (LAST)
         "</script>",
     ])
 

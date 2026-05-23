@@ -952,6 +952,9 @@ function panelForward() {
 document.getElementById('panel-back-btn').addEventListener('click', panelBack);
 document.getElementById('panel-fwd-btn').addEventListener('click', panelForward);
 
+// ── ADR-151: expose panel node for permalink serialization ───────────────────
+window.getCurrentPanelNode = function() { return _currentPanelNodeId; };
+
 // ── ADR-137: Lineage traversal helpers ───────────────────────────────────────
 // Pure functions over the raw `elements` array (includes transit musicians).
 

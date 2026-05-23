@@ -32,14 +32,56 @@ function formatTala(tala) {
 }
 
 // Show a brief non-obtrusive notice when the user copies a link to clipboard.
+// ADR-151: optional msg param lets the share button show a different label.
 let _copyToastTimer = null;
-function showCopyLinkToast() {
+function showCopyLinkToast(msg) {
   const el = document.getElementById('mp-copy-toast');
   if (!el) return;
-  el.textContent = 'Link copied';
+  el.textContent = msg || 'Link copied';
   el.classList.add('visible');
   clearTimeout(_copyToastTimer);
   _copyToastTimer = setTimeout(function() { el.classList.remove('visible'); }, 1500);
+}
+
+// ── ADR-151: encode current UI state as a URL fragment for sharing ───────────
+// Reads the player instance (vid, currentOffset, meta), the left-panel trail
+// (via window.getBaniTrail), and the right-panel musician node
+// (via window.getCurrentPanelNode) and encodes them as a base64 JSON fragment.
+function encodePermalink(instance) {
+  try {
+    const trail   = (typeof window.getBaniTrail === 'function')
+      ? window.getBaniTrail() : { back: [] };
+    const panelId = (typeof window.getCurrentPanelNode === 'function')
+      ? window.getCurrentPanelNode() : null;
+    const state = { v: 1, vid: instance.vid };
+    if (instance.currentOffset > 0) state.t = instance.currentOffset;
+    const m = instance.meta || {};
+    const meta = {};
+    if (m.nodeId)        meta.nid = m.nodeId;
+    if (m.ragaId)        meta.rid = m.ragaId;
+    if (m.compositionId) meta.cid = m.compositionId;
+    if (m.recId)         meta.rec = m.recId;
+    if (Object.keys(meta).length) state.meta = meta;
+    // ADR-151: encode back-stack + current subject as the full trail.
+    // trail.back is the navigation history; trail.current is the subject
+    // currently shown in the panel. Both are needed: replaying only the
+    // back-stack leaves the panel on the last *previous* subject, not the
+    // one the user was actually viewing when they hit Share.
+    // Take the last 5 entries total to respect the ADR-151 max-5 constraint.
+    const _trailEntries = (trail.back || [])
+      .map(function(e) { return { tp: e.type, id: e.id }; });
+    if (trail.current && trail.current.type && trail.current.id)
+      _trailEntries.push({ tp: trail.current.type, id: trail.current.id });
+    if (_trailEntries.length)
+      state.trail = _trailEntries.slice(-5);
+    if (panelId) state.panel = panelId;
+    // btoa over UTF-8: encode JSON to percent-escaped bytes then to latin1
+    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(state))))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    return '#s=' + b64;
+  } catch (err) {
+    return null;
+  }
 }
 
 // Returns { top, left } positioning the player flush-right (or left) of the
@@ -378,6 +420,14 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
   rightGroup.appendChild(copyBtn);
 
+  // ADR-151: share button — encodes full UI state (trail + player + panel) as permalink.
+  // Click handler is wired in createPlayer() / _openMobilePlayer().
+  const shareBtn = document.createElement('button');
+  shareBtn.className = 'mp-share-btn';
+  shareBtn.title = 'Copy permalink';
+  shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>';
+  rightGroup.appendChild(shareBtn);
+
   if (hasTracks) {
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'mp-tracklist-toggle';
@@ -624,6 +674,24 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
           copyBtn.classList.add('mp-copy-copied');
           setTimeout(() => copyBtn.classList.remove('mp-copy-copied'), 1500);
           showCopyLinkToast();
+        });
+      }
+    });
+  }
+
+  // ADR-151: wire share button (permalink = trail + player + panel)
+  const shareBtn = el.querySelector('.mp-share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const fragment = encodePermalink(instance);
+      if (!fragment) return;
+      window.location.hash = fragment;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          shareBtn.classList.add('mp-share-copied');
+          setTimeout(() => shareBtn.classList.remove('mp-share-copied'), 1500);
+          showCopyLinkToast('Permalink copied!');
         });
       }
     });
@@ -2860,6 +2928,26 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
           freshCopy.classList.add('mp-copy-copied');
           setTimeout(() => freshCopy.classList.remove('mp-copy-copied'), 1500);
           showCopyLinkToast();
+        });
+      }
+    });
+  }
+
+  // ADR-151: wire share button on mobile path (same clone pattern as copy btn)
+  const mobileShareBtn = mp.bar.querySelector('.mp-share-btn');
+  if (mobileShareBtn) {
+    const freshShare = mobileShareBtn.cloneNode(true);
+    mobileShareBtn.parentNode.replaceChild(freshShare, mobileShareBtn);
+    freshShare.addEventListener('click', e => {
+      e.stopPropagation();
+      const fragment = encodePermalink(mp);
+      if (!fragment) return;
+      window.location.hash = fragment;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          freshShare.classList.add('mp-share-copied');
+          setTimeout(() => freshShare.classList.remove('mp-share-copied'), 1500);
+          showCopyLinkToast('Permalink copied!');
         });
       }
     });

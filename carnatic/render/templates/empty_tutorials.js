@@ -1557,6 +1557,10 @@
   //      and skip the re-load.
   function _bootHelloWorld() {
     if (!helpEmptyPanels) return;
+    // ADR-151: if a permalink hash is present, restoreStateFromHash() has
+    // already populated both panels synchronously. Proceeding would overwrite
+    // the restored state with the demo subjects and show the help decks on top.
+    if (window.location.hash && window.location.hash.startsWith('#s=')) return;
     // Bani subject (reetigowla by default — kind='raga')
     const baniBlock = helpEmptyPanels.bani_flow_panel || null;
     const baniSubject = baniBlock && baniBlock.subject;
@@ -1596,6 +1600,8 @@
     // (layout + ready callbacks). Most pages hit ready within ~100 ms.
     var attempts = 0;
     (function tick() {
+      // ADR-151: stop polling immediately if a permalink is active.
+      if (window.location.hash && window.location.hash.startsWith('#s=')) return;
       const cyReady = (typeof cy !== 'undefined') && cy.nodes && cy.nodes().length > 0;
       if (cyReady || attempts >= 100) {  // ≈5 s cap
         _bootHelloWorld();

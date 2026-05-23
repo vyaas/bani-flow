@@ -735,3 +735,7 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: code-auditor]
 - 2026-05-22: AUDIT-007: the `buildAddConcertForm` function in entry_forms.js emits `op: 'upsert'` unconditionally — the only non-ADR-097 op in the entire template; the `isEdit` variable was declared and used for the window title and pre-fill block but never wired into the op dispatch, leaving both create and edit paths emitting an op that bani_add.py has no handler for.
 [AGENTS: code-auditor]
+- 2025-07-14: AUDIT-008: concert bracket dblclick-to-edit is already fully wired (chip_dblclick.js + buildEditConcertForm → buildAddConcertForm with isEdit=true) — "common class" requirement is already met for concerts; the architectural gap is on the lec-dem side, where buildLecdemEditForm and buildFocusedLecdemForm are diverged parallel implementations that violate the same pattern concerts already satisfy.
+[AGENTS: code-auditor]
+- 2026-05-23: AUDIT-009: `_bootHelloWorld()` in empty_tutorials.js is triggered by a `DOMContentLoaded`+Cytoscape-ready poll that fires AFTER the synchronous `restoreStateFromHash()` in permalink.js — it unconditionally overwrites both panels with the reetigowla/ramnad_krishnan demo subjects and shows help-deck overlays, clobbering any permalink-restored state; fix is a one-line `window.location.hash.startsWith('#s=')` early-exit guard at the top of `_bootHelloWorld`.
+[AGENTS: code-auditor]

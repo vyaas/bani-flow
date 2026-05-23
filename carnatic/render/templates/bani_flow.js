@@ -101,6 +101,14 @@ function baniForward() {
   if (_baniFwdBtn)  _baniFwdBtn.addEventListener('click', baniForward);
 })();
 
+// ── ADR-151: expose bani trail for permalink serialization ───────────────────
+window.getBaniTrail = function() {
+  return {
+    current: { type: _currentBaniSubject.type, id: _currentBaniSubject.id },
+    back:    baniHistory.back.map(function(e) { return { type: e.type, id: e.id }; }),
+  };
+};
+
 function applyBaniFilter(type, id) {
   activeBaniFilter = { type, id };
 
@@ -838,6 +846,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
           nodeId:        row.nodeId || null,
           ragaId:        row.track.raga_id || null,
           compositionId: row.track.composition_id || null,
+          recId:         row.track.recording_id || null,
         }
       );
     } else {
@@ -852,6 +861,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
           nodeId:        row.nodeId || null,
           ragaId:        row.track.raga_id || null,
           compositionId: row.track.composition_id || null,
+          recId:         row.track.recording_id || null,
         }
       );
     }
@@ -907,13 +917,13 @@ function _buildPlayActsDiv(row) {
         row.track.offset_seconds || undefined,
         row.track.short_title || row.track.concert_title,
         playerTracks,
-        { nodeId: row.nodeId || null, ragaId: row.track.raga_id || null, compositionId: row.track.composition_id || null }
+        { nodeId: row.nodeId || null, ragaId: row.track.raga_id || null, compositionId: row.track.composition_id || null, recId: row.track.recording_id || null }
       );
     } else {
       openOrFocusPlayer(
         row.track.vid, row.track.label, row.artistLabel,
         undefined, undefined, undefined,
-        { nodeId: row.nodeId || null, ragaId: row.track.raga_id || null, compositionId: row.track.composition_id || null }
+        { nodeId: row.nodeId || null, ragaId: row.track.raga_id || null, compositionId: row.track.composition_id || null, recId: row.track.recording_id || null }
       );
     }
   });
