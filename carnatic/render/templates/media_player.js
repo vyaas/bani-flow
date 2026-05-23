@@ -428,6 +428,17 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>';
   rightGroup.appendChild(shareBtn);
 
+  // Watch on YouTube — native anchor so LibRedirect / privacy-redirect extensions intercept it.
+  // Uses the youtu.be short URL (no timestamp; this is a gateway link to the source).
+  const ytLink = document.createElement('a');
+  ytLink.className = 'mp-yt-link';
+  ytLink.href = ytDirectUrl(vid, 0);
+  ytLink.target = '_blank';
+  ytLink.rel = 'noopener noreferrer';
+  ytLink.title = 'Watch on YouTube';
+  ytLink.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
+  rightGroup.appendChild(ytLink);
+
   if (hasTracks) {
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'mp-tracklist-toggle';

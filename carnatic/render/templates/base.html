@@ -1054,6 +1054,17 @@
   .mp-share-btn:hover { color: var(--accent-sub); }
   .mp-share-btn.mp-share-copied { color: var(--accent); }
 
+  /* Watch on YouTube — same visual family as copy/share; anchor styled as icon button */
+  .mp-yt-link {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0; cursor: pointer; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; text-decoration: none;
+    transition: color 0.12s;
+  }
+  .mp-yt-link svg { width: 14px; height: 14px; fill: currentColor; display: block; pointer-events: none; }
+  .mp-yt-link:hover { color: var(--accent-sub); }
+
   /* 16:9 iframe wrapper */
   .mp-video-wrap {
     position: relative; width: 100%; padding-top: 56.25%; background: #000;
@@ -4007,6 +4018,7 @@
     }
     .media-player.full-mobile .mp-copy-btn,
     .media-player.full-mobile .mp-share-btn,
+    .media-player.full-mobile .mp-yt-link,
     .media-player.full-mobile .mp-tracklist-toggle {
       min-width: 44px; min-height: 44px;
       display: inline-flex; align-items: center; justify-content: center;
