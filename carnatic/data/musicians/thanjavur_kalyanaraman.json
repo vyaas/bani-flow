@@ -95,6 +95,47 @@
       "composition_id": "muddumomu_elagu",
       "raga_id": "suryakantam",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/-9lPTaPWSYA",
+      "label": "Alalagada · Hātakāmbari · adi",
+      "composition_id": "alalagada",
+      "raga_id": "hatakambari",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/obIPDQu4gKk",
+      "label": "Phanipati sayee · Jhankāradhvani · adi",
+      "composition_id": "phanipati_sayee",
+      "raga_id": "jhankaradhvani",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/DffRD1AfFsI",
+      "label": "Singara kumari · Varuṇapriyā · adi",
+      "composition_id": "singara_kumari",
+      "raga_id": "varunapriya",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/S5IZdfwyocc",
+      "label": "Manasa Sri Raamuni · Māraranjani · adi",
+      "composition_id": "manasa_sri_raamuni",
+      "raga_id": "mararanjani",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/4F1bSHKv_jI",
+      "label": "Kalankathe · Rāgavardhini · adi",
+      "composition_id": "kalankathe",
+      "raga_id": "ragavardhini",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/8BfIEN06fj0",
+      "label": "Evvare Ramayya · Gāngeyabhuśani",
+      "composition_id": "evvare_ramayya",
+      "raga_id": "gangeyabhusani"
     }
   ]
 }
