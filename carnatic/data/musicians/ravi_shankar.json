@@ -1,0 +1,26 @@
+{
+  "id": "ravi_shankar",
+  "label": "Ravi Shankar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ravi_Shankar",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": null,
+  "died": null,
+  "era": "living_pillars",
+  "instrument": "sitar",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/FI28LJrIPws",
+      "label": "Mushroom",
+      "raga_id": "abhogi_kanada",
+      "year": 1971
+    }
+  ]
+}

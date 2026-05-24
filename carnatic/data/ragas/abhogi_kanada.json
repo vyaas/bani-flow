@@ -1,0 +1,19 @@
+{
+  "id": "abhogi_kanada",
+  "name": "Abhogi Kanada",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [
+    "abhogi"
+  ],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Abhogi",
+      "label": "Wikipedia"
+    }
+  ]
+}
