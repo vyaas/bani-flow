@@ -250,6 +250,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   const subjectName   = document.getElementById('bani-subject-name');
   const subjectLink   = document.getElementById('bani-subject-link');
   const subjectIcon   = document.getElementById('bani-subject-icon');
+  const subjectSub    = document.getElementById('bani-subject-sub');
 
   subjectLink.style.display = 'none';
   subjectLink.href = '#';
@@ -267,9 +268,12 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   // Reset notes row (ADR-097 §7)
   const _notesRow = document.getElementById('bani-notes-row');
   if (_notesRow) { _notesRow.innerHTML = ''; _notesRow.style.display = 'none'; }
+  // Reset inline meta chips row (HER/CER or raga+composer)
+  if (subjectSub) { subjectSub.innerHTML = ''; subjectSub.style.display = 'none'; }
 
   // Reset subject name chip styling from previous call
   subjectName.className = '';
+  subjectName.onclick = null;  // clear stale click handler from previous call
   // ADR-142: clear stale entity attributes so a previous raga/comp navigation
   // cannot bleed through to the next panel type (fixes comp→khamas confusion).
   delete subjectName.dataset.chipRole;
@@ -297,8 +301,30 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       const notesEl = buildNotesSection(comp.notes);
       if (notesEl) { _notesRow.appendChild(notesEl); _notesRow.style.display = ''; }
     }
-    // ADR-149: popup button shows raga + composer + performer count
+    // ADR-149: popup button shows performer count (raga+composer now shown inline)
     _setupBaniSubjectPopupBtn('comp', id, { comp, raga, composer });
+    // Single-click on comp title → sync raga wheel to this composition
+    subjectName.onclick = function() { triggerBaniSearch('comp', id); };
+    // Inline raga + composer chips below the composition title
+    if (subjectSub) {
+      if (raga) {
+        const inlineRagaChip = document.createElement('span');
+        inlineRagaChip.className = 'raga-chip';
+        if (typeof applyChipRole === 'function') applyChipRole(inlineRagaChip, 'entity', 'raga', raga.id);
+        inlineRagaChip.textContent = raga.name;
+        inlineRagaChip.title = 'Explore ' + raga.name + ' in Bani Flow';
+        inlineRagaChip.addEventListener('click', function(e) {
+          e.stopPropagation();
+          triggerBaniSearch('raga', raga.id);
+        });
+        subjectSub.appendChild(inlineRagaChip);
+      }
+      if (typeof buildComposerChip === 'function' && comp && comp.composer_id) {
+        const inlineComposerChip = buildComposerChip(id);
+        if (inlineComposerChip) subjectSub.appendChild(inlineComposerChip);
+      }
+      if (subjectSub.children.length > 0) subjectSub.style.display = 'flex';
+    }
 
   } else if (type === 'perf') {
     // ── Single structured performance (from raga wheel click) ──────────────────
@@ -437,6 +463,43 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     }
     // ADR-149: popup button shows mela family / HER equivalents
     _setupBaniSubjectPopupBtn('raga', id, { raga });
+    // Single-click on raga title → sync raga wheel to this raga
+    subjectName.onclick = function() { triggerBaniSearch('raga', id); };
+    // Inline HER/CER chips below the raga title
+    if (subjectSub) {
+      const _allRagas = window._baniRagas || ragas;
+      if (raga && raga.tradition === 'hindustani') {
+        // Hindustani raga: show Carnatic equivalents (CER)
+        const cerRagas = _allRagas.filter(r => r.hindustani_equivalents && r.hindustani_equivalents.includes(id));
+        cerRagas.forEach(cr => {
+          const chip = document.createElement('span');
+          chip.className = 'raga-chip';
+          chip.textContent = cr.name || cr.id;
+          chip.title = 'Carnatic equivalent — explore in Bani Flow';
+          chip.addEventListener('click', function(e) {
+            e.stopPropagation();
+            triggerBaniSearch('raga', cr.id);
+          });
+          subjectSub.appendChild(chip);
+        });
+      } else if (raga) {
+        // Carnatic raga: show Hindustani equivalents (HER)
+        const herEqs = raga.hindustani_equivalents || [];
+        const herRagas = herEqs.map(hid => _allRagas.find(r => r.id === hid)).filter(Boolean);
+        herRagas.forEach(hr => {
+          const chip = document.createElement('span');
+          chip.className = 'her-chip';
+          chip.textContent = '\u2194\u00a0' + (hr.name || hr.id);
+          chip.title = 'Hindustani equivalent — explore in Bani Flow';
+          chip.addEventListener('click', function(e) {
+            e.stopPropagation();
+            triggerBaniSearch('raga', hr.id);
+          });
+          subjectSub.appendChild(chip);
+        });
+      }
+      if (subjectSub.children.length > 0) subjectSub.style.display = 'flex';
+    }
   }
 
   // ADR-128 D2: show affordances row (wiki link + edit button) when a subject is loaded
@@ -1599,12 +1662,10 @@ function _setupBaniSubjectPopupBtn(type, id, ctx) {
 
     btn.textContent = count;
     btn.title = title;
-    btn.onclick = function(e) {
-      e.stopPropagation();
-      if (_baniSubjectPop.style.display !== 'none') { _baniSubjectPop.style.display = 'none'; return; }
-      _buildCompPopupContent(comp, raga, composer);
-      _positionBaniPopup(btn);
-    };
+    // Raga and composer are now shown inline below the subject chip — no popup needed.
+    btn.onclick = null;
+    btn.style.cursor = 'default';
+    btn.style.pointerEvents = 'none';
   }
 
   btn.style.display = count > 0 ? 'inline-flex' : 'none';
@@ -1636,8 +1697,10 @@ function _positionBaniPopup(btn) {
  *   - 'yt':   "vid::ragaId"
  */
 function triggerBaniSearch(type, id, fromHistory = false) {
-  // ADR-148: push current subject to history before navigating
-  if (!fromHistory && _currentBaniSubject.type) {
+  // ADR-148: push current subject to history before navigating.
+  // Guard: skip if navigating to the same subject (e.g. clicking the panel-title chip).
+  if (!fromHistory && _currentBaniSubject.type &&
+      !(_currentBaniSubject.type === type && _currentBaniSubject.id === id)) {
     baniHistory.back.push({ type: _currentBaniSubject.type, id: _currentBaniSubject.id });
     if (baniHistory.back.length > BANI_HISTORY_MAX) baniHistory.back.shift();
     baniHistory.forward = [];
