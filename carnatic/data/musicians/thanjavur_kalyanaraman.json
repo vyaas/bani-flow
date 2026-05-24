@@ -162,6 +162,40 @@
       "label": "Karudhiyadhu Ellam · Hemavati",
       "composition_id": "karudhiyadhu_ellam",
       "raga_id": "hemavati"
+    },
+    {
+      "url": "https://youtu.be/V_Y0nc3Y3fg",
+      "label": "GhanaNaya · Riśabhapriyā · adi",
+      "composition_id": "ghananaya",
+      "raga_id": "risabhapriya",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/5NPKpqIZqEk",
+      "label": "Maamava Ashrita · Bhavapriyā",
+      "composition_id": "maamava_ashrita",
+      "raga_id": "bhavapriya"
+    },
+    {
+      "url": "https://youtu.be/2JRXB_t4zjs",
+      "label": "Gaanaamudam · Sālagam · adi",
+      "composition_id": "gaanaamudam",
+      "raga_id": "salagam",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/EBIhEu1iW80",
+      "label": "Ka Guha Shanmukha · Kōsalam · rupakam",
+      "composition_id": "ka_guha_shanmukha",
+      "raga_id": "kosalam",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/ra-t1MNduRk",
+      "label": "Sama Gana Lola · Chitrāmbari · misra_capu",
+      "composition_id": "sama_gana_lola",
+      "raga_id": "chitrambari",
+      "tala": "misra_capu"
     }
   ]
 }
