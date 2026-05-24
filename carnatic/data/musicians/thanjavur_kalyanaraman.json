@@ -203,6 +203,47 @@
       "composition_id": "kaarunya",
       "raga_id": "dhavalambari",
       "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/xhlppqd0j5U",
+      "label": "Paramananda · Viśvambari · rupakam",
+      "composition_id": "paramananda",
+      "raga_id": "visvambari",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/1yh4fit4tGE",
+      "label": "Kandha · Śāmaḻāngi · misra_capu",
+      "composition_id": "kandha",
+      "raga_id": "samalangi",
+      "tala": "misra_capu"
+    },
+    {
+      "url": "https://youtu.be/ZFq09Wyspe8",
+      "label": "Sukhakara · Dhāthuvardhani · adi",
+      "composition_id": "sukhakara",
+      "raga_id": "dhathuvardhani",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/kKwyffWzQWw",
+      "label": "Gaanamuda Paanam · Jyoti svarupini · misra_capu",
+      "composition_id": "gaanamuda_paanam",
+      "raga_id": "jyoti_svarupini",
+      "tala": "misra_capu"
+    },
+    {
+      "url": "https://youtu.be/A9HyJtct_Ak",
+      "label": "Sukumara Vela · Sucharitrā",
+      "composition_id": "sukumara_vela",
+      "raga_id": "sucharitra"
+    },
+    {
+      "url": "https://youtu.be/9XkCUFvbE9g",
+      "label": "Andharanga Bakthi · Shaḍvidamārgini · adi",
+      "composition_id": "andharanga_bakthi",
+      "raga_id": "shadvidamargini",
+      "tala": "adi"
     }
   ]
 }
