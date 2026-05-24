@@ -244,6 +244,34 @@
       "composition_id": "andharanga_bakthi",
       "raga_id": "shadvidamargini",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/rmoNaJnyTx8",
+      "label": "Kanaka Mayoora · Jalārnavam · adi",
+      "composition_id": "kanaka_mayoora",
+      "raga_id": "jalarnavam",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/_rDEot0lFWc",
+      "label": "Sami Idhe Nalla Samayam · Navanītam · rupakam",
+      "composition_id": "sami_idhe_nalla_samayam",
+      "raga_id": "navanitam",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/6OXDHeFaWPc",
+      "label": "Anjaade Nenjamee · Pāvani · misra_capu",
+      "composition_id": "anjaade_nenjamee",
+      "raga_id": "pavani",
+      "tala": "misra_capu"
+    },
+    {
+      "url": "https://youtu.be/PE4IKAmuBfg",
+      "label": "Ettanai Ettanai · Gavāmbhodi · adi",
+      "composition_id": "ettanai_ettanai",
+      "raga_id": "gavambhodi",
+      "tala": "adi"
     }
   ]
 }
