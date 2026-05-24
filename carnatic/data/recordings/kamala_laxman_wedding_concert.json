@@ -1,0 +1,114 @@
+{
+  "id": "kamala_laxman_wedding_concert",
+  "video_id": "ojc_s8-8nLE",
+  "url": "https://youtu.be/ojc_s8-8nLE",
+  "title": "Kamala & Laxman Wedding Concert",
+  "date": "1954",
+  "venue": null,
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/ojc_s8-8nLE",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "palghat_raghu",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "evvari_bodhana",
+          "raga_id": "abhogi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:03:57",
+          "offset_seconds": 237,
+          "composition_id": "ne_jesina_neramu",
+          "raga_id": "purnachandrika",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:11:31",
+          "offset_seconds": 691,
+          "composition_id": "ramanatham_bhajeham",
+          "raga_id": "pantuvarali",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:27:57",
+          "offset_seconds": 1677,
+          "composition_id": "nadha_sudharasam",
+          "raga_id": "arabhi",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:41:31",
+          "offset_seconds": 2491,
+          "composition_id": "marivere_gathi",
+          "raga_id": "ananda_bhairavi",
+          "tala": "misra_capu",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:58:52",
+          "offset_seconds": 3532,
+          "composition_id": "kamalambam_bhaja_re",
+          "raga_id": "kalyani",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:33:15",
+          "offset_seconds": 5595,
+          "composition_id": "nenarunchinanu",
+          "raga_id": "malavi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:42:23",
+          "offset_seconds": 6143,
+          "composition_id": "pakkala_nilabadi",
+          "raga_id": "kharaharapriya",
+          "tala": "misra_capu",
+          "display_title": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:02:51",
+          "offset_seconds": 7371,
+          "composition_id": "idadhu_padam_thooki",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
