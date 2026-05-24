@@ -272,6 +272,19 @@
       "composition_id": "ettanai_ettanai",
       "raga_id": "gavambhodi",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/F-4LnEq75cw",
+      "label": "Isaikada · Divyamaṇi",
+      "composition_id": "isaikada",
+      "raga_id": "divyamani"
+    },
+    {
+      "url": "https://youtu.be/oIxYx_Ducl4",
+      "label": "En Maname · Nāmanārāyaṇi · adi",
+      "composition_id": "en_maname",
+      "raga_id": "namanarayani",
+      "tala": "adi"
     }
   ]
 }
