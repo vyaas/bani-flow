@@ -100,6 +100,93 @@ function downloadJson(filename, obj) {
   URL.revokeObjectURL(a.href);
 }
 
+// ── Uniform patch-success dialog — ADR-152 ────────────────────────────────────
+// Replaces the form body with a confirmation panel after "Update Patch" is
+// clicked. All entry forms call this function — behaviour is identical.
+//
+// win      — .ew-window element (body and footer are replaced in place)
+// snapshot — the JS object passed to addToBundle() (shown in collapsible block)
+// opts     — { headline, addAnotherLabel, addAnotherFn, undoFn }
+function showPatchSuccess(win, snapshot, opts) {
+  opts = opts || {};
+  const headline        = opts.headline        || '\u2713 Added to patch';
+  const addAnotherLabel = opts.addAnotherLabel || null;
+  const addAnotherFn    = opts.addAnotherFn    || null;
+  const undoFn          = opts.undoFn          || null;
+
+  const body = win.querySelector('.ew-body');
+  body.innerHTML = '';
+
+  const msg = document.createElement('div');
+  msg.className = 'ef-success';
+
+  const headlineEl = document.createElement('strong');
+  headlineEl.innerHTML = headline;
+  msg.appendChild(headlineEl);
+
+  // Collapsible JSON snapshot (closed by default — zero friction for expert users)
+  const details = document.createElement('details');
+  details.style.cssText = 'margin:10px 0 0;font-size:0.72rem;';
+  const summary = document.createElement('summary');
+  summary.style.cssText = 'cursor:pointer;color:var(--fg-muted);user-select:none;';
+  summary.textContent = 'Snapshot';
+  const snapPre = document.createElement('pre');
+  snapPre.className = 'ef-preview-pre';
+  snapPre.style.cssText = 'margin:6px 0 0;font-size:0.68rem;max-height:160px;overflow:auto;';
+  try { snapPre.textContent = JSON.stringify(snapshot, null, 2); }
+  catch(e) { snapPre.textContent = String(snapshot); }
+  details.appendChild(summary);
+  details.appendChild(snapPre);
+  msg.appendChild(details);
+
+  // Fixed next-step block (identical for every form — bani-add + bani-render)
+  const stepsP = document.createElement('p');
+  stepsP.style.cssText = 'margin:12px 0 0;font-size:0.72rem;color:var(--fg-sub);';
+  stepsP.innerHTML = 'When done, click <strong>\u2B07 Patch</strong> in the toolbar to download '
+    + '<code>bani_add_patch.json</code>, then run:';
+  const cmdPre = document.createElement('pre');
+  cmdPre.style.cssText = 'margin:6px 0 0;font-size:0.72rem;';
+  cmdPre.textContent = 'bani-add bani_add_bundle.json\nbani-render';
+  msg.appendChild(stepsP);
+  msg.appendChild(cmdPre);
+
+  body.appendChild(msg);
+
+  const footer = win.querySelector('.ew-footer');
+  footer.innerHTML = '';
+
+  if (addAnotherLabel && addAnotherFn) {
+    const addAnotherBtn = document.createElement('button');
+    addAnotherBtn.className = 'ef-download-btn';
+    addAnotherBtn.textContent = addAnotherLabel;
+    addAnotherBtn.addEventListener('click', () => { win.remove(); addAnotherFn(); });
+    footer.appendChild(addAnotherBtn);
+  }
+
+  if (undoFn) {
+    const undoBtn = document.createElement('button');
+    undoBtn.className = 'ef-preview-btn';
+    undoBtn.textContent = 'Undo';
+    undoBtn.addEventListener('click', () => {
+      undoFn();
+      body.innerHTML = '';
+      const undoneMsg = document.createElement('div');
+      undoneMsg.className = 'ef-success';
+      undoneMsg.innerHTML = '<strong>\u21A9 Undone \u2014 item removed from patch</strong>';
+      body.appendChild(undoneMsg);
+      footer.innerHTML = '';
+      setTimeout(() => win.remove(), 1500);
+    });
+    footer.appendChild(undoBtn);
+  }
+
+  const okBtn = document.createElement('button');
+  okBtn.className = 'ef-preview-btn';
+  okBtn.textContent = 'OK';
+  okBtn.addEventListener('click', () => win.remove());
+  footer.appendChild(okBtn);
+}
+
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 
 function efInput(id, type, placeholder, value) {
@@ -1338,14 +1425,27 @@ function buildMusicianForm({ prefill = null } = {}) {
     if (!open) updatePreview();
   });
 
-  // ADR-145 D1 / ADR-147: stage into patch bundle (add = new node, edit = patch op)
+  // ADR-145 D1 / ADR-147 / ADR-152: stage into patch bundle (add = new node, edit = patch op)
   addPatchBtn.addEventListener('click', () => {
     const { nodeJson, newEdges } = generateMusicianJson(win);
+    let addedMusician = false;
     if (!isEdit || Object.keys(nodeJson.fields || {}).length > 0) {
       addToBundle('musicians', nodeJson);
+      addedMusician = true;
     }
     newEdges.forEach(e => addToBundle('edges', e));
-    showMusicianPatchSuccess(win, nodeJson.id, newEdges.length);
+    const musId    = nodeJson.id || (prefill && prefill.id) || '';
+    const edgeNote = newEdges.length > 0 ? ` and ${newEdges.length} edge${newEdges.length > 1 ? 's' : ''}` : '';
+    showPatchSuccess(win, nodeJson, {
+      headline: isEdit
+        ? `\u2713 Patch queued for <code>${musId}</code>${edgeNote}`
+        : `\u2713 Added <code>${musId}</code>${edgeNote} to patch`,
+      addAnotherLabel: isEdit ? null : '+ Add Another Musician',
+      addAnotherFn:    isEdit ? null : () => buildMusicianForm(),
+      undoFn: (addedMusician && newEdges.length === 0)
+        ? () => { baniBundle.musicians.pop(); _updateBundleBtn(); }
+        : null,
+    });
   });
 
   return win;
@@ -2098,43 +2198,6 @@ function generateMusicianJson(win) {
   return { nodeJson, newEdges };
 }
 
-// ── showMusicianPatchSuccess — ADR-145 ────────────────────────────────────────
-
-function showMusicianPatchSuccess(win, id, edgeCount) {
-  const body = win.querySelector('.ew-body');
-  body.innerHTML = '';
-
-  const msg = document.createElement('div');
-  msg.className = 'ef-success';
-  const edgeNote = edgeCount > 0 ? ` and ${edgeCount} edge${edgeCount > 1 ? 's' : ''}` : '';
-  msg.innerHTML = `
-    <strong>✓ Added <code>${id}</code>${edgeNote} to the patch</strong>
-    <ol>
-      <li>Continue adding musicians or recordings</li>
-      <li>When done, click <strong>⬇ Patch (N ops)</strong> in the toolbar to download</li>
-      <li>Run: <code>bani-add bani_add_bundle.json</code></li>
-      <li>Run: <code>bani-render</code></li>
-    </ol>
-  `;
-  body.appendChild(msg);
-
-  const footer = win.querySelector('.ew-footer');
-  footer.innerHTML = '';
-
-  const addAnotherBtn = document.createElement('button');
-  addAnotherBtn.className = 'ef-download-btn';
-  addAnotherBtn.textContent = '+ Add Another Musician';
-  addAnotherBtn.addEventListener('click', () => { win.remove(); buildMusicianForm(); });
-
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'ef-preview-btn';
-  closeBtn.textContent = 'Close';
-  closeBtn.addEventListener('click', () => win.remove());
-
-  footer.appendChild(addAnotherBtn);
-  footer.appendChild(closeBtn);
-}
-
 // ── showMusicianSuccess (legacy — kept for any callers still using download path)
 
 function showMusicianSuccess(win, id, hasEdges) {
@@ -2502,19 +2565,25 @@ function buildRagaForm({ prefill = null } = {}) {
       if (hindEqVal) {
         addToBundle('ragas', { op: 'append', id: obj.id, field: 'hindustani_equivalents', value: hindEqVal });
       }
-      showGenericSuccess(win, obj.id, 'bundle');
+      showPatchSuccess(win, obj, { headline: `\u2713 Patch queued for raga <code>${obj.id}</code>` });
     } else {
       // ADR-115: dual-emission for HER creation — emit create + append back-link atomically
       const carnEqVal = win.querySelector('#ef_raga_carnatic_equiv')
         ? win.querySelector('#ef_raga_carnatic_equiv').value
         : '';
-      if (obj.tradition === 'hindustani' && carnEqVal) {
+      const dual = obj.tradition === 'hindustani' && !!carnEqVal;
+      if (dual) {
         addToBundle('ragas', obj);
         addToBundle('ragas', { op: 'append', id: carnEqVal, field: 'hindustani_equivalents', value: obj.id });
       } else {
         addToBundle('ragas', obj);
       }
-      showGenericSuccess(win, obj.id, 'bundle');
+      showPatchSuccess(win, obj, {
+        headline:        `\u2713 Added raga <code>${obj.id}</code> to patch`,
+        addAnotherLabel: '+ Add another raga',
+        addAnotherFn:    () => buildRagaForm(),
+        undoFn: dual ? null : () => { baniBundle.ragas.pop(); _updateBundleBtn(); },
+      });
     }
   });
 
@@ -2857,7 +2926,12 @@ function buildComposerForm() {
   bundleBtn.addEventListener('click', () => {
     const obj = buildJson();
     addToBundle('musicians', obj);
-    showGenericSuccess(win, obj.id, 'bundle');
+    showPatchSuccess(win, obj, {
+      headline: `\u2713 Added composer <code>${obj.id}</code> to patch`,
+      addAnotherLabel: '+ Add another composer',
+      addAnotherFn:    () => buildComposerForm(),
+      undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
+    });
   });
 
   dlBtn.addEventListener('click', () => {
@@ -3045,7 +3119,15 @@ function buildCompositionForm({ prefill = null } = {}) {
   bundleBtn2.addEventListener('click', () => {
     const obj = generateCompositionJson(win);
     addToBundle('compositions', obj);
-    showGenericSuccess(win, obj.id || prefill && prefill.id, 'bundle');
+    const compId = obj.id || (prefill && prefill.id) || '';
+    showPatchSuccess(win, obj, {
+      headline: isEdit
+        ? `\u2713 Patch queued for composition <code>${compId}</code>`
+        : `\u2713 Added composition <code>${compId}</code> to patch`,
+      addAnotherLabel: isEdit ? null : '+ Add another composition',
+      addAnotherFn:    isEdit ? null : () => buildCompositionForm(),
+      undoFn: () => { baniBundle.compositions.pop(); _updateBundleBtn(); },
+    });
   });
 
   dlBtn.addEventListener('click', () => {
@@ -3819,9 +3901,12 @@ function buildAddConcertForm(musicianId, opts) {
     if (!obj.title || !obj.url) return;
     if (typeof addToBundle === 'function') {
       addToBundle('recordings', { op: isEdit ? 'upsert' : 'create', value: obj });
-      bundleBtn.disabled   = true;
-      bundleBtn.textContent = '✓ Added';
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = isEdit ? 'Update Patch' : '+ Add to Patch'; }, 2000);
+      showPatchSuccess(win, obj, {
+        headline: isEdit
+          ? '✓ Concert recording patch queued'
+          : '✓ Added concert recording to patch',
+        undoFn: () => { baniBundle.recordings.pop(); _updateBundleBtn(); },
+      });
     }
   });
 
@@ -3894,6 +3979,9 @@ function showGenericSuccess(win, filename, directory) {
   footer.appendChild(closeBtn);
 }
 
+// ── Combined Musician/YouTube form (internal — ADR-108 transition) ───────────
+// Preserved as _buildCombinedMusicianYouTubeForm for the YouTube-entry path.
+// The public buildMusicianRecordingsForm() shim now delegates to buildAddMusicianForm().
 // ── Combined Musician/YouTube form (internal — ADR-108 transition) ───────────
 // Preserved as _buildCombinedMusicianYouTubeForm for the YouTube-entry path.
 // The public buildMusicianRecordingsForm() shim now delegates to buildAddMusicianForm().
@@ -4236,7 +4324,13 @@ function _buildCombinedMusicianYouTubeForm() {
     }
     delete item._edges;
     addToBundle('musicians', item);
-    showBundleSuccess(win, mode === 'new' ? item.id : item.musician_id, mode);
+    const bundleId = mode === 'new' ? item.id : item.musician_id;
+    showPatchSuccess(win, item, {
+      headline: mode === 'new'
+        ? `✓ Added musician <code>${bundleId}</code> to patch`
+        : `✓ YouTube entries queued for <code>${bundleId}</code>`,
+      undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
+    });
   });
 
   dlBtn.addEventListener('click', () => {
@@ -4253,45 +4347,6 @@ function _buildCombinedMusicianYouTubeForm() {
   });
 
   return win;
-}
-
-function showBundleSuccess(win, id, mode) {
-  const body = win.querySelector('.ew-body');
-  body.innerHTML = '';
-
-  const msg = document.createElement('div');
-  msg.className = 'ef-success';
-  const desc = mode === 'new'
-    ? `New musician <code>${id}</code>`
-    : `YouTube entries for <code>${id}</code>`;
-  msg.innerHTML = `
-    <strong>\u2713 Added to bundle: ${desc}</strong>
-    <p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">
-      When done adding items, click <strong>\u2B07 Patch</strong> in the footer to download
-      <code>bani_add_patch.json</code>, then run:
-    </p>
-    <pre style="margin:6px 0;font-size:0.72rem;">bani-add bani_add_bundle.json\nbani-render</pre>
-  `;
-  body.appendChild(msg);
-
-  const footer = win.querySelector('.ew-footer');
-  footer.innerHTML = '';
-
-  const addMoreBtn = document.createElement('button');
-  addMoreBtn.className  = 'ef-preview-btn';
-  addMoreBtn.textContent = 'Add another musician';
-  addMoreBtn.addEventListener('click', () => {
-    win.remove();
-    buildMusicianRecordingsForm();
-  });
-
-  const closeBtn = document.createElement('button');
-  closeBtn.className  = 'ef-preview-btn';
-  closeBtn.textContent = 'Close';
-  closeBtn.addEventListener('click', () => win.remove());
-
-  footer.appendChild(addMoreBtn);
-  footer.appendChild(closeBtn);
 }
 
 // ── Add YouTube to Existing Musician form (legacy — kept for internal use) ────
@@ -5190,8 +5245,9 @@ function buildLecdemSubjectEditForm(ref, nodeId) {
       }
     });
     if (count > 0) {
-      stageBtn.textContent = `✓ Staged ${count} addition${count > 1 ? 's' : ''}!`;
-      setTimeout(() => { stageBtn.textContent = '↪ Stage additions → patch'; }, 1800);
+      showPatchSuccess(win, { op: 'append', id: nodeId, count, note: 'lecdem subjects' }, {
+        headline: `✓ Staged ${count} subject${count > 1 ? 's' : ''} for <code>${nodeId}</code>`,
+      });
     } else {
       stageBtn.textContent = '(no new items)';
       setTimeout(() => { stageBtn.textContent = '↪ Stage additions → patch'; }, 1200);
@@ -5558,8 +5614,9 @@ function buildLecdemEditForm(ref, nodeId) {
       count++;
     });
     if (count > 0) {
-      stageBtn.textContent = `✓ Staged ${count} item${count > 1 ? 's' : ''}!`;
-      setTimeout(() => { stageBtn.textContent = 'Update Patch'; }, 1800);
+      showPatchSuccess(win, { op: 'append', id: nodeId, count, note: 'lecdem edit' }, {
+        headline: `✓ Staged ${count} item${count > 1 ? 's' : ''} for <code>${nodeId}</code>`,
+      });
     } else {
       stageBtn.textContent = '(no new items)';
       setTimeout(() => { stageBtn.textContent = 'Update Patch'; }, 1200);
@@ -6454,37 +6511,20 @@ function buildAddMusicianForm({ prefill = null } = {}) {
       if (!graphData.musicians.find(m => m.id === musId)) graphData.musicians.push(ghost);
     }
 
-    // Success screen
-    const body2 = win.querySelector('.ew-body');
-    body2.innerHTML = '';
-    const msg = document.createElement('div');
-    msg.className = 'ef-success';
-    const editSummary = isEdit
-      ? (newEdges.length > 0 && Object.keys(item.fields || {}).length === 0
-          ? `${newEdges.length} edge${newEdges.length > 1 ? 's' : ''} queued for <code>${prefill.id}</code>`
-          : `Patch queued for <code>${prefill.id}</code>`)
-      : null;
-    msg.innerHTML = isEdit
-      ? `<strong>\u2713 Added to bundle: ${editSummary}</strong>`
-        + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">Download \u2B07 Bundle to apply the changes.</p>`
-      : `<strong>\u2713 Added to bundle: <code>${musId}</code></strong>`
-        + `<p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);"><code>${musId}</code> is now available in all dropdowns — add more musicians, videos, or edges without refreshing. Download \u2B07 Bundle when done.</p>`;
-    body2.appendChild(msg);
-
-    const footer2 = win.querySelector('.ew-footer');
-    footer2.innerHTML = '';
-    if (!isEdit) {
-      const addMoreBtn = document.createElement('button');
-      addMoreBtn.className  = 'ef-preview-btn';
-      addMoreBtn.textContent = 'Add another musician';
-      addMoreBtn.addEventListener('click', () => { win.remove(); buildAddMusicianForm(); });
-      footer2.appendChild(addMoreBtn);
-    }
-    const closeBtn = document.createElement('button');
-    closeBtn.className  = 'ef-preview-btn';
-    closeBtn.textContent = 'Close';
-    closeBtn.addEventListener('click', () => win.remove());
-    footer2.appendChild(closeBtn);
+    // Success screen — ADR-152
+    const edgeNote2 = newEdges.length > 0 ? ` and ${newEdges.length} edge${newEdges.length > 1 ? 's' : ''}` : '';
+    const addMusHeadline = isEdit
+      ? `✓ Patch queued for <code>${musId}</code>${edgeNote2}`
+      : `✓ Added <code>${musId}</code> to patch`;
+    const canUndo = newEdges.length === 0;
+    showPatchSuccess(win, item, {
+      headline:        addMusHeadline,
+      addAnotherLabel: isEdit ? null : '+ Add another musician',
+      addAnotherFn:    isEdit ? null : () => buildAddMusicianForm(),
+      undoFn: (canUndo && (!isEdit || Object.keys(item.fields || {}).length > 0))
+        ? () => { baniBundle.musicians.pop(); _updateBundleBtn(); }
+        : null,
+    });
   });
 
   validate();
@@ -6742,10 +6782,12 @@ function buildFocusedYouTubeForm(musicianId, opts) {
     if (!data.youtube.length) return;
     const effId = getEffectiveMusicianId();
     if (typeof addToBundle === 'function') {
-      addToBundle('musicians', { op: 'append', id: effId, array: 'youtube', value: data.youtube });
-      bundleBtn.disabled = true;
-      bundleBtn.textContent = '✓ Added';
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = 'Update Patch'; }, 2000);
+      const ytBundleItem = { op: 'append', id: effId, array: 'youtube', value: data.youtube };
+      addToBundle('musicians', ytBundleItem);
+      showPatchSuccess(win, ytBundleItem, {
+        headline: `✓ YouTube entries queued for <code>${effId}</code>`,
+        undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
+      });
     }
   });
 
@@ -7176,8 +7218,12 @@ function buildFocusedLecdemForm(musicianId, prefillSubjects) {
       setTimeout(() => { bundleBtn.textContent = prev; }, 2000);
       return;
     }
-    addToBundle('musicians', { op: 'append', id: musicianId || (musCombo_ && musCombo_.getValue()) || '', array: 'youtube', value: lecdem });
-    showGenericSuccess(win, musicianId || (musCombo_ && musCombo_.getValue()) || '', 'bundle');
+    const resolvedId = musicianId || (musCombo_ && musCombo_.getValue()) || '';
+    addToBundle('musicians', { op: 'append', id: resolvedId, array: 'youtube', value: lecdem });
+    showPatchSuccess(win, lecdem, {
+      headline: `✓ Lecdem queued for <code>${resolvedId}</code>`,
+      undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
+    });
   });
 }
 
@@ -7385,9 +7431,10 @@ function openAddYouTubeFormForComposition({ compositionId, ragaId, compositionTi
     if (!items.length) return;
     if (typeof addToBundle === 'function') {
       items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
-      bundleBtn.textContent = '✓ Added';
-      bundleBtn.disabled = true;
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Patch'; }, 2000);
+      showPatchSuccess(win, items.length === 1 ? items[0] : items, {
+        headline: `✓ Added ${items.length} YouTube entr${items.length > 1 ? 'ies' : 'y'} to patch`,
+        undoFn: () => { baniBundle.musicians.splice(-items.length, items.length); _updateBundleBtn(); },
+      });
     }
   });
 
@@ -7548,9 +7595,10 @@ function openAddYouTubeFormForRaga({ ragaId, ragaLabel } = {}) {
     if (!items.length) return;
     if (typeof addToBundle === 'function') {
       items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
-      bundleBtn.textContent = '✓ Added';
-      bundleBtn.disabled = true;
-      setTimeout(() => { bundleBtn.disabled = false; bundleBtn.textContent = '+ Add to Patch'; }, 2000);
+      showPatchSuccess(win, items.length === 1 ? items[0] : items, {
+        headline: `✓ Added ${items.length} YouTube entr${items.length > 1 ? 'ies' : 'y'} to patch`,
+        undoFn: () => { baniBundle.musicians.splice(-items.length, items.length); _updateBundleBtn(); },
+      });
     }
   });
 
