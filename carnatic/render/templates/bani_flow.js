@@ -1600,6 +1600,11 @@ function _setupBaniSubjectPopupBtn(type, id, ctx) {
   const btn = document.getElementById('bani-subject-popup-btn');
   if (!btn) return;
 
+  // Reset stale per-type styles before each call (e.g. comp sets pointerEvents: none)
+  btn.style.cursor        = '';
+  btn.style.pointerEvents = '';
+  btn.onclick             = null;
+
   let count = 0;
   let title = '';
 
