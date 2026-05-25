@@ -285,6 +285,9 @@ def _process_musicians(
             _seg_m = _re.match(
                 r"youtube\[([A-Za-z0-9_-]{11})\]\.segments\[(\d+)\]\.(.*)", field
             )
+            _yt_m = None if _seg_m else _re.match(
+                r"youtube\[([A-Za-z0-9_-]{11})\]\.(label|year)", field
+            )
             if _seg_m:
                 vid            = _seg_m.group(1)
                 seg_index      = int(_seg_m.group(2))
@@ -300,6 +303,14 @@ def _process_musicians(
                     at_offset_seconds=int(at_offset) if at_offset is not None else None,
                     compositions_path=comp_path,
                     ragas_path=ragas_path,
+                )
+            elif _yt_m:
+                result = writer.patch_youtube_entry(
+                    musicians_path,
+                    musician_id=musician_id,
+                    vid=_yt_m.group(1),
+                    field=_yt_m.group(2),
+                    value=value,
                 )
             else:
                 result = writer.patch_musician(

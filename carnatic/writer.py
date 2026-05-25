@@ -89,6 +89,8 @@ PATCHABLE_RAGA_FIELDS = {"name", "parent_raga", "melakarta", "is_melakarta", "ca
 PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language", "notes", "composer_id", "raga_id", "sources"}
 
 
+PATCHABLE_YOUTUBE_ENTRY_FIELDS = {"label", "year"}
+
 # ADR-101: patchable fields for lecdem segments and recording performances
 PATCHABLE_SEGMENT_FIELDS = {
     "composition_id", "raga_id", "tala", "composer_id", "display_title",
@@ -1247,6 +1249,53 @@ class CarnaticWriter:
             "[SEG~]",
             f"patched: {musician_id}.youtube[{vid}].segments[{segment_index}]  "
             f"{field}: {old_value!r} → {seg[field]!r}",
+        )
+
+    def patch_youtube_entry(
+        self,
+        musicians_path: Path,
+        *,
+        musician_id: str,
+        vid: str,
+        field: str,
+        value: Any,
+    ) -> WriteResult:
+        """Patch a scalar field on an existing youtube[] entry identified by video_id."""
+        if field not in PATCHABLE_YOUTUBE_ENTRY_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a youtube entry\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_YOUTUBE_ENTRY_FIELDS))}"
+            )
+
+        nodes = _load_all_nodes(musicians_path)
+        node = next((n for n in nodes if n["id"] == musician_id), None)
+        if node is None:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        entry = next(
+            (yt for yt in node.get("youtube", []) if _yt_video_id(yt.get("url", "")) == vid),
+            None,
+        )
+        if entry is None:
+            return _err(f"no youtube entry with video_id {vid} on {musician_id}")
+
+        old_value = entry.get(field)
+        if field == "year":
+            if value in (None, "null", ""):
+                coerced: Any = None
+            else:
+                try:
+                    coerced = int(value)
+                except (TypeError, ValueError):
+                    return _err(f"year must be an integer or null, got {value!r}")
+        else:
+            coerced = value if value not in ("", None) else None
+
+        entry[field] = coerced
+        _write_node(musicians_path, node)
+        return _ok(
+            "[YT~]",
+            f"patched: {musician_id}.youtube[{vid}]  {field}: {old_value!r} → {coerced!r}",
         )
 
     def add_youtube_performer(

@@ -2133,7 +2133,9 @@ function buildRecordingsList(nodeId, nodeData) {
         const lecturerChip = _buildLecturerChip(ref.lecturer_id, ref.lecturer_label);
         const subjectChips = _buildLecdemSubjectChips(ref.subjects, nodeId) || [];
         const hasSegments = !!(ref.segments && ref.segments.length > 0);
-        const bracketEl = _buildLecdemBracket(ref, nodeId, artistLabel);
+        // Pass the lecturer's identity so the player footer shows the lecturer chip first,
+        // not the subject musician (nodeId here is the about-subject, not the lecturer).
+        const bracketEl = _buildLecdemBracket(ref, ref.lecturer_id || nodeId, ref.lecturer_label || artistLabel);
         const bodyEls = [lecturerChip, ...subjectChips].filter(Boolean);
         if (hasSegments) {
           // Concert bracket — has its own internal chevron; render directly.

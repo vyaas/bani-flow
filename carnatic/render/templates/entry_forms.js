@@ -5590,6 +5590,30 @@ function buildLecdemEditForm(ref, nodeId) {
   stageBtn.textContent = 'Update Patch';
   stageBtn.addEventListener('click', () => {
     let count = 0;
+    // Stage label change if it differs from the original
+    const newLabel = lblInp.value.trim();
+    if (newLabel && newLabel !== (ref.label || '').trim()) {
+      addToBundle('musicians', {
+        op:    'patch',
+        id:    nodeId,
+        field: `youtube[${vid}].label`,
+        value: newLabel,
+      });
+      count++;
+    }
+    // Stage year change if it differs from the original
+    const newYearRaw = yearInp.value.trim();
+    const newYear = newYearRaw ? (parseInt(newYearRaw, 10) || null) : null;
+    const oldYear = ref.year ? parseInt(ref.year, 10) : null;
+    if (newYear !== oldYear) {
+      addToBundle('musicians', {
+        op:    'patch',
+        id:    nodeId,
+        field: `youtube[${vid}].year`,
+        value: newYear,
+      });
+      count++;
+    }
     // Stage new subjects (skip originals)
     staged.forEach(({ axis, id }, key) => {
       if (!originalKeys.has(key)) {
