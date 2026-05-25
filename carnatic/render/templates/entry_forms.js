@@ -132,7 +132,7 @@ function showPatchSuccess(win, snapshot, opts) {
   summary.textContent = 'Snapshot';
   const snapPre = document.createElement('pre');
   snapPre.className = 'ef-preview-pre';
-  snapPre.style.cssText = 'margin:6px 0 0;font-size:0.68rem;max-height:160px;overflow:auto;';
+  snapPre.style.cssText = 'margin:6px 0 0;font-size:0.68rem;max-height:160px;overflow:auto;display:block;';
   try { snapPre.textContent = JSON.stringify(snapshot, null, 2); }
   catch(e) { snapPre.textContent = String(snapshot); }
   details.appendChild(summary);
@@ -7222,6 +7222,8 @@ function buildFocusedLecdemForm(musicianId, prefillSubjects) {
     addToBundle('musicians', { op: 'append', id: resolvedId, array: 'youtube', value: lecdem });
     showPatchSuccess(win, lecdem, {
       headline: `✓ Lecdem queued for <code>${resolvedId}</code>`,
+      addAnotherLabel: '+ Add another lecdem',
+      addAnotherFn: () => buildFocusedLecdemForm(resolvedId),
       undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
     });
   });
