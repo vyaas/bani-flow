@@ -254,6 +254,20 @@
         "composition_ids": [],
         "musician_ids": []
       }
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=0tG2okf7jcA",
+      "label": "Singing and Instruments in Carnatic Music",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "abhogi",
+          "ishamanohari",
+          "hamsadhwani"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }
