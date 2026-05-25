@@ -37,6 +37,31 @@
       "composition_id": "chede_buddhi_manura",
       "raga_id": "atana",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/OCtBQgshuq0",
+      "label": "comparative study of ragas as handled by Tyagaraja and Dikshitar",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "tyagaraja",
+          "muthuswami_dikshitar"
+        ]
+      }
+    },
+    {
+      "url": "https://youtu.be/H8ZAQZO-u1k",
+      "label": "An insight into the compositions of Shri Subbaraya Sastri",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "subbaraya_sastri"
+        ]
+      }
     }
   ]
 }
