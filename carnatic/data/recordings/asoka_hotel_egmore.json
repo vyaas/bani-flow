@@ -1,0 +1,109 @@
+{
+  "id": "asoka_hotel_egmore",
+  "video_id": "AU_UlJRBCyk",
+  "url": "https://youtu.be/AU_UlJRBCyk",
+  "title": "Asoka Hotel, Egmore",
+  "date": "1960s",
+  "venue": "Egmore, Chennai",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/AU_UlJRBCyk",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "palghat_mani_iyer",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "sanatana_parama",
+          "raga_id": "phalamanjari",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "03:57",
+          "offset_seconds": 237,
+          "composition_id": "shankari_neeve",
+          "raga_id": "begada",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:24:00",
+          "offset_seconds": 1440,
+          "composition_id": "ni_padamule",
+          "raga_id": "bhairavi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:56:40",
+          "offset_seconds": 3400,
+          "composition_id": "eti_janmamidi",
+          "raga_id": "varali",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "01:06:15",
+          "offset_seconds": 3975,
+          "composition_id": "laavanya_rama_kannul_ara",
+          "raga_id": "poornashadjam",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:10:00",
+          "offset_seconds": 4200,
+          "composition_id": null,
+          "raga_id": "purnachandrika",
+          "tala": null,
+          "display_title": "Tillana"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:12:00",
+          "offset_seconds": 4320,
+          "composition_id": "mutta_vadura",
+          "raga_id": "saveri",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:14:00",
+          "offset_seconds": 4440,
+          "composition_id": "parulanna_matta",
+          "raga_id": "kapi",
+          "tala": "rupakam",
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
