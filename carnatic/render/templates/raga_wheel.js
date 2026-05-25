@@ -2485,7 +2485,12 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     const melaG = document.querySelector(`#wheel-viewport .mela-node[data-mela="${melaNum}"]`);
     window._wheelPreviewNoPanel = true;
     if (melaG) melaG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    else _openWheelDetailPanel(raga);
+    else {
+      // Fallback: DOM node not found, open WDP directly. Must also call lightUpSpine
+      // here because the click handler (which normally calls it) never fired.
+      _openWheelDetailPanel(raga);
+      if (typeof window.lightUpSpine === 'function') window.lightUpSpine(raga.id);
+    }
     window._wheelPreviewNoPanel = false;
 
     // Pre-select the target janya in the panel — visual only (suppressFilter=true so the
@@ -2609,11 +2614,13 @@ function syncRagaWheelToFilter(type, id) {
   const melaRaga = ragas.find(r => r.id === melaId);
   if (!melaRaga || !melaRaga.melakarta) return;
 
-  // Redraw the wheel and expand the resolved mela (and optionally a specific composition)
+  // Redraw the wheel and expand the resolved mela (and optionally a specific composition).
+  // NOTE: lightUpSpine is called from inside the mela arc click handler (fired by
+  // _triggerMelaExpand). Do NOT call it again here — lightUpSpine toggles on a
+  // repeat call with the same ID, which would clear the light-up we just set.
   drawRagaWheel();
   const targetCompId = (type === 'comp') ? id : null;
   window._triggerMelaExpand(melaRaga.melakarta, raga.is_melakarta ? null : ragaId, targetCompId);
-  if (typeof window.lightUpSpine === 'function') window.lightUpSpine(melaRaga.id);
 }
 
 function orientRagaWheel(type, id) {
