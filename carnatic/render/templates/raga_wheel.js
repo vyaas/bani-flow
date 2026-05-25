@@ -86,6 +86,10 @@ function switchView(name) {
         typeof syncRagaWheelToFilter === 'function') {
       syncRagaWheelToFilter(activeBaniFilter.type, activeBaniFilter.id);
     }
+    // ADR-151: if syncRagaWheelToFilter returned early (non-raga/comp filter type or
+    // no filter at all), the wheel was made visible but _wdpData is still null.
+    // Draw now so the pending WDP restore (window._pendingWdpPlayback) has data to work with.
+    if (!_wdpData) drawRagaWheel();
   }
 }
 
@@ -1295,6 +1299,19 @@ window.drawRagaWheel = function() {
   // Option B: cache data for the detail panel and clear any stale panel from previous draw
   _wdpData = { janyasByMela, compsByRaga, melaByNum };
   _closeWheelDetailPanel();
+
+  // ADR-151: process a deferred WDP open from permalink restore.
+  // _openWdpForPlayback was called before _wdpData was set (during restoreStateFromHash);
+  // the request was stashed in window._pendingWdpPlayback. One rAF ensures the newly
+  // appended SVG nodes are in the live DOM before the click is dispatched.
+  if (window._pendingWdpPlayback) {
+    var _pending = window._pendingWdpPlayback;
+    window._pendingWdpPlayback = null;
+    requestAnimationFrame(function() {
+      if (typeof window._openWdpForPlayback === 'function')
+        window._openWdpForPlayback(_pending.ragaId, _pending.compId);
+    });
+  }
 
   // Background rect — click on empty space collapses mobile player or clears light-up.
   const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
@@ -2522,7 +2539,16 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
   // Safe to call immediately after openOrFocusPlayer — polls until any
   // in-flight syncRagaWheelToFilter expansion clears before overriding the WDP.
   window._openWdpForPlayback = function(ragaId, compId) {
-    if (!ragaId || !_wdpData) return;
+    if (!ragaId) return;
+    if (!_wdpData) {
+      // ADR-151: drawRagaWheel() hasn't run yet — stash the request.
+      // drawRagaWheel() will process window._pendingWdpPlayback once it runs.
+      window._pendingWdpPlayback = { ragaId: ragaId, compId: compId };
+      if (currentView !== 'raga') switchView('raga');
+      // If already in raga view, the pending will be picked up when
+      // syncRagaWheelToFilter or the _wdpData guard in switchView draws the wheel.
+      return;
+    }
     const melaNum = _getMelaNumForRaga(ragaId);
     if (!melaNum) return;
 
