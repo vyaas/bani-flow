@@ -766,3 +766,5 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: code-auditor]
 - 2026-05-26: ADR-153 proposes narrowing the CSS pencil hover to panel-title chips only (removing the over-broad #right-sidebar rule that applied to all chip roles) to match the chip_dblclick.js handler which already restricts edit to panel-title; principle: one role → one behaviour.
 [AGENTS: graph-architect]
+- 2026-05-26: ADR-153 implementation: collapsing three separate pencil-affordance rule groups (position:relative, ::after content, :hover outline) from #right-sidebar/#left-sidebar/#wheel-detail-panel into a single unified [data-chip-role="panel-title"] selector removes ~40 lines of exclusion rules that had been added to suppress the over-broad right-sidebar rule; the exclusion blocks are dead code once the base rule is narrowed.
+[AGENTS: carnatic-coder]

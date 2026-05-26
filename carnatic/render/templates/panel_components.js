@@ -6,13 +6,16 @@
 // ── buildPanelHeader ──────────────────────────────────────────────────────────
 // Builds a 2-row header:
 //   row 1 (.panel-header-row1): titleNode  (the chip supplied by caller)
-//   row 2 (.panel-header-affordances): [subtitleContent] [✎ edit] [↗ ext-link]
+//   row 2 (.panel-header-affordances): [subtitleContent] [↗ ext-link]
 //
 //   titleNode        DOM element — the vocabulary chip (musician/raga/comp)
 //   subtitleContent  string or DOM node (optional) — lifespan / parent-mela line
 //   externalUrl      string (optional) — if present, renders encircled ↗ link
 //   externalLabel    string (optional) — tooltip for ext link
-//   onEdit           function (optional) — if present, renders encircled ✎ button
+//
+// Edit affordance: the titleNode chip itself carries data-chip-role="panel-title"
+// and gains the ✎ pencil via CSS + chip_dblclick.js (ADR-153). No separate
+// onEdit button is needed or rendered here.
 function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLabel } = {}) {
   const root = document.createElement('div');
   root.className = 'panel-header-root';

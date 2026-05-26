@@ -1901,22 +1901,17 @@
     margin-left: 2px;
     pointer-events: none;
   }
-  /* ADR-144 Phase C / ADR-145 Phase B: panel-scoped entity chips get the
-     positioned pencil aesthetic (top-right corner, fade in) matching the
-     MUSICIAN panel-title. Scoped to sidebar IDs so graph-overlay chips
-     (graph_view.js) — which share the same data-attribute selector but live
-     outside these containers — are unaffected by position:relative.
-     Right sidebar: broad rule (all entity chips with IDs).
-     Left sidebar / WDP: panel-title only — entity chips in trail rows, raga
-     janya lists, HER equivalents, composer/performer badges are navigation-only. */
-  #right-sidebar [data-chip-role][data-entity-type][data-entity-id],
-  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id],
-  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id] {
+  /* ADR-153: pencil affordance scoped to panel-title chips only — matches
+     chip_dblclick.js exactly. Entity chips in trail rows, lineage lists, and
+     navigation contexts do not open edit forms on dblclick, so they must not
+     show the ✎ hover. Scoped without a container ID so graph-overlay chips
+     (graph_view.js) are excluded by virtue of lacking position:relative here;
+     those chips live outside the sidebar containers and their context chips
+     are navigation-only. */
+  [data-chip-role="panel-title"][data-entity-type][data-entity-id] {
     position: relative;
   }
-  #right-sidebar [data-chip-role][data-entity-type][data-entity-id]::after,
-  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after,
-  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after {
+  [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after {
     content: "✎";
     position: absolute;
     top: -7px;
@@ -1928,49 +1923,18 @@
     pointer-events: none;
     transition: opacity 0.15s;
   }
-  #right-sidebar [data-chip-role][data-entity-type][data-entity-id]:hover,
-  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover,
-  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
+  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
     box-shadow: none;
     outline: 1px dashed var(--accent);
   }
-  #right-sidebar [data-chip-role][data-entity-type][data-entity-id]:hover::after,
-  #left-sidebar [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after,
-  #wheel-detail-panel [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after {
+  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after {
     opacity: 1;
   }
-  /* ─ Right-sidebar exclusions: navigable chips that do not afford editing ─── */
-  /* LECDEMS subject chips: .lecdem-subjects-inline = bracket rows,
-     .row-accordion-body = flat accordion rows (raga/comp/musician badges). */
-  #right-sidebar .lecdem-subjects-inline [data-chip-role][data-entity-type][data-entity-id],
-  #right-sidebar .lecdem-row .row-accordion-body [data-chip-role][data-entity-type][data-entity-id] { position: static; }
-  #right-sidebar .lecdem-subjects-inline [data-chip-role][data-entity-type][data-entity-id]::after,
-  #right-sidebar .lecdem-row .row-accordion-body [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
-  #right-sidebar .lecdem-subjects-inline [data-chip-role][data-entity-type][data-entity-id]:hover,
-  #right-sidebar .lecdem-row .row-accordion-body [data-chip-role][data-entity-type][data-entity-id]:hover {
-    outline: none; box-shadow: none;
-  }
-  /* Concert/lecdem bracket: suppress inner track list and co-performer badges.
-     The bracket title chip (double-click to edit) keeps the positioned pencil. */
-  #right-sidebar .concert-bracket .concert-perf-list [data-chip-role][data-entity-type][data-entity-id],
-  #right-sidebar .concert-bracket .concert-performers [data-chip-role][data-entity-type][data-entity-id] { position: static; }
-  #right-sidebar .concert-bracket .concert-perf-list [data-chip-role][data-entity-type][data-entity-id]::after,
-  #right-sidebar .concert-bracket .concert-performers [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
-  #right-sidebar .concert-bracket .concert-perf-list [data-chip-role][data-entity-type][data-entity-id]:hover,
-  #right-sidebar .concert-bracket .concert-performers [data-chip-role][data-entity-type][data-entity-id]:hover {
-    outline: none; box-shadow: none;
-  }
-  /* Chips inside recording row-blocks (.trail-chips within .tree-leaf) */
-  #right-sidebar .tree-leaf .trail-chips [data-chip-role][data-entity-type][data-entity-id] { position: static; }
-  #right-sidebar .tree-leaf .trail-chips [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
-  #right-sidebar .tree-leaf .trail-chips [data-chip-role][data-entity-type][data-entity-id]:hover {
-    outline: none; box-shadow: none;
-  }
-  /* Chips inside recording composition nodes: inner comp/raga/composer chips
-     navigate; the outer li (row-block) is the edit target. */
-  #right-sidebar .tree-comp-node [data-chip-role][data-entity-type][data-entity-id] { position: static; }
-  #right-sidebar .tree-comp-node [data-chip-role][data-entity-type][data-entity-id]::after { display: none; }
-  #right-sidebar .tree-comp-node [data-chip-role][data-entity-type][data-entity-id]:hover { outline: none; box-shadow: none; }
+  /* ADR-153: right-sidebar exclusion blocks removed — no longer needed now
+     that the pencil base rule is scoped to [data-chip-role="panel-title"] only.
+     Entity chips in LECDEMS rows, concert brackets, trail rows, and comp-nodes
+     never had panel-title role, so they naturally receive no pencil. Navigation
+     hover (from .musician-chip:hover etc.) is restored for those chips. */
   /* Multiple-version recording rows (.tree-leaf[data-vid]) in right-sidebar:
      each version row affords double-click edit just like other row-blocks. */
   #right-sidebar .tree-leaf[data-vid] { position: relative; }
@@ -2010,8 +1974,9 @@
   #left-sidebar .raga-chip:not([data-chip-role="panel-title"]):hover,
   #left-sidebar .comp-chip:not([data-chip-role="panel-title"]):hover,
   #left-sidebar .her-chip:hover { filter: none; outline: none; }
-  #left-sidebar [data-chip-role="entity"][data-entity-type]:not([data-entity-type="recording"])[data-entity-id]:hover { box-shadow: none; }
-  #left-sidebar [data-chip-role="entity"][data-entity-type]:not([data-entity-type="recording"])[data-entity-id]:hover::after { content: none; }
+  /* ADR-153: left-sidebar entity-chip hover suppressions removed — dead code
+     now that the base rule no longer gives entity chips position:relative or
+     the pencil ::after. Recording entity chips are handled below. */
   /* Lecdem recording chips in bani-flow strip: positioned pencil */
   #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id] { position: relative; }
   #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]::after {

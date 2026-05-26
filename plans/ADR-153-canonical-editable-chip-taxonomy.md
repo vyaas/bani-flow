@@ -1,6 +1,6 @@
 # ADR-153: Canonical Editable-Chip Taxonomy
 
-**Status**: Proposed  
+**Status**: Accepted  
 **Date**: 2026-05-26  
 **Author**: Graph Architect  
 **Context**: AUDIT-012 Finding 3 — pencil hover affordance is broader than the dblclick-to-edit surface
