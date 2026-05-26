@@ -56,8 +56,14 @@
       "label": "An insight into the compositions of Shri Subbaraya Sastri",
       "kind": "lecdem",
       "subjects": {
-        "raga_ids": [],
-        "composition_ids": [],
+        "raga_ids": [
+          "begada",
+          "hamir_kalyani"
+        ],
+        "composition_ids": [
+          "shankari_neeve",
+          "venkatasaila_vihara"
+        ],
         "musician_ids": [
           "subbaraya_sastri"
         ]
