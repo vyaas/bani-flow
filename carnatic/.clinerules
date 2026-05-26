@@ -764,3 +764,5 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-26: AUDIT-012: showPatchSuccess edit-mode calls omit addAnotherLabel/addAnotherFn in raga (completely absent), composition (explicitly null), and both musician form builders — "Add/Edit another" is uniformly missing from all edit-mode completions.
 - 2026-05-26: AUDIT-012: right-sidebar CSS pencil hover applies to ALL chipRole values but chip_dblclick.js only opens edit forms for panel-title — the affordance over-promises on entity chips in trail rows and lineage lists; requires an ADR to decide the canonical editable-chip surface.
 [AGENTS: code-auditor]
+- 2026-05-26: ADR-153 proposes narrowing the CSS pencil hover to panel-title chips only (removing the over-broad #right-sidebar rule that applied to all chip roles) to match the chip_dblclick.js handler which already restricts edit to panel-title; principle: one role → one behaviour.
+[AGENTS: graph-architect]
