@@ -1719,6 +1719,13 @@ function triggerBaniSearch(type, id, fromHistory = false) {
   // chip click pollute the search bar. See AUDIT-002.
   applyBaniFilter(type, id);
 
+  // Canonical cross-view wheel sync bridge.
+  // When raga view is active, applyBaniFilter already executed immediate wheel
+  // sync; when it is not, stage this subject for first-entry restoration.
+  if (typeof syncWheelFromBaniSubject === 'function') {
+    syncWheelFromBaniSubject(type, id);
+  }
+
   // ADR-042: open the Bani Flow (left) drawer on mobile so the user sees
   // the trail that was just populated.  Mutual exclusion is handled inside
   // setPanelState — the right drawer closes automatically.
@@ -1732,21 +1739,6 @@ function triggerBaniSearch(type, id, fromHistory = false) {
   // ADR-046: open Bani Flow (left) drawer on all screen widths
   if (typeof window.setPanelState === 'function') {
     setTimeout(function () { window.setPanelState('TRAIL'); }, 50);
-  }
-
-  // When a raga or composition is selected from the bani-flow or musician
-  // panels, orient the raga wheel — expand the mela and animate the viewport
-  // to centre on it (only if the raga wheel is the active view).
-  //
-  // Guard: _wheelOriginatedTrigger is set true only when triggerBaniSearch is
-  // called from a comp/janya/mela click *inside* the raga wheel itself.
-  // In that case we must NOT call orientRagaWheel — the wheel already knows
-  // where it is, and re-entering would trigger a full drawRagaWheel() redraw
-  // that undoes the expansion the user just triggered.
-  if ((type === 'raga' || type === 'comp') &&
-      typeof orientRagaWheel === 'function' &&
-      !window._wheelOriginatedTrigger) {
-    orientRagaWheel(type, id);
   }
 
   // ADR-142 §1 Phase A: tag any chip in the freshly-rebuilt panel that didn't

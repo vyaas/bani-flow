@@ -741,6 +741,8 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: code-auditor]
 - 2026-05-24: AUDIT-010: entry_forms.js has two feedback patterns for the "Update Patch" CTA — four forms (raga, composition, musician edit/add) replace the window body with a success dialog (Pattern A), while four others (concert, focused-YouTube, lecdem-edit, lecdem-subject-edit) use a 1.2–2s setTimeout gray-and-re-enable with no snapshot or next-step help (Pattern B); `showBundleSuccess` is dead code (4th format); unification requires a single `showPatchSuccess(win, snapshot, opts)` helper — ADR required before implementation.
 [AGENTS: code-auditor]
+- 2026-05-26: AUDIT-011: raga/composition chip navigation is split between a wheel-local immediate path (`_openWheelDetailPanel` + `lightUpSpine`) and a global path (`triggerBaniSearch` -> `applyBaniFilter` -> `syncRagaWheelToFilter`) that is gated by `currentView === 'raga'`; this origin-dependent orchestration is the root inconsistency and should be unified behind one subject->wheel sync contract.
+[AGENTS: code-auditor]
 - 2026-05-24: ADR-152 proposes `showPatchSuccess(win, snapshot, opts)` as the single success-dialog helper for all nine "Update Patch" forms; the key design decisions are: collapsible `<details>` snapshot (closed by default so experienced users see zero friction), a literal fixed next-step command block (not parameterised — bani-add + bani-render is the same for everyone), and Undo only for single-item stages (multi-item forms like lecdem-edit omit the button by design).
 [AGENTS: graph-architect]
 - 2026-05-24: ADR-152 implementation: the `delete_fn` helper that looks for the nearest `\n// ` comment before a target function MUST be anchored to a comment on the line immediately preceding the function — `rfind('\n// ', 0, fn_start)` will find a comment inside a neighbouring function and delete both; safer strategy is to match `\nfunction <name>(` and include only the function's own decorating comment if present (one line above the `function` keyword).
@@ -754,4 +756,6 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: carnatic-coder]
 
 - 2026-05-25: buildLecdemEditForm "Update Patch" was silently a no-op when only label/year changed — the stageBtn handler only staged new subjects and new segments; fix: detect label/year diffs against ref values and stage `op:patch` items using `youtube[VID].label` / `youtube[VID].year` field paths; added `patch_youtube_entry` writer method and the corresponding `_yt_m` regex branch in bani_add.py.
+[AGENTS: carnatic-coder]
+- 2026-05-26: Raga/composition chip sync fix: remove the extra `orientRagaWheel` call from `triggerBaniSearch` because `applyBaniFilter` already triggers `syncRagaWheelToFilter`; the duplicate path could toggle off `lightUpSpine` (same mela invoked twice), and tutorial chips should route through `triggerBaniSearch` rather than direct `applyBaniFilter` to keep one navigation contract.
 [AGENTS: carnatic-coder]

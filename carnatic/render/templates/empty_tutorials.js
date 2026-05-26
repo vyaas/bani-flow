@@ -1505,11 +1505,11 @@
       const raga = ragaList.find(function (r) {
         return (r.name || '').toLowerCase() === label.toLowerCase();
       });
-      if (raga && typeof applyBaniFilter === 'function') {
+      if (raga && typeof triggerBaniSearch === 'function') {
         chip.addEventListener('click', function (e) {
           e.stopPropagation();
           _flash(chip);
-          applyBaniFilter('raga', raga.id);
+          triggerBaniSearch('raga', raga.id);
         });
       }
     });
@@ -1521,11 +1521,11 @@
       const comp = compList.find(function (c) {
         return (c.title || c.name || '').toLowerCase() === label.toLowerCase();
       });
-      if (comp && typeof applyBaniFilter === 'function') {
+      if (comp && typeof triggerBaniSearch === 'function') {
         chip.addEventListener('click', function (e) {
           e.stopPropagation();
           _flash(chip);
-          applyBaniFilter('comp', comp.id);
+          triggerBaniSearch('comp', comp.id);
         });
       }
     });

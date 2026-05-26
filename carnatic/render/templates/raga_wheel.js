@@ -86,6 +86,13 @@ function switchView(name) {
         typeof syncRagaWheelToFilter === 'function') {
       syncRagaWheelToFilter(activeBaniFilter.type, activeBaniFilter.id);
     }
+    // Canonical fallback: if the global trigger staged a pending raga/comp
+    // subject while not in raga view, resolve it now on first entry.
+    if ((!activeBaniFilter || (activeBaniFilter.type !== 'raga' && activeBaniFilter.type !== 'comp')) &&
+        window._pendingWheelSubject && typeof syncRagaWheelToFilter === 'function') {
+      syncRagaWheelToFilter(window._pendingWheelSubject.type, window._pendingWheelSubject.id);
+      window._pendingWheelSubject = null;
+    }
     // ADR-151: if syncRagaWheelToFilter returned early (non-raga/comp filter type or
     // no filter at all), the wheel was made visible but _wdpData is still null.
     // Draw now so the pending WDP restore (window._pendingWdpPlayback) has data to work with.
@@ -2622,6 +2629,16 @@ function syncRagaWheelToFilter(type, id) {
   const targetCompId = (type === 'comp') ? id : null;
   window._triggerMelaExpand(melaRaga.melakarta, raga.is_melakarta ? null : ragaId, targetCompId);
 }
+
+// Canonical subject->wheel bridge used by global navigation paths.
+// applyBaniFilter already runs immediate sync when raga view is active; this
+// function stages only cross-view raga/comp subjects for first-entry restore.
+function syncWheelFromBaniSubject(type, id) {
+  if (type !== 'raga' && type !== 'comp') return;
+  if (currentView === 'raga') return;
+  window._pendingWheelSubject = { type: type, id: id };
+}
+window.syncWheelFromBaniSubject = syncWheelFromBaniSubject;
 
 function orientRagaWheel(type, id) {
   if (currentView !== 'raga') return;
