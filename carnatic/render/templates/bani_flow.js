@@ -304,7 +304,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     // ADR-149: popup button shows performer count (raga+composer now shown inline)
     _setupBaniSubjectPopupBtn('comp', id, { comp, raga, composer });
     // Single-click on comp title → sync raga wheel to this composition
-    subjectName.onclick = function() { triggerBaniSearch('comp', id); };
+    // AUDIT-012 C1: guard prevents redundant rebuild when already on this subject
+    subjectName.onclick = function() {
+      if (_currentBaniSubject.type === 'comp' && _currentBaniSubject.id === id) return;
+      triggerBaniSearch('comp', id);
+    };
     // Inline raga + composer chips below the composition title
     if (subjectSub) {
       if (raga) {
@@ -464,7 +468,11 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     // ADR-149: popup button shows mela family / HER equivalents
     _setupBaniSubjectPopupBtn('raga', id, { raga });
     // Single-click on raga title → sync raga wheel to this raga
-    subjectName.onclick = function() { triggerBaniSearch('raga', id); };
+    // AUDIT-012 C1: guard prevents redundant rebuild when already on this subject
+    subjectName.onclick = function() {
+      if (_currentBaniSubject.type === 'raga' && _currentBaniSubject.id === id) return;
+      triggerBaniSearch('raga', id);
+    };
     // Inline HER/CER chips below the raga title
     if (subjectSub) {
       const _allRagas = window._baniRagas || ragas;

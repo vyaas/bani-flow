@@ -1440,8 +1440,8 @@ function buildMusicianForm({ prefill = null } = {}) {
       headline: isEdit
         ? `\u2713 Patch queued for <code>${musId}</code>${edgeNote}`
         : `\u2713 Added <code>${musId}</code>${edgeNote} to patch`,
-      addAnotherLabel: isEdit ? null : '+ Add Another Musician',
-      addAnotherFn:    isEdit ? null : () => buildMusicianForm(),
+      addAnotherLabel: isEdit ? '+ Edit another musician' : '+ Add Another Musician',
+      addAnotherFn:    () => buildMusicianForm(),
       undoFn: (addedMusician && newEdges.length === 0)
         ? () => { baniBundle.musicians.pop(); _updateBundleBtn(); }
         : null,
@@ -2565,7 +2565,12 @@ function buildRagaForm({ prefill = null } = {}) {
       if (hindEqVal) {
         addToBundle('ragas', { op: 'append', id: obj.id, field: 'hindustani_equivalents', value: hindEqVal });
       }
-      showPatchSuccess(win, obj, { headline: `\u2713 Patch queued for raga <code>${obj.id}</code>` });
+      showPatchSuccess(win, obj, {
+        headline:        `\u2713 Patch queued for raga <code>${obj.id}</code>`,
+        addAnotherLabel: '+ Edit another raga',
+        addAnotherFn:    () => buildRagaForm(),
+        undoFn:          () => { baniBundle.ragas.pop(); _updateBundleBtn(); },
+      });
     } else {
       // ADR-115: dual-emission for HER creation — emit create + append back-link atomically
       const carnEqVal = win.querySelector('#ef_raga_carnatic_equiv')
@@ -3124,8 +3129,8 @@ function buildCompositionForm({ prefill = null } = {}) {
       headline: isEdit
         ? `\u2713 Patch queued for composition <code>${compId}</code>`
         : `\u2713 Added composition <code>${compId}</code> to patch`,
-      addAnotherLabel: isEdit ? null : '+ Add another composition',
-      addAnotherFn:    isEdit ? null : () => buildCompositionForm(),
+      addAnotherLabel: isEdit ? '+ Edit another composition' : '+ Add another composition',
+      addAnotherFn:    () => buildCompositionForm(),
       undoFn: () => { baniBundle.compositions.pop(); _updateBundleBtn(); },
     });
   });
@@ -6543,8 +6548,8 @@ function buildAddMusicianForm({ prefill = null } = {}) {
     const canUndo = newEdges.length === 0;
     showPatchSuccess(win, item, {
       headline:        addMusHeadline,
-      addAnotherLabel: isEdit ? null : '+ Add another musician',
-      addAnotherFn:    isEdit ? null : () => buildAddMusicianForm(),
+      addAnotherLabel: isEdit ? '+ Edit another musician' : '+ Add another musician',
+      addAnotherFn:    () => buildAddMusicianForm(),
       undoFn: (canUndo && (!isEdit || Object.keys(item.fields || {}).length > 0))
         ? () => { baniBundle.musicians.pop(); _updateBundleBtn(); }
         : null,
