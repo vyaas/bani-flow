@@ -285,6 +285,12 @@
       "composition_id": "en_maname",
       "raga_id": "namanarayani",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/MOHXTBQDLrw",
+      "label": "Manamu Leda · Hamir Kalyani",
+      "composition_id": "manamu_leda",
+      "raga_id": "hamir_kalyani"
     }
   ]
 }

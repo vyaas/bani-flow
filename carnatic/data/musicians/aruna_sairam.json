@@ -52,6 +52,17 @@
       "composition_id": "soundara_rajam_ashraye",
       "raga_id": "brindavana_saranga",
       "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/efVArIpYBfw",
+      "label": "Vazhi maraitirukkude · Nattakurinji",
+      "composition_id": "vazhi_maraitirukkude",
+      "raga_id": "nattakurinji"
+    },
+    {
+      "url": "https://youtu.be/_HtapLThVuw",
+      "label": "RTP",
+      "raga_id": "madhyamavati"
     }
   ]
 }

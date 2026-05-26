@@ -36,6 +36,31 @@
       "url": "https://www.youtube.com/watch?v=JDuMY0STBfw",
       "label": "Alapana",
       "raga_id": "kambhoji"
+    },
+    {
+      "url": "https://youtu.be/pJRoOpf17uQ",
+      "label": "Sukhi Evvaro · Kaanada",
+      "composition_id": "sukhi_evvaro",
+      "raga_id": "kaanada"
+    },
+    {
+      "url": "https://youtu.be/m7lKOttZR7g",
+      "label": "Manavinaalakincha Raadate · Nalinakanthi",
+      "composition_id": "manavinaalakincha_raadate",
+      "raga_id": "nalinakanthi"
+    },
+    {
+      "url": "https://youtu.be/ezhGGhND2jY",
+      "label": "Krupaya Palaya · Chārukesi · tisra_triputa",
+      "composition_id": "krupaya_palaya",
+      "raga_id": "charukesi",
+      "tala": "tisra_triputa"
+    },
+    {
+      "url": "https://youtu.be/LVLi-PF4160",
+      "label": "Manamu Leda · Hamir Kalyani",
+      "composition_id": "manamu_leda",
+      "raga_id": "hamir_kalyani"
     }
   ]
 }
