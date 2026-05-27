@@ -205,7 +205,7 @@
     },
     {
       "url": "https://youtu.be/UCgyrPVawnk",
-      "label": "Hindolam · Malkauns",
+      "label": "On Hindolam",
       "kind": "lecdem",
       "subjects": {
         "raga_ids": [
@@ -267,6 +267,18 @@
         ],
         "composition_ids": [],
         "musician_ids": []
+      }
+    },
+    {
+      "url": "https://youtu.be/nI9Ws2kJnjA",
+      "label": "Vinta ragas of Tyagaraja",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "tyagaraja"
+        ]
       }
     }
   ]
