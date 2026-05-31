@@ -1,0 +1,100 @@
+{
+  "id": "private_concert_madras_c_1986",
+  "video_id": "Gq4e65TdakY",
+  "url": "https://youtu.be/Gq4e65TdakY",
+  "title": "Private concert, Madras, c. 1986",
+  "date": "1986",
+  "venue": "Madras",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/Gq4e65TdakY",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "kv_narayanaswamy",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vv_subrahmanyam",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_raghu",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "viriboni",
+          "raga_id": "bhairavi",
+          "tala": "ata",
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "06:45",
+          "offset_seconds": 405,
+          "composition_id": "anupama_gunambudhi",
+          "raga_id": "atana",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "10:12",
+          "offset_seconds": 612,
+          "composition_id": "devadeva_jagadisvara",
+          "raga_id": "poorvikalyani",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "21:55",
+          "offset_seconds": 1315,
+          "composition_id": "ma_ramanan",
+          "raga_id": "hindolam",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "33:16",
+          "offset_seconds": 1996,
+          "composition_id": "akshaya_linga_vibho",
+          "raga_id": "shankarabharanam",
+          "tala": "misra_capu",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:20:37",
+          "offset_seconds": 4837,
+          "composition_id": "devi_brova_samayaamide",
+          "raga_id": "chintamani",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:27:26",
+          "offset_seconds": 5246,
+          "composition_id": null,
+          "raga_id": "purvi",
+          "tala": null,
+          "display_title": "Tilanna"
+        }
+      ]
+    }
+  ]
+}
