@@ -93,6 +93,23 @@
           "role": "flute"
         }
       ]
+    },
+    {
+      "url": "https://youtu.be/dobb3ydTDNE",
+      "label": "Sukhi Evvaro · Kaanada · adi",
+      "composition_id": "sukhi_evvaro",
+      "raga_id": "kaanada",
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vegavahini_vijayaraghavan",
+          "role": "vocal"
+        }
+      ]
     }
   ]
 }

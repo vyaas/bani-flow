@@ -1127,5 +1127,11 @@
     "target": "sr_janakiraman",
     "confidence": 0.9,
     "source_url": "https://en.wikipedia.org/wiki/S._R._Janakiraman"
+  },
+  {
+    "source": "r_vedavalli",
+    "target": "sumitra_vasudev",
+    "confidence": 1.0,
+    "source_url": "https://sumithravasudev.com/"
   }
 ]

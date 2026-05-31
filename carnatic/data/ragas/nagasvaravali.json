@@ -1,0 +1,14 @@
+{
+  "id": "nagasvaravali",
+  "name": "Nagasvaravali",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Nagasvaravali",
+      "label": "Wikipedia"
+    }
+  ]
+}

@@ -244,6 +244,33 @@
         ],
         "musician_ids": []
       }
+    },
+    {
+      "url": "https://youtu.be/KUOhN9mrmQY",
+      "label": "Lecdem on Gamakas",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "shankarabharanam"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
+    },
+    {
+      "url": "https://youtu.be/kKooLImCqFg",
+      "label": "Lecdem on Gamakas (2)",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "darbar",
+          "nayaki",
+          "begada",
+          "thodi"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }
