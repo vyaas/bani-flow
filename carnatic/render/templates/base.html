@@ -1989,6 +1989,25 @@
   }
   #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]:hover::after { opacity: 1; }
 
+  /* Media player: chips are navigation-only — suppress all edit-gesture pencil
+     affordances. Entity chips (musician, composer, co-performer, recording) and
+     even panel-title chips inside .media-player are for navigation only; editing
+     is only available in sidebar panels. Overrides the document-wide base rule
+     ([data-chip-role][data-entity-type][data-entity-id]:hover) and the panel-title
+     rule ([data-chip-role="panel-title"]…:hover) for anything inside the player. */
+  .media-player [data-chip-role][data-entity-type][data-entity-id]:hover {
+    box-shadow: none;
+  }
+  .media-player [data-chip-role][data-entity-type][data-entity-id]:hover::after {
+    content: none;
+  }
+  .media-player [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
+    outline: none;
+  }
+  .media-player [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after {
+    display: none;
+  }
+
   /* ── ADR-142 Phase E: first-use double-click discoverability hint ───────────
      Appears once on first chip dblclick gesture; dismissed by click/keydown
      or after 3.5s; gated by localStorage 'baniDblClickHinted'. */

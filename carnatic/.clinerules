@@ -769,3 +769,7 @@ Entries are terse — this is a log, not an essay.
 [AGENTS: graph-architect]
 - 2026-05-26: ADR-153 implementation: collapsing three separate pencil-affordance rule groups (position:relative, ::after content, :hover outline) from #right-sidebar/#left-sidebar/#wheel-detail-panel into a single unified [data-chip-role="panel-title"] selector removes ~40 lines of exclusion rules that had been added to suppress the over-broad right-sidebar rule; the exclusion blocks are dead code once the base rule is narrowed.
 [AGENTS: carnatic-coder]
+- 2026-05-31: AUDIT-013: the document-wide base entity-chip pencil rule (`[data-chip-role][data-entity-type][data-entity-id]:hover::after { content: " ✎" }`) leaks into the floating media player (.media-player in #main) because sidebar suppression rules are scoped to #left-sidebar and #right-sidebar only; all player chips (musician, composer, co-performer, recording, and even concert panel-title) are navigation-only — the fix is a single .media-player-scoped suppression block, no JS changes needed.
+[AGENTS: code-auditor]
+- 2026-05-31: Player chip pencil suppression: scope overrides to `.media-player [data-chip-role]…:hover` and `.media-player [data-chip-role="panel-title"]…` — four CSS rules reset box-shadow, content, outline, and display:none on the ::after pseudo-element; place the block immediately after the #left-sidebar lecdem recording pencil rules, before .dblclick-hint.
+[AGENTS: carnatic-coder]
