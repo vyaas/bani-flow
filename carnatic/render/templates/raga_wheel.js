@@ -852,6 +852,8 @@ function _lightUpSpineForMela(M) {
 
   const cakraEl = svg.querySelector(`[data-ring="cakra"][data-cakra="${t.cakra}"]`);
   if (cakraEl) cakraEl.setAttribute('opacity', '0.92');
+  const cakraLblEl = svg.querySelector(`[data-ring="cakra-label"][data-cakra="${t.cakra}"]`);
+  if (cakraLblEl) cakraLblEl.setAttribute('opacity', '1');
 
   const rigaEl = svg.querySelector(`[data-ring="riga"][data-cakra="${t.cakra}"]`);
   if (rigaEl) rigaEl.setAttribute('opacity', '0.82');
@@ -903,6 +905,9 @@ function _lightUpMelas(melaNumbers, strokeHint) {
       const orig = parseFloat(cakraEl.getAttribute('data-orig-opacity')) || 0.82;
       cakraEl.setAttribute('opacity', Math.min(1, orig + 0.12));
     }
+    // Cakra name label — restore with cakra wedge
+    const cakraLblEl = svg.querySelector(`[data-ring="cakra-label"][data-cakra="${actualCakra}"]`);
+    if (cakraLblEl) cakraLblEl.setAttribute('opacity', '1');
     // Ri-ga arc (keyed by cakra number on the element)
     const rigaEl = svg.querySelector(`[data-ring="riga"][data-cakra="${actualCakra}"]`);
     if (rigaEl) {
@@ -1686,7 +1691,8 @@ window.drawRagaWheel = function() {
       x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
       fill: THEME.fg, 'font-size': Math.max(8, minDim * 0.017) + 'px',
       'font-weight': 'bold', 'pointer-events': 'none',
-      transform: `rotate(${cakraRotDeg}, ${lp.x}, ${lp.y})`
+      transform: `rotate(${cakraRotDeg}, ${lp.x}, ${lp.y})`,
+      'data-ring': 'cakra-label', 'data-cakra': cakra, 'data-orig-opacity': 1,
     });
     nameLbl.textContent = CAKRA_NAMES[cakra] || String(cakra);
     vp.appendChild(nameLbl);
@@ -1752,7 +1758,7 @@ window.drawRagaWheel = function() {
       transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
     });
     rlbl.textContent = midDeg <= 180 ? _RIGA_LABELS[rigaIdx] : _RIGA_LABELS_REV[rigaIdx];
-    vp.appendChild(rlbl);
+    rigaG.appendChild(rlbl);
   }
 
   // Ring 3 — Da-ni cell ring (R_RIGA → R_DANI): 72 cells, 5° each (6 per cakra wedge)
@@ -1815,7 +1821,7 @@ window.drawRagaWheel = function() {
         transform: `rotate(${rotDeg}, ${lp.x}, ${lp.y})`
       });
       dlbl.textContent = midDeg <= 180 ? _DANI_LABELS[daniIdx] : _DANI_LABELS_REV[daniIdx];
-      vp.appendChild(dlbl);
+      daniG.appendChild(dlbl);
     }
   }
 
