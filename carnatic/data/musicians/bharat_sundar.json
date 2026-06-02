@@ -15,5 +15,13 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/2pZ730Ejugk",
+      "label": "Tyagaraja Mahadvajaroha · Sriraga · adi",
+      "composition_id": "tyagaraja_mahadvajaroha",
+      "raga_id": "sriraga",
+      "tala": "adi"
+    }
+  ]
 }
