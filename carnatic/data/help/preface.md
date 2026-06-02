@@ -44,7 +44,7 @@ Bejewelled by the Trinity
 Carnatic Music's own Cambrian Explosion of genius
 <cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, <cm>Shyama Shastri<cm>
 
-For this is an **Post-notational Music**
+For this is a **Post-notational Music**
 Whose essences cannot be grasped textually
 The sound does not travel by page
 But by _Raga Bhava_
