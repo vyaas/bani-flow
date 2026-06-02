@@ -28,6 +28,18 @@
       "label": "Upamugana · Yadukula Kambhoji · Sarangapani",
       "composition_id": "upamugana",
       "raga_id": "yadukulakamboji"
+    },
+    {
+      "url": "https://youtu.be/qBth-7DBm4w",
+      "label": "Intro to Carnatic Music",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "mohanam"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }
