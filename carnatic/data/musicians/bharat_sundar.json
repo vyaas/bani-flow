@@ -1,0 +1,19 @@
+{
+  "id": "bharat_sundar",
+  "label": "Bharat Sundar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Bharat_Sundar",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1988,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}
