@@ -1,0 +1,60 @@
+{
+  "id": "university_of_washington",
+  "video_id": "kmDrTKY_mUs",
+  "url": "https://youtu.be/kmDrTKY_mUs",
+  "title": "University of Washington",
+  "date": "1969",
+  "venue": "Seattle",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/kmDrTKY_mUs",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "t_brinda",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "vegavahini_vijayaraghavan",
+          "role": "vocal"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "merusamana",
+          "raga_id": "mayamalavagowla",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "15:00",
+          "offset_seconds": 900,
+          "composition_id": null,
+          "raga_id": "sriraga",
+          "tala": "adi",
+          "display_title": "Varnam"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "amba_neelambari",
+          "raga_id": "neelambari",
+          "tala": "adi",
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
