@@ -1,0 +1,83 @@
+{
+  "id": "live_at_moscow",
+  "video_id": "1h04wlmOcpg",
+  "url": "https://youtu.be/1h04wlmOcpg",
+  "title": "Live at Moscow",
+  "date": "1987",
+  "venue": "Moscow",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/1h04wlmOcpg",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Introduction"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "03:43",
+          "offset_seconds": 223,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Prelude"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "niravadhi_sukhada",
+          "raga_id": "ravichandrika",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": "sanmukhapriya",
+          "tala": "adi",
+          "display_title": "RTP"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "45:30",
+          "offset_seconds": 2730,
+          "composition_id": "vishveshwar_darshan",
+          "raga_id": "sindhu_bhairavi",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": "jonepuri",
+          "tala": "adi",
+          "display_title": "Tilana"
+        }
+      ]
+    }
+  ]
+}
