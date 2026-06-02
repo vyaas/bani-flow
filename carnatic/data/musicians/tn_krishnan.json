@@ -35,7 +35,8 @@
       "kind": "lecdem",
       "subjects": {
         "raga_ids": [
-          "mohanam"
+          "mohanam",
+          "abheri"
         ],
         "composition_ids": [],
         "musician_ids": []

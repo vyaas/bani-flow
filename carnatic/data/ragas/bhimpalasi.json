@@ -1,0 +1,19 @@
+{
+  "id": "bhimpalasi",
+  "name": "Bhimpalasi",
+  "tradition": "hindustani",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": null,
+  "is_melakarta": false,
+  "thaat": "kafi",
+  "carnatic_equivalents": [
+    "abheri"
+  ],
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Bhimpalasi",
+      "label": "Wikipedia"
+    }
+  ]
+}
