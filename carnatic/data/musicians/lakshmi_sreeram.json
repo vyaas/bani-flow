@@ -327,7 +327,9 @@
       "label": "29 - Vivadi – II",
       "kind": "lecdem",
       "subjects": {
-        "raga_ids": [],
+        "raga_ids": [
+          "gangeyabhusani"
+        ],
         "composition_ids": [],
         "musician_ids": []
       }
