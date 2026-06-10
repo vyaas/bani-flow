@@ -4029,6 +4029,11 @@
       padding-top: 0 !important;
       position: relative;
     }
+    /* ADR-155 M3: on mobile full-screen, Plyr fills the flex video area like the
+       old iframe did (desktop lets Plyr size itself responsively instead). */
+    .media-player.full-mobile .mp-video-wrap.mp-has-plyr .plyr {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    }
     /* Tracklist hidden by default; shown when toggle button adds .mp-tracklist-open */
     .media-player.full-mobile .mp-tracklist { display: none; overflow-y: auto; }
     .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; flex: 1; }

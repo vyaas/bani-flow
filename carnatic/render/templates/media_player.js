@@ -3035,8 +3035,9 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   if (!media) return;
   const mkey = mediaKey(media);
 
-  // Stop any previous playback
-  if (mp.iframe) mp.iframe.src = '';
+  // Stop any previous playback (ADR-155: destroy prior controller/Plyr)
+  if (mp.controller) { mp.controller.destroy(); mp.controller = null; }
+  else if (mp.iframe) mp.iframe.src = '';
 
   mp.media = media;
   mp.mediaKey = mkey;
@@ -3150,23 +3151,22 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     });
   }
 
-  // ── Build iframe ────────────────────────────────────────────────────────
+  // ── Mount media (ADR-155: Plyr via mountPlayer; iframe fallback inside) ───
   mp.videoWrap.innerHTML = '';
+  mp.videoWrap.classList.remove('mp-has-plyr');   // mountPlayer re-adds it for Plyr
   mp.videoWrap.style.paddingTop = '56.25%';
   mp.videoWrap.style.height = '';
-  const iframe = document.createElement('iframe');
-  iframe.className = 'mp-iframe';
-  iframe.src = embedUrl(media, startSeconds);
-  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope';
-  iframe.allowFullscreen = true;
-  mp.videoWrap.appendChild(iframe);
-  mp.iframe = iframe;
+  const controller = mountPlayer(mp.videoWrap, media, startSeconds);
+  mp.controller = controller;
+  mp.iframe = controller.iframe;   // null when Plyr-backed
+  // Live playhead so share/copy capture the real position (AUDIT-014 F-04).
+  controller.onTime(sec => { mp.currentOffset = sec; });
 
   // ── Build tracklist ─────────────────────────────────────────────────────
   mp.tracklistDiv.innerHTML = '';
   if (mp.tracks.length > 0) {
     const pseudoInstance = {
-      el: mp.el, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
+      el: mp.el, controller, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
       media, mediaKey: mkey, vid: mp.vid, currentOffset: startSeconds || 0,
       meta: mp.meta,
     };
@@ -3206,7 +3206,8 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     if (val._isMobileSingleton) { playerRegistry.delete(key); break; }
   }
   playerRegistry.set(mkey, {
-    el: mp.el, iframe: mp.iframe, titleEl: mp.bar.querySelector('.mp-title'),
+    el: mp.el, controller, iframe: mp.iframe, plyr: controller.plyr,
+    titleEl: mp.bar.querySelector('.mp-title'),
     tracklistEl: mp.tracklistDiv, media, mediaKey: mkey, vid: mp.vid,
     _isMobileSingleton: true,
   });
@@ -3265,7 +3266,9 @@ function _closeMobilePlayer() {
   }
   mp._currentPlayerId = null;
 
-  if (mp.iframe) mp.iframe.src = '';
+  if (mp.controller) { mp.controller.destroy(); mp.controller = null; }
+  else if (mp.iframe) mp.iframe.src = '';
+  mp.iframe = null;
   mp.vid = null;
   // ADR-043: hide player + restore normal bottom offset
   mp.el.classList.remove('full-mobile');
@@ -3294,8 +3297,10 @@ function _swipeMobileTrack(direction) {
   mp.trackIndex = newIndex;
   const track = mp.tracks[newIndex];
 
-  // Update iframe to new timestamp
-  if (mp.iframe) {
+  // Seek to the new track (ADR-155: controller → Plyr currentTime, no reload)
+  if (mp.controller) {
+    mp.controller.seek(track.offset_seconds > 0 ? track.offset_seconds : 0);
+  } else if (mp.iframe) {
     mp.iframe.src = embedUrl(mp.media,
       track.offset_seconds > 0 ? track.offset_seconds : undefined);
   }
