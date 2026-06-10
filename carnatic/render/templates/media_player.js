@@ -430,7 +430,10 @@ function buildPlayerTrackList(mediaKey, tracks, instance) {
       if (e.target.closest('.raga-chip, .comp-chip')) return;
       const player = playerRegistry.get(mediaKey);
       if (!player) return;
-      player.iframe.src = embedUrl(player.media, t.offset_seconds > 0 ? t.offset_seconds : undefined);
+      // ADR-155: seek via the controller (Plyr → currentTime, no reload). Mobile's
+      // iframe pseudo-instance has no controller, so fall back to an iframe reload.
+      if (player.controller) player.controller.seek(t.offset_seconds > 0 ? t.offset_seconds : 0);
+      else player.iframe.src = embedUrl(player.media, t.offset_seconds > 0 ? t.offset_seconds : undefined);
       player.currentOffset = t.offset_seconds;
       // Update active indicator
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
@@ -676,6 +679,63 @@ function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
   }
 }
 
+// ── ADR-155: mountPlayer — control inversion ──────────────────────────────────
+// Mounts media into `videoWrap` and returns a uniform controller:
+//   { kind, seek(sec), destroy(), onTime(cb), onEnded(cb), iframe?, plyr? }
+// Controllable providers (youtube/vimeo/audio/video) get a Plyr instance whose
+// API we drive directly — seek via currentTime (no iframe reload), live playhead
+// via the timeupdate event, and the ended event for future playlists (ADR-157).
+// Non-controllable providers (soundcloud/gdrive) and any environment lacking
+// Plyr fall back to the pre-existing raw iframe (ADR-155 §4).
+function mountPlayer(videoWrap, media, startSeconds) {
+  const src = (typeof embedSource === 'function') ? embedSource(media) : null;
+  const usePlyr = !!(media && media.controllable && typeof Plyr !== 'undefined' && src);
+
+  if (usePlyr) {
+    const target = document.createElement('div');
+    videoWrap.appendChild(target);
+    const player = new Plyr(target, {
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+      loadSprite: false,                  // sprite is inlined in the document (ADR-155 M1)
+      ratio: '16:9',
+      autoplay: true,
+      keyboard: { focused: true, global: false },
+      youtube: { rel: 0, modestbranding: 1, iv_load_policy: 3 },
+      vimeo: { byline: false, portrait: false, title: false },
+    });
+    player.source = src;
+    if (startSeconds && startSeconds > 0) {
+      player.once('ready', () => { try { player.currentTime = startSeconds; } catch (e) {} });
+    }
+    return {
+      kind: 'plyr',
+      plyr: player,
+      iframe: null,
+      seek(sec) { try { player.currentTime = sec || 0; player.play(); } catch (e) {} },
+      destroy() { try { player.destroy(); } catch (e) {} },
+      onTime(cb) { player.on('timeupdate', () => cb(Math.floor(player.currentTime || 0))); },
+      onEnded(cb) { player.on('ended', cb); },
+    };
+  }
+
+  // Fallback: raw iframe (non-controllable provider, or Plyr unavailable).
+  const iframe = document.createElement('iframe');
+  iframe.className = 'mp-iframe';
+  iframe.src = embedUrl(media, startSeconds);
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope';
+  iframe.allowFullscreen = true;
+  videoWrap.appendChild(iframe);
+  return {
+    kind: 'iframe',
+    plyr: null,
+    iframe,
+    seek(sec) { iframe.src = embedUrl(media, sec > 0 ? sec : undefined); },
+    destroy() { iframe.src = ''; },
+    onTime() {},
+    onEnded() {},
+  };
+}
+
 function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
   const mkey = mediaKey(media);          // ADR-154: provider-qualified registry key
   const hasTracks = Array.isArray(tracks) && tracks.length > 0;
@@ -697,11 +757,9 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
 
   const videoWrap = document.createElement('div');
   videoWrap.className = 'mp-video-wrap';
-  videoWrap.innerHTML = `<iframe class="mp-iframe"
-    src="${embedUrl(media, startSeconds)}"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-    allowfullscreen></iframe>`;
   el.appendChild(videoWrap);
+  // ADR-155: mount Plyr (controllable) or fall back to a raw iframe.
+  const controller = mountPlayer(videoWrap, media, startSeconds);
 
   // ── Footer: musician + raga + comp + composer chips ──────────────────────
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
@@ -722,7 +780,9 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
 
   const instance = {
     el,
-    iframe:       el.querySelector('.mp-iframe'),
+    controller,                  // ADR-155: uniform media controller (Plyr or iframe)
+    iframe:       controller.iframe,   // null when Plyr-backed
+    plyr:         controller.plyr,     // null when iframe-backed
     titleEl:      el.querySelector('.mp-title'),
     tracklistEl:  el.querySelector('.mp-tracklist') || null,
     media,                       // ADR-154: the MediaRef
@@ -734,8 +794,12 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     meta:         fullMeta,
   };
 
+  // ADR-155: live playhead — currentOffset tracks real playback, so share/copy
+  // and the permalink capture where the video actually is (fixes AUDIT-014 F-04).
+  controller.onTime(sec => { instance.currentOffset = sec; });
+
   el.querySelector('.mp-close').addEventListener('click', () => {
-    instance.iframe.src = '';
+    controller.destroy();
     el.remove();
     playerRegistry.delete(mkey);
     refreshPlayingIndicators();
