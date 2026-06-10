@@ -326,6 +326,11 @@ def render_html(
     plyr_js          = _load_vendor("plyr/plyr.min.js")
     plyr_css         = _load_vendor("plyr/plyr.css")
     plyr_sprite      = _load_vendor("plyr/plyr.svg")
+    # The sprite ships with an XML prolog + <!DOCTYPE>; both are illegal inside an
+    # HTML <body> and corrupt parsing of following elements. Inject only the <svg>.
+    _svg_start = plyr_sprite.find("<svg")
+    if _svg_start > 0:
+        plyr_sprite = plyr_sprite[_svg_start:]
     media_providers  = _load("media_providers.js")  # ADR-154: provider registry (before player + entry forms)
     panel_components = _load("panel_components.js")  # ADR-128: must precede media_player + bani_flow
     media_player     = _load("media_player.js")
