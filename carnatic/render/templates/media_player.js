@@ -679,6 +679,32 @@ function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
   }
 }
 
+// ── ADR-156: chapter markers on the controlled timeline ───────────────────────
+// A track/segment carries offset_seconds + label fields; turn the list into Plyr
+// marker points {time, label} so the progress bar shows seekable chapter dots.
+function _markerLabel(t) {
+  if (t.display_title) return t.display_title;
+  if (t.composition_id && typeof compositions !== 'undefined') {
+    const c = compositions.find(x => x.id === t.composition_id);
+    if (c && c.title) return c.title;
+  }
+  if (t.raga_name) return t.raga_name;
+  if (t.raga_id) return t.raga_id;
+  return 'Segment';
+}
+
+function markerPointsFromTracks(tracks) {
+  if (!Array.isArray(tracks)) return [];
+  return tracks
+    .filter(t => (t.offset_seconds || 0) > 0)   // a marker at 0 is just the start
+    .map(t => ({
+      time: t.offset_seconds,
+      // Plyr renders the label as HTML in the tooltip — sanitise angle brackets.
+      label: String(_markerLabel(t)).replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+    }))
+    .sort((a, b) => a.time - b.time);
+}
+
 // ── ADR-155: mountPlayer — control inversion ──────────────────────────────────
 // Mounts media into `videoWrap` and returns a uniform controller:
 //   { kind, seek(sec), destroy(), onTime(cb), onEnded(cb), iframe?, plyr? }
@@ -687,9 +713,10 @@ function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
 // via the timeupdate event, and the ended event for future playlists (ADR-157).
 // Non-controllable providers (soundcloud/gdrive) and any environment lacking
 // Plyr fall back to the pre-existing raw iframe (ADR-155 §4).
-function mountPlayer(videoWrap, media, startSeconds) {
+function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
   const src = (typeof embedSource === 'function') ? embedSource(media) : null;
   const usePlyr = !!(media && media.controllable && typeof Plyr !== 'undefined' && src);
+  const points = Array.isArray(markerPoints) ? markerPoints : [];
 
   if (usePlyr) {
     // Plyr enhances a typed target element (its documented setup), NOT a bare
@@ -718,6 +745,7 @@ function mountPlayer(videoWrap, media, startSeconds) {
       keyboard: { focused: true, global: false },
       youtube: { rel: 0, modestbranding: 1, iv_load_policy: 3 },
       vimeo: { byline: false, portrait: false, title: false },
+      markers: { enabled: points.length > 0, points },   // ADR-156: chapter markers
     });
     if (startSeconds && startSeconds > 0) {
       player.once('ready', () => { try { player.currentTime = startSeconds; } catch (e) {} });
@@ -777,7 +805,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // IFrame API needs the target element attached to initialise. Remaining
   // children (footer, resize) are appended to the now-connected element below.
   document.getElementById('main').appendChild(el);
-  const controller = mountPlayer(videoWrap, media, startSeconds);
+  const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
 
   // ── Footer: musician + raga + comp + composer chips ──────────────────────
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
@@ -3156,7 +3184,7 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   mp.videoWrap.classList.remove('mp-has-plyr');   // mountPlayer re-adds it for Plyr
   mp.videoWrap.style.paddingTop = '56.25%';
   mp.videoWrap.style.height = '';
-  const controller = mountPlayer(mp.videoWrap, media, startSeconds);
+  const controller = mountPlayer(mp.videoWrap, media, startSeconds, markerPointsFromTracks(mp.tracks));
   mp.controller = controller;
   mp.iframe = controller.iframe;   // null when Plyr-backed
   // Live playhead so share/copy capture the real position (AUDIT-014 F-04).
