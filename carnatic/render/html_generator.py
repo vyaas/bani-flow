@@ -316,6 +316,7 @@ def render_html(
     help_html        = _render_help_md((DATA_DIR / "help" / "preface.md").read_text(encoding="utf-8"))
     theme_js         = _load("theme.js")
     graph_view       = _load("graph_view.js")
+    media_providers  = _load("media_providers.js")  # ADR-154: provider registry (before player + entry forms)
     panel_components = _load("panel_components.js")  # ADR-128: must precede media_player + bani_flow
     media_player     = _load("media_player.js")
     # ADR-131 R3: sruti_bar.js retired — drone tonic now lives as a permanent
@@ -385,6 +386,7 @@ def render_html(
         theme_js,          # ← FIRST: defines THEME global
         data_js,
         graph_view,
+        media_providers,   # ← ADR-154: parseMediaUrl/mediaKey/embedSource globals
         panel_components,  # ← ADR-128: shared panel constructors (before media_player/bani_flow)
         media_player,
         timeline,

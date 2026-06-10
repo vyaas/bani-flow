@@ -6,7 +6,7 @@ ERA_FONT_SIZES) are imported from theme.py — the single source of truth.
 Implements ADR-028: Design Token Single Source of Truth.
 """
 from collections import defaultdict
-from .data_loaders import yt_video_id
+from .media_providers import media_key, parse_media_url
 from .theme import ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES, NODE_SIZES, ERA_FONT_SIZES, TOKENS
 
 def build_elements(graph: dict, listenable_set: set | None = None,
@@ -51,18 +51,26 @@ def build_elements(graph: dict, listenable_set: set | None = None,
         for t in node.get("youtube", []):
             if t.get("kind") == "lecdem":
                 continue            # lecdems handled by build_lecdem_indexes (ADR-078)
-            vid = yt_video_id(t.get("url", ""))
-            if vid:
-                tracks.append({
-                    "vid":            vid,
-                    "label":          t.get("label", vid),
-                    "composition_id": t.get("composition_id"),
-                    "raga_id":        t.get("raga_id"),
-                    "year":           t.get("year"),
-                    "version":        t.get("version"),
-                    "tala":           t.get("tala"),
-                    "performers":     t.get("performers", []),  # ADR-070
-                })
+            # ADR-154: parse via the provider registry so non-YouTube sources
+            # (vimeo, soundcloud, gdrive, direct files) are no longer dropped.
+            ref = parse_media_url(t.get("url", ""))
+            if not ref:
+                continue            # unmatched url — skipped (cf. AUDIT-014 F-02)
+            mkey = media_key(ref)
+            tracks.append({
+                "media":          ref,
+                "media_key":      mkey,
+                # ADR-154 transitional: keep `vid` for YouTube tracks until JS
+                # consumers migrate to media_key. Absent for other providers.
+                "vid":            ref["provider_id"] if ref["provider"] == "youtube" else None,
+                "label":          t.get("label", ref["provider_id"]),
+                "composition_id": t.get("composition_id"),
+                "raga_id":        t.get("raga_id"),
+                "year":           t.get("year"),
+                "version":        t.get("version"),
+                "tala":           t.get("tala"),
+                "performers":     t.get("performers", []),  # ADR-070
+            })
 
         # Sources: new schema (sources array) with legacy fallback
         raw_sources = node.get("sources", [])
@@ -137,9 +145,10 @@ def build_elements(graph: dict, listenable_set: set | None = None,
             performers = yt.get("performers") or []
             if not performers:
                 continue
-            vid = yt_video_id(yt.get("url", ""))
-            if not vid:
+            ref = parse_media_url(yt.get("url", ""))
+            if not ref:
                 continue
+            mkey = media_key(ref)
             for pf in performers:
                 mid = pf.get("musician_id")
                 if not mid or mid == host_id:
@@ -150,12 +159,14 @@ def build_elements(graph: dict, listenable_set: set | None = None,
                 target_tracks = target.setdefault("tracks", [])
                 # Skip if already present (host's own iteration covered it, or
                 # this performer is also in the same track twice)
-                if any(t.get("vid") == vid and t.get("host_id") == host_id
+                if any(t.get("media_key") == mkey and t.get("host_id") == host_id
                        for t in target_tracks):
                     continue
                 target_tracks.append({
-                    "vid":            vid,
-                    "label":          yt.get("label", vid),
+                    "media":          ref,
+                    "media_key":      mkey,
+                    "vid":            ref["provider_id"] if ref["provider"] == "youtube" else None,
+                    "label":          yt.get("label", ref["provider_id"]),
                     "composition_id": yt.get("composition_id"),
                     "raga_id":        yt.get("raga_id"),
                     "year":           yt.get("year"),

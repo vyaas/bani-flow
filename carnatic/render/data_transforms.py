@@ -3,6 +3,7 @@ carnatic/render/data_transforms.py — Denormalisation and lookup-table builders
 """
 from collections import defaultdict
 from .data_loaders import yt_video_id
+from .media_providers import media_key, parse_media_url
 
 
 def _track_performer_ids(host_node_id: str, yt: dict) -> list[str]:
@@ -115,6 +116,13 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
         video_id = rec["video_id"]
         title    = rec["title"]
         date     = rec.get("date", "")
+        # ADR-154: derive a provider-agnostic MediaRef from the stored url,
+        # falling back to a YouTube ref synthesised from video_id for legacy
+        # recordings that predate non-YouTube sourcing.
+        rec_media = parse_media_url(rec.get("url", "")) or (
+            parse_media_url(f"https://youtu.be/{video_id}") if video_id else None
+        )
+        rec_media_key = media_key(rec_media)
 
         for session in rec.get("sessions", []):
             performers = session.get("performers", [])
@@ -129,6 +137,8 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
                 ref: dict = {
                     "recording_id":      rec_id,
                     "video_id":          video_id,
+                    "media":             rec_media,      # ADR-154
+                    "media_key":         rec_media_key,  # ADR-154
                     "title":             title,
                     "short_title":       rec.get("short_title", ""),
                     "date":              date,

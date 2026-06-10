@@ -323,6 +323,14 @@ Additive field additions (new optional field on an existing item) do NOT bump th
 
 ### Still open
 
+#### Data integrity — orphan composer_id (raised 2026-06-10, carnatic-coder → librarian)
+`test_schema_integrity.py::test_all_composition_composer_ids_exist` fails:
+composition `shankari_shankuru` has `composer_id: "syama_shastri"`, but no
+musician node with id `syama_shastri` exists. Pre-existing (fails on `main`
+independent of the ADR-154 work). Librarian: either add the Syama Shastri
+musician node (Wikipedia URL available) or correct the composer_id. Out of
+Coder scope (data fix).
+
 #### Wikipedia URL health (last checked 2026-04-07)
 Nodes whose `wikipedia` field has no own article — flagged for community attention:
 | node id | status | note |
@@ -536,6 +544,8 @@ Entries are terse — this is a log, not an essay.
 - 2026-05-16: ADR-142 iteration — generalised from the eight enumerated cases to a stronger corollary: *every listed object has a chip*, with no exceptions; lecdem titles, misc-recording labels, inline subject labels inside a recording (raga / composition / co-performer), and even segment labels (`HH:MM:SS — Composition`) are all entity chips, each double-clicking into its own Edit form; recording-kind (concert / lecdem / misc) is NOT a chip-role discriminator — all three are `entity` of type `recording`, sharing one Add-form and one Edit-form parameterised by kind, so the writer has one `patch_recording`, not `patch_concert`/`patch_lecdem`/`patch_misc` (matching ADR-143 §2's bucket-not-kind matrix); inline subject chip identity wins over its container (double-clicking a raga chip inside a recording edits *the raga*, not the recording) — the disambiguation rule is "the chip you clicked is the chip you get"; segment chips introduce a new entity-type label `recording-segment` whose selector is `recording_id + start` (per ADR-143 §2 segment-selector grammar), and they are the first compound-key entity in the taxonomy, so future compound-key chips (e.g., `youtube[vid]`) inherit the pattern; the panel-level invariant after Phase C is *every label of a stored entity in a panel is a chip*, and non-entity prose (descriptions, dates, durations) remains prose — Coder audits the panels at end of Phase C and converts any remaining plain-prose entity labels.
 
 ### 🎵 Carnatic Coder
+
+- 2026-06-10: ADR-154 Milestone 1 (render-pipeline provider abstraction) landed, backward-compatible. New `carnatic/render/media_providers.py` (+ JS mirror `templates/media_providers.js`, injected before panel_components) is the single URL→identity entry point: `parse_media_url(url)` returns `{provider, provider_id, url, start, controllable}` for youtube/vimeo/soundcloud/gdrive/audio/video or None (no silent drop). `data_loaders.yt_video_id` is now a thin shim over it (returns provider_id only when provider==youtube, preserving the YouTube-only contract its callers rely on). `graph_builder` + `data_transforms` now emit `media`/`media_key` on tracks and recording perf-refs while KEEPING transitional `vid`/`video_id` so JS consumers (media_player.js, bani_flow.js node-id `vid::ragaId`, permalink, entry_forms) keep working until Milestone 2 migrates them. All current data is youtube so `vid` is always populated; non-youtube tracks now survive ingestion with `vid: null`. Render gate run via `PYTHONPATH=. .venv/bin/python3 -c "from carnatic.render import main; main()"` — the installed `bani-render` console script can't import `carnatic` because console scripts don't put cwd on sys.path and the project isn't pip-installed editable in this venv. pytest/pip were absent from the venv; bootstrap with `python3 -m ensurepip` then `python3 -m pip install pytest`, and run as `PYTHONPATH=. .venv/bin/python3 -m pytest`.
 
 - 2026-04-15: ADR-031 (entry_forms.js): The Cytoscape `elements` array does NOT use `{group: 'nodes', data: {...}}` format — elements are flat `{data: {...}}` objects; distinguish nodes from edges by `!e.data.source` (edges have `data.source`/`data.target`). The `e.group === 'nodes'` filter silently returns an empty array.
 

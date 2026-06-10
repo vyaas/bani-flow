@@ -5,14 +5,21 @@ All functions accept explicit Path parameters so they are testable without
 relying on module-level globals.
 """
 import json
-import re
 from pathlib import Path
+
+from .media_providers import parse_media_url
 
 
 def yt_video_id(url: str) -> "str | None":
-    """Extract an 11-character YouTube video ID from any YouTube URL form."""
-    m = re.search(r"(?:v=|youtu\.be/|embed/)([A-Za-z0-9_-]{11})", url)
-    return m.group(1) if m else None
+    """Extract an 11-character YouTube video ID from any YouTube URL form.
+
+    ADR-154: thin shim over the provider registry. Returns the provider_id only
+    when the url is a YouTube url (preserving the YouTube-only contract its
+    callers depend on); non-YouTube urls return None as before. New code should
+    call media_providers.parse_media_url directly to support all providers.
+    """
+    ref = parse_media_url(url)
+    return ref["provider_id"] if ref and ref["provider"] == "youtube" else None
 
 
 def timestamp_to_seconds(ts: str) -> int:
