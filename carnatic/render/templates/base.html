@@ -1440,6 +1440,15 @@
     padding: 2px 4px; font-size: 0.68rem; color: var(--fg-muted);
   }
   #trail-list { list-style: none; }
+  /* ADR-157: "Play all" queue button at the top of the trail */
+  .trail-play-all {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin: 2px 0 8px; padding: 4px 10px;
+    font-family: inherit; font-size: 0.72rem; cursor: pointer;
+    color: var(--bg); background: var(--accent);
+    border: none; border-radius: 12px; white-space: nowrap;
+  }
+  .trail-play-all:hover { background: var(--accent-sub, var(--accent)); }
   #trail-list li {
     padding: 5px 0;
     font-size: 0.74rem; color: var(--fg-dim);

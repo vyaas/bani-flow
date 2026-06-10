@@ -730,6 +730,44 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     row.track._versionLabel = row.track.version || `v${n}`;
   });
 
+  // ── ADR-157: "Play all" — queue every distinct recording in this trail ────
+  // Build a de-duplicated (by media_key) ordered queue from the trail rows, so
+  // the user can play the whole subject's recordings back-to-back (auto-advance).
+  const _qSeen = new Set();
+  const _qItems = [];
+  rows.forEach(function(row) {
+    const m = row.track.media || (row.track.vid && typeof resolveMedia === 'function' ? resolveMedia(row.track.vid) : null);
+    if (!m) return;
+    const k = (typeof mediaKey === 'function') ? mediaKey(m) : null;
+    if (!k || _qSeen.has(k)) return;
+    _qSeen.add(k);
+    _qItems.push({
+      media:        m,
+      label:        row.track.label || '',
+      artistName:   row.artistLabel || '',
+      startSeconds: row.track.offset_seconds || 0,
+      concertTitle: row.track.short_title || row.track.concert_title || row.track.label || '',
+      tracks:       [],
+      meta: {
+        nodeId:        row.nodeId || null,
+        ragaId:        row.track.raga_id || null,
+        compositionId: row.track.composition_id || null,
+        recId:         row.track.recording_id || null,
+      },
+    });
+  });
+  if (_qItems.length >= 2 && typeof window.startMediaQueue === 'function') {
+    const playAll = document.createElement('button');
+    playAll.className = 'trail-play-all';
+    playAll.textContent = '▶ Play all (' + _qItems.length + ')';
+    playAll.title = 'Play all ' + _qItems.length + ' recordings in sequence (auto-advance)';
+    playAll.addEventListener('click', function(e) {
+      e.stopPropagation();
+      window.startMediaQueue(_qItems, 0);
+    });
+    trailList.appendChild(playAll);
+  }
+
   // ── 5. Render trail — tree for raga/comp, flat list for perf/yt ──────────
   if (type === 'raga') {
     buildTreeRaga(rows, trailList, multiVersionKeys, id);

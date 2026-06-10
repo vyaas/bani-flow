@@ -889,6 +889,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // ADR-156: also advance the active-segment footer/highlight as playback crosses
   // chapter boundaries.
   controller.onTime(sec => { instance.currentOffset = sec; _updateActiveSegment(instance, sec); });
+  // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
+  controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
 
   el.querySelector('.mp-close').addEventListener('click', () => {
     controller.destroy();
@@ -1029,6 +1031,69 @@ function openOrFocusPlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     window._openWdpForPlayback(meta.ragaId, meta.compositionId || null);
   }
 }
+
+// ── ADR-157: ephemeral media queue (Phase A) ──────────────────────────────────
+// A client-side, in-memory playlist of distinct media. Auto-advances when the
+// current item's `ended` event fires (controllable providers only). One player
+// window is reused: on advance the previous desktop window is removed (mobile
+// reuses its singleton automatically). No persistence, no schema (the persistent
+// playlist entity is Phase B, a future ADR).
+const MediaQueue = {
+  items: [],          // [{ media, label, artistName, startSeconds, concertTitle, tracks, meta }]
+  index: -1,
+  active: false,
+  currentKey: null,
+
+  start(items, startIndex) {
+    this.items = Array.isArray(items) ? items.filter(it => it && it.media) : [];
+    this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
+    this.active = this.items.length > 0;
+    if (this.active) this._open(null);
+  },
+
+  // True when `mkey` is the queue's current item — guards auto-advance so a
+  // stray `ended` from a non-queue player can't drive the queue.
+  isCurrent(mkey) { return this.active && !!mkey && mkey === this.currentKey; },
+
+  _open(pos) {
+    const it = this.items[this.index];
+    if (!it || !it.media) { this.active = false; return; }
+    openOrFocusPlayer(it.media, it.label, it.artistName, it.startSeconds,
+                      it.concertTitle, it.tracks || [], Object.assign({}, it.meta || {}));
+    this.currentKey = mediaKey(it.media);
+    if (pos) {
+      const inst = playerRegistry.get(this.currentKey);
+      if (inst && inst.el && !inst._isMobileSingleton) {
+        inst.el.style.top = pos.top; inst.el.style.left = pos.left;
+        if (pos.width) inst.el.style.width = pos.width;
+      }
+    }
+  },
+
+  advance() {
+    if (!this.active) return;
+    if (this.index >= this.items.length - 1) { this.active = false; this.currentKey = null; return; }
+    const prevKey = this.currentKey;
+    const prevInst = prevKey ? playerRegistry.get(prevKey) : null;
+    const pos = (prevInst && prevInst.el && !prevInst._isMobileSingleton)
+      ? { top: prevInst.el.style.top, left: prevInst.el.style.left, width: prevInst.el.style.width }
+      : null;
+    this.index++;
+    this._open(pos);
+    // Reuse one window on desktop: drop the previous window (mobile already
+    // re-used its singleton inside _openMobilePlayer).
+    if (prevInst && !prevInst._isMobileSingleton && prevKey !== this.currentKey && playerRegistry.has(prevKey)) {
+      if (prevInst.controller) prevInst.controller.destroy();
+      if (prevInst.el) prevInst.el.remove();
+      playerRegistry.delete(prevKey);
+      refreshPlayingIndicators();
+    }
+  },
+
+  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; },
+};
+window.MediaQueue = MediaQueue;
+window.startMediaQueue = function(items, startIndex) { MediaQueue.start(items, startIndex); };
 
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
 function toggleConcert(headerEl) {
@@ -3224,6 +3289,8 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   mp.iframe = controller.iframe;   // null when Plyr-backed
   // Live playhead so share/copy capture the real position (AUDIT-014 F-04).
   controller.onTime(sec => { mp.currentOffset = sec; });
+  // ADR-157: auto-advance the queue when this item ends.
+  controller.onEnded(() => { if (MediaQueue.isCurrent(mp.mediaKey)) MediaQueue.advance(); });
 
   // ── Build tracklist ─────────────────────────────────────────────────────
   mp.tracklistDiv.innerHTML = '';
