@@ -1,0 +1,26 @@
+{
+  "id": "sid_sriram",
+  "label": "Sid Sriram",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Sid_Sriram",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1990,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/nG9_9cLsJ1M",
+      "label": "Brova Bharama · Bahudari",
+      "composition_id": "brova_bharama",
+      "raga_id": "bahudari"
+    }
+  ]
+}

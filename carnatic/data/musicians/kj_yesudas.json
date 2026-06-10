@@ -1,0 +1,26 @@
+{
+  "id": "kj_yesudas",
+  "label": "KJ Yesudas",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/K._J._Yesudas",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1940,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/1ajEClALfRQ",
+      "label": "Sarasa Samadana · Kapinarayani",
+      "composition_id": "sarasa_samadana",
+      "raga_id": "kapinarayani"
+    }
+  ]
+}
