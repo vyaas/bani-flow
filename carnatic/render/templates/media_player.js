@@ -705,6 +705,47 @@ function markerPointsFromTracks(tracks) {
     .sort((a, b) => a.time - b.time);
 }
 
+// ADR-156: map a lecdem ref's segments[] to the player's track shape, so a
+// lecdem's chapters become in-player tracklist rows + timeline markers (the
+// same treatment concert performances get).
+function segmentsToTracks(segments) {
+  if (!Array.isArray(segments)) return [];
+  return segments.map(seg => {
+    const ragaObj = (typeof ragas !== 'undefined' && seg.raga_id) ? ragas.find(r => r.id === seg.raga_id) : null;
+    return {
+      offset_seconds: seg.offset_seconds || 0,
+      display_title:  seg.display_title || seg.raga_id || seg.kind || '',
+      raga_id:        seg.raga_id || null,
+      raga_name:      ragaObj ? ragaObj.name : (seg.raga_id || ''),
+      tala:           seg.tala || null,
+      timestamp:      seg.timestamp || '00:00',
+      composition_id: seg.composition_id || null,
+    };
+  });
+}
+
+// ADR-156: live active-segment — given the current playhead, find the segment
+// in progress and (when it changes) sync the footer chips + tracklist highlight.
+// Assumes instance.tracks is sorted ascending by offset_seconds.
+function _updateActiveSegment(instance, sec) {
+  const tracks = instance.tracks;
+  if (!tracks || tracks.length === 0) return;
+  let active = tracks[0];
+  for (let i = 0; i < tracks.length; i++) {
+    if ((tracks[i].offset_seconds || 0) <= sec) active = tracks[i];
+    else break;
+  }
+  if (instance._activeOffset === active.offset_seconds) return;   // unchanged
+  instance._activeOffset = active.offset_seconds;
+  updatePlayerFooter(instance, active.raga_id || null, active.composition_id || null,
+                     active.display_title || null, active.tala || null);
+  if (instance.tracklistEl) {
+    instance.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
+      li.classList.toggle('mp-track-active', parseInt(li.dataset.offset, 10) === active.offset_seconds);
+    });
+  }
+}
+
 // ── ADR-155: mountPlayer — control inversion ──────────────────────────────────
 // Mounts media into `videoWrap` and returns a uniform controller:
 //   { kind, seek(sec), destroy(), onTime(cb), onEnded(cb), iframe?, plyr? }
@@ -837,12 +878,17 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     // readers and any lingering vid consumers continue to work.
     vid:          (media && media.provider === 'youtube') ? media.provider_id : null,
     currentOffset: startSeconds || 0,
+    // ADR-156: tracks sorted ascending so live active-segment detection is a
+    // simple forward scan.
+    tracks:       (Array.isArray(tracks) ? tracks.slice() : []).sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0)),
     meta:         fullMeta,
   };
 
   // ADR-155: live playhead — currentOffset tracks real playback, so share/copy
   // and the permalink capture where the video actually is (fixes AUDIT-014 F-04).
-  controller.onTime(sec => { instance.currentOffset = sec; });
+  // ADR-156: also advance the active-segment footer/highlight as playback crosses
+  // chapter boundaries.
+  controller.onTime(sec => { instance.currentOffset = sec; _updateActiveSegment(instance, sec); });
 
   el.querySelector('.mp-close').addEventListener('click', () => {
     controller.destroy();
@@ -1083,7 +1129,7 @@ function buildLecdemChip(ref) {
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
     // Open media player on the lecdem video; pass lecturer meta so footer shows lecturer chip
-    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', [], { nodeId: ref.lecturer_id || null });
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId: ref.lecturer_id || null });
     // Replace footer with a unified footer: lecturer chip + subject cross-link chips (ADR-079 §4)
     const instance = playerRegistry.get(ref.media_key);
     if (instance && ref.subjects) {
@@ -2001,7 +2047,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.textContent = '\u25B6';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', [], { nodeId });
+      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId });
       const instance = playerRegistry.get(ref.media_key);
       if (instance && ref.subjects) {
         const subFooter = _buildLecdemSubjectFooter(
@@ -2024,19 +2070,8 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   }
 
   // ── bracket (has segments) ──────────────────────────────────────────────────
-  // Build allTracks for the in-player selector
-  const allTracks = segments.map(seg => {
-    const ragaObj = seg.raga_id ? ragas.find(r => r.id === seg.raga_id) : null;
-    return {
-      offset_seconds: seg.offset_seconds || 0,
-      display_title:  seg.display_title || seg.raga_id || seg.kind || '',
-      raga_id:        seg.raga_id || null,
-      raga_name:      ragaObj ? ragaObj.name : (seg.raga_id || ''),
-      tala:           seg.tala || null,
-      timestamp:      seg.timestamp || '00:00',
-      composition_id: seg.composition_id || null,
-    };
-  });
+  // Build allTracks for the in-player selector (ADR-156: shared helper)
+  const allTracks = segmentsToTracks(segments);
 
   const bracket = document.createElement('div');
   bracket.className = 'concert-bracket';
@@ -2722,7 +2757,7 @@ function _buildSegTimeline(ref) {
       + '<span class="seg-label">' + segLabel + '</span>';
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, segLabel, '', seg.offset_seconds, ref.label || 'Lecture-Demo', [], {});
+      openOrFocusPlayer(ref.video_id, segLabel, '', seg.offset_seconds, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), {});
     });
     li.appendChild(btn);
     ul.appendChild(li);
