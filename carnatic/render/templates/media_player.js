@@ -1,5 +1,6 @@
 // ── media player manager ──────────────────────────────────────────────────────
-// Registry: vid (11-char YouTube ID) → player instance { el, iframe, titleEl, vid }
+// ADR-154: the registry is keyed by media_key ("provider:provider_id"), not the
+// bare YouTube vid. Instances carry { el, iframe, titleEl, media, mediaKey }.
 const playerRegistry = new Map();
 let topZ = 800;
 let spawnCount = 0;
@@ -12,6 +13,63 @@ function ytEmbedUrl(vid, startSeconds) {
 function ytDirectUrl(vid, startSeconds) {
   const t = (startSeconds && startSeconds > 0) ? `?t=${startSeconds}` : '';
   return `https://youtu.be/${vid}${t}`;
+}
+
+// ── ADR-154: provider-agnostic media resolution + embed/share builders ─────────
+// resolveMedia() normalises any legacy first-argument the player entry points
+// still receive — a bare YouTube id, a "provider:provider_id" key, a full url,
+// or an already-built MediaRef — into a MediaRef. This lets every existing call
+// site keep passing a YouTube id string while the registry/DOM/permalink migrate
+// to media_key underneath.
+function resolveMedia(arg) {
+  if (!arg) return null;
+  if (typeof arg === 'object') return arg.provider ? arg : null;
+  if (typeof arg === 'string') {
+    if (/^https?:/.test(arg)) {
+      const ref = (typeof parseMediaUrl === 'function') ? parseMediaUrl(arg) : null;
+      if (ref) return ref;
+    }
+    // "provider:provider_id" — but not a url (handled above)
+    const colon = arg.indexOf(':');
+    if (colon > 0 && !/\s/.test(arg) && /^[a-z]+$/.test(arg.slice(0, colon))) {
+      const provider = arg.slice(0, colon);
+      const pid = arg.slice(colon + 1);
+      return { provider, provider_id: pid, url: '', start: 0, controllable: provider !== 'soundcloud' && provider !== 'gdrive' };
+    }
+    // bare 11-char YouTube id (legacy default)
+    return { provider: 'youtube', provider_id: arg, url: 'https://youtu.be/' + arg, start: 0, controllable: true };
+  }
+  return null;
+}
+
+// embedUrl(media, startSeconds) → iframe src for the given provider.
+// NOTE: full control inversion (Plyr) arrives in ADR-155; this dispatch keeps
+// each provider embeddable in the interim. YouTube behaviour is unchanged.
+function embedUrl(media, startSeconds) {
+  if (!media) return '';
+  switch (media.provider) {
+    case 'youtube':    return ytEmbedUrl(media.provider_id, startSeconds);
+    case 'vimeo': {
+      const t = (startSeconds && startSeconds > 0) ? `#t=${startSeconds}s` : '';
+      return `https://player.vimeo.com/video/${media.provider_id}?autoplay=1${t}`;
+    }
+    case 'soundcloud': return `https://w.soundcloud.com/player/?url=${encodeURIComponent(media.url)}&auto_play=true`;
+    case 'gdrive':     return `https://drive.google.com/file/d/${media.provider_id}/preview`;
+    default:           return media.url || '';   // audio/video direct — ADR-155 replaces with <audio>/<video>
+  }
+}
+
+// shareUrl(media, startSeconds) → canonical outbound link (copy / open-in-source).
+function shareUrl(media, startSeconds) {
+  if (!media) return '';
+  switch (media.provider) {
+    case 'youtube': return ytDirectUrl(media.provider_id, startSeconds);
+    case 'vimeo': {
+      const t = (startSeconds && startSeconds > 0) ? `#t=${startSeconds}s` : '';
+      return `https://vimeo.com/${media.provider_id}${t}`;
+    }
+    default: return media.url || '';
+  }
 }
 
 function formatTimestamp(seconds) {
@@ -53,7 +111,11 @@ function encodePermalink(instance) {
       ? window.getBaniTrail() : { back: [] };
     const panelId = (typeof window.getCurrentPanelNode === 'function')
       ? window.getCurrentPanelNode() : null;
-    const state = { v: 1, vid: instance.vid };
+    // ADR-154: v:2 carries the provider-qualified media_key (`m`). v:1 readers
+    // (permalink.js) still understand the legacy `vid` field, which we continue
+    // to emit for YouTube media so freshly-copied links open in older builds.
+    const state = { v: 2, m: instance.mediaKey || null };
+    if (instance.media && instance.media.provider === 'youtube') state.vid = instance.media.provider_id;
     if (instance.currentOffset > 0) state.t = instance.currentOffset;
     const m = instance.meta || {};
     const meta = {};
@@ -284,7 +346,7 @@ function buildNotesSection(notes) {
 }
 
 // ── buildPlayerTrackList — build the <ul> of track items for the in-player selector ──
-function buildPlayerTrackList(vid, tracks, instance) {
+function buildPlayerTrackList(mediaKey, tracks, instance) {
   const ul = document.createElement('ul');
   ul.className = 'mp-track-items';
 
@@ -366,9 +428,12 @@ function buildPlayerTrackList(vid, tracks, instance) {
 
     li.addEventListener('click', e => {
       if (e.target.closest('.raga-chip, .comp-chip')) return;
-      const player = playerRegistry.get(vid);
+      const player = playerRegistry.get(mediaKey);
       if (!player) return;
-      player.iframe.src = ytEmbedUrl(vid, t.offset_seconds > 0 ? t.offset_seconds : undefined);
+      // ADR-155: seek via the controller (Plyr → currentTime, no reload). Mobile's
+      // iframe pseudo-instance has no controller, so fall back to an iframe reload.
+      if (player.controller) player.controller.seek(t.offset_seconds > 0 ? t.offset_seconds : 0);
+      else player.iframe.src = embedUrl(player.media, t.offset_seconds > 0 ? t.offset_seconds : undefined);
       player.currentOffset = t.offset_seconds;
       // Update active indicator
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
@@ -387,7 +452,7 @@ function buildPlayerTrackList(vid, tracks, instance) {
 // ── buildPlayerBar — [▾] [title] [copy] [≡?] [✕] ──────────────────────────
 // Artist chip moves to the footer (buildPlayerFooter). meta.nodeId is still
 // stored on the instance so updatePlayerFooter can include the musician chip.
-function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta) {
+function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, meta) {
   meta = meta || {};
   const bar = document.createElement('div');
   bar.className = 'mp-bar';
@@ -432,7 +497,7 @@ function buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, me
   // Uses the youtu.be short URL (no timestamp; this is a gateway link to the source).
   const ytLink = document.createElement('a');
   ytLink.className = 'mp-yt-link';
-  ytLink.href = ytDirectUrl(vid, 0);
+  ytLink.href = shareUrl(media, 0);
   ytLink.target = '_blank';
   ytLink.rel = 'noopener noreferrer';
   ytLink.title = 'Watch on YouTube';
@@ -614,7 +679,149 @@ function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
   }
 }
 
-function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+// ── ADR-156: chapter markers on the controlled timeline ───────────────────────
+// A track/segment carries offset_seconds + label fields; turn the list into Plyr
+// marker points {time, label} so the progress bar shows seekable chapter dots.
+function _markerLabel(t) {
+  if (t.display_title) return t.display_title;
+  if (t.composition_id && typeof compositions !== 'undefined') {
+    const c = compositions.find(x => x.id === t.composition_id);
+    if (c && c.title) return c.title;
+  }
+  if (t.raga_name) return t.raga_name;
+  if (t.raga_id) return t.raga_id;
+  return 'Segment';
+}
+
+function markerPointsFromTracks(tracks) {
+  if (!Array.isArray(tracks)) return [];
+  return tracks
+    .filter(t => (t.offset_seconds || 0) > 0)   // a marker at 0 is just the start
+    .map(t => ({
+      time: t.offset_seconds,
+      // Plyr renders the label as HTML in the tooltip — sanitise angle brackets.
+      label: String(_markerLabel(t)).replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+    }))
+    .sort((a, b) => a.time - b.time);
+}
+
+// ADR-156: map a lecdem ref's segments[] to the player's track shape, so a
+// lecdem's chapters become in-player tracklist rows + timeline markers (the
+// same treatment concert performances get).
+function segmentsToTracks(segments) {
+  if (!Array.isArray(segments)) return [];
+  return segments.map(seg => {
+    const ragaObj = (typeof ragas !== 'undefined' && seg.raga_id) ? ragas.find(r => r.id === seg.raga_id) : null;
+    return {
+      offset_seconds: seg.offset_seconds || 0,
+      display_title:  seg.display_title || seg.raga_id || seg.kind || '',
+      raga_id:        seg.raga_id || null,
+      raga_name:      ragaObj ? ragaObj.name : (seg.raga_id || ''),
+      tala:           seg.tala || null,
+      timestamp:      seg.timestamp || '00:00',
+      composition_id: seg.composition_id || null,
+    };
+  });
+}
+
+// ADR-156: live active-segment — given the current playhead, find the segment
+// in progress and (when it changes) sync the footer chips + tracklist highlight.
+// Assumes instance.tracks is sorted ascending by offset_seconds.
+function _updateActiveSegment(instance, sec) {
+  const tracks = instance.tracks;
+  if (!tracks || tracks.length === 0) return;
+  let active = tracks[0];
+  for (let i = 0; i < tracks.length; i++) {
+    if ((tracks[i].offset_seconds || 0) <= sec) active = tracks[i];
+    else break;
+  }
+  if (instance._activeOffset === active.offset_seconds) return;   // unchanged
+  instance._activeOffset = active.offset_seconds;
+  updatePlayerFooter(instance, active.raga_id || null, active.composition_id || null,
+                     active.display_title || null, active.tala || null);
+  if (instance.tracklistEl) {
+    instance.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
+      li.classList.toggle('mp-track-active', parseInt(li.dataset.offset, 10) === active.offset_seconds);
+    });
+  }
+}
+
+// ── ADR-155: mountPlayer — control inversion ──────────────────────────────────
+// Mounts media into `videoWrap` and returns a uniform controller:
+//   { kind, seek(sec), destroy(), onTime(cb), onEnded(cb), iframe?, plyr? }
+// Controllable providers (youtube/vimeo/audio/video) get a Plyr instance whose
+// API we drive directly — seek via currentTime (no iframe reload), live playhead
+// via the timeupdate event, and the ended event for future playlists (ADR-157).
+// Non-controllable providers (soundcloud/gdrive) and any environment lacking
+// Plyr fall back to the pre-existing raw iframe (ADR-155 §4).
+function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
+  const src = (typeof embedSource === 'function') ? embedSource(media) : null;
+  const usePlyr = !!(media && media.controllable && typeof Plyr !== 'undefined' && src);
+  const points = Array.isArray(markerPoints) ? markerPoints : [];
+
+  if (usePlyr) {
+    // Plyr enhances a typed target element (its documented setup), NOT a bare
+    // empty div: embeds use a <div data-plyr-provider data-plyr-embed-id>;
+    // direct files use a real <audio>/<video> with a <source>.
+    let target;
+    if (media.provider === 'youtube' || media.provider === 'vimeo') {
+      target = document.createElement('div');
+      target.setAttribute('data-plyr-provider', media.provider);
+      target.setAttribute('data-plyr-embed-id', media.provider_id);
+    } else {
+      target = document.createElement(media.provider === 'audio' ? 'audio' : 'video');
+      target.setAttribute('controls', '');
+      target.setAttribute('playsinline', '');
+      const s = document.createElement('source');
+      s.src = media.url;
+      target.appendChild(s);
+    }
+    videoWrap.classList.add('mp-has-plyr');   // let Plyr own its 16:9 sizing
+    videoWrap.appendChild(target);
+    const player = new Plyr(target, {
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+      loadSprite: false,                  // sprite is inlined in the document (ADR-155 M1)
+      ratio: '16:9',
+      autoplay: true,
+      keyboard: { focused: true, global: false },
+      youtube: { rel: 0, modestbranding: 1, iv_load_policy: 3 },
+      vimeo: { byline: false, portrait: false, title: false },
+      markers: { enabled: points.length > 0, points },   // ADR-156: chapter markers
+    });
+    if (startSeconds && startSeconds > 0) {
+      player.once('ready', () => { try { player.currentTime = startSeconds; } catch (e) {} });
+    }
+    return {
+      kind: 'plyr',
+      plyr: player,
+      iframe: null,
+      seek(sec) { try { player.currentTime = sec || 0; player.play(); } catch (e) {} },
+      destroy() { try { player.destroy(); } catch (e) {} },
+      onTime(cb) { player.on('timeupdate', () => cb(Math.floor(player.currentTime || 0))); },
+      onEnded(cb) { player.on('ended', cb); },
+    };
+  }
+
+  // Fallback: raw iframe (non-controllable provider, or Plyr unavailable).
+  const iframe = document.createElement('iframe');
+  iframe.className = 'mp-iframe';
+  iframe.src = embedUrl(media, startSeconds);
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope';
+  iframe.allowFullscreen = true;
+  videoWrap.appendChild(iframe);
+  return {
+    kind: 'iframe',
+    plyr: null,
+    iframe,
+    seek(sec) { iframe.src = embedUrl(media, sec > 0 ? sec : undefined); },
+    destroy() { iframe.src = ''; },
+    onTime() {},
+    onEnded() {},
+  };
+}
+
+function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+  const mkey = mediaKey(media);          // ADR-154: provider-qualified registry key
   const hasTracks = Array.isArray(tracks) && tracks.length > 0;
 
   const pos = nextSpawnPosition();
@@ -622,7 +829,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
   el.className = 'media-player';
   el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${++topZ}; width:480px;`;
 
-  const bar = buildPlayerBar(vid, artistName, concertTitle, trackLabel, hasTracks, meta || {});
+  const bar = buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, meta || {});
   el.appendChild(bar);
 
   if (hasTracks) {
@@ -634,11 +841,12 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
 
   const videoWrap = document.createElement('div');
   videoWrap.className = 'mp-video-wrap';
-  videoWrap.innerHTML = `<iframe class="mp-iframe"
-    src="${ytEmbedUrl(vid, startSeconds)}"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-    allowfullscreen></iframe>`;
   el.appendChild(videoWrap);
+  // ADR-155: connect the player to the DOM BEFORE mounting Plyr — the YouTube
+  // IFrame API needs the target element attached to initialise. Remaining
+  // children (footer, resize) are appended to the now-connected element below.
+  document.getElementById('main').appendChild(el);
+  const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
 
   // ── Footer: musician + raga + comp + composer chips ──────────────────────
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
@@ -659,18 +867,35 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
 
   const instance = {
     el,
-    iframe:       el.querySelector('.mp-iframe'),
+    controller,                  // ADR-155: uniform media controller (Plyr or iframe)
+    iframe:       controller.iframe,   // null when Plyr-backed
+    plyr:         controller.plyr,     // null when iframe-backed
     titleEl:      el.querySelector('.mp-title'),
     tracklistEl:  el.querySelector('.mp-tracklist') || null,
-    vid,
+    media,                       // ADR-154: the MediaRef
+    mediaKey:     mkey,          // ADR-154: registry key
+    // ADR-154 transitional: keep `vid` for YouTube media so older permalink
+    // readers and any lingering vid consumers continue to work.
+    vid:          (media && media.provider === 'youtube') ? media.provider_id : null,
     currentOffset: startSeconds || 0,
+    // ADR-156: tracks sorted ascending so live active-segment detection is a
+    // simple forward scan.
+    tracks:       (Array.isArray(tracks) ? tracks.slice() : []).sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0)),
     meta:         fullMeta,
   };
 
+  // ADR-155: live playhead — currentOffset tracks real playback, so share/copy
+  // and the permalink capture where the video actually is (fixes AUDIT-014 F-04).
+  // ADR-156: also advance the active-segment footer/highlight as playback crosses
+  // chapter boundaries.
+  controller.onTime(sec => { instance.currentOffset = sec; _updateActiveSegment(instance, sec); });
+  // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
+  controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
+
   el.querySelector('.mp-close').addEventListener('click', () => {
-    instance.iframe.src = '';
+    controller.destroy();
     el.remove();
-    playerRegistry.delete(vid);
+    playerRegistry.delete(mkey);
     refreshPlayingIndicators();
   });
 
@@ -679,7 +904,7 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
   if (copyBtn) {
     copyBtn.addEventListener('click', e => {
       e.stopPropagation();
-      const url = ytDirectUrl(vid, instance.currentOffset);
+      const url = shareUrl(media, instance.currentOffset);
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(() => {
           copyBtn.classList.add('mp-copy-copied');
@@ -712,13 +937,13 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
   const ytLinkEl = el.querySelector('.mp-yt-link');
   if (ytLinkEl) {
     ytLinkEl.addEventListener('mouseenter', () => {
-      ytLinkEl.href = ytDirectUrl(vid, instance.currentOffset || 0);
+      ytLinkEl.href = shareUrl(media, instance.currentOffset || 0);
     });
   }
 
   // Wire track list toggle and populate track items
   if (hasTracks && instance.tracklistEl) {
-    const trackUl = buildPlayerTrackList(vid, tracks, instance);
+    const trackUl = buildPlayerTrackList(mkey, tracks, instance);
     instance.tracklistEl.appendChild(trackUl);
 
     const toggleBtn = el.querySelector('.mp-tracklist-toggle');
@@ -741,32 +966,38 @@ function createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, t
   wireResize(el, el.querySelector('.mp-resize'));
   el.addEventListener('mousedown', () => bringToFront(instance));
 
-  document.getElementById('main').appendChild(el);
+  // el was already appended to #main before mountPlayer (Plyr/YT needs the
+  // target connected at init); just raise it to the front now.
   bringToFront(instance);
   return instance;
 }
 
 // meta = { nodeId, ragaId, compositionId } — all optional; drives clickable chips in title bar
-function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
-  // Toggle-close: if this video is already playing, close it — works for both desktop and mobile.
-  if (playerRegistry.has(vid)) {
-    const existing = playerRegistry.get(vid);
+function openOrFocusPlayer(mediaArg, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+  // ADR-154: normalise the first argument (legacy YouTube id string, "provider:id"
+  // key, url, or a MediaRef) into a MediaRef, then key everything by media_key.
+  const media = resolveMedia(mediaArg);
+  if (!media) return;
+  const mkey = mediaKey(media);
+  // Toggle-close: if this media is already playing, close it — desktop + mobile.
+  if (playerRegistry.has(mkey)) {
+    const existing = playerRegistry.get(mkey);
     if (existing._isMobileSingleton) {
       _closeMobilePlayer();
     } else {
       existing.iframe.src = '';
       existing.el.remove();
-      playerRegistry.delete(vid);
+      playerRegistry.delete(mkey);
       refreshPlayingIndicators();
     }
     return;
   }
   // ADR-037: on mobile, delegate to singleton player
   if (_isMobilePlayer()) {
-    _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta);
+    _openMobilePlayer(media, trackLabel, artistName, startSeconds, concertTitle, tracks, meta);
   } else {
-    const p = createPlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
-    playerRegistry.set(vid, p);
+    const p = createPlayer(media, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
+    playerRegistry.set(mkey, p);
     refreshPlayingIndicators();
     // Position player next to the Wheel Detail Panel when a raga context is present.
     if (meta && meta.ragaId) {
@@ -800,6 +1031,69 @@ function openOrFocusPlayer(vid, trackLabel, artistName, startSeconds, concertTit
     window._openWdpForPlayback(meta.ragaId, meta.compositionId || null);
   }
 }
+
+// ── ADR-157: ephemeral media queue (Phase A) ──────────────────────────────────
+// A client-side, in-memory playlist of distinct media. Auto-advances when the
+// current item's `ended` event fires (controllable providers only). One player
+// window is reused: on advance the previous desktop window is removed (mobile
+// reuses its singleton automatically). No persistence, no schema (the persistent
+// playlist entity is Phase B, a future ADR).
+const MediaQueue = {
+  items: [],          // [{ media, label, artistName, startSeconds, concertTitle, tracks, meta }]
+  index: -1,
+  active: false,
+  currentKey: null,
+
+  start(items, startIndex) {
+    this.items = Array.isArray(items) ? items.filter(it => it && it.media) : [];
+    this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
+    this.active = this.items.length > 0;
+    if (this.active) this._open(null);
+  },
+
+  // True when `mkey` is the queue's current item — guards auto-advance so a
+  // stray `ended` from a non-queue player can't drive the queue.
+  isCurrent(mkey) { return this.active && !!mkey && mkey === this.currentKey; },
+
+  _open(pos) {
+    const it = this.items[this.index];
+    if (!it || !it.media) { this.active = false; return; }
+    openOrFocusPlayer(it.media, it.label, it.artistName, it.startSeconds,
+                      it.concertTitle, it.tracks || [], Object.assign({}, it.meta || {}));
+    this.currentKey = mediaKey(it.media);
+    if (pos) {
+      const inst = playerRegistry.get(this.currentKey);
+      if (inst && inst.el && !inst._isMobileSingleton) {
+        inst.el.style.top = pos.top; inst.el.style.left = pos.left;
+        if (pos.width) inst.el.style.width = pos.width;
+      }
+    }
+  },
+
+  advance() {
+    if (!this.active) return;
+    if (this.index >= this.items.length - 1) { this.active = false; this.currentKey = null; return; }
+    const prevKey = this.currentKey;
+    const prevInst = prevKey ? playerRegistry.get(prevKey) : null;
+    const pos = (prevInst && prevInst.el && !prevInst._isMobileSingleton)
+      ? { top: prevInst.el.style.top, left: prevInst.el.style.left, width: prevInst.el.style.width }
+      : null;
+    this.index++;
+    this._open(pos);
+    // Reuse one window on desktop: drop the previous window (mobile already
+    // re-used its singleton inside _openMobilePlayer).
+    if (prevInst && !prevInst._isMobileSingleton && prevKey !== this.currentKey && playerRegistry.has(prevKey)) {
+      if (prevInst.controller) prevInst.controller.destroy();
+      if (prevInst.el) prevInst.el.remove();
+      playerRegistry.delete(prevKey);
+      refreshPlayingIndicators();
+    }
+  },
+
+  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; },
+};
+window.MediaQueue = MediaQueue;
+window.startMediaQueue = function(items, startIndex) { MediaQueue.start(items, startIndex); };
 
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
 function toggleConcert(headerEl) {
@@ -900,9 +1194,9 @@ function buildLecdemChip(ref) {
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
     // Open media player on the lecdem video; pass lecturer meta so footer shows lecturer chip
-    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', [], { nodeId: ref.lecturer_id || null });
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId: ref.lecturer_id || null });
     // Replace footer with a unified footer: lecturer chip + subject cross-link chips (ADR-079 §4)
-    const instance = playerRegistry.get(ref.video_id);
+    const instance = playerRegistry.get(ref.media_key);
     if (instance && ref.subjects) {
       const subFooter = _buildLecdemSubjectFooter(
         ref.subjects,
@@ -1235,8 +1529,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     );
     sortedPerfs.forEach(p => {
       const li = document.createElement('li');
-      li.className = 'concert-perf-item' + (playerRegistry.has(p.video_id) ? ' playing' : '');
-      li.dataset.vid = p.video_id;
+      li.className = 'concert-perf-item' + (playerRegistry.has(p.media_key) ? ' playing' : '');
+      li.dataset.vid = p.media_key;
       // ADR-052: container is not a click target; navigation lives in embedded chips.
 
       // ── Raga chip row (top, no tala — matches tree-comp-node aesthetic) ────
@@ -1429,7 +1723,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     }
     const playBtn = document.createElement('button');
     playBtn.className = p.recording_id ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
-    playBtn.setAttribute('data-vid', p.video_id);
+    playBtn.setAttribute('data-vid', p.media_key);
     playBtn.title = p.short_title || p.title || 'Play';
     playBtn.textContent = '\u25B6';
     playBtn.addEventListener('click', e => {
@@ -1475,8 +1769,8 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     sortedPerfs.forEach((p, idx) => {
       const recLi = document.createElement('li');
       recLi.className = 'tree-leaf';
-      recLi.dataset.vid = p.video_id;
-      if (playerRegistry.has(p.video_id)) recLi.classList.add('playing');
+      recLi.dataset.vid = p.media_key;
+      if (playerRegistry.has(p.media_key)) recLi.classList.add('playing');
 
       const row = document.createElement('div');
       row.className = 'trail-row2';
@@ -1496,7 +1790,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       rowActsDiv.className = 'trail-acts';
       const playBtn = document.createElement('button');
       playBtn.className = p.recording_id ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
-      playBtn.setAttribute('data-vid', p.video_id);
+      playBtn.setAttribute('data-vid', p.media_key);
       playBtn.title = p.short_title || p.title || 'Play';
       playBtn.textContent = '\u25B6';
       playBtn.addEventListener('click', e => {
@@ -1654,8 +1948,8 @@ function buildRagaGroupItem(ragaId, ragaObj, perfs, nodeId, artistLabel) {
 function buildMiscLeaf(p, nodeId, artistLabel) {
   const li = document.createElement('li');
   li.className = 'tree-leaf tree-misc-leaf';
-  li.dataset.vid = p.video_id;
-  if (playerRegistry.has(p.video_id)) li.classList.add('playing');
+  li.dataset.vid = p.media_key;
+  if (playerRegistry.has(p.media_key)) li.classList.add('playing');
   if (p.video_id && typeof applyChipRole === 'function')
     applyChipRole(li, 'row-block', 'recording', p.video_id);
 
@@ -1703,7 +1997,7 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
   actsDiv.className = 'trail-acts';
   const playBtn = document.createElement('button');
   playBtn.className = p.recording_id ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
-  playBtn.setAttribute('data-vid', p.video_id);
+  playBtn.setAttribute('data-vid', p.media_key);
   playBtn.title = p.display_title || p.short_title || p.title || 'Play';
   playBtn.textContent = '\u25B6';
   playBtn.addEventListener('click', e => {
@@ -1813,13 +2107,13 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
 
     const playBtn = document.createElement('button');
     playBtn.className = 'rec-play-btn play-btn-direct';
-    playBtn.setAttribute('data-vid', ref.video_id);
+    playBtn.setAttribute('data-vid', ref.media_key);
     playBtn.title = ref.label || 'Play';
     playBtn.textContent = '\u25B6';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', [], { nodeId });
-      const instance = playerRegistry.get(ref.video_id);
+      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId });
+      const instance = playerRegistry.get(ref.media_key);
       if (instance && ref.subjects) {
         const subFooter = _buildLecdemSubjectFooter(
           ref.subjects,
@@ -1841,19 +2135,8 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   }
 
   // ── bracket (has segments) ──────────────────────────────────────────────────
-  // Build allTracks for the in-player selector
-  const allTracks = segments.map(seg => {
-    const ragaObj = seg.raga_id ? ragas.find(r => r.id === seg.raga_id) : null;
-    return {
-      offset_seconds: seg.offset_seconds || 0,
-      display_title:  seg.display_title || seg.raga_id || seg.kind || '',
-      raga_id:        seg.raga_id || null,
-      raga_name:      ragaObj ? ragaObj.name : (seg.raga_id || ''),
-      tala:           seg.tala || null,
-      timestamp:      seg.timestamp || '00:00',
-      composition_id: seg.composition_id || null,
-    };
-  });
+  // Build allTracks for the in-player selector (ADR-156: shared helper)
+  const allTracks = segmentsToTracks(segments);
 
   const bracket = document.createElement('div');
   bracket.className = 'concert-bracket';
@@ -1932,7 +2215,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   segments.forEach(seg => {
     const li = document.createElement('li');
     li.className = 'concert-perf-item';
-    li.dataset.vid = ref.video_id;
+    li.dataset.vid = ref.media_key;
 
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
@@ -1982,7 +2265,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
       openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, { nodeId });
-      const instance = playerRegistry.get(ref.video_id);
+      const instance = playerRegistry.get(ref.media_key);
       if (instance) {
         // Aggregate all subjects from every segment + top-level ref.subjects
         const mergedSubjects = {
@@ -2230,11 +2513,13 @@ function buildRecordingsList(nodeId, nodeData) {
 
   // ── 2. Raga tree — structured perfs + normalized legacy, all grouped by raga ──
   // Deduplicate: legacy entries whose video_id is already in structured_perfs are skipped.
-  const structuredVideoIds = new Set(structuredPerfs.map(p => p.video_id));
+  const structuredKeys = new Set(structuredPerfs.map(p => p.media_key));
   const normalizedLegacy = legacyTracks
-    .filter(t => !structuredVideoIds.has(t.vid))
+    .filter(t => !structuredKeys.has(t.media_key))
     .map(t => ({
       video_id:       t.vid,
+      media:          t.media,         // ADR-154
+      media_key:      t.media_key,     // ADR-154
       display_title:  t.label || '',
       date:           t.year ? String(t.year) : null,
       short_title:    null,
@@ -2495,7 +2780,8 @@ const namedPlayerRegistry = new Map();
  *        else offsetInput.placeholder = 'Enter offset manually';
  */
 function getCurrentPlayerTime(vid) {
-  const inst = playerRegistry.get(vid);
+  // ADR-154: accept a legacy vid, a media_key, or a MediaRef; key by media_key.
+  const inst = playerRegistry.get(mediaKey(resolveMedia(vid)));
   return inst ? (inst.currentOffset || 0) : null;
 }
 
@@ -2536,7 +2822,7 @@ function _buildSegTimeline(ref) {
       + '<span class="seg-label">' + segLabel + '</span>';
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, segLabel, '', seg.offset_seconds, ref.label || 'Lecture-Demo', [], {});
+      openOrFocusPlayer(ref.video_id, segLabel, '', seg.offset_seconds, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), {});
     });
     li.appendChild(btn);
     ul.appendChild(li);
@@ -2591,7 +2877,7 @@ function openPlayer(videoId, title, playerId) {
   el.style.width    = playerWidth + 'px';
 
   // Build bar via DOM (no innerHTML) — consistent with createPlayer
-  const namedBar = buildPlayerBar(videoId, '', title, title, false, {});
+  const namedBar = buildPlayerBar(resolveMedia(videoId), '', title, title, false, {});
   el.appendChild(namedBar);
 
   const namedVideoWrap = document.createElement('div');
@@ -2869,13 +3155,21 @@ function _wireMobilePlayerEvents(mp) {
   }, { passive: true });
 }
 
-function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
+function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
   const mp = _getMobilePlayer();
 
-  // Stop any previous playback
-  if (mp.iframe) mp.iframe.src = '';
+  // ADR-154: normalise to a MediaRef and key by media_key.
+  const media = resolveMedia(mediaArg);
+  if (!media) return;
+  const mkey = mediaKey(media);
 
-  mp.vid = vid;
+  // Stop any previous playback (ADR-155: destroy prior controller/Plyr)
+  if (mp.controller) { mp.controller.destroy(); mp.controller = null; }
+  else if (mp.iframe) mp.iframe.src = '';
+
+  mp.media = media;
+  mp.mediaKey = mkey;
+  mp.vid = (media.provider === 'youtube') ? media.provider_id : null;
   mp.tracks = (Array.isArray(tracks) && tracks.length > 0) ? tracks : [];
   mp.trackIndex = 0;
   mp.artistName = artistName || '';
@@ -2898,7 +3192,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
 
   // ── Build full-mode bar ─────────────────────────────────────────────────
   mp.bar.innerHTML = '';
-  const fullBar = buildPlayerBar(vid, artistName, concertTitle || trackLabel, trackLabel,
+  const fullBar = buildPlayerBar(media, artistName, concertTitle || trackLabel, trackLabel,
                                  mp.tracks.length > 0, meta || {});
   while (fullBar.firstChild) mp.bar.appendChild(fullBar.firstChild);
 
@@ -2943,7 +3237,7 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
     mobileCopyBtn.parentNode.replaceChild(freshCopy, mobileCopyBtn);
     freshCopy.addEventListener('click', e => {
       e.stopPropagation();
-      const url = ytDirectUrl(mp.vid, mp.currentOffset || 0);
+      const url = shareUrl(mp.media, mp.currentOffset || 0);
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(() => {
           freshCopy.classList.add('mp-copy-copied');
@@ -2978,34 +3272,35 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   const mobileYtLink = mp.bar.querySelector('.mp-yt-link');
   if (mobileYtLink) {
     mobileYtLink.addEventListener('touchstart', () => {
-      mobileYtLink.href = ytDirectUrl(mp.vid, mp.currentOffset || 0);
+      mobileYtLink.href = shareUrl(mp.media, mp.currentOffset || 0);
     }, { passive: true });
     mobileYtLink.addEventListener('mouseenter', () => {
-      mobileYtLink.href = ytDirectUrl(mp.vid, mp.currentOffset || 0);
+      mobileYtLink.href = shareUrl(mp.media, mp.currentOffset || 0);
     });
   }
 
-  // ── Build iframe ────────────────────────────────────────────────────────
+  // ── Mount media (ADR-155: Plyr via mountPlayer; iframe fallback inside) ───
   mp.videoWrap.innerHTML = '';
+  mp.videoWrap.classList.remove('mp-has-plyr');   // mountPlayer re-adds it for Plyr
   mp.videoWrap.style.paddingTop = '56.25%';
   mp.videoWrap.style.height = '';
-  const iframe = document.createElement('iframe');
-  iframe.className = 'mp-iframe';
-  iframe.src = ytEmbedUrl(vid, startSeconds);
-  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope';
-  iframe.allowFullscreen = true;
-  mp.videoWrap.appendChild(iframe);
-  mp.iframe = iframe;
+  const controller = mountPlayer(mp.videoWrap, media, startSeconds, markerPointsFromTracks(mp.tracks));
+  mp.controller = controller;
+  mp.iframe = controller.iframe;   // null when Plyr-backed
+  // Live playhead so share/copy capture the real position (AUDIT-014 F-04).
+  controller.onTime(sec => { mp.currentOffset = sec; });
+  // ADR-157: auto-advance the queue when this item ends.
+  controller.onEnded(() => { if (MediaQueue.isCurrent(mp.mediaKey)) MediaQueue.advance(); });
 
   // ── Build tracklist ─────────────────────────────────────────────────────
   mp.tracklistDiv.innerHTML = '';
   if (mp.tracks.length > 0) {
     const pseudoInstance = {
-      el: mp.el, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
-      vid, currentOffset: startSeconds || 0,
+      el: mp.el, controller, iframe: mp.iframe, tracklistEl: mp.tracklistDiv,
+      media, mediaKey: mkey, vid: mp.vid, currentOffset: startSeconds || 0,
       meta: mp.meta,
     };
-    const trackUl = buildPlayerTrackList(vid, mp.tracks, pseudoInstance);
+    const trackUl = buildPlayerTrackList(mkey, mp.tracks, pseudoInstance);
     mp.tracklistDiv.appendChild(trackUl);
     trackUl.querySelectorAll('.mp-track-item').forEach((li, idx) => {
       li.classList.toggle('mp-track-active', idx === mp.trackIndex);
@@ -3040,9 +3335,11 @@ function _openMobilePlayer(vid, trackLabel, artistName, startSeconds, concertTit
   for (const [key, val] of playerRegistry) {
     if (val._isMobileSingleton) { playerRegistry.delete(key); break; }
   }
-  playerRegistry.set(vid, {
-    el: mp.el, iframe: mp.iframe, titleEl: mp.bar.querySelector('.mp-title'),
-    tracklistEl: mp.tracklistDiv, vid, _isMobileSingleton: true,
+  playerRegistry.set(mkey, {
+    el: mp.el, controller, iframe: mp.iframe, plyr: controller.plyr,
+    titleEl: mp.bar.querySelector('.mp-title'),
+    tracklistEl: mp.tracklistDiv, media, mediaKey: mkey, vid: mp.vid,
+    _isMobileSingleton: true,
   });
   refreshPlayingIndicators();
 }
@@ -3099,7 +3396,9 @@ function _closeMobilePlayer() {
   }
   mp._currentPlayerId = null;
 
-  if (mp.iframe) mp.iframe.src = '';
+  if (mp.controller) { mp.controller.destroy(); mp.controller = null; }
+  else if (mp.iframe) mp.iframe.src = '';
+  mp.iframe = null;
   mp.vid = null;
   // ADR-043: hide player + restore normal bottom offset
   mp.el.classList.remove('full-mobile');
@@ -3128,9 +3427,11 @@ function _swipeMobileTrack(direction) {
   mp.trackIndex = newIndex;
   const track = mp.tracks[newIndex];
 
-  // Update iframe to new timestamp
-  if (mp.iframe) {
-    mp.iframe.src = ytEmbedUrl(mp.vid,
+  // Seek to the new track (ADR-155: controller → Plyr currentTime, no reload)
+  if (mp.controller) {
+    mp.controller.seek(track.offset_seconds > 0 ? track.offset_seconds : 0);
+  } else if (mp.iframe) {
+    mp.iframe.src = embedUrl(mp.media,
       track.offset_seconds > 0 ? track.offset_seconds : undefined);
   }
 

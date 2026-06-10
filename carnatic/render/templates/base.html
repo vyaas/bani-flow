@@ -1073,6 +1073,14 @@
     position: absolute; top: 0; left: 0;
     width: 100%; height: 100%; border: none;
   }
+  /* ADR-155: when a Plyr is mounted, drop the iframe padding-ratio hack and let
+     Plyr size itself (responsive 16:9). Theme controls to the Gruvbox accent. */
+  .mp-video-wrap.mp-has-plyr { padding-top: 0; height: auto; }
+  .mp-video-wrap.mp-has-plyr .plyr {
+    width: 100%;
+    --plyr-color-main: var(--accent, #fabd2f);
+    --plyr-font-family: inherit;
+  }
 
   /* ── footer strip: raga + composition navigation chips ── */
   .mp-footer {
@@ -1432,6 +1440,15 @@
     padding: 2px 4px; font-size: 0.68rem; color: var(--fg-muted);
   }
   #trail-list { list-style: none; }
+  /* ADR-157: "Play all" queue button at the top of the trail */
+  .trail-play-all {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin: 2px 0 8px; padding: 4px 10px;
+    font-family: inherit; font-size: 0.72rem; cursor: pointer;
+    color: var(--bg); background: var(--accent);
+    border: none; border-radius: 12px; white-space: nowrap;
+  }
+  .trail-play-all:hover { background: var(--accent-sub, var(--accent)); }
   #trail-list li {
     padding: 5px 0;
     font-size: 0.74rem; color: var(--fg-dim);
@@ -4021,6 +4038,11 @@
       padding-top: 0 !important;
       position: relative;
     }
+    /* ADR-155 M3: on mobile full-screen, Plyr fills the flex video area like the
+       old iframe did (desktop lets Plyr size itself responsively instead). */
+    .media-player.full-mobile .mp-video-wrap.mp-has-plyr .plyr {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    }
     /* Tracklist hidden by default; shown when toggle button adds .mp-tracklist-open */
     .media-player.full-mobile .mp-tracklist { display: none; overflow-y: auto; }
     .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; flex: 1; }
@@ -4616,8 +4638,10 @@
     outline-offset: 2px;
   }
 </style>
+<!-- INJECT_PLYR_CSS -->
 </head>
 <body>
+<!-- INJECT_PLYR_SPRITE -->
 <!-- ADR-079: inline SVG sprite — lecdem glyph referenced via CSS mask -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="icon-lecdem" viewBox="0 0 24 24">

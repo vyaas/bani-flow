@@ -32,12 +32,14 @@
         }).join('')
       );
       var state = JSON.parse(json);
-      if (state.v !== 1) {
+      // ADR-154: v1 carried a YouTube `vid`; v2 carries a provider-qualified
+      // media_key in `m` (and still emits `vid` for YouTube media). Accept both.
+      if (state.v !== 1 && state.v !== 2) {
         console.warn('[permalink] unsupported schema version:', state.v);
         return null;
       }
-      if (!state.vid) {
-        console.warn('[permalink] missing required field: vid');
+      if (!state.m && !state.vid) {
+        console.warn('[permalink] missing required field: m / vid');
         return null;
       }
       return state;
@@ -83,8 +85,10 @@
 
       // 3. Open the player with the restored state.
       var meta = state.meta || {};
+      // ADR-154: prefer the media_key (v2); fall back to the bare vid (v1).
+      // openOrFocusPlayer.resolveMedia() accepts a media_key, vid, or url.
       openOrFocusPlayer(
-        state.vid,
+        state.m || state.vid,
         meta.cid || null,          // trackLabel: composition title if known
         meta.nid || null,          // artistName: node id used as display fallback
         state.t   || undefined,    // startSeconds
