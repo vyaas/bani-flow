@@ -22,11 +22,14 @@ def _track_performer_ids(host_node_id: str, yt: dict) -> list[str]:
 def _build_lecdem_ref(node: dict, entry: dict) -> dict:
     """Construct a LecdemRef from a host node and a youtube[] lecdem entry (ADR-078)."""
     subjects = entry.get("subjects") or {}
+    _media = parse_media_url(entry.get("url", ""))  # ADR-154
     return {
         "lecturer_id":    node["id"],
         "lecturer_label": node.get("label", ""),
         "url":            entry.get("url", ""),
         "video_id":       yt_video_id(entry.get("url", "")) or "",
+        "media":          _media,                 # ADR-154
+        "media_key":      media_key(_media),      # ADR-154
         "label":          entry.get("label", ""),
         "year":           entry.get("year"),
         "segments":       entry.get("segments", []),

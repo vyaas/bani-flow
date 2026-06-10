@@ -747,8 +747,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
 // ── buildTrailItem: render one <li> for a deduplicated performance row ────────
 function buildTrailItem(row, type, id, multiVersionKeys) {
   const li = document.createElement('li');
-  li.dataset.vid = row.track.vid;
-  li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
+  li.dataset.vid = row.track.media_key;          // ADR-154: media_key, not bare vid
+  li.className   = playerRegistry.has(row.track.media_key) ? 'playing' : '';
   // ADR-052: the container li is not a click target; navigation lives
   // exclusively in the embedded chips (.musician-chip, .comp-chip, .raga-chip).
 
@@ -872,7 +872,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   const trailPlayBtn = document.createElement('button');
   const concertTitle = row.track.short_title || row.track.concert_title || null;
   trailPlayBtn.className = isConcertEntry ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
-  trailPlayBtn.setAttribute('data-vid', row.track.vid);
+  trailPlayBtn.setAttribute('data-vid', row.track.media_key);
   trailPlayBtn.title = isConcertEntry && concertTitle ? `Part of: ${concertTitle}` : 'Play';
   trailPlayBtn.textContent = '▶';
   trailPlayBtn.addEventListener('click', e => {
@@ -907,7 +907,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
         });
       const concertTitle = row.track.short_title || row.track.concert_title;
       openOrFocusPlayer(
-        row.track.vid,
+        row.track.media || row.track.vid,   // ADR-154: pass the MediaRef
         row.track.label,
         row.artistLabel,
         row.track.offset_seconds || undefined,
@@ -922,7 +922,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
       );
     } else {
       openOrFocusPlayer(
-        row.track.vid,
+        row.track.media || row.track.vid,   // ADR-154: pass the MediaRef
         row.track.label,
         row.artistLabel,
         undefined,
@@ -955,7 +955,7 @@ function _buildPlayActsDiv(row) {
   const concertTitle = row.track.short_title || row.track.concert_title || null;
   const playBtn = document.createElement('button');
   playBtn.className = isConcertEntry ? 'rec-play-btn play-btn-concert' : 'rec-play-btn play-btn-direct';
-  playBtn.setAttribute('data-vid', row.track.vid);
+  playBtn.setAttribute('data-vid', row.track.media_key);
   playBtn.title = isConcertEntry && concertTitle ? 'Part of: ' + concertTitle : 'Play';
   playBtn.textContent = '\u25b6';
   playBtn.addEventListener('click', function(e) {
@@ -984,7 +984,7 @@ function _buildPlayActsDiv(row) {
           };
         });
       openOrFocusPlayer(
-        row.track.vid, row.track.label, row.artistLabel,
+        row.track.media || row.track.vid, row.track.label, row.artistLabel,
         row.track.offset_seconds || undefined,
         row.track.short_title || row.track.concert_title,
         playerTracks,
@@ -992,7 +992,7 @@ function _buildPlayActsDiv(row) {
       );
     } else {
       openOrFocusPlayer(
-        row.track.vid, row.track.label, row.artistLabel,
+        row.track.media || row.track.vid, row.track.label, row.artistLabel,
         undefined, undefined, undefined,
         { nodeId: row.nodeId || null, ragaId: row.track.raga_id || null, compositionId: row.track.composition_id || null, recId: row.track.recording_id || null }
       );
@@ -1010,8 +1010,8 @@ function _buildPlayActsDiv(row) {
 function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
   const li = document.createElement('li');
   li.className = 'tree-leaf';
-  li.dataset.vid = row.track.vid;
-  if (playerRegistry.has(row.track.vid)) li.classList.add('playing');
+  li.dataset.vid = row.track.media_key;                                  // ADR-154
+  if (playerRegistry.has(row.track.media_key)) li.classList.add('playing');
 
   // ── Primary row: [artist chip?] [version badge?] [▶+↗ right] ─────────────
   // Labels (long text) are on their own sub-row below — not inline here.
