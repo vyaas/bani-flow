@@ -191,11 +191,17 @@ def _render_help_md(md_text: str) -> str:
     return '\n    '.join(parts)
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
+VENDOR_DIR = Path(__file__).parent / "vendor"
 DATA_DIR = Path(__file__).parent.parent / "data"
 
 
 def _load(name: str) -> str:
     return (TEMPLATES_DIR / name).read_text(encoding="utf-8")
+
+
+def _load_vendor(rel: str) -> str:
+    """Read a vendored third-party asset (ADR-155: Plyr is bundled, not CDN-loaded)."""
+    return (VENDOR_DIR / rel).read_text(encoding="utf-8")
 
 
 def render_html(
@@ -316,6 +322,10 @@ def render_html(
     help_html        = _render_help_md((DATA_DIR / "help" / "preface.md").read_text(encoding="utf-8"))
     theme_js         = _load("theme.js")
     graph_view       = _load("graph_view.js")
+    # ADR-155: Plyr — vendored prebuilt assets (no runtime CDN dependency).
+    plyr_js          = _load_vendor("plyr/plyr.min.js")
+    plyr_css         = _load_vendor("plyr/plyr.css")
+    plyr_sprite      = _load_vendor("plyr/plyr.svg")
     media_providers  = _load("media_providers.js")  # ADR-154: provider registry (before player + entry forms)
     panel_components = _load("panel_components.js")  # ADR-128: must precede media_player + bani_flow
     media_player     = _load("media_player.js")
@@ -336,6 +346,13 @@ def render_html(
     # ── Substitute placeholders in base.html ──────────────────────────────────
     base = base.replace("{node_count}", str(node_count))
     base = base.replace("{edge_count}", str(edge_count))
+    # ADR-155: inject vendored Plyr CSS (head) + icon sprite (body, hidden) so the
+    # player is fully self-contained — loadSprite:false resolves #plyr-* locally.
+    base = base.replace("<!-- INJECT_PLYR_CSS -->", f"<style>{plyr_css}</style>")
+    base = base.replace(
+        "<!-- INJECT_PLYR_SPRITE -->",
+        f'<div hidden aria-hidden="true">{plyr_sprite}</div>',
+    )
 
     # ── Inject help dialog content from help.md ───────────────────────────────
     base = base.replace("<!-- INJECT_HELP_HTML -->", help_html)
@@ -385,6 +402,7 @@ def render_html(
         "<script>",
         theme_js,          # ← FIRST: defines THEME global
         data_js,
+        plyr_js,           # ← ADR-155: defines window.Plyr (before media_player uses it)
         graph_view,
         media_providers,   # ← ADR-154: parseMediaUrl/mediaKey/embedSource globals
         panel_components,  # ← ADR-128: shared panel constructors (before media_player/bani_flow)
