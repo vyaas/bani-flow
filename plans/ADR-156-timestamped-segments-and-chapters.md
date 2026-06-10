@@ -1,7 +1,7 @@
 # ADR-156: Timestamped Segments and Chapter Markers (with Subjects)
 
-**Status**: Proposed
-**Date**: 2026-06-09
+**Status**: Accepted
+**Date**: 2026-06-09 (proposed); 2026-06-10 (accepted)
 **Agents**: code-auditor (AUDIT-014) → graph-architect → carnatic-coder
 **Depends on**: ADR-154 (MediaRef), ADR-155 (control inversion — seekable timeline). **Related**: ADR-077/078 (lecdem kinds + segment indexes), ADR-018/026 (concert brackets, track selector).
 

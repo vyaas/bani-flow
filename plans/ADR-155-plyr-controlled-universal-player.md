@@ -1,7 +1,7 @@
 # ADR-155: Plyr-Controlled Universal Player (Control Inversion)
 
-**Status**: Proposed
-**Date**: 2026-06-09
+**Status**: Accepted
+**Date**: 2026-06-09 (proposed); 2026-06-10 (accepted)
 **Agents**: code-auditor (AUDIT-014) → graph-architect → carnatic-coder
 **Depends on**: ADR-154 (MediaRef + provider registry). **Depended on by**: ADR-156, ADR-157.
 

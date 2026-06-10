@@ -1,7 +1,7 @@
 # ADR-154: Source-Agnostic Media Provider Abstraction
 
-**Status**: Proposed
-**Date**: 2026-06-09
+**Status**: Accepted
+**Date**: 2026-06-09 (proposed); 2026-06-10 (accepted)
 **Agents**: code-auditor (AUDIT-014) → graph-architect → carnatic-coder
 **Supersedes**: nothing. Generalises the implicit YouTube-only contract assumed across the player stack.
 
