@@ -692,7 +692,23 @@ function mountPlayer(videoWrap, media, startSeconds) {
   const usePlyr = !!(media && media.controllable && typeof Plyr !== 'undefined' && src);
 
   if (usePlyr) {
-    const target = document.createElement('div');
+    // Plyr enhances a typed target element (its documented setup), NOT a bare
+    // empty div: embeds use a <div data-plyr-provider data-plyr-embed-id>;
+    // direct files use a real <audio>/<video> with a <source>.
+    let target;
+    if (media.provider === 'youtube' || media.provider === 'vimeo') {
+      target = document.createElement('div');
+      target.setAttribute('data-plyr-provider', media.provider);
+      target.setAttribute('data-plyr-embed-id', media.provider_id);
+    } else {
+      target = document.createElement(media.provider === 'audio' ? 'audio' : 'video');
+      target.setAttribute('controls', '');
+      target.setAttribute('playsinline', '');
+      const s = document.createElement('source');
+      s.src = media.url;
+      target.appendChild(s);
+    }
+    videoWrap.classList.add('mp-has-plyr');   // let Plyr own its 16:9 sizing
     videoWrap.appendChild(target);
     const player = new Plyr(target, {
       controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
@@ -703,7 +719,6 @@ function mountPlayer(videoWrap, media, startSeconds) {
       youtube: { rel: 0, modestbranding: 1, iv_load_policy: 3 },
       vimeo: { byline: false, portrait: false, title: false },
     });
-    player.source = src;
     if (startSeconds && startSeconds > 0) {
       player.once('ready', () => { try { player.currentTime = startSeconds; } catch (e) {} });
     }
@@ -758,7 +773,10 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   const videoWrap = document.createElement('div');
   videoWrap.className = 'mp-video-wrap';
   el.appendChild(videoWrap);
-  // ADR-155: mount Plyr (controllable) or fall back to a raw iframe.
+  // ADR-155: connect the player to the DOM BEFORE mounting Plyr — the YouTube
+  // IFrame API needs the target element attached to initialise. Remaining
+  // children (footer, resize) are appended to the now-connected element below.
+  document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds);
 
   // ── Footer: musician + raga + comp + composer chips ──────────────────────
@@ -872,7 +890,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   wireResize(el, el.querySelector('.mp-resize'));
   el.addEventListener('mousedown', () => bringToFront(instance));
 
-  document.getElementById('main').appendChild(el);
+  // el was already appended to #main before mountPlayer (Plyr/YT needs the
+  // target connected at init); just raise it to the front now.
   bringToFront(instance);
   return instance;
 }

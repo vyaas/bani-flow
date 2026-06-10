@@ -1073,11 +1073,11 @@
     position: absolute; top: 0; left: 0;
     width: 100%; height: 100%; border: none;
   }
-  /* ADR-155: Plyr fills the 16:9 video-wrap box (works with drag-resize, which
-     sets an explicit pixel height on .mp-video-wrap). Theme to Gruvbox accent. */
-  .mp-video-wrap .plyr {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
+  /* ADR-155: when a Plyr is mounted, drop the iframe padding-ratio hack and let
+     Plyr size itself (responsive 16:9). Theme controls to the Gruvbox accent. */
+  .mp-video-wrap.mp-has-plyr { padding-top: 0; height: auto; }
+  .mp-video-wrap.mp-has-plyr .plyr {
+    width: 100%;
     --plyr-color-main: var(--accent, #fabd2f);
     --plyr-font-family: inherit;
   }
