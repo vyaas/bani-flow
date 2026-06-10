@@ -6,12 +6,12 @@
     "Kapinarayana"
   ],
   "melakarta": null,
-  "parent_raga": null,
+  "parent_raga": "harikambhoji",
   "sources": [
     {
-      "url": "https://en.wikipedia.org/wiki/Kapinarayani",
-      "label": "Wikipedia",
-      "type": "wikipedia"
+      "url": "https://www.drmradhakrishnan.com/post/eka-krithi-ragas-kapi-narayani-janya-of-mela-28-ragam-harikambhoji",
+      "label": "www.drmradhakrishnan.com",
+      "type": "other"
     }
   ]
 }
