@@ -28,6 +28,12 @@
       "label": "RTP - Andolika",
       "raga_id": "andolika",
       "tala": "misra nadai"
+    },
+    {
+      "url": "https://youtu.be/ZSsiWR4W5wA",
+      "label": "Sarasa Samadana · Kapinarayani",
+      "composition_id": "sarasa_samadana",
+      "raga_id": "kapinarayani"
     }
   ]
 }
