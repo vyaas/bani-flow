@@ -1,0 +1,137 @@
+{
+  "id": "indian_oil_now_hear_us",
+  "video_id": "rsjSh_mteQw",
+  "url": "https://youtu.be/rsjSh_mteQw",
+  "title": "Indian Oil Now Hear Us",
+  "date": "2021",
+  "venue": "Kingsley, Chennai",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/rsjSh_mteQw",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "vignesh_ishwar",
+          "role": "vocal"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:55",
+          "offset_seconds": 55,
+          "composition_id": "o_rangasayi",
+          "raga_id": "kambhoji",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "13:55",
+          "offset_seconds": 835,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Intro"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "15:00",
+          "offset_seconds": 900,
+          "composition_id": "biranabrova_ide",
+          "raga_id": "kalyani",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "24:19",
+          "offset_seconds": 1459,
+          "composition_id": "tiruvatriyur_thyagarajan",
+          "raga_id": "atana",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "42:16",
+          "offset_seconds": 2536,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Beginnings"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "44:00",
+          "offset_seconds": 2640,
+          "composition_id": "sri_kalahastisa",
+          "raga_id": "huseni",
+          "tala": "jhampa",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "50:25",
+          "offset_seconds": 3025,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Meeting TMK"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "52:24",
+          "offset_seconds": 3144,
+          "composition_id": "kamakshi_varali",
+          "raga_id": "varali",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:24:47",
+          "offset_seconds": 5087,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Seriousness"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:26:14",
+          "offset_seconds": 5174,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Neenyako (Ragamalika)"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "01:34:40",
+          "offset_seconds": 5680,
+          "composition_id": null,
+          "raga_id": "hamir_kalyani",
+          "tala": null,
+          "display_title": "Tilanna"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "01:37:55",
+          "offset_seconds": 5875,
+          "composition_id": "patiki_haritire",
+          "raga_id": "surutti",
+          "tala": null,
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
