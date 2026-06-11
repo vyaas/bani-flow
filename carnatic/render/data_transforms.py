@@ -150,6 +150,7 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
                     "timestamp":         perf.get("timestamp", ""),
                     "offset_seconds":    perf.get("offset_seconds", 0),
                     "display_title":     perf.get("display_title", ""),
+                    "subject":           perf.get("subject"),   # ADR-156: per-segment topic
                     "composition_id":    comp_id,
                     "raga_id":           raga_id,
                     "tala":              perf.get("tala"),

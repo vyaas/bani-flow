@@ -935,6 +935,7 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
           const spRagaObj = sp.raga_id ? ragas.find(r => r.id === sp.raga_id) : null;
           return {
             offset_seconds: sp.offset_seconds || 0,
+            subject:        sp.subject || null,   // ADR-156
             display_title:  sp.display_title || '',
             raga_id:        sp.raga_id || null,
             raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
@@ -1013,6 +1014,7 @@ function _buildPlayActsDiv(row) {
           const spRagaObj = sp.raga_id ? ragas.find(function(r) { return r.id === sp.raga_id; }) : null;
           return {
             offset_seconds: sp.offset_seconds || 0,
+            subject:        sp.subject || null,   // ADR-156
             display_title:  sp.display_title || '',
             raga_id:        sp.raga_id || null,
             raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),

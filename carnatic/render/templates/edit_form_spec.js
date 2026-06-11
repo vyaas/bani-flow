@@ -61,7 +61,9 @@ window.editFormSpec = {
 // Listed separately because a segment is addressed within a recording, not as a
 // top-level entity, so it does not get its own entry in editFormSpec.
 window.editFormSpecSegment = {
-  patchable:   ['composition_id', 'raga_id', 'tala', 'composer_id', 'display_title', 'notes'],
+  // ADR-156: `kind` + `subject` (per-segment free-text topic) added in lockstep
+  // with PATCHABLE_RECORDING_PERFORMANCE_FIELDS in writer.py.
+  patchable:   ['composition_id', 'raga_id', 'tala', 'composer_id', 'display_title', 'notes', 'kind', 'subject'],
   appendable:  [],
   annotatable: false,
 };
