@@ -1,0 +1,14 @@
+{
+  "id": "kannada_bangala",
+  "name": "Kannada Bangala",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "mayamalavagowla",
+  "sources": [
+    {
+      "url": "https://guruguha.org/kannada-bangala-malahari-conjoined-twins/",
+      "label": "guruguha.org"
+    }
+  ]
+}
