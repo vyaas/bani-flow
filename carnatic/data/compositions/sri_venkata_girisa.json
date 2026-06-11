@@ -3,13 +3,13 @@
   "title": "Sri Venkata Girisa",
   "composer_id": "muthuswami_dikshitar",
   "raga_id": "surutti",
-  "tala": "Adi",
+  "tala": null,
   "language": "Sanskrit",
   "sources": [
     {
-      "url": "https://en.wikipedia.org/wiki/Sri_Venkata_Girisa",
-      "label": "Wikipedia",
-      "type": "wikipedia"
+      "url": "https://www.karnatik.com/c1109.shtml",
+      "label": "karnatik.com",
+      "type": "article"
     }
   ],
   "notes": "Muthuswami Dikshitar kriti in Suruti raga."
