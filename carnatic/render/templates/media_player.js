@@ -1845,6 +1845,7 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
 
       // Dblclick to edit this recording version
       if (p.video_id) {
+        if (typeof markEditable === 'function') markEditable(recLi);
         recLi.addEventListener('dblclick', function(e) {
           if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip')) return;
           e.stopPropagation();
@@ -2052,6 +2053,7 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
 
   // ── Dblclick to edit this YouTube recording ────────────────────────────────
   if (p.video_id) {
+    if (typeof markEditable === 'function') markEditable(li);
     li.addEventListener('dblclick', function(e) {
       if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip')) return;
       e.stopPropagation();
@@ -2124,6 +2126,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
       applyChipRole(labelSpan, 'entity', 'recording', ref.video_id);
     // Double-click → Edit Lecdem form
     if (nodeId) {
+      if (typeof markEditable === 'function') markEditable(labelSpan);
       let _ldDblTap = 0;
       labelSpan.addEventListener('click', e => {
         e.stopPropagation();
@@ -2199,6 +2202,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     applyChipRole(titleSpan, 'entity', 'recording', ref.video_id);
   // Double-click → Edit Lecdem form
   if (nodeId) {
+    if (typeof markEditable === 'function') markEditable(titleSpan);
     let _ldDblTap2 = 0;
     titleSpan.addEventListener('click', e => {
       e.stopPropagation();

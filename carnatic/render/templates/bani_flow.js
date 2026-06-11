@@ -1107,6 +1107,7 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
   const _isConcert  = !!(row.isStructured && row.track.recording_id);
   const _recordingId = row.track.recording_id || null;
   if (_vid) {
+    if (typeof markEditable === 'function') markEditable(li);
     li.addEventListener('dblclick', function(e) {
       if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip')) return;
       e.stopPropagation();

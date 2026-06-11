@@ -1906,31 +1906,27 @@
     text-decoration: underline;
   }
 
-  /* ── Edit-gesture affordance (ADR-142 §1 → ADR-153) ──
-     A chip carrying data-entity-type + data-entity-id is clickable, so it earns
-     a pointer cursor. The ✎ pencil that signals editability is NOT applied here:
-     only the genuinely-editable surfaces get it (panel-title, section-add,
-     row-block, and recording rows — see below and chip_dblclick.js). Painting a
-     pencil on every entity chip misled users on navigation-only chips (trail
-     rows, lineage lists, co-performers), and the old inline glyph (margin-left)
-     grew the chip on hover. Each pencil below is an exterior top-right symbol
-     that fades in without reflowing the chip.
-     NOTE: do NOT set `position: relative` here — graph-overlay label chips
-     (graph_view.js) rely on absolute positioning from a higher ancestor; any
-     `position` declaration on the chip itself becomes its own containing
-     block and collapses overlay chips to document-flow positions. */
+  /* ── Edit-gesture affordance — single source of truth (ADR-142 §1 → ADR-153) ──
+     Two orthogonal axes:
+       • clickable — any chip with data-entity-type + data-entity-id navigates on
+         click, so it earns a pointer cursor.
+       • editable  — a chip or row that opens an edit/add form on DOUBLE-click.
+         These, and ONLY these, carry data-editable and show the ✎ pencil.
+     The pencil is keyed solely off [data-editable], which is set by
+     markEditable()/applyChipRole() (panel_components.js) at the exact site each
+     edit handler is wired — chip_dblclick.js (panel-title, section-add) plus the
+     imperative handlers in media_player.js / bani_flow.js (row-block, recording
+     rows, lecdem about/by titles). Because the indication is set where the
+     gesture is wired, hover ↔ double-click ↔ pencil can never drift: every
+     editable surface gets a pencil, navigation-only chips never do.
+     The pencil is an exterior top-right symbol that fades in without reflowing
+     the chip; data-editable supplies the position:relative containing block.
+     Editable elements live inside sidebar panels, never as graph-overlay label
+     chips (graph_view.js) — those are navigation-only and never marked editable —
+     so position:relative here is safe. */
   [data-chip-role][data-entity-type][data-entity-id] { cursor: pointer; }
-  /* ADR-153: pencil affordance scoped to panel-title chips only — matches
-     chip_dblclick.js exactly. Entity chips in trail rows, lineage lists, and
-     navigation contexts do not open edit forms on dblclick, so they must not
-     show the ✎ hover. Scoped without a container ID so graph-overlay chips
-     (graph_view.js) are excluded by virtue of lacking position:relative here;
-     those chips live outside the sidebar containers and their context chips
-     are navigation-only. */
-  [data-chip-role="panel-title"][data-entity-type][data-entity-id] {
-    position: relative;
-  }
-  [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after {
+  [data-editable] { position: relative; }
+  [data-editable]::after {
     content: "✎";
     position: absolute;
     top: -7px;
@@ -1942,83 +1938,27 @@
     pointer-events: none;
     transition: opacity 0.15s;
   }
-  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
+  [data-editable]:hover {
     box-shadow: none;
     outline: 1px dashed var(--accent);
   }
-  [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover::after {
-    opacity: 1;
-  }
-  /* ADR-153: right-sidebar exclusion blocks removed — no longer needed now
-     that the pencil base rule is scoped to [data-chip-role="panel-title"] only.
-     Entity chips in LECDEMS rows, concert brackets, trail rows, and comp-nodes
-     never had panel-title role, so they naturally receive no pencil. Navigation
-     hover (from .musician-chip:hover etc.) is restored for those chips. */
-  /* Multiple-version recording rows (.tree-leaf[data-vid]) in right-sidebar:
-     each version row affords double-click edit just like other row-blocks. */
-  #right-sidebar .tree-leaf[data-vid] { position: relative; }
-  #right-sidebar .tree-leaf[data-vid]::after {
-    content: "✎"; position: absolute; top: -7px; right: -5px;
-    font-size: 9px; line-height: 1; color: var(--accent);
-    opacity: 0; pointer-events: none; transition: opacity 0.15s;
-  }
-  #right-sidebar .tree-leaf[data-vid]:hover { outline: 1px dashed var(--accent); border-radius: 3px; }
-  #right-sidebar .tree-leaf[data-vid]:hover::after { opacity: 1; }
-  /* Right-sidebar: suppress class-based hover for navigation-only chips
-     (COMPOSITIONS section items and in-recording trail chips). */
+  [data-editable]:hover::after { opacity: 1; }
+  /* Navigation-only chips: tame the class-based brightness/outline hover so they
+     don't read as edit affordances. (They are not data-editable, so they already
+     get no pencil; this only suppresses the .musician-chip/.raga-chip/.comp-chip
+     class hover defined above.) */
   #right-sidebar .comp-raga-header .raga-chip:hover,
   #right-sidebar .comp-raga-item .comp-chip:hover,
   #right-sidebar .trail-chips .comp-chip:hover,
   #right-sidebar .trail-chips .raga-chip:hover { filter: none; outline: none; }
-  /* ─ Bani-flow trail item rows: row-block aesthetic on the whole li ─────────
-     li[data-vid] in #left-sidebar are recording rows; position:relative and
-     pencil must be declared here (the entity rule above is panel-title only). */
-  #left-sidebar li[data-vid] { position: relative; }
-  #left-sidebar li[data-vid]::after {
-    content: "✎";
-    position: absolute;
-    top: -7px;
-    right: -5px;
-    font-size: 9px;
-    line-height: 1;
-    color: var(--accent);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-  }
-  #left-sidebar li[data-vid]:hover { outline: 1px dashed var(--accent); border-radius: 3px; }
-  #left-sidebar li[data-vid]:hover::after { opacity: 1; }
-  /* Left-sidebar navigation chips: suppress edit-suggesting hover effects.
-     Only the panel-title chip (the main subject) should show edit animation. */
   #left-sidebar .raga-chip:not([data-chip-role="panel-title"]):hover,
   #left-sidebar .comp-chip:not([data-chip-role="panel-title"]):hover,
   #left-sidebar .her-chip:hover { filter: none; outline: none; }
-  /* ADR-153: left-sidebar entity-chip hover suppressions removed — dead code
-     now that the base rule no longer gives entity chips position:relative or
-     the pencil ::after. Recording entity chips are handled below. */
-  /* Lecdem recording chips in bani-flow strip: positioned pencil */
-  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id] { position: relative; }
-  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]::after {
-    content: "✎"; position: absolute; top: -7px; right: -5px;
-    font-size: 9px; line-height: 1; color: var(--accent);
-    opacity: 0; pointer-events: none; transition: opacity 0.15s;
-  }
-  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]:hover {
-    box-shadow: none; outline: 1px dashed var(--accent);
-  }
-  #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]:hover::after { opacity: 1; }
-
-  /* Media player: chips are navigation-only — suppress the panel-title pencil.
-     Panel-title chips inside .media-player are for navigation only; editing is
-     only available in sidebar panels. Other entity chips no longer carry a
-     pencil (the base hover affordance was removed in ADR-153), so only the
-     panel-title rule ([data-chip-role="panel-title"]…) needs overriding here. */
-  .media-player [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
-    outline: none;
-  }
-  .media-player [data-chip-role="panel-title"][data-entity-type][data-entity-id]::after {
-    display: none;
-  }
+  /* Media player: chips are navigation-only — suppress the pencil for any
+     editable-marked chip that surfaces inside the player (e.g. the now-playing
+     panel-title header). Editing is only offered in the sidebar panels. */
+  .media-player [data-editable]:hover { outline: none; }
+  .media-player [data-editable]::after { display: none; }
 
   /* ── ADR-142 Phase E: first-use double-click discoverability hint ───────────
      Appears once on first chip dblclick gesture; dismissed by click/keydown
@@ -2331,82 +2271,13 @@
     filter: none;
     outline: none;
   }
-  /* ADR-145 Phase A: musician + bani panel-title chips signal "add" with pencil
-     glyph on hover. position:relative lets ::after sit outside the chip's flow
-     without altering its width or height. cursor switches to pointer on hover. */
-  .musician-chip.chip-panel-title,
-  .bani-chip.chip-panel-title {
-    position: relative;
-  }
-  .musician-chip.chip-panel-title:hover,
-  .bani-chip.chip-panel-title:hover {
-    cursor: pointer;
-  }
-  .musician-chip.chip-panel-title::after,
-  .bani-chip.chip-panel-title::after {
-    content: "✎";
-    position: absolute;
-    top: -7px;
-    right: -5px;
-    font-size: 9px;
-    line-height: 1;
-    color: var(--accent);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-  }
-  .musician-chip.chip-panel-title:hover::after,
-  .bani-chip.chip-panel-title:hover::after {
-    opacity: 1;
-  }
-  /* ADR-144 Phase A: section-add chips signal "add" with dashed outline on hover.
-     Dashed vs solid distinguishes "add" from "edit" at a glance.
-     Phase C: extend positioned pencil glyph to all section-add chips (covers
-     LECDEMS, CONCERTS, RECORDINGS, COMPOSITIONS — not only .musician-chip). The
-     class-specific ADR-145 rules above remain; their higher specificity wins
-     for MUSICIAN/BANI FLOW with no conflict. */
-  [data-chip-role="section-add"] { position: relative; }
-  [data-chip-role="section-add"]::after {
-    content: "✎";
-    position: absolute;
-    top: -7px;
-    right: -5px;
-    font-size: 9px;
-    line-height: 1;
-    color: var(--accent);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-  }
-  [data-chip-role="section-add"]:hover {
-    outline: 1px dashed var(--accent);
-    cursor: pointer;
-  }
-  [data-chip-role="section-add"]:hover::after { opacity: 1; }
-  /* ADR-144 Phase B: single-recording row-block affordance.
-     cursor:context-menu signals "secondary action" without claiming the row is a link.
-     ADR-153: the row-block pencil is declared explicitly here — it previously
-     relied on the document-wide base hover rule (now removed), which painted an
-     inline glyph that grew the row on hover. Now it matches the standard
-     exterior top-right symbol with no reflow. */
-  [data-chip-role="row-block"] { cursor: context-menu; position: relative; }
-  [data-chip-role="row-block"]::after {
-    content: "✎";
-    position: absolute;
-    top: -7px;
-    right: -5px;
-    font-size: 9px;
-    line-height: 1;
-    color: var(--accent);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-  }
-  [data-chip-role="row-block"]:hover {
-    outline: 1px dashed var(--accent);
-    border-radius: 3px;
-  }
-  [data-chip-role="row-block"]:hover::after { opacity: 1; }
+  /* Pencil affordance for section-add and row-block is supplied by the unified
+     [data-editable] rule above (applyChipRole marks these roles editable). Only
+     their role-specific cursors remain here: section-add chips lack an entity-id
+     so the base pointer-cursor rule doesn't reach them, and row-block uses
+     context-menu to signal a secondary (non-link) action. */
+  [data-chip-role="section-add"]:hover { cursor: pointer; }
+  [data-chip-role="row-block"] { cursor: context-menu; }
   /* Musician panel title: use accent border fallback (no inline era vars at panel level) */
   .musician-chip.chip-panel-title {
     --chip-era-border: var(--accent, #d79921);

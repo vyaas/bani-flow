@@ -362,17 +362,37 @@ const _CHIP_CLASS_TO_ENTITY_TYPE = {
   'recording-chip':'recording',  // future class for promoted concert/lecdem/misc titles
 };
 
+// Roles whose chips open an edit/add form on double-click. These earn the
+// ✎ pencil affordance automatically (see markEditable + base.html [data-editable]).
+const _EDITABLE_ROLES = { 'panel-title': 1, 'section-add': 1, 'row-block': 1 };
+
+// markEditable — the single source of truth for the ✎ pencil indication.
+// Call this on ANY element that is double-click editable. base.html paints the
+// pencil (exterior top-right symbol, no reflow) solely off [data-editable], so
+// the hover indication can never drift from the actual edit gesture: wherever an
+// edit handler is wired, mark the same element here. Elements reachable via an
+// editable data-chip-role are marked automatically by applyChipRole below; the
+// imperative handlers (recording rows, lecdem about/by titles in media_player.js
+// and bani_flow.js) call markEditable directly at the wiring site.
+function markEditable(el) {
+  if (el && el.dataset) el.dataset.editable = '';
+  return el;
+}
+
 // applyChipRole — set the ADR-142 §1 attributes on a chip.
 // Safe to call multiple times; later calls overwrite earlier ones.
 //   chip        HTMLElement (required)
-//   role        one of 'panel-title' | 'section-header' | 'entity' (required)
-//   entityType  one of the entity-type strings above (required for entity / section-header)
+//   role        one of 'panel-title' | 'section-add' | 'row-block' | 'entity' (required)
+//   entityType  one of the entity-type strings above (required for entity / section-add)
 //   entityId    string (entity-role only); falsy values are omitted
+// An editable role (panel-title / section-add / row-block) also marks the chip
+// data-editable so it earns the pencil — keeping indication and gesture in lockstep.
 function applyChipRole(chip, role, entityType, entityId) {
   if (!chip || !chip.dataset) return chip;
   if (role) chip.dataset.chipRole = role;
   if (entityType) chip.dataset.entityType = entityType;
   if (entityId) chip.dataset.entityId = entityId;
+  if (role && _EDITABLE_ROLES[role]) chip.dataset.editable = '';
   return chip;
 }
 
