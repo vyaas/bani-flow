@@ -780,11 +780,25 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
     }
     videoWrap.classList.add('mp-has-plyr');   // let Plyr own its 16:9 sizing
     videoWrap.appendChild(target);
+    const isEmbed = (media.provider === 'youtube' || media.provider === 'vimeo');
     const player = new Plyr(target, {
       controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
       loadSprite: false,                  // sprite is inlined in the document (ADR-155 M1)
       ratio: '16:9',
       autoplay: true,
+      // AUDIT-015 F-01: browsers only reliably permit autoplay while muted —
+      // unmuted autoplay needs a fresh user gesture, which is lost across the
+      // async iframe-ready boundary. Start muted so the speaker icon never
+      // lies about a silently-muted stream, then unmute on the first `playing`
+      // event below (unmuting an already-playing video is allowed without a
+      // gesture). This removes the "click unmute twice" desync.
+      muted: true,
+      // AUDIT-015 F-02: Plyr's clickToPlay listens on the player container, but
+      // the cross-origin YouTube/Vimeo iframe swallows the centre click before
+      // it arrives — so it never toggles. Disable it for embeds and own the
+      // toggle via a transparent catcher (added on ready). HTML5 audio/video
+      // keep Plyr's native clickToPlay, which works directly.
+      clickToPlay: !isEmbed,
       keyboard: { focused: true, global: false },
       youtube: { rel: 0, modestbranding: 1, iv_load_policy: 3 },
       vimeo: { byline: false, portrait: false, title: false },
@@ -792,6 +806,26 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
     });
     if (startSeconds && startSeconds > 0) {
       player.once('ready', () => { try { player.currentTime = startSeconds; } catch (e) {} });
+    }
+    // AUDIT-015 F-01: as soon as playback actually starts, lift the autoplay
+    // mute so the user hears sound on first open with no clicks. `once` so a
+    // later deliberate mute by the user is never undone.
+    player.once('playing', () => { try { player.muted = false; } catch (e) {} });
+    // AUDIT-015 F-02: for embeds, overlay a transparent click-catcher above the
+    // iframe (z-index 1, like the poster) but below the play-large (z2) and the
+    // control bar (z3), so clicking the video body toggles play/pause while the
+    // controls stay reachable. Added on ready, when Plyr's wrapper exists.
+    if (isEmbed) {
+      player.once('ready', () => {
+        try {
+          const wrap = player.elements && player.elements.wrapper;
+          if (!wrap || wrap.querySelector('.mp-click-catch')) return;
+          const catcher = document.createElement('div');
+          catcher.className = 'mp-click-catch';
+          catcher.addEventListener('click', () => { try { player.togglePlay(); } catch (e) {} });
+          wrap.appendChild(catcher);
+        } catch (e) {}
+      });
     }
     return {
       kind: 'plyr',

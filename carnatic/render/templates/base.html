@@ -1081,6 +1081,14 @@
     --plyr-color-main: var(--accent, #fabd2f);
     --plyr-font-family: inherit;
   }
+  /* AUDIT-015 F-02: transparent click-catcher for embed providers — sits above
+     the iframe (z-index 0) and poster (z-index 1) but below the play-large
+     (z-index 2) and control bar (z-index 3), so clicking the video body
+     toggles play/pause while the Plyr controls stay reachable. */
+  .mp-video-wrap.mp-has-plyr .plyr .mp-click-catch {
+    position: absolute; inset: 0; z-index: 1;
+    background: transparent; cursor: pointer;
+  }
 
   /* ── footer strip: raga + composition navigation chips ── */
   .mp-footer {
