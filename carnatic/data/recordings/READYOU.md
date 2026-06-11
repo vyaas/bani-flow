@@ -117,6 +117,9 @@ A session is a continuous performance block by a fixed set of performers. A mult
 | `tala` | string \| null | e.g. `"adi"`, `"rupakam"`, `"misra_capu"` |
 | `composer_id` | string \| null | References `composers[].id` in `compositions.json`. |
 | `display_title` | string | Title shown in the UI. Use transliterated form when available. |
+| `subject` | string \| null | **(ADR-156)** Optional free-text topic for this segment — the chapter "subject" (e.g. `"Gamaka in Kalyani"`). Used as the timeline-marker label when present. Distinct from a lecdem entry's aggregate `subjects` dict (ADR-078). |
+| `kind` | string \| null | **(ADR-156)** Optional segment kind (`"performance"` default, `"tani"`, `"chapter"`, `"alapana"`, …). Parity with lecdem segments. |
+| `duration_seconds` | int \| null | Optional span length; the segment end is `offset_seconds + duration_seconds`. |
 | `notes` | string \| null | Free text: `"padam"`, `"javali"`, `"varnam"`, `"2 kalai"`, etc. |
 | `type` | string | Only set for non-composition items: `"tani"` for percussion solos. |
 | `version` | string \| null | Optional. Distinguishes this recording from other versions of the same composition by the same musician. Free text: `"Jamshedpur 1961"`, `"standalone clip"`, `"AIR Madras 1960s"`, `"younger"`. Omit if only one version exists. |

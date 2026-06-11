@@ -91,13 +91,17 @@ PATCHABLE_COMPOSITION_FIELDS = {"title", "tala", "language", "notes", "composer_
 
 PATCHABLE_YOUTUBE_ENTRY_FIELDS = {"label", "year"}
 
-# ADR-101: patchable fields for lecdem segments and recording performances
+# ADR-101: patchable fields for lecdem segments and recording performances.
+# ADR-156: `subject` — per-segment free-text topic ("Gamaka in Kalyani"), distinct
+# from the entry-level `subjects` aggregate dict (ADR-078). `duration_seconds` is the
+# span end (end = offset_seconds + duration_seconds); there is no separate `end` field.
 PATCHABLE_SEGMENT_FIELDS = {
     "composition_id", "raga_id", "tala", "composer_id", "display_title",
-    "notes", "kind", "performer_ids", "duration_seconds",
+    "notes", "kind", "performer_ids", "duration_seconds", "subject",
 }
 PATCHABLE_RECORDING_PERFORMANCE_FIELDS = {
     "composition_id", "raga_id", "tala", "composer_id", "display_title", "notes",
+    "kind", "subject",   # ADR-156: parity with lecdem segments
 }
 
 # ADR-143 §2 / §6: scalar top-level fields on a recording file that the
@@ -226,6 +230,10 @@ def _validate_segment_dict(
         for mid in seg["performer_ids"]:
             if known_musician_ids and mid not in known_musician_ids:
                 return f"performer_id \"{mid}\" does not exist in nodes[]"
+
+    # ADR-156: `subject` is free text — only type-checked (no closed vocabulary).
+    if seg.get("subject") is not None and not isinstance(seg["subject"], str):
+        return f"subject must be a string, got {type(seg['subject']).__name__}"
 
     return None
 

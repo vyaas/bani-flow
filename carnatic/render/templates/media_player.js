@@ -683,6 +683,7 @@ function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
 // A track/segment carries offset_seconds + label fields; turn the list into Plyr
 // marker points {time, label} so the progress bar shows seekable chapter dots.
 function _markerLabel(t) {
+  if (t.subject) return t.subject;            // ADR-156: per-chapter topic wins
   if (t.display_title) return t.display_title;
   if (t.composition_id && typeof compositions !== 'undefined') {
     const c = compositions.find(x => x.id === t.composition_id);
@@ -714,7 +715,8 @@ function segmentsToTracks(segments) {
     const ragaObj = (typeof ragas !== 'undefined' && seg.raga_id) ? ragas.find(r => r.id === seg.raga_id) : null;
     return {
       offset_seconds: seg.offset_seconds || 0,
-      display_title:  seg.display_title || seg.raga_id || seg.kind || '',
+      subject:        seg.subject || null,     // ADR-156: per-chapter topic
+      display_title:  seg.display_title || seg.subject || seg.raga_id || seg.kind || '',
       raga_id:        seg.raga_id || null,
       raga_name:      ragaObj ? ragaObj.name : (seg.raga_id || ''),
       tala:           seg.tala || null,
@@ -738,7 +740,7 @@ function _updateActiveSegment(instance, sec) {
   if (instance._activeOffset === active.offset_seconds) return;   // unchanged
   instance._activeOffset = active.offset_seconds;
   updatePlayerFooter(instance, active.raga_id || null, active.composition_id || null,
-                     active.display_title || null, active.tala || null);
+                     active.subject || active.display_title || null, active.tala || null);
   if (instance.tracklistEl) {
     instance.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
       li.classList.toggle('mp-track-active', parseInt(li.dataset.offset, 10) === active.offset_seconds);

@@ -1,9 +1,49 @@
 # ADR-156: Timestamped Segments and Chapter Markers (with Subjects)
 
-**Status**: Accepted
-**Date**: 2026-06-09 (proposed); 2026-06-10 (accepted)
+**Status**: Accepted (revised 2026-06-10 — see Revision)
+**Date**: 2026-06-09 (proposed); 2026-06-10 (accepted); 2026-06-10 (revised)
 **Agents**: code-auditor (AUDIT-014) → graph-architect → carnatic-coder
 **Depends on**: ADR-154 (MediaRef), ADR-155 (control inversion — seekable timeline). **Related**: ADR-077/078 (lecdem kinds + segment indexes), ADR-018/026 (concert brackets, track selector).
+
+---
+
+## Revision (2026-06-10) — descope the structural rename; deliver additively
+
+Implementation review against the *actual* schema and writer changed the plan. The
+original Decision §1/§4 proposed renaming recordings' `performances[]` → `segments[]`
+and `offset_seconds` → `start`. That is **descoped**, because:
+
+- **It is a rename of established structure, not an additive migration.** Renaming a
+  stored key across all 53 `recordings/*.json` files plus every reader
+  (`data_transforms`, the player, tests) and the writer internals is high-risk and
+  conflicts with the project's "never rename established identifiers/structure"
+  principle. The original text mislabelled it "additive".
+- **The unification already exists where it matters.** The writer already presents a
+  single segment facade over both lecdem `youtube[].segments[]` and recording
+  `sessions[].performances[]` (`_validate_segment_dict`, `PATCHABLE_SEGMENT_FIELDS`,
+  ADR-101/143), and the two shapes are already aligned (`offset_seconds`,
+  `composition_id`, `raga_id`, `tala`, `display_title`, `composer_id`).
+- **The span end already has a field.** `duration_seconds` is an existing patchable
+  segment field; `end = offset_seconds + duration_seconds`. No new `end` field.
+
+**What ships instead (additive — no rename, no data migration):**
+
+1. A new optional free-text **`subject`** field on a segment / performance — the
+   per-chapter topic ("Gamaka in Kalyani"). Existing files simply omit it.
+2. `kind` becomes valid on recording performances too (parity with lecdem segments;
+   optional, defaults to "performance").
+3. `offset_seconds` remains the segment start; `duration_seconds` remains the span.
+
+**`subject` (singular) vs `subjects` (plural) — keep them distinct.** The entry-level
+`youtube[].subjects` is the ADR-078 *aggregate* index `{raga_ids, composition_ids,
+musician_ids}` for a whole lecdem. The new `subject` is a *per-segment* free-text topic
+string. Different field, different level, different type. The writer validates the
+aggregate `subjects` strictly (ids must resolve); `subject` is free text (type-checked
+only).
+
+The sections below are retained for historical context; where they say "rename
+`performances[]` to `segments[]`" read "add `subject` to the existing
+performance/segment object". Markers/active-segment (Decision §3) shipped in M1/M2a.
 
 ---
 
