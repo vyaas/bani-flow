@@ -1906,26 +1906,20 @@
     text-decoration: underline;
   }
 
-  /* ── ADR-142 §1 Phase δ: edit-gesture affordance ──
-     Any chip carrying both data-entity-type and data-entity-id is double-click
-     editable (see chip_dblclick.js). On hover we show a tiny ✎ glyph and an
-     inset outline so users can discover the gesture without docs. Chips
-     without data-entity-id (preface chips, section headers) are unaffected.
+  /* ── Edit-gesture affordance (ADR-142 §1 → ADR-153) ──
+     A chip carrying data-entity-type + data-entity-id is clickable, so it earns
+     a pointer cursor. The ✎ pencil that signals editability is NOT applied here:
+     only the genuinely-editable surfaces get it (panel-title, section-add,
+     row-block, and recording rows — see below and chip_dblclick.js). Painting a
+     pencil on every entity chip misled users on navigation-only chips (trail
+     rows, lineage lists, co-performers), and the old inline glyph (margin-left)
+     grew the chip on hover. Each pencil below is an exterior top-right symbol
+     that fades in without reflowing the chip.
      NOTE: do NOT set `position: relative` here — graph-overlay label chips
      (graph_view.js) rely on absolute positioning from a higher ancestor; any
      `position` declaration on the chip itself becomes its own containing
      block and collapses overlay chips to document-flow positions. */
   [data-chip-role][data-entity-type][data-entity-id] { cursor: pointer; }
-  [data-chip-role][data-entity-type][data-entity-id]:hover {
-    box-shadow: inset 0 0 0 1px var(--fg-muted, currentColor);
-  }
-  [data-chip-role][data-entity-type][data-entity-id]:hover::after {
-    content: " ✎";
-    font-size: 0.85em;
-    opacity: 0.55;
-    margin-left: 2px;
-    pointer-events: none;
-  }
   /* ADR-153: pencil affordance scoped to panel-title chips only — matches
      chip_dblclick.js exactly. Entity chips in trail rows, lineage lists, and
      navigation contexts do not open edit forms on dblclick, so they must not
@@ -2014,18 +2008,11 @@
   }
   #left-sidebar [data-chip-role="entity"][data-entity-type="recording"][data-entity-id]:hover::after { opacity: 1; }
 
-  /* Media player: chips are navigation-only — suppress all edit-gesture pencil
-     affordances. Entity chips (musician, composer, co-performer, recording) and
-     even panel-title chips inside .media-player are for navigation only; editing
-     is only available in sidebar panels. Overrides the document-wide base rule
-     ([data-chip-role][data-entity-type][data-entity-id]:hover) and the panel-title
-     rule ([data-chip-role="panel-title"]…:hover) for anything inside the player. */
-  .media-player [data-chip-role][data-entity-type][data-entity-id]:hover {
-    box-shadow: none;
-  }
-  .media-player [data-chip-role][data-entity-type][data-entity-id]:hover::after {
-    content: none;
-  }
+  /* Media player: chips are navigation-only — suppress the panel-title pencil.
+     Panel-title chips inside .media-player are for navigation only; editing is
+     only available in sidebar panels. Other entity chips no longer carry a
+     pencil (the base hover affordance was removed in ADR-153), so only the
+     panel-title rule ([data-chip-role="panel-title"]…) needs overriding here. */
   .media-player [data-chip-role="panel-title"][data-entity-type][data-entity-id]:hover {
     outline: none;
   }
@@ -2398,13 +2385,28 @@
   [data-chip-role="section-add"]:hover::after { opacity: 1; }
   /* ADR-144 Phase B: single-recording row-block affordance.
      cursor:context-menu signals "secondary action" without claiming the row is a link.
-     Pencil is inherited from the panel-scoped entity rule above (row-blocks carry
-     all three data attrs and live inside #right-sidebar). */
-  [data-chip-role="row-block"] { cursor: context-menu; }
+     ADR-153: the row-block pencil is declared explicitly here — it previously
+     relied on the document-wide base hover rule (now removed), which painted an
+     inline glyph that grew the row on hover. Now it matches the standard
+     exterior top-right symbol with no reflow. */
+  [data-chip-role="row-block"] { cursor: context-menu; position: relative; }
+  [data-chip-role="row-block"]::after {
+    content: "✎";
+    position: absolute;
+    top: -7px;
+    right: -5px;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
   [data-chip-role="row-block"]:hover {
     outline: 1px dashed var(--accent);
     border-radius: 3px;
   }
+  [data-chip-role="row-block"]:hover::after { opacity: 1; }
   /* Musician panel title: use accent border fallback (no inline era vars at panel level) */
   .musician-chip.chip-panel-title {
     --chip-era-border: var(--accent, #d79921);
@@ -2754,10 +2756,16 @@
   }
 
   .mp-tracklist {
-    max-height: 180px;
+    position: absolute;
+    top: 30px;           /* overlays below .mp-bar without displacing the video */
+    left: 0;
+    right: 0;
+    z-index: 10;
+    max-height: min(320px, 60%);
     overflow-y: auto;
     background: var(--bg-panel);
-    border-bottom: 1px solid var(--border-strong);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
   }
 
   .mp-track-items {
@@ -4051,9 +4059,21 @@
     .media-player.full-mobile .mp-video-wrap.mp-has-plyr .plyr {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     }
-    /* Tracklist hidden by default; shown when toggle button adds .mp-tracklist-open */
-    .media-player.full-mobile .mp-tracklist { display: none; overflow-y: auto; }
-    .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; flex: 1; }
+    /* Tracklist hidden by default; shown when toggle button adds .mp-tracklist-open.
+       Positioned as an absolute overlay so the video is never displaced or shrunk. */
+    .media-player.full-mobile .mp-tracklist {
+      display: none;
+      position: absolute;
+      top: 60px;           /* below drag handle (~16px) + bar (~44px) */
+      left: 0; right: 0;
+      z-index: 10;
+      max-height: min(260px, 55%);
+      overflow-y: auto;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+    }
+    .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; }
     /* No tracks → tracklist is empty; keep hidden regardless of class */
     .media-player.full-mobile .mp-tracklist:empty { display: none !important; }
     .media-player.full-mobile .mp-footer { flex-shrink: 0; }
