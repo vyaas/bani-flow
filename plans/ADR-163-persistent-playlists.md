@@ -1,7 +1,8 @@
 # ADR-163: Persistent Playlists — Entity, Add Gesture & PLAYLISTS Panel Sections
 
-**Status**: Proposed
-**Date**: 2026-06-12
+**Status**: Accepted
+**Date**: 2026-06-12 (proposed + accepted)
+**Implementation note**: built in three verifiable slices — (1) data + write surface (playlists/ schema, writer.py methods, bani_add _process_playlists, entry_forms baniBundle key) — verified by running an op:create patch through bani-add; (2) render + PLAYLISTS panel sections (load + back-index + buildSection); (3) capture UI (the `+` affordance / queue "Save as playlist") + cross-recording continuation via end_seconds.
 **Agents**: graph-architect → librarian + carnatic-coder (parallel) → test-engineer
 **Depends on**: ADR-157 Phase B (this *is* Phase B), ADR-162 (the queue panel this playlist opens into), ADR-154 (MediaRef / `media_key` — playlist item identity across providers), ADR-156 (segment spans — a playlist item can be a span inside a recording), ADR-085 (self-replicating curation loop — playlists join it as a first-class entity), **ADR-083 (the `bani_add_patch.json` bundle envelope — a saved playlist is just a bundle item), ADR-097 (delta ops `create`/`patch`/`append`/`annotate` — playlist saves and edits reuse these verbatim)**, ADR-128 (`buildSection` panel pattern reused for the PLAYLISTS section). **Constitutional note:** introduces a new graph entity + a new `bani-add` item type; per ADR-085 this requires a PR and review before merge to `main`.
 
