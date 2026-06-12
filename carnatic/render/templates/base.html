@@ -3934,6 +3934,11 @@
       flex-shrink: 0;
       cursor: pointer; /* hint: tap bar to minimise */
     }
+    /* ADR-160 pass 2: the fold-cue is inert on mobile (minimize is by tapping the
+       bar / using the mini strip), so hide it — it would otherwise duplicate the
+       rail's functional ▾N overflow arrow. */
+    .media-player.full-mobile .mp-fold-cue,
+    .media-player.mini .mp-fold-cue { display: none; }
     .media-player.full-mobile .mp-title {
       font-size: 0.74rem; font-weight: 400;
     }
@@ -4022,6 +4027,11 @@
       font-size: 0.78rem; color: var(--fg);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    /* ADR-160 pass 2: the live chip rail replaces the text title in the mini
+       strip. Full-width single row (auto height, not flex-grown in the column),
+       overflowing chips collapse into the rail's ▾N menu. */
+    .mp-mini-info .mp-rail { flex: 0 0 auto; width: 100%; }
+    .mp-mini-title:empty { display: none; }
     .mp-mini-dots {
       display: flex; gap: 3px; margin-top: 2px;
     }

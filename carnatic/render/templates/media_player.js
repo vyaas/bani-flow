@@ -777,6 +777,17 @@ function _toggleRailOverflow(moreBtn, overflow) {
   overflow.style.top  = Math.round(r.bottom + 4) + 'px';
   overflow.classList.add('open');
   moreBtn.setAttribute('aria-expanded', 'true');
+  // Flip upward if the menu would spill off the bottom of the viewport — needed
+  // for the mobile mini strip, which sits at the bottom edge (ADR-160 pass 2).
+  const menuH = overflow.offsetHeight;
+  if (r.bottom + 4 + menuH > window.innerHeight) {
+    overflow.style.top = Math.round(Math.max(4, r.top - menuH - 4)) + 'px';
+  }
+  // Keep the menu within the right edge too.
+  const menuW = overflow.offsetWidth;
+  if (r.left + menuW > window.innerWidth) {
+    overflow.style.left = Math.round(Math.max(4, window.innerWidth - menuW - 4)) + 'px';
+  }
   // Close on the next click outside the menu (capture phase so it runs first).
   setTimeout(() => {
     const onDoc = ev => {
@@ -3379,11 +3390,14 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     if (idx >= 0) mp.trackIndex = idx;
   }
 
-  // Update mini strip title
+  // ADR-160 pass 2: the mini strip shows the live chip rail (not a text title)
   const currentTrack = mp.tracks[mp.trackIndex];
   const displayTitle = currentTrack ? currentTrack.display_title : trackLabel;
-  mp.miniTitle.textContent = (artistName ? artistName + ' \u2014 ' : '') +
-                             (displayTitle || concertTitle || '');
+  _updateMobileMiniRail(mp,
+    currentTrack ? (currentTrack.raga_id || null)        : ((meta && meta.ragaId) || null),
+    currentTrack ? (currentTrack.composition_id || null) : ((meta && meta.compositionId) || null),
+    displayTitle || concertTitle || null,
+    currentTrack ? (currentTrack.tala || null)           : ((meta && meta.tala) || null));
 
   // ── Build full-mode bar ─────────────────────────────────────────────────
   mp.bar.innerHTML = '';
@@ -3630,9 +3644,9 @@ function _swipeMobileTrack(direction) {
       track.offset_seconds > 0 ? track.offset_seconds : undefined);
   }
 
-  // Update mini title
-  mp.miniTitle.textContent = (mp.artistName ? mp.artistName + ' \u2014 ' : '') +
-                             (track.display_title || '');
+  // ADR-160 pass 2: keep the mini-strip chip rail in sync with the active track
+  _updateMobileMiniRail(mp, track.raga_id || null, track.composition_id || null,
+                        track.display_title || null, track.tala || null);
 
   // Update dot indicators
   _updateMiniDots(mp);
@@ -3650,6 +3664,33 @@ function _swipeMobileTrack(direction) {
     track.display_title || null,
     track.tala || null
   );
+}
+
+// ── ADR-160 pass 2: mobile mini-strip identity rail ──────────────────────────
+// The collapsed mobile strip shows the same live chip rail as the full bar, so
+// discovery stays open (and what's playing stays visible) while minimized.
+// Built into .mp-mini-info above the track dots; overflowing chips collapse into
+// the rail's ▾N menu (which flips upward off the bottom strip, see
+// _toggleRailOverflow). Reuses buildPlayerRail + pmeta exactly like the bar.
+function _updateMobileMiniRail(mp, ragaId, compId, displayTitle, tala) {
+  const info = mp.strip && mp.strip.querySelector('.mp-mini-info');
+  if (!info) return;
+  const old = info.querySelector('.mp-rail');
+  if (old) {
+    if (old._railObserver) old._railObserver.disconnect();
+    old.remove();
+  }
+  const pmeta = mp.meta || {};
+  const rail = buildPlayerRail({
+    nodeId:        pmeta.nodeId    || null,
+    artistName:    pmeta.artistName || null,
+    ragaId:        ragaId || null,
+    compositionId: compId || null,
+    displayTitle:  displayTitle || null,
+    tala:          tala || null,
+    subjects:      pmeta.subjects || null,
+  });
+  if (rail) info.insertBefore(rail, info.firstChild);   // rail above the track dots
 }
 
 function _updateMiniDots(mp) {
