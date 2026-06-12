@@ -1554,7 +1554,7 @@ function _openPlusMenu(anchor, getItem) {
     return it;
   }
 
-  // "Add to session queue" — ephemeral, no bundle op
+  // “Add to session queue” — ephemeral, no bundle op
   const addQ = document.createElement('button');
   addQ.type = 'button'; addQ.className = 'mp-plus-menu-item';
   addQ.textContent = 'Add to queue';
@@ -1568,28 +1568,64 @@ function _openPlusMenu(anchor, getItem) {
   });
   menu.appendChild(addQ);
 
-  // Existing playlists → "Add to playlist X"
-  if (typeof playlists !== 'undefined' && Array.isArray(playlists)) {
-    playlists.forEach(pl => {
-      const addPl = document.createElement('button');
-      addPl.type = 'button'; addPl.className = 'mp-plus-menu-item';
-      addPl.textContent = 'Add to “' + (pl.title || pl.id) + '”';
-      addPl.addEventListener('click', e => {
-        e.stopPropagation();
-        const it = _buildOp(resolvedMedia, item);
-        if (!it) { menu.remove(); return; }
-        const op = { op: 'append', id: pl.id, array: 'items', value: it };
-        if (typeof window.addToBundle === 'function') window.addToBundle('playlists', op);
-        addPl.textContent = '✓ Added';
-        setTimeout(() => menu.remove(), 900);
+  // Existing playlists → searchable filter + scrollable list
+  const knownPlaylists = (typeof playlists !== 'undefined' && Array.isArray(playlists)) ? playlists : [];
+  if (knownPlaylists.length) {
+    const divider = document.createElement('div');
+    divider.className = 'mp-plus-menu-divider';
+    divider.textContent = 'Add to playlist';
+    menu.appendChild(divider);
+
+    const search = document.createElement('input');
+    search.type = 'text';
+    search.className = 'mp-plus-menu-search';
+    search.placeholder = 'Filter…';
+    search.autocomplete = 'off';
+    menu.appendChild(search);
+
+    const list = document.createElement('div');
+    list.className = 'mp-plus-menu-list';
+    menu.appendChild(list);
+
+    function _renderList(q) {
+      list.innerHTML = '';
+      const term = q.trim().toLowerCase();
+      const matched = term
+        ? knownPlaylists.filter(pl => (pl.title || pl.id).toLowerCase().includes(term))
+        : knownPlaylists;
+      if (!matched.length) {
+        const empty = document.createElement('div');
+        empty.className = 'mp-plus-menu-empty';
+        empty.textContent = term ? 'No matches' : 'No playlists yet';
+        list.appendChild(empty);
+        return;
+      }
+      matched.forEach(pl => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'mp-plus-menu-item';
+        btn.textContent = pl.title || pl.id;
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const it = _buildOp(resolvedMedia, item);
+          if (!it) { menu.remove(); return; }
+          const op = { op: 'append', id: pl.id, array: 'items', value: it };
+          if (typeof window.addToBundle === 'function') window.addToBundle('playlists', op);
+          btn.textContent = '✓ Added to “' + (pl.title || pl.id) + '”';
+          btn.disabled = true;
+          setTimeout(() => menu.remove(), 1000);
+        });
+        list.appendChild(btn);
       });
-      menu.appendChild(addPl);
-    });
+    }
+    _renderList('');
+    search.addEventListener('input', () => _renderList(search.value));
+    // Prevent outside-click listener from firing on search keystrokes
+    search.addEventListener('click', e => e.stopPropagation());
   }
 
-  // "New playlist…" → op:create
+  // “New playlist…” → op:create
   const newPl = document.createElement('button');
-  newPl.type = 'button'; newPl.className = 'mp-plus-menu-item';
+  newPl.type = 'button'; newPl.className = 'mp-plus-menu-item mp-plus-menu-new';
   newPl.textContent = 'New playlist…';
   newPl.addEventListener('click', e => {
     e.stopPropagation(); menu.remove();
@@ -1608,15 +1644,18 @@ function _openPlusMenu(anchor, getItem) {
 
   document.body.appendChild(menu);
   const r = anchor.getBoundingClientRect();
-  // Prefer opening above; fall back to below if near top of viewport
-  const menuH = menu.offsetHeight || 120;
+  const menuH = menu.offsetHeight || 160;
   if (r.top > menuH + 8) {
     menu.style.bottom = (window.innerHeight - r.top + 4) + 'px';
     menu.style.top = 'auto';
   } else {
     menu.style.top = (r.bottom + 4) + 'px';
   }
-  menu.style.left = Math.min(r.left, window.innerWidth - 200) + 'px';
+  menu.style.left = Math.min(r.left, window.innerWidth - 220) + 'px';
+
+  // Focus the search input (if present) so the user can type immediately
+  const searchEl = menu.querySelector('.mp-plus-menu-search');
+  if (searchEl) setTimeout(() => searchEl.focus(), 40);
 
   const close = ev => {
     if (!menu.contains(ev.target)) { menu.remove(); document.removeEventListener('click', close, true); }
