@@ -61,9 +61,10 @@ But instead shines a brilliant light
 On what Beauty itself is
 
 So I invite you to browse this growing library of youtube links
-Along the principle axes of Carnatic Music
-By <cm>Musician<cm>, <cc>Composition<cc>, and <cr>Raga<cr>
-Resonate in the Sruti soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Brinda<cm>
+Curated elsewhere by passionate _Rasikas_
+Reorganized and indexed here along the principle axes of Carnatic Music
+<cm>Musician<cm>, <cc>Composition<cc>, and <cr>Raga<cr>
+Resonate in the _Sruti_ soaked renditions of <cm>Ramnad Krishnan<cm> and <cm>T. Brinda<cm>
 Revel in the profound and subtle differences between <cr>Kalyani<cr> and <cr>Shankarabharanam<cr>
 Get inspired by the passionate lecture-demonstrations of <cm>TM Krishna<cm> and <cm>Sriram Parasuram<cm>
 
@@ -76,8 +77,8 @@ Mylapore and Cleveland will see to that!
 But listening _is_ endangered
 In this tyranny of images
 And algorithm driven habit forming
-_Even in Mylapore_
-_Especially in Cleveland_
+Our ears are being controlled
+Not _haunted_
 
 Bani-flow's mission is simple:
 > Provide a no-nonsense navigable interface to explore Carnatic Music
