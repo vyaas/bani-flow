@@ -5,6 +5,17 @@ const playerRegistry = new Map();
 let topZ = 800;
 let spawnCount = 0;
 
+// ── ADR-158: relative-seek gesture constants ──────────────────────────────────
+// SEEK_STEP is the universal "skip" quantum (YouTube/NewPipe default). Tap-zone
+// double-taps and arrow keys both move the playhead in multiples of it.
+const SEEK_STEP     = 10;   // seconds per step
+const DOUBLE_TAP_MS = 300;  // double-tap detection / single-tap play-toggle debounce
+const ACCUM_MS      = 700;  // trailing window for additional taps/keys to accumulate
+
+// ADR-158: the topmost open player — the document-level key handler seeks this one.
+// Set by bringToFront() (every open/raise/mousedown across desktop + mobile paths).
+let _activePlayer = null;
+
 function ytEmbedUrl(vid, startSeconds) {
   const t = (startSeconds && startSeconds > 0) ? `&start=${startSeconds}` : '';
   return `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0${t}`;
@@ -216,6 +227,7 @@ function nextSpawnPosition() {
 function bringToFront(player) {
   topZ += 1;
   player.el.style.zIndex = topZ;
+  _activePlayer = player;   // ADR-158: keyboard seek targets the topmost player
 }
 
 function refreshPlayingIndicators() {
@@ -793,13 +805,15 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
       // event below (unmuting an already-playing video is allowed without a
       // gesture). This removes the "click unmute twice" desync.
       muted: true,
-      // AUDIT-015 F-02: Plyr's clickToPlay listens on the player container, but
-      // the cross-origin YouTube/Vimeo iframe swallows the centre click before
-      // it arrives — so it never toggles. Disable it for embeds and own the
-      // toggle via a transparent catcher (added on ready). HTML5 audio/video
-      // keep Plyr's native clickToPlay, which works directly.
-      clickToPlay: !isEmbed,
-      keyboard: { focused: true, global: false },
+      // AUDIT-015 F-02 + ADR-158: the tap-zone gesture layer (added on ready) owns
+      // single-tap play/pause for every controllable provider, so Plyr's own
+      // clickToPlay is disabled uniformly — both to dodge the cross-origin iframe
+      // swallowing centre clicks (embeds) and to keep one tap code path (HTML5).
+      clickToPlay: false,
+      // ADR-158: we own all key seeking at the document level. Cross-origin
+      // iframes capture focus, so Plyr's `focused` keyboard would never fire for
+      // YouTube/Vimeo anyway; disabling both avoids a double-seek on HTML5.
+      keyboard: { focused: false, global: false },
       youtube: { rel: 0, modestbranding: 1, iv_load_policy: 3 },
       vimeo: { byline: false, portrait: false, title: false },
       markers: { enabled: points.length > 0, points },   // ADR-156: chapter markers
@@ -811,27 +825,69 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
     // mute so the user hears sound on first open with no clicks. `once` so a
     // later deliberate mute by the user is never undone.
     player.once('playing', () => { try { player.muted = false; } catch (e) {} });
-    // AUDIT-015 F-02: for embeds, overlay a transparent click-catcher above the
-    // iframe (z-index 1, like the poster) but below the play-large (z2) and the
-    // control bar (z3), so clicking the video body toggles play/pause while the
-    // controls stay reachable. Added on ready, when Plyr's wrapper exists.
-    if (isEmbed) {
-      player.once('ready', () => {
-        try {
-          const wrap = player.elements && player.elements.wrapper;
-          if (!wrap || wrap.querySelector('.mp-click-catch')) return;
+
+    // ── ADR-158: relative-seek primitive + accumulating session ───────────────
+    // nudge() is the single Strong Centre both the tap layer and the keyboard
+    // handler drive. seekStep() wraps it with the running overlay total and the
+    // ACCUM_MS window, so N rapid inputs on a side read as one cumulative seek.
+    function nudge(delta) {
+      try {
+        const dur = player.duration || 0;
+        let next = (player.currentTime || 0) + delta;
+        if (next < 0) next = 0;
+        if (dur && next > dur) next = dur;
+        player.currentTime = next;
+        return next;
+      } catch (e) { return null; }
+    }
+    let _seekSteps = 0, _seekTimer = null, _overlayEl = null;
+    function _renderOverlay() {
+      if (!_overlayEl) return;
+      if (_seekSteps === 0) { _overlayEl.classList.remove('visible'); return; }
+      const secs = Math.abs(_seekSteps) * SEEK_STEP;
+      _overlayEl.textContent = _seekSteps < 0 ? ('« ' + secs + 's') : (secs + 's »');
+      _overlayEl.classList.add('visible');
+    }
+    function seekStep(side) {
+      const dir = side === 'left' ? -1 : 1;
+      if (nudge(dir * SEEK_STEP) === null) return;   // not ready / clamped away
+      _seekSteps += dir;
+      _renderOverlay();
+      clearTimeout(_seekTimer);
+      _seekTimer = setTimeout(() => { _seekSteps = 0; _renderOverlay(); _seekTimer = null; }, ACCUM_MS);
+    }
+
+    // The gesture layer + overlay live on Plyr's video wrapper, which exists for
+    // embeds and HTML5 video but NOT audio. Audio still seeks via keyboard
+    // (seekStep → nudge); it just has no tap zones and no on-frame overlay.
+    player.once('ready', () => {
+      try {
+        const wrap = player.elements && player.elements.wrapper;
+        if (!wrap) return;
+        if (!wrap.querySelector('.mp-seek-overlay')) {
+          const ov = document.createElement('div');
+          ov.className = 'mp-seek-overlay';
+          ov.setAttribute('aria-live', 'polite');
+          ov.setAttribute('aria-atomic', 'true');
+          wrap.appendChild(ov);
+          _overlayEl = ov;
+        }
+        if (!wrap.querySelector('.mp-click-catch')) {
           const catcher = document.createElement('div');
           catcher.className = 'mp-click-catch';
-          catcher.addEventListener('click', () => { try { player.togglePlay(); } catch (e) {} });
+          wireTapGestures(catcher, wrap, player, seekStep);
           wrap.appendChild(catcher);
-        } catch (e) {}
-      });
-    }
+        }
+      } catch (e) {}
+    });
+
     return {
       kind: 'plyr',
       plyr: player,
       iframe: null,
       seek(sec) { try { player.currentTime = sec || 0; player.play(); } catch (e) {} },
+      nudge,                 // ADR-158: clamped relative seek (returns new time, or null)
+      seekStep,              // ADR-158: +overlay accumulation; driven by tap + keyboard
       destroy() { try { player.destroy(); } catch (e) {} },
       onTime(cb) { player.on('timeupdate', () => cb(Math.floor(player.currentTime || 0))); },
       onEnded(cb) { player.on('ended', cb); },
@@ -850,11 +906,80 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
     plyr: null,
     iframe,
     seek(sec) { iframe.src = embedUrl(media, sec > 0 ? sec : undefined); },
+    // ADR-158 / ADR-155 §4: uncontrollable providers can neither read nor write
+    // currentTime — relative seek degrades to a no-op (no overlay, no affordance).
+    nudge() { return null; },
+    seekStep() {},
     destroy() { iframe.src = ''; },
     onTime() {},
     onEnded() {},
   };
 }
+
+// ── ADR-158: tap-zone gesture layer ───────────────────────────────────────────
+// Divides the video surface into rewind (left 0–40%), neutral (40–60%) and
+// forward (right 60–100%) zones. A single tap toggles play/pause (after a short
+// debounce that disambiguates it from a double-tap); a double-tap on a side
+// begins a seek session, and every further same-side tap within the window adds
+// another SEEK_STEP — so N rapid taps ⇒ (N−1) steps, matching YouTube/NewPipe.
+function wireTapGestures(catcher, wrap, player, seekStep) {
+  let pending = null, toggleTimer = null, sessionActive = false, sessionTimer = null;
+  const now = () => (window.performance && performance.now) ? performance.now() : Date.now();
+  function endSession() { sessionActive = false; clearTimeout(sessionTimer); sessionTimer = null; }
+  function armSession() { sessionActive = true; clearTimeout(sessionTimer); sessionTimer = setTimeout(endSession, ACCUM_MS); }
+
+  catcher.addEventListener('pointerup', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();   // suppress the synthetic click / double-tap zoom
+    const rect = wrap.getBoundingClientRect();
+    const frac = rect.width ? (e.clientX - rect.left) / rect.width : 0.5;
+    const side = frac < 0.4 ? 'left' : (frac > 0.6 ? 'right' : 'centre');
+    const seekZone = side !== 'centre';
+
+    // Already seeking: any further side-tap keeps accumulating, no re-arming tap needed.
+    if (sessionActive) {
+      if (seekZone) { seekStep(side); armSession(); }
+      return;
+    }
+    // A second tap on the same side within the window arms the seek (its first step).
+    if (pending && seekZone && pending.side === side && (now() - pending.t) < DOUBLE_TAP_MS) {
+      clearTimeout(toggleTimer); toggleTimer = null; pending = null;
+      seekStep(side); armSession();
+      return;
+    }
+    // Otherwise this is a play/pause candidate — fire it once the double-tap window lapses.
+    pending = { side, t: now() };
+    clearTimeout(toggleTimer);
+    toggleTimer = setTimeout(() => {
+      try { player.togglePlay(); } catch (e) {}
+      pending = null; toggleTimer = null;
+    }, DOUBLE_TAP_MS);
+  });
+
+  // ADR-158: a double-tap on a seek zone is OUR gesture — stop it bubbling to
+  // Plyr's container, whose native dblclick handler would otherwise also toggle
+  // fullscreen. Maximize stays reachable via Plyr's bottom-right fullscreen button.
+  catcher.addEventListener('dblclick', e => { e.preventDefault(); e.stopPropagation(); });
+}
+
+// ── ADR-158: keyboard parity ──────────────────────────────────────────────────
+// Owned at the document level because cross-origin YouTube/Vimeo iframes capture
+// focus, so Plyr's own (disabled) keyboard would never receive these keys. Routes
+// ←/→ through the SAME seekStep() as taps, so they share the overlay + accumulation.
+document.addEventListener('keydown', e => {
+  if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+  const side = e.key === 'ArrowLeft' ? 'left' : (e.key === 'ArrowRight' ? 'right' : null);
+  if (!side) return;
+  // Never steal arrows from a focused form field (entry/edit forms).
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  const inst = _activePlayer;
+  if (!inst || !inst.el || !inst.el.isConnected) return;
+  const ctrl = inst.controller;
+  if (!ctrl || ctrl.kind !== 'plyr' || typeof ctrl.seekStep !== 'function') return;
+  ctrl.seekStep(side);
+  e.preventDefault();
+});
 
 function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle, tracks, meta) {
   const mkey = mediaKey(media);          // ADR-154: provider-qualified registry key

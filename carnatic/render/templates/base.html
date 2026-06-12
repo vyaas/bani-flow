@@ -1081,14 +1081,31 @@
     --plyr-color-main: var(--accent, #fabd2f);
     --plyr-font-family: inherit;
   }
-  /* AUDIT-015 F-02: transparent click-catcher for embed providers — sits above
-     the iframe (z-index 0) and poster (z-index 1) but below the play-large
-     (z-index 2) and control bar (z-index 3), so clicking the video body
-     toggles play/pause while the Plyr controls stay reachable. */
+  /* AUDIT-015 F-02 + ADR-158: transparent gesture layer over the video surface —
+     sits above the iframe (z-index 0) and poster (z-index 1) but below the
+     play-large (z-index 2) and control bar (z-index 3), so single-tap toggles
+     play/pause and left/right double-taps seek, while the Plyr controls stay
+     reachable. touch-action:manipulation suppresses the browser's double-tap
+     zoom so rapid seek taps register cleanly. */
   .mp-video-wrap.mp-has-plyr .plyr .mp-click-catch {
     position: absolute; inset: 0; z-index: 1;
     background: transparent; cursor: pointer;
+    touch-action: manipulation;
   }
+  /* ADR-158: transient seek-amount indicator (e.g. "« 20s" / "30s »"), centred
+     over the frame above the gesture layer but below the controls. aria-live so
+     the running total is announced; pointer-events:none so it never eats taps. */
+  .mp-video-wrap.mp-has-plyr .plyr .mp-seek-overlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 2; pointer-events: none;
+    background: color-mix(in srgb, var(--accent, #fabd2f) 16%, rgba(0, 0, 0, 0.62));
+    color: var(--accent, #fabd2f);
+    border: 1px solid var(--accent, #fabd2f); border-radius: 999px;
+    padding: 6px 16px; font-size: 0.95rem; font-weight: 600;
+    letter-spacing: 0.02em; white-space: nowrap;
+    opacity: 0; transition: opacity 0.18s;
+  }
+  .mp-video-wrap.mp-has-plyr .plyr .mp-seek-overlay.visible { opacity: 1; }
 
   /* ── footer strip: raga + composition navigation chips ── */
   .mp-footer {
