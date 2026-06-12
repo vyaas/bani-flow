@@ -2731,6 +2731,12 @@
     font-size: 0.9rem; cursor: pointer; padding: 2px 4px; line-height: 1;
   }
   .mp-queue-prev:hover, .mp-queue-next:hover { color: var(--accent); }
+  /* ADR-163: "Save as playlist" button in queue head */
+  .mp-queue-save {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.95rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+  }
+  .mp-queue-save:hover { color: var(--accent); }
   .mp-queue-items { list-style: none; margin: 0; padding: 0; }
   .mp-queue-item {
     display: flex; align-items: center; gap: 6px;
@@ -2760,6 +2766,31 @@
     font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
   }
   .mp-queue-remove:hover { color: var(--accent-danger); }
+  /* ADR-163 §3: + affordance — add-to-playlist button beside play controls */
+  .mp-plus-btn {
+    background: none; border: 1px solid var(--border); border-radius: 50%;
+    color: var(--fg-muted); font-size: 0.75rem; line-height: 1;
+    width: 18px; height: 18px; padding: 0;
+    cursor: pointer; flex-shrink: 0; display: inline-flex;
+    align-items: center; justify-content: center;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .mp-plus-btn:hover { color: var(--accent); border-color: var(--accent); }
+  /* Floating popover menu opened by the + button */
+  .mp-plus-menu {
+    position: fixed; z-index: 9999;
+    background: var(--bg-panel); border: 1px solid var(--border-strong);
+    border-radius: 6px; padding: 4px 0;
+    min-width: 170px; box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+  }
+  .mp-plus-menu-item {
+    display: block; width: 100%;
+    background: none; border: none;
+    color: var(--fg-main); font-size: 0.8rem;
+    padding: 6px 12px; text-align: left; cursor: pointer;
+    white-space: nowrap;
+  }
+  .mp-plus-menu-item:hover { background: var(--bg-input); color: var(--accent); }
   /* Queue toggle button in the bar (same icon-button family as copy/share) */
   .mp-queue-toggle {
     background: none; border: none; color: var(--fg-muted);

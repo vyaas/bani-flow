@@ -1215,7 +1215,19 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // and the permalink capture where the video actually is (fixes AUDIT-014 F-04).
   // ADR-156: also advance the active-segment footer/highlight as playback crosses
   // chapter boundaries.
-  controller.onTime(sec => { instance.currentOffset = sec; _updateActiveSegment(instance, sec); });
+  controller.onTime(sec => {
+    instance.currentOffset = sec;
+    _updateActiveSegment(instance, sec);
+    // ADR-163 §5: cross-recording continuation — if this queue item has an end_seconds
+    // span boundary, advance the playlist the moment the playhead crosses it, even
+    // though the source video keeps running past that point.
+    if (MediaQueue.isCurrent(instance.mediaKey)) {
+      const _qi = MediaQueue.items[MediaQueue.index];
+      if (_qi && _qi.meta && _qi.meta.end_seconds != null && sec >= _qi.meta.end_seconds) {
+        MediaQueue.advance();
+      }
+    }
+  });
   // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
   controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
 
@@ -1489,10 +1501,128 @@ const MediaQueue = {
 
   setPanelOpen(open) { this.panelOpen = !!open; },
 
+  // ADR-163 §3: add a single item to the queue without replacing it.
+  addItem(item) {
+    if (!this.active) { this.start([item], 0); return; }
+    this.items.push(item);
+    _refreshQueuePanels();
+  },
+
   clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; },
 };
 window.MediaQueue = MediaQueue;
 window.startMediaQueue = function(items, startIndex) { MediaQueue.start(items, startIndex); };
+
+// ── ADR-163 §3: + affordance — add any item to a playlist via the patch loop ──
+// _buildPlusBtn(getItem) → <button class="mp-plus-btn"> that opens a popover menu.
+// getItem() is called lazily on click and must return:
+//   { media, startSeconds?, meta: { ragaId, compositionId, nodeId, end_seconds? }, label?, artistName? }
+function _buildPlusBtn(getItem) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'mp-plus-btn';
+  btn.title = 'Add to playlist…';
+  btn.textContent = '+';
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    _openPlusMenu(btn, getItem);
+  });
+  return btn;
+}
+
+function _openPlusMenu(anchor, getItem) {
+  document.querySelectorAll('.mp-plus-menu').forEach(m => m.remove());
+  const item = getItem();
+  if (!item || !item.media) return;
+  const resolvedMedia = (typeof resolveMedia === 'function') ? resolveMedia(item.media) : item.media;
+  if (!resolvedMedia) return;
+
+  const menu = document.createElement('div');
+  menu.className = 'mp-plus-menu';
+
+  function _buildOp(resolvedMedia, item) {
+    const mk = (typeof mediaKey === 'function') ? mediaKey(resolvedMedia) : null;
+    if (!mk) return null;
+    const it = { media_key: mk };
+    if (item.startSeconds) it.start_seconds = item.startSeconds;
+    const m = item.meta || {};
+    if (m.end_seconds) it.end_seconds = m.end_seconds;
+    if (m.ragaId) it.raga_id = m.ragaId;
+    if (m.compositionId) it.composition_id = m.compositionId;
+    if (m.nodeId) it.musician_ids = [m.nodeId];
+    if (item.label) it.note = item.label;
+    return it;
+  }
+
+  // "Add to session queue" — ephemeral, no bundle op
+  const addQ = document.createElement('button');
+  addQ.type = 'button'; addQ.className = 'mp-plus-menu-item';
+  addQ.textContent = 'Add to queue';
+  addQ.addEventListener('click', e => {
+    e.stopPropagation(); menu.remove();
+    MediaQueue.addItem({
+      media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
+      startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
+      tracks: [], meta: item.meta || {},
+    });
+  });
+  menu.appendChild(addQ);
+
+  // Existing playlists → "Add to playlist X"
+  if (typeof playlists !== 'undefined' && Array.isArray(playlists)) {
+    playlists.forEach(pl => {
+      const addPl = document.createElement('button');
+      addPl.type = 'button'; addPl.className = 'mp-plus-menu-item';
+      addPl.textContent = 'Add to “' + (pl.title || pl.id) + '”';
+      addPl.addEventListener('click', e => {
+        e.stopPropagation();
+        const it = _buildOp(resolvedMedia, item);
+        if (!it) { menu.remove(); return; }
+        const op = { op: 'append', id: pl.id, array: 'items', value: it };
+        if (typeof window.addToBundle === 'function') window.addToBundle('playlists', op);
+        addPl.textContent = '✓ Added';
+        setTimeout(() => menu.remove(), 900);
+      });
+      menu.appendChild(addPl);
+    });
+  }
+
+  // "New playlist…" → op:create
+  const newPl = document.createElement('button');
+  newPl.type = 'button'; newPl.className = 'mp-plus-menu-item';
+  newPl.textContent = 'New playlist…';
+  newPl.addEventListener('click', e => {
+    e.stopPropagation(); menu.remove();
+    const title = window.prompt('New playlist name:');
+    if (!title) return;
+    const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || ('pl_' + Date.now());
+    const it = _buildOp(resolvedMedia, item);
+    if (!it) return;
+    const op = { op: 'create', id, title, description: '', items: [it], kind: 'user', sources: [] };
+    if (typeof window.addToBundle === 'function') {
+      window.addToBundle('playlists', op);
+      anchor.textContent = '✓'; setTimeout(() => { anchor.textContent = '+'; }, 1500);
+    }
+  });
+  menu.appendChild(newPl);
+
+  document.body.appendChild(menu);
+  const r = anchor.getBoundingClientRect();
+  // Prefer opening above; fall back to below if near top of viewport
+  const menuH = menu.offsetHeight || 120;
+  if (r.top > menuH + 8) {
+    menu.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+    menu.style.top = 'auto';
+  } else {
+    menu.style.top = (r.bottom + 4) + 'px';
+  }
+  menu.style.left = Math.min(r.left, window.innerWidth - 200) + 'px';
+
+  const close = ev => {
+    if (!menu.contains(ev.target)) { menu.remove(); document.removeEventListener('click', close, true); }
+  };
+  setTimeout(() => document.addEventListener('click', close, true), 0);
+}
 
 // ── ADR-162: the "Up Next" queue panel — makes MediaQueue visible & editable ──
 // A bar-summoned, upward-opening panel (like the tracklist) listing the queue's
@@ -1555,6 +1685,16 @@ function _renderQueuePanel(panel) {
     rm.title = 'Remove from queue'; rm.setAttribute('aria-label', 'Remove from queue');
     rm.textContent = '✕';
     rm.addEventListener('click', e => { e.stopPropagation(); MediaQueue.removeAt(i); });
+    // ADR-163 §3: + affordance on each queue row
+    const qplus = _buildPlusBtn((() => {
+      const _item = item;
+      return () => ({
+        media: _item.media, startSeconds: _item.startSeconds || 0,
+        concertTitle: _item.concertTitle || '', label: _item.label || '',
+        artistName: _item.artistName || '', meta: _item.meta || {},
+      });
+    })());
+    li.appendChild(qplus);
     li.appendChild(rm);
 
     // Row body (outside chips/buttons) jumps to this item.
@@ -1578,7 +1718,38 @@ function buildQueuePanel() {
   const next = document.createElement('button');
   next.type = 'button'; next.className = 'mp-queue-next'; next.title = 'Next'; next.textContent = '⏭';
   next.addEventListener('click', e => { e.stopPropagation(); MediaQueue.next(); });
-  head.appendChild(title); head.appendChild(prev); head.appendChild(next);
+  // ADR-163 §3: "Save as playlist" — turns the current queue into a create op for the patch loop
+  const saveBtn = document.createElement('button');
+  saveBtn.type = 'button'; saveBtn.className = 'mp-queue-save mp-toggle-btn';
+  saveBtn.title = 'Save queue as playlist…';
+  saveBtn.textContent = '⊕';
+  saveBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!MediaQueue.items.length) return;
+    const pTitle = window.prompt('Playlist name:');
+    if (!pTitle) return;
+    const pId = pTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || ('pl_' + Date.now());
+    const items = MediaQueue.items.map(qi => {
+      const mk = (qi.media && typeof mediaKey === 'function') ? mediaKey(qi.media) : null;
+      if (!mk) return null;
+      const it = { media_key: mk };
+      if (qi.startSeconds) it.start_seconds = qi.startSeconds;
+      const m = qi.meta || {};
+      if (m.end_seconds) it.end_seconds = m.end_seconds;
+      if (m.ragaId) it.raga_id = m.ragaId;
+      if (m.compositionId) it.composition_id = m.compositionId;
+      if (m.nodeId) it.musician_ids = [m.nodeId];
+      if (qi.label) it.note = qi.label;
+      return it;
+    }).filter(Boolean);
+    if (!items.length) return;
+    const op = { op: 'create', id: pId, title: pTitle, description: '', items, kind: 'user', sources: [] };
+    if (typeof window.addToBundle === 'function') {
+      window.addToBundle('playlists', op);
+      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = '⊕'; }, 2000);
+    }
+  });
+  head.appendChild(title); head.appendChild(prev); head.appendChild(next); head.appendChild(saveBtn);
   const ul = document.createElement('ul');
   ul.className = 'mp-queue-items';
   panel.appendChild(head); panel.appendChild(ul);
@@ -2110,6 +2281,12 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         );
       });
       actsDiv.appendChild(playBtn);
+      // ADR-163 §3: + affordance on concert bracket performance rows
+      actsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+        media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+        label: _p.display_title || '', artistName: artistLabel,
+        meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
+      }); })()));
       compHeader.appendChild(actsDiv);
 
       // ── Wrap comp header + composer in indented block when raga is present ────
@@ -2230,6 +2407,12 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       );
     });
     actsDiv.appendChild(playBtn);
+    // ADR-163 §3: + affordance on single-recording standalone rows
+    actsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+      media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+      label: _p.display_title || '', artistName: artistLabel,
+      meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
+    }); })()));
     compHeader.appendChild(actsDiv);
   } else {
     // ── Multiple recordings: right-chevron accordion (starts collapsed) ────
@@ -2297,6 +2480,12 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
         );
       });
       rowActsDiv.appendChild(playBtn);
+      // ADR-163 §3: + affordance on multi-recording version rows
+      rowActsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+        media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+        label: _p.display_title || '', artistName: artistLabel,
+        meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
+      }); })()));
       row.appendChild(rowActsDiv);
 
       recLi.appendChild(row);
@@ -2868,7 +3057,21 @@ function buildPlaylistRow(pl) {
       e.stopPropagation();
       if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, i);
     });
+    // ADR-163 §3: + affordance on each playlist track row
+    const itCopy = it;
+    const qiCopy = queueItems[i];
+    const tplus = _buildPlusBtn(() => ({
+      media: qiCopy && qiCopy.media,
+      startSeconds: itCopy.start_seconds || 0,
+      meta: {
+        ragaId: itCopy.raga_id || null, compositionId: itCopy.composition_id || null,
+        nodeId: (itCopy.musician_ids && itCopy.musician_ids[0]) || null,
+        end_seconds: itCopy.end_seconds || null,
+      },
+      label: itCopy.note || itCopy.composition_id || '',
+    }));
     trow.appendChild(tplay);
+    trow.appendChild(tplus);
     return trow;
   });
 
