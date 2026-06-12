@@ -1,7 +1,7 @@
 # ADR-161: Bold Toggle-State Buttons & Upward-Opening Surfaces
 
-**Status**: Proposed
-**Date**: 2026-06-12
+**Status**: Accepted
+**Date**: 2026-06-12 (proposed + accepted)
 **Agents**: graph-architect → carnatic-coder → test-engineer
 **Depends on**: ADR-159 (the bar layout these buttons live in). **Related**: ADR-051 (mobile player chips), ADR-158 (the video surface owns tap-seek — these chrome buttons must stay outside that surface).
 
