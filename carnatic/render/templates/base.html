@@ -939,18 +939,17 @@
   }
 
   /* ── ADR-159: live identity rail — chips in the bar, replacing the title.
-     Fills the space between the fold-cue and the right button group; scrolls
-     horizontally if the chip set overflows so the buttons stay pinned right. */
+     Single line between the fold-cue and the right button group. Chips that
+     don't fit are moved by reflowRail() into the "▾ N" overflow menu, so the
+     buttons stay pinned and nothing is ever hidden. */
   .mp-rail {
     flex: 1; min-width: 0;
     display: flex; align-items: center; gap: 5px;
-    overflow-x: auto; overflow-y: hidden;
-    scrollbar-width: none;            /* Firefox: hide scrollbar, keep scrollability */
+    overflow: hidden;                 /* clip; overflowing chips move into ▾ N */
   }
-  .mp-rail::-webkit-scrollbar { display: none; }
-  .mp-rail > * { flex-shrink: 0; }    /* chips keep their size; the rail scrolls */
+  .mp-rail > * { flex-shrink: 0; }    /* chips keep their size; reflow moves the surplus */
   .mp-rail .rec-raga-tala {
-    display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 4px;
   }
   /* Cap individual chip width so one long name can't crowd the rest; the full
      name stays available in the chip's own title= / on tap. */
@@ -959,7 +958,32 @@
   .mp-rail .comp-chip,
   .mp-rail .composer-chip,
   .mp-rail .yt-label-chip {
-    max-width: 18ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ▾ N — overflow toggle; opens the menu of chips that didn't fit the line */
+  .mp-rail-more {
+    flex-shrink: 0; cursor: pointer;
+    background: var(--bg-input); color: var(--fg-sub);
+    border: 1px solid var(--border-strong); border-radius: 4px;
+    font: inherit; font-size: 0.7rem; line-height: 1;
+    padding: 2px 6px; white-space: nowrap; user-select: none;
+  }
+  .mp-rail-more:hover { color: var(--accent); border-color: var(--accent); }
+  .mp-rail-more[aria-expanded="true"] {
+    color: var(--accent); border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--bg-input));
+  }
+  /* The overflow menu — fixed-positioned so the bar's overflow:hidden can't
+     clip it; coordinates are set from the button's rect in _toggleRailOverflow. */
+  .mp-rail-overflow { display: none; }
+  .mp-rail-overflow.open {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    position: fixed; z-index: 100000;
+    max-width: 320px; padding: 7px 9px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
   }
 
   /* em-dash separator between artist chip and title */
@@ -1131,24 +1155,10 @@
   }
   .mp-video-wrap.mp-has-plyr .plyr .mp-seek-overlay.visible { opacity: 1; }
 
-  /* ── footer strip: raga + composition navigation chips ── */
-  .mp-footer {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
-    padding: 5px 10px;
-    background: var(--bg-panel);
-    border-top: 1px solid var(--border-strong);
-  }
-  .mp-footer-overflow {
-    display: inline-flex; flex-wrap: wrap; gap: 5px; align-items: center;
-  }
-  .mp-footer-overflow[hidden] { display: none; }
-  .mp-footer-toggle {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.65rem; cursor: pointer; padding: 0 2px;
-    font-family: inherit; line-height: 1; user-select: none;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .mp-footer-toggle:hover { color: var(--accent); }
+  /* ADR-159: the below-video .mp-footer is fully retired — the identity chips
+     and lecdem subject cross-links now live in the header .mp-rail (with its
+     ▾N overflow). The few remaining .mp-footer mentions in collapsed-state
+     selector lists below are inert (no element carries the class). */
 
   /* resize grip at bottom — se-resize cursor + corner-dot indicator pointing ↘ */
   .mp-resize {

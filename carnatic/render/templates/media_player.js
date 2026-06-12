@@ -487,6 +487,7 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
     compositionId: meta.compositionId || null,
     displayTitle:  trackLabel         || null,
     tala:          meta.tala          || null,
+    subjects:      meta.subjects      || null,
   });
   if (rail) {
     bar.appendChild(rail);
@@ -548,7 +549,7 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
 }
 
 // ── _buildMusicianChipForFooter — era-tinted musician chip with transit fallback ─
-// Shared by buildPlayerRail and _buildLecdemSubjectFooter.
+// Shared by buildPlayerRail and the rail's performer anchor.
 // nodeId may be null if only artistName is known (renders chip without navigation).
 function _buildMusicianChipForFooter(nodeId, artistName) {
   if (!nodeId && !artistName) return null;
@@ -605,8 +606,12 @@ function _buildMusicianChipForFooter(nodeId, artistName) {
 // and are swapped live by updatePlayerRail as the playhead crosses segments.
 function buildPlayerRail(meta) {
   if (!meta) return null;
-  const { nodeId, artistName, ragaId, compositionId, displayTitle, tala } = meta;
-  const hasAny = nodeId || artistName || ragaId || compositionId || displayTitle;
+  const { nodeId, artistName, ragaId, compositionId, displayTitle, tala, subjects } = meta;
+  const hasSubjects = subjects && (
+    (subjects.raga_ids && subjects.raga_ids.length) ||
+    (subjects.composition_ids && subjects.composition_ids.length) ||
+    (subjects.musician_ids && subjects.musician_ids.length));
+  const hasAny = nodeId || artistName || ragaId || compositionId || displayTitle || hasSubjects;
   if (!hasAny) return null;
 
   const rail = document.createElement('div');
@@ -618,7 +623,7 @@ function buildPlayerRail(meta) {
     if (mChip) rail.appendChild(mChip);
   }
 
-  // ── Raga chip + tala (same .raga-chip class as panels; tala stays inline) ────
+  // ── Raga chip (same .raga-chip class as panels; tala is demoted to the end) ──
   if (ragaId) {
     const ragaObj = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
     const ragaName = ragaObj ? ragaObj.name : ragaId;
@@ -632,18 +637,7 @@ function buildPlayerRail(meta) {
       setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
     });
-    if (tala) {
-      const ragaTalaDiv = document.createElement('div');
-      ragaTalaDiv.className = 'rec-raga-tala';
-      ragaTalaDiv.appendChild(ragaChip);
-      const talaSpan = document.createElement('span');
-      talaSpan.className = 'trail-tala';
-      talaSpan.textContent = formatTala(tala);
-      ragaTalaDiv.appendChild(talaSpan);
-      rail.appendChild(ragaTalaDiv);
-    } else {
-      rail.appendChild(ragaChip);
-    }
+    rail.appendChild(ragaChip);
   }
 
   // ── Composition chip (same .comp-chip class as panels) ──────────────────
@@ -675,7 +669,98 @@ function buildPlayerRail(meta) {
     rail.appendChild(lbl);
   }
 
+  // ── ADR-159: lecdem subject cross-links populate the rail itself (and its
+  // ▾N overflow) — no separate below-video footer. raga/comp/musician → chip. ──
+  if (hasSubjects) {
+    _buildSubjectChips(subjects).forEach(c => rail.appendChild(c));
+  }
+
+  // ── Tala — demoted to the very end, shown only if present (any rendition) ──
+  if (tala) {
+    const talaSpan = document.createElement('span');
+    talaSpan.className = 'trail-tala mp-rail-tala';
+    talaSpan.textContent = formatTala(tala);
+    rail.appendChild(talaSpan);
+  }
+
+  // ── ADR-159: adaptive overflow — chips that don't fit the single line collapse
+  // into a "▾ N" menu. The reflow pass (reflowRail) runs once the rail is laid
+  // out and again whenever the bar is resized, via a ResizeObserver.
+  const moreBtn = document.createElement('button');
+  moreBtn.type = 'button';
+  moreBtn.className = 'mp-rail-more';
+  moreBtn.title = 'Show more chips';
+  moreBtn.setAttribute('aria-expanded', 'false');
+  moreBtn.style.display = 'none';
+  const overflow = document.createElement('div');
+  overflow.className = 'mp-rail-overflow';
+  rail.appendChild(moreBtn);
+  rail.appendChild(overflow);
+  moreBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    _toggleRailOverflow(moreBtn, overflow);
+  });
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => reflowRail(rail));
+    ro.observe(rail);
+    rail._railObserver = ro;
+  } else {
+    requestAnimationFrame(() => reflowRail(rail));
+  }
+
   return rail;
+}
+
+// ── reflowRail — adaptive overflow for the bar's identity rail (ADR-159 §5) ──
+// Measures the single-line rail; any chips that don't fit are moved (in order)
+// into the .mp-rail-overflow menu, and the "▾ N" toggle is shown. Idempotent:
+// always pulls chips back inline first, then re-measures.
+function reflowRail(rail) {
+  if (!rail || !rail.isConnected) return;
+  const moreBtn  = rail.querySelector(':scope > .mp-rail-more');
+  const overflow = rail.querySelector(':scope > .mp-rail-overflow');
+  if (!moreBtn || !overflow) return;
+  // 1) reset: pull every overflowed chip back inline (before the button)
+  while (overflow.firstChild) rail.insertBefore(overflow.firstChild, moreBtn);
+  overflow.classList.remove('open');
+  moreBtn.style.display = 'none';
+  moreBtn.setAttribute('aria-expanded', 'false');
+  const fits = () => rail.scrollWidth <= rail.clientWidth + 1;
+  if (fits()) return;                       // everything fits — no menu needed
+  // 2) reserve the button's width, then move trailing chips out until it fits
+  moreBtn.style.display = '';
+  const chips = Array.from(rail.children).filter(c => c !== moreBtn && c !== overflow);
+  let i = chips.length - 1;
+  while (i >= 0 && !fits()) {
+    overflow.insertBefore(chips[i], overflow.firstChild);   // preserve original order
+    i--;
+  }
+  const n = overflow.children.length;
+  if (n === 0) { moreBtn.style.display = 'none'; return; }
+  moreBtn.textContent = '▾ ' + n;  // ▾ N
+}
+
+// ── _toggleRailOverflow — open/close the ▾ N menu as a fixed popover ─────────
+// Fixed positioning escapes the bar's overflow:hidden so the menu isn't clipped.
+function _toggleRailOverflow(moreBtn, overflow) {
+  const opening = !overflow.classList.contains('open');
+  document.querySelectorAll('.mp-rail-overflow.open').forEach(o => o.classList.remove('open'));
+  if (!opening) { moreBtn.setAttribute('aria-expanded', 'false'); return; }
+  const r = moreBtn.getBoundingClientRect();
+  overflow.style.left = Math.round(r.left) + 'px';
+  overflow.style.top  = Math.round(r.bottom + 4) + 'px';
+  overflow.classList.add('open');
+  moreBtn.setAttribute('aria-expanded', 'true');
+  // Close on the next click outside the menu (capture phase so it runs first).
+  setTimeout(() => {
+    const onDoc = ev => {
+      if (overflow.contains(ev.target) || ev.target === moreBtn) return;
+      overflow.classList.remove('open');
+      moreBtn.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('click', onDoc, true);
+    };
+    document.addEventListener('click', onDoc, true);
+  }, 0);
 }
 
 // ── updatePlayerRail — swap the bar's identity rail in-place ──────────────────
@@ -696,11 +781,15 @@ function updatePlayerRail(player, ragaId, compositionId, displayTitle, tala) {
     compositionId,
     displayTitle:  displayTitle || null,
     tala:          tala || null,
+    subjects:      pmeta.subjects || null,   // ADR-159: lecdem subjects persist across segment updates
   });
   // Remove the existing rail (or the title fallback) from the bar, then insert
   // the new rail before the right-anchored button group so buttons stay pinned.
   const existing = bar.querySelector('.mp-rail') || bar.querySelector('.mp-title');
-  if (existing) existing.remove();
+  if (existing) {
+    if (existing._railObserver) existing._railObserver.disconnect();  // drop stale observer
+    existing.remove();
+  }
   if (newRail) {
     const rightGroup = bar.querySelector('.mp-bar-right');
     if (rightGroup) bar.insertBefore(newRail, rightGroup);
@@ -1028,8 +1117,11 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
 
-  // ADR-159: the identity rail is built inside buildPlayerBar (in the header).
-  // No below-video footer is appended for the standard recital/concert path.
+  // ADR-159: the identity rail is built inside buildPlayerBar (in the header);
+  // no below-video footer is appended for the standard recital/concert path.
+  // fullMeta still drives instance.meta so updatePlayerRail can rebuild the
+  // performer chip on every segment/track change.
+  const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
 
   const resizeHandle = document.createElement('div');
   resizeHandle.className = 'mp-resize';
@@ -1364,49 +1456,24 @@ function buildLecdemChip(ref) {
     e.stopPropagation();
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
-    // Open media player on the lecdem video; pass lecturer meta so footer shows lecturer chip
-    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId: ref.lecturer_id || null });
-    // Replace footer with a unified footer: lecturer chip + subject cross-link chips (ADR-079 §4)
-    const instance = playerRegistry.get(ref.media_key);
-    if (instance && ref.subjects) {
-      const subFooter = _buildLecdemSubjectFooter(
-        ref.subjects,
-        { nodeId: ref.lecturer_id || null, artistName: ref.lecturer_label || null }
-      );
-      if (subFooter) {
-        const existing = instance.el.querySelector('.mp-footer');
-        if (existing) existing.remove();
-        const resize = instance.el.querySelector('.mp-resize');
-        if (resize) instance.el.insertBefore(subFooter, resize);
-        else        instance.el.appendChild(subFooter);
-      }
-    }
+    // ADR-159: lecturer + subject cross-links ride in the header rail (and its
+    // ▾N overflow) — pass subjects in meta instead of building a below-video footer.
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId: ref.lecturer_id || null, subjects: ref.subjects || null });
   });
   return chip;
 }
 
-// Helper: footer with subject cross-link chips for a lecdem player (ADR-079 §4)
-// lecturerMeta (optional): { nodeId, artistName } — prepended as first chip if provided.
-// Each raga_id → .raga-chip, composition_id → .comp-chip, musician_id → .musician-chip.
-// Returns null if lecturerMeta is absent AND all subject arrays are empty.
-// Only the first PREVIEW_COUNT chips are shown by default; the rest are behind a
-// fold/unfold toggle (▶ N more / ▼ less) to keep the footer compact on mobile.
-function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
-  const PREVIEW_COUNT = 3;
+// ── _buildSubjectChips — cross-link chips for a recording's subjects (ADR-079/159) ──
+// subjects: { raga_ids[], composition_ids[], musician_ids[] }. Returns an array of
+// navigable chips (raga → .raga-chip, comp → .comp-chip, musician → .musician-chip),
+// consumed by buildPlayerRail so lecdem subjects populate the header rail (and its
+// ▾N overflow) rather than a separate below-video footer. Returns [] when empty.
+function _buildSubjectChips(subjects) {
+  if (!subjects) return [];
   const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
   const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
   const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
-  const hasLecturer = lecturerMeta && (lecturerMeta.nodeId || lecturerMeta.artistName);
-  if (!ragaIds.length && !compIds.length && !musicianIds.length && !hasLecturer) return null;
-
-  // ── Collect all chips into an array before deciding layout ────────────────
   const allChips = [];
-
-  // Lecturer chip (first)
-  if (hasLecturer) {
-    const lecChip = _buildMusicianChipForFooter(lecturerMeta.nodeId || null, lecturerMeta.artistName || null);
-    if (lecChip) allChips.push(lecChip);
-  }
 
   ragaIds.forEach(ragaId => {
     const ragaObj  = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
@@ -1478,39 +1545,7 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
     allChips.push(mchip);
   });
 
-  if (!allChips.length) return null;
-
-  // ── Build footer with preview + optional overflow ─────────────────────────
-  const footer = document.createElement('div');
-  footer.className = 'mp-footer';
-
-  const previewChips  = allChips.slice(0, PREVIEW_COUNT);
-  const overflowChips = allChips.slice(PREVIEW_COUNT);
-
-  previewChips.forEach(c => footer.appendChild(c));
-
-  if (overflowChips.length > 0) {
-    const overflowEl = document.createElement('span');
-    overflowEl.className = 'mp-footer-overflow';
-    overflowEl.hidden = true;
-    overflowChips.forEach(c => overflowEl.appendChild(c));
-
-    const n = overflowChips.length;
-    const toggleBtn = document.createElement('button');
-    toggleBtn.type = 'button';
-    toggleBtn.className = 'mp-footer-toggle';
-    toggleBtn.textContent = '\u25b6 ' + n + ' more';
-    toggleBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      overflowEl.hidden = !overflowEl.hidden;
-      toggleBtn.textContent = overflowEl.hidden ? ('\u25b6 ' + n + ' more') : '\u25bc less';
-    });
-
-    footer.appendChild(toggleBtn);
-    footer.appendChild(overflowEl);
-  }
-
-  return footer.hasChildNodes() ? footer : null;
+  return allChips;
 }
 
 // ── _buildConcertTracksFor — ordered playerTracks for a named concert bracket ─
@@ -2286,21 +2321,8 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.textContent = '\u25B6';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId });
-      const instance = playerRegistry.get(ref.media_key);
-      if (instance && ref.subjects) {
-        const subFooter = _buildLecdemSubjectFooter(
-          ref.subjects,
-          { nodeId: nodeId || null, artistName: artistLabel || null }
-        );
-        if (subFooter) {
-          const existing = instance.el.querySelector('.mp-footer');
-          if (existing) existing.remove();
-          const resize = instance.el.querySelector('.mp-resize');
-          if (resize) instance.el.insertBefore(subFooter, resize);
-          else        instance.el.appendChild(subFooter);
-        }
-      }
+      // ADR-159: subjects ride in the header rail (+ ▾N overflow), not a footer.
+      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId, subjects: ref.subjects || null });
     });
     actsDiv.appendChild(playBtn);
 
@@ -2439,33 +2461,20 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.textContent = '▶';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, { nodeId });
-      const instance = playerRegistry.get(ref.media_key);
-      if (instance) {
-        // Aggregate all subjects from every segment + top-level ref.subjects
-        const mergedSubjects = {
-          raga_ids: [...new Set([
-            ...(ref.subjects && ref.subjects.raga_ids ? ref.subjects.raga_ids : []),
-            ...segments.filter(s => s.raga_id).map(s => s.raga_id),
-          ])],
-          composition_ids: [...new Set([
-            ...(ref.subjects && ref.subjects.composition_ids ? ref.subjects.composition_ids : []),
-            ...segments.filter(s => s.composition_id).map(s => s.composition_id),
-          ])],
-          musician_ids: (ref.subjects && ref.subjects.musician_ids) ? ref.subjects.musician_ids : [],
-        };
-        const subFooter = _buildLecdemSubjectFooter(
-          mergedSubjects,
-          { nodeId: nodeId || null, artistName: artistLabel || null }
-        );
-        if (subFooter) {
-          const existing = instance.el.querySelector('.mp-footer');
-          if (existing) existing.remove();
-          const resize = instance.el.querySelector('.mp-resize');
-          if (resize) instance.el.insertBefore(subFooter, resize);
-          else        instance.el.appendChild(subFooter);
-        }
-      }
+      // ADR-159: aggregate every segment's subjects + top-level ref.subjects and
+      // pass them in meta so they populate the header rail (and its ▾N overflow).
+      const mergedSubjects = {
+        raga_ids: [...new Set([
+          ...(ref.subjects && ref.subjects.raga_ids ? ref.subjects.raga_ids : []),
+          ...segments.filter(s => s.raga_id).map(s => s.raga_id),
+        ])],
+        composition_ids: [...new Set([
+          ...(ref.subjects && ref.subjects.composition_ids ? ref.subjects.composition_ids : []),
+          ...segments.filter(s => s.composition_id).map(s => s.composition_id),
+        ])],
+        musician_ids: (ref.subjects && ref.subjects.musician_ids) ? ref.subjects.musician_ids : [],
+      };
+      openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, { nodeId, subjects: mergedSubjects });
     });
     row1.appendChild(playBtn);
 
