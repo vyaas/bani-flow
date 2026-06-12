@@ -1852,6 +1852,14 @@ function _addQueueUI(el) {
     const panel = buildQueuePanel();
     const videoWrap = el.querySelector('.mp-video-wrap');
     if (videoWrap) el.insertBefore(panel, videoWrap); else bar.after(panel);
+    // Wire the queue head as a second drag handle for the player container —
+    // the user naturally expects to grab it just like the bar. Buttons inside
+    // the head stop propagation so their clicks never start a drag.
+    const queueHead = panel.querySelector('.mp-queue-head');
+    if (queueHead) {
+      wireDrag(el, queueHead);
+      queueHead.querySelectorAll('button').forEach(b => b.addEventListener('mousedown', e => e.stopPropagation()));
+    }
   }
   _refreshQueuePanels();
 }
