@@ -991,12 +991,15 @@
     flex-shrink: 0; font-size: 0.74rem; color: var(--fg-muted);
   }
 
-  /* ▾ fold-cue — non-interactive visual hint that the bar collapses the player */
+  /* ▾ fold-cue — ADR-160: a real minimize toggle once wired (.mp-fold-active);
+     an inert visual hint otherwise (so an unwired cue shows no false affordance). */
   .mp-fold-cue {
     flex-shrink: 0; margin-right: 2px;
     color: var(--text-dim, var(--fg-muted)); font-size: 0.75rem;
     user-select: none; pointer-events: none;
   }
+  .mp-fold-cue.mp-fold-active { pointer-events: auto; cursor: pointer; }
+  .mp-fold-cue.mp-fold-active:hover { color: var(--accent); }
 
   /* right-side group: tracklist toggle + close */
   .mp-bar-right {
@@ -1180,55 +1183,37 @@
        0   -5px  0 rgba(255,255,255,0.35);
   }
 
-  /* ── ADR-131 R3: Sruti player minimize affordance ───────────────────────
-     The sruti drone player (.sruti-player) carries a minimize toggle in
-     place of a close button. When minimized it collapses to its title bar
-     only — a thin, brightly-coloured strip that can be dragged anywhere
-     on the canvas. The drone keeps playing; only clicking the active
-     sruti pie sector at the wheel centre stops it. */
-  /* Minimize button — large + obvious; bar has plenty of room */
-  .media-player.sruti-player .mp-close {
-    color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 14%, transparent);
-    border: 1px solid var(--accent);
-    border-radius: 4px;
-    width: 28px; height: 22px;
-    font-size: 1.15rem; font-weight: bold;
-    line-height: 1; padding: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: background 0.12s, color 0.12s, transform 0.08s;
-  }
-  .media-player.sruti-player .mp-close:hover {
-    color: var(--bg);
-    background: var(--accent);
-    transform: scale(1.05);
-  }
-  /* Close (stop) button on sruti player — standard ✕ style, stops drone */
-  .media-player.sruti-player .mp-sruti-close {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
-    flex-shrink: 0;
-  }
-  .media-player.sruti-player .mp-sruti-close:hover { color: var(--accent-danger); }
-  .media-player.sruti-player.sruti-minimized {
+  /* ── ADR-131 R3 / ADR-160: Sruti player affordances ─────────────────────
+     The sruti drone minimizes via the universal fold-cue (▾, ADR-160) like
+     any other player — no dedicated minimize button. Its single ✕ close
+     button (default .mp-close styling) stops the drone; on hover it reads as
+     a destructive action. */
+  .media-player.sruti-player .mp-close:hover { color: var(--accent-danger); }
+  /* ── ADR-160: universal minimize — any player collapses to its bar; the chip
+     rail stays visible and live, the media keeps playing. A minimized player
+     reads as a live strip via a subtle accent border. ── */
+  .media-player.minimized {
     width: auto; min-width: 0;
-    /* Bright accent border so the minimized strip is visually distinct
-       from a regular minimized window — it is an active drone. */
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--border-strong));
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5),
+                0 0 7px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  .media-player.minimized .mp-bar { border-bottom: none; border-radius: 4px; }
+  .media-player.minimized .mp-video-wrap,
+  .media-player.minimized .mp-tracklist,
+  .media-player.minimized .mp-resize { display: none; }
+  /* Sruti drone: brighter strip — it is only ever a strip, and always an active drone. */
+  .media-player.sruti-player.minimized {
     border-color: var(--accent);
     box-shadow: 0 4px 16px rgba(0,0,0,0.55),
                 0 0 10px color-mix(in srgb, var(--accent) 35%, transparent);
   }
-  .media-player.sruti-player.sruti-minimized .mp-bar {
-    border-bottom: none;
-    border-radius: 4px;
+  .media-player.sruti-player.minimized .mp-bar {
     background: color-mix(in srgb, var(--accent) 14%, var(--bg-input));
   }
-  .media-player.sruti-player.sruti-minimized .mp-bar .mp-title {
+  .media-player.sruti-player.minimized .mp-bar .mp-title {
     color: var(--accent); font-weight: bold;
   }
-  .media-player.sruti-player.sruti-minimized .mp-video-wrap,
-  .media-player.sruti-player.sruti-minimized .mp-footer,
-  .media-player.sruti-player.sruti-minimized .mp-resize { display: none; }
   .mp-resize:hover { opacity: 1; background-color: var(--bg-active); }
 
   /* ── timeline ruler (ADR-136) — navigable ticks, hybrid axis ── */

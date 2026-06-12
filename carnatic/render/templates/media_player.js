@@ -548,6 +548,32 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   return bar;
 }
 
+// ── ADR-160: universal minimize ──────────────────────────────────────────────
+// Toggle the `.minimized` state on a player root: the bar (with its live chip
+// rail) stays; the video, tracklist, and resize handle are hidden via CSS; the
+// media keeps playing (we never tear down the controller). Returns the new state.
+function _toggleMinimized(el) {
+  const min = el.classList.toggle('minimized');
+  const cue = el.querySelector('.mp-fold-cue');
+  if (cue) {
+    cue.textContent = min ? '▴' : '▾';   // ▴ restore | ▾ minimize
+    cue.title = min ? 'Restore' : 'Minimize';
+  }
+  return min;
+}
+
+// Promote the bar's fold-cue (▾) into a real minimize toggle. Marked active so
+// the CSS only shows the affordance where it is wired. stopPropagation on
+// mousedown so clicking the cue never starts a window drag (the bar is the handle).
+function _wireFoldCue(el) {
+  const cue = el.querySelector('.mp-fold-cue');
+  if (!cue) return;
+  cue.classList.add('mp-fold-active');
+  cue.title = 'Minimize';
+  cue.addEventListener('mousedown', e => e.stopPropagation());
+  cue.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); });
+}
+
 // ── _buildMusicianChipForFooter — era-tinted musician chip with transit fallback ─
 // Shared by buildPlayerRail and the rail's performer anchor.
 // nodeId may be null if only artistName is known (renders chip without navigation).
@@ -1225,6 +1251,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     });
   }
 
+  _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
   el.addEventListener('mousedown', () => bringToFront(instance));
@@ -3085,46 +3112,30 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  // Named player: sruti drone has a minimize toggle (ADR-131 R3) alongside a
-  // close button. The minimize toggle collapses the player to a bright title-bar
-  // strip. The close button stops the drone and resets the tonic ring.
+  // Named player: the sruti drone minimizes via the universal fold-cue (ADR-160),
+  // so it no longer needs a dedicated minimize button. Its single ✕ close button
+  // stops the drone and resets the tonic ring on the raga wheel.
   if (playerId === 'sruti') {
     el.classList.add('sruti-player');
-    const minBtn = el.querySelector('.mp-close');
-    if (minBtn) {
-      minBtn.textContent = '\u2212';   // − (minus sign) = minimize
-      minBtn.title = 'Minimize';
-      minBtn.setAttribute('aria-label', 'Minimize sruti player');
-      minBtn.addEventListener('click', (e) => {
+    const closeBtn = el.querySelector('.mp-close');
+    if (closeBtn) {
+      closeBtn.title = 'Stop tanpura';
+      closeBtn.setAttribute('aria-label', 'Stop tanpura drone');
+      closeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const minimized = el.classList.toggle('sruti-minimized');
-        minBtn.textContent = minimized ? '\u2922' : '\u2212';   // ⤢ restore | − minimize
-        minBtn.title       = minimized ? 'Restore' : 'Minimize';
-        minBtn.setAttribute('aria-label',
-          minimized ? 'Restore sruti player' : 'Minimize sruti player');
+        if (typeof RagaWheel !== 'undefined' && typeof RagaWheel._clearSrutiRing === 'function') {
+          RagaWheel._clearSrutiRing();
+        }
+        closePlayer('sruti');
       });
     }
-    // Close button: stops drone and resets the tonic ring on the raga wheel
-    const srutiCloseBtn = document.createElement('button');
-    srutiCloseBtn.className = 'mp-sruti-close';
-    srutiCloseBtn.textContent = '\u2715';   // ✕
-    srutiCloseBtn.title = 'Stop tanpura';
-    srutiCloseBtn.setAttribute('aria-label', 'Stop tanpura drone');
-    srutiCloseBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (typeof RagaWheel !== 'undefined' && typeof RagaWheel._clearSrutiRing === 'function') {
-        RagaWheel._clearSrutiRing();
-      }
-      closePlayer('sruti');
-    });
-    const barRight = el.querySelector('.mp-bar-right');
-    if (barRight) barRight.appendChild(srutiCloseBtn);
   } else {
     el.querySelector('.mp-close').addEventListener('click', () => {
       closePlayer(playerId);
     });
   }
 
+  _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
   el.addEventListener('mousedown', () => bringToFront(instance));
