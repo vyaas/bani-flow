@@ -323,13 +323,11 @@ Additive field additions (new optional field on an existing item) do NOT bump th
 
 ### Still open
 
-#### Data integrity — orphan composer_id (raised 2026-06-10, carnatic-coder → librarian)
-`test_schema_integrity.py::test_all_composition_composer_ids_exist` fails:
-composition `shankari_shankuru` has `composer_id: "syama_shastri"`, but no
-musician node with id `syama_shastri` exists. Pre-existing (fails on `main`
-independent of the ADR-154 work). Librarian: either add the Syama Shastri
-musician node (Wikipedia URL available) or correct the composer_id. Out of
-Coder scope (data fix).
+#### Data integrity — orphan composer_id (raised 2026-06-10, resolved 2026-06-12)
+- **RESOLVED** — `shankari_shankuru.json` `composer_id` was the misspelled
+`"syama_shastri"` (dropped 'h'); corrected to canonical `"shyama_shastri"`.
+`cli.py validate` now reports "Graph is coherent" (0 errors) after `bani-render`.
+Shyama Shastri now links 18 compositions. See Librarian learning log 2026-06-12.
 
 #### Wikipedia URL health (last checked 2026-04-07)
 Nodes whose `wikipedia` field has no own article — flagged for community attention:
@@ -820,4 +818,10 @@ Entries are terse — this is a log, not an essay.
 - 2026-06-10: AUDIT-015 fix implemented in mountPlayer: added `muted:true` + `player.once('playing', () => player.muted = false)` — unmuting an already-*playing* video is allowed without a fresh gesture, so sound now lands on first open with zero clicks (better than the audit's two-click conservative framing). For click-to-pause, set `clickToPlay: !isEmbed` (HTML5 keeps Plyr's native handler; embeds turn it off to avoid a double-toggle) and append a `.mp-click-catch` div to `player.elements.wrapper` on `ready` for youtube/vimeo only. Z-index is the crux: catcher at `z-index:1` sits above the iframe (z0) but below play-large (z2) and the control bar (z3, also `pointer-events:none` until hover) — `.plyr__video-wrapper` has position:relative but NO z-index so it creates no stacking context and the catcher's z1 compares directly against the controls' z3 in the `.plyr` context. CSS rule lives beside the ADR-155 `.mp-has-plyr .plyr` block in base.html.
 [AGENTS: carnatic-coder]
 - 2026-06-11: AUDIT-016 playlist overlay fix: `.mp-tracklist` was an in-flow flex child of `.media-player`, causing the player window to grow taller (desktop) or the video to shrink (mobile `flex:1` competition). Fix is `position:absolute; top:30px` (desktop) / `top:60px` (mobile, below handle+bar) with `z-index:10` — takes it out of flow, player height invariant across toggle. Source of truth is `base.html`; graph.html is a render artefact. Verify player height before/after toggle in Playwright to confirm: `position:absolute` on the tracklist does NOT propagate height to the containing block, so the containing block must be `position:absolute` or `fixed` (both player variants are).
+[AGENTS: carnatic-coder]
+- 2026-06-12: Orphan composer_id (Open questions 2026-06-10) resolved — `shankari_shankuru.json` had `composer_id: "syama_shastri"` (dropped 'h'); corrected to the canonical `shyama_shastri`. The typo hid from a plain grep of `"shyama_shastri"` precisely because it didn't match; the validator (`cli.py validate`, reading derived graph.json after `bani-render`) is the reliable detector for dangling foreign keys, not grep. Shyama Shastri now links 18 compositions (was 17).
+[AGENTS: librarian]
+- 2026-06-12: `bani-render` "ModuleNotFoundError: No module named 'carnatic'" was NOT a code bug — the venv was built against Python 3.13 (pyvenv.cfg, packages under lib/python3.13/site-packages) but `/usr/bin/python3.13` was later removed and `/usr/bin/python3` became 3.10, so `.venv/bin/python3` silently ran 3.10 and looked in an empty lib/python3.10/site-packages. Symptom is interpreter/site-packages version skew; fix is rebuild the venv against the available interpreter (`python3 -m venv --clear .venv && pip install -e ".[dev]" cairosvg yt-dlp`). Tell: `.venv/bin/python3 --version` disagrees with `pyvenv.cfg` version, and the editable `_EditableFinder` is absent from `sys.meta_path`.
+[AGENTS: carnatic-coder]
+- 2026-06-12: pyproject `dependencies` was incomplete for a self-contained install — declared only requests + beautifulsoup4 but the repo also imports `cairosvg` (carnatic/generate_pwa_icons.py) and `yt_dlp` (root-level playlist_meta.py); both added. Audit method: `grep -rhoE '^\s*(import|from)\s+\w+'` across BOTH carnatic/ and root-level *.py (root scripts are easy to miss), then drop stdlib/internal. `pygments` was installed in the old env but is imported nowhere — left undeclared rather than carried as a phantom dep. Verified by building a throwaway venv from `pip install -e ".[dev]"` alone and importing every third-party module.
 [AGENTS: carnatic-coder]
