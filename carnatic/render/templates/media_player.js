@@ -450,8 +450,8 @@ function buildPlayerTrackList(mediaKey, tracks, instance) {
       // Update active indicator
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
       li.classList.add('mp-track-active');
-      // Update footer chips to reflect the newly selected track (ADR-066: pass displayTitle)
-      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null, t.display_title || null, t.tala || null);
+      // ADR-159: update the bar's identity rail to reflect the selected track
+      updatePlayerRail(player, t.raga_id || null, t.composition_id || null, t.display_title || null, t.tala || null);
       refreshPlayingIndicators();
     });
 
@@ -461,9 +461,11 @@ function buildPlayerTrackList(mediaKey, tracks, instance) {
   return ul;
 }
 
-// ── buildPlayerBar — [▾] [title] [copy] [≡?] [✕] ──────────────────────────
-// Artist chip moves to the footer (buildPlayerFooter). meta.nodeId is still
-// stored on the instance so updatePlayerFooter can include the musician chip.
+// ── buildPlayerBar — [▾] [chip rail] [copy][share][yt][≡?][✕] ──────────────
+// ADR-159: the identity chips (musician · raga · comp · composer · tala) live
+// in the bar as a live rail (buildPlayerRail), replacing the freeform title.
+// The concert/source string is demoted to the bar tooltip; the .mp-title span
+// survives only as a fallback when there are no chips (sruti drone, named bar).
 function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, meta) {
   meta = meta || {};
   const bar = document.createElement('div');
@@ -475,13 +477,24 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   foldCue.textContent = '\u25be'; // ▾ small downward-pointing triangle
   bar.appendChild(foldCue);
 
-  // ── Title (fills remaining space) ─────────────────────────────────────────
+  // ── ADR-159: live identity rail replaces the title (fills remaining space) ─
   const titleText = concertTitle || '';
-  if (titleText) {
+  if (titleText) bar.title = titleText;   // concert/source string demoted to tooltip
+  const rail = buildPlayerRail({
+    nodeId:        meta.nodeId        || null,
+    artistName:    artistName         || null,
+    ragaId:        meta.ragaId        || null,
+    compositionId: meta.compositionId || null,
+    displayTitle:  trackLabel         || null,
+    tala:          meta.tala          || null,
+  });
+  if (rail) {
+    bar.appendChild(rail);
+  } else if (titleText) {
+    // No chips (sruti drone / named bar): fall back to the plain title.
     const titleSpan = document.createElement('span');
     titleSpan.className = 'mp-title';
     titleSpan.textContent = titleText;
-    titleSpan.title = titleText;
     bar.appendChild(titleSpan);
   }
 
@@ -535,7 +548,7 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
 }
 
 // ── _buildMusicianChipForFooter — era-tinted musician chip with transit fallback ─
-// Shared by buildPlayerFooter and _buildLecdemSubjectFooter.
+// Shared by buildPlayerRail and _buildLecdemSubjectFooter.
 // nodeId may be null if only artistName is known (renders chip without navigation).
 function _buildMusicianChipForFooter(nodeId, artistName) {
   if (!nodeId && !artistName) return null;
@@ -583,23 +596,26 @@ function _buildMusicianChipForFooter(nodeId, artistName) {
   return chip;
 }
 
-// ── buildPlayerFooter — musician + raga + comp + composer chips below the video ──
-// ADR-066: chips use same classes as panels for visual parity.
-// meta = { nodeId, artistName, ragaId, compositionId, displayTitle, tala } — all optional.
-// nodeId + artistName drive the musician chip (prepended first).
-function buildPlayerFooter(meta) {
+// ── buildPlayerRail — musician · raga · comp · composer chips in the bar ────
+// ADR-159: relocated from the below-video footer into the header bar as the
+// single live identity surface. ADR-066: chips use the same classes as panels
+// for visual parity. meta = { nodeId, artistName, ragaId, compositionId,
+// displayTitle, tala } — all optional. nodeId + artistName drive the performer
+// chip, kept as a concert-stable left anchor; raga/comp/composer/tala follow
+// and are swapped live by updatePlayerRail as the playhead crosses segments.
+function buildPlayerRail(meta) {
   if (!meta) return null;
   const { nodeId, artistName, ragaId, compositionId, displayTitle, tala } = meta;
   const hasAny = nodeId || artistName || ragaId || compositionId || displayTitle;
   if (!hasAny) return null;
 
-  const footer = document.createElement('div');
-  footer.className = 'mp-footer';
+  const rail = document.createElement('div');
+  rail.className = 'mp-rail';
 
-  // ── Musician chip (always first) ──────────────────────────────────────────
+  // ── Performer chip (stable anchor, always first) ──────────────────────────
   if (nodeId || artistName) {
     const mChip = _buildMusicianChipForFooter(nodeId || null, artistName || null);
-    if (mChip) footer.appendChild(mChip);
+    if (mChip) rail.appendChild(mChip);
   }
 
   // ── Raga chip + tala (same .raga-chip class as panels; tala stays inline) ────
@@ -624,9 +640,9 @@ function buildPlayerFooter(meta) {
       talaSpan.className = 'trail-tala';
       talaSpan.textContent = formatTala(tala);
       ragaTalaDiv.appendChild(talaSpan);
-      footer.appendChild(ragaTalaDiv);
+      rail.appendChild(ragaTalaDiv);
     } else {
-      footer.appendChild(ragaChip);
+      rail.appendChild(ragaChip);
     }
   }
 
@@ -645,35 +661,35 @@ function buildPlayerFooter(meta) {
       setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compositionId);
     });
-    footer.appendChild(compChip);
+    rail.appendChild(compChip);
 
     // ── Composer chip (reuse existing buildComposerChip) ──────────────────
     const composerChip = buildComposerChip(compositionId);
-    if (composerChip) footer.appendChild(composerChip);
+    if (composerChip) rail.appendChild(composerChip);
 
   } else if (displayTitle) {
     // ── Non-composition fallback label — yt-label-chip style ──
     const lbl = document.createElement('span');
     lbl.className = 'yt-label-chip';
     lbl.textContent = displayTitle;
-    footer.appendChild(lbl);
+    rail.appendChild(lbl);
   }
 
-  return footer;
+  return rail;
 }
 
-// ── updatePlayerFooter — replace the footer in-place when a track is selected ─
-// Called by buildPlayerTrackList on track click and on track swipe to keep chips in sync.
-// Reads nodeId + artistName from player.meta so the musician chip persists on every
-// track change on both desktop and mobile.
-function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
+// ── updatePlayerRail — swap the bar's identity rail in-place ──────────────────
+// ADR-159: replaces the chip rail in the header bar when a track is selected
+// (buildPlayerTrackList click) or when the playhead crosses a segment boundary
+// (_updateActiveSegment). Reads nodeId + artistName from player.meta so the
+// performer anchor persists across track changes on both desktop and mobile.
+function updatePlayerRail(player, ragaId, compositionId, displayTitle, tala) {
   const el = player.el;
-  // Remove existing footer if present
-  const existing = el.querySelector('.mp-footer');
-  if (existing) existing.remove();
-  // Include musician meta so musician chip persists across track changes
+  const bar = el.querySelector('.mp-bar');
+  if (!bar) return;
+  // Include performer meta so the performer chip persists across track changes
   const pmeta = player.meta || {};
-  const newFooter = buildPlayerFooter({
+  const newRail = buildPlayerRail({
     nodeId:        pmeta.nodeId    || null,
     artistName:    pmeta.artistName || null,
     ragaId,
@@ -681,13 +697,14 @@ function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
     displayTitle:  displayTitle || null,
     tala:          tala || null,
   });
-  if (newFooter) {
-    const resize = el.querySelector('.mp-resize');
-    if (resize) {
-      el.insertBefore(newFooter, resize);
-    } else {
-      el.appendChild(newFooter);
-    }
+  // Remove the existing rail (or the title fallback) from the bar, then insert
+  // the new rail before the right-anchored button group so buttons stay pinned.
+  const existing = bar.querySelector('.mp-rail') || bar.querySelector('.mp-title');
+  if (existing) existing.remove();
+  if (newRail) {
+    const rightGroup = bar.querySelector('.mp-bar-right');
+    if (rightGroup) bar.insertBefore(newRail, rightGroup);
+    else            bar.appendChild(newRail);
   }
 }
 
@@ -751,8 +768,10 @@ function _updateActiveSegment(instance, sec) {
   }
   if (instance._activeOffset === active.offset_seconds) return;   // unchanged
   instance._activeOffset = active.offset_seconds;
-  updatePlayerFooter(instance, active.raga_id || null, active.composition_id || null,
-                     active.subject || active.display_title || null, active.tala || null);
+  // ADR-159: the header rail tracks the playhead — swap chips as the concert
+  // moves from one segment (kriti) to the next.
+  updatePlayerRail(instance, active.raga_id || null, active.composition_id || null,
+                   active.subject || active.display_title || null, active.tala || null);
   if (instance.tracklistEl) {
     instance.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
       li.classList.toggle('mp-track-active', parseInt(li.dataset.offset, 10) === active.offset_seconds);
@@ -1009,17 +1028,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
 
-  // ── Footer: musician + raga + comp + composer chips ──────────────────────
-  const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
-  const footer = buildPlayerFooter({
-    nodeId:        fullMeta.nodeId       || null,
-    artistName:    fullMeta.artistName   || null,
-    ragaId:        fullMeta.ragaId       || null,
-    compositionId: fullMeta.compositionId || null,
-    displayTitle:  trackLabel            || null,
-    tala:          fullMeta.tala         || null,
-  });
-  if (footer) el.appendChild(footer);
+  // ADR-159: the identity rail is built inside buildPlayerBar (in the header).
+  // No below-video footer is appended for the standard recital/concert path.
 
   const resizeHandle = document.createElement('div');
   resizeHandle.className = 'mp-resize';
@@ -3339,7 +3349,7 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   mp.trackIndex = 0;
   mp.artistName = artistName || '';
   mp.concertTitle = concertTitle || '';
-  // ADR-066: store artistName in meta so updatePlayerFooter can build musician chip
+  // ADR-066/159: store artistName in meta so updatePlayerRail can build the performer chip
   mp.meta = Object.assign({ artistName: artistName || null }, meta || {});
   mp.currentRagaId = (meta && meta.ragaId) || null;  // ADR-049
 
@@ -3480,7 +3490,7 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   // When tracks=[] (single-recording from raga tree), _initTrack is null so we
   // fall back to mp.meta for both ragaId and compositionId.
   const _initTrack = mp.tracks[mp.trackIndex] || null;
-  updatePlayerFooter(
+  updatePlayerRail(
     { el: mp.el, meta: mp.meta },
     _initTrack ? (_initTrack.raga_id || null) : (mp.currentRagaId || null),
     _initTrack ? (_initTrack.composition_id || null) : ((mp.meta && mp.meta.compositionId) || null),
@@ -3612,8 +3622,8 @@ function _swipeMobileTrack(direction) {
     li.classList.toggle('mp-track-active', idx === newIndex);
   });
 
-  // Update footer chips in full mode (ADR-066: include meta + displayTitle)
-  updatePlayerFooter(
+  // ADR-159: update the bar's identity rail in full mode (include meta + displayTitle)
+  updatePlayerRail(
     { el: mp.el, meta: mp.meta },
     track.raga_id || null,
     track.composition_id || null,

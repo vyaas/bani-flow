@@ -931,11 +931,35 @@
   }
   .mp-bar:active { cursor: grabbing; }
 
-  /* plain concert/track title — fills remaining space */
+  /* plain concert/track title — fallback when the rail has no chips (sruti/named bar) */
   .mp-title {
     flex: 1; font-size: 0.74rem; color: var(--fg-sub);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     min-width: 0;
+  }
+
+  /* ── ADR-159: live identity rail — chips in the bar, replacing the title.
+     Fills the space between the fold-cue and the right button group; scrolls
+     horizontally if the chip set overflows so the buttons stay pinned right. */
+  .mp-rail {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 5px;
+    overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none;            /* Firefox: hide scrollbar, keep scrollability */
+  }
+  .mp-rail::-webkit-scrollbar { display: none; }
+  .mp-rail > * { flex-shrink: 0; }    /* chips keep their size; the rail scrolls */
+  .mp-rail .rec-raga-tala {
+    display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  }
+  /* Cap individual chip width so one long name can't crowd the rest; the full
+     name stays available in the chip's own title= / on tap. */
+  .mp-rail .musician-chip,
+  .mp-rail .raga-chip,
+  .mp-rail .comp-chip,
+  .mp-rail .composer-chip,
+  .mp-rail .yt-label-chip {
+    max-width: 18ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
   /* em-dash separator between artist chip and title */
