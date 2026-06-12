@@ -931,11 +931,59 @@
   }
   .mp-bar:active { cursor: grabbing; }
 
-  /* plain concert/track title — fills remaining space */
+  /* plain concert/track title — fallback when the rail has no chips (sruti/named bar) */
   .mp-title {
     flex: 1; font-size: 0.74rem; color: var(--fg-sub);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     min-width: 0;
+  }
+
+  /* ── ADR-159: live identity rail — chips in the bar, replacing the title.
+     Single line between the fold-cue and the right button group. Chips that
+     don't fit are moved by reflowRail() into the "▾ N" overflow menu, so the
+     buttons stay pinned and nothing is ever hidden. */
+  .mp-rail {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 5px;
+    overflow: hidden;                 /* clip; overflowing chips move into ▾ N */
+  }
+  .mp-rail > * { flex-shrink: 0; }    /* chips keep their size; reflow moves the surplus */
+  .mp-rail .rec-raga-tala {
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  /* Cap individual chip width so one long name can't crowd the rest; the full
+     name stays available in the chip's own title= / on tap. */
+  .mp-rail .musician-chip,
+  .mp-rail .raga-chip,
+  .mp-rail .comp-chip,
+  .mp-rail .composer-chip,
+  .mp-rail .yt-label-chip {
+    max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ▾ N — overflow toggle; opens the menu of chips that didn't fit the line */
+  .mp-rail-more {
+    flex-shrink: 0; cursor: pointer;
+    background: var(--bg-input); color: var(--fg-sub);
+    border: 1px solid var(--border-strong); border-radius: 4px;
+    font: inherit; font-size: 0.7rem; line-height: 1;
+    padding: 2px 6px; white-space: nowrap; user-select: none;
+  }
+  .mp-rail-more:hover { color: var(--accent); border-color: var(--accent); }
+  .mp-rail-more[aria-expanded="true"] {
+    color: var(--accent); border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--bg-input));
+  }
+  /* The overflow menu — fixed-positioned so the bar's overflow:hidden can't
+     clip it; coordinates are set from the button's rect in _toggleRailOverflow. */
+  .mp-rail-overflow { display: none; }
+  .mp-rail-overflow.open {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    position: fixed; z-index: 100000;
+    max-width: 320px; padding: 7px 9px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
   }
 
   /* em-dash separator between artist chip and title */
@@ -943,12 +991,15 @@
     flex-shrink: 0; font-size: 0.74rem; color: var(--fg-muted);
   }
 
-  /* ▾ fold-cue — non-interactive visual hint that the bar collapses the player */
+  /* ▾ fold-cue — ADR-160: a real minimize toggle once wired (.mp-fold-active);
+     an inert visual hint otherwise (so an unwired cue shows no false affordance). */
   .mp-fold-cue {
     flex-shrink: 0; margin-right: 2px;
     color: var(--text-dim, var(--fg-muted)); font-size: 0.75rem;
     user-select: none; pointer-events: none;
   }
+  .mp-fold-cue.mp-fold-active { pointer-events: auto; cursor: pointer; }
+  .mp-fold-cue.mp-fold-active:hover { color: var(--accent); }
 
   /* right-side group: tracklist toggle + close */
   .mp-bar-right {
@@ -1065,6 +1116,21 @@
   .mp-yt-link svg { width: 14px; height: 14px; fill: currentColor; display: block; pointer-events: none; }
   .mp-yt-link:hover { color: var(--accent-sub); }
 
+  /* ── ADR-161: reusable toggle button — open/closed declared via aria-pressed.
+     A strong depressed (filled + inset) state, not a faint tint; reused by the
+     tracklist toggle now and the ADR-162 queue toggle later. ── */
+  .mp-toggle-btn { border-radius: 4px; transition: background 0.12s, color 0.12s, box-shadow 0.12s; }
+  .mp-toggle-btn[aria-pressed="true"] {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
+  }
+  /* ADR-161: keyboard focus ring on all bar controls */
+  .mp-bar-right button:focus-visible,
+  .mp-bar-right a:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 3px;
+  }
+
   /* 16:9 iframe wrapper */
   .mp-video-wrap {
     position: relative; width: 100%; padding-top: 56.25%; background: #000;
@@ -1107,24 +1173,10 @@
   }
   .mp-video-wrap.mp-has-plyr .plyr .mp-seek-overlay.visible { opacity: 1; }
 
-  /* ── footer strip: raga + composition navigation chips ── */
-  .mp-footer {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
-    padding: 5px 10px;
-    background: var(--bg-panel);
-    border-top: 1px solid var(--border-strong);
-  }
-  .mp-footer-overflow {
-    display: inline-flex; flex-wrap: wrap; gap: 5px; align-items: center;
-  }
-  .mp-footer-overflow[hidden] { display: none; }
-  .mp-footer-toggle {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.65rem; cursor: pointer; padding: 0 2px;
-    font-family: inherit; line-height: 1; user-select: none;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .mp-footer-toggle:hover { color: var(--accent); }
+  /* ADR-159: the below-video .mp-footer is fully retired — the identity chips
+     and lecdem subject cross-links now live in the header .mp-rail (with its
+     ▾N overflow). The few remaining .mp-footer mentions in collapsed-state
+     selector lists below are inert (no element carries the class). */
 
   /* resize grip at bottom — se-resize cursor + corner-dot indicator pointing ↘ */
   .mp-resize {
@@ -1146,55 +1198,37 @@
        0   -5px  0 rgba(255,255,255,0.35);
   }
 
-  /* ── ADR-131 R3: Sruti player minimize affordance ───────────────────────
-     The sruti drone player (.sruti-player) carries a minimize toggle in
-     place of a close button. When minimized it collapses to its title bar
-     only — a thin, brightly-coloured strip that can be dragged anywhere
-     on the canvas. The drone keeps playing; only clicking the active
-     sruti pie sector at the wheel centre stops it. */
-  /* Minimize button — large + obvious; bar has plenty of room */
-  .media-player.sruti-player .mp-close {
-    color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 14%, transparent);
-    border: 1px solid var(--accent);
-    border-radius: 4px;
-    width: 28px; height: 22px;
-    font-size: 1.15rem; font-weight: bold;
-    line-height: 1; padding: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: background 0.12s, color 0.12s, transform 0.08s;
-  }
-  .media-player.sruti-player .mp-close:hover {
-    color: var(--bg);
-    background: var(--accent);
-    transform: scale(1.05);
-  }
-  /* Close (stop) button on sruti player — standard ✕ style, stops drone */
-  .media-player.sruti-player .mp-sruti-close {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1;
-    flex-shrink: 0;
-  }
-  .media-player.sruti-player .mp-sruti-close:hover { color: var(--accent-danger); }
-  .media-player.sruti-player.sruti-minimized {
+  /* ── ADR-131 R3 / ADR-160: Sruti player affordances ─────────────────────
+     The sruti drone minimizes via the universal fold-cue (▾, ADR-160) like
+     any other player — no dedicated minimize button. Its single ✕ close
+     button (default .mp-close styling) stops the drone; on hover it reads as
+     a destructive action. */
+  .media-player.sruti-player .mp-close:hover { color: var(--accent-danger); }
+  /* ── ADR-160: universal minimize — any player collapses to its bar; the chip
+     rail stays visible and live, the media keeps playing. A minimized player
+     reads as a live strip via a subtle accent border. ── */
+  .media-player.minimized {
     width: auto; min-width: 0;
-    /* Bright accent border so the minimized strip is visually distinct
-       from a regular minimized window — it is an active drone. */
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--border-strong));
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5),
+                0 0 7px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  .media-player.minimized .mp-bar { border-bottom: none; border-radius: 4px; }
+  .media-player.minimized .mp-video-wrap,
+  .media-player.minimized .mp-tracklist,
+  .media-player.minimized .mp-resize { display: none; }
+  /* Sruti drone: brighter strip — it is only ever a strip, and always an active drone. */
+  .media-player.sruti-player.minimized {
     border-color: var(--accent);
     box-shadow: 0 4px 16px rgba(0,0,0,0.55),
                 0 0 10px color-mix(in srgb, var(--accent) 35%, transparent);
   }
-  .media-player.sruti-player.sruti-minimized .mp-bar {
-    border-bottom: none;
-    border-radius: 4px;
+  .media-player.sruti-player.minimized .mp-bar {
     background: color-mix(in srgb, var(--accent) 14%, var(--bg-input));
   }
-  .media-player.sruti-player.sruti-minimized .mp-bar .mp-title {
+  .media-player.sruti-player.minimized .mp-bar .mp-title {
     color: var(--accent); font-weight: bold;
   }
-  .media-player.sruti-player.sruti-minimized .mp-video-wrap,
-  .media-player.sruti-player.sruti-minimized .mp-footer,
-  .media-player.sruti-player.sruti-minimized .mp-resize { display: none; }
   .mp-resize:hover { opacity: 1; background-color: var(--bg-active); }
 
   /* ── timeline ruler (ADR-136) — navigable ticks, hybrid axis ── */
@@ -2645,16 +2679,188 @@
 
   .mp-tracklist {
     position: absolute;
-    top: 30px;           /* overlays below .mp-bar without displacing the video */
+    bottom: 100%;        /* ADR-161: open ABOVE the bar — never over the video */
+    top: auto;
     left: 0;
     right: 0;
     z-index: 10;
-    max-height: min(320px, 60%);
+    max-height: min(320px, 60vh);
     overflow-y: auto;
     background: var(--bg-panel);
     border: 1px solid var(--border-strong);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.45);   /* shadow cast upward */
+  }
+  /* Flip below the player only when there's no room above (near viewport top). */
+  .mp-tracklist.mp-tracklist-down {
+    bottom: auto; top: 100%;
+    border-radius: 0 0 4px 4px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.45);
   }
+
+  /* ── ADR-162: "Up Next" queue panel — bar-summoned, opens above the bar ── */
+  .mp-queue {
+    position: absolute;
+    bottom: 100%; left: 0; right: 0;
+    z-index: 11;
+    max-height: min(340px, 65vh);
+    overflow-y: auto;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.45);
+  }
+  .mp-queue.mp-queue-down {
+    bottom: auto; top: 100%;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+  }
+  .mp-queue-head {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 8px;
+    position: sticky; top: 0;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-strong);
+    cursor: grab; user-select: none;
+  }
+  .mp-queue-head:active { cursor: grabbing; }
+  .mp-queue-head button { cursor: pointer; }
+  .mp-queue-title {
+    flex: 1; font-size: 0.68rem; font-weight: bold; color: var(--fg-sub);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .mp-queue-prev, .mp-queue-next {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.9rem; cursor: pointer; padding: 2px 4px; line-height: 1;
+  }
+  .mp-queue-prev:hover, .mp-queue-next:hover { color: var(--accent); }
+  /* ADR-163: "Save as playlist" button in queue head */
+  .mp-queue-save {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.95rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+  }
+  .mp-queue-save:hover { color: var(--accent); }
+  .mp-queue-items { list-style: none; margin: 0; padding: 0; }
+  .mp-queue-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border);
+    border-left: 2px solid transparent;
+    cursor: pointer;
+  }
+  .mp-queue-item:hover { background: var(--bg-input); }
+  .mp-queue-current {
+    background: color-mix(in srgb, var(--accent) 13%, transparent);
+    border-left-color: var(--accent);
+  }
+  .mp-queue-reorder { display: flex; flex-direction: column; gap: 1px; flex-shrink: 0; }
+  .mp-queue-reorder button {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.6rem; line-height: 1; cursor: pointer; padding: 0 2px;
+  }
+  .mp-queue-reorder button:disabled { opacity: 0.25; cursor: default; }
+  .mp-queue-reorder button:not(:disabled):hover { color: var(--accent); }
+  .mp-queue-chips {
+    flex: 1; min-width: 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  }
+  .mp-queue-remove {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+  }
+  .mp-queue-remove:hover { color: var(--accent-danger); }
+  /* ADR-163 §3: + affordance — add-to-playlist button beside play controls */
+  .mp-plus-btn {
+    background: none; border: 1px solid var(--border); border-radius: 50%;
+    color: var(--fg-muted); font-size: 0.75rem; line-height: 1;
+    width: 18px; height: 18px; padding: 0;
+    cursor: pointer; flex-shrink: 0; display: inline-flex;
+    align-items: center; justify-content: center;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .mp-plus-btn:hover { color: var(--accent); border-color: var(--accent); }
+  /* Floating popover menu opened by the + button */
+  .mp-plus-menu {
+    position: fixed; z-index: 9999;
+    background: var(--bg-panel); border: 1px solid var(--border-strong);
+    border-radius: 6px; padding: 4px 0;
+    min-width: 210px; max-width: 280px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+  }
+  .mp-plus-menu-item {
+    display: block; width: 100%;
+    background: none; border: none;
+    color: var(--fg-main); font-size: 0.8rem;
+    padding: 6px 12px; text-align: left; cursor: pointer;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mp-plus-menu-item:hover:not(:disabled) { background: var(--bg-input); color: var(--accent); }
+  .mp-plus-menu-item:disabled { color: var(--fg-muted); cursor: default; }
+  /* Section divider above the playlist list */
+  .mp-plus-menu-divider {
+    font-size: 0.67rem; font-weight: bold; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--fg-sub);
+    padding: 6px 12px 2px; margin-top: 2px;
+    border-top: 1px solid var(--border);
+  }
+  /* Filter input inside the playlist section */
+  .mp-plus-menu-search {
+    display: block; width: calc(100% - 24px); margin: 4px 12px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--fg-main); font-size: 0.8rem;
+    padding: 4px 7px; outline: none;
+  }
+  .mp-plus-menu-search:focus { border-color: var(--accent); }
+  /* Scrollable playlist results */
+  .mp-plus-menu-list {
+    max-height: 160px; overflow-y: auto;
+    border-bottom: 1px solid var(--border); margin-bottom: 2px;
+  }
+  .mp-plus-menu-empty {
+    font-size: 0.78rem; color: var(--fg-muted);
+    padding: 5px 12px; font-style: italic;
+  }
+  /* "New playlist…" gets a subtle separator from the list */
+  .mp-plus-menu-new { color: var(--accent); }
+  /* Queue toggle button in the bar (same icon-button family as copy/share) */
+  .mp-queue-toggle {
+    background: none; border: none; color: var(--fg-muted);
+    cursor: pointer; padding: 0 4px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .mp-queue-toggle svg { width: 15px; height: 15px; fill: currentColor; display: block; pointer-events: none; }
+  .mp-queue-toggle:hover { color: var(--accent-sub); }
+
+  /* ── ADR-163: PLAYLISTS rendered as tree nodes (buildRowAccordion) so a
+     playlist nests under the PLAYLISTS header like every other section's tree,
+     and its tracks nest under the playlist. ── */
+  /* Bani-flow panel: align the dedicated container with the lecdem strip + trail. */
+  #bani-playlists { padding: 0 14px; }
+  .mp-playlist-hdr {
+    display: flex; align-items: center; gap: 8px; min-width: 0;
+    font-size: 0.78rem;
+  }
+  .playlist-chip {
+    /* hug the text — a label, not a bar */
+    flex: 0 1 auto; max-width: 100%;
+    display: inline-block; padding: 1px 7px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    color: var(--accent); font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    cursor: default;
+  }
+  .mp-playlist-count { color: var(--fg-muted); font-size: 0.72rem; flex-shrink: 0; }
+  .mp-playlist-track {
+    flex: 0 0 100%;
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 0.76rem;
+  }
+  /* Chips wrap downward across as many lines as the tags need; the ▶ stays put. */
+  .mp-playlist-track-chips {
+    flex: 1; min-width: 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  }
+  .mp-playlist-track .rec-play-btn { flex-shrink: 0; }
 
   .mp-track-items {
     list-style: none;
@@ -3901,6 +4107,7 @@
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       height: calc(50vh - 56px);
       transform: none;
+      transition: height 0.2s ease-out;   /* ADR-161: grow upward when tracklist opens */
       border-radius: 16px 16px 0 0;
       z-index: 205; /* ADR-043: above drawers (200), below tab bar (210) */
       overflow: hidden;
@@ -3915,6 +4122,16 @@
       flex-shrink: 0;
       cursor: pointer; /* hint: tap bar to minimise */
     }
+    /* ADR-161: on the full mobile player the fold-cue is the explicit minimize
+       chevron (leftmost), since the chip rail leaves no blank area to tap. Give
+       it a real touch target. (In .mini the bar is hidden; the mini strip has
+       its own expand chevron.) */
+    .media-player.full-mobile .mp-fold-cue {
+      min-width: 44px; min-height: 44px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: var(--accent);
+    }
+    .media-player.mini .mp-fold-cue { display: none; }
     .media-player.full-mobile .mp-title {
       font-size: 0.74rem; font-weight: 400;
     }
@@ -3924,7 +4141,8 @@
     .media-player.full-mobile .mp-copy-btn,
     .media-player.full-mobile .mp-share-btn,
     .media-player.full-mobile .mp-yt-link,
-    .media-player.full-mobile .mp-tracklist-toggle {
+    .media-player.full-mobile .mp-tracklist-toggle,
+    .media-player.full-mobile .mp-queue-toggle {
       min-width: 44px; min-height: 44px;
       display: inline-flex; align-items: center; justify-content: center;
     }
@@ -3947,21 +4165,35 @@
     .media-player.full-mobile .mp-video-wrap.mp-has-plyr .plyr {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     }
-    /* Tracklist hidden by default; shown when toggle button adds .mp-tracklist-open.
-       Positioned as an absolute overlay so the video is never displaced or shrunk. */
+    /* ADR-161: tracklist is in-flow between the bar and the video (not an
+       overlay), so opening it pushes the video down instead of covering it.
+       The bottom-anchored sheet grows upward (.mp-tl-expanded) to make room. */
+    .media-player.full-mobile .mp-full-handle { order: 0; }
+    .media-player.full-mobile .mp-bar          { order: 1; }
+    .media-player.full-mobile .mp-tracklist    { order: 2; }
+    .media-player.full-mobile .mp-queue        { order: 2; }
+    .media-player.full-mobile .mp-video-wrap   { order: 3; }
     .media-player.full-mobile .mp-tracklist {
       display: none;
-      position: absolute;
-      top: 60px;           /* below drag handle (~16px) + bar (~44px) */
-      left: 0; right: 0;
-      z-index: 10;
-      max-height: min(260px, 55%);
+      position: static;
+      flex-shrink: 0;
+      max-height: 55%;
       overflow-y: auto;
       background: var(--bg-panel);
-      border: 1px solid var(--border-strong);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+      border-bottom: 1px solid var(--border-strong);
     }
     .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; }
+    /* ADR-162: the queue panel is in-flow on mobile too (pushes the video down),
+       like the tracklist; the sheet grows when either is open. */
+    .media-player.full-mobile .mp-queue {
+      position: static; flex-shrink: 0; max-height: 55%;
+      border-radius: 0; box-shadow: none;
+      border-left: none; border-right: none; border-top: none;
+    }
+    .media-player.mini .mp-queue { display: none !important; }
+    /* Grow the sheet upward when the tracklist OR the queue panel opens. */
+    .media-player.full-mobile.mp-tl-expanded,
+    .media-player.full-mobile:has(.mp-queue.mp-queue-shown) { height: calc(85vh - 56px); }
     /* No tracks → tracklist is empty; keep hidden regardless of class */
     .media-player.full-mobile .mp-tracklist:empty { display: none !important; }
     .media-player.full-mobile .mp-footer { flex-shrink: 0; }
@@ -3986,12 +4218,13 @@
       background: var(--accent);
       transition: width 0.3s linear;
     }
-    .mp-mini-play {
+    /* ADR-161: leftmost expand chevron on the mini strip */
+    .mp-mini-expand {
       width: 44px; height: 44px;
       min-width: 44px;
       display: flex; align-items: center; justify-content: center;
       background: none; border: none;
-      color: var(--fg); font-size: 1.1rem;
+      color: var(--accent); font-size: 1rem;
       cursor: pointer;
     }
     .mp-mini-info {
@@ -4003,6 +4236,11 @@
       font-size: 0.78rem; color: var(--fg);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    /* ADR-160 pass 2: the live chip rail replaces the text title in the mini
+       strip. Full-width single row (auto height, not flex-grown in the column),
+       overflowing chips collapse into the rail's ▾N menu. */
+    .mp-mini-info .mp-rail { flex: 0 0 auto; width: 100%; }
+    .mp-mini-title:empty { display: none; }
     .mp-mini-dots {
       display: flex; gap: 3px; margin-top: 2px;
     }
@@ -4022,15 +4260,6 @@
       color: var(--fg-muted); font-size: 1.1rem;
       cursor: pointer;
     }
-    .mp-mini-expand {
-      width: 44px; height: 44px;
-      min-width: 44px;
-      display: flex; align-items: center; justify-content: center;
-      background: none; border: none;
-      color: var(--accent); font-size: 0.85rem;
-      cursor: pointer;
-    }
-
     /* ── ADR-051: enforce 44px touch targets for player chips on mobile ── */
     .mp-raga-chip,
     .mp-comp-chip,
@@ -4648,6 +4877,7 @@
       <!-- ADR-086: empty-panel tutorial (shown when no subject loaded) -->
       <div id="bani-tutorial" class="panel-tutorial" style="display:none"></div>
       <!-- Lecdem strip: shown above the trail when a raga/composition subject has lecdems -->
+      <section id="bani-playlists" style="display:none"></section>
       <section id="bani-lecdem-strip" class="lecdem-strip" style="display:none"></section>
       <div id="listening-trail" style="display:none; padding: 0 14px;">
         <ul id="trail-list"></ul>

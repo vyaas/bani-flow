@@ -83,6 +83,10 @@ def _default_recordings_path() -> Path:
     return Path(__file__).parent / "data" / "recordings"
 
 
+def _default_playlists_path() -> Path:
+    return Path(__file__).parent / "data" / "playlists"
+
+
 def _atomic_write_recording(recordings_dir: Path, rec: dict) -> None:
     """Write a recording file atomically to recordings/{id}.json."""
     rec_id = rec.get("id")
@@ -936,6 +940,58 @@ def _process_edges(
     return added, skipped, errors
 
 
+# ── ADR-163: playlists ───────────────────────────────────────────────────────
+
+def _process_playlists(
+    playlists: list[dict],
+    writer: CarnaticWriter,
+    playlists_path: Path,
+) -> tuple[int, int, int]:
+    """Apply playlist bundle items (ADR-163), dispatching by ADR-097 op:
+    create (default) / patch / append (array:"items"). Mirrors _process_recordings."""
+    added = skipped = errors = 0
+    for p in playlists:
+        op = p.get("op", "create")
+
+        if op == "patch":
+            result = writer.patch_playlist(
+                playlist_id=p.get("id", ""),
+                field=p.get("field", ""),
+                value=p.get("value"),
+                playlists_path=playlists_path,
+            )
+        elif op == "append":
+            if p.get("array") not in (None, "items"):
+                print(f"  ERROR  playlist append: only array:\"items\" is supported (got {p.get('array')!r})")
+                errors += 1
+                continue
+            result = writer.append_to_playlist_items(
+                playlist_id=p.get("id", ""),
+                item=p.get("value") or {},
+                playlists_path=playlists_path,
+            )
+        elif op in ("create", None):
+            data = p.get("value", p)
+            result = writer.add_playlist(
+                id=data.get("id", ""),
+                title=data.get("title", ""),
+                description=data.get("description"),
+                items=data.get("items") or [],
+                kind=data.get("kind", "user"),
+                playlists_path=playlists_path,
+            )
+        else:
+            print(f"  ERROR  playlist item has unknown op '{op}'.")
+            errors += 1
+            continue
+
+        _print_result(result)
+        if result.ok:        added += 1
+        elif result.skipped: skipped += 1
+        else:                errors += 1
+    return added, skipped, errors
+
+
 # ── main ───────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -962,7 +1018,7 @@ def main() -> None:
         sys.exit(1)
 
     MAX_VERSION = 2
-    KNOWN_ITEM_TYPES = {"ragas", "composers", "musicians", "compositions", "recordings", "edges", "talas"}
+    KNOWN_ITEM_TYPES = {"ragas", "composers", "musicians", "compositions", "recordings", "edges", "talas", "playlists"}
 
     schema_version = bundle.get("schema_version", 1)
     if schema_version > MAX_VERSION:
@@ -990,12 +1046,14 @@ def main() -> None:
     recordings   = items.get("recordings",   [])
     edges        = items.get("edges",        [])
     talas        = items.get("talas",        [])
+    playlists    = items.get("playlists",    [])
 
     writer          = CarnaticWriter()
     musicians_path  = _default_musicians_path()
     comp_path       = _default_compositions_path()
     ragas_path      = _default_ragas_path()
     recordings_path = _default_recordings_path()
+    playlists_path  = _default_playlists_path()
 
     total_added = total_skipped = total_errors = 0
 
@@ -1043,6 +1101,13 @@ def main() -> None:
     if recordings:
         print(f"\nRecordings ({len(recordings)}):")
         a, s, e = _process_recordings(recordings, recordings_path, writer, comp_path, ragas_path)
+        total_added += a; total_skipped += s; total_errors += e
+
+    # ── playlists (ADR-163) ────────────────────────────────────────────────────
+    # After recordings/compositions/musicians so item back-references resolve.
+    if playlists:
+        print(f"\nPlaylists ({len(playlists)}):")
+        a, s, e = _process_playlists(playlists, writer, playlists_path)
         total_added += a; total_skipped += s; total_errors += e
 
     # ── edges ─────────────────────────────────────────────────────────────────

@@ -142,6 +142,20 @@ def load_recordings(recordings_dir: Path, recordings_file: Path) -> dict:
     return {"recordings": []}
 
 
+def load_playlists(playlists_dir: Path) -> list:
+    """ADR-163: load user-authored playlists from data/playlists/ (one .json per
+    playlist). Returns a list of playlist objects, sorted by filename; files
+    starting with '_' (e.g. READYOU is .md, but be safe) are skipped. Playlists
+    are NOT part of graph.json — they are loaded directly here every render."""
+    if not playlists_dir.is_dir():
+        return []
+    files = sorted(
+        f for f in playlists_dir.glob("*.json")
+        if not f.name.startswith("_")
+    )
+    return [json.loads(f.read_text(encoding="utf-8")) for f in files]
+
+
 def load_tanpura(data_dir: Path) -> list:
     """Load carnatic/data/tanpura.json; return empty list if absent."""
     path = data_dir / "tanpura.json"

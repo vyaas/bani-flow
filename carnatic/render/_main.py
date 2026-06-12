@@ -38,8 +38,8 @@ if _PROJECT_ROOT not in [Path(p).resolve() for p in sys.path]:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 from carnatic.render.sync import sync_graph_json
-from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura, load_help_empty_panels, load_talas
-from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set, build_lecdem_indexes, derive_carnatic_equivalents
+from carnatic.render.data_loaders import load_musicians, load_compositions, load_recordings, load_tanpura, load_help_empty_panels, load_talas, load_playlists
+from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups, build_listenable_set, build_lecdem_indexes, derive_carnatic_equivalents, build_playlist_lookups
 from carnatic.render.graph_builder import build_elements
 from carnatic.render.html_generator import render_html
 
@@ -84,6 +84,12 @@ def main() -> None:
     # ADR-078: lecdem subject-anchored indexes
     lecdem_indexes = build_lecdem_indexes(graph["nodes"])
 
+    # ADR-163: persistent playlists (loaded directly — not part of graph.json)
+    playlists = load_playlists(ROOT / "data" / "playlists")
+    playlists_by_musician, playlists_by_raga, playlists_by_composition = build_playlist_lookups(playlists)
+    if playlists:
+        print(f"[LOAD] playlists/  ({len(playlists)} playlists)")
+
     # ADR-110: composer_musician_ids — set of musician IDs that are also composers
     all_compositions = comp_data.get("compositions", [])
     composer_musician_ids: set[str] = {
@@ -121,6 +127,10 @@ def main() -> None:
         listenable_set=listenable_set,
         lecdem_indexes=lecdem_indexes,
         help_empty_panels=help_empty_panels,
+        playlists=playlists,
+        playlists_by_musician=playlists_by_musician,
+        playlists_by_raga=playlists_by_raga,
+        playlists_by_composition=playlists_by_composition,
     )
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"[RENDERED] {OUT_FILE}  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")

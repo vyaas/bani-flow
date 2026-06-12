@@ -25,6 +25,7 @@ const baniBundle = {
   compositions: [],
   recordings:   [],
   edges:        [],
+  playlists:    [],   // ADR-163: saved playlists ride the same patch loop
 };
 
 function addToBundle(type, obj) {

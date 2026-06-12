@@ -450,8 +450,8 @@ function buildPlayerTrackList(mediaKey, tracks, instance) {
       // Update active indicator
       ul.querySelectorAll('.mp-track-item').forEach(el => el.classList.remove('mp-track-active'));
       li.classList.add('mp-track-active');
-      // Update footer chips to reflect the newly selected track (ADR-066: pass displayTitle)
-      updatePlayerFooter(player, t.raga_id || null, t.composition_id || null, t.display_title || null, t.tala || null);
+      // ADR-159: update the bar's identity rail to reflect the selected track
+      updatePlayerRail(player, t.raga_id || null, t.composition_id || null, t.display_title || null, t.tala || null);
       refreshPlayingIndicators();
     });
 
@@ -461,9 +461,11 @@ function buildPlayerTrackList(mediaKey, tracks, instance) {
   return ul;
 }
 
-// ── buildPlayerBar — [▾] [title] [copy] [≡?] [✕] ──────────────────────────
-// Artist chip moves to the footer (buildPlayerFooter). meta.nodeId is still
-// stored on the instance so updatePlayerFooter can include the musician chip.
+// ── buildPlayerBar — [▾] [chip rail] [copy][share][yt][≡?][✕] ──────────────
+// ADR-159: the identity chips (musician · raga · comp · composer · tala) live
+// in the bar as a live rail (buildPlayerRail), replacing the freeform title.
+// The concert/source string is demoted to the bar tooltip; the .mp-title span
+// survives only as a fallback when there are no chips (sruti drone, named bar).
 function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, meta) {
   meta = meta || {};
   const bar = document.createElement('div');
@@ -475,13 +477,25 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   foldCue.textContent = '\u25be'; // ▾ small downward-pointing triangle
   bar.appendChild(foldCue);
 
-  // ── Title (fills remaining space) ─────────────────────────────────────────
+  // ── ADR-159: live identity rail replaces the title (fills remaining space) ─
   const titleText = concertTitle || '';
-  if (titleText) {
+  if (titleText) bar.title = titleText;   // concert/source string demoted to tooltip
+  const rail = buildPlayerRail({
+    nodeId:        meta.nodeId        || null,
+    artistName:    artistName         || null,
+    ragaId:        meta.ragaId        || null,
+    compositionId: meta.compositionId || null,
+    displayTitle:  trackLabel         || null,
+    tala:          meta.tala          || null,
+    subjects:      meta.subjects      || null,
+  });
+  if (rail) {
+    bar.appendChild(rail);
+  } else if (titleText) {
+    // No chips (sruti drone / named bar): fall back to the plain title.
     const titleSpan = document.createElement('span');
     titleSpan.className = 'mp-title';
     titleSpan.textContent = titleText;
-    titleSpan.title = titleText;
     bar.appendChild(titleSpan);
   }
 
@@ -518,8 +532,10 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
 
   if (hasTracks) {
     const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'mp-tracklist-toggle';
+    // ADR-161: reusable toggle button \u2014 declares open/closed via aria-pressed.
+    toggleBtn.className = 'mp-tracklist-toggle mp-toggle-btn';
     toggleBtn.title = 'Track list';
+    toggleBtn.setAttribute('aria-pressed', 'false');
     toggleBtn.textContent = '\u2261';
     rightGroup.appendChild(toggleBtn);
   }
@@ -534,8 +550,34 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   return bar;
 }
 
+// ── ADR-160: universal minimize ──────────────────────────────────────────────
+// Toggle the `.minimized` state on a player root: the bar (with its live chip
+// rail) stays; the video, tracklist, and resize handle are hidden via CSS; the
+// media keeps playing (we never tear down the controller). Returns the new state.
+function _toggleMinimized(el) {
+  const min = el.classList.toggle('minimized');
+  const cue = el.querySelector('.mp-fold-cue');
+  if (cue) {
+    cue.textContent = min ? '▴' : '▾';   // ▴ restore | ▾ minimize
+    cue.title = min ? 'Restore' : 'Minimize';
+  }
+  return min;
+}
+
+// Promote the bar's fold-cue (▾) into a real minimize toggle. Marked active so
+// the CSS only shows the affordance where it is wired. stopPropagation on
+// mousedown so clicking the cue never starts a window drag (the bar is the handle).
+function _wireFoldCue(el) {
+  const cue = el.querySelector('.mp-fold-cue');
+  if (!cue) return;
+  cue.classList.add('mp-fold-active');
+  cue.title = 'Minimize';
+  cue.addEventListener('mousedown', e => e.stopPropagation());
+  cue.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); });
+}
+
 // ── _buildMusicianChipForFooter — era-tinted musician chip with transit fallback ─
-// Shared by buildPlayerFooter and _buildLecdemSubjectFooter.
+// Shared by buildPlayerRail and the rail's performer anchor.
 // nodeId may be null if only artistName is known (renders chip without navigation).
 function _buildMusicianChipForFooter(nodeId, artistName) {
   if (!nodeId && !artistName) return null;
@@ -583,26 +625,33 @@ function _buildMusicianChipForFooter(nodeId, artistName) {
   return chip;
 }
 
-// ── buildPlayerFooter — musician + raga + comp + composer chips below the video ──
-// ADR-066: chips use same classes as panels for visual parity.
-// meta = { nodeId, artistName, ragaId, compositionId, displayTitle, tala } — all optional.
-// nodeId + artistName drive the musician chip (prepended first).
-function buildPlayerFooter(meta) {
+// ── buildPlayerRail — musician · raga · comp · composer chips in the bar ────
+// ADR-159: relocated from the below-video footer into the header bar as the
+// single live identity surface. ADR-066: chips use the same classes as panels
+// for visual parity. meta = { nodeId, artistName, ragaId, compositionId,
+// displayTitle, tala } — all optional. nodeId + artistName drive the performer
+// chip, kept as a concert-stable left anchor; raga/comp/composer/tala follow
+// and are swapped live by updatePlayerRail as the playhead crosses segments.
+function buildPlayerRail(meta) {
   if (!meta) return null;
-  const { nodeId, artistName, ragaId, compositionId, displayTitle, tala } = meta;
-  const hasAny = nodeId || artistName || ragaId || compositionId || displayTitle;
+  const { nodeId, artistName, ragaId, compositionId, displayTitle, tala, subjects } = meta;
+  const hasSubjects = subjects && (
+    (subjects.raga_ids && subjects.raga_ids.length) ||
+    (subjects.composition_ids && subjects.composition_ids.length) ||
+    (subjects.musician_ids && subjects.musician_ids.length));
+  const hasAny = nodeId || artistName || ragaId || compositionId || displayTitle || hasSubjects;
   if (!hasAny) return null;
 
-  const footer = document.createElement('div');
-  footer.className = 'mp-footer';
+  const rail = document.createElement('div');
+  rail.className = 'mp-rail';
 
-  // ── Musician chip (always first) ──────────────────────────────────────────
+  // ── Performer chip (stable anchor, always first) ──────────────────────────
   if (nodeId || artistName) {
     const mChip = _buildMusicianChipForFooter(nodeId || null, artistName || null);
-    if (mChip) footer.appendChild(mChip);
+    if (mChip) rail.appendChild(mChip);
   }
 
-  // ── Raga chip + tala (same .raga-chip class as panels; tala stays inline) ────
+  // ── Raga chip (same .raga-chip class as panels; tala is demoted to the end) ──
   if (ragaId) {
     const ragaObj = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
     const ragaName = ragaObj ? ragaObj.name : ragaId;
@@ -616,18 +665,7 @@ function buildPlayerFooter(meta) {
       setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
     });
-    if (tala) {
-      const ragaTalaDiv = document.createElement('div');
-      ragaTalaDiv.className = 'rec-raga-tala';
-      ragaTalaDiv.appendChild(ragaChip);
-      const talaSpan = document.createElement('span');
-      talaSpan.className = 'trail-tala';
-      talaSpan.textContent = formatTala(tala);
-      ragaTalaDiv.appendChild(talaSpan);
-      footer.appendChild(ragaTalaDiv);
-    } else {
-      footer.appendChild(ragaChip);
-    }
+    rail.appendChild(ragaChip);
   }
 
   // ── Composition chip (same .comp-chip class as panels) ──────────────────
@@ -645,49 +683,181 @@ function buildPlayerFooter(meta) {
       setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
       if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', compositionId);
     });
-    footer.appendChild(compChip);
+    rail.appendChild(compChip);
 
     // ── Composer chip (reuse existing buildComposerChip) ──────────────────
     const composerChip = buildComposerChip(compositionId);
-    if (composerChip) footer.appendChild(composerChip);
+    if (composerChip) rail.appendChild(composerChip);
 
   } else if (displayTitle) {
     // ── Non-composition fallback label — yt-label-chip style ──
     const lbl = document.createElement('span');
     lbl.className = 'yt-label-chip';
     lbl.textContent = displayTitle;
-    footer.appendChild(lbl);
+    rail.appendChild(lbl);
   }
 
-  return footer;
+  // ── ADR-159: lecdem subject cross-links populate the rail itself (and its
+  // ▾N overflow) — no separate below-video footer. raga/comp/musician → chip. ──
+  if (hasSubjects) {
+    _buildSubjectChips(subjects).forEach(c => rail.appendChild(c));
+  }
+
+  // ── Tala — demoted to the very end, shown only if present (any rendition) ──
+  if (tala) {
+    const talaSpan = document.createElement('span');
+    talaSpan.className = 'trail-tala mp-rail-tala';
+    talaSpan.textContent = formatTala(tala);
+    rail.appendChild(talaSpan);
+  }
+
+  // ── ADR-159: adaptive overflow — chips that don't fit the single line collapse
+  // into a "▾ N" menu. The reflow pass (reflowRail) runs once the rail is laid
+  // out and again whenever the bar is resized, via a ResizeObserver.
+  const moreBtn = document.createElement('button');
+  moreBtn.type = 'button';
+  moreBtn.className = 'mp-rail-more';
+  moreBtn.title = 'Show more chips';
+  moreBtn.setAttribute('aria-expanded', 'false');
+  moreBtn.style.display = 'none';
+  const overflow = document.createElement('div');
+  overflow.className = 'mp-rail-overflow';
+  rail.appendChild(moreBtn);
+  rail.appendChild(overflow);
+  rail._overflowEl = overflow;   // referenced by reflowRail; popped to <body> while open
+  moreBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    _toggleRailOverflow(moreBtn, overflow);
+  });
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => reflowRail(rail));
+    ro.observe(rail);
+    rail._railObserver = ro;
+  } else {
+    requestAnimationFrame(() => reflowRail(rail));
+  }
+
+  return rail;
 }
 
-// ── updatePlayerFooter — replace the footer in-place when a track is selected ─
-// Called by buildPlayerTrackList on track click and on track swipe to keep chips in sync.
-// Reads nodeId + artistName from player.meta so the musician chip persists on every
-// track change on both desktop and mobile.
-function updatePlayerFooter(player, ragaId, compositionId, displayTitle, tala) {
+// ── reflowRail — adaptive overflow for the bar's identity rail (ADR-159 §5) ──
+// Measures the single-line rail; any chips that don't fit are moved (in order)
+// into the .mp-rail-overflow menu, and the "▾ N" toggle is shown. Idempotent:
+// always pulls chips back inline first, then re-measures.
+function reflowRail(rail) {
+  if (!rail || !rail.isConnected) return;
+  const moreBtn  = rail.querySelector(':scope > .mp-rail-more');
+  const overflow = rail._overflowEl;
+  if (!moreBtn || !overflow) return;
+  // bring the menu back into the rail if it was popped out to <body> while open
+  if (overflow.parentNode !== rail) rail.appendChild(overflow);
+  // 1) reset: pull every overflowed chip back inline (before the button)
+  while (overflow.firstChild) rail.insertBefore(overflow.firstChild, moreBtn);
+  overflow.classList.remove('open');
+  moreBtn.style.display = 'none';
+  moreBtn.setAttribute('aria-expanded', 'false');
+  const fits = () => rail.scrollWidth <= rail.clientWidth + 1;
+  if (fits()) return;                       // everything fits — no menu needed
+  // 2) reserve the button's width, then move trailing chips out until it fits
+  moreBtn.style.display = '';
+  const chips = Array.from(rail.children).filter(c => c !== moreBtn && c !== overflow);
+  let i = chips.length - 1;
+  while (i >= 0 && !fits()) {
+    overflow.insertBefore(chips[i], overflow.firstChild);   // preserve original order
+    i--;
+  }
+  const n = overflow.children.length;
+  if (n === 0) { moreBtn.style.display = 'none'; return; }
+  moreBtn.textContent = '▾ ' + n;  // ▾ N
+}
+
+// ── _toggleRailOverflow — open/close the ▾ N menu ────────────────────────────
+// While open, the menu is reparented to <body> and positioned with fixed
+// viewport coords. This is essential on the minimized mobile strip: its
+// ancestor (.media-player.mini) has a transform + overflow:hidden, which would
+// otherwise make position:fixed resolve against — and be clipped by — that
+// ancestor. On close it is tucked back into the rail so reflowRail can manage it.
+function _tuckRailOverflow(overflow) {
+  const rail = overflow._ownerRail;
+  overflow.classList.remove('open');
+  if (rail && overflow.parentNode !== rail) rail.appendChild(overflow);
+}
+function _toggleRailOverflow(moreBtn, overflow) {
+  const rail = moreBtn.parentNode;
+  const opening = !overflow.classList.contains('open');
+  // Close (and tuck back) any other open menu first.
+  document.querySelectorAll('.mp-rail-overflow.open').forEach(o => {
+    o.classList.remove('open');
+    _tuckRailOverflow(o);
+  });
+  if (!opening) {
+    moreBtn.setAttribute('aria-expanded', 'false');
+    _tuckRailOverflow(overflow);
+    return;
+  }
+  // Pop out to <body> so a transformed / overflow-hidden ancestor can't clip it.
+  overflow._ownerRail = rail;
+  document.body.appendChild(overflow);
+  const r = moreBtn.getBoundingClientRect();
+  overflow.style.left = Math.round(r.left) + 'px';
+  overflow.style.top  = Math.round(r.bottom + 4) + 'px';
+  overflow.classList.add('open');
+  moreBtn.setAttribute('aria-expanded', 'true');
+  // Flip upward if the menu would spill off the bottom of the viewport — needed
+  // for the mobile mini strip, which sits at the bottom edge.
+  const menuH = overflow.offsetHeight;
+  if (r.bottom + 4 + menuH > window.innerHeight) {
+    overflow.style.top = Math.round(Math.max(4, r.top - menuH - 4)) + 'px';
+  }
+  // Keep the menu within the right edge too.
+  const menuW = overflow.offsetWidth;
+  if (r.left + menuW > window.innerWidth) {
+    overflow.style.left = Math.round(Math.max(4, window.innerWidth - menuW - 4)) + 'px';
+  }
+  // Close on the next click outside the menu (capture phase so it runs first).
+  setTimeout(() => {
+    const onDoc = ev => {
+      if (overflow.contains(ev.target) || ev.target === moreBtn) return;
+      _tuckRailOverflow(overflow);
+      moreBtn.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('click', onDoc, true);
+    };
+    document.addEventListener('click', onDoc, true);
+  }, 0);
+}
+
+// ── updatePlayerRail — swap the bar's identity rail in-place ──────────────────
+// ADR-159: replaces the chip rail in the header bar when a track is selected
+// (buildPlayerTrackList click) or when the playhead crosses a segment boundary
+// (_updateActiveSegment). Reads nodeId + artistName from player.meta so the
+// performer anchor persists across track changes on both desktop and mobile.
+function updatePlayerRail(player, ragaId, compositionId, displayTitle, tala) {
   const el = player.el;
-  // Remove existing footer if present
-  const existing = el.querySelector('.mp-footer');
-  if (existing) existing.remove();
-  // Include musician meta so musician chip persists across track changes
+  const bar = el.querySelector('.mp-bar');
+  if (!bar) return;
+  // Include performer meta so the performer chip persists across track changes
   const pmeta = player.meta || {};
-  const newFooter = buildPlayerFooter({
+  const newRail = buildPlayerRail({
     nodeId:        pmeta.nodeId    || null,
     artistName:    pmeta.artistName || null,
     ragaId,
     compositionId,
     displayTitle:  displayTitle || null,
     tala:          tala || null,
+    subjects:      pmeta.subjects || null,   // ADR-159: lecdem subjects persist across segment updates
   });
-  if (newFooter) {
-    const resize = el.querySelector('.mp-resize');
-    if (resize) {
-      el.insertBefore(newFooter, resize);
-    } else {
-      el.appendChild(newFooter);
-    }
+  // Remove the existing rail (or the title fallback) from the bar, then insert
+  // the new rail before the right-anchored button group so buttons stay pinned.
+  const existing = bar.querySelector('.mp-rail') || bar.querySelector('.mp-title');
+  if (existing) {
+    if (existing._railObserver) existing._railObserver.disconnect();  // drop stale observer
+    if (existing._overflowEl) existing._overflowEl.remove();          // drop popped-out menu
+    existing.remove();
+  }
+  if (newRail) {
+    const rightGroup = bar.querySelector('.mp-bar-right');
+    if (rightGroup) bar.insertBefore(newRail, rightGroup);
+    else            bar.appendChild(newRail);
   }
 }
 
@@ -751,8 +921,10 @@ function _updateActiveSegment(instance, sec) {
   }
   if (instance._activeOffset === active.offset_seconds) return;   // unchanged
   instance._activeOffset = active.offset_seconds;
-  updatePlayerFooter(instance, active.raga_id || null, active.composition_id || null,
-                     active.subject || active.display_title || null, active.tala || null);
+  // ADR-159: the header rail tracks the playhead — swap chips as the concert
+  // moves from one segment (kriti) to the next.
+  updatePlayerRail(instance, active.raga_id || null, active.composition_id || null,
+                   active.subject || active.display_title || null, active.tala || null);
   if (instance.tracklistEl) {
     instance.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
       li.classList.toggle('mp-track-active', parseInt(li.dataset.offset, 10) === active.offset_seconds);
@@ -1009,17 +1181,11 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
 
-  // ── Footer: musician + raga + comp + composer chips ──────────────────────
+  // ADR-159: the identity rail is built inside buildPlayerBar (in the header);
+  // no below-video footer is appended for the standard recital/concert path.
+  // fullMeta still drives instance.meta so updatePlayerRail can rebuild the
+  // performer chip on every segment/track change.
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
-  const footer = buildPlayerFooter({
-    nodeId:        fullMeta.nodeId       || null,
-    artistName:    fullMeta.artistName   || null,
-    ragaId:        fullMeta.ragaId       || null,
-    compositionId: fullMeta.compositionId || null,
-    displayTitle:  trackLabel            || null,
-    tala:          fullMeta.tala         || null,
-  });
-  if (footer) el.appendChild(footer);
 
   const resizeHandle = document.createElement('div');
   resizeHandle.className = 'mp-resize';
@@ -1049,7 +1215,19 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // and the permalink capture where the video actually is (fixes AUDIT-014 F-04).
   // ADR-156: also advance the active-segment footer/highlight as playback crosses
   // chapter boundaries.
-  controller.onTime(sec => { instance.currentOffset = sec; _updateActiveSegment(instance, sec); });
+  controller.onTime(sec => {
+    instance.currentOffset = sec;
+    _updateActiveSegment(instance, sec);
+    // ADR-163 §5: cross-recording continuation — if this queue item has an end_seconds
+    // span boundary, advance the playlist the moment the playhead crosses it, even
+    // though the source video keeps running past that point.
+    if (MediaQueue.isCurrent(instance.mediaKey)) {
+      const _qi = MediaQueue.items[MediaQueue.index];
+      if (_qi && _qi.meta && _qi.meta.end_seconds != null && sec >= _qi.meta.end_seconds) {
+        MediaQueue.advance();
+      }
+    }
+  });
   // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
   controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
 
@@ -1110,10 +1288,20 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     const toggleBtn = el.querySelector('.mp-tracklist-toggle');
     toggleBtn.addEventListener('click', e => {
       e.stopPropagation();
-      const isOpen = instance.tracklistEl.style.display !== 'none';
-      instance.tracklistEl.style.display = isOpen ? 'none' : 'block';
-      toggleBtn.classList.toggle('mp-tracklist-open', !isOpen);
-      if (!isOpen) {
+      const willOpen = instance.tracklistEl.style.display === 'none';
+      instance.tracklistEl.style.display = willOpen ? 'block' : 'none';
+      // ADR-161: declare state via aria-pressed (drives the depressed visual).
+      toggleBtn.setAttribute('aria-pressed', willOpen ? 'true' : 'false');
+      if (willOpen) {
+        // ADR-162: tracklist and queue panel are mutually exclusive (both open
+        // upward from the bar) — close the queue panel when opening the tracklist.
+        if (MediaQueue.panelOpen) { MediaQueue.setPanelOpen(false); _refreshQueuePanels(); }
+        // ADR-161: opens above the bar (CSS bottom:100%); flip below only if there
+        // is no room above (player near the top of the viewport).
+        instance.tracklistEl.classList.remove('mp-tracklist-down');
+        if (instance.tracklistEl.getBoundingClientRect().top < 4) {
+          instance.tracklistEl.classList.add('mp-tracklist-down');
+        }
         // Mark the active track when opening
         trackUl.querySelectorAll('.mp-track-item').forEach(li => {
           li.classList.toggle('mp-track-active',
@@ -1123,6 +1311,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     });
   }
 
+  _addQueueUI(el);    // ADR-162: queue toggle + "Up Next" panel (only when a queue is active)
+  _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
   el.addEventListener('mousedown', () => bringToFront(instance));
@@ -1204,12 +1394,15 @@ const MediaQueue = {
   index: -1,
   active: false,
   currentKey: null,
+  panelOpen: false,   // ADR-162: whether the "Up Next" panel shows by default
 
   start(items, startIndex) {
     this.items = Array.isArray(items) ? items.filter(it => it && it.media) : [];
     this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
     this.active = this.items.length > 0;
+    this.panelOpen = this.active;   // ADR-162: Play all reveals the queue panel
     if (this.active) this._open(null);
+    _refreshQueuePanels();
   },
 
   // True when `mkey` is the queue's current item — guards auto-advance so a
@@ -1231,30 +1424,468 @@ const MediaQueue = {
     }
   },
 
-  advance() {
-    if (!this.active) return;
-    if (this.index >= this.items.length - 1) { this.active = false; this.currentKey = null; return; }
+  // ADR-162: switch to a given index, reusing one desktop window (drop the prev).
+  _switchTo(newIndex) {
+    if (newIndex < 0 || newIndex >= this.items.length) return;
     const prevKey = this.currentKey;
     const prevInst = prevKey ? playerRegistry.get(prevKey) : null;
     const pos = (prevInst && prevInst.el && !prevInst._isMobileSingleton)
       ? { top: prevInst.el.style.top, left: prevInst.el.style.left, width: prevInst.el.style.width }
       : null;
-    this.index++;
+    this.index = newIndex;
     this._open(pos);
-    // Reuse one window on desktop: drop the previous window (mobile already
-    // re-used its singleton inside _openMobilePlayer).
     if (prevInst && !prevInst._isMobileSingleton && prevKey !== this.currentKey && playerRegistry.has(prevKey)) {
       if (prevInst.controller) prevInst.controller.destroy();
       if (prevInst.el) prevInst.el.remove();
       playerRegistry.delete(prevKey);
       refreshPlayingIndicators();
     }
+    _refreshQueuePanels();
   },
 
-  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; },
+  advance() {
+    if (!this.active) return;
+    if (this.index >= this.items.length - 1) {
+      this.active = false; this.currentKey = null; _refreshQueuePanels(); return;
+    }
+    this._switchTo(this.index + 1);
+  },
+
+  // ADR-162: explicit transport + editing.
+  next()     { this.advance(); },
+  previous() { if (this.active && this.index > 0) this._switchTo(this.index - 1); },
+  jumpTo(i)  { if (this.active && i !== this.index) this._switchTo(i); },
+
+  removeAt(i) {
+    if (i < 0 || i >= this.items.length) return;
+    if (i === this.index) {
+      // Removing the current item: drop it and play whatever now sits here
+      // (the next item), or stop cleanly if it was the last (never stall).
+      const prevKey = this.currentKey;
+      const prevInst = prevKey ? playerRegistry.get(prevKey) : null;
+      this.items.splice(i, 1);
+      if (this.items.length === 0) {
+        if (prevInst && !prevInst._isMobileSingleton && prevInst.el) {
+          if (prevInst.controller) prevInst.controller.destroy();
+          prevInst.el.remove(); playerRegistry.delete(prevKey); refreshPlayingIndicators();
+        }
+        this.clear(); _refreshQueuePanels(); return;
+      }
+      if (this.index >= this.items.length) this.index = this.items.length - 1;
+      const pos = (prevInst && prevInst.el && !prevInst._isMobileSingleton)
+        ? { top: prevInst.el.style.top, left: prevInst.el.style.left, width: prevInst.el.style.width } : null;
+      this._open(pos);
+      if (prevInst && !prevInst._isMobileSingleton && prevKey !== this.currentKey && playerRegistry.has(prevKey)) {
+        if (prevInst.controller) prevInst.controller.destroy();
+        if (prevInst.el) prevInst.el.remove();
+        playerRegistry.delete(prevKey); refreshPlayingIndicators();
+      }
+    } else {
+      this.items.splice(i, 1);
+      if (i < this.index) this.index--;
+    }
+    _refreshQueuePanels();
+  },
+
+  move(from, to) {
+    if (from < 0 || from >= this.items.length || to < 0 || to >= this.items.length || from === to) return;
+    const [it] = this.items.splice(from, 1);
+    this.items.splice(to, 0, it);
+    // Keep `index` pointing at the still-current item after the reorder.
+    if (this.currentKey) {
+      const ni = this.items.findIndex(x => mediaKey(x.media) === this.currentKey);
+      if (ni >= 0) this.index = ni;
+    }
+    _refreshQueuePanels();
+  },
+
+  setPanelOpen(open) { this.panelOpen = !!open; },
+
+  // ADR-163 §3: add a single item to the queue without replacing it.
+  addItem(item) {
+    if (!this.active) { this.start([item], 0); return; }
+    this.items.push(item);
+    _refreshQueuePanels();
+  },
+
+  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; },
 };
 window.MediaQueue = MediaQueue;
 window.startMediaQueue = function(items, startIndex) { MediaQueue.start(items, startIndex); };
+
+// ── ADR-163 §3: + affordance — add any item to a playlist via the patch loop ──
+// _buildPlusBtn(getItem) → <button class="mp-plus-btn"> that opens a popover menu.
+// getItem() is called lazily on click and must return:
+//   { media, startSeconds?, meta: { ragaId, compositionId, nodeId, end_seconds? }, label?, artistName? }
+function _buildPlusBtn(getItem) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'mp-plus-btn';
+  btn.title = 'Add to queue';
+  btn.textContent = '+';
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    // Mobile: no editing features — + always means "add to queue" directly.
+    if (_isMobilePlayer()) {
+      const item = getItem();
+      if (!item || !item.media) return;
+      const resolvedMedia = (typeof resolveMedia === 'function') ? resolveMedia(item.media) : item.media;
+      if (!resolvedMedia) return;
+      MediaQueue.addItem({
+        media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
+        startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
+        tracks: [], meta: item.meta || {},
+      });
+      btn.textContent = '✓'; setTimeout(() => { btn.textContent = '+'; }, 1000);
+      return;
+    }
+    _openPlusMenu(btn, getItem);
+  });
+  return btn;
+}
+
+function _openPlusMenu(anchor, getItem) {
+  document.querySelectorAll('.mp-plus-menu').forEach(m => m.remove());
+  const item = getItem();
+  if (!item || !item.media) return;
+  const resolvedMedia = (typeof resolveMedia === 'function') ? resolveMedia(item.media) : item.media;
+  if (!resolvedMedia) return;
+
+  const menu = document.createElement('div');
+  menu.className = 'mp-plus-menu';
+
+  function _buildOp(resolvedMedia, item) {
+    const mk = (typeof mediaKey === 'function') ? mediaKey(resolvedMedia) : null;
+    if (!mk) return null;
+    const it = { media_key: mk };
+    if (item.startSeconds) it.start_seconds = item.startSeconds;
+    const m = item.meta || {};
+    if (m.end_seconds) it.end_seconds = m.end_seconds;
+    if (m.ragaId) it.raga_id = m.ragaId;
+    if (m.compositionId) it.composition_id = m.compositionId;
+    if (m.nodeId) it.musician_ids = [m.nodeId];
+    if (item.label) it.note = item.label;
+    return it;
+  }
+
+  // Order (top → bottom in DOM = furthest → closest to the + button when menu
+  // opens above, which is the common case):
+  //   1. “New playlist…”          — furthest, deliberate action
+  //   2. “Add to playlist” search — middle, filtered list
+  //   3. “Add to queue”           — closest, most immediate action
+
+  // “New playlist…” → op:create
+  const newPl = document.createElement('button');
+  newPl.type = 'button'; newPl.className = 'mp-plus-menu-item mp-plus-menu-new';
+  newPl.textContent = 'New playlist…';
+  newPl.addEventListener('click', e => {
+    e.stopPropagation(); menu.remove();
+    const title = window.prompt('New playlist name:');
+    if (!title) return;
+    const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || ('pl_' + Date.now());
+    const it = _buildOp(resolvedMedia, item);
+    if (!it) return;
+    const op = { op: 'create', id, title, description: '', items: [it], kind: 'user', sources: [] };
+    if (typeof window.addToBundle === 'function') {
+      window.addToBundle('playlists', op);
+      anchor.textContent = '✓'; setTimeout(() => { anchor.textContent = '+'; }, 1500);
+    }
+  });
+  menu.appendChild(newPl);
+
+  // Existing playlists → searchable filter + scrollable list
+  const knownPlaylists = (typeof playlists !== 'undefined' && Array.isArray(playlists)) ? playlists : [];
+  if (knownPlaylists.length) {
+    const divider = document.createElement('div');
+    divider.className = 'mp-plus-menu-divider';
+    divider.textContent = 'Add to playlist';
+    menu.appendChild(divider);
+
+    const search = document.createElement('input');
+    search.type = 'text';
+    search.className = 'mp-plus-menu-search';
+    search.placeholder = 'Filter…';
+    search.autocomplete = 'off';
+    menu.appendChild(search);
+
+    const list = document.createElement('div');
+    list.className = 'mp-plus-menu-list';
+    menu.appendChild(list);
+
+    function _renderList(q) {
+      list.innerHTML = '';
+      const term = q.trim().toLowerCase();
+      const matched = term
+        ? knownPlaylists.filter(pl => (pl.title || pl.id).toLowerCase().includes(term))
+        : knownPlaylists;
+      if (!matched.length) {
+        const empty = document.createElement('div');
+        empty.className = 'mp-plus-menu-empty';
+        empty.textContent = term ? 'No matches' : 'No playlists yet';
+        list.appendChild(empty);
+        return;
+      }
+      matched.forEach(pl => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'mp-plus-menu-item';
+        btn.textContent = pl.title || pl.id;
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const it = _buildOp(resolvedMedia, item);
+          if (!it) { menu.remove(); return; }
+          const op = { op: 'append', id: pl.id, array: 'items', value: it };
+          if (typeof window.addToBundle === 'function') window.addToBundle('playlists', op);
+          btn.textContent = '✓ Added to “' + (pl.title || pl.id) + '”';
+          btn.disabled = true;
+          setTimeout(() => menu.remove(), 1000);
+        });
+        list.appendChild(btn);
+      });
+    }
+    _renderList('');
+    search.addEventListener('input', () => _renderList(search.value));
+    // Prevent outside-click listener from firing on search keystrokes
+    search.addEventListener('click', e => e.stopPropagation());
+  }
+
+  // “Add to session queue” — closest to the + button, most immediate action
+  const qDivider = document.createElement('div');
+  qDivider.className = 'mp-plus-menu-divider';
+  menu.appendChild(qDivider);
+  const addQ = document.createElement('button');
+  addQ.type = 'button'; addQ.className = 'mp-plus-menu-item';
+  addQ.textContent = 'Add to queue';
+  addQ.addEventListener('click', e => {
+    e.stopPropagation(); menu.remove();
+    MediaQueue.addItem({
+      media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
+      startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
+      tracks: [], meta: item.meta || {},
+    });
+  });
+  menu.appendChild(addQ);
+
+  document.body.appendChild(menu);
+  const r = anchor.getBoundingClientRect();
+  const menuH = menu.offsetHeight || 160;
+  if (r.top > menuH + 8) {
+    menu.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+    menu.style.top = 'auto';
+  } else {
+    menu.style.top = (r.bottom + 4) + 'px';
+  }
+  menu.style.left = Math.min(r.left, window.innerWidth - 220) + 'px';
+
+  // Focus the search input (if present) so the user can type immediately
+  const searchEl = menu.querySelector('.mp-plus-menu-search');
+  if (searchEl) setTimeout(() => searchEl.focus(), 40);
+
+  const close = ev => {
+    if (!menu.contains(ev.target)) { menu.remove(); document.removeEventListener('click', close, true); }
+  };
+  setTimeout(() => document.addEventListener('click', close, true), 0);
+}
+
+// ── ADR-162: the "Up Next" queue panel — makes MediaQueue visible & editable ──
+// A bar-summoned, upward-opening panel (like the tracklist) listing the queue's
+// items with a now-playing highlight, per-row reorder/remove, row-click to jump,
+// and prev/next transport. Two-way bound: every control mutates MediaQueue, and
+// MediaQueue mutations call _refreshQueuePanels() to re-render every open panel.
+const _QUEUE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 5h12v2H3zM3 10h12v2H3zM3 15h8v2H3zM16 9v8l6-4z"/></svg>';
+
+function _buildQueueRowChips(item) {
+  const m = item.meta || {};
+  const frag = document.createDocumentFragment();
+  const perf = _buildMusicianChipForFooter(m.nodeId || null, item.artistName || null);
+  if (perf) frag.appendChild(perf);
+  const subj = (typeof _buildSubjectChips === 'function')
+    ? _buildSubjectChips({
+        raga_ids:        m.ragaId ? [m.ragaId] : [],
+        composition_ids: m.compositionId ? [m.compositionId] : [],
+        musician_ids:    [],
+      })
+    : [];
+  subj.forEach(c => frag.appendChild(c));
+  if (!m.compositionId && !subj.length && item.label) {
+    const lbl = document.createElement('span');
+    lbl.className = 'yt-label-chip';
+    lbl.textContent = item.label;
+    frag.appendChild(lbl);
+  }
+  return frag;
+}
+
+function _renderQueuePanel(panel) {
+  const ul = panel.querySelector('.mp-queue-items');
+  if (!ul) return;
+  ul.innerHTML = '';
+  MediaQueue.items.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'mp-queue-item' + (i === MediaQueue.index ? ' mp-queue-current' : '');
+    li.dataset.i = i;
+
+    const reorder = document.createElement('span');
+    reorder.className = 'mp-queue-reorder';
+    const up = document.createElement('button');
+    up.type = 'button'; up.className = 'mp-queue-up'; up.title = 'Move up'; up.textContent = '▴';
+    up.disabled = (i === 0);
+    up.addEventListener('click', e => { e.stopPropagation(); MediaQueue.move(i, i - 1); });
+    const down = document.createElement('button');
+    down.type = 'button'; down.className = 'mp-queue-down'; down.title = 'Move down'; down.textContent = '▾';
+    down.disabled = (i === MediaQueue.items.length - 1);
+    down.addEventListener('click', e => { e.stopPropagation(); MediaQueue.move(i, i + 1); });
+    reorder.appendChild(up); reorder.appendChild(down);
+    li.appendChild(reorder);
+
+    const chips = document.createElement('span');
+    chips.className = 'mp-queue-chips';
+    chips.appendChild(_buildQueueRowChips(item));
+    li.appendChild(chips);
+
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'mp-queue-remove';
+    rm.title = 'Remove from queue'; rm.setAttribute('aria-label', 'Remove from queue');
+    rm.textContent = '✕';
+    rm.addEventListener('click', e => { e.stopPropagation(); MediaQueue.removeAt(i); });
+    // ADR-163 §3: + affordance on each queue row
+    const qplus = _buildPlusBtn((() => {
+      const _item = item;
+      return () => ({
+        media: _item.media, startSeconds: _item.startSeconds || 0,
+        concertTitle: _item.concertTitle || '', label: _item.label || '',
+        artistName: _item.artistName || '', meta: _item.meta || {},
+      });
+    })());
+    li.appendChild(qplus);
+    li.appendChild(rm);
+
+    // Row body (outside chips/buttons) jumps to this item.
+    li.addEventListener('click', () => MediaQueue.jumpTo(i));
+    ul.appendChild(li);
+  });
+}
+
+function buildQueuePanel() {
+  const panel = document.createElement('div');
+  panel.className = 'mp-queue';
+  panel.style.display = 'none';
+  const head = document.createElement('div');
+  head.className = 'mp-queue-head';
+  const title = document.createElement('span');
+  title.className = 'mp-queue-title';
+  title.textContent = 'Up Next';
+  const prev = document.createElement('button');
+  prev.type = 'button'; prev.className = 'mp-queue-prev'; prev.title = 'Previous'; prev.textContent = '⏮';
+  prev.addEventListener('click', e => { e.stopPropagation(); MediaQueue.previous(); });
+  const next = document.createElement('button');
+  next.type = 'button'; next.className = 'mp-queue-next'; next.title = 'Next'; next.textContent = '⏭';
+  next.addEventListener('click', e => { e.stopPropagation(); MediaQueue.next(); });
+  // ADR-163 §3: "Save as playlist" — turns the current queue into a create op for the patch loop
+  const saveBtn = document.createElement('button');
+  saveBtn.type = 'button'; saveBtn.className = 'mp-queue-save mp-toggle-btn';
+  saveBtn.title = 'Save queue as playlist…';
+  saveBtn.textContent = '⊕';
+  saveBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!MediaQueue.items.length) return;
+    const pTitle = window.prompt('Playlist name:');
+    if (!pTitle) return;
+    const pId = pTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || ('pl_' + Date.now());
+    const items = MediaQueue.items.map(qi => {
+      const mk = (qi.media && typeof mediaKey === 'function') ? mediaKey(qi.media) : null;
+      if (!mk) return null;
+      const it = { media_key: mk };
+      if (qi.startSeconds) it.start_seconds = qi.startSeconds;
+      const m = qi.meta || {};
+      if (m.end_seconds) it.end_seconds = m.end_seconds;
+      if (m.ragaId) it.raga_id = m.ragaId;
+      if (m.compositionId) it.composition_id = m.compositionId;
+      if (m.nodeId) it.musician_ids = [m.nodeId];
+      if (qi.label) it.note = qi.label;
+      return it;
+    }).filter(Boolean);
+    if (!items.length) return;
+    const op = { op: 'create', id: pId, title: pTitle, description: '', items, kind: 'user', sources: [] };
+    if (typeof window.addToBundle === 'function') {
+      window.addToBundle('playlists', op);
+      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = '⊕'; }, 2000);
+    }
+  });
+  head.appendChild(title); head.appendChild(prev); head.appendChild(next); head.appendChild(saveBtn);
+  const ul = document.createElement('ul');
+  ul.className = 'mp-queue-items';
+  panel.appendChild(head); panel.appendChild(ul);
+  _renderQueuePanel(panel);
+  return panel;
+}
+
+// Re-render every open queue panel and sync toggle state/visibility. Called by
+// MediaQueue on any mutation (start/advance/jump/remove/move/clear).
+function _refreshQueuePanels() {
+  const show = MediaQueue.active && MediaQueue.panelOpen;
+  document.querySelectorAll('.mp-queue').forEach(p => {
+    _renderQueuePanel(p);
+    p.style.display = show ? 'block' : 'none';
+    p.classList.toggle('mp-queue-shown', show);   // hook for the mobile sheet-grow (:has)
+    if (show) {
+      // ADR-161 §3: open above the bar; flip below only if no room above.
+      p.classList.remove('mp-queue-down');
+      if (p.getBoundingClientRect().top < 4) p.classList.add('mp-queue-down');
+    }
+  });
+  document.querySelectorAll('.mp-queue-toggle').forEach(btn => {
+    btn.style.display = MediaQueue.active ? '' : 'none';
+    btn.setAttribute('aria-pressed', MediaQueue.panelOpen ? 'true' : 'false');
+  });
+}
+
+// Attach the queue toggle (bar) + panel to a freshly-built player, but only when
+// a queue is active. The panel is a sibling before .mp-video-wrap so its upward
+// (bottom:100%) anchor sits above the bar, never over the video (ADR-161 §3).
+function _addQueueUI(el) {
+  if (!MediaQueue.active || !el) return;
+  const bar = el.querySelector('.mp-bar');
+  if (!bar) return;
+  const rightGroup = bar.querySelector('.mp-bar-right');
+  if (rightGroup && !rightGroup.querySelector('.mp-queue-toggle')) {
+    const qBtn = document.createElement('button');
+    qBtn.type = 'button';
+    qBtn.className = 'mp-queue-toggle mp-toggle-btn';
+    qBtn.title = 'Up Next (queue)';
+    qBtn.setAttribute('aria-pressed', MediaQueue.panelOpen ? 'true' : 'false');
+    qBtn.innerHTML = _QUEUE_ICON;
+    const closeBtn = rightGroup.querySelector('.mp-close');
+    if (closeBtn) rightGroup.insertBefore(qBtn, closeBtn); else rightGroup.appendChild(qBtn);
+    qBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
+      // Desktop: tracklist + queue both open upward from the bar (absolute), so
+      // they're mutually exclusive. Mobile panels are in-flow and simply stack.
+      const onMobile = (typeof _isMobilePlayer === 'function' && _isMobilePlayer());
+      if (MediaQueue.panelOpen && !onMobile) {
+        const tl = el.querySelector('.mp-tracklist');
+        if (tl) { tl.style.display = 'none'; tl.classList.remove('mp-tracklist-down'); }
+        const tlBtn = el.querySelector('.mp-tracklist-toggle');
+        if (tlBtn) tlBtn.setAttribute('aria-pressed', 'false');
+      }
+      _refreshQueuePanels();
+    });
+  }
+  if (!el.querySelector('.mp-queue')) {
+    const panel = buildQueuePanel();
+    const videoWrap = el.querySelector('.mp-video-wrap');
+    if (videoWrap) el.insertBefore(panel, videoWrap); else bar.after(panel);
+    // Wire the queue head as a second drag handle for the player container —
+    // the user naturally expects to grab it just like the bar. Buttons inside
+    // the head stop propagation so their clicks never start a drag.
+    const queueHead = panel.querySelector('.mp-queue-head');
+    if (queueHead) {
+      wireDrag(el, queueHead);
+      queueHead.querySelectorAll('button').forEach(b => b.addEventListener('mousedown', e => e.stopPropagation()));
+    }
+  }
+  _refreshQueuePanels();
+}
 
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
 function toggleConcert(headerEl) {
@@ -1354,49 +1985,24 @@ function buildLecdemChip(ref) {
     e.stopPropagation();
     chip.classList.add('chip-tapped');
     setTimeout(() => chip.classList.remove('chip-tapped'), 200);
-    // Open media player on the lecdem video; pass lecturer meta so footer shows lecturer chip
-    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId: ref.lecturer_id || null });
-    // Replace footer with a unified footer: lecturer chip + subject cross-link chips (ADR-079 §4)
-    const instance = playerRegistry.get(ref.media_key);
-    if (instance && ref.subjects) {
-      const subFooter = _buildLecdemSubjectFooter(
-        ref.subjects,
-        { nodeId: ref.lecturer_id || null, artistName: ref.lecturer_label || null }
-      );
-      if (subFooter) {
-        const existing = instance.el.querySelector('.mp-footer');
-        if (existing) existing.remove();
-        const resize = instance.el.querySelector('.mp-resize');
-        if (resize) instance.el.insertBefore(subFooter, resize);
-        else        instance.el.appendChild(subFooter);
-      }
-    }
+    // ADR-159: lecturer + subject cross-links ride in the header rail (and its
+    // ▾N overflow) — pass subjects in meta instead of building a below-video footer.
+    openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', ref.lecturer_label || '', undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId: ref.lecturer_id || null, subjects: ref.subjects || null });
   });
   return chip;
 }
 
-// Helper: footer with subject cross-link chips for a lecdem player (ADR-079 §4)
-// lecturerMeta (optional): { nodeId, artistName } — prepended as first chip if provided.
-// Each raga_id → .raga-chip, composition_id → .comp-chip, musician_id → .musician-chip.
-// Returns null if lecturerMeta is absent AND all subject arrays are empty.
-// Only the first PREVIEW_COUNT chips are shown by default; the rest are behind a
-// fold/unfold toggle (▶ N more / ▼ less) to keep the footer compact on mobile.
-function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
-  const PREVIEW_COUNT = 3;
+// ── _buildSubjectChips — cross-link chips for a recording's subjects (ADR-079/159) ──
+// subjects: { raga_ids[], composition_ids[], musician_ids[] }. Returns an array of
+// navigable chips (raga → .raga-chip, comp → .comp-chip, musician → .musician-chip),
+// consumed by buildPlayerRail so lecdem subjects populate the header rail (and its
+// ▾N overflow) rather than a separate below-video footer. Returns [] when empty.
+function _buildSubjectChips(subjects) {
+  if (!subjects) return [];
   const ragaIds     = Array.isArray(subjects.raga_ids)        ? subjects.raga_ids        : [];
   const compIds     = Array.isArray(subjects.composition_ids) ? subjects.composition_ids : [];
   const musicianIds = Array.isArray(subjects.musician_ids)    ? subjects.musician_ids    : [];
-  const hasLecturer = lecturerMeta && (lecturerMeta.nodeId || lecturerMeta.artistName);
-  if (!ragaIds.length && !compIds.length && !musicianIds.length && !hasLecturer) return null;
-
-  // ── Collect all chips into an array before deciding layout ────────────────
   const allChips = [];
-
-  // Lecturer chip (first)
-  if (hasLecturer) {
-    const lecChip = _buildMusicianChipForFooter(lecturerMeta.nodeId || null, lecturerMeta.artistName || null);
-    if (lecChip) allChips.push(lecChip);
-  }
 
   ragaIds.forEach(ragaId => {
     const ragaObj  = (typeof ragas !== 'undefined') ? ragas.find(r => r.id === ragaId) : null;
@@ -1468,39 +2074,7 @@ function _buildLecdemSubjectFooter(subjects, lecturerMeta) {
     allChips.push(mchip);
   });
 
-  if (!allChips.length) return null;
-
-  // ── Build footer with preview + optional overflow ─────────────────────────
-  const footer = document.createElement('div');
-  footer.className = 'mp-footer';
-
-  const previewChips  = allChips.slice(0, PREVIEW_COUNT);
-  const overflowChips = allChips.slice(PREVIEW_COUNT);
-
-  previewChips.forEach(c => footer.appendChild(c));
-
-  if (overflowChips.length > 0) {
-    const overflowEl = document.createElement('span');
-    overflowEl.className = 'mp-footer-overflow';
-    overflowEl.hidden = true;
-    overflowChips.forEach(c => overflowEl.appendChild(c));
-
-    const n = overflowChips.length;
-    const toggleBtn = document.createElement('button');
-    toggleBtn.type = 'button';
-    toggleBtn.className = 'mp-footer-toggle';
-    toggleBtn.textContent = '\u25b6 ' + n + ' more';
-    toggleBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      overflowEl.hidden = !overflowEl.hidden;
-      toggleBtn.textContent = overflowEl.hidden ? ('\u25b6 ' + n + ' more') : '\u25bc less';
-    });
-
-    footer.appendChild(toggleBtn);
-    footer.appendChild(overflowEl);
-  }
-
-  return footer.hasChildNodes() ? footer : null;
+  return allChips;
 }
 
 // ── _buildConcertTracksFor — ordered playerTracks for a named concert bracket ─
@@ -1777,6 +2351,12 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         );
       });
       actsDiv.appendChild(playBtn);
+      // ADR-163 §3: + affordance on concert bracket performance rows
+      actsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+        media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+        label: _p.display_title || '', artistName: artistLabel,
+        meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
+      }); })()));
       compHeader.appendChild(actsDiv);
 
       // ── Wrap comp header + composer in indented block when raga is present ────
@@ -1897,6 +2477,12 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       );
     });
     actsDiv.appendChild(playBtn);
+    // ADR-163 §3: + affordance on single-recording standalone rows
+    actsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+      media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+      label: _p.display_title || '', artistName: artistLabel,
+      meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
+    }); })()));
     compHeader.appendChild(actsDiv);
   } else {
     // ── Multiple recordings: right-chevron accordion (starts collapsed) ────
@@ -1964,6 +2550,12 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
         );
       });
       rowActsDiv.appendChild(playBtn);
+      // ADR-163 §3: + affordance on multi-recording version rows
+      rowActsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+        media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+        label: _p.display_title || '', artistName: artistLabel,
+        meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
+      }); })()));
       row.appendChild(rowActsDiv);
 
       recLi.appendChild(row);
@@ -2276,21 +2868,8 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.textContent = '\u25B6';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId });
-      const instance = playerRegistry.get(ref.media_key);
-      if (instance && ref.subjects) {
-        const subFooter = _buildLecdemSubjectFooter(
-          ref.subjects,
-          { nodeId: nodeId || null, artistName: artistLabel || null }
-        );
-        if (subFooter) {
-          const existing = instance.el.querySelector('.mp-footer');
-          if (existing) existing.remove();
-          const resize = instance.el.querySelector('.mp-resize');
-          if (resize) instance.el.insertBefore(subFooter, resize);
-          else        instance.el.appendChild(subFooter);
-        }
-      }
+      // ADR-159: subjects ride in the header rail (+ ▾N overflow), not a footer.
+      openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId, subjects: ref.subjects || null });
     });
     actsDiv.appendChild(playBtn);
 
@@ -2429,33 +3008,20 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     playBtn.textContent = '▶';
     playBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, { nodeId });
-      const instance = playerRegistry.get(ref.media_key);
-      if (instance) {
-        // Aggregate all subjects from every segment + top-level ref.subjects
-        const mergedSubjects = {
-          raga_ids: [...new Set([
-            ...(ref.subjects && ref.subjects.raga_ids ? ref.subjects.raga_ids : []),
-            ...segments.filter(s => s.raga_id).map(s => s.raga_id),
-          ])],
-          composition_ids: [...new Set([
-            ...(ref.subjects && ref.subjects.composition_ids ? ref.subjects.composition_ids : []),
-            ...segments.filter(s => s.composition_id).map(s => s.composition_id),
-          ])],
-          musician_ids: (ref.subjects && ref.subjects.musician_ids) ? ref.subjects.musician_ids : [],
-        };
-        const subFooter = _buildLecdemSubjectFooter(
-          mergedSubjects,
-          { nodeId: nodeId || null, artistName: artistLabel || null }
-        );
-        if (subFooter) {
-          const existing = instance.el.querySelector('.mp-footer');
-          if (existing) existing.remove();
-          const resize = instance.el.querySelector('.mp-resize');
-          if (resize) instance.el.insertBefore(subFooter, resize);
-          else        instance.el.appendChild(subFooter);
-        }
-      }
+      // ADR-159: aggregate every segment's subjects + top-level ref.subjects and
+      // pass them in meta so they populate the header rail (and its ▾N overflow).
+      const mergedSubjects = {
+        raga_ids: [...new Set([
+          ...(ref.subjects && ref.subjects.raga_ids ? ref.subjects.raga_ids : []),
+          ...segments.filter(s => s.raga_id).map(s => s.raga_id),
+        ])],
+        composition_ids: [...new Set([
+          ...(ref.subjects && ref.subjects.composition_ids ? ref.subjects.composition_ids : []),
+          ...segments.filter(s => s.composition_id).map(s => s.composition_id),
+        ])],
+        musician_ids: (ref.subjects && ref.subjects.musician_ids) ? ref.subjects.musician_ids : [],
+      };
+      openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, { nodeId, subjects: mergedSubjects });
     });
     row1.appendChild(playBtn);
 
@@ -2466,6 +3032,138 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
 
   bracket.appendChild(segList);
   return bracket;
+}
+
+// ── ADR-163: PLAYLISTS section helpers (shared by all panels) ────────────────
+// A saved playlist appears in the PLAYLISTS section of every panel whose subject
+// it touches (musician / raga / composition), resolved from the render-time
+// back-index. A row plays the whole playlist into the ADR-162 queue.
+function _playlistToQueueItems(pl) {
+  return (pl.items || []).map(it => {
+    const media = (typeof resolveMedia === 'function') ? resolveMedia(it.media_key) : null;
+    if (!media) return null;
+    return {
+      media,
+      label:        it.note || it.composition_id || pl.title || '',
+      artistName:   '',
+      startSeconds: it.start_seconds || 0,
+      concertTitle: pl.title || '',
+      tracks:       [],
+      meta: {
+        nodeId:        (it.musician_ids && it.musician_ids[0]) || null,
+        ragaId:        it.raga_id || null,
+        compositionId: it.composition_id || null,
+        recId:         it.recording_id || null,
+        end_seconds:   it.end_seconds || null,   // ADR-163 slice 3: cross-recording advance
+      },
+    };
+  }).filter(Boolean);
+}
+
+function buildPlaylistRow(pl) {
+  const items = pl.items || [];
+  const queueItems = _playlistToQueueItems(pl);
+
+  // Header: name chip (hugs its text) + track count. The header wrapper stretches
+  // (row-accordion gives it flex:1), so the play button pins to the right.
+  const headerEl = document.createElement('div');
+  headerEl.className = 'mp-playlist-hdr';
+  const chip = document.createElement('span');
+  chip.className = 'playlist-chip';
+  chip.textContent = pl.title || pl.id;
+  chip.title = pl.description || pl.title || pl.id;
+  headerEl.appendChild(chip);
+  const count = document.createElement('span');
+  count.className = 'mp-playlist-count';
+  count.textContent = items.length + ' track' + (items.length === 1 ? '' : 's');
+  headerEl.appendChild(count);
+
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'rec-play-btn play-btn-direct';
+  play.title = 'Play "' + (pl.title || pl.id) + '"';
+  play.textContent = '▶';
+  play.addEventListener('click', e => {
+    e.stopPropagation();
+    if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, 0);
+  });
+  // Wrap in .trail-acts — the row-accordion header gives non-chevron children
+  // flex:1, which would stretch a bare play button into an ellipse; .trail-acts
+  // is exempted (flex:none), keeping it a circle (same pattern as concert rows).
+  const playActs = document.createElement('span');
+  playActs.className = 'trail-acts';
+  playActs.appendChild(play);
+
+  // Children: one tree-leaf per track — chips + play-from-here (queue at index i).
+  const bodyEls = items.map((it, i) => {
+    const trow = document.createElement('div');
+    trow.className = 'mp-playlist-track';
+    // Chips live in their own flex-wrap container: a single line by default that
+    // grows downward to as many lines as the tags need, while the ▶ stays pinned.
+    const chipsWrap = document.createElement('span');
+    chipsWrap.className = 'mp-playlist-track-chips';
+    const perf = _buildMusicianChipForFooter((it.musician_ids && it.musician_ids[0]) || null, null);
+    if (perf) chipsWrap.appendChild(perf);
+    if (typeof _buildSubjectChips === 'function') {
+      _buildSubjectChips({
+        raga_ids:        it.raga_id ? [it.raga_id] : [],
+        composition_ids: it.composition_id ? [it.composition_id] : [],
+        musician_ids:    [],
+      }).forEach(c => chipsWrap.appendChild(c));
+    }
+    if (!it.composition_id && it.note) {
+      const lbl = document.createElement('span');
+      lbl.className = 'yt-label-chip';
+      lbl.textContent = it.note;
+      chipsWrap.appendChild(lbl);
+    }
+    trow.appendChild(chipsWrap);
+    const tplay = document.createElement('button');
+    tplay.type = 'button';
+    tplay.className = 'rec-play-btn play-btn-concert';
+    tplay.title = 'Play from here';
+    tplay.textContent = '▶';
+    tplay.addEventListener('click', e => {
+      e.stopPropagation();
+      if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, i);
+    });
+    // ADR-163 §3: + affordance on each playlist track row
+    const itCopy = it;
+    const qiCopy = queueItems[i];
+    const tplus = _buildPlusBtn(() => ({
+      media: qiCopy && qiCopy.media,
+      startSeconds: itCopy.start_seconds || 0,
+      meta: {
+        ragaId: itCopy.raga_id || null, compositionId: itCopy.composition_id || null,
+        nodeId: (itCopy.musician_ids && itCopy.musician_ids[0]) || null,
+        end_seconds: itCopy.end_seconds || null,
+      },
+      label: itCopy.note || itCopy.composition_id || '',
+    }));
+    trow.appendChild(tplay);
+    trow.appendChild(tplus);
+    return trow;
+  });
+
+  // Tree node: chevron + header + collapsible track children (ADR-128 row-accordion).
+  return buildRowAccordion({ headerEl, bodyEls, defaultCollapsed: true, chevronPosition: 'left', trailingEl: playActs });
+}
+
+// Returns a PLAYLISTS buildSection for the given playlist ids, or null if none.
+function buildPlaylistsSection(playlistIds) {
+  if (!Array.isArray(playlistIds) || !playlistIds.length) return null;
+  if (typeof playlists === 'undefined' || typeof buildSection !== 'function') return null;
+  const pls = playlistIds.map(id => playlists.find(p => p.id === id)).filter(Boolean);
+  if (!pls.length) return null;
+  const chip = document.createElement('span');
+  // Match every other section header (CONCERTS / RECORDINGS / LECDEMS): the
+  // chip-section-hdr scale (0.85rem), not the smaller bare neutral-chip.
+  chip.className = 'neutral-chip chip-section-hdr';
+  chip.textContent = 'PLAYLISTS';
+  const { sectionEl, bodyEl } = buildSection({ headerChip: chip, count: pls.length, defaultCollapsed: false });
+  sectionEl.dataset.section = 'playlists';
+  pls.forEach(pl => bodyEl.appendChild(buildPlaylistRow(pl)));
+  return sectionEl;
 }
 
 // ── buildRecordingsList — concert-bracketed + legacy flat (ADR-018) ───────────
@@ -2848,6 +3546,15 @@ function buildRecordingsList(nodeId, nodeData) {
     _sections.push({ sectionEl: compSection, count: composerComps.length });
   }
 
+  // ── ADR-163: PLAYLISTS section (playlists this musician appears in) ──────────
+  // Promoted to the TOP — a playlist is the user's own re-organisation of the
+  // music, the highest abstraction in the panel. unshift so it leads the
+  // populated sections (the count>0 partition preserves insertion order).
+  const _plSection = buildPlaylistsSection(
+    (typeof playlistsByMusician !== 'undefined' ? playlistsByMusician[nodeId] : null)
+  );
+  if (_plSection) _sections.unshift({ sectionEl: _plSection, count: 1 });
+
   // ── 5. ADR-128 D4: Empty-section demotion ────────────────────────────────
   // Stable partition: sections with count > 0 come first (natural order),
   // sections with count === 0 come last (natural order). Sort before append.
@@ -3066,46 +3773,30 @@ function openPlayer(videoId, title, playerId) {
     playerId,
   };
 
-  // Named player: sruti drone has a minimize toggle (ADR-131 R3) alongside a
-  // close button. The minimize toggle collapses the player to a bright title-bar
-  // strip. The close button stops the drone and resets the tonic ring.
+  // Named player: the sruti drone minimizes via the universal fold-cue (ADR-160),
+  // so it no longer needs a dedicated minimize button. Its single ✕ close button
+  // stops the drone and resets the tonic ring on the raga wheel.
   if (playerId === 'sruti') {
     el.classList.add('sruti-player');
-    const minBtn = el.querySelector('.mp-close');
-    if (minBtn) {
-      minBtn.textContent = '\u2212';   // − (minus sign) = minimize
-      minBtn.title = 'Minimize';
-      minBtn.setAttribute('aria-label', 'Minimize sruti player');
-      minBtn.addEventListener('click', (e) => {
+    const closeBtn = el.querySelector('.mp-close');
+    if (closeBtn) {
+      closeBtn.title = 'Stop tanpura';
+      closeBtn.setAttribute('aria-label', 'Stop tanpura drone');
+      closeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const minimized = el.classList.toggle('sruti-minimized');
-        minBtn.textContent = minimized ? '\u2922' : '\u2212';   // ⤢ restore | − minimize
-        minBtn.title       = minimized ? 'Restore' : 'Minimize';
-        minBtn.setAttribute('aria-label',
-          minimized ? 'Restore sruti player' : 'Minimize sruti player');
+        if (typeof RagaWheel !== 'undefined' && typeof RagaWheel._clearSrutiRing === 'function') {
+          RagaWheel._clearSrutiRing();
+        }
+        closePlayer('sruti');
       });
     }
-    // Close button: stops drone and resets the tonic ring on the raga wheel
-    const srutiCloseBtn = document.createElement('button');
-    srutiCloseBtn.className = 'mp-sruti-close';
-    srutiCloseBtn.textContent = '\u2715';   // ✕
-    srutiCloseBtn.title = 'Stop tanpura';
-    srutiCloseBtn.setAttribute('aria-label', 'Stop tanpura drone');
-    srutiCloseBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (typeof RagaWheel !== 'undefined' && typeof RagaWheel._clearSrutiRing === 'function') {
-        RagaWheel._clearSrutiRing();
-      }
-      closePlayer('sruti');
-    });
-    const barRight = el.querySelector('.mp-bar-right');
-    if (barRight) barRight.appendChild(srutiCloseBtn);
   } else {
     el.querySelector('.mp-close').addEventListener('click', () => {
       closePlayer(playerId);
     });
   }
 
+  _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
   el.addEventListener('mousedown', () => bringToFront(instance));
@@ -3158,17 +3849,15 @@ function _createMobilePlayer() {
   progress.appendChild(progressBar);
   strip.appendChild(progress);
 
+  // ADR-161: leftmost chevron \u2014 the explicit expand affordance (the chip rail
+  // now fills the strip, so there's no blank area left to tap). Replaces the old
+  // \u25B6 button, which misleadingly implied "play" when it only expanded.
   const expandBtn = document.createElement('button');
   expandBtn.className = 'mp-mini-expand';
   expandBtn.title = 'Expand player';
   expandBtn.setAttribute('aria-label', 'Expand player');
-  expandBtn.textContent = '\u25B2';   // ▲ upward triangle = expand
+  expandBtn.textContent = '\u25B4';   // \u25B4 upward chevron = expand
   strip.appendChild(expandBtn);
-
-  const playBtn = document.createElement('button');
-  playBtn.className = 'mp-mini-play';
-  playBtn.textContent = '\u25B6';
-  strip.appendChild(playBtn);
 
   const info = document.createElement('div');
   info.className = 'mp-mini-info';
@@ -3214,7 +3903,6 @@ function _createMobilePlayer() {
     el, strip, bar, videoWrap, tracklistDiv, handle,
     miniTitle: titleSpan,
     miniExpand: expandBtn,
-    miniPlay: playBtn,
     miniClose: closeBtn,
     progressBar,
     iframe: null,
@@ -3260,22 +3948,16 @@ function hideMiniPlayer() {
 }
 
 function _wireMobilePlayerEvents(mp) {
-  // Tap mini strip info area → expand to full
+  // Tap a blank part of the mini strip → expand. Chips stopPropagation (they
+  // navigate instead); the close button and the ▾N overflow menu are excluded.
   mp.strip.addEventListener('click', e => {
-    if (e.target === mp.miniClose || e.target === mp.miniPlay ||
-        mp.miniClose.contains(e.target) || mp.miniPlay.contains(e.target)) return;
+    if (e.target === mp.miniClose || mp.miniClose.contains(e.target)) return;
+    if (e.target.closest('.mp-rail-more, .mp-rail-overflow')) return;
     _expandMobilePlayer();
   });
 
-  // Mini expand chevron (▲) — explicit expand affordance at left of strip
+  // Leftmost expand chevron (▴) — explicit expand affordance
   mp.miniExpand.addEventListener('click', e => {
-    e.stopPropagation();
-    _expandMobilePlayer();
-  });
-
-  // Mini play button → expand (YouTube iframe API isn't loaded, so user
-  // controls playback in full mode directly)
-  mp.miniPlay.addEventListener('click', e => {
     e.stopPropagation();
     _expandMobilePlayer();
   });
@@ -3339,7 +4021,7 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   mp.trackIndex = 0;
   mp.artistName = artistName || '';
   mp.concertTitle = concertTitle || '';
-  // ADR-066: store artistName in meta so updatePlayerFooter can build musician chip
+  // ADR-066/159: store artistName in meta so updatePlayerRail can build the performer chip
   mp.meta = Object.assign({ artistName: artistName || null }, meta || {});
   mp.currentRagaId = (meta && meta.ragaId) || null;  // ADR-049
 
@@ -3349,11 +4031,14 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     if (idx >= 0) mp.trackIndex = idx;
   }
 
-  // Update mini strip title
+  // ADR-160 pass 2: the mini strip shows the live chip rail (not a text title)
   const currentTrack = mp.tracks[mp.trackIndex];
   const displayTitle = currentTrack ? currentTrack.display_title : trackLabel;
-  mp.miniTitle.textContent = (artistName ? artistName + ' \u2014 ' : '') +
-                             (displayTitle || concertTitle || '');
+  _updateMobileMiniRail(mp,
+    currentTrack ? (currentTrack.raga_id || null)        : ((meta && meta.ragaId) || null),
+    currentTrack ? (currentTrack.composition_id || null) : ((meta && meta.compositionId) || null),
+    displayTitle || concertTitle || null,
+    currentTrack ? (currentTrack.tala || null)           : ((meta && meta.tala) || null));
 
   // ── Build full-mode bar ─────────────────────────────────────────────────
   mp.bar.innerHTML = '';
@@ -3370,20 +4055,41 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     });
   }
 
+  // ADR-161: leftmost fold-cue (▾) minimizes the full mobile player back to the
+  // mini strip — the chip rail fills the bar, leaving no blank area to tap, so an
+  // explicit chevron is the minimize affordance (mirrors desktop's fold-cue).
+  const barFoldCue = mp.bar.querySelector('.mp-fold-cue');
+  if (barFoldCue) {
+    barFoldCue.classList.add('mp-fold-active');
+    barFoldCue.textContent = '▾';
+    barFoldCue.title = 'Minimize';
+    barFoldCue.addEventListener('click', e => {
+      e.stopPropagation();
+      _collapseMobilePlayer(false);
+    });
+  }
+
+  // ADR-162: queue toggle + "Up Next" panel on the mobile bar (when a queue is active)
+  _addQueueUI(mp.el);
+
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
   // Tracklist starts hidden (fold-first); hamburger reveals it.
   mp.tracklistDiv.classList.remove('mp-tracklist-open');
+  mp.el.classList.remove('mp-tl-expanded');   // ADR-161: reset sheet height on new media
   const mobileToggleBtn = mp.bar.querySelector('.mp-tracklist-toggle');
   if (mobileToggleBtn && mp.tracks.length > 0) {
     // Remove any previous listener by cloning the button node
     const freshToggle = mobileToggleBtn.cloneNode(true);
     mobileToggleBtn.parentNode.replaceChild(freshToggle, mobileToggleBtn);
     freshToggle.classList.remove('mp-tracklist-open');
+    freshToggle.setAttribute('aria-pressed', 'false');
     freshToggle.addEventListener('click', e => {
       e.stopPropagation();
       const isOpen = mp.tracklistDiv.classList.contains('mp-tracklist-open');
       mp.tracklistDiv.classList.toggle('mp-tracklist-open', !isOpen);
       freshToggle.classList.toggle('mp-tracklist-open', !isOpen);
+      freshToggle.setAttribute('aria-pressed', String(!isOpen));   // ADR-161: depressed state
+      mp.el.classList.toggle('mp-tl-expanded', !isOpen);           // ADR-161: grow sheet upward
       if (!isOpen) {
         mp.tracklistDiv.querySelectorAll('.mp-track-item').forEach((li, idx) => {
           li.classList.toggle('mp-track-active', idx === mp.trackIndex);
@@ -3480,7 +4186,7 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   // When tracks=[] (single-recording from raga tree), _initTrack is null so we
   // fall back to mp.meta for both ragaId and compositionId.
   const _initTrack = mp.tracks[mp.trackIndex] || null;
-  updatePlayerFooter(
+  updatePlayerRail(
     { el: mp.el, meta: mp.meta },
     _initTrack ? (_initTrack.raga_id || null) : (mp.currentRagaId || null),
     _initTrack ? (_initTrack.composition_id || null) : ((mp.meta && mp.meta.compositionId) || null),
@@ -3600,9 +4306,9 @@ function _swipeMobileTrack(direction) {
       track.offset_seconds > 0 ? track.offset_seconds : undefined);
   }
 
-  // Update mini title
-  mp.miniTitle.textContent = (mp.artistName ? mp.artistName + ' \u2014 ' : '') +
-                             (track.display_title || '');
+  // ADR-160 pass 2: keep the mini-strip chip rail in sync with the active track
+  _updateMobileMiniRail(mp, track.raga_id || null, track.composition_id || null,
+                        track.display_title || null, track.tala || null);
 
   // Update dot indicators
   _updateMiniDots(mp);
@@ -3612,14 +4318,42 @@ function _swipeMobileTrack(direction) {
     li.classList.toggle('mp-track-active', idx === newIndex);
   });
 
-  // Update footer chips in full mode (ADR-066: include meta + displayTitle)
-  updatePlayerFooter(
+  // ADR-159: update the bar's identity rail in full mode (include meta + displayTitle)
+  updatePlayerRail(
     { el: mp.el, meta: mp.meta },
     track.raga_id || null,
     track.composition_id || null,
     track.display_title || null,
     track.tala || null
   );
+}
+
+// ── ADR-160 pass 2: mobile mini-strip identity rail ──────────────────────────
+// The collapsed mobile strip shows the same live chip rail as the full bar, so
+// discovery stays open (and what's playing stays visible) while minimized.
+// Built into .mp-mini-info above the track dots; overflowing chips collapse into
+// the rail's ▾N menu (which flips upward off the bottom strip, see
+// _toggleRailOverflow). Reuses buildPlayerRail + pmeta exactly like the bar.
+function _updateMobileMiniRail(mp, ragaId, compId, displayTitle, tala) {
+  const info = mp.strip && mp.strip.querySelector('.mp-mini-info');
+  if (!info) return;
+  const old = info.querySelector('.mp-rail');
+  if (old) {
+    if (old._railObserver) old._railObserver.disconnect();
+    if (old._overflowEl) old._overflowEl.remove();   // drop popped-out menu
+    old.remove();
+  }
+  const pmeta = mp.meta || {};
+  const rail = buildPlayerRail({
+    nodeId:        pmeta.nodeId    || null,
+    artistName:    pmeta.artistName || null,
+    ragaId:        ragaId || null,
+    compositionId: compId || null,
+    displayTitle:  displayTitle || null,
+    tala:          tala || null,
+    subjects:      pmeta.subjects || null,
+  });
+  if (rail) info.insertBefore(rail, info.firstChild);   // rail above the track dots
 }
 
 function _updateMiniDots(mp) {
