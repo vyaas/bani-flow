@@ -1116,6 +1116,21 @@
   .mp-yt-link svg { width: 14px; height: 14px; fill: currentColor; display: block; pointer-events: none; }
   .mp-yt-link:hover { color: var(--accent-sub); }
 
+  /* ── ADR-161: reusable toggle button — open/closed declared via aria-pressed.
+     A strong depressed (filled + inset) state, not a faint tint; reused by the
+     tracklist toggle now and the ADR-162 queue toggle later. ── */
+  .mp-toggle-btn { border-radius: 4px; transition: background 0.12s, color 0.12s, box-shadow 0.12s; }
+  .mp-toggle-btn[aria-pressed="true"] {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
+  }
+  /* ADR-161: keyboard focus ring on all bar controls */
+  .mp-bar-right button:focus-visible,
+  .mp-bar-right a:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 3px;
+  }
+
   /* 16:9 iframe wrapper */
   .mp-video-wrap {
     position: relative; width: 100%; padding-top: 56.25%; background: #000;
@@ -2664,14 +2679,22 @@
 
   .mp-tracklist {
     position: absolute;
-    top: 30px;           /* overlays below .mp-bar without displacing the video */
+    bottom: 100%;        /* ADR-161: open ABOVE the bar — never over the video */
+    top: auto;
     left: 0;
     right: 0;
     z-index: 10;
-    max-height: min(320px, 60%);
+    max-height: min(320px, 60vh);
     overflow-y: auto;
     background: var(--bg-panel);
     border: 1px solid var(--border-strong);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.45);   /* shadow cast upward */
+  }
+  /* Flip below the player only when there's no room above (near viewport top). */
+  .mp-tracklist.mp-tracklist-down {
+    bottom: auto; top: 100%;
+    border-radius: 0 0 4px 4px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.45);
   }
 
@@ -3920,6 +3943,7 @@
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       height: calc(50vh - 56px);
       transform: none;
+      transition: height 0.2s ease-out;   /* ADR-161: grow upward when tracklist opens */
       border-radius: 16px 16px 0 0;
       z-index: 205; /* ADR-043: above drawers (200), below tab bar (210) */
       overflow: hidden;
@@ -3934,10 +3958,15 @@
       flex-shrink: 0;
       cursor: pointer; /* hint: tap bar to minimise */
     }
-    /* ADR-160 pass 2: the fold-cue is inert on mobile (minimize is by tapping the
-       bar / using the mini strip), so hide it — it would otherwise duplicate the
-       rail's functional ▾N overflow arrow. */
-    .media-player.full-mobile .mp-fold-cue,
+    /* ADR-161: on the full mobile player the fold-cue is the explicit minimize
+       chevron (leftmost), since the chip rail leaves no blank area to tap. Give
+       it a real touch target. (In .mini the bar is hidden; the mini strip has
+       its own expand chevron.) */
+    .media-player.full-mobile .mp-fold-cue {
+      min-width: 44px; min-height: 44px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: var(--accent);
+    }
     .media-player.mini .mp-fold-cue { display: none; }
     .media-player.full-mobile .mp-title {
       font-size: 0.74rem; font-weight: 400;
@@ -3971,21 +4000,25 @@
     .media-player.full-mobile .mp-video-wrap.mp-has-plyr .plyr {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     }
-    /* Tracklist hidden by default; shown when toggle button adds .mp-tracklist-open.
-       Positioned as an absolute overlay so the video is never displaced or shrunk. */
+    /* ADR-161: tracklist is in-flow between the bar and the video (not an
+       overlay), so opening it pushes the video down instead of covering it.
+       The bottom-anchored sheet grows upward (.mp-tl-expanded) to make room. */
+    .media-player.full-mobile .mp-full-handle { order: 0; }
+    .media-player.full-mobile .mp-bar          { order: 1; }
+    .media-player.full-mobile .mp-tracklist    { order: 2; }
+    .media-player.full-mobile .mp-video-wrap   { order: 3; }
     .media-player.full-mobile .mp-tracklist {
       display: none;
-      position: absolute;
-      top: 60px;           /* below drag handle (~16px) + bar (~44px) */
-      left: 0; right: 0;
-      z-index: 10;
-      max-height: min(260px, 55%);
+      position: static;
+      flex-shrink: 0;
+      max-height: 55%;
       overflow-y: auto;
       background: var(--bg-panel);
-      border: 1px solid var(--border-strong);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+      border-bottom: 1px solid var(--border-strong);
     }
     .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; }
+    /* Grow the sheet upward when the tracklist opens (it is bottom-anchored). */
+    .media-player.full-mobile.mp-tl-expanded { height: calc(85vh - 56px); }
     /* No tracks → tracklist is empty; keep hidden regardless of class */
     .media-player.full-mobile .mp-tracklist:empty { display: none !important; }
     .media-player.full-mobile .mp-footer { flex-shrink: 0; }
@@ -4010,12 +4043,13 @@
       background: var(--accent);
       transition: width 0.3s linear;
     }
-    .mp-mini-play {
+    /* ADR-161: leftmost expand chevron on the mini strip */
+    .mp-mini-expand {
       width: 44px; height: 44px;
       min-width: 44px;
       display: flex; align-items: center; justify-content: center;
       background: none; border: none;
-      color: var(--fg); font-size: 1.1rem;
+      color: var(--accent); font-size: 1rem;
       cursor: pointer;
     }
     .mp-mini-info {
@@ -4051,15 +4085,6 @@
       color: var(--fg-muted); font-size: 1.1rem;
       cursor: pointer;
     }
-    .mp-mini-expand {
-      width: 44px; height: 44px;
-      min-width: 44px;
-      display: flex; align-items: center; justify-content: center;
-      background: none; border: none;
-      color: var(--accent); font-size: 0.85rem;
-      cursor: pointer;
-    }
-
     /* ── ADR-051: enforce 44px touch targets for player chips on mobile ── */
     .mp-raga-chip,
     .mp-comp-chip,

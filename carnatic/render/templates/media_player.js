@@ -532,8 +532,10 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
 
   if (hasTracks) {
     const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'mp-tracklist-toggle';
+    // ADR-161: reusable toggle button \u2014 declares open/closed via aria-pressed.
+    toggleBtn.className = 'mp-tracklist-toggle mp-toggle-btn';
     toggleBtn.title = 'Track list';
+    toggleBtn.setAttribute('aria-pressed', 'false');
     toggleBtn.textContent = '\u2261';
     rightGroup.appendChild(toggleBtn);
   }
@@ -722,6 +724,7 @@ function buildPlayerRail(meta) {
   overflow.className = 'mp-rail-overflow';
   rail.appendChild(moreBtn);
   rail.appendChild(overflow);
+  rail._overflowEl = overflow;   // referenced by reflowRail; popped to <body> while open
   moreBtn.addEventListener('click', e => {
     e.stopPropagation();
     _toggleRailOverflow(moreBtn, overflow);
@@ -744,8 +747,10 @@ function buildPlayerRail(meta) {
 function reflowRail(rail) {
   if (!rail || !rail.isConnected) return;
   const moreBtn  = rail.querySelector(':scope > .mp-rail-more');
-  const overflow = rail.querySelector(':scope > .mp-rail-overflow');
+  const overflow = rail._overflowEl;
   if (!moreBtn || !overflow) return;
+  // bring the menu back into the rail if it was popped out to <body> while open
+  if (overflow.parentNode !== rail) rail.appendChild(overflow);
   // 1) reset: pull every overflowed chip back inline (before the button)
   while (overflow.firstChild) rail.insertBefore(overflow.firstChild, moreBtn);
   overflow.classList.remove('open');
@@ -766,19 +771,40 @@ function reflowRail(rail) {
   moreBtn.textContent = '▾ ' + n;  // ▾ N
 }
 
-// ── _toggleRailOverflow — open/close the ▾ N menu as a fixed popover ─────────
-// Fixed positioning escapes the bar's overflow:hidden so the menu isn't clipped.
+// ── _toggleRailOverflow — open/close the ▾ N menu ────────────────────────────
+// While open, the menu is reparented to <body> and positioned with fixed
+// viewport coords. This is essential on the minimized mobile strip: its
+// ancestor (.media-player.mini) has a transform + overflow:hidden, which would
+// otherwise make position:fixed resolve against — and be clipped by — that
+// ancestor. On close it is tucked back into the rail so reflowRail can manage it.
+function _tuckRailOverflow(overflow) {
+  const rail = overflow._ownerRail;
+  overflow.classList.remove('open');
+  if (rail && overflow.parentNode !== rail) rail.appendChild(overflow);
+}
 function _toggleRailOverflow(moreBtn, overflow) {
+  const rail = moreBtn.parentNode;
   const opening = !overflow.classList.contains('open');
-  document.querySelectorAll('.mp-rail-overflow.open').forEach(o => o.classList.remove('open'));
-  if (!opening) { moreBtn.setAttribute('aria-expanded', 'false'); return; }
+  // Close (and tuck back) any other open menu first.
+  document.querySelectorAll('.mp-rail-overflow.open').forEach(o => {
+    o.classList.remove('open');
+    _tuckRailOverflow(o);
+  });
+  if (!opening) {
+    moreBtn.setAttribute('aria-expanded', 'false');
+    _tuckRailOverflow(overflow);
+    return;
+  }
+  // Pop out to <body> so a transformed / overflow-hidden ancestor can't clip it.
+  overflow._ownerRail = rail;
+  document.body.appendChild(overflow);
   const r = moreBtn.getBoundingClientRect();
   overflow.style.left = Math.round(r.left) + 'px';
   overflow.style.top  = Math.round(r.bottom + 4) + 'px';
   overflow.classList.add('open');
   moreBtn.setAttribute('aria-expanded', 'true');
   // Flip upward if the menu would spill off the bottom of the viewport — needed
-  // for the mobile mini strip, which sits at the bottom edge (ADR-160 pass 2).
+  // for the mobile mini strip, which sits at the bottom edge.
   const menuH = overflow.offsetHeight;
   if (r.bottom + 4 + menuH > window.innerHeight) {
     overflow.style.top = Math.round(Math.max(4, r.top - menuH - 4)) + 'px';
@@ -792,7 +818,7 @@ function _toggleRailOverflow(moreBtn, overflow) {
   setTimeout(() => {
     const onDoc = ev => {
       if (overflow.contains(ev.target) || ev.target === moreBtn) return;
-      overflow.classList.remove('open');
+      _tuckRailOverflow(overflow);
       moreBtn.setAttribute('aria-expanded', 'false');
       document.removeEventListener('click', onDoc, true);
     };
@@ -825,6 +851,7 @@ function updatePlayerRail(player, ragaId, compositionId, displayTitle, tala) {
   const existing = bar.querySelector('.mp-rail') || bar.querySelector('.mp-title');
   if (existing) {
     if (existing._railObserver) existing._railObserver.disconnect();  // drop stale observer
+    if (existing._overflowEl) existing._overflowEl.remove();          // drop popped-out menu
     existing.remove();
   }
   if (newRail) {
@@ -1249,10 +1276,17 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     const toggleBtn = el.querySelector('.mp-tracklist-toggle');
     toggleBtn.addEventListener('click', e => {
       e.stopPropagation();
-      const isOpen = instance.tracklistEl.style.display !== 'none';
-      instance.tracklistEl.style.display = isOpen ? 'none' : 'block';
-      toggleBtn.classList.toggle('mp-tracklist-open', !isOpen);
-      if (!isOpen) {
+      const willOpen = instance.tracklistEl.style.display === 'none';
+      instance.tracklistEl.style.display = willOpen ? 'block' : 'none';
+      // ADR-161: declare state via aria-pressed (drives the depressed visual).
+      toggleBtn.setAttribute('aria-pressed', willOpen ? 'true' : 'false');
+      if (willOpen) {
+        // ADR-161: opens above the bar (CSS bottom:100%); flip below only if there
+        // is no room above (player near the top of the viewport).
+        instance.tracklistEl.classList.remove('mp-tracklist-down');
+        if (instance.tracklistEl.getBoundingClientRect().top < 4) {
+          instance.tracklistEl.classList.add('mp-tracklist-down');
+        }
         // Mark the active track when opening
         trackUl.querySelectorAll('.mp-track-item').forEach(li => {
           li.classList.toggle('mp-track-active',
@@ -3199,17 +3233,15 @@ function _createMobilePlayer() {
   progress.appendChild(progressBar);
   strip.appendChild(progress);
 
+  // ADR-161: leftmost chevron \u2014 the explicit expand affordance (the chip rail
+  // now fills the strip, so there's no blank area left to tap). Replaces the old
+  // \u25B6 button, which misleadingly implied "play" when it only expanded.
   const expandBtn = document.createElement('button');
   expandBtn.className = 'mp-mini-expand';
   expandBtn.title = 'Expand player';
   expandBtn.setAttribute('aria-label', 'Expand player');
-  expandBtn.textContent = '\u25B2';   // ▲ upward triangle = expand
+  expandBtn.textContent = '\u25B4';   // \u25B4 upward chevron = expand
   strip.appendChild(expandBtn);
-
-  const playBtn = document.createElement('button');
-  playBtn.className = 'mp-mini-play';
-  playBtn.textContent = '\u25B6';
-  strip.appendChild(playBtn);
 
   const info = document.createElement('div');
   info.className = 'mp-mini-info';
@@ -3255,7 +3287,6 @@ function _createMobilePlayer() {
     el, strip, bar, videoWrap, tracklistDiv, handle,
     miniTitle: titleSpan,
     miniExpand: expandBtn,
-    miniPlay: playBtn,
     miniClose: closeBtn,
     progressBar,
     iframe: null,
@@ -3301,22 +3332,16 @@ function hideMiniPlayer() {
 }
 
 function _wireMobilePlayerEvents(mp) {
-  // Tap mini strip info area → expand to full
+  // Tap a blank part of the mini strip → expand. Chips stopPropagation (they
+  // navigate instead); the close button and the ▾N overflow menu are excluded.
   mp.strip.addEventListener('click', e => {
-    if (e.target === mp.miniClose || e.target === mp.miniPlay ||
-        mp.miniClose.contains(e.target) || mp.miniPlay.contains(e.target)) return;
+    if (e.target === mp.miniClose || mp.miniClose.contains(e.target)) return;
+    if (e.target.closest('.mp-rail-more, .mp-rail-overflow')) return;
     _expandMobilePlayer();
   });
 
-  // Mini expand chevron (▲) — explicit expand affordance at left of strip
+  // Leftmost expand chevron (▴) — explicit expand affordance
   mp.miniExpand.addEventListener('click', e => {
-    e.stopPropagation();
-    _expandMobilePlayer();
-  });
-
-  // Mini play button → expand (YouTube iframe API isn't loaded, so user
-  // controls playback in full mode directly)
-  mp.miniPlay.addEventListener('click', e => {
     e.stopPropagation();
     _expandMobilePlayer();
   });
@@ -3414,20 +3439,38 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     });
   }
 
+  // ADR-161: leftmost fold-cue (▾) minimizes the full mobile player back to the
+  // mini strip — the chip rail fills the bar, leaving no blank area to tap, so an
+  // explicit chevron is the minimize affordance (mirrors desktop's fold-cue).
+  const barFoldCue = mp.bar.querySelector('.mp-fold-cue');
+  if (barFoldCue) {
+    barFoldCue.classList.add('mp-fold-active');
+    barFoldCue.textContent = '▾';
+    barFoldCue.title = 'Minimize';
+    barFoldCue.addEventListener('click', e => {
+      e.stopPropagation();
+      _collapseMobilePlayer(false);
+    });
+  }
+
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
   // Tracklist starts hidden (fold-first); hamburger reveals it.
   mp.tracklistDiv.classList.remove('mp-tracklist-open');
+  mp.el.classList.remove('mp-tl-expanded');   // ADR-161: reset sheet height on new media
   const mobileToggleBtn = mp.bar.querySelector('.mp-tracklist-toggle');
   if (mobileToggleBtn && mp.tracks.length > 0) {
     // Remove any previous listener by cloning the button node
     const freshToggle = mobileToggleBtn.cloneNode(true);
     mobileToggleBtn.parentNode.replaceChild(freshToggle, mobileToggleBtn);
     freshToggle.classList.remove('mp-tracklist-open');
+    freshToggle.setAttribute('aria-pressed', 'false');
     freshToggle.addEventListener('click', e => {
       e.stopPropagation();
       const isOpen = mp.tracklistDiv.classList.contains('mp-tracklist-open');
       mp.tracklistDiv.classList.toggle('mp-tracklist-open', !isOpen);
       freshToggle.classList.toggle('mp-tracklist-open', !isOpen);
+      freshToggle.setAttribute('aria-pressed', String(!isOpen));   // ADR-161: depressed state
+      mp.el.classList.toggle('mp-tl-expanded', !isOpen);           // ADR-161: grow sheet upward
       if (!isOpen) {
         mp.tracklistDiv.querySelectorAll('.mp-track-item').forEach((li, idx) => {
           li.classList.toggle('mp-track-active', idx === mp.trackIndex);
@@ -3678,6 +3721,7 @@ function _updateMobileMiniRail(mp, ragaId, compId, displayTitle, tala) {
   const old = info.querySelector('.mp-rail');
   if (old) {
     if (old._railObserver) old._railObserver.disconnect();
+    if (old._overflowEl) old._overflowEl.remove();   // drop popped-out menu
     old.remove();
   }
   const pmeta = mp.meta || {};
