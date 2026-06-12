@@ -1,7 +1,7 @@
 # ADR-159: Header as the Live Identity Rail
 
-**Status**: Proposed
-**Date**: 2026-06-12
+**Status**: Accepted
+**Date**: 2026-06-12 (proposed + accepted)
 **Agents**: graph-architect → carnatic-coder → test-engineer
 **Depends on**: ADR-156 (active-segment tracking — the live signal this consumes), ADR-066 (chip-parity classes shared with panels), ADR-142 (chips as entity objects). **Supersedes the chip-placement decision of**: ADR-066 (footer chip row).
 
@@ -27,7 +27,7 @@ The forces: **immersion** (the player should answer "what am I hearing right now
 
 `buildPlayerBar` stops rendering `.mp-title` as the primary element. In its place, the bar renders a horizontal chip rail in this order:
 
-1. **Performer chip** (stable anchor, leftmost) — era-tinted musician chip (`_buildMusicianChipForFooter`, `:540–584`). *Rationale for keeping it despite the user's raga-first list:* the performer is **concert-stable** — it does not change as the recording moves between kritis — whereas everything after it is **segment-live**. Keeping "who" as a fixed left anchor and letting the rest update is what makes the live-sync legible rather than vertiginous. **Open for review:** if you'd rather drop the performer from the rail entirely (it is still reachable from the source title / panel), say so and I'll cut it.
+1. **Performer chip** (stable anchor, leftmost) — era-tinted musician chip (`_buildMusicianChipForFooter`, `:540–584`). *Rationale for keeping it despite the user's raga-first list:* the performer is **concert-stable** — it does not change as the recording moves between kritis — whereas everything after it is **segment-live**. Keeping "who" as a fixed left anchor and letting the rest update is what makes the live-sync legible rather than vertiginous. **Resolved (2026-06-12, accepted):** keep the performer chip as the stable leftmost anchor.
 2. **Raga chip** — `.raga-chip`, teal (`--chip-raga-border`).
 3. **Composition chip** — `.comp-chip`, amber (`--chip-comp-border`).
 4. **Composer chip** — `buildComposerChip` (`:1272–1335`), era-tinted.
@@ -35,9 +35,11 @@ The forces: **immersion** (the player should answer "what am I hearing right now
 
 All chips keep their existing classes, colors, click-to-navigate handlers, and ADR-142 entity roles — this is a *relocation*, not a reinvention. Colors already exist as tokens (`base.html:20–58`); no new palette.
 
-### 2. The footer is retired
+### 2. The standard footer is retired
 
-`.mp-footer` and its CSS (`base.html:1111–1127`) are removed. `buildPlayerFooter` is **renamed and repurposed** into the rail builder (`buildPlayerRail` or folded into `buildPlayerBar`) so the chip-construction logic is reused verbatim, not duplicated. The video sits directly below the bar; the player loses one horizontal band of height.
+`buildPlayerFooter` is **renamed** to `buildPlayerRail` (chip-construction reused verbatim) and mounted in the bar via `buildPlayerBar`; `updatePlayerFooter` → `updatePlayerRail` swaps the rail in-place. For the standard recital/concert path the below-video footer is gone and the player loses one horizontal band of height.
+
+**Implementation refinement (2026-06-12, Coder):** the `.mp-footer` *class and CSS are retained*, not deleted, because two other surfaces use them — `_buildLecdemSubjectFooter` (a cross-link *index* of every subject a lecture covers, with overflow; genuinely not a one-line identity rail) and the panel co-performer footers. So a lecdem still shows its subject-index footer below the video, while its identity rail (lecturer + live segment subject) lives in the bar like everything else. The win promised here — retire the *standard* identity footer, reclaim the band — holds for the dominant recital/concert case; the lecdem subject index is a distinct element left in place. A future ADR may reconsider where the lecdem subject index lives.
 
 ### 3. The source/concert title is demoted, not deleted
 
