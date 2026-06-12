@@ -1,7 +1,8 @@
 # ADR-162: The Queue Made Visible & Editable
 
-**Status**: Proposed
-**Date**: 2026-06-12
+**Status**: Accepted
+**Date**: 2026-06-12 (proposed + accepted)
+**Implementation note**: shipped desktop-first, then mobile (the queue toggle/panel added to both player paths, like the tracklist). Reorder via up/down controls rather than drag (touch-robust; drag is a possible later enhancement).
 **Agents**: graph-architect → carnatic-coder → test-engineer
 **Depends on**: ADR-157 (the ephemeral `MediaQueue` this gives a face to), ADR-161 (the upward-opening surface + toggle-button primitive it reuses), ADR-159 (chip rail vocabulary). **Completes**: ADR-157 Phase A.
 
