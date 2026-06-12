@@ -117,6 +117,8 @@ PATCHABLE_RECORDING_FIELDS = {
     "occasion",       # ADR-143's "notes_summary" analogue
     "url",            # top-level YouTube URL
 }
+# ADR-163: user-authored playlists (first non-sourced entity; no source gate).
+PATCHABLE_PLAYLIST_FIELDS = {"title", "description", "sources"}
 
 
 # ── WriteResult ────────────────────────────────────────────────────────────────
@@ -2015,6 +2017,106 @@ class CarnaticWriter:
             "[REC~]",
             f"patched: {recording_id}  {field}: {old_value!r} → {rec[field]!r}",
         )
+
+    # ── ADR-163: persistent playlists (per-file in data/playlists/) ──────────────
+    # The first user-authored entity. kind:"user" playlists are exempt from the
+    # source-URL gate; validation is structural/referential only. Items reuse the
+    # ADR-154 media_key + ADR-156 span fields, so a playlist can mix whole videos,
+    # concert spans, and lecdem chapters.
+    @staticmethod
+    def _norm_playlist_item(it: dict) -> dict:
+        """Normalise a playlist item: media_key (+ start) required-ish; optional
+        span/back-reference fields kept only when present."""
+        out: dict[str, Any] = {"media_key": it.get("media_key")}
+        for k in ("end_seconds", "recording_id", "composition_id", "raga_id", "note"):
+            if it.get(k) not in (None, "", "null"):
+                out[k] = it[k]
+        if it.get("musician_ids"):
+            out["musician_ids"] = list(it["musician_ids"])
+        out["start_seconds"] = it.get("start_seconds") or 0
+        return out
+
+    def add_playlist(
+        self,
+        *,
+        id: str,
+        title: str,
+        description: str | None = None,
+        items: list[dict] | None = None,
+        kind: str = "user",
+        playlists_path: Path | None = None,
+    ) -> WriteResult:
+        """Create a new playlist file at playlists/{id}.json (ADR-163)."""
+        if not id:
+            return _err("playlist requires an id")
+        if not title:
+            return _err("playlist requires a title")
+        pp = playlists_path or (Path(__file__).parent / "data" / "playlists")
+        pp.mkdir(parents=True, exist_ok=True)
+        pl_file = pp / f"{id}.json"
+        if pl_file.exists():
+            return _skip(f"playlist {id} already exists in playlists/")
+        norm_items = []
+        for it in (items or []):
+            if not isinstance(it, dict) or not it.get("media_key"):
+                return _err(f"playlist item missing media_key: {it!r}")
+            norm_items.append(self._norm_playlist_item(it))
+        playlist = {
+            "id": id,
+            "title": title,
+            "description": description,
+            "items": norm_items,
+            "sources": [],
+            "kind": kind or "user",
+        }
+        _atomic_write(pl_file, playlist)
+        n = len(norm_items)
+        return _ok("[PLAYLIST+]", f"added: {id} — {title} ({n} item{'' if n == 1 else 's'})")
+
+    def patch_playlist(
+        self, *, playlist_id: str, field: str, value: Any,
+        playlists_path: Path | None = None,
+    ) -> WriteResult:
+        """Update a single scalar field on a playlist (ADR-163)."""
+        if field == "id":
+            return _err("id is immutable — cannot be patched")
+        if field not in PATCHABLE_PLAYLIST_FIELDS:
+            return _err(
+                f"field \"{field}\" is not patchable on a playlist\n"
+                f"       Permitted fields: {', '.join(sorted(PATCHABLE_PLAYLIST_FIELDS))}"
+            )
+        pp = playlists_path or (Path(__file__).parent / "data" / "playlists")
+        pl_file = pp / f"{playlist_id}.json"
+        if not pl_file.exists():
+            return _err(f"playlist_id \"{playlist_id}\" does not exist in playlists/")
+        pl = json.loads(pl_file.read_text(encoding="utf-8"))
+        old = pl.get(field)
+        pl[field] = value if value not in (None, "null", "") else None
+        _atomic_write(pl_file, pl)
+        return _ok("[PLAYLIST~]", f"patched: {playlist_id}  {field}: {old!r} → {pl[field]!r}")
+
+    def append_to_playlist_items(
+        self, *, playlist_id: str, item: dict,
+        playlists_path: Path | None = None,
+    ) -> WriteResult:
+        """Append one item to a playlist's items[] (ADR-163). De-dupes by
+        (media_key, start_seconds)."""
+        if not isinstance(item, dict) or not item.get("media_key"):
+            return _err("playlist item missing media_key")
+        pp = playlists_path or (Path(__file__).parent / "data" / "playlists")
+        pl_file = pp / f"{playlist_id}.json"
+        if not pl_file.exists():
+            return _err(f"playlist_id \"{playlist_id}\" does not exist in playlists/")
+        pl = json.loads(pl_file.read_text(encoding="utf-8"))
+        pl.setdefault("items", [])
+        norm = self._norm_playlist_item(item)
+        for ex in pl["items"]:
+            if (ex.get("media_key") == norm["media_key"]
+                    and (ex.get("start_seconds") or 0) == (norm.get("start_seconds") or 0)):
+                return _skip(f"item {norm['media_key']}@{norm.get('start_seconds', 0)} already in {playlist_id}")
+        pl["items"].append(norm)
+        _atomic_write(pl_file, pl)
+        return _ok("[PLAYLIST+ITEM]", f"appended item to {playlist_id} ({len(pl['items'])} total)")
 
     def append_to_recording_segments(
         self,
