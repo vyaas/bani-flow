@@ -2698,6 +2698,77 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.45);
   }
 
+  /* ── ADR-162: "Up Next" queue panel — bar-summoned, opens above the bar ── */
+  .mp-queue {
+    position: absolute;
+    bottom: 100%; left: 0; right: 0;
+    z-index: 11;
+    max-height: min(340px, 65vh);
+    overflow-y: auto;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.45);
+  }
+  .mp-queue.mp-queue-down {
+    bottom: auto; top: 100%;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+  }
+  .mp-queue-head {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 8px;
+    position: sticky; top: 0;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .mp-queue-title {
+    flex: 1; font-size: 0.68rem; font-weight: bold; color: var(--fg-sub);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .mp-queue-prev, .mp-queue-next {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.9rem; cursor: pointer; padding: 2px 4px; line-height: 1;
+  }
+  .mp-queue-prev:hover, .mp-queue-next:hover { color: var(--accent); }
+  .mp-queue-items { list-style: none; margin: 0; padding: 0; }
+  .mp-queue-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border);
+    border-left: 2px solid transparent;
+    cursor: pointer;
+  }
+  .mp-queue-item:hover { background: var(--bg-input); }
+  .mp-queue-current {
+    background: color-mix(in srgb, var(--accent) 13%, transparent);
+    border-left-color: var(--accent);
+  }
+  .mp-queue-reorder { display: flex; flex-direction: column; gap: 1px; flex-shrink: 0; }
+  .mp-queue-reorder button {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.6rem; line-height: 1; cursor: pointer; padding: 0 2px;
+  }
+  .mp-queue-reorder button:disabled { opacity: 0.25; cursor: default; }
+  .mp-queue-reorder button:not(:disabled):hover { color: var(--accent); }
+  .mp-queue-chips {
+    flex: 1; min-width: 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  }
+  .mp-queue-remove {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+  }
+  .mp-queue-remove:hover { color: var(--accent-danger); }
+  /* Queue toggle button in the bar (same icon-button family as copy/share) */
+  .mp-queue-toggle {
+    background: none; border: none; color: var(--fg-muted);
+    cursor: pointer; padding: 0 4px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .mp-queue-toggle svg { width: 15px; height: 15px; fill: currentColor; display: block; pointer-events: none; }
+  .mp-queue-toggle:hover { color: var(--accent-sub); }
+
   .mp-track-items {
     list-style: none;
     margin: 0;
@@ -3977,7 +4048,8 @@
     .media-player.full-mobile .mp-copy-btn,
     .media-player.full-mobile .mp-share-btn,
     .media-player.full-mobile .mp-yt-link,
-    .media-player.full-mobile .mp-tracklist-toggle {
+    .media-player.full-mobile .mp-tracklist-toggle,
+    .media-player.full-mobile .mp-queue-toggle {
       min-width: 44px; min-height: 44px;
       display: inline-flex; align-items: center; justify-content: center;
     }
@@ -4006,6 +4078,7 @@
     .media-player.full-mobile .mp-full-handle { order: 0; }
     .media-player.full-mobile .mp-bar          { order: 1; }
     .media-player.full-mobile .mp-tracklist    { order: 2; }
+    .media-player.full-mobile .mp-queue        { order: 2; }
     .media-player.full-mobile .mp-video-wrap   { order: 3; }
     .media-player.full-mobile .mp-tracklist {
       display: none;
@@ -4017,8 +4090,17 @@
       border-bottom: 1px solid var(--border-strong);
     }
     .media-player.full-mobile .mp-tracklist.mp-tracklist-open { display: block; }
-    /* Grow the sheet upward when the tracklist opens (it is bottom-anchored). */
-    .media-player.full-mobile.mp-tl-expanded { height: calc(85vh - 56px); }
+    /* ADR-162: the queue panel is in-flow on mobile too (pushes the video down),
+       like the tracklist; the sheet grows when either is open. */
+    .media-player.full-mobile .mp-queue {
+      position: static; flex-shrink: 0; max-height: 55%;
+      border-radius: 0; box-shadow: none;
+      border-left: none; border-right: none; border-top: none;
+    }
+    .media-player.mini .mp-queue { display: none !important; }
+    /* Grow the sheet upward when the tracklist OR the queue panel opens. */
+    .media-player.full-mobile.mp-tl-expanded,
+    .media-player.full-mobile:has(.mp-queue.mp-queue-shown) { height: calc(85vh - 56px); }
     /* No tracks → tracklist is empty; keep hidden regardless of class */
     .media-player.full-mobile .mp-tracklist:empty { display: none !important; }
     .media-player.full-mobile .mp-footer { flex-shrink: 0; }

@@ -1281,6 +1281,9 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
       // ADR-161: declare state via aria-pressed (drives the depressed visual).
       toggleBtn.setAttribute('aria-pressed', willOpen ? 'true' : 'false');
       if (willOpen) {
+        // ADR-162: tracklist and queue panel are mutually exclusive (both open
+        // upward from the bar) — close the queue panel when opening the tracklist.
+        if (MediaQueue.panelOpen) { MediaQueue.setPanelOpen(false); _refreshQueuePanels(); }
         // ADR-161: opens above the bar (CSS bottom:100%); flip below only if there
         // is no room above (player near the top of the viewport).
         instance.tracklistEl.classList.remove('mp-tracklist-down');
@@ -1296,6 +1299,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     });
   }
 
+  _addQueueUI(el);    // ADR-162: queue toggle + "Up Next" panel (only when a queue is active)
   _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
@@ -1378,12 +1382,15 @@ const MediaQueue = {
   index: -1,
   active: false,
   currentKey: null,
+  panelOpen: false,   // ADR-162: whether the "Up Next" panel shows by default
 
   start(items, startIndex) {
     this.items = Array.isArray(items) ? items.filter(it => it && it.media) : [];
     this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
     this.active = this.items.length > 0;
+    this.panelOpen = this.active;   // ADR-162: Play all reveals the queue panel
     if (this.active) this._open(null);
+    _refreshQueuePanels();
   },
 
   // True when `mkey` is the queue's current item — guards auto-advance so a
@@ -1405,30 +1412,239 @@ const MediaQueue = {
     }
   },
 
-  advance() {
-    if (!this.active) return;
-    if (this.index >= this.items.length - 1) { this.active = false; this.currentKey = null; return; }
+  // ADR-162: switch to a given index, reusing one desktop window (drop the prev).
+  _switchTo(newIndex) {
+    if (newIndex < 0 || newIndex >= this.items.length) return;
     const prevKey = this.currentKey;
     const prevInst = prevKey ? playerRegistry.get(prevKey) : null;
     const pos = (prevInst && prevInst.el && !prevInst._isMobileSingleton)
       ? { top: prevInst.el.style.top, left: prevInst.el.style.left, width: prevInst.el.style.width }
       : null;
-    this.index++;
+    this.index = newIndex;
     this._open(pos);
-    // Reuse one window on desktop: drop the previous window (mobile already
-    // re-used its singleton inside _openMobilePlayer).
     if (prevInst && !prevInst._isMobileSingleton && prevKey !== this.currentKey && playerRegistry.has(prevKey)) {
       if (prevInst.controller) prevInst.controller.destroy();
       if (prevInst.el) prevInst.el.remove();
       playerRegistry.delete(prevKey);
       refreshPlayingIndicators();
     }
+    _refreshQueuePanels();
   },
 
-  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; },
+  advance() {
+    if (!this.active) return;
+    if (this.index >= this.items.length - 1) {
+      this.active = false; this.currentKey = null; _refreshQueuePanels(); return;
+    }
+    this._switchTo(this.index + 1);
+  },
+
+  // ADR-162: explicit transport + editing.
+  next()     { this.advance(); },
+  previous() { if (this.active && this.index > 0) this._switchTo(this.index - 1); },
+  jumpTo(i)  { if (this.active && i !== this.index) this._switchTo(i); },
+
+  removeAt(i) {
+    if (i < 0 || i >= this.items.length) return;
+    if (i === this.index) {
+      // Removing the current item: drop it and play whatever now sits here
+      // (the next item), or stop cleanly if it was the last (never stall).
+      const prevKey = this.currentKey;
+      const prevInst = prevKey ? playerRegistry.get(prevKey) : null;
+      this.items.splice(i, 1);
+      if (this.items.length === 0) {
+        if (prevInst && !prevInst._isMobileSingleton && prevInst.el) {
+          if (prevInst.controller) prevInst.controller.destroy();
+          prevInst.el.remove(); playerRegistry.delete(prevKey); refreshPlayingIndicators();
+        }
+        this.clear(); _refreshQueuePanels(); return;
+      }
+      if (this.index >= this.items.length) this.index = this.items.length - 1;
+      const pos = (prevInst && prevInst.el && !prevInst._isMobileSingleton)
+        ? { top: prevInst.el.style.top, left: prevInst.el.style.left, width: prevInst.el.style.width } : null;
+      this._open(pos);
+      if (prevInst && !prevInst._isMobileSingleton && prevKey !== this.currentKey && playerRegistry.has(prevKey)) {
+        if (prevInst.controller) prevInst.controller.destroy();
+        if (prevInst.el) prevInst.el.remove();
+        playerRegistry.delete(prevKey); refreshPlayingIndicators();
+      }
+    } else {
+      this.items.splice(i, 1);
+      if (i < this.index) this.index--;
+    }
+    _refreshQueuePanels();
+  },
+
+  move(from, to) {
+    if (from < 0 || from >= this.items.length || to < 0 || to >= this.items.length || from === to) return;
+    const [it] = this.items.splice(from, 1);
+    this.items.splice(to, 0, it);
+    // Keep `index` pointing at the still-current item after the reorder.
+    if (this.currentKey) {
+      const ni = this.items.findIndex(x => mediaKey(x.media) === this.currentKey);
+      if (ni >= 0) this.index = ni;
+    }
+    _refreshQueuePanels();
+  },
+
+  setPanelOpen(open) { this.panelOpen = !!open; },
+
+  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; },
 };
 window.MediaQueue = MediaQueue;
 window.startMediaQueue = function(items, startIndex) { MediaQueue.start(items, startIndex); };
+
+// ── ADR-162: the "Up Next" queue panel — makes MediaQueue visible & editable ──
+// A bar-summoned, upward-opening panel (like the tracklist) listing the queue's
+// items with a now-playing highlight, per-row reorder/remove, row-click to jump,
+// and prev/next transport. Two-way bound: every control mutates MediaQueue, and
+// MediaQueue mutations call _refreshQueuePanels() to re-render every open panel.
+const _QUEUE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 5h12v2H3zM3 10h12v2H3zM3 15h8v2H3zM16 9v8l6-4z"/></svg>';
+
+function _buildQueueRowChips(item) {
+  const m = item.meta || {};
+  const frag = document.createDocumentFragment();
+  const perf = _buildMusicianChipForFooter(m.nodeId || null, item.artistName || null);
+  if (perf) frag.appendChild(perf);
+  const subj = (typeof _buildSubjectChips === 'function')
+    ? _buildSubjectChips({
+        raga_ids:        m.ragaId ? [m.ragaId] : [],
+        composition_ids: m.compositionId ? [m.compositionId] : [],
+        musician_ids:    [],
+      })
+    : [];
+  subj.forEach(c => frag.appendChild(c));
+  if (!m.compositionId && !subj.length && item.label) {
+    const lbl = document.createElement('span');
+    lbl.className = 'yt-label-chip';
+    lbl.textContent = item.label;
+    frag.appendChild(lbl);
+  }
+  return frag;
+}
+
+function _renderQueuePanel(panel) {
+  const ul = panel.querySelector('.mp-queue-items');
+  if (!ul) return;
+  ul.innerHTML = '';
+  MediaQueue.items.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'mp-queue-item' + (i === MediaQueue.index ? ' mp-queue-current' : '');
+    li.dataset.i = i;
+
+    const reorder = document.createElement('span');
+    reorder.className = 'mp-queue-reorder';
+    const up = document.createElement('button');
+    up.type = 'button'; up.className = 'mp-queue-up'; up.title = 'Move up'; up.textContent = '▴';
+    up.disabled = (i === 0);
+    up.addEventListener('click', e => { e.stopPropagation(); MediaQueue.move(i, i - 1); });
+    const down = document.createElement('button');
+    down.type = 'button'; down.className = 'mp-queue-down'; down.title = 'Move down'; down.textContent = '▾';
+    down.disabled = (i === MediaQueue.items.length - 1);
+    down.addEventListener('click', e => { e.stopPropagation(); MediaQueue.move(i, i + 1); });
+    reorder.appendChild(up); reorder.appendChild(down);
+    li.appendChild(reorder);
+
+    const chips = document.createElement('span');
+    chips.className = 'mp-queue-chips';
+    chips.appendChild(_buildQueueRowChips(item));
+    li.appendChild(chips);
+
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'mp-queue-remove';
+    rm.title = 'Remove from queue'; rm.setAttribute('aria-label', 'Remove from queue');
+    rm.textContent = '✕';
+    rm.addEventListener('click', e => { e.stopPropagation(); MediaQueue.removeAt(i); });
+    li.appendChild(rm);
+
+    // Row body (outside chips/buttons) jumps to this item.
+    li.addEventListener('click', () => MediaQueue.jumpTo(i));
+    ul.appendChild(li);
+  });
+}
+
+function buildQueuePanel() {
+  const panel = document.createElement('div');
+  panel.className = 'mp-queue';
+  panel.style.display = 'none';
+  const head = document.createElement('div');
+  head.className = 'mp-queue-head';
+  const title = document.createElement('span');
+  title.className = 'mp-queue-title';
+  title.textContent = 'Up Next';
+  const prev = document.createElement('button');
+  prev.type = 'button'; prev.className = 'mp-queue-prev'; prev.title = 'Previous'; prev.textContent = '⏮';
+  prev.addEventListener('click', e => { e.stopPropagation(); MediaQueue.previous(); });
+  const next = document.createElement('button');
+  next.type = 'button'; next.className = 'mp-queue-next'; next.title = 'Next'; next.textContent = '⏭';
+  next.addEventListener('click', e => { e.stopPropagation(); MediaQueue.next(); });
+  head.appendChild(title); head.appendChild(prev); head.appendChild(next);
+  const ul = document.createElement('ul');
+  ul.className = 'mp-queue-items';
+  panel.appendChild(head); panel.appendChild(ul);
+  _renderQueuePanel(panel);
+  return panel;
+}
+
+// Re-render every open queue panel and sync toggle state/visibility. Called by
+// MediaQueue on any mutation (start/advance/jump/remove/move/clear).
+function _refreshQueuePanels() {
+  const show = MediaQueue.active && MediaQueue.panelOpen;
+  document.querySelectorAll('.mp-queue').forEach(p => {
+    _renderQueuePanel(p);
+    p.style.display = show ? 'block' : 'none';
+    p.classList.toggle('mp-queue-shown', show);   // hook for the mobile sheet-grow (:has)
+    if (show) {
+      // ADR-161 §3: open above the bar; flip below only if no room above.
+      p.classList.remove('mp-queue-down');
+      if (p.getBoundingClientRect().top < 4) p.classList.add('mp-queue-down');
+    }
+  });
+  document.querySelectorAll('.mp-queue-toggle').forEach(btn => {
+    btn.style.display = MediaQueue.active ? '' : 'none';
+    btn.setAttribute('aria-pressed', MediaQueue.panelOpen ? 'true' : 'false');
+  });
+}
+
+// Attach the queue toggle (bar) + panel to a freshly-built player, but only when
+// a queue is active. The panel is a sibling before .mp-video-wrap so its upward
+// (bottom:100%) anchor sits above the bar, never over the video (ADR-161 §3).
+function _addQueueUI(el) {
+  if (!MediaQueue.active || !el) return;
+  const bar = el.querySelector('.mp-bar');
+  if (!bar) return;
+  const rightGroup = bar.querySelector('.mp-bar-right');
+  if (rightGroup && !rightGroup.querySelector('.mp-queue-toggle')) {
+    const qBtn = document.createElement('button');
+    qBtn.type = 'button';
+    qBtn.className = 'mp-queue-toggle mp-toggle-btn';
+    qBtn.title = 'Up Next (queue)';
+    qBtn.setAttribute('aria-pressed', MediaQueue.panelOpen ? 'true' : 'false');
+    qBtn.innerHTML = _QUEUE_ICON;
+    const closeBtn = rightGroup.querySelector('.mp-close');
+    if (closeBtn) rightGroup.insertBefore(qBtn, closeBtn); else rightGroup.appendChild(qBtn);
+    qBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
+      // Desktop: tracklist + queue both open upward from the bar (absolute), so
+      // they're mutually exclusive. Mobile panels are in-flow and simply stack.
+      const onMobile = (typeof _isMobilePlayer === 'function' && _isMobilePlayer());
+      if (MediaQueue.panelOpen && !onMobile) {
+        const tl = el.querySelector('.mp-tracklist');
+        if (tl) { tl.style.display = 'none'; tl.classList.remove('mp-tracklist-down'); }
+        const tlBtn = el.querySelector('.mp-tracklist-toggle');
+        if (tlBtn) tlBtn.setAttribute('aria-pressed', 'false');
+      }
+      _refreshQueuePanels();
+    });
+  }
+  if (!el.querySelector('.mp-queue')) {
+    const panel = buildQueuePanel();
+    const videoWrap = el.querySelector('.mp-video-wrap');
+    if (videoWrap) el.insertBefore(panel, videoWrap); else bar.after(panel);
+  }
+  _refreshQueuePanels();
+}
 
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
 function toggleConcert(headerEl) {
@@ -3452,6 +3668,9 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
       _collapseMobilePlayer(false);
     });
   }
+
+  // ADR-162: queue toggle + "Up Next" panel on the mobile bar (when a queue is active)
+  _addQueueUI(mp.el);
 
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
   // Tracklist starts hidden (fold-first); hamburger reveals it.
