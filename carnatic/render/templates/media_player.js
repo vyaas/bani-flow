@@ -1742,12 +1742,18 @@ function _renderQueuePanel(panel) {
     chips.appendChild(_buildQueueRowChips(item));
     li.appendChild(chips);
 
-    const rm = document.createElement('button');
-    rm.type = 'button'; rm.className = 'mp-queue-remove';
-    rm.title = 'Remove from queue'; rm.setAttribute('aria-label', 'Remove from queue');
-    rm.textContent = '✕';
-    rm.addEventListener('click', e => { e.stopPropagation(); MediaQueue.removeAt(i); });
-    // ADR-163 §3: + affordance on each queue row
+    // Play button — primary action: jump to this item and start playing
+    const isCurrent = (i === MediaQueue.index);
+    const playBtn = document.createElement('button');
+    playBtn.type = 'button'; playBtn.className = 'mp-queue-play';
+    playBtn.title = isCurrent ? 'Now playing' : 'Play';
+    playBtn.setAttribute('aria-label', isCurrent ? 'Now playing' : 'Play');
+    playBtn.textContent = '▶';
+    playBtn.disabled = isCurrent;
+    playBtn.addEventListener('click', e => { e.stopPropagation(); MediaQueue.jumpTo(i); });
+    li.appendChild(playBtn);
+
+    // + affordance — secondary: add to playlist or session queue
     const qplus = _buildPlusBtn((() => {
       const _item = item;
       return () => ({
@@ -1757,6 +1763,12 @@ function _renderQueuePanel(panel) {
       });
     })());
     li.appendChild(qplus);
+
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'mp-queue-remove';
+    rm.title = 'Remove from queue'; rm.setAttribute('aria-label', 'Remove from queue');
+    rm.textContent = '✕';
+    rm.addEventListener('click', e => { e.stopPropagation(); MediaQueue.removeAt(i); });
     li.appendChild(rm);
 
     // Row body (outside chips/buttons) jumps to this item.
@@ -1822,6 +1834,14 @@ function buildQueuePanel() {
 // Re-render every open queue panel and sync toggle state/visibility. Called by
 // MediaQueue on any mutation (start/advance/jump/remove/move/clear).
 function _refreshQueuePanels() {
+  // Ensure any open player that was created before the queue started also gets
+  // the queue toggle + panel. Calls _addQueueUI with skipRefresh=true to avoid
+  // re-entering this function.
+  if (MediaQueue.active) {
+    document.querySelectorAll('.media-player').forEach(function(pl) {
+      if (!pl.querySelector('.mp-queue-toggle')) _addQueueUI(pl, true);
+    });
+  }
   const show = MediaQueue.active && MediaQueue.panelOpen;
   document.querySelectorAll('.mp-queue').forEach(p => {
     _renderQueuePanel(p);
@@ -1842,7 +1862,7 @@ function _refreshQueuePanels() {
 // Attach the queue toggle (bar) + panel to a freshly-built player, but only when
 // a queue is active. The panel is a sibling before .mp-video-wrap so its upward
 // (bottom:100%) anchor sits above the bar, never over the video (ADR-161 §3).
-function _addQueueUI(el) {
+function _addQueueUI(el, skipRefresh) {
   if (!MediaQueue.active || !el) return;
   const bar = el.querySelector('.mp-bar');
   if (!bar) return;
@@ -1884,7 +1904,7 @@ function _addQueueUI(el) {
       queueHead.querySelectorAll('button').forEach(b => b.addEventListener('mousedown', e => e.stopPropagation()));
     }
   }
-  _refreshQueuePanels();
+  if (!skipRefresh) _refreshQueuePanels();
 }
 
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────

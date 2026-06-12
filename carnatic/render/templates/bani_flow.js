@@ -1061,6 +1061,22 @@ function _buildPlayActsDiv(row) {
   const actsDiv = document.createElement('div');
   actsDiv.className = 'trail-acts';
   actsDiv.appendChild(playBtn);
+  const plusBtn = _buildPlusBtn(function() {
+    return {
+      media:        row.track.media || row.track.vid,
+      startSeconds: row.track.offset_seconds || 0,
+      label:        row.track.label || '',
+      artistName:   row.artistLabel || '',
+      concertTitle: row.track.short_title || row.track.concert_title || '',
+      meta: {
+        ragaId:        row.track.raga_id || null,
+        compositionId: row.track.composition_id || null,
+        nodeId:        row.nodeId || null,
+        recId:         row.track.recording_id || null,
+      },
+    };
+  });
+  actsDiv.appendChild(plusBtn);
   return actsDiv;
 }
 

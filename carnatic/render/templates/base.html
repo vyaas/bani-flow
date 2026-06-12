@@ -2764,6 +2764,12 @@
     flex: 1; min-width: 0;
     display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
   }
+  .mp-queue-play {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.7rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+  }
+  .mp-queue-play:not(:disabled):hover { color: var(--accent); }
+  .mp-queue-play:disabled { opacity: 0.35; cursor: default; }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
     font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
@@ -3719,7 +3725,7 @@
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
     /* .vp-btn excluded: same visual size as .filter-dropdown-btn (both are pill controls) */
-    button:not(.rec-play-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn) {
+    button:not(.rec-play-btn):not(.mp-plus-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn) {
       min-height: 44px;
     }
     .view-btn {
