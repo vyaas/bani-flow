@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-06-12 (proposed + accepted)
-**Implementation note**: shipped in two passes — (1) desktop universal minimize + sruti unification + active-strip; (2) mobile `.mini`↔`.minimized` reconciliation (the mini strip showing the chip rail). Pass 2 is the intricate mobile-mini-strip surface, handled as a focused follow-up.
+**Implementation note**: shipped in two passes, both landed — (1) desktop universal minimize via the fold-cue + sruti unification (its redundant minimize button removed) + active-strip; (2) the mobile `.mp-mini-strip` now carries the same `buildPlayerRail` (chips + `▾N` overflow that flips upward off the bottom edge), and the inert mobile fold-cue is hidden. Mobile keeps its own bottom-sheet mechanism (a different form factor from desktop's in-place `.minimized`) but carries the same rail, so §4's user-facing goal is met without merging the two mechanisms.
 **Agents**: graph-architect → carnatic-coder → test-engineer
 **Depends on**: ADR-159 (the bar must already carry the live chip rail — that is what makes a minimized strip worth keeping open), ADR-131 (the sruti minimize affordance this generalises). **Related**: ADR-037 (mobile singleton player).
 
