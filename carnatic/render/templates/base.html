@@ -2769,6 +2769,37 @@
   .mp-queue-toggle svg { width: 15px; height: 15px; fill: currentColor; display: block; pointer-events: none; }
   .mp-queue-toggle:hover { color: var(--accent-sub); }
 
+  /* ── ADR-163: PLAYLISTS rendered as tree nodes (buildRowAccordion) so a
+     playlist nests under the PLAYLISTS header like every other section's tree,
+     and its tracks nest under the playlist. ── */
+  /* Bani-flow panel: align the dedicated container with the lecdem strip + trail. */
+  #bani-playlists { padding: 0 14px; }
+  .mp-playlist-hdr {
+    display: flex; align-items: center; gap: 8px; min-width: 0;
+    font-size: 0.78rem;
+  }
+  .playlist-chip {
+    /* hug the text — a label, not a bar */
+    flex: 0 1 auto; max-width: 100%;
+    display: inline-block; padding: 1px 7px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    color: var(--accent); font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    cursor: default;
+  }
+  .mp-playlist-count { color: var(--fg-muted); font-size: 0.72rem; flex-shrink: 0; }
+  .mp-playlist-track {
+    flex: 0 0 100%;
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 0.76rem;
+  }
+  /* Chips wrap downward across as many lines as the tags need; the ▶ stays put. */
+  .mp-playlist-track-chips {
+    flex: 1; min-width: 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  }
+  .mp-playlist-track .rec-play-btn { flex-shrink: 0; }
+
   .mp-track-items {
     list-style: none;
     margin: 0;
@@ -4784,6 +4815,7 @@
       <!-- ADR-086: empty-panel tutorial (shown when no subject loaded) -->
       <div id="bani-tutorial" class="panel-tutorial" style="display:none"></div>
       <!-- Lecdem strip: shown above the trail when a raga/composition subject has lecdems -->
+      <section id="bani-playlists" style="display:none"></section>
       <section id="bani-lecdem-strip" class="lecdem-strip" style="display:none"></section>
       <div id="listening-trail" style="display:none; padding: 0 14px;">
         <ul id="trail-list"></ul>

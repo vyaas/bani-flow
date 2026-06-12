@@ -186,6 +186,37 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
         dict(perf_to_performances),
     )
 
+
+def build_playlist_lookups(playlists: list) -> tuple[dict, dict, dict]:
+    """ADR-163: back-index playlists by participant so a playlist appears in the
+    PLAYLISTS section of every panel whose subject it touches. Returns three
+    {entity_id: [playlist_id, ...]} maps (musician / raga / composition), each
+    de-duplicated so a playlist lists once per entity even if several items match.
+    Panels resolve full playlist objects from the `playlists` global by id."""
+    by_musician: dict[str, list] = {}
+    by_raga: dict[str, list] = {}
+    by_composition: dict[str, list] = {}
+    for pl in playlists:
+        pid = pl.get("id")
+        if not pid:
+            continue
+        seen_m, seen_r, seen_c = set(), set(), set()
+        for it in pl.get("items", []):
+            for mid in (it.get("musician_ids") or []):
+                if mid and mid not in seen_m:
+                    seen_m.add(mid)
+                    by_musician.setdefault(mid, []).append(pid)
+            rid = it.get("raga_id")
+            if rid and rid not in seen_r:
+                seen_r.add(rid)
+                by_raga.setdefault(rid, []).append(pid)
+            cid = it.get("composition_id")
+            if cid and cid not in seen_c:
+                seen_c.add(cid)
+                by_composition.setdefault(cid, []).append(pid)
+    return by_musician, by_raga, by_composition
+
+
 def build_composition_lookups(
     graph: dict,
     comp_data: dict,

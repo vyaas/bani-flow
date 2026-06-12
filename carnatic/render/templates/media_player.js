@@ -2775,6 +2775,124 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   return bracket;
 }
 
+// ── ADR-163: PLAYLISTS section helpers (shared by all panels) ────────────────
+// A saved playlist appears in the PLAYLISTS section of every panel whose subject
+// it touches (musician / raga / composition), resolved from the render-time
+// back-index. A row plays the whole playlist into the ADR-162 queue.
+function _playlistToQueueItems(pl) {
+  return (pl.items || []).map(it => {
+    const media = (typeof resolveMedia === 'function') ? resolveMedia(it.media_key) : null;
+    if (!media) return null;
+    return {
+      media,
+      label:        it.note || it.composition_id || pl.title || '',
+      artistName:   '',
+      startSeconds: it.start_seconds || 0,
+      concertTitle: pl.title || '',
+      tracks:       [],
+      meta: {
+        nodeId:        (it.musician_ids && it.musician_ids[0]) || null,
+        ragaId:        it.raga_id || null,
+        compositionId: it.composition_id || null,
+        recId:         it.recording_id || null,
+        end_seconds:   it.end_seconds || null,   // ADR-163 slice 3: cross-recording advance
+      },
+    };
+  }).filter(Boolean);
+}
+
+function buildPlaylistRow(pl) {
+  const items = pl.items || [];
+  const queueItems = _playlistToQueueItems(pl);
+
+  // Header: name chip (hugs its text) + track count. The header wrapper stretches
+  // (row-accordion gives it flex:1), so the play button pins to the right.
+  const headerEl = document.createElement('div');
+  headerEl.className = 'mp-playlist-hdr';
+  const chip = document.createElement('span');
+  chip.className = 'playlist-chip';
+  chip.textContent = pl.title || pl.id;
+  chip.title = pl.description || pl.title || pl.id;
+  headerEl.appendChild(chip);
+  const count = document.createElement('span');
+  count.className = 'mp-playlist-count';
+  count.textContent = items.length + ' track' + (items.length === 1 ? '' : 's');
+  headerEl.appendChild(count);
+
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'rec-play-btn play-btn-direct';
+  play.title = 'Play "' + (pl.title || pl.id) + '"';
+  play.textContent = '▶';
+  play.addEventListener('click', e => {
+    e.stopPropagation();
+    if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, 0);
+  });
+  // Wrap in .trail-acts — the row-accordion header gives non-chevron children
+  // flex:1, which would stretch a bare play button into an ellipse; .trail-acts
+  // is exempted (flex:none), keeping it a circle (same pattern as concert rows).
+  const playActs = document.createElement('span');
+  playActs.className = 'trail-acts';
+  playActs.appendChild(play);
+
+  // Children: one tree-leaf per track — chips + play-from-here (queue at index i).
+  const bodyEls = items.map((it, i) => {
+    const trow = document.createElement('div');
+    trow.className = 'mp-playlist-track';
+    // Chips live in their own flex-wrap container: a single line by default that
+    // grows downward to as many lines as the tags need, while the ▶ stays pinned.
+    const chipsWrap = document.createElement('span');
+    chipsWrap.className = 'mp-playlist-track-chips';
+    const perf = _buildMusicianChipForFooter((it.musician_ids && it.musician_ids[0]) || null, null);
+    if (perf) chipsWrap.appendChild(perf);
+    if (typeof _buildSubjectChips === 'function') {
+      _buildSubjectChips({
+        raga_ids:        it.raga_id ? [it.raga_id] : [],
+        composition_ids: it.composition_id ? [it.composition_id] : [],
+        musician_ids:    [],
+      }).forEach(c => chipsWrap.appendChild(c));
+    }
+    if (!it.composition_id && it.note) {
+      const lbl = document.createElement('span');
+      lbl.className = 'yt-label-chip';
+      lbl.textContent = it.note;
+      chipsWrap.appendChild(lbl);
+    }
+    trow.appendChild(chipsWrap);
+    const tplay = document.createElement('button');
+    tplay.type = 'button';
+    tplay.className = 'rec-play-btn play-btn-concert';
+    tplay.title = 'Play from here';
+    tplay.textContent = '▶';
+    tplay.addEventListener('click', e => {
+      e.stopPropagation();
+      if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, i);
+    });
+    trow.appendChild(tplay);
+    return trow;
+  });
+
+  // Tree node: chevron + header + collapsible track children (ADR-128 row-accordion).
+  return buildRowAccordion({ headerEl, bodyEls, defaultCollapsed: true, chevronPosition: 'left', trailingEl: playActs });
+}
+
+// Returns a PLAYLISTS buildSection for the given playlist ids, or null if none.
+function buildPlaylistsSection(playlistIds) {
+  if (!Array.isArray(playlistIds) || !playlistIds.length) return null;
+  if (typeof playlists === 'undefined' || typeof buildSection !== 'function') return null;
+  const pls = playlistIds.map(id => playlists.find(p => p.id === id)).filter(Boolean);
+  if (!pls.length) return null;
+  const chip = document.createElement('span');
+  // Match every other section header (CONCERTS / RECORDINGS / LECDEMS): the
+  // chip-section-hdr scale (0.85rem), not the smaller bare neutral-chip.
+  chip.className = 'neutral-chip chip-section-hdr';
+  chip.textContent = 'PLAYLISTS';
+  const { sectionEl, bodyEl } = buildSection({ headerChip: chip, count: pls.length, defaultCollapsed: false });
+  sectionEl.dataset.section = 'playlists';
+  pls.forEach(pl => bodyEl.appendChild(buildPlaylistRow(pl)));
+  return sectionEl;
+}
+
 // ── buildRecordingsList — concert-bracketed + legacy flat (ADR-018) ───────────
 function buildRecordingsList(nodeId, nodeData) {
   const recPanel  = document.getElementById('recordings-panel');
@@ -3154,6 +3272,15 @@ function buildRecordingsList(nodeId, nodeData) {
 
     _sections.push({ sectionEl: compSection, count: composerComps.length });
   }
+
+  // ── ADR-163: PLAYLISTS section (playlists this musician appears in) ──────────
+  // Promoted to the TOP — a playlist is the user's own re-organisation of the
+  // music, the highest abstraction in the panel. unshift so it leads the
+  // populated sections (the count>0 partition preserves insertion order).
+  const _plSection = buildPlaylistsSection(
+    (typeof playlistsByMusician !== 'undefined' ? playlistsByMusician[nodeId] : null)
+  );
+  if (_plSection) _sections.unshift({ sectionEl: _plSection, count: 1 });
 
   // ── 5. ADR-128 D4: Empty-section demotion ────────────────────────────────
   // Stable partition: sections with count > 0 come first (natural order),

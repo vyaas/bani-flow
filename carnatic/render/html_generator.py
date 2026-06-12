@@ -220,6 +220,10 @@ def render_html(
     listenable_set: set | None = None,
     lecdem_indexes: dict | None = None,
     help_empty_panels: dict | None = None,
+    playlists: list | None = None,
+    playlists_by_musician: dict | None = None,
+    playlists_by_raga: dict | None = None,
+    playlists_by_composition: dict | None = None,
 ) -> str:
     node_count = len(graph["nodes"])
     edge_count = len(graph["edges"])
@@ -252,6 +256,12 @@ def render_html(
 
     # ADR-086: empty-panel tutorial data (None when data file is absent)
     help_empty_panels_json = json.dumps(help_empty_panels, indent=2, ensure_ascii=False)
+
+    # ADR-163: persistent playlists + participant back-index
+    playlists_json                = json.dumps(playlists or [], indent=2, ensure_ascii=False)
+    playlists_by_musician_json    = json.dumps(playlists_by_musician or {}, indent=2, ensure_ascii=False)
+    playlists_by_raga_json        = json.dumps(playlists_by_raga or {}, indent=2, ensure_ascii=False)
+    playlists_by_composition_json = json.dumps(playlists_by_composition or {}, indent=2, ensure_ascii=False)
 
     # ADR-078: lecdem subject-anchored indexes
     _lecdem = lecdem_indexes or {}
@@ -293,6 +303,12 @@ def render_html(
         f"\n"
         f"// ── Empty-panel tutorial copy (ADR-086) ──────────────────────────────────────\n"
         f"const helpEmptyPanels = {help_empty_panels_json};\n"
+        f"\n"
+        f"// ── Playlists (ADR-163) — persistent user playlists + participant back-index ─\n"
+        f"const playlists               = {playlists_json};\n"
+        f"const playlistsByMusician     = {playlists_by_musician_json};\n"
+        f"const playlistsByRaga         = {playlists_by_raga_json};\n"
+        f"const playlistsByComposition  = {playlists_by_composition_json};\n"
         f"\n"
         f"// ── graphData: unified object for entry forms (ADR-031) ──────────────────────\n"
         f"const graphData = {{\n"

@@ -513,6 +513,8 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   // ADR-128 D2: show affordances row (wiki link + edit button) when a subject is loaded
   const _baniAffordances = document.getElementById('bani-header-affordances');
   if (_baniAffordances) _baniAffordances.style.display = '';
+  // ADR-163: render the PLAYLISTS section at the very top (above lecdems)
+  _renderBaniFlowPlaylists(type, id);
   // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
   _renderBaniFlowLecdemStrip(type, id);
 
@@ -780,6 +782,24 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   }
 
   trail.style.display = rows.length > 0 ? 'block' : 'none';
+}
+
+// ── ADR-163: PLAYLISTS at the top of the bani-flow panel ──────────────────────
+// Rendered into its own container ABOVE #bani-lecdem-strip (mirroring the lecdem
+// strip), so the user's playlist leads the panel — consistent with the musician
+// panel where PLAYLISTS is unshifted to the top. Cleared and rebuilt each filter.
+function _renderBaniFlowPlaylists(type, id) {
+  const section = document.getElementById('bani-playlists');
+  if (!section) return;
+  section.innerHTML = '';
+  section.style.display = 'none';
+  let ids = null;
+  if (type === 'raga' && typeof playlistsByRaga !== 'undefined') ids = playlistsByRaga[id];
+  else if (type === 'comp' && typeof playlistsByComposition !== 'undefined') ids = playlistsByComposition[id];
+  const sec = (typeof buildPlaylistsSection === 'function') ? buildPlaylistsSection(ids) : null;
+  if (!sec) return;
+  section.appendChild(sec);
+  section.style.display = 'block';
 }
 
 // ── buildTrailItem: render one <li> for a deduplicated performance row ────────
