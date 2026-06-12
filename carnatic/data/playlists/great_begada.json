@@ -1,0 +1,20 @@
+{
+  "id": "great_begada",
+  "title": "Great Begada",
+  "description": "A walk through memorable Begada renditions.",
+  "items": [
+    {
+      "media_key": "youtube:AU_UlJRBCyk",
+      "recording_id": "asoka_hotel_egmore",
+      "composition_id": "shankari_neeve",
+      "raga_id": "begada",
+      "note": "Ramnad Krishnan",
+      "musician_ids": [
+        "ramnad_krishnan"
+      ],
+      "start_seconds": 237
+    }
+  ],
+  "sources": [],
+  "kind": "user"
+}
