@@ -1521,10 +1521,24 @@ function _buildPlusBtn(getItem) {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'mp-plus-btn';
-  btn.title = 'Add to playlist…';
+  btn.title = 'Add to queue';
   btn.textContent = '+';
   btn.addEventListener('click', e => {
     e.stopPropagation();
+    // Mobile: no editing features — + always means "add to queue" directly.
+    if (_isMobilePlayer()) {
+      const item = getItem();
+      if (!item || !item.media) return;
+      const resolvedMedia = (typeof resolveMedia === 'function') ? resolveMedia(item.media) : item.media;
+      if (!resolvedMedia) return;
+      MediaQueue.addItem({
+        media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
+        startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
+        tracks: [], meta: item.meta || {},
+      });
+      btn.textContent = '✓'; setTimeout(() => { btn.textContent = '+'; }, 1000);
+      return;
+    }
     _openPlusMenu(btn, getItem);
   });
   return btn;
@@ -1554,19 +1568,30 @@ function _openPlusMenu(anchor, getItem) {
     return it;
   }
 
-  // “Add to session queue” — ephemeral, no bundle op
-  const addQ = document.createElement('button');
-  addQ.type = 'button'; addQ.className = 'mp-plus-menu-item';
-  addQ.textContent = 'Add to queue';
-  addQ.addEventListener('click', e => {
+  // Order (top → bottom in DOM = furthest → closest to the + button when menu
+  // opens above, which is the common case):
+  //   1. “New playlist…”          — furthest, deliberate action
+  //   2. “Add to playlist” search — middle, filtered list
+  //   3. “Add to queue”           — closest, most immediate action
+
+  // “New playlist…” → op:create
+  const newPl = document.createElement('button');
+  newPl.type = 'button'; newPl.className = 'mp-plus-menu-item mp-plus-menu-new';
+  newPl.textContent = 'New playlist…';
+  newPl.addEventListener('click', e => {
     e.stopPropagation(); menu.remove();
-    MediaQueue.addItem({
-      media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
-      startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
-      tracks: [], meta: item.meta || {},
-    });
+    const title = window.prompt('New playlist name:');
+    if (!title) return;
+    const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || ('pl_' + Date.now());
+    const it = _buildOp(resolvedMedia, item);
+    if (!it) return;
+    const op = { op: 'create', id, title, description: '', items: [it], kind: 'user', sources: [] };
+    if (typeof window.addToBundle === 'function') {
+      window.addToBundle('playlists', op);
+      anchor.textContent = '✓'; setTimeout(() => { anchor.textContent = '+'; }, 1500);
+    }
   });
-  menu.appendChild(addQ);
+  menu.appendChild(newPl);
 
   // Existing playlists → searchable filter + scrollable list
   const knownPlaylists = (typeof playlists !== 'undefined' && Array.isArray(playlists)) ? playlists : [];
@@ -1623,24 +1648,22 @@ function _openPlusMenu(anchor, getItem) {
     search.addEventListener('click', e => e.stopPropagation());
   }
 
-  // “New playlist…” → op:create
-  const newPl = document.createElement('button');
-  newPl.type = 'button'; newPl.className = 'mp-plus-menu-item mp-plus-menu-new';
-  newPl.textContent = 'New playlist…';
-  newPl.addEventListener('click', e => {
+  // “Add to session queue” — closest to the + button, most immediate action
+  const qDivider = document.createElement('div');
+  qDivider.className = 'mp-plus-menu-divider';
+  menu.appendChild(qDivider);
+  const addQ = document.createElement('button');
+  addQ.type = 'button'; addQ.className = 'mp-plus-menu-item';
+  addQ.textContent = 'Add to queue';
+  addQ.addEventListener('click', e => {
     e.stopPropagation(); menu.remove();
-    const title = window.prompt('New playlist name:');
-    if (!title) return;
-    const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || ('pl_' + Date.now());
-    const it = _buildOp(resolvedMedia, item);
-    if (!it) return;
-    const op = { op: 'create', id, title, description: '', items: [it], kind: 'user', sources: [] };
-    if (typeof window.addToBundle === 'function') {
-      window.addToBundle('playlists', op);
-      anchor.textContent = '✓'; setTimeout(() => { anchor.textContent = '+'; }, 1500);
-    }
+    MediaQueue.addItem({
+      media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
+      startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
+      tracks: [], meta: item.meta || {},
+    });
   });
-  menu.appendChild(newPl);
+  menu.appendChild(addQ);
 
   document.body.appendChild(menu);
   const r = anchor.getBoundingClientRect();
