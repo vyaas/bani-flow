@@ -657,7 +657,7 @@ function buildPlayerRail(meta) {
   // ── Performer chip (stable anchor, always first) ──────────────────────────
   if (nodeId || artistName) {
     const mChip = _buildMusicianChipForFooter(nodeId || null, artistName || null);
-    if (mChip) { mChip.dataset.anchor = 'true'; rail.appendChild(mChip); }
+    if (mChip) { rail.appendChild(mChip); }
   }
 
   // ── Raga chip (same .raga-chip class as panels; tala is demoted to the end) ──
@@ -666,7 +666,6 @@ function buildPlayerRail(meta) {
     const ragaName = ragaObj ? ragaObj.name : ragaId;
     const ragaChip = document.createElement('span');
     ragaChip.className = 'raga-chip';
-    ragaChip.dataset.anchor = 'true';
     ragaChip.textContent = ragaName;
     ragaChip.title = 'Explore ' + ragaName + ' in Bani Flow';
     ragaChip.addEventListener('click', e => {

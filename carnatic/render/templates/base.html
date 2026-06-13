@@ -991,7 +991,7 @@
   .mp-rail .comp-chip,
   .mp-rail .composer-chip,
   .mp-rail .yt-label-chip {
-    max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    white-space: nowrap;
   }
 
   /* ▾ N — overflow toggle; opens the menu of chips that didn't fit the line */
@@ -4297,10 +4297,6 @@
        strip. Full-width single row (auto height, not flex-grown in the column),
        overflowing chips collapse into the rail's ▾N menu. */
     .mp-mini-info .mp-rail { flex: 0 0 auto; width: 100%; }
-    /* Priority chips narrower on mobile so musician + raga fit side-by-side
-       in the mini strip's ~259px info area without triggering the ▾N overflow. */
-    .mp-rail .musician-chip,
-    .mp-rail .raga-chip { max-width: 13ch; }
     .mp-mini-title:empty { display: none; }
     .mp-mini-dots {
       display: flex; gap: 3px; margin-top: 2px;
