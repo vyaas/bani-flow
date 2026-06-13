@@ -278,6 +278,37 @@
       "composition_id": "emi_neramu",
       "raga_id": "shankarabharanam",
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/KpUJtEgBS6k",
+      "label": "Udayaravichandrika (Part I)",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "udayaravichandrika",
+          "shuddha_dhanyasi"
+        ],
+        "composition_ids": [],
+        "musician_ids": [
+          "muthuswami_dikshitar"
+        ]
+      }
+    },
+    {
+      "url": "https://youtu.be/sCP-o3ctm1o",
+      "label": "Udayaravichandrika (Part II)",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "udayaravichandrika"
+        ],
+        "composition_ids": [
+          "sri_guruguha_murte"
+        ],
+        "musician_ids": [
+          "muthuswami_dikshitar"
+        ]
+      }
     }
   ]
 }
