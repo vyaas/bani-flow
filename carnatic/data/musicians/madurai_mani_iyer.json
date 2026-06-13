@@ -51,6 +51,18 @@
       "composition_id": "sri_subramanyaya_namaste",
       "raga_id": "kambhoji",
       "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/X0FerSEtDqU",
+      "label": "Brova Bharama · Bahudari",
+      "composition_id": "brova_bharama",
+      "raga_id": "bahudari"
+    },
+    {
+      "url": "https://youtu.be/VY2hk3bF_D0",
+      "label": "Sarasa Samadana · Kapinarayani",
+      "composition_id": "sarasa_samadana",
+      "raga_id": "kapinarayani"
     }
   ]
 }
