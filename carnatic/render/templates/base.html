@@ -522,15 +522,17 @@
 
   /* ── recording filter input + trail filter input ── */
   #rec-filter,
+  #trail-filter {
+    width: 100%; background: var(--bg-input); color: var(--fg-dim);
+    border: 1px solid var(--border-strong); padding: 4px 8px;
+    font-family: inherit; font-size: 0.72rem; border-radius: 2px;
+    margin-top: 6px; display: none; box-sizing: border-box;
+  }
+  /* ADR-167: trail-filter lives inside #trail-filter-row; row handles visibility/layout */
   #trail-filter-row {
     flex-wrap: nowrap; align-items: center; gap: 6px; margin-top: 6px;
   }
-  #trail-filter {
-    flex: 1; min-width: 0; background: var(--bg-input); color: var(--fg-dim);
-    border: 1px solid var(--border-strong); padding: 4px 8px;
-    font-family: inherit; font-size: 0.72rem; border-radius: 2px;
-    box-sizing: border-box;
-  }
+  #trail-filter { flex: 1; min-width: 0; width: auto; margin-top: 0; display: block; }
   #rec-filter:focus,
   #trail-filter:focus { outline: none; border-color: var(--accent); }
   #rec-filter::placeholder,
