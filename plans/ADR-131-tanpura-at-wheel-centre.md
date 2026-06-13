@@ -1,8 +1,15 @@
 # ADR-131 — Tanpura at the Centre of the Raga Wheel
 
-**Status**: Accepted
+**Status**: Accepted — *partially superseded by ADR-169*
 **Date**: 2026-05-11
 **Supersedes / refines**: ADR-130 (sruti widget), ADR-129 (chrome retirement)
+
+> **Note (2026-06-13):** the "R3" refinement of this ADR turned the centre into a
+> *permanent radial pie* of 12 pitch sectors. That permanent-pie / radial-wedge
+> layout is **superseded by ADR-169**, which collapses the centre to a single
+> tanpura *seed* button and shows the 12 pitches only as a modal overlay picker.
+> The core thesis of this ADR — *the tanpura is the seed/centre of the wheel* —
+> is retained and reinforced by ADR-169.
 
 ---
 
