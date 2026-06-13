@@ -2,5 +2,12 @@
   "id": "janani_ninnuvina",
   "title": "Janani Ninnuvina",
   "composer_id": "subbaraya_sastri",
-  "raga_id": "reetigowla"
+  "raga_id": "reetigowla",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/c29926.shtml",
+      "label": "karnatik.com",
+      "type": "article"
+    }
+  ]
 }
