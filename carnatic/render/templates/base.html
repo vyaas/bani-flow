@@ -952,8 +952,9 @@
   .mp-bar {
     display: flex; align-items: center; gap: 5px;
     padding: 5px 8px;
-    background: var(--bg-input); border-radius: 4px 4px 0 0;
-    cursor: grab; border-bottom: 1px solid var(--border-strong);
+    background: transparent; border-radius: 4px 4px 0 0;
+    cursor: grab; border: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-strong);
     flex-wrap: nowrap;
   }
   .mp-bar:active { cursor: grabbing; }
