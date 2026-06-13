@@ -4477,12 +4477,19 @@ function _closeMobilePlayer() {
   const mp = _mobilePlayer;
 
   // If the active player was the sruti drone, reset the tonic ring.
-  if (mp._currentPlayerId === 'sruti' &&
+  // _currentPlayerId is nulled FIRST to break the call loop:
+  //   _closeMobilePlayer → _clearSrutiRing → _srutiStop → closePlayer('sruti')
+  //   → _closeMobilePlayer again. Without the early null the second entry also
+  //   sees 'sruti' and recurses into _clearSrutiRing, causing a stack overflow
+  //   that aborts before mp.el.style.display='none' runs (indicator clears,
+  //   player stays visible).
+  const _wasSruti = mp._currentPlayerId === 'sruti';
+  mp._currentPlayerId = null;
+  if (_wasSruti &&
       typeof RagaWheel !== 'undefined' &&
       typeof RagaWheel._clearSrutiRing === 'function') {
     RagaWheel._clearSrutiRing();
   }
-  mp._currentPlayerId = null;
 
   if (mp.controller) { mp.controller.destroy(); mp.controller = null; }
   else if (mp.iframe) mp.iframe.src = '';
