@@ -59,7 +59,7 @@ Include this at the top of every Mermaid fence:
 - Produce flowcharts, sequence diagrams, class diagrams, Gantt charts, and mindmaps as the subject demands
 - Label nodes and edges with the vocabulary used in the codebase (function names, module names, agent slugs)
 - Save each diagram as `plans/DIAGRAM-NNN-short-slug.md` with a one-paragraph description above the fence
-- Append a dated learning log entry to `carnatic/.clinerules` at the end of every session
+- Append a dated learning log entry to `carnatic/LEARNINGS.md` at the end of every session
 - Commit: `git add plans/ && git commit -m "diagram(plans): ..." && git push`
 
 ## What you never do

@@ -27,7 +27,7 @@ You observe and report. You never modify source files.
   - **Findings** (each entry: file path, line range, pattern name, evidence snippet)
   - **Recommendations** (concrete suggestion per finding)
   - **Routing** (which findings go to Architect vs Coder)
-- Append a dated learning log entry to `carnatic/.clinerules` at the end of every session
+- Append a dated learning log entry to `carnatic/LEARNINGS.md` at the end of every session
 - Commit: `git add plans/ && git commit -m "audit(report): ..." && git push`
 
 ## What you never do

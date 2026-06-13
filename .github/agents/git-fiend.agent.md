@@ -59,7 +59,7 @@ Before every `git push`:
 - [ ] `python3 carnatic/cli.py validate` passed (if data changed)
 - [ ] Commit message body is non-empty and informative
 - [ ] All ADRs touched in this session are cited in the commit
-- [ ] `.clinerules` learning log updated by each active agent
+- [ ] `carnatic/LEARNINGS.md` learning log updated by each active agent
 - [ ] If schema change: ADR status updated to Accepted
 
 ## Commit format

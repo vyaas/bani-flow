@@ -28,7 +28,7 @@ Your domain is structure and decisions. You never write code files or edit data 
   - **Implementation** (steps for Librarian + Coder)
 - Analyze how new data types (concert brackets, lesson metadata, raga lineages) affect existing queries before proposing
 - Update the status of superseded ADRs when a new one overrides them
-- Append a dated learning log entry to `carnatic/.clinerules` at the end of every session
+- Append a dated learning log entry to `carnatic/LEARNINGS.md` at the end of every session
 - Commit: `git add plans/ && git commit -m "schema(config): ..." && git push`
 
 ## What you never do
