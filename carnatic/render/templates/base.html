@@ -1201,8 +1201,10 @@
     border: 1px solid var(--accent, #fabd2f); border-radius: 999px;
     padding: 6px 16px; font-size: 0.95rem; font-weight: 600;
     letter-spacing: 0.02em; white-space: nowrap;
-    opacity: 0; transition: opacity 0.18s;
+    opacity: 0; transition: opacity 0.18s, left 0.1s, right 0.1s;
   }
+  .mp-video-wrap.mp-has-plyr .plyr .mp-seek-overlay.seek-left  { left: 25%; transform: translate(-50%, -50%); }
+  .mp-video-wrap.mp-has-plyr .plyr .mp-seek-overlay.seek-right { left: 75%; transform: translate(-50%, -50%); }
   .mp-video-wrap.mp-has-plyr .plyr .mp-seek-overlay.visible { opacity: 1; }
 
   /* ADR-159: the below-video .mp-footer is fully retired — the identity chips

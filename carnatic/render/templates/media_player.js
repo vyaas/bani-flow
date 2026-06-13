@@ -1031,9 +1031,11 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
     let _seekSteps = 0, _seekTimer = null, _overlayEl = null;
     function _renderOverlay() {
       if (!_overlayEl) return;
-      if (_seekSteps === 0) { _overlayEl.classList.remove('visible'); return; }
+      if (_seekSteps === 0) { _overlayEl.classList.remove('visible', 'seek-left', 'seek-right'); return; }
       const secs = Math.abs(_seekSteps) * SEEK_STEP;
       _overlayEl.textContent = _seekSteps < 0 ? ('« ' + secs + 's') : (secs + 's »');
+      _overlayEl.classList.toggle('seek-left', _seekSteps < 0);
+      _overlayEl.classList.toggle('seek-right', _seekSteps > 0);
       _overlayEl.classList.add('visible');
     }
     function seekStep(side) {
