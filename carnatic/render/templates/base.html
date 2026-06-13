@@ -528,11 +528,12 @@
     font-family: inherit; font-size: 0.72rem; border-radius: 2px;
     margin-top: 6px; display: none; box-sizing: border-box;
   }
-  /* ADR-167: trail-filter lives inside #trail-filter-row; row handles visibility/layout */
+  /* ADR-166/167: both filters live inside their own flex rows; rows handle visibility/layout */
+  #rec-filter-row,
   #trail-filter-row {
     flex-wrap: nowrap; align-items: center; gap: 6px; margin-top: 6px;
   }
-  #trail-filter { flex: 1; min-width: 0; width: auto; margin-top: 0; display: block; }
+  #rec-filter, #trail-filter { flex: 1; min-width: 0; width: auto; margin-top: 0; display: block; }
   #rec-filter:focus,
   #trail-filter:focus { outline: none; border-color: var(--accent); }
   #rec-filter::placeholder,
@@ -5002,8 +5003,14 @@
                style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
           </div>
         </div>
-        <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
-               style="display:none" autocomplete="off" spellcheck="false" />
+        <div id="rec-filter-row" style="display:none">
+          <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
+                 autocomplete="off" spellcheck="false" />
+          <span id="rec-play-acts" class="section-play-acts">
+            <button id="rec-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
+            <button id="rec-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue">&#x2295;</button>
+          </span>
+        </div>
       </div>
       </div>
     </div>

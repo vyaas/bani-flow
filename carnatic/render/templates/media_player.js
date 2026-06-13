@@ -3244,7 +3244,7 @@ function buildPlaylistsSection(playlistIds) {
 function buildRecordingsList(nodeId, nodeData) {
   const recPanel  = document.getElementById('recordings-panel');
   const recList   = document.getElementById('recordings-list');
-  const recFilter = document.getElementById('rec-filter');
+  const recFilterRow = document.getElementById('rec-filter-row');
   recList.innerHTML = '';
 
   // ADR-150: resolveNode falls back to elements[] for transit musicians; avoids
@@ -3658,8 +3658,8 @@ function buildRecordingsList(nodeId, nodeData) {
   const hasContent = concerts.length > 0 || legacyTracks.length > 0 || composerComps.length > 0
     || lecdemsBy_.length > 0 || lecdemsAbout_.length > 0
     || !!nodeId;  // always true when called from selectNode
-  recPanel.style.display  = hasContent ? 'block' : 'none';
-  recFilter.style.display = hasContent ? 'block' : 'none';
+  recPanel.style.display     = hasContent ? 'block' : 'none';
+  recFilterRow.style.display = hasContent ? 'flex'  : 'none';
 
   // ── 7. Notes section (ADR-097 §7) ────────────────────────────────────────
   // If the musician node carries a notes[] array, append it as a soft
