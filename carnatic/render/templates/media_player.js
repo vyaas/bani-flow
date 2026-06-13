@@ -648,7 +648,7 @@ function buildPlayerRail(meta) {
   // ── Performer chip (stable anchor, always first) ──────────────────────────
   if (nodeId || artistName) {
     const mChip = _buildMusicianChipForFooter(nodeId || null, artistName || null);
-    if (mChip) rail.appendChild(mChip);
+    if (mChip) { mChip.dataset.anchor = 'true'; rail.appendChild(mChip); }
   }
 
   // ── Raga chip (same .raga-chip class as panels; tala is demoted to the end) ──
@@ -657,6 +657,7 @@ function buildPlayerRail(meta) {
     const ragaName = ragaObj ? ragaObj.name : ragaId;
     const ragaChip = document.createElement('span');
     ragaChip.className = 'raga-chip';
+    ragaChip.dataset.anchor = 'true';
     ragaChip.textContent = ragaName;
     ragaChip.title = 'Explore ' + ragaName + ' in Bani Flow';
     ragaChip.addEventListener('click', e => {
@@ -763,6 +764,7 @@ function reflowRail(rail) {
   const chips = Array.from(rail.children).filter(c => c !== moreBtn && c !== overflow);
   let i = chips.length - 1;
   while (i >= 0 && !fits()) {
+    if (chips[i].dataset.anchor) { i--; continue; }        // never overflow priority chips
     overflow.insertBefore(chips[i], overflow.firstChild);   // preserve original order
     i--;
   }
