@@ -69,7 +69,10 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 //   onAdd            function (optional) — if provided, renders a + button
 //   addTitle         string (optional) — tooltip for + button
 //   defaultCollapsed boolean (default false)
-function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCollapsed = false } = {}) {
+// ADR-166: when playable is true, the header gains ▶ (Play all visible) and
+// ⊕ (Add visible to queue) buttons. Both harvest lazily at click time via
+// collectQueueItems(bodyEl) — no count is shown, no filter coupling required.
+function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCollapsed = false, playable = false } = {}) {
   const sectionEl = document.createElement('section');
 
   const headerEl = document.createElement('div');
@@ -96,6 +99,36 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
   const bodyEl = document.createElement('div');
   bodyEl.className = 'section-body';
   bodyEl.hidden = defaultCollapsed;
+
+  // ADR-166: play-all / enqueue pair — created after bodyEl so handlers can close over it.
+  if (playable) {
+    const acts = document.createElement('span');
+    acts.className = 'section-play-acts';
+    const playAllBtn = document.createElement('button');
+    playAllBtn.type = 'button';
+    playAllBtn.className = 'section-play-btn';
+    playAllBtn.title = 'Play all visible';
+    playAllBtn.textContent = '\u25b6';
+    playAllBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (typeof collectQueueItems !== 'function') return;
+      const items = collectQueueItems(bodyEl);
+      if (items.length && typeof startMediaQueue === 'function') startMediaQueue(items, 0);
+    });
+    const enqueueBtn = document.createElement('button');
+    enqueueBtn.type = 'button';
+    enqueueBtn.className = 'section-enqueue-btn';
+    enqueueBtn.title = 'Add visible to queue';
+    enqueueBtn.textContent = '\u2295';
+    enqueueBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (typeof collectQueueItems !== 'function' || typeof MediaQueue === 'undefined') return;
+      MediaQueue.addItems(collectQueueItems(bodyEl));
+    });
+    acts.appendChild(playAllBtn);
+    acts.appendChild(enqueueBtn);
+    headerEl.appendChild(acts);
+  }
 
   chevron.addEventListener('click', function (e) {
     e.stopPropagation();

@@ -756,6 +756,22 @@
   .rec-section-header-row:hover { color: var(--fg); }
   /* Pin the + add button to the right edge of any section header. */
   .rec-section-header-row > .co-add-chip { margin-left: auto; }
+  /* ADR-166: play-all / enqueue pair on playable section headers. */
+  .section-play-acts {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  }
+  .section-play-btn, .section-enqueue-btn {
+    background: none; border: 1px solid var(--border); border-radius: 50%;
+    color: var(--fg-muted); font-size: 0.62rem; line-height: 1;
+    width: 18px; height: 18px; padding: 0;
+    cursor: pointer; flex-shrink: 0; display: inline-flex;
+    align-items: center; justify-content: center;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .section-play-btn:hover, .section-enqueue-btn:hover { color: var(--accent); border-color: var(--accent); }
+  @media (max-width: 600px) {
+    .section-play-btn, .section-enqueue-btn { width: 44px; height: 44px; font-size: 1rem; border-radius: 50%; }
+  }
   /* Indent section bodies under their header for visual hierarchy. */
   .section-body { padding-left: var(--hier-indent-step, 14px); }
   .section-body[hidden] { padding-left: 0; }

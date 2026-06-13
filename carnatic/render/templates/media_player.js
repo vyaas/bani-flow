@@ -3234,7 +3234,7 @@ function buildPlaylistsSection(playlistIds) {
   // chip-section-hdr scale (0.85rem), not the smaller bare neutral-chip.
   chip.className = 'neutral-chip chip-section-hdr';
   chip.textContent = 'PLAYLISTS';
-  const { sectionEl, bodyEl } = buildSection({ headerChip: chip, count: pls.length, defaultCollapsed: false });
+  const { sectionEl, bodyEl } = buildSection({ headerChip: chip, count: pls.length, defaultCollapsed: false, playable: true });
   sectionEl.dataset.section = 'playlists';
   pls.forEach(pl => bodyEl.appendChild(buildPlaylistRow(pl)));
   return sectionEl;
@@ -3273,6 +3273,7 @@ function buildRecordingsList(nodeId, nodeData) {
     const { sectionEl: lsSection, bodyEl: lsBody } = buildSection({
       headerChip: lsHdrChip,
       count: lecdemCount,
+      playable: true,
     });
     lsSection.classList.add('lecdem-section');
     lsSection.dataset.section = 'lecdems';
@@ -3320,6 +3321,12 @@ function buildRecordingsList(nodeId, nodeData) {
           // consistent across all rows. Empty bodyEls → phantom chevron for alignment.
           li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: subjectChips || [], defaultCollapsed: true }));
         }
+        // ADR-165: register whole-lecdem item; harvest picks it up per filter visibility.
+        if (ref.video_id) registerQueueItem(li, (() => { const _r = ref; return () => ({
+          media: _r.video_id, startSeconds: 0,
+          label: _r.label || 'Lecture-Demo', artistName: artistLabel,
+          meta: { nodeId },
+        }); })());
         byList.appendChild(li);
       });
 
@@ -3378,6 +3385,13 @@ function buildRecordingsList(nodeId, nodeData) {
           // Flat row: always wrap in row-accordion. Empty bodyEls → phantom chevron.
           li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
         }
+        // ADR-165: register whole-lecdem item; harvest picks it up per filter visibility.
+        if (ref.video_id) registerQueueItem(li, (() => { const _r = ref; return () => ({
+          media: _r.video_id, startSeconds: 0,
+          label: _r.label || 'Lecture-Demo',
+          artistName: _r.lecturer_label || artistLabel,
+          meta: { nodeId: _r.lecturer_id || nodeId },
+        }); })());
         aboutList.appendChild(li);
       });
 
@@ -3440,6 +3454,7 @@ function buildRecordingsList(nodeId, nodeData) {
   const { sectionEl: concertSection, bodyEl: concertBody } = buildSection({
     headerChip: _concertsChip,
     count: concerts.length,
+    playable: true,
   });
   concertSection.dataset.section = 'concerts';
   concerts.forEach(concert => {
@@ -3481,6 +3496,7 @@ function buildRecordingsList(nodeId, nodeData) {
   const { sectionEl: ragaSection, bodyEl: ragaBody } = buildSection({
     headerChip: _ragaHdrLabel,
     count: allPerfs.length,
+    playable: true,
   });
   ragaSection.dataset.section = 'raga-recordings';
   if (allPerfs.length > 0) {
