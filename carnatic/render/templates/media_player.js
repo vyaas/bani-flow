@@ -1351,7 +1351,8 @@ function openOrFocusPlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     playerRegistry.set(mkey, p);
     refreshPlayingIndicators();
     // Position player next to the Wheel Detail Panel when a raga context is present.
-    if (meta && meta.ragaId) {
+    // Queue/playlist players are pinned — skip repositioning so they stay put.
+    if (meta && meta.ragaId && !meta.isQueueItem) {
       const wdpPanel = document.getElementById('wheel-detail-panel');
       const wdpAlreadyOpen = wdpPanel && wdpPanel.classList.contains('wdp-open') &&
                              (typeof currentView === 'undefined' || currentView === 'raga');
@@ -1378,7 +1379,7 @@ function openOrFocusPlayer(mediaArg, trackLabel, artistName, startSeconds, conce
       }
     }
   }
-  if (meta && meta.ragaId && typeof window._openWdpForPlayback === 'function') {
+  if (meta && meta.ragaId && !meta.isQueueItem && typeof window._openWdpForPlayback === 'function') {
     window._openWdpForPlayback(meta.ragaId, meta.compositionId || null);
   }
 }
@@ -1397,7 +1398,16 @@ const MediaQueue = {
   panelOpen: false,   // ADR-162: whether the "Up Next" panel shows by default
 
   start(items, startIndex) {
-    this.items = Array.isArray(items) ? items.filter(it => it && it.media) : [];
+    const newItems = Array.isArray(items) ? items.filter(it => it && it.media) : [];
+    // If the queue is already playing this exact playlist, switch tracks in-place
+    // rather than tearing down and re-creating the player window.
+    if (this.active && newItems.length === this.items.length &&
+        newItems.every((it, j) => mediaKey(it.media) === mediaKey(this.items[j].media))) {
+      this._switchTo(Math.max(0, Math.min(startIndex || 0, newItems.length - 1)));
+      _refreshQueuePanels();
+      return;
+    }
+    this.items = newItems;
     this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
     this.active = this.items.length > 0;
     this.panelOpen = this.active;   // ADR-162: Play all reveals the queue panel
@@ -1413,7 +1423,7 @@ const MediaQueue = {
     const it = this.items[this.index];
     if (!it || !it.media) { this.active = false; return; }
     openOrFocusPlayer(it.media, it.label, it.artistName, it.startSeconds,
-                      it.concertTitle, it.tracks || [], Object.assign({}, it.meta || {}));
+                      it.concertTitle, it.tracks || [], Object.assign({}, it.meta || {}, { isQueueItem: true }));
     this.currentKey = mediaKey(it.media);
     if (pos) {
       const inst = playerRegistry.get(this.currentKey);
