@@ -1,6 +1,6 @@
 # ADR-165: Filter-Scoped Queue Harvest — Row Registry & the WYSIWYG Invariant
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-06-12
 **Agents**: graph-architect → carnatic-coder → test-engineer
 **Depends on**: ADR-162 (`MediaQueue` and the Up-Next panel), ADR-163 §3 (the `+` affordance's lazy `getItem` thunks — this ADR generalises them), ADR-154 (`mediaKey` identity), ADR-156 (span items / `start_seconds`), ADR-018/064/080 (the bracket-, tree-, and lecdem-aware `#rec-filter` matching rules this ADR deliberately does **not** re-implement).

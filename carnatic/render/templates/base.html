@@ -528,6 +528,12 @@
     font-family: inherit; font-size: 0.72rem; border-radius: 2px;
     margin-top: 6px; display: none; box-sizing: border-box;
   }
+  /* ADR-166/167: both filters live inside their own flex rows; rows handle visibility/layout */
+  #rec-filter-row,
+  #trail-filter-row {
+    flex-wrap: nowrap; align-items: center; gap: 6px; margin-top: 6px;
+  }
+  #rec-filter, #trail-filter { flex: 1; min-width: 0; width: auto; margin-top: 0; display: block; }
   #rec-filter:focus,
   #trail-filter:focus { outline: none; border-color: var(--accent); }
   #rec-filter::placeholder,
@@ -756,6 +762,22 @@
   .rec-section-header-row:hover { color: var(--fg); }
   /* Pin the + add button to the right edge of any section header. */
   .rec-section-header-row > .co-add-chip { margin-left: auto; }
+  /* ADR-166: play-all / enqueue pair on playable section headers. */
+  .section-play-acts {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  }
+  .section-play-btn, .section-enqueue-btn {
+    background: none; border: 1px solid var(--border); border-radius: 50%;
+    color: var(--fg-muted); font-size: 0.62rem; line-height: 1;
+    width: 18px; height: 18px; padding: 0;
+    cursor: pointer; flex-shrink: 0; display: inline-flex;
+    align-items: center; justify-content: center;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .section-play-btn:hover, .section-enqueue-btn:hover { color: var(--accent); border-color: var(--accent); }
+  @media (max-width: 600px) {
+    .section-play-btn, .section-enqueue-btn { width: 44px; height: 44px; font-size: 1rem; border-radius: 50%; }
+  }
   /* Indent section bodies under their header for visual hierarchy. */
   .section-body { padding-left: var(--hier-indent-step, 14px); }
   .section-body[hidden] { padding-left: 0; }
@@ -4894,9 +4916,15 @@
             <!-- Inline meta chips: HER/CER for raga, raga+composer for comp -->
             <div id="bani-subject-sub" style="display:none"></div>
           </div>
-          <!-- Filter — below the chip row, above the trail list -->
-          <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
-                 style="display:none" autocomplete="off" spellcheck="false" />
+          <!-- Filter + ADR-167 play-all/enqueue pair — flex row below the chip row -->
+          <div id="trail-filter-row" style="display:none">
+            <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
+                   autocomplete="off" spellcheck="false" />
+            <span id="trail-play-acts" class="section-play-acts">
+              <button id="trail-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
+              <button id="trail-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue">&#x2295;</button>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -5003,8 +5031,14 @@
                style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
           </div>
         </div>
-        <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
-               style="display:none" autocomplete="off" spellcheck="false" />
+        <div id="rec-filter-row" style="display:none">
+          <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
+                 autocomplete="off" spellcheck="false" />
+          <span id="rec-play-acts" class="section-play-acts">
+            <button id="rec-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
+            <button id="rec-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue">&#x2295;</button>
+          </span>
+        </div>
       </div>
       </div>
     </div>

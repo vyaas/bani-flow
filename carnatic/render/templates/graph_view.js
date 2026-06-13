@@ -1294,7 +1294,31 @@ function _openMusicianPanelForTransit(transitId) {
   if (typeof window.setPanelState === 'function') window.setPanelState('MUSICIAN');
 }
 
+// ADR-166: rec-filter-row ▶/⊕ buttons — harvest from #recordings-list
+(function() {
+  var recPlayBtn = document.getElementById('rec-play-all-btn');
+  var recEnqBtn  = document.getElementById('rec-enqueue-btn');
+  var recList    = document.getElementById('recordings-list');
+  if (recPlayBtn) {
+    recPlayBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof collectQueueItems !== 'function') return;
+      var items = collectQueueItems(recList);
+      if (items.length && typeof startMediaQueue === 'function') startMediaQueue(items, 0);
+    });
+  }
+  if (recEnqBtn) {
+    recEnqBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof collectQueueItems !== 'function' || typeof MediaQueue === 'undefined') return;
+      MediaQueue.addItems(collectQueueItems(recList));
+    });
+  }
+})();
+
 // ── rec-filter event listener — bracket-aware (ADR-018) + raga-tree-aware (ADR-064) ──
+// ADR-165 §3 visibility-channel invariant: this filter MUST express all exclusions
+// via inline style.display = 'none' only. Never use the `hidden` attribute here.
 document.getElementById('rec-filter').addEventListener('input', function() {
   const q       = this.value.toLowerCase().trim();
   const recList = document.getElementById('recordings-list');
@@ -1437,6 +1461,8 @@ document.getElementById('rec-filter').addEventListener('input', function() {
 });
 
 // ── trail-filter event listener ───────────────────────────────────────────────
+// ADR-165 §3 visibility-channel invariant: this filter MUST express all exclusions
+// via inline style.display = 'none' only. Never use the `hidden` attribute here.
 document.getElementById('trail-filter').addEventListener('input', function() {
   const q         = this.value.toLowerCase().trim();
   const trailList = document.getElementById('trail-list');
@@ -1754,7 +1780,7 @@ cy.on('tap', evt => {
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—'; // clear chip
   document.getElementById('node-wiki-link').style.display   = 'none';
-  document.getElementById('rec-filter').style.display       = 'none';
+  document.getElementById('rec-filter-row').style.display   = 'none';
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';
   var _lgBgTap = document.getElementById('lineage-popup-btn');
@@ -1779,7 +1805,7 @@ window.clearMusicianPanel = function () {
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—';
   document.getElementById('node-wiki-link').style.display   = 'none';
-  document.getElementById('rec-filter').style.display       = 'none';
+  document.getElementById('rec-filter-row').style.display   = 'none';
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';
   var _lgReset = document.getElementById('lineage-popup-btn');

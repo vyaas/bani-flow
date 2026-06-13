@@ -1,6 +1,6 @@
 # ADR-166: Section-Header Play All & Enqueue — the Filter as Playlist Generator (Detail Panels)
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-06-12
 **Agents**: graph-architect → carnatic-coder → test-engineer
 **Depends on**: ADR-165 (`registerQueueItem` / `collectQueueItems` / `MediaQueue.addItems` — the mechanism this ADR surfaces), ADR-128 (`buildSection` — the header row that hosts the new buttons), ADR-161 (button vocabulary, 44px touch targets), ADR-162 (queue panel the results land in), ADR-163 ("Save as playlist" — the closing gesture of the loop this ADR opens).
