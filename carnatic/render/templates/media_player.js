@@ -1327,7 +1327,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     });
   }
 
-  _addQueueUI(el);    // ADR-162: queue toggle + "Up Next" panel (only when a queue is active)
+  if (meta && meta.isQueueItem) _addQueueUI(el);   // ADR-162: queue UI only on queue-owned windows; standalone players get their own clean instance
   _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
@@ -1969,13 +1969,14 @@ function buildQueuePanel() {
 // Re-render every open queue panel and sync toggle state/visibility. Called by
 // MediaQueue on any mutation (start/advance/jump/remove/move/clear).
 function _refreshQueuePanels() {
-  // Ensure any open player that was created before the queue started also gets
-  // the queue toggle + panel. Calls _addQueueUI with skipRefresh=true to avoid
-  // re-entering this function.
-  if (MediaQueue.active) {
-    document.querySelectorAll('.media-player').forEach(function(pl) {
-      if (!pl.querySelector('.mp-queue-toggle')) _addQueueUI(pl, true);
-    });
+  // Ensure the queue's own player window has the toggle + panel. We target only
+  // the current queue player (by currentKey) rather than all open players —
+  // standalone players opened while a queue runs must stay queue-free.
+  if (MediaQueue.active && MediaQueue.currentKey) {
+    const _qInst = playerRegistry.get(MediaQueue.currentKey);
+    if (_qInst && _qInst.el && !_qInst._isMobileSingleton && !_qInst.el.querySelector('.mp-queue-toggle')) {
+      _addQueueUI(_qInst.el, true);
+    }
   }
   const show = MediaQueue.active && MediaQueue.panelOpen;
   document.querySelectorAll('.mp-queue').forEach(p => {
