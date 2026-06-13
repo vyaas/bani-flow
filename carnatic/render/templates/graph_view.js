@@ -1295,6 +1295,8 @@ function _openMusicianPanelForTransit(transitId) {
 }
 
 // ── rec-filter event listener — bracket-aware (ADR-018) + raga-tree-aware (ADR-064) ──
+// ADR-165 §3 visibility-channel invariant: this filter MUST express all exclusions
+// via inline style.display = 'none' only. Never use the `hidden` attribute here.
 document.getElementById('rec-filter').addEventListener('input', function() {
   const q       = this.value.toLowerCase().trim();
   const recList = document.getElementById('recordings-list');
@@ -1437,6 +1439,8 @@ document.getElementById('rec-filter').addEventListener('input', function() {
 });
 
 // ── trail-filter event listener ───────────────────────────────────────────────
+// ADR-165 §3 visibility-channel invariant: this filter MUST express all exclusions
+// via inline style.display = 'none' only. Never use the `hidden` attribute here.
 document.getElementById('trail-filter').addEventListener('input', function() {
   const q         = this.value.toLowerCase().trim();
   const trailList = document.getElementById('trail-list');

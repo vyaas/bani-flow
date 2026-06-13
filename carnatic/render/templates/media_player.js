@@ -1518,10 +1518,58 @@ const MediaQueue = {
     _refreshQueuePanels();
   },
 
+  // ADR-165 §4: append an entire harvest to the queue with a single panel refresh.
+  addItems(items) {
+    const valid = (items || []).filter(it => it && it.media);
+    if (!valid.length) return;
+    if (!this.active) { this.start(valid, 0); return; }
+    this.items.push(...valid);
+    _refreshQueuePanels();
+  },
+
   clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; },
 };
 window.MediaQueue = MediaQueue;
 window.startMediaQueue = function(items, startIndex) { MediaQueue.start(items, startIndex); };
+
+// ── ADR-165: row registry + harvest primitive ─────────────────────────────────
+// Visibility-channel invariant (§3): filters express exclusion EXCLUSIVELY via
+// inline style.display = 'none'. Collapse/fold expresses folding EXCLUSIVELY via
+// the `hidden` attribute (or a class that does not touch inline display). No
+// template code may use one channel for the other's purpose — harvest semantics
+// depend on this separation being respected.
+const _queueItemThunks = new WeakMap();  // rowEl → getItem
+
+function registerQueueItem(rowEl, getItem) {
+  rowEl.classList.add('q-row');
+  _queueItemThunks.set(rowEl, getItem);
+}
+window.registerQueueItem = registerQueueItem;   // bani_flow.js registers trail rows
+
+// All queue items currently filter-visible inside rootEl, in document order,
+// deduplicated by media identity + span start.
+function collectQueueItems(rootEl) {
+  const seen = new Set(), out = [];
+  rootEl.querySelectorAll('.q-row').forEach(row => {
+    // Filter channel only: inline display:none on the row or any ancestor below
+    // rootEl excludes it. The `hidden` attribute (collapse) does not.
+    for (let el = row; el && el !== rootEl; el = el.parentElement) {
+      if (el.style && el.style.display === 'none') return;
+    }
+    const thunk = _queueItemThunks.get(row);
+    if (!thunk) return;
+    [].concat(thunk() || []).forEach(item => {
+      if (!item || !item.media) return;
+      const mk = typeof mediaKey === 'function' ? mediaKey(item.media) : item.media;
+      const k = mk + '@' + (item.startSeconds || 0);
+      if (seen.has(k)) return;
+      seen.add(k);
+      out.push(item);
+    });
+  });
+  return out;
+}
+window.collectQueueItems = collectQueueItems;
 
 // ── ADR-163 §3: + affordance — add any item to a playlist via the patch loop ──
 // _buildPlusBtn(getItem) → <button class="mp-plus-btn"> that opens a popover menu.
@@ -2362,11 +2410,14 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       });
       actsDiv.appendChild(playBtn);
       // ADR-163 §3: + affordance on concert bracket performance rows
-      actsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+      // ADR-165: same thunk feeds the + menu and the harvest.
+      const _concertPerfThunk = (() => { const _p = p; return () => ({
         media: _p.video_id, startSeconds: _p.offset_seconds || 0,
         label: _p.display_title || '', artistName: artistLabel,
         meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
-      }); })()));
+      }); })();
+      actsDiv.appendChild(_buildPlusBtn(_concertPerfThunk));
+      registerQueueItem(li, _concertPerfThunk);
       compHeader.appendChild(actsDiv);
 
       // ── Wrap comp header + composer in indented block when raga is present ────
@@ -2488,11 +2539,14 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     });
     actsDiv.appendChild(playBtn);
     // ADR-163 §3: + affordance on single-recording standalone rows
-    actsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+    // ADR-165: same thunk feeds the + menu and the harvest.
+    const _singleRecThunk = (() => { const _p = p; return () => ({
       media: _p.video_id, startSeconds: _p.offset_seconds || 0,
       label: _p.display_title || '', artistName: artistLabel,
       meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
-    }); })()));
+    }); })();
+    actsDiv.appendChild(_buildPlusBtn(_singleRecThunk));
+    registerQueueItem(li, _singleRecThunk);
     compHeader.appendChild(actsDiv);
   } else {
     // ── Multiple recordings: right-chevron accordion (starts collapsed) ────
@@ -2561,11 +2615,14 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       });
       rowActsDiv.appendChild(playBtn);
       // ADR-163 §3: + affordance on multi-recording version rows
-      rowActsDiv.appendChild(_buildPlusBtn((() => { const _p = p; return () => ({
+      // ADR-165: same thunk feeds the + menu and the harvest.
+      const _multiRecThunk = (() => { const _p = p; return () => ({
         media: _p.video_id, startSeconds: _p.offset_seconds || 0,
         label: _p.display_title || '', artistName: artistLabel,
         meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
-      }); })()));
+      }); })();
+      rowActsDiv.appendChild(_buildPlusBtn(_multiRecThunk));
+      registerQueueItem(recLi, _multiRecThunk);
       row.appendChild(rowActsDiv);
 
       recLi.appendChild(row);
@@ -3138,9 +3195,10 @@ function buildPlaylistRow(pl) {
       if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, i);
     });
     // ADR-163 §3: + affordance on each playlist track row
+    // ADR-165: same thunk feeds the + menu and the harvest.
     const itCopy = it;
     const qiCopy = queueItems[i];
-    const tplus = _buildPlusBtn(() => ({
+    const _trackThunk = () => ({
       media: qiCopy && qiCopy.media,
       startSeconds: itCopy.start_seconds || 0,
       meta: {
@@ -3149,14 +3207,20 @@ function buildPlaylistRow(pl) {
         end_seconds: itCopy.end_seconds || null,
       },
       label: itCopy.note || itCopy.composition_id || '',
-    }));
+    });
+    const tplus = _buildPlusBtn(_trackThunk);
+    registerQueueItem(trow, _trackThunk);
     trow.appendChild(tplay);
     trow.appendChild(tplus);
     return trow;
   });
 
   // Tree node: chevron + header + collapsible track children (ADR-128 row-accordion).
-  return buildRowAccordion({ headerEl, bodyEls, defaultCollapsed: true, chevronPosition: 'left', trailingEl: playActs });
+  // ADR-165: register the playlist row with an array thunk so harvest on a PLAYLISTS
+  // section body returns the full concatenation of visible playlists' items.
+  const rowEl = buildRowAccordion({ headerEl, bodyEls, defaultCollapsed: true, chevronPosition: 'left', trailingEl: playActs });
+  registerQueueItem(rowEl, () => queueItems);
+  return rowEl;
 }
 
 // Returns a PLAYLISTS buildSection for the given playlist ids, or null if none.
