@@ -159,6 +159,8 @@ function toggleLayout() {
 function showRagaWheel(skipDraw) {
   const wheel = document.getElementById('raga-wheel');
   wheel.style.display = '';
+  const overlay = document.getElementById('sruti-overlay');
+  if (overlay) overlay.style.display = '';
   if (!skipDraw) drawRagaWheel();
 }
 
@@ -166,8 +168,14 @@ function hideRagaWheel() {
   const wheel = document.getElementById('raga-wheel');
   wheel.style.display = 'none';
   wheel.innerHTML = '';
-  // Abort SVG-level listeners so hidden wheel doesn't process stale events
   if (typeof _svgAbortFromOutside === 'function') _svgAbortFromOutside();
+  const overlay = document.getElementById('sruti-overlay');
+  if (overlay) {
+    overlay.classList.remove('sruti-expanded');
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.style.display = 'none';
+  }
+  if (window.RagaWheel && window.RagaWheel._sruti) window.RagaWheel._sruti.expanded = false;
 }
 
 // ── Raga Wheel — SVG rendering (ADR-023) ──────────────────────────────────────
@@ -822,7 +830,7 @@ function _lightUpSpineForMela(M) {
   const t = _melaToTuple(M);
 
   // Dim all ring cells to near-zero — exclude sruti pie (independent of bani filter)
-  svg.querySelectorAll('[data-ring]:not([data-ring="sruti"]):not([data-ring="sruti-label"])').forEach(el => {
+  svg.querySelectorAll('[data-ring]:not([data-ring="sruti-seed"])').forEach(el => {
     el.setAttribute('opacity', '0.08');
   });
   // Dim mela arc slots — scale origOp proportionally so live/empty hierarchy is preserved
@@ -886,7 +894,7 @@ function _lightUpMelas(melaNumbers, strokeHint) {
   if (!svg) return;
 
   // Dim all ring cells — exclude sruti pie (independent of bani filter)
-  svg.querySelectorAll('[data-ring]:not([data-ring="sruti"]):not([data-ring="sruti-label"])').forEach(el => el.setAttribute('opacity', '0.08'));
+  svg.querySelectorAll('[data-ring]:not([data-ring="sruti-seed"])').forEach(el => el.setAttribute('opacity', '0.08'));
 
   // Light up spine cells (madhyama, cakra, ri-ga, da-ni) for every lit mela
   for (const M of melaNumbers) {
@@ -968,7 +976,7 @@ function _clearWheelLightUp() {
   if (!svg) return;
 
   // Restore ring cells — exclude sruti pie (manages its own active/inactive state)
-  svg.querySelectorAll('[data-ring]:not([data-ring="sruti"]):not([data-ring="sruti-label"])').forEach(el => {
+  svg.querySelectorAll('[data-ring]:not([data-ring="sruti-seed"])').forEach(el => {
     const orig = el.getAttribute('data-orig-opacity');
     if (orig) el.setAttribute('opacity', orig);
   });
@@ -1142,9 +1150,11 @@ window._svgAbortFromOutside = () => {
   if (_svgListenerController) { _svgListenerController.abort(); _svgListenerController = null; }
 };
 
-// Re-append _labelLayer so it is always the last (topmost) child of vp
+// Re-append _labelLayer then seed so they are always the topmost children of vp
 function _bringLabelsToFront(vp) {
   if (_labelLayer && _labelLayer.parentNode === vp) vp.appendChild(_labelLayer);
+  const seed = vp.querySelector('#sruti-seed');
+  if (seed) vp.appendChild(seed);
 }
 
 window.drawRagaWheel = function() {
@@ -1352,9 +1362,13 @@ window.drawRagaWheel = function() {
   // Clamp any persisted scale to the current viewport's max (handles resize-before-draw)
   RagaWheel._state.scale = RagaWheel._clampScale(RagaWheel._state.scale);
 
-  // ESC key clears light-up — registered once per draw via AbortController
+  // ESC key clears light-up and collapses sruti picker
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { _closeWheelDetailPanel(); _clearWheelLightUp(); }
+    if (e.key === 'Escape') {
+      _closeWheelDetailPanel();
+      _clearWheelLightUp();
+      if (typeof RagaWheel._srutiCollapse === 'function') RagaWheel._srutiCollapse();
+    }
   }, { signal: _signal });
 
   // ── Pan/zoom gesture handlers (wheel scroll, pointer drag, pinch) ─────────
@@ -1514,143 +1528,303 @@ window.drawRagaWheel = function() {
     vp.appendChild(t);
   });
 
-  // ── ADR-131 R3 — Sruti pie: 12 pitch sectors at the very centre ────────────
-  // The drone is the wheel's acoustic root. Click a sector to start that
-  // tonic's tanpura; click it again (or the active sector) to stop. No floating
-  // chrome, no states beyond active/inactive — the pie is permanent.
+  // ── ADR-169 — Sruti seed button + modal pitch picker ────────────────────────
+  // Replaces the ADR-131 R3 permanent pie. State machine: four states derived
+  // from { activeIdx, expanded }. Overlay bloom/swallow handled via CSS transitions.
   if (typeof tanpuraData !== 'undefined' && Array.isArray(tanpuraData) && tanpuraData.length > 0) {
-    const N_SRUTI = tanpuraData.length;        // 12
-    const SECT_DEG = 360 / N_SRUTI;
-    const lblFontSize = Math.max(7, minDim * 0.012);
-    const lblR = R_SRUTI * 0.82;               // pushed toward edge — more arc width at larger radius
+    const SEED_R = Math.max(22, R_SRUTI);  // half-diameter; min 44px touch target (2×22)
 
-    // ADR-132: piano-key palette mapped to Gruvbox Hard Dark primitives.
-    // White keys (natural notes) → fg #ebdbb2 (warm cream); text: bg_h #1d2021
-    // Black keys (altered notes) → bg1 #3c3836 (warm panel dark); text: fg2 #bdae93
-    // Active (any key)           → yellow #d79921 (Gruvbox accent); text: bg_h #1d2021
+    // ADR-132 palette — unchanged from pie era
     const _SRUTI_WHITE_KEYS = new Set([0, 2, 4, 5, 7, 9, 11]); // C D E F G A B
     function _srutiFill(idx, active) {
-      if (active) return '#d79921';                              // Gruvbox yellow — playing
+      if (active) return '#c89a18';  // ADR-132 active-amber
       return _SRUTI_WHITE_KEYS.has(idx) ? '#ebdbb2' : '#3c3836';
     }
     function _srutiTextFill(idx, active) {
-      if (active) return '#1d2021';                              // bg_h on yellow
+      if (active) return '#1d2021';
       return _SRUTI_WHITE_KEYS.has(idx) ? '#1d2021' : '#bdae93';
     }
 
-    // RagaWheel._sruti = persistent state across redraws + view switches.
-    if (!RagaWheel._sruti) RagaWheel._sruti = { activeIdx: null };
-    const _activeIdx = RagaWheel._sruti.activeIdx;
+    // Persistent state across redraws + view switches
+    if (!RagaWheel._sruti) {
+      RagaWheel._sruti = { activeIdx: null, expanded: false };
+      // Restore tonic from localStorage on first load (COLLAPSED_PLAYING visual, no audio yet)
+      try {
+        const saved = localStorage.getItem('sruti.tonic');
+        if (saved) {
+          const idx = tanpuraData.findIndex(e => e.note === saved);
+          if (idx !== -1) RagaWheel._sruti.activeIdx = idx;
+        }
+      } catch (e) { /* ignore */ }
+    }
+    if (RagaWheel._sruti.expanded === undefined) RagaWheel._sruti.expanded = false;
 
-    // Exposed on RagaWheel so the media player's close button can reset the ring
-    // without re-entering closePlayer (which would loop back here).
-    RagaWheel._clearSrutiRing = function() {
+    // ── State helpers ──────────────────────────────────────────────────────────
+
+    function _srutiUpdateSeed() {
+      const seedG = vp.querySelector('#sruti-seed');
+      if (!seedG) return;
+      const activeIdx = RagaWheel._sruti.activeIdx;
+      const isPlaying = activeIdx !== null;
+      const circle = seedG.querySelector('circle');
+      if (circle) {
+        circle.setAttribute('stroke', isPlaying ? '#c89a18' : (THEME.border || '#504945'));
+        circle.setAttribute('stroke-width', isPlaying ? '2' : '1.5');
+      }
+      const icon = seedG.querySelector('use');
+      if (icon) icon.setAttribute('fill', isPlaying ? '#c89a18' : (THEME.fg || '#ebdbb2'));
+      const badge = seedG.querySelector('.sruti-badge');
+      if (badge) {
+        const entry = isPlaying ? tanpuraData[activeIdx] : null;
+        badge.textContent = entry ? entry.note : '';
+        badge.setAttribute('visibility', isPlaying ? 'visible' : 'hidden');
+      }
+      seedG.setAttribute('data-playing', String(isPlaying));
+      const titleEl = seedG.querySelector('title');
+      if (titleEl) {
+        const entry = isPlaying ? tanpuraData[activeIdx] : null;
+        titleEl.textContent = isPlaying
+          ? 'Tanpura — ' + (entry ? entry.note + ' drone playing' : 'playing') + ' — open pitch picker'
+          : 'Tanpura — open pitch picker';
+      }
+    }
+
+    function _srutiSetExpanded(state) {
+      RagaWheel._sruti.expanded = !!state;
+      const overlay = document.getElementById('sruti-overlay');
+      if (!overlay) return;
+      const activeIdx = RagaWheel._sruti.activeIdx;
+      if (state) {
+        overlay.classList.add('sruti-expanded');
+        overlay.setAttribute('aria-hidden', 'false');
+        overlay.setAttribute('data-sruti-state',
+          activeIdx !== null ? 'EXPANDED_PLAYING' : 'EXPANDED_IDLE');
+        overlay.querySelectorAll('.sruti-key').forEach((k) => {
+          const i = parseInt(k.dataset.srutiIdx, 10);
+          const isActive = (activeIdx !== null && i === activeIdx);
+          k.classList.toggle('sruti-key-active', isActive);
+          k.setAttribute('aria-pressed', String(isActive));
+          k.style.background = _srutiFill(i, isActive);
+          k.style.color = _srutiTextFill(i, isActive);
+          k.style.borderColor = isActive ? '#c89a18' : (_SRUTI_WHITE_KEYS.has(i) ? '#504945' : '#7c6f64');
+        });
+      } else {
+        overlay.classList.remove('sruti-expanded');
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.setAttribute('data-sruti-state',
+          activeIdx !== null ? 'COLLAPSED_PLAYING' : 'COLLAPSED_IDLE');
+      }
+    }
+
+    function _srutiStop() {
       RagaWheel._sruti.activeIdx = null;
       try { localStorage.removeItem('sruti.tonic'); } catch (e) { /* ignore */ }
-      vp.querySelectorAll('path[data-ring="sruti"]').forEach((p) => {
-        const i = parseInt(p.getAttribute('data-sruti-idx'), 10);
-        p.setAttribute('fill', _srutiFill(i, false));
-        p.removeAttribute('stroke');
-      });
-      // Also repaint labels
-      vp.querySelectorAll('text[data-ring="sruti-label"]').forEach((t) => {
-        const i = parseInt(t.getAttribute('data-sruti-idx'), 10);
-        t.setAttribute('fill', _srutiTextFill(i, false));
-        t.setAttribute('font-weight', 'normal');
-      });
-    };
-
-    function _stopSruti() {
-      RagaWheel._clearSrutiRing();
+      _srutiUpdateSeed();
       if (typeof closePlayer === 'function') closePlayer('sruti');
     }
 
-    function _startSruti(idx, entry, sectorPathEl) {
+    function _srutiStart(idx) {
+      const entry = tanpuraData[idx];
       RagaWheel._sruti.activeIdx = idx;
       try { localStorage.setItem('sruti.tonic', entry.note); } catch (e) { /* ignore */ }
-      // Repaint: all inactive first, then mark this one
-      vp.querySelectorAll('path[data-ring="sruti"]').forEach((p) => {
-        const i = parseInt(p.getAttribute('data-sruti-idx'), 10);
-        p.setAttribute('fill', _srutiFill(i, false));
-        p.removeAttribute('stroke');
-      });
-      vp.querySelectorAll('text[data-ring="sruti-label"]').forEach((t) => {
-        const i = parseInt(t.getAttribute('data-sruti-idx'), 10);
-        t.setAttribute('fill', _srutiTextFill(i, false));
-        t.setAttribute('font-weight', 'normal');
-      });
-      sectorPathEl.setAttribute('fill', _srutiFill(idx, true));
-      sectorPathEl.setAttribute('stroke', THEME.fg || '#ebdbb2');
-      sectorPathEl.setAttribute('stroke-width', '1.5');
-      // Update active label to dark-on-amber text
-      vp.querySelectorAll(`text[data-ring="sruti-label"][data-sruti-idx="${idx}"]`).forEach((t) => {
-        t.setAttribute('fill', _srutiTextFill(idx, true));
-        t.setAttribute('font-weight', 'bold');
-      });
-      if (typeof openPlayer === 'function') {
-        openPlayer(entry.id, entry.note + ' tanpura', 'sruti');
+      _srutiUpdateSeed();
+      if (typeof openPlayer === 'function') openPlayer(entry.id, entry.note + ' tanpura', 'sruti');
+    }
+
+    function _srutiSeedTap() {
+      _srutiSetExpanded(!RagaWheel._sruti.expanded);
+    }
+
+    function _srutiKeyTap(idx) {
+      if (!RagaWheel._sruti.expanded) return;
+      if (RagaWheel._sruti.activeIdx === idx) {
+        // Transition 5: EXPANDED_PLAYING + tap live key → stop + collapse
+        _srutiStop();
+        _srutiSetExpanded(false);
+      } else {
+        // Transition 2/6: tap key → start/switch + collapse
+        _srutiStart(idx);
+        _srutiSetExpanded(false);
       }
     }
 
-    tanpuraData.forEach((entry, idx) => {
-      const startD = idx * SECT_DEG;
-      const endD   = startD + SECT_DEG;
-      const isActive = (idx === _activeIdx);
-      const sect = svgEl('path', {
-        d: sectorPath(cx, cy, 0, R_SRUTI, startD, endD),
-        fill: _srutiFill(idx, isActive),
-        'pointer-events': 'all', cursor: 'pointer',
-        'data-ring': 'sruti', 'data-sruti-idx': String(idx),
-        tabindex: '0',
-      });
-      if (isActive) {
-        sect.setAttribute('stroke', THEME.fg || '#ebdbb2');
-        sect.setAttribute('stroke-width', '1.5');
-      }
-      const sectTitle = svgEl('title', {});
-      sectTitle.textContent = entry.note + ' — tanpura drone';
-      sect.appendChild(sectTitle);
-      sect.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (RagaWheel._sruti.activeIdx === idx) {
-          _stopSruti();
-        } else {
-          _startSruti(idx, entry, sect);
-        }
-      });
-      vp.appendChild(sect);
+    // Expose collapse on RagaWheel for Escape handler + external callers
+    RagaWheel._srutiCollapse = () => _srutiSetExpanded(false);
 
-      // Tiny pitch label at sector mid-angle
-      const midDeg = startD + SECT_DEG / 2;
-      const lp = polar(cx, cy, lblR, midDeg);
-      const lbl = svgEl('text', {
-        x: lp.x, y: lp.y,
-        'text-anchor': 'middle', 'dominant-baseline': 'middle',
-        fill: _srutiTextFill(idx, isActive),
-        'font-size': lblFontSize + 'px',
-        'font-weight': isActive ? 'bold' : 'normal',
-        'pointer-events': 'none',
-        'data-ring': 'sruti-label',
-        'data-sruti-idx': String(idx),
+    // _clearSrutiRing: called by media player close button (external)
+    RagaWheel._clearSrutiRing = function() {
+      _srutiStop();
+      _srutiSetExpanded(false);
+    };
+
+    // ── Build overlay keys ───────────────────────────────────────────────────────
+    (function _buildOverlay() {
+      const overlay = document.getElementById('sruti-overlay');
+      if (!overlay) return;
+      const ring = overlay.querySelector('.sruti-ring');
+      if (!ring) return;
+
+      const ringR = Math.max(70, R_CAKRA);
+      const N = tanpuraData.length;
+      const chord = 2 * ringR * Math.sin(Math.PI / N);
+      const keySize = Math.min(48, Math.max(40, ringR * 0.36));
+      const useTwoArcs = chord < keySize * 1.1;
+      const naturalsOrder  = [0, 2, 4, 5, 7, 9, 11];
+      const accidentalsOrder = [1, 3, 6, 8, 10];
+
+      ring.innerHTML = '';
+
+      tanpuraData.forEach((entry, idx) => {
+        const isNatural = _SRUTI_WHITE_KEYS.has(idx);
+        let x, y, ks;
+
+        if (useTwoArcs) {
+          const outerR = ringR;
+          const innerR = ringR * 0.62;
+          if (isNatural) {
+            const pos = naturalsOrder.indexOf(idx);
+            const angle = ((pos / naturalsOrder.length) * 360 - 90) * (Math.PI / 180);
+            x = outerR * Math.cos(angle);
+            y = outerR * Math.sin(angle);
+            ks = keySize;
+          } else {
+            const pos = accidentalsOrder.indexOf(idx);
+            const angle = ((pos / accidentalsOrder.length) * 360 - 90) * (Math.PI / 180);
+            x = innerR * Math.cos(angle);
+            y = innerR * Math.sin(angle);
+            ks = keySize;  // inner arc gives enough angular space — no size reduction needed
+          }
+        } else {
+          const angle = ((idx / N) * 360 - 90) * (Math.PI / 180);  // top = C
+          x = ringR * Math.cos(angle);
+          y = ringR * Math.sin(angle);
+          ks = keySize;
+        }
+
+        const activeIdx = RagaWheel._sruti.activeIdx;
+        const isActive = (activeIdx !== null && idx === activeIdx);
+
+        const k = document.createElement('button');
+        k.className = 'sruti-key' + (isActive ? ' sruti-key-active' : '');
+        k.dataset.srutiIdx = String(idx);
+        k.setAttribute('type', 'button');
+        k.setAttribute('aria-label', entry.note + ' drone');
+        k.setAttribute('aria-pressed', String(isActive));
+        k.style.width  = ks + 'px';
+        k.style.height = ks + 'px';
+        k.style.fontSize = Math.max(10, ks * 0.32) + 'px';
+        k.style.left = x + 'px';
+        k.style.top  = y + 'px';
+        k.style.setProperty('--dx', (-x) + 'px');  // bloom origin = seed centre
+        k.style.setProperty('--dy', (-y) + 'px');
+        k.style.setProperty('--delay', (idx * 16) + 'ms');
+        k.style.background   = _srutiFill(idx, isActive);
+        k.style.color        = _srutiTextFill(idx, isActive);
+        k.style.borderColor  = isActive ? '#c89a18' : (isNatural ? '#504945' : '#7c6f64');
+
+        if (entry.note.includes('#')) {
+          const letter = document.createElement('span');
+          letter.textContent = entry.note.replace('#', '');
+          const sup = document.createElement('sup');
+          sup.textContent = '♯';
+          sup.style.fontSize = '0.62em';
+          k.appendChild(letter);
+          k.appendChild(sup);
+        } else {
+          k.textContent = entry.note;
+        }
+
+        k.addEventListener('click', (e) => { e.stopPropagation(); _srutiKeyTap(idx); });
+        ring.appendChild(k);
       });
-      // Render accidentals (e.g. "C#") with the letter at full size and the
-      // "#" as a smaller superscript tspan to keep the label inside its slice.
-      if (entry.note.includes('#')) {
-        const letter = svgEl('tspan', {});
-        letter.textContent = entry.note.replace('#', '');
-        const sharp = svgEl('tspan', {
-          'font-size': Math.round(lblFontSize * 0.62) + 'px',
-          'dy': '-0.38em',
-          'dx': '0.06em',
-        });
-        sharp.textContent = '#';
-        lbl.appendChild(letter);
-        lbl.appendChild(sharp);
+
+      // Sync overlay class + state attribute to current _sruti state
+      const activeIdx = RagaWheel._sruti.activeIdx;
+      if (RagaWheel._sruti.expanded) {
+        overlay.classList.add('sruti-expanded');
+        overlay.setAttribute('aria-hidden', 'false');
+        overlay.setAttribute('data-sruti-state',
+          activeIdx !== null ? 'EXPANDED_PLAYING' : 'EXPANDED_IDLE');
       } else {
-        lbl.textContent = entry.note;
+        overlay.classList.remove('sruti-expanded');
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.setAttribute('data-sruti-state',
+          activeIdx !== null ? 'COLLAPSED_PLAYING' : 'COLLAPSED_IDLE');
       }
-      vp.appendChild(lbl);
+
+      // Scrim click — re-wire on each draw
+      const scrim = overlay.querySelector('.sruti-scrim');
+      if (scrim) {
+        const oldH = scrim._srutiHandler;
+        if (oldH) scrim.removeEventListener('click', oldH);
+        const handler = (e) => { e.stopPropagation(); if (RagaWheel._sruti.expanded) _srutiSetExpanded(false); };
+        scrim._srutiHandler = handler;
+        scrim.addEventListener('click', handler);
+      }
+    })();
+
+    // ── SVG seed button (last child of vp — paints over rings) ──────────────────
+    const isPlaying = RagaWheel._sruti.activeIdx !== null;
+    const activeEntry = isPlaying ? tanpuraData[RagaWheel._sruti.activeIdx] : null;
+
+    const seedG = svgEl('g', {
+      id: 'sruti-seed',
+      'data-ring': 'sruti-seed',
+      'data-playing': String(isPlaying),
+      tabindex: '0',
+      role: 'button',
+      cursor: 'pointer',
     });
+    seedG.style.setProperty('--seed-r', SEED_R + 'px');
+
+    const seedCircle = svgEl('circle', {
+      cx: String(cx), cy: String(cy), r: String(SEED_R),
+      fill: THEME.bgPanel || '#282828',
+      stroke: isPlaying ? '#c89a18' : (THEME.border || '#504945'),
+      'stroke-width': isPlaying ? '2' : '1.5',
+    });
+    seedG.appendChild(seedCircle);
+
+    const iconSize = SEED_R * 1.05;
+    const iconUse = svgEl('use', {
+      href: '#icon-tanpura',
+      x:      String(cx - iconSize / 2),
+      y:      String(cy - iconSize / 2),
+      width:  String(iconSize),
+      height: String(iconSize),
+      fill: isPlaying ? '#c89a18' : (THEME.fg || '#ebdbb2'),
+      'pointer-events': 'none',
+    });
+    seedG.appendChild(iconUse);
+
+    // Tonic badge — bottom-right quadrant of seed circle
+    const badge = svgEl('text', {
+      x: String(cx + SEED_R * 0.5),
+      y: String(cy + SEED_R * 0.58),
+      'text-anchor': 'middle',
+      'dominant-baseline': 'middle',
+      'font-size': String(Math.max(7, SEED_R * 0.36)) + 'px',
+      'font-weight': 'bold',
+      fill: '#c89a18',
+      'pointer-events': 'none',
+      class: 'sruti-badge',
+      visibility: isPlaying ? 'visible' : 'hidden',
+    });
+    badge.textContent = activeEntry ? activeEntry.note : '';
+    seedG.appendChild(badge);
+
+    const seedTitle = svgEl('title', {});
+    seedTitle.textContent = isPlaying
+      ? 'Tanpura — ' + (activeEntry ? activeEntry.note + ' drone playing' : 'playing') + ' — open pitch picker'
+      : 'Tanpura — open pitch picker';
+    seedG.appendChild(seedTitle);
+
+    seedG.addEventListener('click', (e) => { e.stopPropagation(); _srutiSeedTap(); });
+    seedG.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _srutiSeedTap(); }
+    });
+
+    vp.appendChild(seedG);
   }
 
   // Ring 1 — Cakra wedge ring (R_MADHYAMA → R_CAKRA): 12 wedges, 30° each
