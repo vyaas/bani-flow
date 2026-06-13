@@ -1,6 +1,6 @@
 # ADR-169 — Tanpura Seed Button & Modal Pitch Picker
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-06-13
 **Supersedes / refines**: ADR-131 (tanpura at wheel centre — *the permanent-pie "R3" radial layout only*), ADR-130 (sruti widget state machine)
 **Retains**: ADR-132 (piano-key colour palette — kept verbatim), ADR-129 (chrome retirement), ADR-124 (zoom/pan retirement)
