@@ -1347,15 +1347,15 @@ document.getElementById('rec-filter').addEventListener('input', function() {
     });
 
     if (!q) {
-      // Reset: collapse all brackets
+      // Reset: collapse all brackets. ADR-165 §3: collapse via the .expanded class
+      // only; the bracket's own inline display is the filter channel (whole-bracket
+      // exclusion), the perf-list visibility is CSS-driven off .expanded.
       bracket.style.display = 'block';
       bracket.classList.remove('expanded');
-      bracket.querySelector('.concert-perf-list').style.display = 'none';
       anyVisible = true;
     } else if (bracketHasMatch) {
       bracket.style.display = 'block';
       bracket.classList.add('expanded');
-      bracket.querySelector('.concert-perf-list').style.display = 'block';
       anyVisible = true;
     } else {
       bracket.style.display = 'none';
@@ -1444,6 +1444,36 @@ document.getElementById('rec-filter').addEventListener('input', function() {
     if (!q || sectionHasMatch) anyVisible = true;
   });
 
+  // ── playlist sections (ADR-163) ───────────────────────────────────────────
+  recList.querySelectorAll('section[data-section="playlists"]').forEach(section => {
+    const body = section.querySelector('.section-body');
+    if (!body) return;
+    let sectionHasMatch = false;
+
+    body.querySelectorAll('.row-accordion').forEach(rowEl => {
+      if (!q) {
+        rowEl.style.display = '';
+        sectionHasMatch = true;
+        return;
+      }
+      const titleText = (rowEl.querySelector('.playlist-chip') || {}).textContent || '';
+      if (titleText.toLowerCase().includes(q)) {
+        rowEl.style.display = '';
+        sectionHasMatch = true;
+        return;
+      }
+      let rowHasTrackMatch = false;
+      rowEl.querySelectorAll('.mp-playlist-track-chips').forEach(chips => {
+        if (chips.textContent.toLowerCase().includes(q)) rowHasTrackMatch = true;
+      });
+      rowEl.style.display = rowHasTrackMatch ? '' : 'none';
+      if (rowHasTrackMatch) sectionHasMatch = true;
+    });
+
+    section.style.display = (!q || sectionHasMatch) ? '' : 'none';
+    if (!q || sectionHasMatch) anyVisible = true;
+  });
+
   // ── no-match sentinel ─────────────────────────────────────────────────────
   let noMatch = recList.querySelector('.rec-no-match');
   if (!anyVisible && q) {
@@ -1490,6 +1520,38 @@ document.getElementById('trail-filter').addEventListener('input', function() {
       });
       lecdemStrip.style.display = stripHasMatch ? '' : 'none';
     }
+  }
+
+  // ── bani playlists (ADR-163) — unconditional like lecdem strip ───────────
+  const baniPlaylists = document.getElementById('bani-playlists');
+  if (baniPlaylists) {
+    baniPlaylists.querySelectorAll('section[data-section="playlists"]').forEach(function(section) {
+      const body = section.querySelector('.section-body');
+      if (!body) return;
+      let sectionHasMatch = false;
+
+      body.querySelectorAll('.row-accordion').forEach(function(rowEl) {
+        if (!q) {
+          rowEl.style.display = '';
+          sectionHasMatch = true;
+          return;
+        }
+        const titleText = (rowEl.querySelector('.playlist-chip') || {}).textContent || '';
+        if (titleText.toLowerCase().includes(q)) {
+          rowEl.style.display = '';
+          sectionHasMatch = true;
+          return;
+        }
+        let rowHasTrackMatch = false;
+        rowEl.querySelectorAll('.mp-playlist-track-chips').forEach(function(chips) {
+          if (chips.textContent.toLowerCase().includes(q)) rowHasTrackMatch = true;
+        });
+        rowEl.style.display = rowHasTrackMatch ? '' : 'none';
+        if (rowHasTrackMatch) sectionHasMatch = true;
+      });
+
+      section.style.display = (!q || sectionHasMatch) ? '' : 'none';
+    });
   }
 
   // ── Tree view (raga / comp): filter leaves, show/collapse parent groups ──

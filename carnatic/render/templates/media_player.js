@@ -2045,15 +2045,11 @@ function _addQueueUI(el, skipRefresh) {
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
 function toggleConcert(headerEl) {
   const bracket = headerEl.closest('.concert-bracket');
-  const list    = bracket.querySelector('.concert-perf-list');
-  const isOpen  = bracket.classList.contains('expanded');
-  if (isOpen) {
-    bracket.classList.remove('expanded');
-    list.style.display = 'none';
-  } else {
-    bracket.classList.add('expanded');
-    list.style.display = 'block';
-  }
+  if (!bracket) return;
+  // ADR-165 §3: collapse via the .expanded class only — the .concert-perf-list
+  // visibility is driven by CSS. Never touch inline display here (that is the
+  // filter channel, and doing so would hide folded rows from the harvest).
+  bracket.classList.toggle('expanded');
 }
 
 // buildYtLink removed — ADR-139: external link replaced by clipboard copy in media player bar.
@@ -2410,7 +2406,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   // ── composition list ──────────────────────────────────────────────────────
   const perfList = document.createElement('ul');
   perfList.className = 'concert-perf-list';
-  perfList.style.display = 'none';
+  // ADR-165 §3: collapsed-by-default is a CSS concern of .concert-perf-list;
+  // no inline display (the filter channel) so the harvest can see folded rows.
 
   concert.sessions.forEach(session => {
     // Sort perfs within session by offset_seconds
@@ -3118,7 +3115,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   // ── segment list ─────────────────────────────────────────────────────────────
   const segList = document.createElement('ul');
   segList.className = 'concert-perf-list';
-  segList.style.display = 'none';
+  // ADR-165 §3: collapsed-by-default via CSS, not inline display (filter channel).
 
   segments.forEach(seg => {
     const li = document.createElement('li');
@@ -3419,8 +3416,10 @@ function buildRecordingsList(nodeId, nodeData) {
           li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: subjectChips || [], defaultCollapsed: true }));
         }
         // ADR-165: register whole-lecdem item; harvest picks it up per filter visibility.
-        if (ref.video_id) registerQueueItem(li, (() => { const _r = ref; return () => ({
-          media: _r.video_id, startSeconds: 0,
+        // Key on the resolved media (ADR-154), not the YouTube-only video_id — non-YouTube
+        // lecdems carry an empty video_id and would otherwise be dropped from the harvest.
+        if (ref.media || ref.media_key) registerQueueItem(li, (() => { const _r = ref; return () => ({
+          media: _r.media || _r.media_key, startSeconds: 0,
           label: _r.label || 'Lecture-Demo', artistName: artistLabel,
           meta: { nodeId },
         }); })());
@@ -3483,8 +3482,9 @@ function buildRecordingsList(nodeId, nodeData) {
           li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
         }
         // ADR-165: register whole-lecdem item; harvest picks it up per filter visibility.
-        if (ref.video_id) registerQueueItem(li, (() => { const _r = ref; return () => ({
-          media: _r.video_id, startSeconds: 0,
+        // Key on the resolved media (ADR-154), not the YouTube-only video_id.
+        if (ref.media || ref.media_key) registerQueueItem(li, (() => { const _r = ref; return () => ({
+          media: _r.media || _r.media_key, startSeconds: 0,
           label: _r.label || 'Lecture-Demo',
           artistName: _r.lecturer_label || artistLabel,
           meta: { nodeId: _r.lecturer_id || nodeId },

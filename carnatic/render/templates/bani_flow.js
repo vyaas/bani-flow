@@ -1960,10 +1960,12 @@ function _renderBaniFlowLecdemStrip(type, id) {
       }
     }
     // ADR-167 §4: register whole-lecdem item for filter-scoped harvest.
-    if (ref.video_id && typeof registerQueueItem === 'function') {
+    // Key on resolved media (ADR-154), not the YouTube-only video_id — non-YouTube
+    // lecdems carry an empty video_id and would otherwise be dropped from the harvest.
+    if ((ref.media || ref.media_key) && typeof registerQueueItem === 'function') {
       registerQueueItem(li, (function(_r) { return function() {
         return {
-          media: _r.video_id, startSeconds: 0,
+          media: _r.media || _r.media_key, startSeconds: 0,
           label: _r.label || 'Lecture-Demo',
           artistName: _r.lecturer_label || '',
           meta: { nodeId: _r.lecturer_id || null },

@@ -800,7 +800,12 @@
     list-style: none;
     padding-left: var(--hier-indent-step);
     margin-bottom: 4px;
+    /* ADR-165 §3: collapse is expressed via the .expanded class on the bracket,
+       NOT inline display, so the harvest (collectQueueItems) — which excludes only
+       inline-display:none rows (the filter channel) — still sees folded perf rows. */
+    display: none;
   }
+  .concert-bracket.expanded .concert-perf-list { display: block; }
   .concert-perf-item {
     padding: 4px 0;
     /* ADR-052: container is not a click target — chips are */
