@@ -1595,6 +1595,15 @@ window.drawRagaWheel = function() {
       if (!overlay) return;
       const activeIdx = RagaWheel._sruti.activeIdx;
       if (state) {
+        // Anchor .sruti-ring to the seed's actual screen centre — pan-agnostic
+        const seedEl = document.getElementById('sruti-seed');
+        const ring = overlay.querySelector('.sruti-ring');
+        if (seedEl && ring) {
+          const sr = seedEl.getBoundingClientRect();
+          const or = overlay.getBoundingClientRect();
+          ring.style.left = (sr.left + sr.width  / 2 - or.left) + 'px';
+          ring.style.top  = (sr.top  + sr.height / 2 - or.top)  + 'px';
+        }
         overlay.classList.add('sruti-expanded');
         overlay.setAttribute('aria-hidden', 'false');
         overlay.setAttribute('data-sruti-state',
