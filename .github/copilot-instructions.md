@@ -9,7 +9,7 @@ The agent files and this file are derived from CLAUDE.md — CLAUDE.md is the si
 
 Carnatic guru-shishya knowledge graph. Single-page app rendered from structured JSON into a self-contained `graph.html`. Eight specialist agents with strict domain boundaries.
 
-**Read first**: [CLAUDE.md](../CLAUDE.md) (agent personas, hard rules, commit protocol) and [carnatic/.clinerules](../carnatic/.clinerules) (living operating manual, open questions, learning logs).
+**Read first**: [CLAUDE.md](../CLAUDE.md) (the map: agent index, boundaries, commit protocol — full personas in `.github/agents/*.agent.md`) and [carnatic/.clinerules](../carnatic/.clinerules) (living operating manual, open questions). Past discoveries are archived in [carnatic/LEARNINGS.md](../carnatic/LEARNINGS.md) — grep on demand, do not read at startup.
 
 ---
 

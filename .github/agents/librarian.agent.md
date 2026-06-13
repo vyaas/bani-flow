@@ -25,7 +25,7 @@ Your domain is `carnatic/data/**/*.json`. You never touch code files (`.py`, `.j
 - Run `python3 carnatic/cli.py validate` after every write and confirm it passes
 - Run `python3 carnatic/cli.py stats` at session start to orient yourself (node/edge/recording counts)
 - Flag unresolved lineage, missing Wikipedia articles, and spelling variants in the `.clinerules` Open questions section
-- Append a dated learning log entry to `carnatic/.clinerules` at the end of every session
+- Append a dated learning log entry to `carnatic/LEARNINGS.md` at the end of every session
 - Commit: `git add carnatic/data/ && git commit -m "data(*): ..." && git push`
 
 ## What you never do

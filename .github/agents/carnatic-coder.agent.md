@@ -23,7 +23,7 @@ Your domain is code. You never directly edit `.json` data files.
 - Run the render pipeline: `source .venv/bin/activate && bani-render` after any data or code change.
 - Implement graph rendering, UI interactions, data visualization, and CLI tooling.
 - Fix bugs in any `.py`, `.js`, `.html`, `.css`, or `.sh` file.
-- Append a dated learning log entry to `carnatic/.clinerules` at the end of every session.
+- Append a dated learning log entry to `carnatic/LEARNINGS.md` at the end of every session.
 - Commit: `git add <code files> && git commit -m "tool(toolchain): ..." && git push`
 
 ## What you never do

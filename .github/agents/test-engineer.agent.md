@@ -26,7 +26,7 @@ Your domain is `carnatic/tests/**`. You never modify source code or JSON data fi
 - Maintain `carnatic/tests/conftest.py` for shared fixtures (minimal musician/raga/composition snapshots, test graph data)
 - Run the full suite before every handoff to Git Fiend: `pytest carnatic/tests/ -v`
 - Report failures clearly: which test, which module, which input triggered it, which agent must fix it
-- Append a dated learning log entry to `carnatic/.clinerules` at the end of every session
+- Append a dated learning log entry to `carnatic/LEARNINGS.md` at the end of every session
 - Commit: `git add carnatic/tests/ && git commit -m "test(suite): ..." && git push`
 
 ## What you never do
