@@ -1156,11 +1156,22 @@ function wireTapGestures(catcher, wrap, player, seekStep) {
 // ←/→ through the SAME seekStep() as taps, so they share the overlay + accumulation.
 document.addEventListener('keydown', e => {
   if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
-  const side = e.key === 'ArrowLeft' ? 'left' : (e.key === 'ArrowRight' ? 'right' : null);
-  if (!side) return;
-  // Never steal arrows from a focused form field (entry/edit forms).
+  // Never steal keys from a focused form field (entry/edit forms).
   const t = e.target;
   if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+
+  if (e.key === ' ') {
+    const inst = _activePlayer;
+    if (!inst || !inst.el || !inst.el.isConnected) return;
+    const ctrl = inst.controller;
+    if (!ctrl || ctrl.kind !== 'plyr' || !ctrl.plyr) return;
+    ctrl.plyr.togglePlay();
+    e.preventDefault();
+    return;
+  }
+
+  const side = e.key === 'ArrowLeft' ? 'left' : (e.key === 'ArrowRight' ? 'right' : null);
+  if (!side) return;
   const inst = _activePlayer;
   if (!inst || !inst.el || !inst.el.isConnected) return;
   const ctrl = inst.controller;
