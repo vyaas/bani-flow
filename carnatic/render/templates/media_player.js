@@ -1346,6 +1346,17 @@ function openOrFocusPlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   const media = resolveMedia(mediaArg);
   if (!media) return;
   const mkey = mediaKey(media);
+  // ADR-157: a single player window is reused — we do not spawn N windows. When a
+  // queue is active, an individual "play" on an item that already lives in the
+  // queue must drive the queue's one window (jump to it) rather than open a second
+  // player (which, since the queue is active, would also show the "Up Next" list).
+  // Guarded by !isQueueItem so the queue's own _open() — which sets that flag —
+  // never recurses back into here. Items not in the queue keep prior behaviour.
+  if (!(meta && meta.isQueueItem) && typeof MediaQueue !== 'undefined' &&
+      MediaQueue.active && !_isMobilePlayer()) {
+    const qIdx = MediaQueue.items.findIndex(it => it && it.media && mediaKey(it.media) === mkey);
+    if (qIdx >= 0 && qIdx !== MediaQueue.index) { MediaQueue.jumpTo(qIdx); return; }
+  }
   // Toggle-close: if this media is already playing, close it — desktop + mobile.
   if (playerRegistry.has(mkey)) {
     const existing = playerRegistry.get(mkey);
@@ -1413,8 +1424,20 @@ const MediaQueue = {
   currentKey: null,
   panelOpen: false,   // ADR-162: whether the "Up Next" panel shows by default
 
+  // Queue items arrive with `media` as a raw video_id string (the row thunks store
+  // `_p.video_id`). mediaKey() only works on a resolved MediaRef, so an un-resolved
+  // item yields a null key — which silently breaks currentKey, the _switchTo
+  // teardown, and isCurrent (the window is never reused, players accumulate).
+  // Normalise media to a MediaRef on entry so every mediaKey() call downstream is valid.
+  _normalize(it) {
+    if (!it || !it.media) return null;
+    const m = (typeof resolveMedia === 'function') ? resolveMedia(it.media) : it.media;
+    if (!m || !m.provider) return null;
+    return (m === it.media) ? it : Object.assign({}, it, { media: m });
+  },
+
   start(items, startIndex) {
-    const newItems = Array.isArray(items) ? items.filter(it => it && it.media) : [];
+    const newItems = (Array.isArray(items) ? items : []).map(it => this._normalize(it)).filter(Boolean);
     // If the queue is already playing this exact playlist, switch tracks in-place
     // rather than tearing down and re-creating the player window.
     if (this.active && newItems.length === this.items.length &&
@@ -1423,12 +1446,48 @@ const MediaQueue = {
       _refreshQueuePanels();
       return;
     }
+    // Reuse the player the user is already looking at rather than spawning a
+    // second window (ADR-157: one window is reused). Adopt its position and tear
+    // it down before opening the queue head — this is the start()-time analogue of
+    // _switchTo's adopt-and-drop. On mobile the singleton reuses itself inside
+    // _openMobilePlayer, so _incumbentKey() returns null and there is nothing to drop.
+    let pos = null;
+    if (newItems.length) {
+      const incKey = this._incumbentKey();
+      const inc = incKey ? playerRegistry.get(incKey) : null;
+      if (inc && inc.el && !inc._isMobileSingleton) {
+        pos = { top: inc.el.style.top, left: inc.el.style.left, width: inc.el.style.width };
+        if (inc.controller) inc.controller.destroy();
+        inc.el.remove();
+        playerRegistry.delete(incKey);
+        refreshPlayingIndicators();
+      }
+    }
     this.items = newItems;
     this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
     this.active = this.items.length > 0;
     this.panelOpen = this.active;   // ADR-162: Play all reveals the queue panel
-    if (this.active) this._open(null);
+    if (this.active) this._open(pos);
     _refreshQueuePanels();
+  },
+
+  // The desktop player the user is currently looking at, whose window start()
+  // should reuse instead of spawning a new one: the queue's current player when
+  // switching between queues, else the topmost open standalone player. Mobile
+  // singletons are excluded (they reuse themselves), so this returns null on
+  // mobile and start() falls back to default positioning.
+  _incumbentKey() {
+    if (this.active && this.currentKey && playerRegistry.has(this.currentKey)) {
+      const cur = playerRegistry.get(this.currentKey);
+      if (cur && !cur._isMobileSingleton) return this.currentKey;
+    }
+    let topKey = null, topZi = -Infinity;
+    playerRegistry.forEach((inst, key) => {
+      if (!inst || inst._isMobileSingleton || !inst.el) return;
+      const zi = parseInt(inst.el.style.zIndex, 10) || 0;
+      if (zi >= topZi) { topZi = zi; topKey = key; }
+    });
+    return topKey;
   },
 
   // True when `mkey` is the queue's current item — guards auto-advance so a
@@ -1529,14 +1588,16 @@ const MediaQueue = {
 
   // ADR-163 §3: add a single item to the queue without replacing it.
   addItem(item) {
-    if (!this.active) { this.start([item], 0); return; }
-    this.items.push(item);
+    const it = this._normalize(item);
+    if (!it) return;
+    if (!this.active) { this.start([it], 0); return; }
+    this.items.push(it);
     _refreshQueuePanels();
   },
 
   // ADR-165 §4: append an entire harvest to the queue with a single panel refresh.
   addItems(items) {
-    const valid = (items || []).filter(it => it && it.media);
+    const valid = (items || []).map(it => this._normalize(it)).filter(Boolean);
     if (!valid.length) return;
     if (!this.active) { this.start(valid, 0); return; }
     this.items.push(...valid);
