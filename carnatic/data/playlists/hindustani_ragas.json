@@ -1,0 +1,72 @@
+{
+  "id": "hindustani_ragas",
+  "title": "Hindustani Ragas",
+  "description": "",
+  "items": [
+    {
+      "media_key": "youtube:-EtiRwtqL_Y",
+      "raga_id": "malkauns",
+      "note": "Malkauns Alap",
+      "musician_ids": [
+        "venkatesh_kumar"
+      ],
+      "start_seconds": 0
+    },
+    {
+      "media_key": "youtube:6_2hAY1l-Eg",
+      "raga_id": "jog",
+      "note": "Maayaahomam",
+      "musician_ids": [
+        "malladi_suri_babu"
+      ],
+      "start_seconds": 0
+    },
+    {
+      "media_key": "youtube:tcX0pE0hLNE",
+      "raga_id": "charukeshi",
+      "note": "Alap",
+      "musician_ids": [
+        "nikhil_banerjee"
+      ],
+      "start_seconds": 0
+    },
+    {
+      "media_key": "youtube:feI65rC0_EE",
+      "raga_id": "vridaavani_sarang",
+      "note": "Vridaavani Sarang",
+      "musician_ids": [
+        "bhimsen_joshi"
+      ],
+      "start_seconds": 0
+    },
+    {
+      "media_key": "youtube:yEpy2hyT1Rk",
+      "raga_id": "abhogi_kanada",
+      "note": "Abhogi Kanada",
+      "musician_ids": [
+        "bhimsen_joshi"
+      ],
+      "start_seconds": 0
+    },
+    {
+      "media_key": "youtube:hAR2d6KAfQw",
+      "raga_id": "madhumad_sarang",
+      "note": "Madhya laya khyal",
+      "musician_ids": [
+        "kishori_amonkar"
+      ],
+      "start_seconds": 0
+    },
+    {
+      "media_key": "youtube:eGpqTbPUIwc",
+      "raga_id": "darbari",
+      "note": "Darbari",
+      "musician_ids": [
+        "ali_akbar_khan"
+      ],
+      "start_seconds": 0
+    }
+  ],
+  "sources": [],
+  "kind": "user"
+}
