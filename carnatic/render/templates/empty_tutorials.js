@@ -67,11 +67,17 @@
   }
 
   function _onComposition(id, opts) {
-    // Help-panel chips are non-interactive — clicking does nothing.
+    // Help-panel chips are fully interactive — clicking explores the site so the
+    // user absorbs that chips navigate. Navigation populates the panel, which
+    // auto-dismisses the tutorial; the ? button reopens it.
+    if (opts && opts.previewOnly) { _previewWheel('comp', id); return; }
+    if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', id);
   }
 
   function _onRaga(id, opts) {
-    // Help-panel chips are non-interactive — clicking does nothing.
+    // Help-panel chips are fully interactive — see _onComposition.
+    if (opts && opts.previewOnly) { _previewWheel('raga', id); return; }
+    if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', id);
   }
 
   function _orientToMusician(nodeId) {
@@ -114,7 +120,10 @@
   }
 
   function _onMusician(id) {
-    // Help-panel chips are non-interactive — clicking does nothing.
+    // Help-panel chips are fully interactive — orient to the musician in the
+    // graph view. Navigation replaces the tutorial view (no preserve-help path),
+    // so the old chip-faded/faded dual-opacity conflict no longer applies.
+    _orientToMusician(id);
   }
 
   function _onComposer(composerId) {
