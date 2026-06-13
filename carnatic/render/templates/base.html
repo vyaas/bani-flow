@@ -522,11 +522,14 @@
 
   /* ── recording filter input + trail filter input ── */
   #rec-filter,
+  #trail-filter-row {
+    flex-wrap: nowrap; align-items: center; gap: 6px; margin-top: 6px;
+  }
   #trail-filter {
-    width: 100%; background: var(--bg-input); color: var(--fg-dim);
+    flex: 1; min-width: 0; background: var(--bg-input); color: var(--fg-dim);
     border: 1px solid var(--border-strong); padding: 4px 8px;
     font-family: inherit; font-size: 0.72rem; border-radius: 2px;
-    margin-top: 6px; display: none; box-sizing: border-box;
+    box-sizing: border-box;
   }
   #rec-filter:focus,
   #trail-filter:focus { outline: none; border-color: var(--accent); }
@@ -4882,9 +4885,15 @@
             <!-- Inline meta chips: HER/CER for raga, raga+composer for comp -->
             <div id="bani-subject-sub" style="display:none"></div>
           </div>
-          <!-- Filter — below the chip row, above the trail list -->
-          <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
-                 style="display:none" autocomplete="off" spellcheck="false" />
+          <!-- Filter + ADR-167 play-all/enqueue pair — flex row below the chip row -->
+          <div id="trail-filter-row" style="display:none">
+            <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
+                   autocomplete="off" spellcheck="false" />
+            <span id="trail-play-acts" class="section-play-acts">
+              <button id="trail-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
+              <button id="trail-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue">&#x2295;</button>
+            </span>
+          </div>
         </div>
       </div>
     </div>

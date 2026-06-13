@@ -1,6 +1,6 @@
 # ADR-167: Bani Flow Filter-Scoped Play All & Enqueue — Trail, Strips, and the Span-Accurate Trail Queue
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-06-12
 **Agents**: graph-architect → carnatic-coder → test-engineer
 **Depends on**: ADR-165 (harvest mechanism), ADR-166 (the affordance pair this ADR mirrors on the left panel), ADR-157 ("Play all" on the trail — **partially superseded**: its placement, eager precomputation, and whole-video dedup are replaced; its queue mechanics live on in ADR-162), ADR-081 (lecdem strip discoverability invariant), ADR-156 (spans), ADR-163 (PLAYLISTS section in Bani Flow, "Save as playlist").

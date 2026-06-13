@@ -226,7 +226,8 @@ function applyBaniFilter(type, id) {
   document.getElementById('bani-info').style.display = '';
   buildListeningTrail(type, id, matchedNodeIds);
 
-  document.getElementById('trail-filter').style.display = 'block';
+  const _tfRow = document.getElementById('trail-filter-row');
+  if (_tfRow) _tfRow.style.display = 'flex';
   document.getElementById('trail-filter').value = '';
 
   // Sync raga wheel if it is the active view
@@ -732,45 +733,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     row.track._versionLabel = row.track.version || `v${n}`;
   });
 
-  // ── ADR-157: "Play all" — queue every distinct recording in this trail ────
-  // Build a de-duplicated (by media_key) ordered queue from the trail rows, so
-  // the user can play the whole subject's recordings back-to-back (auto-advance).
-  const _qSeen = new Set();
-  const _qItems = [];
-  rows.forEach(function(row) {
-    const m = row.track.media || (row.track.vid && typeof resolveMedia === 'function' ? resolveMedia(row.track.vid) : null);
-    if (!m) return;
-    const k = (typeof mediaKey === 'function') ? mediaKey(m) : null;
-    if (!k || _qSeen.has(k)) return;
-    _qSeen.add(k);
-    _qItems.push({
-      media:        m,
-      label:        row.track.label || '',
-      artistName:   row.artistLabel || '',
-      startSeconds: row.track.offset_seconds || 0,
-      concertTitle: row.track.short_title || row.track.concert_title || row.track.label || '',
-      tracks:       [],
-      meta: {
-        nodeId:        row.nodeId || null,
-        ragaId:        row.track.raga_id || null,
-        compositionId: row.track.composition_id || null,
-        recId:         row.track.recording_id || null,
-      },
-    });
-  });
-  if (_qItems.length >= 2 && typeof window.startMediaQueue === 'function') {
-    const playAll = document.createElement('button');
-    playAll.className = 'trail-play-all';
-    playAll.textContent = '▶ Play all (' + _qItems.length + ')';
-    playAll.title = 'Play all ' + _qItems.length + ' recordings in sequence (auto-advance)';
-    playAll.addEventListener('click', function(e) {
-      e.stopPropagation();
-      window.startMediaQueue(_qItems, 0);
-    });
-    trailList.appendChild(playAll);
-  }
-
   // ── 5. Render trail — tree for raga/comp, flat list for perf/yt ──────────
+  // ADR-167: supersedes ADR-157's eager _qItems block and bottom play-all button.
+  // Harvest is now lazy: collectQueueItems(#trail-list) at click time.
   if (type === 'raga') {
     buildTreeRaga(rows, trailList, multiVersionKeys, id);
   } else if (type === 'comp') {
@@ -1003,6 +968,26 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
 
   li.appendChild(headerDiv);
   li.appendChild(row2Div);
+  // ADR-167: register thunk so filter-scoped harvest works on this flat trail row.
+  if (row.track.media || row.track.vid) {
+    const _r = row;
+    if (typeof registerQueueItem === 'function') registerQueueItem(li, function() {
+      return {
+        media:        _r.track.media || _r.track.vid,
+        startSeconds: _r.track.offset_seconds || 0,
+        label:        _r.track.label || '',
+        artistName:   _r.artistLabel || '',
+        concertTitle: _r.track.short_title || _r.track.concert_title || '',
+        tracks:       [],
+        meta: {
+          nodeId:        _r.nodeId || null,
+          ragaId:        _r.track.raga_id || null,
+          compositionId: _r.track.composition_id || null,
+          recId:         _r.track.recording_id || null,
+        },
+      };
+    });
+  }
   return li;
 }
 
@@ -1144,6 +1129,27 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     });
   }
 
+  // ADR-167: register thunk so filter-scoped harvest works on this tree leaf.
+  if (row.track.media || row.track.vid) {
+    const _r = row;
+    if (typeof registerQueueItem === 'function') registerQueueItem(li, function() {
+      return {
+        media:        _r.track.media || _r.track.vid,
+        startSeconds: _r.track.offset_seconds || 0,
+        label:        _r.track.label || '',
+        artistName:   _r.artistLabel || '',
+        concertTitle: _r.track.short_title || _r.track.concert_title || '',
+        tracks:       [],
+        meta: {
+          nodeId:        _r.nodeId || null,
+          ragaId:        _r.track.raga_id || null,
+          compositionId: _r.track.composition_id || null,
+          recId:         _r.track.recording_id || null,
+        },
+      };
+    });
+  }
+
   return li;
 }
 
@@ -1236,6 +1242,7 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
     const { sectionEl: compSec, bodyEl: compSecBody } = buildSection({
       headerChip: compTypeChip,
       count: compGroups.length,
+      playable: true,
     });
     compGroups.forEach(function(g) { compSecBody.appendChild(_renderGroup(g)); });
     trailList.appendChild(compSec);
@@ -1258,6 +1265,7 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
       headerChip: _miscChip,
       headerSuffixText: '',
       count: miscCount,
+      playable: true,
     });
     // Render rows directly into the section body — buildSection already
     // provides the collapsible header. _renderGroup would emit a redundant
@@ -1338,6 +1346,26 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
         const accordion = buildRowAccordion({ headerEl: header, bodyEls: [], defaultCollapsed: true, trailingEl: actsDiv });
         accordion.classList.add('tree-leaf-coperformers-group');
         li.appendChild(accordion);
+      }
+      // ADR-167: register single-version comp-view group li for harvest.
+      const _r0 = group.rows[0];
+      if ((_r0.track.media || _r0.track.vid) && typeof registerQueueItem === 'function') {
+        registerQueueItem(li, (function(_r) { return function() {
+          return {
+            media:        _r.track.media || _r.track.vid,
+            startSeconds: _r.track.offset_seconds || 0,
+            label:        _r.track.label || '',
+            artistName:   _r.artistLabel || '',
+            concertTitle: _r.track.short_title || _r.track.concert_title || '',
+            tracks:       [],
+            meta: {
+              nodeId:        _r.nodeId || null,
+              ragaId:        _r.track.raga_id || null,
+              compositionId: _r.track.composition_id || null,
+              recId:         _r.track.recording_id || null,
+            },
+          };
+        }; })(_r0));
       }
     } else {
       // Multi-version: whole header bar toggles; artist chip stopPropagation handles its own click
@@ -1421,6 +1449,8 @@ function clearBaniFilter() {
   document.getElementById('bani-search-input').value = '';
   document.getElementById('bani-info').style.display = 'none';
   document.getElementById('trail-filter').value = '';
+  const _clearTfRow = document.getElementById('trail-filter-row');
+  if (_clearTfRow) _clearTfRow.style.display = 'none';
   document.getElementById('listening-trail').style.display = 'none';
   const _bfStrip = document.getElementById('bani-lecdem-strip');
   if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
@@ -1863,11 +1893,11 @@ function _renderBaniFlowLecdemStrip(type, id) {
   hdrChip.dataset.sectionAction = 'add-lecdem';
   hdrChip.dataset.subjectType   = type;  // 'raga' | 'comp'
   hdrChip.dataset.subjectId     = id;
-  // ADR-128 D3+D11: buildSection. Subject context (raga / composition) is
-  // already the panel subject — the suffix "on {subjectName}" was redundant.
+  // ADR-128 D3+D11: buildSection. ADR-167: playable:true so the strip gets ▶/⊕.
   const { sectionEl: lecdemSectionWrap, bodyEl: lecdemListBody } = buildSection({
     headerChip: hdrChip,
     count: refs.length,
+    playable: true,
   });
   section.appendChild(lecdemSectionWrap);
 
@@ -1913,6 +1943,17 @@ function _renderBaniFlowLecdemStrip(type, id) {
         li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
       }
     }
+    // ADR-167 §4: register whole-lecdem item for filter-scoped harvest.
+    if (ref.video_id && typeof registerQueueItem === 'function') {
+      registerQueueItem(li, (function(_r) { return function() {
+        return {
+          media: _r.video_id, startSeconds: 0,
+          label: _r.label || 'Lecture-Demo',
+          artistName: _r.lecturer_label || '',
+          meta: { nodeId: _r.lecturer_id || null },
+        };
+      }; })(ref));
+    }
 
     list.appendChild(li);
   });
@@ -1931,4 +1972,26 @@ function _buildBaniFlowLecdemSubjectChips(subjects, excludeType, excludeId) {
     excludeMusicianId: excludeType === 'musician' ? excludeId : undefined,
   });
 }
+
+// ── ADR-167: wire static trail ▶/⊕ buttons (fired once after DOM ready) ──────
+document.addEventListener('DOMContentLoaded', function() {
+  const trailList = document.getElementById('trail-list');
+  const playAllBtn = document.getElementById('trail-play-all-btn');
+  const enqueueBtn = document.getElementById('trail-enqueue-btn');
+  if (playAllBtn && trailList) {
+    playAllBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof collectQueueItems !== 'function') return;
+      const items = collectQueueItems(trailList);
+      if (items.length && typeof startMediaQueue === 'function') startMediaQueue(items, 0);
+    });
+  }
+  if (enqueueBtn && trailList) {
+    enqueueBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (typeof collectQueueItems !== 'function' || typeof MediaQueue === 'undefined') return;
+      MediaQueue.addItems(collectQueueItems(trailList));
+    });
+  }
+});
 

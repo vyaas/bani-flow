@@ -1,6 +1,6 @@
 # ADR-157: Media Playlists
 
-**Status**: Accepted
+**Status**: Accepted (trail play-all section superseded by ADR-167)
 **Date**: 2026-06-09 (proposed); 2026-06-10 (accepted)
 **Agents**: code-auditor (AUDIT-014) → graph-architect → carnatic-coder
 **Depends on**: ADR-154 (MediaRef — uniform identity across providers), ADR-155 (control inversion — the `ended` event), ADR-156 (segments — playable spans). This is the **eventual target** of the roadmap; accept and implement last.
