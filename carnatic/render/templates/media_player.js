@@ -472,17 +472,12 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   bar.className = 'mp-bar';
 
   // ── Fold-cue (▾ visual hint that the bar collapses the player; non-interactive) ─
-  // ADR-168: chips row ─ fold-cue + identity rail in their own flex row
+  // ADR-168: chips row ─ identity rail only (fold-cue moved to mp-bar-right).
   // On desktop mp-bar-chips-row gets flex:1, sitting beside mp-bar-right.
-  // On mobile (.full-mobile) mp-bar becomes a column: chips row is full-width
-  // row 1, mp-bar-right (buttons) is full-width row 2.
+  // On mobile (.full-mobile) mp-bar is a column: mp-bar-right (fold-cue + buttons)
+  // is the top row, mp-bar-chips-row (chips only) is the full-width bottom row.
   const chipsRow = document.createElement('div');
   chipsRow.className = 'mp-bar-chips-row';
-
-  const foldCue = document.createElement('span');
-  foldCue.className = 'mp-fold-cue';
-  foldCue.textContent = '\u25be'; // ▾ small downward-pointing triangle
-  chipsRow.appendChild(foldCue);
 
   // ── ADR-159: live identity rail replaces the title (fills remaining space) ─
   const titleText = concertTitle || '';
@@ -510,6 +505,12 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   // ── Track list toggle + close (right-anchored) ────────────────────────────
   const rightGroup = document.createElement('span');
   rightGroup.className = 'mp-bar-right';
+
+  // fold-cue (minimize chevron) lives in the button row so chips get full width
+  const foldCue = document.createElement('span');
+  foldCue.className = 'mp-fold-cue';
+  foldCue.textContent = '\u25be'; // ▾ downward-pointing triangle
+  rightGroup.appendChild(foldCue);
 
   // ADR-139: clipboard copy button — copies ytDirectUrl(vid, currentOffset) to clipboard.
   // Click handler is wired in createPlayer() after the instance is constructed.

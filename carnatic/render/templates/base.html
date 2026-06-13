@@ -4173,6 +4173,7 @@
       display: flex; align-items: center;
       padding: 0 8px;
       overflow: hidden;
+      order: 2;
     }
     /* ADR-161: on the full mobile player the fold-cue is the explicit minimize
        chevron (leftmost), since the chip rail leaves no blank area to tap. Give
@@ -4182,6 +4183,7 @@
       min-width: 44px; min-height: 44px;
       display: inline-flex; align-items: center; justify-content: center;
       font-size: 1rem; color: var(--accent);
+      margin-right: auto;
     }
     .media-player.mini .mp-fold-cue { display: none; }
     .media-player.full-mobile .mp-title {
@@ -4190,7 +4192,8 @@
     .media-player.full-mobile .mp-bar-right {
       gap: 0;
       justify-content: flex-end;
-      border-top: 1px solid var(--border-strong);
+      order: 1;
+      border-bottom: 1px solid var(--border-strong);
     }
     .media-player.full-mobile .mp-copy-btn,
     .media-player.full-mobile .mp-share-btn,
