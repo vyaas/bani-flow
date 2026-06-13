@@ -43,8 +43,8 @@
         },
         {
           "performance_index": 3,
-          "timestamp": "00:00",
-          "offset_seconds": 0,
+          "timestamp": "05:56",
+          "offset_seconds": 356,
           "composition_id": "niravadhi_sukhada",
           "raga_id": "ravichandrika",
           "tala": "adi",
@@ -52,8 +52,8 @@
         },
         {
           "performance_index": 4,
-          "timestamp": "00:00",
-          "offset_seconds": 0,
+          "timestamp": "17:00",
+          "offset_seconds": 1020,
           "composition_id": null,
           "raga_id": "sanmukhapriya",
           "tala": "adi",
@@ -70,8 +70,8 @@
         },
         {
           "performance_index": 6,
-          "timestamp": "00:00",
-          "offset_seconds": 0,
+          "timestamp": "52:09",
+          "offset_seconds": 3129,
           "composition_id": null,
           "raga_id": "jonepuri",
           "tala": "adi",
