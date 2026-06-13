@@ -1595,6 +1595,10 @@ window.drawRagaWheel = function() {
       if (!overlay) return;
       const activeIdx = RagaWheel._sruti.activeIdx;
       if (state) {
+        // Record open time so scrim/close handlers can guard against ghost-clicks
+        // (mobile browsers fire a native click immediately after the pointer sequence
+        // that opened the modal — without a guard the scrim would close it instantly).
+        RagaWheel._sruti._openTime = Date.now();
         // Anchor .sruti-ring to the seed's actual screen centre — pan-agnostic
         const seedEl = document.getElementById('sruti-seed');
         const ring = overlay.querySelector('.sruti-ring');
@@ -1673,7 +1677,10 @@ window.drawRagaWheel = function() {
       const ring = overlay.querySelector('.sruti-ring');
       if (!ring) return;
 
-      const ringR = Math.max(70, R_CAKRA);
+      // Min 90px ensures the N=12 chord (ringR * 0.518) always exceeds keySize * 1.1
+      // so the single-ring layout is always used — two-arc mode caused key overlap on
+      // small mobile screens (innerR * 0.62 gap < keySize at ringR=70).
+      const ringR = Math.max(90, R_CAKRA);
       const N = tanpuraData.length;
       const chord = 2 * ringR * Math.sin(Math.PI / N);
       const keySize = Math.min(48, Math.max(40, ringR * 0.36));
@@ -1761,15 +1768,46 @@ window.drawRagaWheel = function() {
           activeIdx !== null ? 'COLLAPSED_PLAYING' : 'COLLAPSED_IDLE');
       }
 
-      // Scrim click — re-wire on each draw
+      // Scrim dismiss — re-wire on each draw.
+      // Uses pointerdown+pointerup instead of click so it fires immediately on mobile
+      // without the browser's 300ms synthetic-click delay. The ghost-click guard
+      // (_openTime) prevents the native click that fires right after the seed tap
+      // from immediately collapsing the modal that just opened.
       const scrim = overlay.querySelector('.sruti-scrim');
       if (scrim) {
-        const oldH = scrim._srutiHandler;
-        if (oldH) scrim.removeEventListener('click', oldH);
-        const handler = (e) => { e.stopPropagation(); if (RagaWheel._sruti.expanded) _srutiSetExpanded(false); };
-        scrim._srutiHandler = handler;
-        scrim.addEventListener('click', handler);
+        if (scrim._srutiPointerDown) scrim.removeEventListener('pointerdown', scrim._srutiPointerDown);
+        if (scrim._srutiPointerUp)   scrim.removeEventListener('pointerup',   scrim._srutiPointerUp);
+        if (scrim._srutiHandler)     scrim.removeEventListener('click', scrim._srutiHandler);
+        scrim._srutiHandler = null;
+        const pdHandler = (e) => { e.stopPropagation(); };
+        const puHandler = (e) => {
+          e.stopPropagation();
+          if (Date.now() - (RagaWheel._sruti._openTime || 0) < 350) return;
+          if (RagaWheel._sruti.expanded) _srutiSetExpanded(false);
+        };
+        scrim._srutiPointerDown = pdHandler;
+        scrim._srutiPointerUp   = puHandler;
+        scrim.addEventListener('pointerdown', pdHandler);
+        scrim.addEventListener('pointerup',   puHandler);
       }
+
+      // Close button — centered below the key circle; provides a reliable dismiss
+      // target on mobile where the scrim can be hard to tap (keys cover the centre).
+      const existingClose = ring.querySelector('.sruti-close');
+      if (existingClose) existingClose.remove();
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'sruti-close';
+      closeBtn.type = 'button';
+      closeBtn.setAttribute('aria-label', 'Close pitch picker');
+      closeBtn.textContent = '×';
+      closeBtn.style.top  = (ringR + keySize / 2 + 16) + 'px';
+      closeBtn.style.left = '0';
+      closeBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); });
+      closeBtn.addEventListener('pointerup', (e) => {
+        e.stopPropagation();
+        if (RagaWheel._sruti.expanded) _srutiSetExpanded(false);
+      });
+      ring.appendChild(closeBtn);
     })();
 
     // ── SVG seed button (last child of vp — paints over rings) ──────────────────
