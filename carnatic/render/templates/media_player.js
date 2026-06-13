@@ -3930,7 +3930,7 @@ function _createMobilePlayer() {
   document.body.appendChild(el);
 
   const mp = {
-    el, strip, bar, videoWrap, tracklistDiv, handle,
+    el, strip, bar, videoWrap, tracklistDiv, tracklistEl: tracklistDiv, handle,
     miniTitle: titleSpan,
     miniExpand: expandBtn,
     miniClose: closeBtn,
@@ -4189,7 +4189,23 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   mp.controller = controller;
   mp.iframe = controller.iframe;   // null when Plyr-backed
   // Live playhead so share/copy capture the real position (AUDIT-014 F-04).
-  controller.onTime(sec => { mp.currentOffset = sec; });
+  // Also advance the header rail and mini-strip when the playhead crosses a
+  // segment boundary (mirrors the desktop createPlayer path).
+  controller.onTime(sec => {
+    mp.currentOffset = sec;
+    const prevOffset = mp._activeOffset;
+    _updateActiveSegment(mp, sec);
+    if (mp._activeOffset !== prevOffset) {
+      const active = mp.tracks.find(t => t.offset_seconds === mp._activeOffset);
+      if (active) {
+        _updateMobileMiniRail(mp, active.raga_id || null, active.composition_id || null,
+                              active.subject || active.display_title || null, active.tala || null);
+        const newIdx = mp.tracks.indexOf(active);
+        if (newIdx >= 0) mp.trackIndex = newIdx;
+        _updateMiniDots(mp);
+      }
+    }
+  });
   // ADR-157: auto-advance the queue when this item ends.
   controller.onEnded(() => { if (MediaQueue.isCurrent(mp.mediaKey)) MediaQueue.advance(); });
 
