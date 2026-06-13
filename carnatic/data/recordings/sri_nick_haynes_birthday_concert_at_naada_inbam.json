@@ -24,6 +24,10 @@
         {
           "musician_id": "rk_shriramkumar",
           "role": "violin"
+        },
+        {
+          "musician_id": "k_arun_prakash",
+          "role": "mridangam"
         }
       ],
       "performances": [
