@@ -927,9 +927,14 @@
     padding: 5px 8px;
     background: var(--bg-input); border-radius: 4px 4px 0 0;
     cursor: grab; border-bottom: 1px solid var(--border-strong);
-    flex-wrap: nowrap; overflow: hidden;
+    flex-wrap: nowrap;
   }
   .mp-bar:active { cursor: grabbing; }
+  /* ADR-168: chips row inside the bar — fold-cue + identity rail */
+  .mp-bar-chips-row {
+    display: flex; align-items: center; gap: 5px;
+    flex: 1; min-width: 0; overflow: hidden;
+  }
 
   /* plain concert/track title — fallback when the rail has no chips (sruti/named bar) */
   .mp-title {
@@ -4124,9 +4129,20 @@
     }
     .media-player.full-mobile .mp-mini-strip { display: none; }
     .media-player.full-mobile .mp-full-handle { display: flex; flex-shrink: 0; }
+    /* ADR-168: two-row bar on mobile ─ chips row above, action row below */
     .media-player.full-mobile .mp-bar {
       flex-shrink: 0;
-      cursor: pointer; /* hint: tap bar to minimise */
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      cursor: default;
+      overflow: visible;
+    }
+    .media-player.full-mobile .mp-bar-chips-row {
+      display: flex; align-items: center;
+      padding: 0 8px;
+      overflow: hidden;
     }
     /* ADR-161: on the full mobile player the fold-cue is the explicit minimize
        chevron (leftmost), since the chip rail leaves no blank area to tap. Give
@@ -4143,6 +4159,8 @@
     }
     .media-player.full-mobile .mp-bar-right {
       gap: 0;
+      justify-content: flex-end;
+      border-top: 1px solid var(--border-strong);
     }
     .media-player.full-mobile .mp-copy-btn,
     .media-player.full-mobile .mp-share-btn,

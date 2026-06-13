@@ -472,10 +472,17 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   bar.className = 'mp-bar';
 
   // ── Fold-cue (▾ visual hint that the bar collapses the player; non-interactive) ─
+  // ADR-168: chips row ─ fold-cue + identity rail in their own flex row
+  // On desktop mp-bar-chips-row gets flex:1, sitting beside mp-bar-right.
+  // On mobile (.full-mobile) mp-bar becomes a column: chips row is full-width
+  // row 1, mp-bar-right (buttons) is full-width row 2.
+  const chipsRow = document.createElement('div');
+  chipsRow.className = 'mp-bar-chips-row';
+
   const foldCue = document.createElement('span');
   foldCue.className = 'mp-fold-cue';
   foldCue.textContent = '\u25be'; // ▾ small downward-pointing triangle
-  bar.appendChild(foldCue);
+  chipsRow.appendChild(foldCue);
 
   // ── ADR-159: live identity rail replaces the title (fills remaining space) ─
   const titleText = concertTitle || '';
@@ -490,14 +497,15 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
     subjects:      meta.subjects      || null,
   });
   if (rail) {
-    bar.appendChild(rail);
+    chipsRow.appendChild(rail);
   } else if (titleText) {
     // No chips (sruti drone / named bar): fall back to the plain title.
     const titleSpan = document.createElement('span');
     titleSpan.className = 'mp-title';
     titleSpan.textContent = titleText;
-    bar.appendChild(titleSpan);
+    chipsRow.appendChild(titleSpan);
   }
+  bar.appendChild(chipsRow);
 
   // ── Track list toggle + close (right-anchored) ────────────────────────────
   const rightGroup = document.createElement('span');
@@ -857,9 +865,15 @@ function updatePlayerRail(player, ragaId, compositionId, displayTitle, tala) {
     existing.remove();
   }
   if (newRail) {
-    const rightGroup = bar.querySelector('.mp-bar-right');
-    if (rightGroup) bar.insertBefore(newRail, rightGroup);
-    else            bar.appendChild(newRail);
+    // ADR-168: rail lives inside mp-bar-chips-row; fall back to old bar insert.
+    const chipsRow = bar.querySelector('.mp-bar-chips-row');
+    if (chipsRow) {
+      chipsRow.appendChild(newRail);
+    } else {
+      const rightGroup = bar.querySelector('.mp-bar-right');
+      if (rightGroup) bar.insertBefore(newRail, rightGroup);
+      else            bar.appendChild(newRail);
+    }
   }
 }
 
