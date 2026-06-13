@@ -1636,27 +1636,28 @@ window.drawRagaWheel = function() {
       if (typeof closePlayer === 'function') closePlayer('sruti');
     }
 
-    function _srutiStart(idx) {
+    function _srutiStart(idx, anchorRect) {
       const entry = tanpuraData[idx];
       RagaWheel._sruti.activeIdx = idx;
       try { localStorage.setItem('sruti.tonic', entry.note); } catch (e) { /* ignore */ }
       _srutiUpdateSeed();
-      if (typeof openPlayer === 'function') openPlayer(entry.id, entry.note + ' tanpura', 'sruti');
+      if (typeof openPlayer === 'function') openPlayer(entry.id, entry.note + ' tanpura', 'sruti', anchorRect);
     }
 
     function _srutiSeedTap() {
       _srutiSetExpanded(!RagaWheel._sruti.expanded);
     }
 
-    function _srutiKeyTap(idx) {
+    function _srutiKeyTap(idx, e) {
       if (!RagaWheel._sruti.expanded) return;
+      const anchorRect = (e && e.currentTarget) ? e.currentTarget.getBoundingClientRect() : null;
       if (RagaWheel._sruti.activeIdx === idx) {
         // Transition 5: EXPANDED_PLAYING + tap live key → stop + collapse
         _srutiStop();
         _srutiSetExpanded(false);
       } else {
         // Transition 2/6: tap key → start/switch + collapse
-        _srutiStart(idx);
+        _srutiStart(idx, anchorRect);
         _srutiSetExpanded(false);
       }
     }
@@ -1750,7 +1751,7 @@ window.drawRagaWheel = function() {
           k.textContent = entry.note;
         }
 
-        k.addEventListener('click', (e) => { e.stopPropagation(); _srutiKeyTap(idx); });
+        k.addEventListener('click', (e) => { e.stopPropagation(); _srutiKeyTap(idx, e); });
         ring.appendChild(k);
       });
 

@@ -3914,7 +3914,7 @@ function _buildSegTimeline(ref) {
  * - If playerId is omitted, falls through to openOrFocusPlayer() (legacy
  *   concert player behaviour, keyed by vid).
  */
-function openPlayer(videoId, title, playerId) {
+function openPlayer(videoId, title, playerId, anchorRect) {
   if (!playerId) {
     // Legacy path: delegate to existing concert player logic
     openOrFocusPlayer(videoId, title, '', undefined, undefined, []);
@@ -3935,19 +3935,39 @@ function openPlayer(videoId, title, playerId) {
   const el = document.createElement('div');
   el.className = 'media-player';
 
-  // Fixed position: top-right of the canvas, below the sruti bar + header
   const main = document.getElementById('main');
-  const mainRect = main ? main.getBoundingClientRect() : { width: window.innerWidth };
+  const mainRect = main ? main.getBoundingClientRect() : { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
   const playerWidth = 480;
-  const rightMargin = 18;
-  const topMargin   = 18;
-  el.style.cssText = `top:${topMargin}px; right:${rightMargin}px; left:auto; z-index:${++topZ};`;
-  // Override absolute positioning to use right-anchored placement
+  const playerHeight = 320;
+  const gap = 8;
+
   el.style.position = 'absolute';
-  el.style.right    = rightMargin + 'px';
-  el.style.top      = topMargin + 'px';
-  el.style.left     = 'auto';
   el.style.width    = playerWidth + 'px';
+  el.style.zIndex   = ++topZ;
+
+  if (anchorRect) {
+    // Open below the anchor; flip left if it overflows right edge, flip up if it overflows bottom
+    let left = anchorRect.left - mainRect.left;
+    let top  = anchorRect.bottom - mainRect.top + gap;
+
+    if (left + playerWidth > mainRect.width - gap) {
+      left = Math.max(gap, mainRect.width - playerWidth - gap);
+    }
+    if (left < gap) left = gap;
+
+    if (top + playerHeight > mainRect.height - gap) {
+      top = Math.max(gap, anchorRect.top - mainRect.top - playerHeight - gap);
+    }
+
+    el.style.left  = left + 'px';
+    el.style.top   = top  + 'px';
+    el.style.right = 'auto';
+  } else {
+    // Fallback: top-right corner
+    el.style.right = '18px';
+    el.style.top   = '18px';
+    el.style.left  = 'auto';
+  }
 
   // Build bar via DOM (no innerHTML) — consistent with createPlayer
   const namedBar = buildPlayerBar(resolveMedia(videoId), '', title, title, false, {});
