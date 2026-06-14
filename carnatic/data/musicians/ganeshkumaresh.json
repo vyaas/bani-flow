@@ -1,0 +1,26 @@
+{
+  "id": "ganeshkumaresh",
+  "label": "Ganesh-Kumaresh",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Ganesh_and_Kumaresh",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1964,
+  "died": null,
+  "era": "contemporary",
+  "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/WwnzfWJiTwg",
+      "label": "Nagumomu Ganaleni · Abheri",
+      "composition_id": "nagumomu_ganaleni",
+      "raga_id": "abheri"
+    }
+  ]
+}
