@@ -1650,6 +1650,14 @@ window.drawRagaWheel = function() {
 
     function _srutiKeyTap(idx, e) {
       if (!RagaWheel._sruti.expanded) return;
+      // Ghost-click guard (same window as the scrim, _openTime above): mobile fires
+      // a synthetic click at the original tap point right after the seed tap that
+      // opened the overlay. The keys bloom out FROM the seed centre, so at that
+      // instant they are stacked (opacity:0, still pointer-active) under the finger —
+      // the ghost click lands on whichever one is there and starts a random drone.
+      // Ignore any key tap within the open window; a deliberate tap can only arrive
+      // after the 0.28s bloom, well past this guard.
+      if (Date.now() - (RagaWheel._sruti._openTime || 0) < 350) return;
       const anchorRect = (e && e.currentTarget) ? e.currentTarget.getBoundingClientRect() : null;
       if (RagaWheel._sruti.activeIdx === idx) {
         // Transition 5: EXPANDED_PLAYING + tap live key → stop + collapse
