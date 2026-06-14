@@ -775,9 +775,11 @@
     transition: color 0.12s, border-color 0.12s;
   }
   .section-play-btn:hover, .section-enqueue-btn:hover { color: var(--accent); border-color: var(--accent); }
-  @media (max-width: 600px) {
-    .section-play-btn, .section-enqueue-btn { width: 44px; height: 44px; font-size: 1rem; border-radius: 50%; }
+  /* Expand tap target without inflating the visual button on mobile */
+  .section-play-btn::after, .section-enqueue-btn::after {
+    content: ''; position: absolute; inset: -11px;
   }
+  .section-play-btn, .section-enqueue-btn { position: relative; }
   /* Indent section bodies under their header for visual hierarchy. */
   .section-body { padding-left: var(--hier-indent-step, 14px); }
   .section-body[hidden] { padding-left: 0; }
