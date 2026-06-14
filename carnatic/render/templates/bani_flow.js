@@ -1388,7 +1388,7 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
       const chevron = document.createElement('span');
       chevron.className = 'tree-chevron';
       chevron.setAttribute('aria-hidden', 'true');
-      header.appendChild(chevron);
+      header.insertBefore(chevron, header.firstChild);
       header.style.cursor = 'pointer';
       header.addEventListener('click', function() {
         li.classList.toggle('tree-group-open');
