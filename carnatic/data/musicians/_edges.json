@@ -1163,5 +1163,17 @@
     "target": "suguna_varadachari",
     "confidence": 0.9,
     "source_url": null
+  },
+  {
+    "source": "calcutta_ks_krishnamurthy",
+    "target": "sanjay_subrahmanyan",
+    "confidence": 0.9,
+    "source_url": null
+  },
+  {
+    "source": "calcutta_ks_krishnamurthy",
+    "target": "suguna_varadachari",
+    "confidence": 0.9,
+    "source_url": null
   }
 ]

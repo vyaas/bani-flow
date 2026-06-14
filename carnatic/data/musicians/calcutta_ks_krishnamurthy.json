@@ -1,0 +1,26 @@
+{
+  "id": "calcutta_ks_krishnamurthy",
+  "label": "Calcutta KS Krishnamurthy",
+  "sources": [
+    {
+      "url": "http://www.carnatica.net/tribute/ksk.htm",
+      "label": "www.carnatica.net"
+    }
+  ],
+  "born": 1921,
+  "died": 1999,
+  "era": "disseminator",
+  "instrument": "vocal",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/9oyi0um_UhM",
+      "label": "Sangeetha Bhushanam · Abhogi",
+      "composition_id": "sangeetha_bhushanam",
+      "raga_id": "abhogi"
+    }
+  ]
+}
