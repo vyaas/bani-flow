@@ -15,5 +15,25 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/DJHdwdFyCnI",
+      "label": "Living Legacies - Suguna Varadachari: Carnatic Musician & Teacher",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "reetigowla",
+          "begada"
+        ],
+        "composition_ids": [
+          "janani_ninnuvina"
+        ],
+        "musician_ids": [
+          "musiri_subramania_iyer",
+          "t_brinda",
+          "jayammal"
+        ]
+      }
+    }
+  ]
 }
