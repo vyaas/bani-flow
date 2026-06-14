@@ -112,11 +112,15 @@ function showCopyLinkToast(msg) {
   _copyToastTimer = setTimeout(function() { el.classList.remove('visible'); }, 1500);
 }
 
-// ── ADR-151: encode current UI state as a URL fragment for sharing ───────────
+// ── ADR-151/170: encode current UI state as a URL fragment for sharing ───────
 // Reads the player instance (vid, currentOffset, meta), the left-panel trail
 // (via window.getBaniTrail), and the right-panel musician node
-// (via window.getCurrentPanelNode) and encodes them as a base64 JSON fragment.
-function encodePermalink(instance) {
+// (via window.getCurrentPanelNode) and encodes them into the URL fragment.
+// ADR-170: the v:2 JSON state is unchanged; only the transport shrank. We
+// deflate-raw + base64url into a `#z=` fragment (~half the length), falling
+// back to the legacy plain-base64 `#s=` form when CompressionStream is absent.
+// permalink.js reads both prefixes, so old links keep resolving.
+async function encodePermalink(instance) {
   try {
     const trail   = (typeof window.getBaniTrail === 'function')
       ? window.getBaniTrail() : { back: [] };
@@ -148,8 +152,20 @@ function encodePermalink(instance) {
     if (_trailEntries.length)
       state.trail = _trailEntries.slice(-5);
     if (panelId) state.panel = panelId;
-    // btoa over UTF-8: encode JSON to percent-escaped bytes then to latin1
-    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(state))))
+    const json = JSON.stringify(state);
+    // ADR-170: compress with native deflate-raw, then base64url into `#z=`.
+    if (typeof CompressionStream === 'function') {
+      try {
+        const cs = new CompressionStream('deflate-raw');
+        const stream = new Blob([new TextEncoder().encode(json)]).stream().pipeThrough(cs);
+        const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+        let bin = '';
+        for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+        return '#z=' + btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      } catch (e) { /* fall through to the legacy plain form */ }
+    }
+    // Legacy `#s=`: btoa over UTF-8 (percent-escaped bytes → latin1).
+    const b64 = btoa(unescape(encodeURIComponent(json)))
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     return '#s=' + b64;
   } catch (err) {
@@ -1286,9 +1302,9 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // ADR-151: wire share button (permalink = trail + player + panel)
   const shareBtn = el.querySelector('.mp-share-btn');
   if (shareBtn) {
-    shareBtn.addEventListener('click', e => {
+    shareBtn.addEventListener('click', async e => {
       e.stopPropagation();
-      const fragment = encodePermalink(instance);
+      const fragment = await encodePermalink(instance);
       if (!fragment) return;
       window.location.hash = fragment;
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -4345,9 +4361,9 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   if (mobileShareBtn) {
     const freshShare = mobileShareBtn.cloneNode(true);
     mobileShareBtn.parentNode.replaceChild(freshShare, mobileShareBtn);
-    freshShare.addEventListener('click', e => {
+    freshShare.addEventListener('click', async e => {
       e.stopPropagation();
-      const fragment = encodePermalink(mp);
+      const fragment = await encodePermalink(mp);
       if (!fragment) return;
       window.location.hash = fragment;
       if (navigator.clipboard && navigator.clipboard.writeText) {
