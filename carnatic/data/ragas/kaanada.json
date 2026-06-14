@@ -8,10 +8,10 @@
     "kAnaDA"
   ],
   "melakarta": null,
-  "parent_raga": "kharaharapriya",
+  "parent_raga": null,
   "sources": [
     {
-      "url": "https://en.wikipedia.org/wiki/Kanada_(raga)",
+      "url": "https://en.wikipedia.org/wiki/Kanada_%28family_of_ragas%29",
       "label": "Wikipedia",
       "type": "wikipedia"
     }
