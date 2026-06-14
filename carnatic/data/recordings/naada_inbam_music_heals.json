@@ -1,0 +1,118 @@
+{
+  "id": "naada_inbam_music_heals",
+  "video_id": "ujaTPc5Sbx0",
+  "url": "https://youtu.be/ujaTPc5Sbx0",
+  "title": "Naada Inbam - Music Heals",
+  "date": "2019",
+  "venue": null,
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/ujaTPc5Sbx0",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "suguna_varadachari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "rk_shriramkumar",
+          "role": "violin"
+        },
+        {
+          "musician_id": "k_arun_prakash",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Opening Sloka"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:45",
+          "offset_seconds": 45,
+          "composition_id": "viriboni",
+          "raga_id": "bhairavi",
+          "tala": "Khanda Ata",
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "09:35",
+          "offset_seconds": 575,
+          "composition_id": "rara_mayinti",
+          "raga_id": "asaveri",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "14:35",
+          "offset_seconds": 875,
+          "composition_id": "varadaraja_avava",
+          "raga_id": "gangeyabhusani",
+          "tala": "misra_capu",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "17:38",
+          "offset_seconds": 1058,
+          "composition_id": "orajoopu_choocedi_nyaayamaa",
+          "raga_id": "kannada_gowla",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "26:30",
+          "offset_seconds": 1590,
+          "composition_id": "ninnu_mincina_vaarevaraamma",
+          "raga_id": "nattakurinji",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:08:55",
+          "offset_seconds": 4135,
+          "composition_id": "endu_daginado",
+          "raga_id": "thodi",
+          "tala": "misra_capu",
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "02:09:15",
+          "offset_seconds": 7755,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Ragamalika Viruttam"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:25:07",
+          "offset_seconds": 8707,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": null,
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
