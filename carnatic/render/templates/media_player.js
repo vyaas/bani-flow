@@ -528,6 +528,15 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   foldCue.textContent = '\u25be'; // ▾ downward-pointing triangle
   rightGroup.appendChild(foldCue);
 
+  // Promoted musician chip: visible only on mobile (CSS hides on desktop).
+  // Placed between the fold-cue and action buttons so the top bar reads:
+  // [▾] [Musician Name — full wrap] [copy][share][yt][≡?][✕]
+  const promoChip = _buildMusicianChipForFooter(meta.nodeId || null, artistName || null);
+  if (promoChip) {
+    promoChip.classList.add('mp-musician-promo');
+    rightGroup.appendChild(promoChip);
+  }
+
   // ADR-139: clipboard copy button — copies ytDirectUrl(vid, currentOffset) to clipboard.
   // Click handler is wired in createPlayer() after the instance is constructed.
   const copyBtn = document.createElement('button');

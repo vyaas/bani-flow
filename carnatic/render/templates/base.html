@@ -1039,6 +1039,8 @@
     display: flex; align-items: center; gap: 6px;
     flex-shrink: 0; margin-left: auto;
   }
+  /* Promo chip only appears in the mobile top bar; hidden on desktop. */
+  .mp-bar-right .mp-musician-promo { display: none; }
 
   /* ── Artist chip in player bar ── */
   .mp-artist-chip {
@@ -4198,6 +4200,16 @@
       order: 1;
       border-bottom: 1px solid var(--border-strong);
     }
+    /* Raised musician chip: fills the space between the chevron and action buttons.
+       white-space:normal lets the name wrap rather than truncate. */
+    .media-player.full-mobile .mp-bar-right .mp-musician-promo {
+      display: inline-flex;
+      flex: 1; min-width: 0;
+      white-space: normal; word-break: break-word;
+      margin: 0 6px;
+    }
+    /* Hide the duplicate musician chip that remains in the bottom chips row. */
+    .media-player.full-mobile .mp-rail .musician-chip { display: none; }
     .media-player.full-mobile .mp-copy-btn,
     .media-player.full-mobile .mp-share-btn,
     .media-player.full-mobile .mp-yt-link,
