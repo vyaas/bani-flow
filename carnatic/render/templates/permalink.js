@@ -15,22 +15,40 @@
 (function() {
   'use strict';
 
+  // ── b64url → Uint8Array ───────────────────────────────────────────────────
+  function _bytesFromB64url(s) {
+    var b64 = s.replace(/-/g, '+').replace(/_/g, '/');
+    var pad = b64.length % 4;
+    if (pad) b64 += '===='.slice(0, 4 - pad);
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
   // ── decodePermalinkHash ───────────────────────────────────────────────────
-  // Returns parsed state object or null on any error.
-  function decodePermalinkHash(hash) {
-    if (!hash || !hash.startsWith('#s=')) return null;
+  // Returns parsed state object or null on any error. Async because the `#z=`
+  // (ADR-170) path inflates via the stream-based DecompressionStream API.
+  async function decodePermalinkHash(hash) {
+    if (!hash) return null;
     try {
-      // Reverse URL-safe base64: restore standard base64 chars, then re-pad.
-      var b64 = hash.slice(3)
-        .replace(/-/g, '+').replace(/_/g, '/');
-      var pad = b64.length % 4;
-      if (pad) b64 += '===='.slice(0, 4 - pad);
-      // atob → percent-escape latin1 bytes → decodeURIComponent for UTF-8
-      var json = decodeURIComponent(
-        atob(b64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join('')
-      );
+      var json;
+      if (hash.startsWith('#z=')) {
+        // ADR-170: base64url → deflate-raw bytes → inflate → JSON.
+        var ds = new DecompressionStream('deflate-raw');
+        var stream = new Blob([_bytesFromB64url(hash.slice(3))]).stream().pipeThrough(ds);
+        json = await new Response(stream).text();
+      } else if (hash.startsWith('#s=')) {
+        // Legacy: URL-safe base64 → percent-escape latin1 → UTF-8 JSON.
+        var bytes = _bytesFromB64url(hash.slice(3));
+        var pct = '';
+        for (var i = 0; i < bytes.length; i++) {
+          pct += '%' + ('00' + bytes[i].toString(16)).slice(-2);
+        }
+        json = decodeURIComponent(pct);
+      } else {
+        return null;
+      }
       var state = JSON.parse(json);
       // ADR-154: v1 carried a YouTube `vid`; v2 carries a provider-qualified
       // media_key in `m` (and still emits `vid` for YouTube media). Accept both.
@@ -51,8 +69,8 @@
 
   // ── restoreStateFromHash ─────────────────────────────────────────────────
   // Decodes and replays the permalink. Called once on page load.
-  function restoreStateFromHash() {
-    var state = decodePermalinkHash(window.location.hash);
+  async function restoreStateFromHash() {
+    var state = await decodePermalinkHash(window.location.hash);
     if (!state) return;
 
     try {
