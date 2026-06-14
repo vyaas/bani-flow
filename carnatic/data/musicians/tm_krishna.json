@@ -734,7 +734,9 @@
           "sahana",
           "bhairavi"
         ],
-        "composition_ids": [],
+        "composition_ids": [
+          "sri_nathadi_guruguho"
+        ],
         "musician_ids": []
       }
     },
