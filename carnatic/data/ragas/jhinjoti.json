@@ -1,0 +1,14 @@
+{
+  "id": "jhinjoti",
+  "name": "Jhinjoti",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "harikambhoji",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragasj.shtml#jhinjoTi",
+      "label": "karnatik.com"
+    }
+  ]
+}

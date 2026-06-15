@@ -1,0 +1,123 @@
+{
+  "id": "madhuradhwani_s_fifth_anniversary",
+  "video_id": "FUbdBlL-roA",
+  "url": "https://www.youtube.com/watch?v=FUbdBlL-roA",
+  "title": "Madhuradhwani's Fifth Anniversary",
+  "date": "2017",
+  "venue": "Chennai",
+  "occasion": "Madhuradhwani's Fifth Anniversary",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=FUbdBlL-roA",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "r_vedavalli",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "sumitra_vasudev",
+          "role": "vocal"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Introduction"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "10:00",
+          "offset_seconds": 600,
+          "composition_id": "dinamani_vamsa",
+          "raga_id": "harikambhoji",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "19:06",
+          "offset_seconds": 1146,
+          "composition_id": "tulasi_dalamulace",
+          "raga_id": "mayamalavagowla",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "44:38",
+          "offset_seconds": 2678,
+          "composition_id": "yagnadulu_sukhamanu",
+          "raga_id": "jayamanohari",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "49:24",
+          "offset_seconds": 2964,
+          "composition_id": "sharanam_sharanam_endrane",
+          "raga_id": "sowrashtram",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "56:00",
+          "offset_seconds": 3360,
+          "composition_id": "manasu_swadheenamaina",
+          "raga_id": "shankarabharanam",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:36:40",
+          "offset_seconds": 5800,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Viruttam (Ragamalika)"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:43:04",
+          "offset_seconds": 6184,
+          "composition_id": "kaana_vendum_laksham_kangal",
+          "raga_id": "surutti",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:47:10",
+          "offset_seconds": 6430,
+          "composition_id": "sarvam_brahmamayam",
+          "raga_id": "jhinjoti",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:51:40",
+          "offset_seconds": 6700,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": null,
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
