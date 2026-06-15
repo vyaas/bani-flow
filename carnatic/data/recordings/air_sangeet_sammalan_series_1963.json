@@ -1,0 +1,96 @@
+{
+  "id": "air_sangeet_sammalan_series_1963",
+  "video_id": "f-JC_khnDoE",
+  "url": "https://youtu.be/f-JC_khnDoE",
+  "title": "AIR Sangeet Sammalan Series 1963",
+  "date": null,
+  "venue": null,
+  "occasion": "51st Remembrance Day",
+  "sources": [
+    {
+      "url": "https://youtu.be/f-JC_khnDoE",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "vidulaku_mrokkeda",
+          "raga_id": "mayamalavagowla",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "09:45",
+          "offset_seconds": 585,
+          "composition_id": "enduku_nirdaya",
+          "raga_id": "harikambhoji",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "19:43",
+          "offset_seconds": 1183,
+          "composition_id": "ne_jesina_neramu",
+          "raga_id": "purnachandrika",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "29:07",
+          "offset_seconds": 1747,
+          "composition_id": "ni_padamule",
+          "raga_id": "bhairavi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "39:20",
+          "offset_seconds": 2360,
+          "composition_id": "ilalo_pranatartihara",
+          "raga_id": "atana",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "49:10",
+          "offset_seconds": 2950,
+          "composition_id": "palimchu_kamakshi",
+          "raga_id": "madhyamavati",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "59:10",
+          "offset_seconds": 3550,
+          "composition_id": "vani_pondu",
+          "raga_id": "kaanada",
+          "tala": "rupakam",
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
