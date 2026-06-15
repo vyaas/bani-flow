@@ -1175,5 +1175,17 @@
     "target": "suguna_varadachari",
     "confidence": 0.9,
     "source_url": null
+  },
+  {
+    "source": "ariyakudi_ramanuja_iyengar",
+    "target": "ambi_bhagavathar",
+    "confidence": 0.9,
+    "source_url": null
+  },
+  {
+    "source": "ambi_bhagavathar",
+    "target": "papa_choodamani",
+    "confidence": 0.9,
+    "source_url": null
   }
 ]
