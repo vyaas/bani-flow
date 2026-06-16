@@ -56,7 +56,17 @@
       "url": "https://youtu.be/X0FerSEtDqU",
       "label": "Brova Bharama · Bahudari",
       "composition_id": "brova_bharama",
-      "raga_id": "bahudari"
+      "raga_id": "bahudari",
+      "performers": [
+        {
+          "musician_id": "madurai_mani_iyer",
+          "role": "vocal"
+        },
+        {
+          "role": "violin",
+          "musician_id": "tn_krishnan"
+        }
+      ]
     },
     {
       "url": "https://youtu.be/VY2hk3bF_D0",

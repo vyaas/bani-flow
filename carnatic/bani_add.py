@@ -375,7 +375,26 @@ def _process_musicians(
                     )
                     _print_result(result)
                     if result.ok:        added   += 1
-                    elif result.skipped: skipped += 1
+                    elif result.skipped:
+                        skipped += 1
+                        # Entry already exists — still apply any performers included
+                        # in the bundle (entry form always emits array:'youtube', even
+                        # for performer-only additions to an existing video).
+                        for perf in (yt.get("performers") or []):
+                            if not isinstance(perf, dict):
+                                continue
+                            pr = writer.add_youtube_performer(
+                                musicians_path,
+                                musician_id=musician_id,
+                                url=yt["url"],
+                                performer_id=perf.get("musician_id"),
+                                role=perf.get("role", ""),
+                                unmatched_name=perf.get("unmatched_name"),
+                            )
+                            _print_result(pr)
+                            if pr.ok:        added   += 1
+                            elif pr.skipped: skipped += 1
+                            else:            errors  += 1
                     else:                errors  += 1
                 continue
             elif array_sel.startswith("youtube[") and ".performers" in array_sel:
@@ -387,12 +406,27 @@ def _process_musicians(
                     errors += 1
                     continue
                 vid = m_sel.group(1)
-                result = writer.add_youtube_performer(
-                    musicians_path,
-                    musician_id=musician_id,
-                    video_id=vid,
-                    performer=value,
-                )
+                perf_list = value if isinstance(value, list) else [value]
+                result = None
+                for perf in perf_list:
+                    if not isinstance(perf, dict):
+                        print(f"  ERROR  performer entry must be a dict: {perf!r}")
+                        errors += 1
+                        continue
+                    result = writer.add_youtube_performer(
+                        musicians_path,
+                        musician_id=musician_id,
+                        url=f"https://www.youtube.com/watch?v={vid}",
+                        performer_id=perf.get("musician_id"),
+                        role=perf.get("role", ""),
+                        unmatched_name=perf.get("unmatched_name"),
+                    )
+                    _print_result(result)
+                    if result.ok:        added   += 1
+                    elif result.skipped: skipped += 1
+                    else:                errors  += 1
+                if result is not None:
+                    continue
             elif array_sel.startswith("youtube[") and ".subjects" in array_sel:
                 import re as _re
                 m_sel = _re.match(r"youtube\[([A-Za-z0-9_-]{11})\]\.subjects\.(.*)", array_sel)
