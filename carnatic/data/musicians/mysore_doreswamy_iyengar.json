@@ -15,5 +15,13 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/j9Cb3PNjOx4",
+      "label": "Swara Ragasudha · Shankarabharanam · adi",
+      "composition_id": "swara_ragasudha",
+      "raga_id": "shankarabharanam",
+      "tala": "adi"
+    }
+  ]
 }
