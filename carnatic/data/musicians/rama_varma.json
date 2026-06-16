@@ -23,7 +23,9 @@
       "kind": "lecdem",
       "subjects": {
         "raga_ids": [],
-        "composition_ids": [],
+        "composition_ids": [
+          "nada_thanumanisam"
+        ],
         "musician_ids": [
           "madurai_mani_iyer"
         ]
