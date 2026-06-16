@@ -1,0 +1,19 @@
+{
+  "id": "veena_venkatagiriyappa",
+  "label": "Veena Venkatagiriyappa",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Veena_Venkatagiriyappa",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1887,
+  "died": 1951,
+  "era": "golden_age",
+  "instrument": "veena",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}

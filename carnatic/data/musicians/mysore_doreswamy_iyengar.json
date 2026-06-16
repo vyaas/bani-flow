@@ -1,0 +1,19 @@
+{
+  "id": "mysore_doreswamy_iyengar",
+  "label": "Mysore Doreswamy Iyengar",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Doreswamy_Iyengar",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1920,
+  "died": 1997,
+  "era": "disseminator",
+  "instrument": "veena",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}
