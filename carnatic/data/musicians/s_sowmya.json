@@ -22,6 +22,26 @@
       "label": "Gitarthamu · Surutti · Adi - S. Sowmya",
       "composition_id": "gitarthamu",
       "raga_id": "surutti"
+    },
+    {
+      "url": "https://youtu.be/MbcoX6xXyGA",
+      "label": "Relevance of 22 Srutis/Microtones today",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "sahana",
+          "bhairavi",
+          "surutti",
+          "saveri",
+          "manji",
+          "kalyani",
+          "saranga"
+        ],
+        "composition_ids": [],
+        "musician_ids": [
+          "s_ramanathan"
+        ]
+      }
     }
   ]
 }
