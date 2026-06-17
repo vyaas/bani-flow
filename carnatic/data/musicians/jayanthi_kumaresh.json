@@ -36,6 +36,18 @@
       "url": "https://youtu.be/HYAOgON3RZs",
       "label": "RTP",
       "raga_id": "sanmukhapriya"
+    },
+    {
+      "url": "https://youtu.be/cOEjkVUrmGA",
+      "label": "Sadhinchane · Arabhi",
+      "composition_id": "sadhinchane",
+      "raga_id": "arabhi"
+    },
+    {
+      "url": "https://youtu.be/4dxsDhI22Cs",
+      "label": "Brova Bharama · Bahudari",
+      "composition_id": "brova_bharama",
+      "raga_id": "bahudari"
     }
   ]
 }

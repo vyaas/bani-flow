@@ -63,6 +63,21 @@
       "url": "https://youtu.be/_HtapLThVuw",
       "label": "RTP",
       "raga_id": "madhyamavati"
+    },
+    {
+      "url": "https://youtu.be/kRTDX9t3zv4",
+      "label": "RTP",
+      "raga_id": "simhendramadhyamam",
+      "performers": [
+        {
+          "musician_id": "aruna_sairam",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "jayanthi_kumaresh",
+          "role": "veena"
+        }
+      ]
     }
   ]
 }
