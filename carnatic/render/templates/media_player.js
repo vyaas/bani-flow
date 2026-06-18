@@ -2448,6 +2448,13 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   // ADR-165 §3: collapsed-by-default is a CSS concern of .concert-perf-list;
   // no inline display (the filter channel) so the harvest can see folded rows.
 
+  // Pre-compute flat sorted track list so thunks can derive end_seconds for ADR-163 §5.
+  const _concertAllTracks = [];
+  concert.sessions.forEach(sess => {
+    sess.perfs.forEach(sp => { _concertAllTracks.push({ offset_seconds: sp.offset_seconds || 0 }); });
+  });
+  _concertAllTracks.sort((a, b) => a.offset_seconds - b.offset_seconds);
+
   concert.sessions.forEach(session => {
     // Sort perfs within session by offset_seconds
     const sortedPerfs = session.perfs.slice().sort(
@@ -2544,11 +2551,16 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       actsDiv.appendChild(playBtn);
       // ADR-163 §3: + affordance on concert bracket performance rows
       // ADR-165: same thunk feeds the + menu and the harvest.
-      const _concertPerfThunk = (() => { const _p = p; return () => ({
-        media: _p.video_id, startSeconds: _p.offset_seconds || 0,
-        label: _p.display_title || '', artistName: artistLabel,
-        meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
-      }); })();
+      const _concertPerfThunk = (() => {
+        const _p = p;
+        const _nextTrack = _concertAllTracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
+        const _endSec = _nextTrack ? _nextTrack.offset_seconds : null;
+        return () => ({
+          media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+          label: _p.display_title || '', artistName: artistLabel,
+          meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId, end_seconds: _endSec },
+        });
+      })();
       actsDiv.appendChild(_buildPlusBtn(_concertPerfThunk));
       registerQueueItem(li, _concertPerfThunk);
       compHeader.appendChild(actsDiv);
@@ -2673,11 +2685,20 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     actsDiv.appendChild(playBtn);
     // ADR-163 §3: + affordance on single-recording standalone rows
     // ADR-165: same thunk feeds the + menu and the harvest.
-    const _singleRecThunk = (() => { const _p = p; return () => ({
-      media: _p.video_id, startSeconds: _p.offset_seconds || 0,
-      label: _p.display_title || '', artistName: artistLabel,
-      meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
-    }); })();
+    const _singleRecThunk = (() => {
+      const _p = p;
+      const _endSec = (() => {
+        if (!_p.recording_id) return null;
+        const _tracks = _buildConcertTracksFor(_p.recording_id, nodeId);
+        const _next = _tracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
+        return _next ? _next.offset_seconds : null;
+      })();
+      return () => ({
+        media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+        label: _p.display_title || '', artistName: artistLabel,
+        meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId, end_seconds: _endSec },
+      });
+    })();
     actsDiv.appendChild(_buildPlusBtn(_singleRecThunk));
     registerQueueItem(li, _singleRecThunk);
     compHeader.appendChild(actsDiv);
@@ -2749,11 +2770,20 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       rowActsDiv.appendChild(playBtn);
       // ADR-163 §3: + affordance on multi-recording version rows
       // ADR-165: same thunk feeds the + menu and the harvest.
-      const _multiRecThunk = (() => { const _p = p; return () => ({
-        media: _p.video_id, startSeconds: _p.offset_seconds || 0,
-        label: _p.display_title || '', artistName: artistLabel,
-        meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId },
-      }); })();
+      const _multiRecThunk = (() => {
+        const _p = p;
+        const _endSec = (() => {
+          if (!_p.recording_id) return null;
+          const _tracks = _buildConcertTracksFor(_p.recording_id, nodeId);
+          const _next = _tracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
+          return _next ? _next.offset_seconds : null;
+        })();
+        return () => ({
+          media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+          label: _p.display_title || '', artistName: artistLabel,
+          meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId, end_seconds: _endSec },
+        });
+      })();
       rowActsDiv.appendChild(_buildPlusBtn(_multiRecThunk));
       registerQueueItem(recLi, _multiRecThunk);
       row.appendChild(rowActsDiv);
