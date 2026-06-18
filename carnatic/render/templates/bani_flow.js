@@ -1047,6 +1047,14 @@ function _buildPlayActsDiv(row) {
   actsDiv.className = 'trail-acts';
   actsDiv.appendChild(playBtn);
   const plusBtn = _buildPlusBtn(function() {
+    var endSec = null;
+    if (row.isStructured && row.track.recording_id) {
+      var allForRec = Object.values(musicianToPerformances).flat()
+        .filter(function(sp) { return sp.recording_id === row.track.recording_id; })
+        .sort(function(a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
+      var nextPerf = allForRec.find(function(sp) { return (sp.offset_seconds || 0) > (row.track.offset_seconds || 0); });
+      endSec = nextPerf ? nextPerf.offset_seconds : null;
+    }
     return {
       media:        row.track.media || row.track.vid,
       startSeconds: row.track.offset_seconds || 0,
@@ -1058,6 +1066,7 @@ function _buildPlayActsDiv(row) {
         compositionId: row.track.composition_id || null,
         nodeId:        row.nodeId || null,
         recId:         row.track.recording_id || null,
+        end_seconds:   endSec,
       },
     };
   });

@@ -4451,6 +4451,13 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
         _updateMiniDots(mp);
       }
     }
+    // ADR-163 §5: cross-recording continuation — same boundary check as desktop createPlayer.
+    if (MediaQueue.isCurrent(mp.mediaKey)) {
+      const _qi = MediaQueue.items[MediaQueue.index];
+      if (_qi && _qi.meta && _qi.meta.end_seconds != null && sec >= _qi.meta.end_seconds) {
+        MediaQueue.advance();
+      }
+    }
   });
   // ADR-157: auto-advance the queue when this item ends.
   controller.onEnded(() => { if (MediaQueue.isCurrent(mp.mediaKey)) MediaQueue.advance(); });
