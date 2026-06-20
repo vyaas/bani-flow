@@ -1,0 +1,25 @@
+{
+  "id": "dwaram_venkataswamy_naidu",
+  "label": "Dwaram Venkataswamy Naidu",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Dwaram_Venkataswamy_Naidu",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1893,
+  "died": 1964,
+  "era": "disseminator",
+  "instrument": "violin",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": [
+    {
+      "url": "https://youtu.be/9J2va-7JVII",
+      "label": "Tanam",
+      "raga_id": "darbari_kanada"
+    }
+  ]
+}

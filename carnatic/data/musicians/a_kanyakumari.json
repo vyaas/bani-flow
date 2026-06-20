@@ -16,5 +16,12 @@
     "carnatic"
   ],
   "bani": "mixed",
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/M3IQtTudvvo",
+      "label": "Govardhana Giridhara Govinda · Darbari Kanada",
+      "composition_id": "govardhana_giridhara",
+      "raga_id": "darbari_kanada"
+    }
+  ]
 }
