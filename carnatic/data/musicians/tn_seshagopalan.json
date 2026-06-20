@@ -61,7 +61,21 @@
       "url": "https://youtu.be/GSCZLuNCv0Y",
       "label": "Pakkala Nilabadi · Kharaharapriya",
       "composition_id": "pakkala_nilabadi",
-      "raga_id": "kharaharapriya"
+      "raga_id": "kharaharapriya",
+      "performers": [
+        {
+          "musician_id": "tn_seshagopalan",
+          "role": "vocal"
+        },
+        {
+          "role": "violin",
+          "musician_id": "lalgudi_jayaraman"
+        },
+        {
+          "role": "mridangam",
+          "musician_id": "karaikudi_mani"
+        }
+      ]
     }
   ]
 }
