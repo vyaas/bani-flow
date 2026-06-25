@@ -968,30 +968,54 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
 
   li.appendChild(headerDiv);
   li.appendChild(row2Div);
-  // ADR-167: register thunk so filter-scoped harvest works on this flat trail row.
+  // ADR-167 / ADR-165 §3 (AUDIT-019): register canonical queue item so the
+  // filter-scoped harvest emits the same shape as the + menu — crucially
+  // including end_seconds for concert-segment rows.
   if (row.track.media || row.track.vid) {
     const _r = row;
-    if (typeof registerQueueItem === 'function') registerQueueItem(li, function() {
-      return {
-        media:        _r.track.media || _r.track.vid,
-        startSeconds: _r.track.offset_seconds || 0,
-        label:        _r.track.label || '',
-        artistName:   _r.artistLabel || '',
-        concertTitle: _r.track.short_title || _r.track.concert_title || '',
-        tracks:       [],
-        meta: {
-          nodeId:        _r.nodeId || null,
-          ragaId:        _r.track.raga_id || null,
-          compositionId: _r.track.composition_id || null,
-          recId:         _r.track.recording_id || null,
-        },
-      };
-    });
+    if (typeof registerQueueItem === 'function') {
+      registerQueueItem(li, function() { return _buildRowQueueItem(_r); });
+    }
   }
   return li;
 }
 
 // ── ADR-061: tree-structured trail helpers ────────────────────────────────────
+
+// ADR-163 §5 / ADR-165 §3 (AUDIT-019): single source of truth for the queue-item
+// end_seconds boundary. Returns the offset of the next performance in the same
+// source recording, or null for standalone (whole-video) rows. Without this the
+// MediaQueue advance never fires until the entire source video ends naturally —
+// which strands queues built from concert-segment rows on the first item.
+function _deriveRowEndSec(row) {
+  if (!(row.isStructured && row.track.recording_id)) return null;
+  const all = Object.values(musicianToPerformances).flat()
+    .filter(function(sp) { return sp.recording_id === row.track.recording_id; })
+    .sort(function(a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
+  const next = all.find(function(sp) { return (sp.offset_seconds || 0) > (row.track.offset_seconds || 0); });
+  return next ? next.offset_seconds : null;
+}
+
+// ADR-165 §3 (AUDIT-019): canonical queue-item shape for a trail row.
+// One definition reused by both _buildPlusBtn(thunk) and registerQueueItem(li, thunk)
+// so the plus-menu and the harvest cannot disagree by construction.
+function _buildRowQueueItem(row) {
+  return {
+    media:        row.track.media || row.track.vid,
+    startSeconds: row.track.offset_seconds || 0,
+    label:        row.track.label || '',
+    artistName:   row.artistLabel || '',
+    concertTitle: row.track.short_title || row.track.concert_title || '',
+    tracks:       [],
+    meta: {
+      nodeId:        row.nodeId || null,
+      ragaId:        row.track.raga_id || null,
+      compositionId: row.track.composition_id || null,
+      recId:         row.track.recording_id || null,
+      end_seconds:   _deriveRowEndSec(row),
+    },
+  };
+}
 
 // _buildPlayActsDiv: shared ▶ + ↗ .trail-acts div for both flat and tree leaves.
 function _buildPlayActsDiv(row) {
@@ -1046,30 +1070,8 @@ function _buildPlayActsDiv(row) {
   const actsDiv = document.createElement('div');
   actsDiv.className = 'trail-acts';
   actsDiv.appendChild(playBtn);
-  const plusBtn = _buildPlusBtn(function() {
-    var endSec = null;
-    if (row.isStructured && row.track.recording_id) {
-      var allForRec = Object.values(musicianToPerformances).flat()
-        .filter(function(sp) { return sp.recording_id === row.track.recording_id; })
-        .sort(function(a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); });
-      var nextPerf = allForRec.find(function(sp) { return (sp.offset_seconds || 0) > (row.track.offset_seconds || 0); });
-      endSec = nextPerf ? nextPerf.offset_seconds : null;
-    }
-    return {
-      media:        row.track.media || row.track.vid,
-      startSeconds: row.track.offset_seconds || 0,
-      label:        row.track.label || '',
-      artistName:   row.artistLabel || '',
-      concertTitle: row.track.short_title || row.track.concert_title || '',
-      meta: {
-        ragaId:        row.track.raga_id || null,
-        compositionId: row.track.composition_id || null,
-        nodeId:        row.nodeId || null,
-        recId:         row.track.recording_id || null,
-        end_seconds:   endSec,
-      },
-    };
-  });
+  // ADR-165 §3 (AUDIT-019): same canonical queue item used by the harvest.
+  const plusBtn = _buildPlusBtn(function() { return _buildRowQueueItem(row); });
   actsDiv.appendChild(plusBtn);
   return actsDiv;
 }
@@ -1154,25 +1156,14 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     });
   }
 
-  // ADR-167: register thunk so filter-scoped harvest works on this tree leaf.
+  // ADR-167 / ADR-165 §3 (AUDIT-019): register canonical queue item so the
+  // filter-scoped harvest emits the same shape as the + menu — crucially
+  // including end_seconds for concert-segment rows.
   if (row.track.media || row.track.vid) {
     const _r = row;
-    if (typeof registerQueueItem === 'function') registerQueueItem(li, function() {
-      return {
-        media:        _r.track.media || _r.track.vid,
-        startSeconds: _r.track.offset_seconds || 0,
-        label:        _r.track.label || '',
-        artistName:   _r.artistLabel || '',
-        concertTitle: _r.track.short_title || _r.track.concert_title || '',
-        tracks:       [],
-        meta: {
-          nodeId:        _r.nodeId || null,
-          ragaId:        _r.track.raga_id || null,
-          compositionId: _r.track.composition_id || null,
-          recId:         _r.track.recording_id || null,
-        },
-      };
-    });
+    if (typeof registerQueueItem === 'function') {
+      registerQueueItem(li, function() { return _buildRowQueueItem(_r); });
+    }
   }
 
   return li;
@@ -1372,25 +1363,11 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
         accordion.classList.add('tree-leaf-coperformers-group');
         li.appendChild(accordion);
       }
-      // ADR-167: register single-version comp-view group li for harvest.
+      // ADR-167 / ADR-165 §3 (AUDIT-019): register canonical queue item — same
+      // shape as the + menu, including end_seconds for concert-segment rows.
       const _r0 = group.rows[0];
       if ((_r0.track.media || _r0.track.vid) && typeof registerQueueItem === 'function') {
-        registerQueueItem(li, (function(_r) { return function() {
-          return {
-            media:        _r.track.media || _r.track.vid,
-            startSeconds: _r.track.offset_seconds || 0,
-            label:        _r.track.label || '',
-            artistName:   _r.artistLabel || '',
-            concertTitle: _r.track.short_title || _r.track.concert_title || '',
-            tracks:       [],
-            meta: {
-              nodeId:        _r.nodeId || null,
-              ragaId:        _r.track.raga_id || null,
-              compositionId: _r.track.composition_id || null,
-              recId:         _r.track.recording_id || null,
-            },
-          };
-        }; })(_r0));
+        registerQueueItem(li, function() { return _buildRowQueueItem(_r0); });
       }
     } else {
       // Multi-version: whole header bar toggles; artist chip stopPropagation handles its own click
