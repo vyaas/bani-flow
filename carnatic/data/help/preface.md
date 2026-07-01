@@ -4,7 +4,7 @@ This is a substantive curation
 Forever incomplete
 That aims to enable an immersion
 Otherwise impossible outside Mylapore
-Of a Music whose very name means _Haunting of the ear_
+In a Music whose very name means _Haunting of the ear_
 
 For this is **<cr>Raga<cr> Music**
 Whose sonic forms are myriad
