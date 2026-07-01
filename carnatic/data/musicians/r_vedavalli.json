@@ -54,6 +54,25 @@
       "label": "Nagumomu Ganaleni · Abheri",
       "composition_id": "nagumomu_ganaleni",
       "raga_id": "abheri"
+    },
+    {
+      "url": "https://youtu.be/r1Yy6DBN9Nw",
+      "label": "Raga Swaroopa Lakshanam",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "bhairavi",
+          "kharaharapriya",
+          "ananda_bhairavi",
+          "reetigowla",
+          "madhyamavati",
+          "sriraga",
+          "poorvikalyani",
+          "pantuvarali"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }
