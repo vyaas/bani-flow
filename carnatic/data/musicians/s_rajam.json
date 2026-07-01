@@ -16,5 +16,18 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/HGzVIi47MoE",
+      "label": "",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "semmangudi_srinivasa_iyer"
+        ]
+      }
+    }
+  ]
 }

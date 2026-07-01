@@ -108,8 +108,8 @@
           "performance_index": 10,
           "timestamp": "02:24:53",
           "offset_seconds": 8693,
-          "composition_id": null,
-          "raga_id": null,
+          "composition_id": "govardhana_giridhara",
+          "raga_id": "darbari_kanada",
           "tala": null,
           "display_title": null
         }
