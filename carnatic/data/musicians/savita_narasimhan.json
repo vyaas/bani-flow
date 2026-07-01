@@ -30,6 +30,18 @@
           "ramnad_krishnan"
         ]
       }
+    },
+    {
+      "url": "https://youtu.be/RAWSAgZ8QWQ",
+      "label": "Notes to Myself - S. Sowmya",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [],
+        "composition_ids": [],
+        "musician_ids": [
+          "s_sowmya"
+        ]
+      }
     }
   ]
 }
