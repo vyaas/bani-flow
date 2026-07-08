@@ -1,15 +1,20 @@
 {
   "id": "muttavadura",
   "title": "Muttavadura",
-  "composer_id": "kshetrayya",
+  "composer_id": "chinnaiah_pillai",
   "raga_id": "saveri",
   "language": "Telugu",
   "sources": [
     {
-      "url": "https://www.karnatik.com/c2765.shtml",
+      "url": "https://www.karnatik.com/c16286.shtml",
       "label": "Karnatik.com",
+      "type": "article"
+    },
+    {
+      "url": "https://www.karnatik.com/c2765.shtml",
+      "label": "Karnatik.com (alt attribution — kshetrayya)",
       "type": "article"
     }
   ],
-  "notes": "Javali in Saveri"
+  "notes": "Javali in Saveri; composed by Chinnaiah Pillai (Thanjavur Quartet); alternate karnatik.com entry (c2765) attributes to Kshetrayya"
 }
