@@ -1597,6 +1597,36 @@ document.getElementById('trail-filter').addEventListener('input', function() {
       }
     });
 
+    // ── MISC leaves (ADR-128 D11): "Other recordings" rows render as bare
+    // li.tree-leaf directly under a section's .section-body, not wrapped in
+    // li.tree-group (see bani_flow.js buildTreeRaga) — so the treeGroups pass
+    // above never sees them. Filter them here and toggle their section.
+    trailList.querySelectorAll(':scope > section').forEach(function(section) {
+      const body = section.querySelector(':scope > .section-body');
+      if (!body) return;
+      const standaloneLeaves = body.querySelectorAll(':scope > li.tree-leaf');
+      if (standaloneLeaves.length === 0) return;
+
+      let sectionHasMatch = false;
+      standaloneLeaves.forEach(function(leaf) {
+        if (!q) {
+          leaf.style.display = '';
+          sectionHasMatch = true;
+          return;
+        }
+        const primaryText = (leaf.querySelector('.musician-chip') || {}).textContent || '';
+        const coTexts     = [...leaf.querySelectorAll('.trail-artist-co')].map(function(el) { return el.textContent; }).join(' ');
+        const labelText   = (leaf.querySelector('.trail-label')    || {}).textContent || '';
+        const leafMatch = [primaryText, coTexts, labelText]
+          .some(function(t) { return t.toLowerCase().includes(q); });
+        leaf.style.display = leafMatch ? '' : 'none';
+        if (leafMatch) sectionHasMatch = true;
+      });
+
+      section.style.display = (!q || sectionHasMatch) ? '' : 'none';
+      if (!q || sectionHasMatch) anyVisible = true;
+    });
+
     let noMatch = trailList.querySelector('.trail-no-match');
     if (!anyVisible && q) {
       if (!noMatch) {
