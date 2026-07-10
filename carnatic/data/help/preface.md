@@ -6,25 +6,24 @@ That aims to enable an immersion
 Otherwise impossible outside Mylapore
 In a Music whose very name means _Haunting of the ear_
 
-For this is **<cr>Raga<cr> Music**
+This is **<cr>Raga<cr> Music**
 Whose sonic forms are myriad
 And Oceanic in depth
 Revealed to those who _listen_
 And let their ears be _haunted_
 
-For this is **Art Music**
+This is **Art Music**
 > _Art is a way to make feelings happen_
 Brian Eno called it!
 Every Raga is a vessel of emotion
-Every rendition is an Art object
+Every rendition an Art object
 <cr>Reetigowla<cr> summons terror and hope in a world remote from mine
-<cr>Surutti<cr> paints a heron disappearing its serene frame into an orange sunrise
+<cr>Surutti<cr> paints a heron serenly disappearing into a sunrise
 <cr>Khamas<cr> evokes deep and enduring sky blue joy
 <cr>Begada<cr> invites beauty and reconciliation unconditionally, undeservedly
 
 ```bani-formula
-(My life)   Experiences + (Carnatic) Music = (My unique)   Feelings
-(Your life) Experiences + (Carnatic) Music = (Your unique) Feelings
+Experiences + Music = Feelings
 ```
 
 Feelings can help us work backwards
@@ -34,33 +33,30 @@ And learn who we really are
 Art → Feelings → Self-realization(s)
 ```
 
-For this is **Genealogical Music**
+This is **Genealogical Music**
 The DNA of its sound propagated
 From Guru to Shishya to Guru 
 This is how _Bani_ flows
-Mutated by aesthetic preferences
+Mutated by aesthetic choices
 Survived by the test of Time
 Bejewelled by the Trinity
-Carnatic Music's own Cambrian Explosion of genius
+This Music's own Cambrian Explosion of genius
 <cm>Tyagaraja<cm>, <cm>Muthuswami Dikshitar<cm>, <cm>Shyama Shastri<cm>
 
-For this is a **Post-notational Music**
-Whose essences cannot be grasped textually
-The sound does not travel by page
-But by _Raga Bhava_
+This is **Post-notational Music**
 Never for the eyes, only for the ears
-For here is a masterclass in _emotional abstraction_
+A masterclass in _melodic abstraction_
 Whose isomorphisms do not emerge from symbols
-They emerge from _emotions_
+But from _emotions_
 
-For this is emphatically **NOT Pop Music**
-It does not seek to please you
+This is **NOT Pop Music**
+It does not seek to please
 It aspires to a higher Truth
 It does not try to be Beautiful
 But instead shines a brilliant light 
 On what Beauty itself is
 
-So I invite you to browse this growing library of youtube links
+So I invite you to browse this library of youtube links
 Curated elsewhere by passionate _Rasikas_
 Reorganized and indexed here along the principle axes of Carnatic Music
 <cm>Musician<cm>, <cc>Composition<cc>, and <cr>Raga<cr>
@@ -70,11 +66,15 @@ Get inspired by the passionate lecture-demonstrations of <cm>TM Krishna<cm> and 
 
 This is not an evangalism
 Singing, playing, performing will all thrive
-Make no mistake
 Carnatic Music is _not_ endangered
 Mylapore and Cleveland will see to that!
 
-But listening _is_ endangered
+But the act of listening _is_ endangered
+Conscious listening
+Differential listening
+Immersive listening
+Ego dissolving listening
+
 In this tyranny of images
 And algorithm driven habit forming
 Our ears are being controlled
