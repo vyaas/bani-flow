@@ -142,11 +142,12 @@
           "performance_index": 10,
           "timestamp": "01:21:47",
           "offset_seconds": 4907,
-          "composition_id": "nenarunchi_nanu",
+          "composition_id": "nenarunchinanu",
           "raga_id": "malavi",
           "tala": "adi",
           "composer_id": "tyagaraja",
-          "display_title": "Nenarunchi Nanu"
+          "display_title": "Nenarunchinanu",
+          "notes": "MLV performs in Adi tala; canonical composition in Deshadi tala"
         },
         {
           "performance_index": 11,
