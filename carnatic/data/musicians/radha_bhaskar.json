@@ -15,5 +15,20 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/3t89Yuhi1Fo",
+      "label": "A Raga's Journey- Poorvi Kalyani",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "poorvikalyani"
+        ],
+        "composition_ids": [
+          "meenakshi_me_mudam_dehi"
+        ],
+        "musician_ids": []
+      }
+    }
+  ]
 }
