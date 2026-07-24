@@ -842,6 +842,26 @@
       "label": "calamEla jEsEvayya · Nattakurinji",
       "composition_id": "calamela_jesevayya",
       "raga_id": "nattakurinji"
+    },
+    {
+      "url": "https://youtu.be/my7SwcJtkiU",
+      "label": "Ninnuvinaga Mari · Poorvikalyani",
+      "composition_id": "ninnuvinaga_mari",
+      "raga_id": "poorvikalyani",
+      "performers": [
+        {
+          "musician_id": "tm_krishna",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "k_arun_prakash",
+          "role": "mridangam"
+        },
+        {
+          "musician_id": "akkarai_subbulakshmi",
+          "role": "violin"
+        }
+      ]
     }
   ]
 }
