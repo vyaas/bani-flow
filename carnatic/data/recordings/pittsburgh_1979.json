@@ -1,0 +1,164 @@
+{
+  "id": "pittsburgh_1979",
+  "video_id": "KCVdhK5dLhw",
+  "url": "https://youtu.be/KCVdhK5dLhw",
+  "title": "Pittsburgh 1979",
+  "date": "1979",
+  "venue": "Sri Venkateswara Temple, Pittsburgh",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/KCVdhK5dLhw",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "balamuralikrishna",
+          "role": "vocal"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Tunin"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "01:07",
+          "offset_seconds": 67,
+          "composition_id": "endaro_mahanubhavulu",
+          "raga_id": "sriraga",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "17:04",
+          "offset_seconds": 1024,
+          "composition_id": "samajavaragamana",
+          "raga_id": "hindolam",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "49:32",
+          "offset_seconds": 2972,
+          "composition_id": "palukutache_phalamemi",
+          "raga_id": "phalamanjari",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "55:02",
+          "offset_seconds": 3302,
+          "composition_id": "ayakalaikellam_arasiye",
+          "raga_id": "mohanam",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:10:58",
+          "offset_seconds": 4258,
+          "composition_id": "nagumomu_ganaleni",
+          "raga_id": "abheri",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:40:28",
+          "offset_seconds": 6028,
+          "composition_id": "indariki_abhayambu",
+          "raga_id": "mishra_harikambhoji",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:44:38",
+          "offset_seconds": 6278,
+          "composition_id": "anugalavu_chinte",
+          "raga_id": "abhogi",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:55:18",
+          "offset_seconds": 6918,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Ragamalika - Orunal Poduma (from the film Thiruvilaiyadal, 1965)"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:57:45",
+          "offset_seconds": 7065,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "rupakam",
+          "display_title": "Ragamalika - Ganalola Nee Leela"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:04:53",
+          "offset_seconds": 7493,
+          "composition_id": "paluke_bangaramayena",
+          "raga_id": "ananda_bhairavi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:09:39",
+          "offset_seconds": 7779,
+          "composition_id": "raghu_nandana",
+          "raga_id": "kedaragaula",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:12:36",
+          "offset_seconds": 7956,
+          "composition_id": null,
+          "raga_id": "kadanakutuhalam",
+          "tala": "adi",
+          "display_title": "Thilana"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:20:34",
+          "offset_seconds": 8434,
+          "composition_id": "nagumomu_galavani",
+          "raga_id": "madhyamavati",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:23:43",
+          "offset_seconds": 8623,
+          "composition_id": "ramachandraya",
+          "raga_id": "kurinji",
+          "tala": null,
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
