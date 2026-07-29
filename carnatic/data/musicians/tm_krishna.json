@@ -397,9 +397,21 @@
     },
     {
       "url": "https://www.youtube.com/watch?v=zGrDSEDeCI0",
-      "label": "Dikshitar kriti · Mayamalavagowla - TM Krishna & Akkarai Subbulakshmi, Karnatic Modern Mumbai 2017",
+      "label": "Sri Nathadi Guruguho · Mayamalavagowla · adi",
+      "composition_id": "sri_nathadi_guruguho",
       "raga_id": "mayamalavagowla",
-      "year": 2017
+      "year": 2017,
+      "tala": "adi",
+      "performers": [
+        {
+          "musician_id": "tm_krishna",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "akkarai_subbulakshmi",
+          "role": "violin"
+        }
+      ]
     },
     {
       "url": "https://www.youtube.com/watch?v=nuzjW5a--AU",
