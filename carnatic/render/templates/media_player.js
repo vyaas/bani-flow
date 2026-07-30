@@ -1139,13 +1139,38 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
 // another SEEK_STEP — so N rapid taps ⇒ (N−1) steps, matching YouTube/NewPipe.
 function wireTapGestures(catcher, wrap, player, seekStep) {
   let pending = null, toggleTimer = null, sessionActive = false, sessionTimer = null;
+  let revealArmed = false, revealTimer = null;
   const now = () => (window.performance && performance.now) ? performance.now() : Date.now();
   function endSession() { sessionActive = false; clearTimeout(sessionTimer); sessionTimer = null; }
   function armSession() { sessionActive = true; clearTimeout(sessionTimer); sessionTimer = setTimeout(endSession, ACCUM_MS); }
+  // ADR-158 mobile follow-up: Plyr's controls bar has no hover affordance on
+  // touch, and our transparent .mp-click-catch overlay swallows the taps Plyr
+  // would otherwise use to reveal it. controlsHidden() reads Plyr's own
+  // plyr--hide-controls class so a first touch tap can force the bar visible
+  // via the public toggleControls() API without touching playback; a second
+  // tap within the reveal window falls straight through to the toggle/seek
+  // logic below.
+  function controlsHidden() {
+    const c = player.elements && player.elements.container;
+    return !!(c && c.classList.contains('plyr--hide-controls'));
+  }
 
   catcher.addEventListener('pointerup', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();   // suppress the synthetic click / double-tap zoom
+
+    // Mobile-only: first tap while controls are hidden just reveals them — it
+    // must not also toggle play/pause or count as a seek tap. Desktop mouse
+    // clicks never hit this branch, so hover + click-to-toggle stay untouched.
+    if (e.pointerType !== 'mouse' && controlsHidden() && !revealArmed) {
+      try { player.toggleControls(true); } catch (err) {}
+      revealArmed = true;
+      clearTimeout(revealTimer);
+      revealTimer = setTimeout(() => { revealArmed = false; }, DOUBLE_TAP_MS);
+      return;
+    }
+    if (revealArmed) { clearTimeout(revealTimer); revealArmed = false; }
+
     const rect = wrap.getBoundingClientRect();
     const frac = rect.width ? (e.clientX - rect.left) / rect.width : 0.5;
     const side = frac < 0.4 ? 'left' : (frac > 0.6 ? 'right' : 'centre');
