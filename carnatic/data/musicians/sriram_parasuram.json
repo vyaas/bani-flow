@@ -280,6 +280,19 @@
           "tyagaraja"
         ]
       }
+    },
+    {
+      "url": "https://youtu.be/JHMmFYOLBSg",
+      "label": "Sindhu Bhairavi · Bhairavi",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "sindhu_bhairavi",
+          "bhairavi"
+        ],
+        "composition_ids": [],
+        "musician_ids": []
+      }
     }
   ]
 }
