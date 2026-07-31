@@ -1155,14 +1155,26 @@ function wireTapGestures(catcher, wrap, player, seekStep) {
     return !!(c && c.classList.contains('plyr--hide-controls'));
   }
 
+  // Plyr has its own touchstart listener that reveals its controls, and that
+  // touchstart bubbles up through our catcher (only pointerup calls
+  // preventDefault) — so by the time 'pointerup' fires below, Plyr may have
+  // already un-hidden the bar and a live controlsHidden() check would read
+  // false even though the tap started on a hidden bar. Capture the true
+  // pre-tap state at pointerdown, which always fires before touchstart.
+  let hiddenAtDown = false;
+  catcher.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse') hiddenAtDown = controlsHidden();
+  });
+
   catcher.addEventListener('pointerup', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();   // suppress the synthetic click / double-tap zoom
 
-    // Mobile-only: first tap while controls are hidden just reveals them — it
-    // must not also toggle play/pause or count as a seek tap. Desktop mouse
-    // clicks never hit this branch, so hover + click-to-toggle stay untouched.
-    if (e.pointerType !== 'mouse' && controlsHidden() && !revealArmed) {
+    // Mobile-only: first tap while controls were hidden just reveals them —
+    // it must not also toggle play/pause or count as a seek tap. Desktop
+    // mouse clicks never hit this branch, so hover + click-to-toggle stay
+    // untouched.
+    if (e.pointerType !== 'mouse' && hiddenAtDown && !revealArmed) {
       try { player.toggleControls(true); } catch (err) {}
       revealArmed = true;
       clearTimeout(revealTimer);
