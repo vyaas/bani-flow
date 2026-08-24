@@ -3605,6 +3605,113 @@
   }
   .ef-success ol { padding-left: 18px; margin-top: 6px; }
   .ef-success li { margin-bottom: 4px; }
+  /* ── Patch cart — ADR-171 ───────────────────────────────────────────── */
+  .patch-cart { width: 520px; max-width: 640px; }
+  .pc-empty {
+    margin: 4px 0; font-size: 0.76rem; color: var(--fg-muted); line-height: 1.5;
+  }
+  .pc-banner {
+    margin: 0 0 12px; padding: 8px 10px;
+    font-size: 0.72rem; line-height: 1.5; color: var(--fg-sub);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border: 1px solid var(--accent); border-radius: 4px;
+  }
+  .pc-banner code { color: var(--accent); font-family: var(--font-mono); }
+  .pc-section { margin: 0 0 14px; }
+  .pc-section-head {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--fg-muted);
+    padding: 0 0 4px; margin: 0 0 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pc-row {
+    padding: 6px 8px; margin: 0 0 4px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .pc-row:hover { border-color: var(--border-strong); }
+  .pc-row-unknown { border-color: var(--accent-warn); }
+  .pc-row-main { display: flex; align-items: center; gap: 6px; }
+  .pc-row-title {
+    font-size: 0.76rem; color: var(--fg);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+  }
+  .pc-row-spacer { flex: 1; min-width: 0; }
+  .pc-row-detail {
+    font-size: 0.70rem; color: var(--fg-muted); line-height: 1.45;
+    padding: 3px 0 0 2px; word-break: break-word;
+  }
+  .pc-row-conflict {
+    font-size: 0.68rem; color: var(--accent-warn);
+    padding: 3px 0 0 2px;
+  }
+  .pc-row-json {
+    display: block; margin: 6px 0 0;
+    font-size: 0.66rem; max-height: 160px; overflow: auto;
+  }
+  .pc-badge {
+    flex-shrink: 0; font-size: 0.64rem; line-height: 1;
+    padding: 2px 4px; border-radius: 3px; cursor: help;
+  }
+  .pc-badge-group {
+    color: var(--accent-sub); border: 1px solid var(--accent-sub);
+  }
+  .pc-badge-conflict {
+    color: var(--accent-warn); border: 1px solid var(--accent-warn);
+  }
+  .pc-row-btn {
+    flex-shrink: 0; background: none; color: var(--fg-dim);
+    border: 1px solid transparent; border-radius: 3px;
+    font-size: 0.82rem; line-height: 1; cursor: pointer;
+    width: 24px; height: 22px; padding: 0;
+  }
+  .pc-row-btn:hover { color: var(--fg); border-color: var(--border-strong); }
+  .pc-row-btn-remove:hover {
+    color: var(--accent-danger); border-color: var(--accent-danger);
+  }
+  .pc-footer-hint {
+    flex-basis: 100%; font-size: 0.66rem; color: var(--fg-muted);
+    padding: 2px 0 0;
+  }
+  .pc-footer-hint code { color: var(--fg-sub); font-family: var(--font-mono); }
+  /* JSON fallback editor — the universal edit path (ADR-171 §5) */
+  .pc-json-editor { padding: 8px 0 2px; }
+  .pc-json-note {
+    font-size: 0.66rem; color: var(--accent-warn); padding: 0 0 4px;
+  }
+  .pc-json-input {
+    width: 100%; box-sizing: border-box; min-height: 130px;
+    font-family: var(--font-mono); font-size: 0.68rem; line-height: 1.45;
+    color: var(--fg); background: var(--bg-deep);
+    border: 1px solid var(--border-strong); border-radius: 3px;
+    padding: 6px 8px; resize: vertical;
+  }
+  .pc-json-input:focus { outline: none; border-color: var(--accent); }
+  .pc-json-msg { font-size: 0.66rem; padding: 4px 0 0; min-height: 1em; }
+  .pc-json-msg-ok   { color: var(--accent); }
+  .pc-json-msg-bad  { color: var(--accent-danger); }
+  .pc-json-msg-warn { color: var(--accent-warn); }
+  .pc-json-bar { display: flex; gap: 8px; padding: 6px 0 0; }
+  /* Restore notice — announced, declinable (ADR-171 §9). Desktop-only, like the
+     patch button itself; revealed in the desktop media query below. */
+  .pc-notice {
+    display: none;
+    position: fixed; bottom: 62px; left: 50%; transform: translateX(-50%);
+    z-index: 1003;
+    align-items: center; gap: 10px;
+    padding: 8px 10px 8px 14px;
+    font-size: 0.72rem; color: var(--fg-sub);
+    background: var(--bg-panel);
+    border: 1px solid var(--accent); border-radius: 5px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .pc-notice-btn {
+    background: none; color: var(--fg-dim);
+    border: 1px solid var(--border-strong); border-radius: 3px;
+    font-size: 0.70rem; padding: 3px 8px; cursor: pointer;
+  }
+  .pc-notice-btn:hover { color: var(--fg); border-color: var(--accent); }
+  .pc-notice-dismiss { border-color: transparent; padding: 3px 6px; }
   .ef-success code {
     font-family: var(--font-mono); font-size: 0.70rem;
     background: var(--bg-deep); padding: 1px 4px; border-radius: 2px;
@@ -3961,6 +4068,7 @@
     #left-panel-toggle,
     #right-panel-toggle,
     #bundle-download-btn { display: inline-flex; }
+    .pc-notice { display: flex; }
   }
 
   /* ── Panel pin button (desktop only) ───────────────────────────────────── */
@@ -5223,8 +5331,8 @@
 <!-- Hidden on mobile via CSS; shown on desktop. Each toggle is open-pinned ↔ closed. -->
 <button id="left-panel-toggle" title="Open / close Bani Flow panel"
         aria-pressed="false">&#9776; Bani Flow</button>
-<button id="bundle-download-btn" onclick="downloadBundle()" disabled
-        title="Download patch JSON">&#x2B07; Patch (0 items)</button>
+<button id="bundle-download-btn" onclick="openPatchCart()" disabled
+        title="Review the staged patch">&#x2B07; Patch (0 ops)</button>
 <button id="right-panel-toggle" title="Open / close Musician panel"
         aria-pressed="false"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg> Musician</button>
 

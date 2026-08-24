@@ -2,9 +2,14 @@
 // Depends on: graphData (injected by render pipeline), nextSpawnPosition(),
 //             wireDrag(), topZ (from media_player.js)
 //
-// Bundle schema: ADR-083 (plans/ADR-083-bani-add-bundle-canonical-write-channel.md).
-// addToBundle(type, obj) enforces the whitelist of six item types defined in §4 of
-// that ADR and throws on any unknown type — silent drops are forbidden.
+// Patch schema: ADR-083 (envelope) + ADR-097 (delta ops) + ADR-143 (op matrix).
+// addToBundle(type, obj, meta) enforces the bucket whitelist and throws on any
+// unknown type — silent drops are forbidden.
+//
+// Review surface: ADR-171 (patch_cart.js). Op identity, grouping, replacement and
+// removal all live here; the cart reads them. `meta` is the optional reopen
+// descriptor { label, reopen: { form, args } } — purely additive, and an op
+// without one still renders and edits (as raw JSON) in the cart.
 //
 // ── ADR-103 §3 / ADR-100: global edit bar deprecation ────────────────────────
 // The footer bar (#footer-bar in base.html) is a deprecated fallback. Its buttons
@@ -13,10 +18,14 @@
 // points going forward. The bar is removable when ADR-100's coverage matrix is
 // fully green. Do not add new button types here; add co-located triggers instead.
 
-// ── Session bundle state ──────────────────────────────────────────────────────
-// All entry forms can push their output into this shared bundle.
-// One click on "Download Bundle" produces bani_add_bundle.json, which
-// bani-add consumes to populate all data directories in one pass.
+// ── Session patch state ─────────────────────────────────────────────
+// All entry forms push their output into this shared patch. The ⬇ Patch button
+// opens the patch cart (ADR-171, patch_cart.js), from which the artefact is
+// downloaded as bani_add_patch.json and consumed by `bani-add`.
+//
+// Bucket keys MUST equal bani_add.py's KNOWN_ITEM_TYPES — pinned by
+// carnatic/tests/test_patch_cart_drift.py. The arrays hold *pure op objects*;
+// cart bookkeeping never lives inside them (ADR-171 §1).
 
 const baniBundle = {
   ragas:        [],
@@ -26,20 +35,173 @@ const baniBundle = {
   recordings:   [],
   edges:        [],
   playlists:    [],   // ADR-163: saved playlists ride the same patch loop
+  talas:        [],   // ADR-171: bani_add.py accepts talas; buildTalaMiniForm needs it
 };
 
-function addToBundle(type, obj) {
+const PATCH_FILENAME = 'bani_add_patch.json';
+
+// ── Op identity — ADR-171 §1 ────────────────────────────────────────
+// Each staged op carries a stable opId as a NON-ENUMERABLE property, so
+// JSON.stringify skips it: downloadBundle() and the localStorage write both see
+// exactly the object bani_add expects. No strip pass can drift out of sync.
+// Descriptive metadata (label, reopen descriptor, groupId) lives in a side Map.
+
+let _patchSeq = 0;
+let _patchGroupSeq = 0;
+const _patchMeta = new Map();   // opId → { bucket, groupId, label, reopen }
+
+// Non-null while a single submit is emitting several ops that belong together
+// (musician node + guru edges; raga dual-emission). One groupId ⇒ one cart row.
+let _patchGroupCur = null;
+
+// Bookkeeping for an in-flight replacement; spans the several addToBundle()
+// calls one submit may make. Reset by _patchStagingEnd().
+let _patchReplace = null;       // { target, at: { <bucket>: nextIndex } }
+let _patchReleasePending = false;
+
+function _patchOpIdOf(op) {
+  return (op && typeof op === 'object') ? op._patchOpId : undefined;
+}
+
+function _patchMetaOf(op) {
+  const id = _patchOpIdOf(op);
+  return id ? (_patchMeta.get(id) || null) : null;
+}
+
+function _patchGroupBegin() {
+  _patchGroupSeq += 1;
+  _patchGroupCur = 'g' + _patchGroupSeq;
+  return _patchGroupCur;
+}
+
+function _patchGroupEnd() {
+  _patchGroupCur = null;
+}
+
+// Wrap a multi-op submit so its ops share one groupId even if it throws.
+function withPatchGroup(fn) {
+  _patchGroupBegin();
+  try { return fn(); }
+  finally { _patchGroupEnd(); }
+}
+
+function _patchTagOp(obj, bucket, groupId, meta) {
+  const opId = 'op' + (++_patchSeq);
+  try {
+    Object.defineProperty(obj, '_patchOpId', {
+      value: opId, enumerable: false, configurable: true, writable: true,
+    });
+  } catch (e) {
+    // Frozen/sealed op — identity is unavailable, so the cart will fall back to
+    // the raw-JSON row for it. Never fatal.
+  }
+  _patchMeta.set(opId, Object.assign({ bucket: bucket, groupId: groupId }, meta || {}));
+  return opId;
+}
+
+// ── Replacement — ADR-171 §3 ────────────────────────────────────
+// The cart sets window._patchStagingTarget to a groupId, reopens the originating
+// form prefilled, and clears the token via _patchStagingEnd(). Every existing
+// submit handler therefore gains correct replace-in-place semantics unchanged.
+
+function _patchStagingBegin(groupId) {
+  window._patchStagingTarget = groupId;
+  _patchReplace = null;
+  _patchReleasePending = false;
+}
+
+function _patchStagingEnd() {
+  window._patchStagingTarget = null;
+  _patchReplace = null;
+  _patchReleasePending = false;
+}
+
+// The token must not outlive the submit that consumed it. Watching for the form
+// window to close is not enough: showPatchSuccess replaces the body in place and
+// leaves the window open, so its "Add another" button would stage a second
+// replacement over the first. All ops of one submit are staged synchronously, so
+// releasing on the next macrotask is both late enough and early enough.
+function _patchScheduleRelease() {
+  if (_patchReleasePending) return;
+  _patchReleasePending = true;
+  setTimeout(() => { if (_patchReleasePending) _patchStagingEnd(); }, 0);
+}
+
+// Splice the incoming op into the index its predecessor occupied — bucket-internal
+// order is contractual (ADR-143: a create must precede an append to the same id).
+function _patchReplaceGroup(target, bucket, obj) {
+  if (!_patchReplace || _patchReplace.target !== target) {
+    _patchReplace = { target: target, at: {} };
+    Object.keys(baniBundle).forEach(b => {
+      const arr = baniBundle[b];
+      for (let i = arr.length - 1; i >= 0; i--) {
+        const m = _patchMetaOf(arr[i]);
+        if (m && m.groupId === target) {
+          const id = _patchOpIdOf(arr[i]);
+          arr.splice(i, 1);
+          if (id) _patchMeta.delete(id);
+          _patchReplace.at[b] = i;   // descending loop ⇒ settles on the lowest index
+        }
+      }
+    });
+  }
+  const at = _patchReplace.at;
+  const idx = (at[bucket] === undefined) ? baniBundle[bucket].length : at[bucket];
+  baniBundle[bucket].splice(idx, 0, obj);
+  at[bucket] = idx + 1;
+}
+
+function addToBundle(type, obj, meta) {
   if (!(type in baniBundle)) throw new Error(`addToBundle: unknown type '${type}'`);
-  baniBundle[type].push(obj);
+  const target = window._patchStagingTarget || null;
+  // A replacement op adopts the group it replaces, so the cart row keeps its identity.
+  const groupId = target || _patchGroupCur || ('g' + (++_patchGroupSeq));
+  _patchTagOp(obj, type, groupId, meta);
+  if (target) { _patchReplaceGroup(target, type, obj); _patchScheduleRelease(); }
+  else        baniBundle[type].push(obj);
+  if (typeof _patchPersist === 'function') _patchPersist();
   _updateBundleBtn();
+}
+
+// Remove one group's ops from the patch. Patch-scoped only — ADR-085 §6 forbids
+// a delete op, so this never touches stored data.
+function removeFromBundle(groupId) {
+  let removed = 0;
+  Object.keys(baniBundle).forEach(b => {
+    const arr = baniBundle[b];
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const m = _patchMetaOf(arr[i]);
+      if (m && m.groupId === groupId) {
+        const id = _patchOpIdOf(arr[i]);
+        arr.splice(i, 1);
+        if (id) _patchMeta.delete(id);
+        removed += 1;
+      }
+    }
+  });
+  if (typeof _patchPersist === 'function') _patchPersist();
+  _updateBundleBtn();
+  return removed;
+}
+
+function clearBundle() {
+  Object.keys(baniBundle).forEach(b => { baniBundle[b].length = 0; });
+  _patchMeta.clear();
+  _patchReplace = null;
+  if (typeof _patchPersist === 'function') _patchPersist();
+  _updateBundleBtn();
+}
+
+function patchOpCount() {
+  return Object.values(baniBundle).reduce((s, arr) => s + arr.length, 0);
 }
 
 function _updateBundleBtn() {
   const btn = document.getElementById('bundle-download-btn');
   if (!btn) return;
   const prevTotal = parseInt(btn.dataset.prevTotal || '0', 10);
-  const total = Object.values(baniBundle).reduce((s, arr) => s + arr.length, 0);
-  btn.textContent = `⬇ Patch (${total} op${total === 1 ? '' : 's'})`;
+  const total = patchOpCount();
+  btn.textContent = `\u2b07 Patch (${total} op${total === 1 ? '' : 's'})`;
   btn.disabled = total === 0;
   btn.classList.toggle('entry-btn-active', total > 0);
   // ADR-129 D2: pulse animation when first item is added
@@ -51,6 +213,23 @@ function _updateBundleBtn() {
     });
   }
   btn.dataset.prevTotal = String(total);
+  if (typeof _patchCartRefresh === 'function') _patchCartRefresh();
+}
+
+// Guard the invariant of ADR-171 §1: no cart bookkeeping may reach the artefact.
+function _assertCleanArtefact(obj, path) {
+  path = path || 'items';
+  if (Array.isArray(obj)) {
+    obj.forEach((v, i) => _assertCleanArtefact(v, path + '[' + i + ']'));
+    return;
+  }
+  if (!obj || typeof obj !== 'object') return;
+  Object.keys(obj).forEach(k => {
+    if (k.indexOf('_patch') === 0) {
+      throw new Error(`patch artefact polluted: enumerable '${k}' at ${path}`);
+    }
+    _assertCleanArtefact(obj[k], path + '.' + k);
+  });
 }
 
 function downloadBundle() {
@@ -59,7 +238,9 @@ function downloadBundle() {
     generated_at:   new Date().toISOString(),
     items:          baniBundle,
   };
-  downloadJson('bani_add_patch.json', bundle);
+  _assertCleanArtefact(bundle.items);
+  downloadJson(PATCH_FILENAME, bundle);
+  if (typeof _patchMarkDownloaded === 'function') _patchMarkDownloaded();
 }
 
 // ── Utility functions ─────────────────────────────────────────────────────────
@@ -107,13 +288,17 @@ function downloadJson(filename, obj) {
 //
 // win      — .ew-window element (body and footer are replaced in place)
 // snapshot — the JS object passed to addToBundle() (shown in collapsible block)
-// opts     — { headline, addAnotherLabel, addAnotherFn, undoFn }
+// opts     — { headline, addAnotherLabel, addAnotherFn }
+//
+// ADR-171 §10: the old per-form `undoFn` (a positional baniBundle.<bucket>.pop())
+// is retired. It popped the last op in the bucket rather than the one this dialog
+// is about, and could not express a multi-op submit at all. Reversal now lives in
+// the patch cart, which acts on op identity — hence [Review patch] below.
 function showPatchSuccess(win, snapshot, opts) {
   opts = opts || {};
   const headline        = opts.headline        || '\u2713 Added to patch';
   const addAnotherLabel = opts.addAnotherLabel || null;
   const addAnotherFn    = opts.addAnotherFn    || null;
-  const undoFn          = opts.undoFn          || null;
 
   const body = win.querySelector('.ew-body');
   body.innerHTML = '';
@@ -143,11 +328,11 @@ function showPatchSuccess(win, snapshot, opts) {
   // Fixed next-step block (identical for every form — bani-add + bani-render)
   const stepsP = document.createElement('p');
   stepsP.style.cssText = 'margin:12px 0 0;font-size:0.72rem;color:var(--fg-sub);';
-  stepsP.innerHTML = 'When done, click <strong>\u2B07 Patch</strong> in the toolbar to download '
-    + '<code>bani_add_patch.json</code>, then run:';
+  stepsP.innerHTML = 'When done, click <strong>\u2B07 Patch</strong> in the toolbar to review '
+    + 'and download <code>' + PATCH_FILENAME + '</code>, then run:';
   const cmdPre = document.createElement('pre');
   cmdPre.style.cssText = 'margin:6px 0 0;font-size:0.72rem;';
-  cmdPre.textContent = 'bani-add bani_add_bundle.json\nbani-render';
+  cmdPre.textContent = 'bani-add ' + PATCH_FILENAME + '\nbani-render';
   msg.appendChild(stepsP);
   msg.appendChild(cmdPre);
 
@@ -164,21 +349,13 @@ function showPatchSuccess(win, snapshot, opts) {
     footer.appendChild(addAnotherBtn);
   }
 
-  if (undoFn) {
-    const undoBtn = document.createElement('button');
-    undoBtn.className = 'ef-preview-btn';
-    undoBtn.textContent = 'Undo';
-    undoBtn.addEventListener('click', () => {
-      undoFn();
-      body.innerHTML = '';
-      const undoneMsg = document.createElement('div');
-      undoneMsg.className = 'ef-success';
-      undoneMsg.innerHTML = '<strong>\u21A9 Undone \u2014 item removed from patch</strong>';
-      body.appendChild(undoneMsg);
-      footer.innerHTML = '';
-      setTimeout(() => win.remove(), 1500);
-    });
-    footer.appendChild(undoBtn);
+  // Reversal and amendment route to the cart, which can address this exact op.
+  if (typeof openPatchCart === 'function') {
+    const reviewBtn = document.createElement('button');
+    reviewBtn.className = 'ef-preview-btn';
+    reviewBtn.textContent = 'Review patch';
+    reviewBtn.addEventListener('click', () => { win.remove(); openPatchCart(); });
+    footer.appendChild(reviewBtn);
   }
 
   const okBtn = document.createElement('button');
@@ -1144,8 +1321,12 @@ function buildBaniFlowPickerForm() {
 //          wiki link inline with Display Name, chip-based guru/shishya edges,
 //          "Add to Patch" as primary CTA (no per-form download).
 
-function buildMusicianForm({ prefill = null } = {}) {
-  const isEdit = !!prefill;
+function buildMusicianForm({ prefill = null, forceCreate = false, prefillEdges = null } = {}) {
+  // ADR-171 §3: `prefill` doubles as the edit-mode discriminator, so reopening a
+  // staged CREATE from the patch cart would otherwise flip the form to edit mode and
+  // emit a patch against an entity that does not exist yet. forceCreate keeps the
+  // prefilled values while staying in create mode.
+  const isEdit = !!prefill && !forceCreate;
   const win = createEntryWindow(isEdit ? 'Edit Musician' : 'Add Musician');
   if (!win) return;
   const body = win.querySelector('.ew-body');
@@ -1300,19 +1481,25 @@ function buildMusicianForm({ prefill = null } = {}) {
   const guruRow    = buildEdgeChipSection(edgesContainer, 'guru',    win);
   const shishyaRow = buildEdgeChipSection(edgesContainer, 'shishya', win);
 
-  // ── Pre-fill in edit mode (ADR-147) ────────────────────────────────────────
-  if (isEdit) {
+  // ── Pre-fill ───────────────────────────────────────────────────────────────
+  // ADR-171 §3: two separate gates. `prefill` decides whether to POPULATE the
+  // fields; `isEdit` decides whether this form emits a patch. A create reopened
+  // from the patch cart arrives with prefill set and forceCreate true — it must
+  // populate its values but stay a create, and its id must stay editable.
+  if (prefill) {
     labelInp.value = prefill.label || '';
     if (prefill.born) bornInp.value = prefill.born;
     if (prefill.died) diedInp.value = prefill.died;
-    // ID: lock permanently — node IDs are immutable (CLAUDE.md)
     const idInput = idRow._idInput;
     if (idInput) {
-      idInput.value    = prefill.id;
-      idInput.readOnly = true;
-      idInput.style.opacity = '0.6';
-      const editBtn = idRow.querySelector('.ef-id-edit-btn');
-      if (editBtn) editBtn.style.display = 'none';
+      idInput.value = prefill.id || '';
+      // Existing node ids are immutable (CLAUDE.md); a staged create's is not yet.
+      if (isEdit) {
+        idInput.readOnly = true;
+        idInput.style.opacity = '0.6';
+        const editBtn = idRow.querySelector('.ef-id-edit-btn');
+        if (editBtn) editBtn.style.display = 'none';
+      }
     }
     // Era chip
     if (prefill.era) {
@@ -1338,24 +1525,39 @@ function buildMusicianForm({ prefill = null } = {}) {
       srcUrlInp.value = url;
       if (url) { wikiLinkBtn.href = url; wikiLinkBtn.style.display = ''; }
     }
-    // Hidden prefill-ID for generateMusicianJson to detect edit mode
-    const prefillIdInp = document.createElement('input');
-    prefillIdInp.type = 'hidden'; prefillIdInp.id = 'ef_mus_prefill_id'; prefillIdInp.value = prefill.id;
-    body.appendChild(prefillIdInp);
-    // Edit-mode note
-    const editNote = document.createElement('p');
-    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
-    editNote.textContent = 'Only changed fields and new edges are included in the patch.';
-    body.appendChild(editNote);
-    // Pre-fill existing edge chips
-    (graphData.edges || []).filter(e => e.source === prefill.id || e.target === prefill.id).forEach(e => {
-      const direction = e.target === prefill.id ? 'guru' : 'shishya';
-      const otherId   = direction === 'guru' ? e.source : e.target;
-      const otherNode = (graphData.nodes || []).find(n => n.id === otherId);
-      const row = direction === 'guru' ? guruRow : shishyaRow;
-      row._addChip({ otherId, otherLabel: otherNode ? otherNode.label : otherId, direction,
-        confidence: e.confidence, source_url: e.source_url, note: e.note, _prefilled: true });
-    });
+    if (isEdit) {
+      // Hidden prefill-ID for generateMusicianJson to detect edit mode
+      const prefillIdInp = document.createElement('input');
+      prefillIdInp.type = 'hidden'; prefillIdInp.id = 'ef_mus_prefill_id'; prefillIdInp.value = prefill.id;
+      body.appendChild(prefillIdInp);
+      // Edit-mode note
+      const editNote = document.createElement('p');
+      editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+      editNote.textContent = 'Only changed fields and new edges are included in the patch.';
+      body.appendChild(editNote);
+      // Pre-fill existing edge chips
+      (graphData.edges || []).filter(e => e.source === prefill.id || e.target === prefill.id).forEach(e => {
+        const direction = e.target === prefill.id ? 'guru' : 'shishya';
+        const otherId   = direction === 'guru' ? e.source : e.target;
+        const otherNode = (graphData.nodes || []).find(n => n.id === otherId);
+        const row = direction === 'guru' ? guruRow : shishyaRow;
+        row._addChip({ otherId, otherLabel: otherNode ? otherNode.label : otherId, direction,
+          confidence: e.confidence, source_url: e.source_url, note: e.note, _prefilled: true });
+      });
+    } else if (Array.isArray(prefillEdges)) {
+      // ADR-171 §3: a staged create reopened from the cart re-seeds the edges it
+      // staged — the group replace has just removed them, and without this they
+      // would vanish silently on re-submit. Not marked _prefilled: they must be
+      // re-emitted, not treated as already on disk.
+      prefillEdges.forEach(e => {
+        const direction = (e.target === prefill.id) ? 'guru' : 'shishya';
+        const otherId   = direction === 'guru' ? e.source : e.target;
+        const otherNode = (graphData.nodes || []).find(n => n.id === otherId);
+        const row = direction === 'guru' ? guruRow : shishyaRow;
+        row._addChip({ otherId, otherLabel: otherNode ? otherNode.label : otherId, direction,
+          confidence: e.confidence, source_url: e.source_url, note: e.note });
+      });
+    }
   }
 
   // ── Preview pre (lives in body, above footer) ─────────────────────────────
@@ -1429,12 +1631,17 @@ function buildMusicianForm({ prefill = null } = {}) {
   // ADR-145 D1 / ADR-147 / ADR-152: stage into patch bundle (add = new node, edit = patch op)
   addPatchBtn.addEventListener('click', () => {
     const { nodeJson, newEdges } = generateMusicianJson(win);
-    let addedMusician = false;
-    if (!isEdit || Object.keys(nodeJson.fields || {}).length > 0) {
-      addToBundle('musicians', nodeJson);
-      addedMusician = true;
-    }
-    newEdges.forEach(e => addToBundle('edges', e));
+    // One submit, one cart row: the node and its lineage edges are a single act.
+    withPatchGroup(() => {
+      if (!isEdit || Object.keys(nodeJson.fields || {}).length > 0) {
+        addToBundle('musicians', nodeJson, {
+          reopen: { form: 'musician', args: [isEdit
+            ? { prefill: prefill }
+            : { prefill: nodeJson, forceCreate: true, prefillEdges: newEdges }] },
+        });
+      }
+      newEdges.forEach(e => addToBundle('edges', e));
+    });
     const musId    = nodeJson.id || (prefill && prefill.id) || '';
     const edgeNote = newEdges.length > 0 ? ` and ${newEdges.length} edge${newEdges.length > 1 ? 's' : ''}` : '';
     showPatchSuccess(win, nodeJson, {
@@ -1443,9 +1650,6 @@ function buildMusicianForm({ prefill = null } = {}) {
         : `\u2713 Added <code>${musId}</code>${edgeNote} to patch`,
       addAnotherLabel: isEdit ? '+ Edit another musician' : '+ Add Another Musician',
       addAnotherFn:    () => buildMusicianForm(),
-      undoFn: (addedMusician && newEdges.length === 0)
-        ? () => { baniBundle.musicians.pop(); _updateBundleBtn(); }
-        : null,
     });
   });
 
@@ -2056,11 +2260,18 @@ function collectYoutubePerformers(block, hostId, hostInstrument) {
 
 // ── Edge block (repeating) ────────────────────────────────────────────────────
 
-function addEdgeBlock(container, direction, formWin, prefillData = null) {
+// prefillData populates the block. By default a populated block is treated as
+// already-on-disk: marked data-prefilled, locked, and SKIPPED by the edge
+// collectors. ADR-171 §3 needs the other case — a staged create reopened from the
+// patch cart re-seeds edges that the group replace just removed, so those must be
+// live and re-emitted. opts.editable selects that behaviour; without it the
+// re-seeded edges would be silently dropped on re-submit.
+function addEdgeBlock(container, direction, formWin, prefillData = null, opts = {}) {
+  const locked = !!prefillData && !opts.editable;
   const block = document.createElement('div');
   block.className = 'ef-repeat-block';
   block.dataset.direction = direction;
-  if (prefillData) {
+  if (locked) {
     block.dataset.prefilled = 'true';
     block.style.opacity = '0.65';
   }
@@ -2069,7 +2280,7 @@ function addEdgeBlock(container, direction, formWin, prefillData = null) {
   removeBtn.type = 'button';
   removeBtn.className = 'ef-repeat-remove';
   removeBtn.textContent = '×';
-  if (prefillData) {
+  if (locked) {
     // Prefilled blocks are read-only display — hide the remove button
     removeBtn.style.display = 'none';
   } else {
@@ -2109,10 +2320,11 @@ function addEdgeBlock(container, direction, formWin, prefillData = null) {
     if (prefillData.source_url)        srcInp.value  = prefillData.source_url;
     if (prefillData.note)              noteInp.value = prefillData.note;
     // Disable all inputs so user can't accidentally edit prefilled edges
-    [confInp, srcInp, noteInp].forEach(el => { el.disabled = true; el.style.opacity = '0.65'; });
-  } else {
-    formWin.dispatchEvent(new Event('input'));
+    if (locked) {
+      [confInp, srcInp, noteInp].forEach(el => { el.disabled = true; el.style.opacity = '0.65'; });
+    }
   }
+  if (!locked) formWin.dispatchEvent(new Event('input'));
 }
 
 // ── generateMusicianJson ──────────────────────────────────────────────────────
@@ -2258,8 +2470,12 @@ function showMusicianSuccess(win, id, hasEdges) {
 
 // ── Raga form ─────────────────────────────────────────────────────────────────
 
-function buildRagaForm({ prefill = null } = {}) {
-  const isEdit = !!prefill;
+function buildRagaForm({ prefill = null, forceCreate = false } = {}) {
+  // ADR-171 §3: `prefill` doubles as the edit-mode discriminator, so reopening a
+  // staged CREATE from the patch cart would otherwise flip the form to edit mode and
+  // emit a patch against an entity that does not exist yet. forceCreate keeps the
+  // prefilled values while staying in create mode.
+  const isEdit = !!prefill && !forceCreate;
   const win = createEntryWindow(isEdit ? 'Edit Raga' : 'Add Raga');
   if (!win) return;
   const body = win.querySelector('.ew-body');
@@ -2408,7 +2624,12 @@ function buildRagaForm({ prefill = null } = {}) {
   body.appendChild(efSourceFields('ef_raga'));
 
   // ── Pre-fill in edit mode ─────────────────────────────────────────────────
-  if (isEdit) {
+  // ── Pre-fill ───────────────────────────────────────────────────────────────
+  // ADR-171 §3: two separate gates. `prefill` decides whether to POPULATE the
+  // fields; `isEdit` decides whether this form emits a patch. A create reopened
+  // from the patch cart arrives with prefill set and forceCreate true — it must
+  // populate its values but stay a create, and its id must stay editable.
+  if (prefill) {
     // Tradition — pre-select and lock (changing tradition has downstream consequences)
     _tradition = prefill.tradition || 'carnatic';
     _carnaticBtn.classList.toggle('active', _tradition === 'carnatic');
@@ -2485,24 +2706,31 @@ function buildRagaForm({ prefill = null } = {}) {
     // Lock ID (node IDs are permanent per CLAUDE.md)
     const idInput = idRow._idInput;
     if (idInput) {
-      idInput.value    = prefill.id;
-      idInput.readOnly = true;
-      idInput.style.opacity = '0.6';
-      const editBtn = idRow.querySelector('.ef-id-edit-btn');
-      if (editBtn) editBtn.style.display = 'none';
+      idInput.value = prefill.id || '';
+      // Existing node ids are immutable (CLAUDE.md); a staged create's is not yet.
+      if (isEdit) {
+        idInput.readOnly = true;
+        idInput.style.opacity = '0.6';
+        const editBtn = idRow.querySelector('.ef-id-edit-btn');
+        if (editBtn) editBtn.style.display = 'none';
+      }
     }
 
-    // Hidden prefill-id for generateRagaJson to detect edit mode
-    const prefillIdInp = document.createElement('input');
-    prefillIdInp.type = 'hidden'; prefillIdInp.id = 'ef_raga_prefill_id';
-    prefillIdInp.value = prefill.id;
-    body.appendChild(prefillIdInp);
+    // Hidden prefill-id for generateRagaJson to detect edit mode. Only in edit
+    // mode: a reopened staged create must keep emitting a create (ADR-171 §3).
+    if (isEdit) {
+      const prefillIdInp = document.createElement('input');
+      prefillIdInp.type = 'hidden'; prefillIdInp.id = 'ef_raga_prefill_id';
+      prefillIdInp.value = prefill.id;
+      body.appendChild(prefillIdInp);
+    }
 
-    // Edit-mode note
-    const editNote = document.createElement('p');
-    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
-    editNote.textContent = 'Only changed fields are included in the patch.';
-    body.appendChild(editNote);
+    if (isEdit) {
+      const editNote = document.createElement('p');
+      editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+      editNote.textContent = 'Only changed fields are included in the patch.';
+      body.appendChild(editNote);
+    }
   }
 
   // Footer
@@ -2561,16 +2789,19 @@ function buildRagaForm({ prefill = null } = {}) {
     const obj = generateRagaJson(win);
     if (isEdit) {
       // Edit mode: patch op + optional Hindustani equivalent append
-      addToBundle('ragas', obj);
       const hindEqVal = win.querySelector('#ef_raga_hind_equiv') ? win.querySelector('#ef_raga_hind_equiv').value : '';
-      if (hindEqVal) {
-        addToBundle('ragas', { op: 'append', id: obj.id, field: 'hindustani_equivalents', value: hindEqVal });
-      }
+      withPatchGroup(() => {
+        addToBundle('ragas', obj, {
+          reopen: { form: 'raga', args: [{ prefill: prefill }] },
+        });
+        if (hindEqVal) {
+          addToBundle('ragas', { op: 'append', id: obj.id, field: 'hindustani_equivalents', value: hindEqVal });
+        }
+      });
       showPatchSuccess(win, obj, {
         headline:        `\u2713 Patch queued for raga <code>${obj.id}</code>`,
         addAnotherLabel: '+ Edit another raga',
         addAnotherFn:    () => buildRagaForm(),
-        undoFn:          () => { baniBundle.ragas.pop(); _updateBundleBtn(); },
       });
     } else {
       // ADR-115: dual-emission for HER creation — emit create + append back-link atomically
@@ -2578,17 +2809,18 @@ function buildRagaForm({ prefill = null } = {}) {
         ? win.querySelector('#ef_raga_carnatic_equiv').value
         : '';
       const dual = obj.tradition === 'hindustani' && !!carnEqVal;
-      if (dual) {
-        addToBundle('ragas', obj);
-        addToBundle('ragas', { op: 'append', id: carnEqVal, field: 'hindustani_equivalents', value: obj.id });
-      } else {
-        addToBundle('ragas', obj);
-      }
+      withPatchGroup(() => {
+        addToBundle('ragas', obj, {
+          reopen: { form: 'raga', args: [{ prefill: obj, forceCreate: true }] },
+        });
+        if (dual) {
+          addToBundle('ragas', { op: 'append', id: carnEqVal, field: 'hindustani_equivalents', value: obj.id });
+        }
+      });
       showPatchSuccess(win, obj, {
         headline:        `\u2713 Added raga <code>${obj.id}</code> to patch`,
         addAnotherLabel: '+ Add another raga',
         addAnotherFn:    () => buildRagaForm(),
-        undoFn: dual ? null : () => { baniBundle.ragas.pop(); _updateBundleBtn(); },
       });
     }
   });
@@ -2936,7 +3168,6 @@ function buildComposerForm() {
       headline: `\u2713 Added composer <code>${obj.id}</code> to patch`,
       addAnotherLabel: '+ Add another composer',
       addAnotherFn:    () => buildComposerForm(),
-      undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
     });
   });
 
@@ -2951,8 +3182,12 @@ function buildComposerForm() {
 
 // ── Composition form ──────────────────────────────────────────────────────────
 
-function buildCompositionForm({ prefill = null } = {}) {
-  const isEdit = !!prefill;
+function buildCompositionForm({ prefill = null, forceCreate = false } = {}) {
+  // ADR-171 §3: `prefill` doubles as the edit-mode discriminator, so reopening a
+  // staged CREATE from the patch cart would otherwise flip the form to edit mode and
+  // emit a patch against an entity that does not exist yet. forceCreate keeps the
+  // prefilled values while staying in create mode.
+  const isEdit = !!prefill && !forceCreate;
   const win = createEntryWindow(isEdit ? 'Edit Composition' : 'Add Composition');
   if (!win) return;
   const body = win.querySelector('.ew-body');
@@ -2990,17 +3225,25 @@ function buildCompositionForm({ prefill = null } = {}) {
   body.appendChild(efSourceFields('ef_comp'));
 
   // ── Pre-fill in edit mode ─────────────────────────────────────────────────
-  if (isEdit) {
+  // ── Pre-fill ───────────────────────────────────────────────────────────────
+  // ADR-171 §3: two separate gates. `prefill` decides whether to POPULATE the
+  // fields; `isEdit` decides whether this form emits a patch. A create reopened
+  // from the patch cart arrives with prefill set and forceCreate true — it must
+  // populate its values but stay a create, and its id must stay editable.
+  if (prefill) {
     titleInp.value = prefill.title || '';
 
     // ID — read-only (node IDs are permanent per CLAUDE.md)
     const idInput = idRow._idInput;
     if (idInput) {
-      idInput.value    = prefill.id;
-      idInput.readOnly = true;
-      idInput.style.opacity = '0.6';
-      const editBtn = idRow.querySelector('.ef-id-edit-btn');
-      if (editBtn) editBtn.style.display = 'none';
+      idInput.value = prefill.id || '';
+      // Existing node ids are immutable (CLAUDE.md); a staged create's is not yet.
+      if (isEdit) {
+        idInput.readOnly = true;
+        idInput.style.opacity = '0.6';
+        const editBtn = idRow.querySelector('.ef-id-edit-btn');
+        if (editBtn) editBtn.style.display = 'none';
+      }
     }
 
     // Composer combobox
@@ -3044,18 +3287,22 @@ function buildCompositionForm({ prefill = null } = {}) {
       srcUrlInp.value = (typeof src === 'string') ? src : (src && src.url ? src.url : '');
     }
 
-    // Hidden prefill-id for generateCompositionJson edit-mode detection
-    const prefillIdInp = document.createElement('input');
-    prefillIdInp.type  = 'hidden';
-    prefillIdInp.id    = 'ef_comp_prefill_id';
-    prefillIdInp.value = prefill.id;
-    body.appendChild(prefillIdInp);
+    // Hidden prefill-id for generateCompositionJson edit-mode detection. Edit mode
+    // only: a reopened staged create must keep emitting a create (ADR-171 §3).
+    if (isEdit) {
+      const prefillIdInp = document.createElement('input');
+      prefillIdInp.type  = 'hidden';
+      prefillIdInp.id    = 'ef_comp_prefill_id';
+      prefillIdInp.value = prefill.id;
+      body.appendChild(prefillIdInp);
+    }
 
-    // Edit-mode note
-    const editNote = document.createElement('p');
-    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
-    editNote.textContent = 'Only changed fields are included in the patch.';
-    body.appendChild(editNote);
+    if (isEdit) {
+      const editNote = document.createElement('p');
+      editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+      editNote.textContent = 'Only changed fields are included in the patch.';
+      body.appendChild(editNote);
+    }
   }
 
   // Footer
@@ -3124,7 +3371,11 @@ function buildCompositionForm({ prefill = null } = {}) {
 
   bundleBtn2.addEventListener('click', () => {
     const obj = generateCompositionJson(win);
-    addToBundle('compositions', obj);
+    addToBundle('compositions', obj, {
+      reopen: { form: 'composition', args: [isEdit
+        ? { prefill: prefill }
+        : { prefill: obj, forceCreate: true }] },
+    });
     const compId = obj.id || (prefill && prefill.id) || '';
     showPatchSuccess(win, obj, {
       headline: isEdit
@@ -3132,7 +3383,6 @@ function buildCompositionForm({ prefill = null } = {}) {
         : `\u2713 Added composition <code>${compId}</code> to patch`,
       addAnotherLabel: isEdit ? '+ Edit another composition' : '+ Add another composition',
       addAnotherFn:    () => buildCompositionForm(),
-      undoFn: () => { baniBundle.compositions.pop(); _updateBundleBtn(); },
     });
   });
 
@@ -3647,7 +3897,9 @@ function buildConcertTrackBlock(formWin, prefill) {
 function buildAddConcertForm(musicianId, opts) {
   opts = opts || {};
   const rec    = opts.recording || null;   // prefill recording object (edit mode)
-  const isEdit = !!rec;
+  // ADR-171 §3: see the note on buildMusicianForm — a reopened staged create must
+  // not become an upsert.
+  const isEdit = !!rec && !opts.forceCreate;
   const node   = musicianId ? (graphData.nodes || []).find(n => n.id === musicianId) : null;
 
   const win = createEntryWindow(isEdit ? 'Edit Concert Recording' : 'Add Concert Recording');
@@ -3906,12 +4158,15 @@ function buildAddConcertForm(musicianId, opts) {
     const obj = collectConcertData();
     if (!obj.title || !obj.url) return;
     if (typeof addToBundle === 'function') {
-      addToBundle('recordings', { op: isEdit ? 'upsert' : 'create', value: obj });
+      addToBundle('recordings', { op: isEdit ? 'upsert' : 'create', value: obj }, {
+        reopen: { form: 'concert', args: [musicianId, isEdit
+          ? { recording: rec }
+          : { recording: obj, forceCreate: true }] },
+      });
       showPatchSuccess(win, obj, {
         headline: isEdit
           ? '✓ Concert recording patch queued'
           : '✓ Added concert recording to patch',
-        undoFn: () => { baniBundle.recordings.pop(); _updateBundleBtn(); },
       });
     }
   });
@@ -3958,10 +4213,10 @@ function showGenericSuccess(win, filename, directory) {
     msg.innerHTML = `
       <strong>\u2713 Added <code>${filename}</code> to patch</strong>
       <p style="margin:8px 0 0;font-size:0.72rem;color:var(--fg-sub);">
-        When done, click <strong>\u2B07 Patch</strong> in the footer to download
-        <code>bani_add_patch.json</code>, then run:
+        When done, click <strong>\u2B07 Patch</strong> to review and download
+        <code>${PATCH_FILENAME}</code>, then run:
       </p>
-      <pre style="margin:6px 0;font-size:0.72rem;">bani-add bani_add_bundle.json\nbani-render</pre>
+      <pre style="margin:6px 0;font-size:0.72rem;">bani-add ${PATCH_FILENAME}\nbani-render</pre>
     `;
   } else {
     msg.innerHTML = `
@@ -4324,18 +4579,18 @@ function _buildCombinedMusicianYouTubeForm() {
 
   bundleBtn.addEventListener('click', () => {
     const item = buildBundleItem();
-    // Edges for new musicians are stored separately in bundle.items.edges
-    if (item._edges && item._edges.length > 0) {
-      item._edges.forEach(e => addToBundle('edges', e));
-    }
+    const _edges = item._edges || [];
     delete item._edges;
-    addToBundle('musicians', item);
+    // Node + its lineage edges are one authored act ⇒ one cart row (ADR-171 §2).
+    withPatchGroup(() => {
+      _edges.forEach(e => addToBundle('edges', e));
+      addToBundle('musicians', item);
+    });
     const bundleId = mode === 'new' ? item.id : item.musician_id;
     showPatchSuccess(win, item, {
       headline: mode === 'new'
         ? `✓ Added musician <code>${bundleId}</code> to patch`
         : `✓ YouTube entries queued for <code>${bundleId}</code>`,
-      undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
     });
   });
 
@@ -5768,18 +6023,24 @@ function openAddCompositionForm({ composerId, musicianId } = {}) {
 
       newBundleBtn.addEventListener('click', () => {
         const compObj = generateCompositionJson(win);
-        // 1. Companion composer record (ADR-109 §3)
-        addToBundle('composers', {
-          op:               'create',
-          id:               companionId,
-          name:             companionLabel,
-          musician_node_id: _musicianNode.id,
-          born:             _musicianNode.born || null,
-          died:             _musicianNode.died || null,
-          sources:          [],
+        // One act, one cart row: the composition references the companion composer,
+        // so removing the composer alone would leave a dangling composer_id.
+        withPatchGroup(() => {
+          // 1. Companion composer record (ADR-109 §3)
+          addToBundle('composers', {
+            op:               'create',
+            id:               companionId,
+            name:             companionLabel,
+            musician_node_id: _musicianNode.id,
+            born:             _musicianNode.born || null,
+            died:             _musicianNode.died || null,
+            sources:          [],
+          });
+          // 2. Composition
+          addToBundle('compositions', compObj, {
+            reopen: { form: 'composition', args: [{ prefill: compObj, forceCreate: true }] },
+          });
         });
-        // 2. Composition
-        addToBundle('compositions', compObj);
 
         // Success screen
         const body = win.querySelector('.ew-body');
@@ -6154,8 +6415,8 @@ function _openGenericEditForm(entityType, id) {
   // ── Reminder: download the patch file ────────────────────────────────────
   const hint = document.createElement('p');
   hint.style.cssText = 'margin:14px 0 4px;font-size:0.73rem;color:var(--fg-muted);line-height:1.4;';
-  hint.innerHTML = 'After staging, click <strong>\u2b07 Patch</strong> to download '
-    + '<code>bani_add_bundle.json</code>, then run <code>bani-add bani_add_bundle.json</code> '
+  hint.innerHTML = 'After staging, click <strong>\u2b07 Patch</strong> to review and download '
+    + '<code>' + PATCH_FILENAME + '</code>, then run <code>bani-add ' + PATCH_FILENAME + '</code> '
     + 'and <code>bani-render</code> to apply.';
   body.appendChild(hint);
 
@@ -6227,8 +6488,12 @@ function openAddRagaFormCarnatic() {
 // Create mode (prefill=null): generates { type:'new', id, label, ... } bundle item.
 // Edit mode (prefill=nodeObj): pre-fills fields, generates { op:'patch', id, fields:{} }.
 // Called by openAddMusicianForm() and openEditMusicianForm(nodeId).
-function buildAddMusicianForm({ prefill = null } = {}) {
-  const isEdit = !!prefill;
+function buildAddMusicianForm({ prefill = null, forceCreate = false, prefillEdges = null } = {}) {
+  // ADR-171 §3: `prefill` doubles as the edit-mode discriminator, so reopening a
+  // staged CREATE from the patch cart would otherwise flip the form to edit mode and
+  // emit a patch against an entity that does not exist yet. forceCreate keeps the
+  // prefilled values while staying in create mode.
+  const isEdit = !!prefill && !forceCreate;
   const win = createEntryWindow(isEdit ? 'Edit Musician' : 'Add Musician');
   if (!win) return;
   const body = win.querySelector('.ew-body');
@@ -6315,16 +6580,23 @@ function buildAddMusicianForm({ prefill = null } = {}) {
   addShishyaBtn.addEventListener('click', () => addEdgeBlock(edgesContainer, 'shishya', win));
 
   // ── Pre-fill in edit mode ─────────────────────────────────────────────────
-  if (isEdit) {
+  // ── Pre-fill ───────────────────────────────────────────────────────────────
+  // ADR-171 §3: two separate gates. `prefill` decides whether to POPULATE the
+  // fields; `isEdit` decides whether this form emits a patch. A create reopened
+  // from the patch cart arrives with prefill set and forceCreate true — it must
+  // populate its values but stay a create, and its id must stay editable.
+  if (prefill) {
     labelInp.value = prefill.label || '';
     const idInput = idRow._idInput;
     if (idInput) {
-      idInput.value    = prefill.id;
-      idInput.readOnly = true;
-      idInput.style.opacity = '0.6';
-      // Hide the "Edit" unlock button — node IDs are permanent (CLAUDE.md)
-      const editBtn = idRow.querySelector('.ef-id-edit-btn');
-      if (editBtn) editBtn.style.display = 'none';
+      idInput.value = prefill.id || '';
+      // Existing node ids are immutable (CLAUDE.md); a staged create's is not yet.
+      if (isEdit) {
+        idInput.readOnly = true;
+        idInput.style.opacity = '0.6';
+        const editBtn = idRow.querySelector('.ef-id-edit-btn');
+        if (editBtn) editBtn.style.display = 'none';
+      }
     }
     if (prefill.born)       bornInp.value  = prefill.born;
     if (prefill.died)       diedInp.value  = prefill.died;
@@ -6341,10 +6613,12 @@ function buildAddMusicianForm({ prefill = null } = {}) {
     carnaticChip.classList.toggle('active', prefillTrad.includes('carnatic'));
     hindustaniChip.classList.toggle('active', prefillTrad.includes('hindustani'));
 
-    // Pre-fill existing edges as read-only display rows
-    const existingEdges = (graphData.edges || []).filter(
-      e => e.source === prefill.id || e.target === prefill.id
-    );
+    // Pre-fill edges. In edit mode these come from the graph; for a staged create
+    // reopened from the cart they come from the ops the group replace just removed,
+    // which would otherwise vanish silently on re-submit (ADR-171 §3).
+    const existingEdges = isEdit
+      ? (graphData.edges || []).filter(e => e.source === prefill.id || e.target === prefill.id)
+      : (Array.isArray(prefillEdges) ? prefillEdges : []);
     existingEdges.forEach(e => {
       const direction  = e.target === prefill.id ? 'guru' : 'shishya';
       const otherId    = direction === 'guru' ? e.source : e.target;
@@ -6355,13 +6629,14 @@ function buildAddMusicianForm({ prefill = null } = {}) {
         confidence: e.confidence,
         source_url: e.source_url,
         note:       e.note,
-      });
+      }, { editable: !isEdit });
     });
-    // Edit-mode note
-    const editNote = document.createElement('p');
-    editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
-    editNote.textContent = 'Only changed fields are included in the patch item.';
-    body.appendChild(editNote);
+    if (isEdit) {
+      const editNote = document.createElement('p');
+      editNote.style.cssText = 'font-size:0.68rem;color:var(--fg-muted);margin:4px 0 8px;';
+      editNote.textContent = 'Only changed fields are included in the patch item.';
+      body.appendChild(editNote);
+    }
   }
 
   // ── Footer ────────────────────────────────────────────────────────────────
@@ -6512,14 +6787,20 @@ function buildAddMusicianForm({ prefill = null } = {}) {
     const newEdges = item._edges || [];
     delete item._edges;
 
-    // Always route new edges to bundle.items.edges (works for both new and edit)
-    newEdges.forEach(e => addToBundle('edges', e));
-
     const musId = item.id || (isEdit ? prefill.id : '');
-    // For edit mode: only add musician patch item if scalar fields actually changed
-    if (!isEdit || Object.keys(item.fields || {}).length > 0) {
-      addToBundle('musicians', item);
-    }
+    // Always route new edges to bundle.items.edges (works for both new and edit).
+    // Grouped so the cart shows one row for node + edges (ADR-171 §2).
+    withPatchGroup(() => {
+      newEdges.forEach(e => addToBundle('edges', e));
+      // For edit mode: only add musician patch item if scalar fields actually changed
+      if (!isEdit || Object.keys(item.fields || {}).length > 0) {
+        addToBundle('musicians', item, {
+          reopen: { form: 'add_musician', args: [isEdit
+            ? { prefill: prefill }
+            : { prefill: item, forceCreate: true, prefillEdges: newEdges }] },
+        });
+      }
+    });
 
     // Mirror new musician into graphData so subsequent forms (guru/shishya dropdowns,
     // accompanist selectors, existing-musician picker) see this entry immediately —
@@ -6546,14 +6827,10 @@ function buildAddMusicianForm({ prefill = null } = {}) {
     const addMusHeadline = isEdit
       ? `✓ Patch queued for <code>${musId}</code>${edgeNote2}`
       : `✓ Added <code>${musId}</code> to patch`;
-    const canUndo = newEdges.length === 0;
     showPatchSuccess(win, item, {
       headline:        addMusHeadline,
       addAnotherLabel: isEdit ? '+ Edit another musician' : '+ Add another musician',
       addAnotherFn:    () => buildAddMusicianForm(),
-      undoFn: (canUndo && (!isEdit || Object.keys(item.fields || {}).length > 0))
-        ? () => { baniBundle.musicians.pop(); _updateBundleBtn(); }
-        : null,
     });
   });
 
@@ -6813,10 +7090,11 @@ function buildFocusedYouTubeForm(musicianId, opts) {
     const effId = getEffectiveMusicianId();
     if (typeof addToBundle === 'function') {
       const ytBundleItem = { op: 'append', id: effId, array: 'youtube', value: data.youtube };
-      addToBundle('musicians', ytBundleItem);
+      addToBundle('musicians', ytBundleItem, {
+        reopen: { form: 'focused_youtube', args: [effId, { prefill: data.youtube }] },
+      });
       showPatchSuccess(win, ytBundleItem, {
         headline: `✓ YouTube entries queued for <code>${effId}</code>`,
-        undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
       });
     }
   });
@@ -7249,12 +7527,13 @@ function buildFocusedLecdemForm(musicianId, prefillSubjects) {
       return;
     }
     const resolvedId = musicianId || (musCombo_ && musCombo_.getValue()) || '';
-    addToBundle('musicians', { op: 'append', id: resolvedId, array: 'youtube', value: lecdem });
+    addToBundle('musicians', { op: 'append', id: resolvedId, array: 'youtube', value: lecdem }, {
+      reopen: { form: 'focused_lecdem', args: [resolvedId] },
+    });
     showPatchSuccess(win, lecdem, {
       headline: `✓ Lecdem queued for <code>${resolvedId}</code>`,
       addAnotherLabel: '+ Add another lecdem',
       addAnotherFn: () => buildFocusedLecdemForm(resolvedId),
-      undoFn: () => { baniBundle.musicians.pop(); _updateBundleBtn(); },
     });
   });
 }
@@ -7462,10 +7741,12 @@ function openAddYouTubeFormForComposition({ compositionId, ragaId, compositionTi
     const items = bundleItems();
     if (!items.length) return;
     if (typeof addToBundle === 'function') {
-      items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
+      withPatchGroup(() => {
+        items.forEach(item => addToBundle('musicians',
+          { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
+      });
       showPatchSuccess(win, items.length === 1 ? items[0] : items, {
         headline: `✓ Added ${items.length} YouTube entr${items.length > 1 ? 'ies' : 'y'} to patch`,
-        undoFn: () => { baniBundle.musicians.splice(-items.length, items.length); _updateBundleBtn(); },
       });
     }
   });
@@ -7626,10 +7907,12 @@ function openAddYouTubeFormForRaga({ ragaId, ragaLabel } = {}) {
     const items = bundleItems();
     if (!items.length) return;
     if (typeof addToBundle === 'function') {
-      items.forEach(item => addToBundle('musicians', { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
+      withPatchGroup(() => {
+        items.forEach(item => addToBundle('musicians',
+          { op: 'append', id: item.musician_id, array: 'youtube', value: item.youtube }));
+      });
       showPatchSuccess(win, items.length === 1 ? items[0] : items, {
         headline: `✓ Added ${items.length} YouTube entr${items.length > 1 ? 'ies' : 'y'} to patch`,
-        undoFn: () => { baniBundle.musicians.splice(-items.length, items.length); _updateBundleBtn(); },
       });
     }
   });

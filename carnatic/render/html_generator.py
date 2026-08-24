@@ -357,6 +357,7 @@ def render_html(
     bani_flow    = _load("bani_flow.js")
     search       = _load("search.js")
     entry_forms  = _load("entry_forms.js")
+    patch_cart   = _load("patch_cart.js")     # ADR-171: patch review surface
     roles_js     = _load("roles.js")
     edit_form_spec = _load("edit_form_spec.js")  # ADR-143 §4: chip Edit-form metadata
     chip_dblclick = _load("chip_dblclick.js")    # ADR-142 Phase δ: dblclick chip → openEditForm
@@ -435,6 +436,7 @@ def render_html(
         roles_js,      # ← before entry_forms: defines window.PERFORMER_ROLES (ADR-071)
         edit_form_spec,  # ← ADR-143 §4: defines window.editFormSpec for the chip Edit form
         entry_forms,   # ← needs graphData + wireDrag/nextSpawnPosition/topZ
+        patch_cart,    # ← ADR-171: needs baniBundle/_patchMeta/createEntryWindow/topZ
         chip_dblclick, # ← ADR-142 δ: needs openEditForm from entry_forms.js
         empty_tut,     # ← ADR-086: empty-panel tutorials; needs helpEmptyPanels + bani_flow + media_player
         mobile,        # ← exposes peekBottomSheet/dismissBottomSheet globals
