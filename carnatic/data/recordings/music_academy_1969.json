@@ -1,0 +1,168 @@
+{
+  "id": "music_academy_1969",
+  "video_id": "Cq1CqpOCGlw",
+  "url": "https://youtu.be/Cq1CqpOCGlw",
+  "title": "Music Academy 1969",
+  "date": "1969",
+  "venue": "Music Academy, Chennai",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/Cq1CqpOCGlw",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ramnad_krishnan",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "ms_gopalakrishnan",
+          "role": "violin"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "ninnekori",
+          "raga_id": "kaanada",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "08:31",
+          "offset_seconds": 511,
+          "composition_id": "thyagaraja_palaya",
+          "raga_id": "gowla",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "15:19",
+          "offset_seconds": 919,
+          "composition_id": "bhuvini_daasudane",
+          "raga_id": "sriranjini",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "28:39",
+          "offset_seconds": 1719,
+          "composition_id": "arunachala_natham",
+          "raga_id": "saranga",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "43:28",
+          "offset_seconds": 2608,
+          "composition_id": "ramakatha",
+          "raga_id": "madhyamavati",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:32:47",
+          "offset_seconds": 5567,
+          "composition_id": "smarane_sukamu",
+          "raga_id": "janaranjani",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:43:30",
+          "offset_seconds": 6210,
+          "composition_id": "mayamma",
+          "raga_id": "ahiri",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:48:57",
+          "offset_seconds": 6537,
+          "composition_id": "kanugonu",
+          "raga_id": "nayaki",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:53:57",
+          "offset_seconds": 6837,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Viruttam (Ragamalika)"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "02:18:19",
+          "offset_seconds": 8299,
+          "composition_id": "govardhana_giridhara",
+          "raga_id": "darbari_kanada",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:22:22",
+          "offset_seconds": 8542,
+          "composition_id": null,
+          "raga_id": "asaveri",
+          "tala": null,
+          "display_title": "Uradurai podha"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:24:00",
+          "offset_seconds": 8640,
+          "composition_id": "apudu_manasu",
+          "raga_id": "khamas",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:27:46",
+          "offset_seconds": 8866,
+          "composition_id": "vandarulvai_muruga",
+          "raga_id": "devamanohari",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:30:18",
+          "offset_seconds": 9018,
+          "composition_id": "adhi_neepai_marulu",
+          "raga_id": "yamuna_kalyani",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "02:32:11",
+          "offset_seconds": 9131,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": null,
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}
