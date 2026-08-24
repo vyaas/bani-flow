@@ -16,5 +16,30 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/TO_72jy62Ww",
+      "label": "RTP",
+      "raga_id": "sriraga"
+    },
+    {
+      "url": "https://youtu.be/wuMfMjw9v2U",
+      "label": "Pakkala Nilabadi · Kharaharapriya",
+      "composition_id": "pakkala_nilabadi",
+      "raga_id": "kharaharapriya"
+    },
+    {
+      "url": "https://youtu.be/PVzqtrD0-b0",
+      "label": "Manasaa Etulortun · Malayamarutham · rupakam",
+      "composition_id": "manasaa_etulortun",
+      "raga_id": "malayamarutham",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/eKotVpfP2Fc",
+      "label": "Intha Chalamu · Begada",
+      "composition_id": "intha_chalamu",
+      "raga_id": "begada"
+    }
+  ]
 }

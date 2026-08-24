@@ -1,0 +1,14 @@
+{
+  "id": "malayamarutham",
+  "name": "Malayamarutham",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "chakravakam",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Malayamarutam",
+      "label": "Wikipedia"
+    }
+  ]
+}
