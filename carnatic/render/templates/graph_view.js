@@ -780,13 +780,16 @@ function scheduleCyChipSync() {
 // ── zoom-tiered labels (word-cloud / cartographic style) ──────────────────────
 // Tier-based show/hide of overlay chips. Mirrors the original canvas-label
 // thresholds so the perceived label density is unchanged.
+// Name-chip visibility. Despite the name this no longer consults zoom: both
+// modes are focus-driven, so `label_tier` and cy.zoom() are unused here. Chip
+// *scaling* with zoom still happens in _syncOverlayChipPositions().
 function applyZoomLabels() {
-  const z = cy.zoom();
   const defaultView = _isDefaultView();
 
   // Use _currentPanelNodeId (set by ALL selectNode paths: canvas tap, chip click,
   // history nav, search) rather than cy ':selected' (only set by canvas taps).
-  const focusedId = defaultView ? _currentPanelNodeId : null;
+  // Needed in BOTH modes now: filter mode is also focus-driven (see `show`).
+  const focusedId = _currentPanelNodeId;
   const neighborIds = new Set();
   if (focusedId) {
     const focused = cy.getElementById(focusedId);
@@ -798,27 +801,25 @@ function applyZoomLabels() {
   cy.nodes().forEach(n => {
     const chip = _cyChipMap.get(n.id());
     if (!chip) return;
-    const tier       = n.data('label_tier');
     const selected   = n.selected();
     const isTrinity  = TRINITY_IDS.has(n.id());
     const isAnchor   = isTrinity || n.id() === 'vina_dhanammal';
     const isFocused  = n.id() === focusedId;
     const isNeighbor = neighborIds.has(n.id());
 
-    // Default (no filters): show Trinity + Vina Dhanammal, the focused node, and its direct neighbors.
-    // Filtered / zoomed: use tier-based zoom thresholds, but only for nodes that
-    // actually survived the filter. applyChipFilters() runs first and owns
-    // `chip-faded` in filter mode, so it is the authority on what passed.
-    // Without this gate every musician's name rendered — merely dimmed to 0.18 —
-    // which read as clutter rather than as "filtered out".
-    const passesFilter = defaultView || !n.hasClass('chip-faded');
+    // Default (no filters): show Trinity + Vina Dhanammal, the focused node, and
+    // its direct neighbors.
+    //
+    // Filter mode: names start hidden and are revealed by clicking. A filtered
+    // set can run to 141 musicians (vocal), and tier/zoom thresholds could not
+    // keep that legible — so the only names shown are the focused node's and
+    // those of everything it connects to. Connections are named regardless of
+    // whether they match the filter: clicking a violinist should tell you who
+    // their guru was even if the guru sang. Their discs stay dimmed — filter
+    // membership is still what `applyChipFilters()` expresses through the fill.
     const show = defaultView
       ? (isAnchor || isFocused || isNeighbor)
-      : (selected ||
-         (passesFilter &&
-          (tier === 0 ||
-           (tier === 1 && z >= 0.35) ||
-           (tier === 2 && z >= 0.60))));
+      : (selected || isFocused || isNeighbor);
     chip.classList.toggle('chip-hidden', !show);
 
     // Default view only: dim every node that is not an anchor (Trinity or Vina Dhanammal),
