@@ -45,6 +45,7 @@ INSTRUMENTS: dict[str, dict] = {
     # ── Carnatic ─────────────────────────────────────────────────────────────
     "vocal": {
         "label": "Vocal", "order": 10, "tradition": "carnatic", "filter": True,
+        "box": (1.8, 1.1, 21.5, 21.6),
         # Head in profile with two filled crescents radiating to the right.
         # Deliberately NOT a microphone — the mic glyph is already spoken for by
         # the "Concerts" neutral chip (base.html:2290) and would collide.
@@ -60,6 +61,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "violin": {
         "label": "Violin", "order": 20, "tradition": "carnatic", "filter": True,
+        "box": (7.0, 1.5, 17.0, 22.6),
         # Waisted body (the load-bearing cue at small size), neck, volute scroll.
         "svg": (
             "<path d='M12 9.6 C14.6 9.6 16.6 11.2 16.6 13.2 "
@@ -75,6 +77,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "veena": {
         "label": "Veena", "order": 30, "tradition": "carnatic", "filter": True,
+        "box": (2.3, 1.5, 22.8, 21.6),
         # Large resonator gourd low-left, diagonal neck up-right to a yali knob,
         # small tumba slung beneath the neck.
         "svg": (
@@ -86,6 +89,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "flute": {
         "label": "Flute", "order": 40, "tradition": "carnatic", "filter": True,
+        "box": (1.55, 5.55, 22.45, 20.05),
         # Tilted tube; blowhole + four finger holes punched through via evenodd
         # (same trick as icon-tanpura's gourd rim).
         "svg": (
@@ -100,6 +104,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "mridangam": {
         "label": "Mridangam", "order": 50, "tradition": "carnatic", "filter": True,
+        "box": (2.0, 4.4, 22.0, 19.6),
         # Horizontal barrel bulging at the waist between two asymmetric heads
         # (thoppi left is the larger). The heads must stand clearly proud of the
         # barrel or the whole thing reads as a rounded rectangle.
@@ -112,6 +117,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "ghatam": {
         "label": "Ghatam", "order": 60, "tradition": "carnatic", "filter": True,
+        "box": (3.1, 3.0, 20.9, 22.3),
         # Wide-bellied clay pot narrowing to a short neck and flared lip.
         "svg": (
             "<path d='M9.6 4.4 L14.4 4.4 L14.4 6.6 C18.6 7.9 20.9 11.4 20.9 15.0 "
@@ -122,6 +128,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "khanjira": {
         "label": "Khanjira", "order": 70, "tradition": "carnatic", "filter": True,
+        "box": (1.8, 3.8, 21.35, 21.0),
         # Circular frame drum as an open ring (evenodd), with a pair of jingle
         # discs set into the rim at the right.
         "svg": (
@@ -134,6 +141,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "gottuvadyam": {
         "label": "Gottuvadyam", "order": 80, "tradition": "carnatic", "filter": True,
+        "box": (2.3, 1.5, 22.8, 21.6),
         # ADR-172 Open Q1 — DEFERRED: intentionally identical to `veena`. A
         # fretless slide-bar differentiator that survives 11px is real design
         # work for two musicians; the separate key already carries the semantic
@@ -147,6 +155,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "bharatanatyam": {
         "label": "Bharatanatyam", "order": 90, "tradition": "carnatic", "filter": True,
+        "box": (4.4, 1.2, 19.4, 22.4),
         # Dancer in araimandi: arms out with elbows raised, flared costume skirt,
         # feet turned out. The skirt is what makes it read as a dancer rather
         # than a generic stick figure at small size.
@@ -164,6 +173,7 @@ INSTRUMENTS: dict[str, dict] = {
     # ── Hindustani (ADR-114) ─────────────────────────────────────────────────
     "sitar": {
         "label": "Sitar", "order": 100, "tradition": "hindustani", "filter": True,
+        "box": (5.4, 2.0, 19.0, 22.8),
         # Deep gourd body, long straight vertical neck, tumba near the top —
         # the vertical neck + high tumba is what separates it from `veena`,
         # whose neck runs diagonally from a low-left gourd.
@@ -177,6 +187,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "sarod": {
         "label": "Sarod", "order": 110, "tradition": "hindustani", "filter": True,
+        "box": (4.7, 3.0, 19.3, 22.8),
         # Broad fretless fingerboard (metal plate punched through via evenodd)
         # over a wide rounded body, with side tuning pegs. The short broad plate
         # + pegs is the cue against `sitar`'s narrow neck and high tumba.
@@ -194,6 +205,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "bansuri": {
         "label": "Bansuri", "order": 120, "tradition": "hindustani", "filter": True,
+        "box": (1.55, 5.55, 22.45, 20.05),
         # ADR-172 Open Q1 — DEFERRED: intentionally identical to `flute`. See the
         # note on `gottuvadyam`; binding rings at 11px are the same problem.
         "svg": (
@@ -208,6 +220,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "tabla": {
         "label": "Tabla", "order": 130, "tradition": "hindustani", "filter": False,
+        "box": (3.2, 8.6, 20.8, 22.3),
         # The pair: squat wide bayan left, narrow tall dayan right, each with its
         # syahi punched through (evenodd).
         "svg": (
@@ -223,6 +236,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "sarangi": {
         "label": "Sarangi", "order": 140, "tradition": "hindustani", "filter": False,
+        "box": (2.6, 3.0, 21.7, 22.6),
         # Boxy waisted body under a broad stubby neck, crossed by a bow — the bow
         # is what marks it as bowed rather than plucked.
         "svg": (
@@ -235,6 +249,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     "surbahar": {
         "label": "Surbahar", "order": 150, "tradition": "hindustani", "filter": False,
+        "box": (4.6, 1.8, 19.4, 23.0),
         # A bass sitar: broader gourd, longer fretted neck, no upper tumba. The
         # punched frets separate it from `sitar`'s plain neck.
         "svg": (
@@ -251,6 +266,7 @@ INSTRUMENTS: dict[str, dict] = {
     # ── Catch-alls ───────────────────────────────────────────────────────────
     "other": {
         "label": "Other", "order": 900, "tradition": None, "filter": True,
+        "box": (5.8, 2.4, 18.2, 22.6),
         # Generic round-bodied plucked lute — recognisably "an instrument"
         # without claiming to be any particular one.
         "svg": (
@@ -262,6 +278,7 @@ INSTRUMENTS: dict[str, dict] = {
     },
     FALLBACK_KEY: {
         "label": "Unknown", "order": 990, "tradition": None, "filter": False,
+        "box": (3.6, 3.6, 20.4, 20.4),
         # Neutral open ring. Musicians with `instrument: null` previously fell
         # through to "circle = vocal", which actively asserted something false.
         "svg": (
@@ -273,6 +290,65 @@ INSTRUMENTS: dict[str, dict] = {
 }
 
 SYMBOL_ID_PREFIX = "icon-instr-"
+CAP_SYMBOL_ID = "icon-scholar-cap"
+
+# ── Scholar's cap (ADR-173) ───────────────────────────────────────────────────
+# Mortarboard with tassel — the same artwork the lecdem chip already uses
+# (base.html .lecdem-chip::before), so "scholarly" reads consistently across the
+# UI. Worn by any musician with >=1 composition: in Carnatic music composing is
+# a scholarly act, and it is not tied to an instrument — vocalists, violinists,
+# veena players and flautists all compose.
+MORTARBOARD_SVG = (
+    "<path d='M12 3 1 9l11 6 9-4.91V17h2V9zM5 13.18v4L12 21l7-3.82v-4L12 17z'/>"
+)
+MORTARBOARD_BOX = (1.0, 3.0, 23.0, 21.0)
+
+# ── Layout: every glyph is normalised into the same optical box ───────────────
+# Hand-drawn coordinates cannot be trusted to frame consistently: measured ink
+# spans ran from 16.8 to 21.2 units of the 24-unit box, and narrow glyphs
+# (violin 10 wide, sitar 13.6) read as "barely visible" beside a full-width
+# ghatam. So each glyph carries its measured ink `box` and is mapped into a
+# fixed target rect at emit time, preserving aspect and centred. Framing is
+# therefore uniform by construction rather than by careful drawing.
+#
+# Targets are (x, y, w, h) in the 24x24 canvas.
+# The composer pair deliberately spans the SAME vertical band as a plain glyph
+# (1.2..22.4 vs 1.6..22.4). Letting the composite run edge-to-edge made composer
+# nodes read ~9% larger than their neighbours and crowded the node's border ring.
+_PLAIN_TARGET      = (1.6, 1.6, 20.8, 20.8)     # 87% of the box, centred
+_COMPOSER_CAP      = (7.2, 1.2, 9.6, 6.8)       # cap centred across the top
+_COMPOSER_INSTR    = (2.2, 8.2, 19.6, 14.2)     # instrument sits below the cap
+
+
+def _fit(box: tuple[float, float, float, float],
+         tx: float, ty: float, tw: float, th: float) -> str:
+    """
+    SVG transform mapping `box` (an ink bounding box) into the target rect,
+    scaled on its longest side so aspect is preserved, and centred.
+    """
+    x0, y0, x1, y1 = box
+    scale = min(tw, th) / max(x1 - x0, y1 - y0)
+    cx, cy = tx + tw / 2, ty + th / 2
+    icx, icy = (x0 + x1) / 2, (y0 + y1) / 2
+    return f"translate({cx - scale * icx:.4f} {cy - scale * icy:.4f}) scale({scale:.5f})"
+
+
+def glyph_markup(key: str | None, *, composer: bool = False) -> str:
+    """
+    Normalised inner markup for `key` on a 24x24 canvas.
+
+    `composer=True` shrinks the instrument into the lower band and sets a
+    mortarboard across the top. Only used where there is room for it — at 11-13px
+    the composite turns to mush, so chips wear the cap as a separate marker
+    (see makeInstrBadge in graph_view.js) rather than a composite glyph.
+    """
+    entry = INSTRUMENTS.get(key or "", INSTRUMENTS[FALLBACK_KEY])
+    if not composer:
+        return f"<g transform='{_fit(entry['box'], *_PLAIN_TARGET)}'>{entry['svg']}</g>"
+    return (
+        f"<g transform='{_fit(entry['box'], *_COMPOSER_INSTR)}'>{entry['svg']}</g>"
+        f"<g transform='{_fit(MORTARBOARD_BOX, *_COMPOSER_CAP)}'>{MORTARBOARD_SVG}</g>"
+    )
 
 
 def symbol_id(key: str) -> str:
@@ -287,13 +363,24 @@ def ordered_keys(*, filterable: bool = False) -> list[str]:
 
 
 def sprite_symbols(indent: str = "  ") -> str:
-    """<symbol> defs for every glyph, for base.html's ADR-079 inline sprite."""
-    out = []
-    for key in ordered_keys():
-        out.append(
-            f"{indent}<symbol id=\"{symbol_id(key)}\" viewBox=\"0 0 24 24\">"
-            f"{INSTRUMENTS[key]['svg']}</symbol>"
-        )
+    """
+    <symbol> defs for base.html's ADR-079 inline sprite: one per instrument plus
+    the standalone scholar's cap.
+
+    Composite composer glyphs are deliberately NOT emitted here — the DOM wears
+    instrument and cap as two elements, so the composite is only ever needed by
+    icon_data_uri() for canvas nodes.
+    """
+    out = [
+        f"{indent}<symbol id=\"{symbol_id(key)}\" viewBox=\"0 0 24 24\">"
+        f"{glyph_markup(key)}</symbol>"
+        for key in ordered_keys()
+    ]
+    out.append(
+        f"{indent}<symbol id=\"{CAP_SYMBOL_ID}\" viewBox=\"0 0 24 24\">"
+        f"<g transform='{_fit(MORTARBOARD_BOX, *_PLAIN_TARGET)}'>{MORTARBOARD_SVG}</g>"
+        f"</symbol>"
+    )
     return "\n".join(out)
 
 
@@ -301,9 +388,9 @@ def js_registry() -> str:
     """
     `const INSTRUMENTS = {...}` for the JS surfaces.
 
-    Deliberately omits `svg`: JS renders glyphs via <use href="#icon-instr-KEY">
-    against the injected sprite, so path data exists exactly once in the built
-    artifact and cannot drift (ADR-172 §2).
+    Deliberately omits `svg` and `box`: JS renders glyphs via
+    <use href="#icon-instr-KEY"> against the injected sprite, so geometry exists
+    exactly once in the built artifact and cannot drift (ADR-172 §2).
     """
     payload = {
         key: {
@@ -315,25 +402,30 @@ def js_registry() -> str:
         for key, v in INSTRUMENTS.items()
     }
     return (
-        "// ADR-172: generated from carnatic/render/instruments.py — do not edit.\n"
+        "// ADR-172/ADR-173: generated from carnatic/render/instruments.py — do not edit.\n"
         f"const INSTRUMENTS = {json.dumps(payload, indent=2, sort_keys=False)};\n"
         f"const INSTRUMENT_FALLBACK = {json.dumps(FALLBACK_KEY)};\n"
         f"const INSTRUMENT_SYMBOL_PREFIX = {json.dumps(SYMBOL_ID_PREFIX)};\n"
+        f"const SCHOLAR_CAP_SYMBOL = {json.dumps(CAP_SYMBOL_ID)};\n"
     )
 
 
-def icon_data_uri(key: str | None, colour: str) -> str:
+def icon_data_uri(key: str | None, colour: str, *, composer: bool = False) -> str:
     """
     Base64 SVG data URI of `key`'s glyph filled with `colour`.
 
-    Base64 (not utf8) matching _favicon_data_uri() in html_generator.py: the
-    colour is a `#rrggbb` literal, and a raw `#` inside a data: URI is read as
-    a fragment delimiter — cytoscape would truncate the image silently.
+    Two things here are load-bearing for cytoscape:
+
+    * **Explicit width/height.** An SVG carrying only a viewBox has no intrinsic
+      size, so a browser falls back to the 300x150 default replaced-element box.
+      Cytoscape then scales that 2:1 letterbox rather than the glyph — which is
+      what made node icons look off-centre and inconsistently zoomed.
+    * **base64, not `;utf8,`.** The `#` of a `#rrggbb` fill is read as a fragment
+      delimiter inside a data: URI and truncates the image.
     """
-    entry = INSTRUMENTS.get(key or "", INSTRUMENTS[FALLBACK_KEY])
     svg = (
-        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' "
-        f"fill='{colour}'>{entry['svg']}</svg>"
+        "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' "
+        f"viewBox='0 0 24 24' fill='{colour}'>{glyph_markup(key, composer=composer)}</svg>"
     )
     b64 = base64.b64encode(svg.encode()).decode()
     return f"data:image/svg+xml;base64,{b64}"

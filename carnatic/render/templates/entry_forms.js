@@ -1696,7 +1696,8 @@ function buildEdgeChipSection(containerEl, direction, formWin) {
     chip.title = 'Double-click to edit edge details';
     chip._edgeData = { ...data };
     if (otherNode && otherNode.instrument && typeof makeInstrBadge === 'function') {
-      chip.appendChild(makeInstrBadge(otherNode.instrument, 11));
+      chip.appendChild(makeInstrBadge(otherNode.instrument, 11,
+                                      { composer: !!otherNode.is_composer }));
     }
 
     const nameSpan = document.createElement('span');
@@ -3911,7 +3912,8 @@ function buildAddConcertForm(musicianId, opts) {
     musChip.style.setProperty('--chip-era-bg', tint.bg);
     musChip.style.setProperty('--chip-era-border', tint.border);
     if (node.instrument && typeof makeInstrBadge === 'function') {
-      musChip.appendChild(makeInstrBadge(node.instrument));
+      musChip.appendChild(makeInstrBadge(node.instrument, 13,
+                                         { composer: !!node.is_composer }));
     }
     musChip.appendChild(document.createTextNode(node.label || musicianId));
     musRow.appendChild(musLbl);
@@ -5546,7 +5548,8 @@ function buildLecdemEditForm(ref, nodeId) {
     musChip.style.setProperty('--chip-era-bg', tint.bg);
     musChip.style.setProperty('--chip-era-border', tint.border);
     if (node.instrument && typeof makeInstrBadge === 'function') {
-      musChip.appendChild(makeInstrBadge(node.instrument));
+      musChip.appendChild(makeInstrBadge(node.instrument, 13,
+                                         { composer: !!node.is_composer }));
     }
     musChip.appendChild(document.createTextNode(node.label));
   } else {
@@ -6943,7 +6946,8 @@ function buildFocusedYouTubeForm(musicianId, opts) {
     musChip.style.setProperty('--chip-era-bg', tint.bg);
     musChip.style.setProperty('--chip-era-border', tint.border);
     if (node.instrument && typeof makeInstrBadge === 'function') {
-      musChip.appendChild(makeInstrBadge(node.instrument));
+      musChip.appendChild(makeInstrBadge(node.instrument, 13,
+                                         { composer: !!node.is_composer }));
     }
     musChip.appendChild(document.createTextNode(node.label || musicianId));
     musRow.appendChild(musLabel);
@@ -7143,7 +7147,8 @@ function buildFocusedLecdemForm(musicianId, prefillSubjects) {
     musicianChip.style.setProperty('--chip-era-bg', tint.bg);
     musicianChip.style.setProperty('--chip-era-border', tint.border);
     if (node.instrument && typeof makeInstrBadge === 'function') {
-      musicianChip.appendChild(makeInstrBadge(node.instrument));
+      musicianChip.appendChild(makeInstrBadge(node.instrument, 13,
+                                              { composer: !!node.is_composer }));
     }
     musicianChip.appendChild(document.createTextNode(node.label));
     musRow.appendChild(musLabel);
@@ -7400,7 +7405,8 @@ function buildFocusedLecdemForm(musicianId, prefillSubjects) {
         chip.style.setProperty('--chip-era-bg', tint.bg);
         chip.style.setProperty('--chip-era-border', tint.border);
         if (perfNode.instrument && typeof makeInstrBadge === 'function') {
-          chip.appendChild(makeInstrBadge(perfNode.instrument));
+          chip.appendChild(makeInstrBadge(perfNode.instrument, 13,
+                                          { composer: !!perfNode.is_composer }));
         }
       }
       chip.appendChild(document.createTextNode(label + ' ×'));

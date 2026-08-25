@@ -633,7 +633,7 @@ function _buildMusicianChipForFooter(nodeId, artistName) {
   // ADR-069: instrument badge
   if (nodeId && typeof makeInstrBadge === 'function') {
     const instrKey = node ? node.data('instrument') : null;
-    if (instrKey) chip.appendChild(makeInstrBadge(instrKey));
+    if (instrKey) chip.appendChild(makeInstrBadge(instrKey, 13, { composer: !!node.data('is_composer') }));
   }
   chip.appendChild(document.createTextNode(name));
   chip.title = name + ' — Open Musician panel';
@@ -2279,7 +2279,7 @@ function _buildSubjectChips(subjects) {
     // ADR-172: instrument glyph on the lecdem-subject chip.
     const _sInstr = (node && node.data) ? (node.data('instrument') || null) : null;
     if (_sInstr && typeof makeInstrBadge === 'function') {
-      mchip.insertBefore(makeInstrBadge(_sInstr), mchip.firstChild);
+      mchip.insertBefore(makeInstrBadge(_sInstr, 13, { composer: !!node.data('is_composer') }), mchip.firstChild);
     }
     mchip.title = name + ' — Open Musician panel';
     // ADR-142 §1: lecdem-subject musician chip is an entity chip
@@ -2409,7 +2409,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     // ADR-069: instrument badge
     if (pf.musicianId && typeof makeInstrBadge === 'function') {
       const instrKey = _pfNode ? _pfNode.data('instrument') : null;
-      if (instrKey) chip.appendChild(makeInstrBadge(instrKey, 11));
+      if (instrKey) chip.appendChild(makeInstrBadge(instrKey, 11,
+                                                   { composer: !!_pfNode.data('is_composer') }));
     }
     chip.appendChild(document.createTextNode(pf.label));
     chip.title = pf.musicianId ? pf.label + ' — Open Musician panel' : pf.label;
@@ -3910,7 +3911,8 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
   // ADR-172: instrument glyph on the lecturer chip.
   const _lInstr = (_lNodeData && _lNodeData.data) ? (_lNodeData.data('instrument') || null) : null;
   if (_lInstr && typeof makeInstrBadge === 'function') {
-    chip.insertBefore(makeInstrBadge(_lInstr), chip.firstChild);
+    chip.insertBefore(makeInstrBadge(_lInstr, 13,
+                                     { composer: !!_lNodeData.data('is_composer') }), chip.firstChild);
   }
 
   chip.addEventListener('click', e => {

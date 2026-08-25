@@ -32,9 +32,6 @@ def build_elements(graph: dict, listenable_set: set | None = None,
         # dark fallback (labelOutline) for non-musician nodes (no 'era' key).
         _era_raw = node.get("era")
         _label_chip = ERA_COLORS.get(_era_raw, TOKENS["labelOutline"]) if _era_raw else TOKENS["labelOutline"]
-        # ADR-172: near-black glyph holds contrast against all six mid-tone
-        # era fills, so no per-era special case is needed.
-        icon     = icon_data_uri(instr, TOKENS["bgDeep"])
         base     = NODE_SIZES.get(era, 44)
         deg      = degree.get(node["id"], 0)
         size     = base + int((deg / max_degree) * 28)
@@ -91,6 +88,10 @@ def build_elements(graph: dict, listenable_set: set | None = None,
         is_listenable = bool(listenable_set is None or node_id_local in listenable_set)
         is_composer = bool(composer_musician_ids and node_id_local in composer_musician_ids)
         composer_id_local = node_id_local if is_composer else None
+        # ADR-172: near-black glyph holds contrast against all six mid-tone era
+        # fills, so no per-era special case is needed.
+        # ADR-173: composers wear a mortarboard above the instrument.
+        icon = icon_data_uri(instr, TOKENS["bgDeep"], composer=is_composer)
         # ADR-114: flag nodes whose traditions include "hindustani"
         traditions = node.get("traditions", ["carnatic"])
         is_hindustani = 1 if "hindustani" in traditions else 0

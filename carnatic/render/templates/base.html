@@ -255,6 +255,17 @@
   }
   .chip-instr-icon svg { display: block; width: 100%; height: 100%; }
   .chip-instr-icon svg use { fill: var(--fg-muted); }
+  /* ADR-173: scholar's cap sits beside the instrument glyph on composer chips.
+     Slightly brighter than the instrument mark so it reads as an accolade
+     rather than a second instrument. */
+  .chip-instr-group { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .chip-scholar-cap {
+    display: inline-flex; align-items: center; flex-shrink: 0;
+    width: 11px; height: 11px; opacity: 0.9;
+  }
+  .chip-scholar-cap svg { display: block; width: 100%; height: 100%; }
+  .chip-scholar-cap svg use { fill: var(--fg-sub); }
+  .chip-secondary .chip-scholar-cap { width: 9px; height: 9px; }
   .chip-secondary .chip-instr-icon { width: 11px; height: 11px; }
 
   /* ── scope label ── */

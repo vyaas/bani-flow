@@ -174,15 +174,17 @@ const cy = cytoscape({
         'background-color':   'data(color)',
         // ADR-172: geometry no longer encodes instrument — every musician node
         // is a circle in its era colour, with the instrument glyph overlaid
-        // centred. `background-clip: none` keeps the glyph from being masked by
-        // the node's own shape; `background-fit: none` + explicit percentages
-        // scale it with node size rather than stretching it to the bounding box.
+        // centred. The glyph arrives pre-normalised into a square 24x24 canvas
+        // with explicit width/height (see instruments.py icon_data_uri), so
+        // `contain` fits it predictably and centring needs no per-glyph nudging.
         'shape':              'ellipse',
         'background-image':         'data(icon)',
-        'background-fit':           'none',
-        'background-width':         '58%',
-        'background-height':        '58%',
-        'background-image-opacity': 0.85,
+        'background-fit':           'contain',
+        'background-width':         '66%',
+        'background-height':        '66%',
+        'background-position-x':    '50%',
+        'background-position-y':    '50%',
+        'background-image-opacity': 0.9,
         'background-clip':          'none',
         'width':              'data(size)',
         'height':             'data(size)',
@@ -356,32 +358,73 @@ function instrumentLabel(instrKey) {
   return entry ? entry.label : (instrKey || INSTRUMENTS[INSTRUMENT_FALLBACK].label);
 }
 
-function makeInstrIconSVG(instrKey, size) {
-  const s = size || 13;
+// Builds <svg viewBox="0 0 24 24"><use href="#symbolId"/></svg> at `size` px.
+function _makeSymbolSVG(symbolId, size) {
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('width',  s);
-  svg.setAttribute('height', s);
+  svg.setAttribute('width',  size);
+  svg.setAttribute('height', size);
   svg.setAttribute('viewBox', '0 0 24 24');
   const use = document.createElementNS(ns, 'use');
   // Both forms: `href` is standard, `xlink:href` keeps older WebKit happy.
-  use.setAttribute('href', '#' + instrumentSymbolId(instrKey));
-  use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
-                     '#' + instrumentSymbolId(instrKey));
+  use.setAttribute('href', '#' + symbolId);
+  use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + symbolId);
   svg.appendChild(use);
   return svg;
 }
 
+function makeInstrIconSVG(instrKey, size) {
+  return _makeSymbolSVG(instrumentSymbolId(instrKey), size || 13);
+}
+
+// ADR-173: standalone scholar's cap. Composers get the cap as a *sibling* of the
+// instrument glyph rather than a composite icon: at the 11-13px chip sizes a
+// combined glyph shrinks the instrument past legibility, so the two marks sit
+// side by side instead. Canvas nodes are large enough for the composite and use
+// it (baked into the node's `icon` data URI by instruments.py).
+function makeScholarCap(size) {
+  const cap = document.createElement('span');
+  cap.className = 'chip-scholar-cap';
+  cap.setAttribute('aria-hidden', 'true');
+  cap.title = 'Composer';
+  cap.appendChild(_makeSymbolSVG(SCHOLAR_CAP_SYMBOL, size || 11));
+  return cap;
+}
+
+// Resolve whether a musician composed anything. ADR-110 already puts
+// `is_composer` on every node, so this is a lookup, not a recount.
+function isComposerId(musicianId) {
+  if (!musicianId) return false;
+  const n = (typeof resolveNode === 'function') ? resolveNode(musicianId)
+          : ((typeof cy !== 'undefined') ? cy.getElementById(musicianId) : null);
+  return !!(n && n.data && n.data('is_composer'));
+}
+
 // ADR-069: instrument badge element for musician chips.
-// ADR-172: signature preserved deliberately — this is the seam that keeps all
-// 15 call-sites across 5 template files unchanged.
-function makeInstrBadge(instrKey, size) {
+// ADR-172: the (instrKey, size) signature is preserved deliberately — it is the
+// seam that keeps every existing call-site working untouched.
+// ADR-173: pass a third argument to add the scholar's cap. Either
+// `{ composer: true }` when the caller already has the flag, or
+// `{ musicianId: 'id' }` to have it looked up.
+function makeInstrBadge(instrKey, size, opts) {
   const badge = document.createElement('span');
   badge.className = 'chip-instr-icon';
   badge.setAttribute('aria-hidden', 'true');
   badge.title = instrumentLabel(instrKey);
   badge.appendChild(makeInstrIconSVG(instrKey, size || 13));
-  return badge;
+
+  const o = opts || {};
+  const composer = ('composer' in o) ? !!o.composer : isComposerId(o.musicianId);
+  if (!composer) return badge;
+
+  // Wrap glyph + cap so the pair behaves as one inline unit inside the chip.
+  const wrap = document.createElement('span');
+  wrap.className = 'chip-instr-group';
+  wrap.setAttribute('aria-hidden', 'true');
+  badge.title = instrumentLabel(instrKey) + ' \u00b7 composer';
+  wrap.appendChild(badge);
+  wrap.appendChild(makeScholarCap(Math.max(9, Math.round((size || 13) * 0.82))));
+  return wrap;
 }
 
 // ── chip filter state ─────────────────────────────────────────────────────────
@@ -662,7 +705,7 @@ function _buildOverlayChip(node) {
     chip.classList.add('hindustani-musician');
     chip.style.setProperty('--chip-era-border', 'var(--her-chip-accent, #8fb4d8)');
   }
-  if (d.instrument) chip.appendChild(makeInstrBadge(d.instrument));
+  if (d.instrument) chip.appendChild(makeInstrBadge(d.instrument, 13, { composer: !!d.is_composer }));
   chip.appendChild(document.createTextNode(d.label));
   chip.title = d.label + (d.lifespan ? ' · ' + d.lifespan : '');
   chip.dataset.nodeId = node.id();
@@ -974,7 +1017,7 @@ function _makeLineageChip(d) {
   if (!isContentBearing) chip.classList.add('chip-dimmed');
 
   if (d.instrument && typeof makeInstrBadge === 'function') {
-    chip.appendChild(makeInstrBadge(d.instrument));
+    chip.appendChild(makeInstrBadge(d.instrument, 13, { composer: !!d.is_composer }));
   }
   chip.appendChild(document.createTextNode(d.label || d.id));
   chip.title = (d.label || d.id) +
@@ -1131,7 +1174,7 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
     nameChip.classList.add('hindustani-musician');
     nameChip.style.setProperty('--chip-era-border', 'var(--her-chip-accent, #8fb4d8)');
   }
-  if (d.instrument) nameChip.appendChild(makeInstrBadge(d.instrument));
+  if (d.instrument) nameChip.appendChild(makeInstrBadge(d.instrument, 13, { composer: !!d.is_composer }));
   nameChip.appendChild(document.createTextNode(d.label));
   nameChip.title = 'Pan to ' + d.label + ' on graph (' + (d.instrument || '') + ')';
   nameChip.onclick = () => orientToNode(node.id());
@@ -1233,7 +1276,7 @@ function _openMusicianPanelForTransit(transitId) {
   nameChip.style.setProperty('--chip-era-bg', tint.bg);
   nameChip.style.setProperty('--chip-era-border', tint.border);
   if (d.instrument && typeof makeInstrBadge === 'function') {
-    nameChip.appendChild(makeInstrBadge(d.instrument));
+    nameChip.appendChild(makeInstrBadge(d.instrument, 13, { composer: !!d.is_composer }));
   }
   nameChip.appendChild(document.createTextNode(d.label || transitId));
   if (typeof applyChipRole === 'function') applyChipRole(nameChip, 'panel-title', 'musician', transitId);
@@ -1809,7 +1852,7 @@ cy.on('tap', 'edge', evt => {
       // musician chip. Badge first, matching the canonical chip order.
       const _tInstr = rawEl ? (rawEl.data.instrument || null) : null;
       if (_tInstr && typeof makeInstrBadge === 'function') {
-        chip.insertBefore(makeInstrBadge(_tInstr), chip.firstChild);
+        chip.insertBefore(makeInstrBadge(_tInstr, 13, { composer: !!rawEl.data.is_composer }), chip.firstChild);
       }
       chip.title = name + ' \u2014 Open Musician panel';
       chip.style.display = 'inline-block';

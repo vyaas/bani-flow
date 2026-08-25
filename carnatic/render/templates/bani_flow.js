@@ -1413,7 +1413,8 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
   // ADR-069: instrument badge — resolve from node data (cy or raw elements)
   const instrKey = _node ? _node.data('instrument') : null;
   if (instrKey && typeof makeInstrBadge === 'function') {
-    span.appendChild(makeInstrBadge(instrKey, isPrimary ? 13 : 11));
+    span.appendChild(makeInstrBadge(instrKey, isPrimary ? 13 : 11,
+                                    { composer: !!_node.data('is_composer') }));
   }
 
   span.appendChild(document.createTextNode(artistRow.artistLabel));

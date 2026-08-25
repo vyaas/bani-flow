@@ -343,7 +343,8 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
     // ADR-172: instrument glyph, matching every other musician chip.
     const _mInstr = (mNode && mNode.data) ? (mNode.data('instrument') || null) : null;
     if (_mInstr && typeof makeInstrBadge === 'function') {
-      c.insertBefore(makeInstrBadge(_mInstr), c.firstChild);
+      c.insertBefore(makeInstrBadge(_mInstr, 13,
+                                    { composer: !!mNode.data('is_composer') }), c.firstChild);
     }
     c.title = 'Open ' + mLabel + '\u2019s panel';
 
