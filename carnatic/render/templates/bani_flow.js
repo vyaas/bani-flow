@@ -1446,7 +1446,12 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
   return span;
 }
 
-function clearBaniFilter() {
+// `opts.cascade === false` suppresses the reciprocal chip-filter clear below.
+// Passed by applyChipFilters(), which calls this *because* a chip filter was just
+// activated — without it the mutual exclusion is re-entrant and eats the very
+// selection that triggered it, so the first click on an era/instrument item
+// appeared to do nothing and only the second one stuck.
+function clearBaniFilter(opts) {
   activeBaniFilter = null;
   cy.elements().removeClass('faded highlighted bani-match');
   document.getElementById('bani-search-input').value = '';
@@ -1472,8 +1477,9 @@ function clearBaniFilter() {
   applyZoomLabels();
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('bani');
-  // Mutual exclusion: clear chip filters when Bani Flow filter clears
-  clearAllChipFilters();
+  // Mutual exclusion: clear chip filters when Bani Flow filter clears — unless
+  // the chip-filter path is what called us (see the note on the signature).
+  if (!opts || opts.cascade !== false) clearAllChipFilters();
 }
 
 // ── ADR-149: Bani subject popup button ───────────────────────────────────────

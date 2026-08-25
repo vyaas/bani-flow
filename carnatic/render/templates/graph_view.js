@@ -603,7 +603,9 @@ function applyChipFilters() {
   const anyActive   = eraActive.size > 0 || instrActive.size > 0;
 
   if (anyActive && activeBaniFilter) {
-    clearBaniFilter();
+    // cascade:false — clearBaniFilter() would otherwise call back into
+    // clearAllChipFilters() and wipe the selection that just brought us here.
+    clearBaniFilter({ cascade: false });
   }
 
   const clearBtn = document.getElementById('filter-clear-all');
@@ -804,13 +806,19 @@ function applyZoomLabels() {
     const isNeighbor = neighborIds.has(n.id());
 
     // Default (no filters): show Trinity + Vina Dhanammal, the focused node, and its direct neighbors.
-    // Filtered / zoomed: use tier-based zoom thresholds.
+    // Filtered / zoomed: use tier-based zoom thresholds, but only for nodes that
+    // actually survived the filter. applyChipFilters() runs first and owns
+    // `chip-faded` in filter mode, so it is the authority on what passed.
+    // Without this gate every musician's name rendered — merely dimmed to 0.18 —
+    // which read as clutter rather than as "filtered out".
+    const passesFilter = defaultView || !n.hasClass('chip-faded');
     const show = defaultView
       ? (isAnchor || isFocused || isNeighbor)
       : (selected ||
-         tier === 0 ||
-         (tier === 1 && z >= 0.35) ||
-         (tier === 2 && z >= 0.60));
+         (passesFilter &&
+          (tier === 0 ||
+           (tier === 1 && z >= 0.35) ||
+           (tier === 2 && z >= 0.60))));
     chip.classList.toggle('chip-hidden', !show);
 
     // Default view only: dim every node that is not an anchor (Trinity or Vina Dhanammal),
