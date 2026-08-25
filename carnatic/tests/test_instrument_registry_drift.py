@@ -28,9 +28,13 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from carnatic.render.instruments import (  # noqa: E402
+    CAP_SYMBOL_ID,
     FALLBACK_KEY,
     INSTRUMENTS,
+    MORTARBOARD_BOX,
+    MORTARBOARD_SVG,
     SYMBOL_ID_PREFIX,
+    glyph_markup,
     icon_data_uri,
     js_registry,
     ordered_keys,
@@ -89,8 +93,13 @@ def test_every_instrument_in_the_data_has_a_glyph():
 @pytest.mark.parametrize("key", sorted(INSTRUMENTS))
 def test_entry_shape(key):
     entry = INSTRUMENTS[key]
-    assert set(entry) == {"label", "order", "tradition", "filter", "svg"}, \
+    assert set(entry) == {"label", "order", "tradition", "filter", "svg", "box"}, \
         f"{key}: unexpected fields {sorted(entry)}"
+    assert len(entry["box"]) == 4, f"{key}: box must be (x0, y0, x1, y1)"
+    x0, y0, x1, y1 = entry["box"]
+    assert x1 > x0 and y1 > y0, f"{key}: degenerate box"
+    assert 0 <= x0 and 0 <= y0 and x1 <= 24 and y1 <= 24, \
+        f"{key}: box escapes the 24x24 canvas"
     assert entry["label"], f"{key}: empty label"
     assert isinstance(entry["order"], int), f"{key}: order must be int"
     assert isinstance(entry["filter"], bool), f"{key}: filter must be bool"
@@ -131,7 +140,91 @@ def test_sprite_emits_one_symbol_per_key(key):
 
 
 def test_sprite_symbol_count_matches_registry():
-    assert sprite_symbols().count("<symbol ") == len(INSTRUMENTS)
+    # One per instrument, plus the standalone scholar's cap (ADR-173).
+    assert sprite_symbols().count("<symbol ") == len(INSTRUMENTS) + 1
+    assert f'id="{CAP_SYMBOL_ID}"' in sprite_symbols()
+
+
+def test_sprite_omits_composite_composer_glyphs():
+    """
+    ADR-173: the DOM wears instrument and cap as two sibling elements, so the
+    composite belongs only in the node data URI. Emitting composites here would
+    double the sprite for no consumer.
+    """
+    assert "-composer" not in sprite_symbols()
+
+
+# ── ADR-173: glyph normalisation ─────────────────────────────────────────────
+
+@pytest.mark.parametrize("key", sorted(INSTRUMENTS))
+def test_stored_box_matches_rendered_ink(key):
+    """
+    The `box` field drives all framing, so a glyph edit that forgets to update it
+    silently mis-frames that icon. Re-measure by rasterising and compare.
+    """
+    cairosvg = pytest.importorskip("cairosvg")
+    Image = pytest.importorskip("PIL.Image", reason="Pillow needed to measure ink")
+
+    n = 240
+    svg = (f"<svg xmlns='http://www.w3.org/2000/svg' width='{n}' height='{n}' "
+           f"viewBox='0 0 24 24' fill='#fff'>{INSTRUMENTS[key]['svg']}</svg>")
+    png = cairosvg.svg2png(bytestring=svg.encode(), output_width=n, output_height=n)
+    import io
+    bbox = Image.open(io.BytesIO(png)).convert("RGBA").getbbox()
+    measured = tuple(v / n * 24 for v in bbox)
+    stored = INSTRUMENTS[key]["box"]
+    # Half a unit of tolerance absorbs rasterisation edge effects.
+    for got, want, axis in zip(measured, stored, "xyxy"):
+        assert abs(got - want) < 0.5, (
+            f"{key}: stored box {stored} disagrees with rendered ink "
+            f"{tuple(round(v, 2) for v in measured)} on {axis} — re-measure and "
+            f"update the `box` field"
+        )
+
+
+@pytest.mark.parametrize("key", sorted(INSTRUMENTS))
+def test_glyph_markup_is_normalised(key):
+    """Every glyph is wrapped in exactly one fitting transform."""
+    plain = glyph_markup(key)
+    assert plain.count("<g transform=") == 1
+    assert "scale(" in plain and "translate(" in plain
+
+
+@pytest.mark.parametrize("key", sorted(INSTRUMENTS))
+def test_composer_markup_adds_the_cap(key):
+    composed = glyph_markup(key, composer=True)
+    assert composed.count("<g transform=") == 2, "instrument + cap, each fitted"
+    assert MORTARBOARD_SVG in composed
+    assert composed != glyph_markup(key)
+
+
+def test_mortarboard_follows_the_glyph_convention():
+    assert "fill=" not in MORTARBOARD_SVG
+    assert "stroke" not in MORTARBOARD_SVG
+    x0, y0, x1, y1 = MORTARBOARD_BOX
+    assert x1 > x0 and y1 > y0
+
+
+@pytest.mark.parametrize("key", sorted(INSTRUMENTS))
+def test_data_uri_declares_an_intrinsic_size(key):
+    """
+    An SVG with only a viewBox has no intrinsic size, so a browser substitutes
+    the 300x150 default replaced-element box and cytoscape scales that 2:1
+    letterbox instead of the glyph — the cause of the off-centre, inconsistently
+    zoomed node icons. width/height must be declared.
+    """
+    import base64
+    for composer in (False, True):
+        uri = icon_data_uri(key, "#1d2021", composer=composer)
+        svg = base64.b64decode(uri.split(",", 1)[1]).decode()
+        assert "width='24'" in svg and "height='24'" in svg, \
+            f"{key} (composer={composer}): data URI lacks an intrinsic size"
+
+
+def test_composer_and_plain_node_icons_differ():
+    plain = icon_data_uri("violin", "#1d2021")
+    capped = icon_data_uri("violin", "#1d2021", composer=True)
+    assert plain != capped
 
 
 def test_js_registry_exposes_every_key_without_path_data():
@@ -213,6 +306,28 @@ def test_templates_actually_call_instrument_keys(template):
     """The flip side: the lists must be derived, not merely deleted."""
     src = (TEMPLATES / template).read_text()
     assert "instrumentKeys(" in src, f"{template}: nothing derives from the registry"
+
+
+def test_badge_seam_accepts_a_composer_option():
+    """
+    ADR-173 adds the cap through a third argument so the (instrKey, size) seam
+    stays intact. Both option forms must be honoured.
+    """
+    gv = (TEMPLATES / "graph_view.js").read_text()
+    assert "function makeInstrBadge(instrKey, size, opts)" in gv
+    assert "'composer' in o" in gv, "explicit flag form"
+    assert "isComposerId(o.musicianId)" in gv, "id-lookup form"
+    assert "function makeScholarCap" in gv
+
+
+def test_instrument_picker_wears_no_cap():
+    """
+    The add-musician instrument selector depicts an instrument, not a person, so
+    it must never sprout a composer cap.
+    """
+    src = (TEMPLATES / "entry_forms.js").read_text()
+    assert "makeInstrBadge(instr, 11)" in src, \
+        "the instrument picker should stay a two-argument call"
 
 
 def test_geometric_shape_machinery_is_gone():
