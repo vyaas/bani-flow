@@ -87,22 +87,60 @@ def test_toggle_filter_item_is_a_plain_single_toggle():
     assert "clearAllChipFilters" not in body
 
 
-# ── Bug 2: name chips follow the filter ──────────────────────────────────────
+# ── Bug 2: name chips are focus-driven, never zoom-driven ────────────────────
+#
+# First fix gated filter-mode labels on filter membership, which stopped the
+# "every name, dimmed" clutter. That was still too crowded — filtering to `vocal`
+# passes 141 musicians. The rule is now: in filter mode nothing is named until a
+# node is clicked, and then only that node and everything it connects to.
 
-def test_zoom_labels_gate_on_the_filter():
+def test_focused_id_is_available_in_both_modes():
+    """
+    Filter mode is focus-driven now, so `focusedId` can no longer be computed as
+    `defaultView ? _currentPanelNodeId : null` — that made it null exactly when
+    the filter branch needs it.
+    """
     m = re.search(r"function applyZoomLabels\(\)\s*\{(.*?)\n\}", GRAPH_VIEW_CODE, re.S)
-    assert m, "applyZoomLabels not found"
     body = m.group(1)
-    assert "passesFilter" in body, (
-        "chip visibility must consider whether the node survived the filter, or "
-        "every musician's name renders dimmed instead of only the matches"
-    )
-    # The gate is derived from chip-faded, which applyChipFilters() owns in filter mode.
-    assert re.search(r"const passesFilter = defaultView \|\| !n\.hasClass\('chip-faded'\)", body)
-    # And it must actually participate in the `show` decision.
+    assert "const focusedId = _currentPanelNodeId;" in body
+    assert "defaultView ? _currentPanelNodeId" not in body
+
+
+def test_filter_mode_labels_are_focus_only():
+    m = re.search(r"function applyZoomLabels\(\)\s*\{(.*?)\n\}", GRAPH_VIEW_CODE, re.S)
+    body = m.group(1)
     show = re.search(r"const show = defaultView(.*?);", body, re.S)
-    assert show and "passesFilter" in show.group(1), \
-        "passesFilter is computed but not used in the show decision"
+    assert show, "show expression not found"
+    expr = show.group(1)
+    # default branch keeps its anchors; filter branch is focus + neighbours only
+    assert "isAnchor" in expr, "default view should still name the anchors"
+    assert "selected || isFocused || isNeighbor" in expr, \
+        "filter mode must name only the focused node and its connections"
+
+
+def test_zoom_thresholds_are_gone_from_label_visibility():
+    """
+    Density is managed by click-to-reveal now. A returning tier/zoom threshold
+    would reintroduce the crowding this replaced.
+    """
+    m = re.search(r"function applyZoomLabels\(\)\s*\{(.*?)\n\}", GRAPH_VIEW_CODE, re.S)
+    body = m.group(1)
+    assert "label_tier" not in body, "applyZoomLabels no longer consults label_tier"
+    assert "cy.zoom()" not in body, "applyZoomLabels no longer consults zoom"
+    assert not re.search(r"z >= 0\.\d+", body), "no zoom thresholds in label visibility"
+
+
+def test_connections_are_named_regardless_of_filter_membership():
+    """
+    Clicking a violinist should reveal who their guru was even if the guru sang,
+    so the filter must NOT gate the neighbour reveal.
+    """
+    m = re.search(r"function applyZoomLabels\(\)\s*\{(.*?)\n\}", GRAPH_VIEW_CODE, re.S)
+    body = m.group(1)
+    assert "passesFilter" not in body, (
+        "a filter gate on label visibility would hide the names of connections "
+        "that do not match the active filter"
+    )
 
 
 def test_apply_chip_filters_still_owns_chip_faded_in_filter_mode():
