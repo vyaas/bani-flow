@@ -229,6 +229,9 @@
     flex-shrink: 0; width: 13px; height: 13px;
   }
   .filter-dropdown-item .chip-icon svg { display: block; }
+  /* ADR-172: filled instrument glyph via <use>; brightens on selection */
+  .filter-dropdown-item .chip-icon svg use { fill: var(--fg-muted); }
+  .filter-dropdown-item[aria-selected="true"] .chip-icon svg use { fill: var(--accent); }
   .filter-checkmark {
     margin-left: auto; opacity: 0;
     font-size: 0.8rem; color: var(--accent);
@@ -243,11 +246,15 @@
   .filter-dropdown-clear:hover { color: var(--accent); background: var(--bg-active); }
 
   /* ── ADR-069: instrument badge inside musician chips ── */
+  /* ADR-172: the badge is now a filled instrument silhouette referenced from
+     the inline sprite via <use>, not a stroked geometric outline. Colour comes
+     from `fill` here rather than `stroke`. */
   .chip-instr-icon {
     display: inline-flex; align-items: center; flex-shrink: 0;
     width: 13px; height: 13px; opacity: 0.75;
   }
   .chip-instr-icon svg { display: block; width: 100%; height: 100%; }
+  .chip-instr-icon svg use { fill: var(--fg-muted); }
   .chip-secondary .chip-instr-icon { width: 11px; height: 11px; }
 
   /* ── scope label ── */
@@ -1672,13 +1679,6 @@
   .trail-tala { font-size: 0.68rem; color: var(--fg-muted); opacity: 0.75; margin-left: 2px; }
   /* raga chip + tala on the same flex row inside rec-meta and mp-footer */
   .rec-raga-tala { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-  /* Instrument shape icon in trail rows — outline only, rendered as inline SVG by JS */
-  .trail-shape-icon {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 10px; height: 10px;
-    margin-right: 6px; vertical-align: middle; flex-shrink: 0;
-  }
-  .trail-shape-icon svg { display: block; }
   .trail-link {
     flex-shrink: 0; color: var(--accent-link); font-size: 0.70rem;
     text-decoration: none; white-space: nowrap; margin-left: auto;
@@ -3827,9 +3827,10 @@
     background: color-mix(in srgb, var(--accent-sub) 15%, transparent);
     color: var(--accent-sub);
   }
-  /* Active instrument chip: SVG stroke inherits chip color via currentColor */
-  .ef-instr-chip.ef-instr-chip--active .chip-instr-icon svg * {
-    stroke: currentColor;
+  /* Active instrument chip: glyph inherits chip colour via currentColor.
+     ADR-172: `fill`, not `stroke` — the glyphs are filled silhouettes now. */
+  .ef-instr-chip.ef-instr-chip--active .chip-instr-icon svg use {
+    fill: currentColor;
   }
 
   /* ADR-115: Tradition segmented control (Add Raga form) */
@@ -5098,6 +5099,9 @@
     <!-- sound slot -->
     <rect x="10.6" y="17.2" width="2.8" height="1.4" rx="0.7"/>
   </symbol>
+  <!-- ADR-172: instrument glyphs, generated from carnatic/render/instruments.py.
+       Referenced as <use href="#icon-instr-KEY"> by makeInstrIconSVG(). -->
+  <!-- INJECT_INSTRUMENT_SPRITE -->
 </svg>
 
 <!-- ADR-129 D1: Floating title cluster (top-left) — no backing bar -->

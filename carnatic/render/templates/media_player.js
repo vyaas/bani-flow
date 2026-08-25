@@ -2276,6 +2276,11 @@ function _buildSubjectChips(subjects) {
     mchip.style.setProperty('--chip-era-bg',     tint.bg);
     mchip.style.setProperty('--chip-era-border', tint.border);
     mchip.textContent = name;
+    // ADR-172: instrument glyph on the lecdem-subject chip.
+    const _sInstr = (node && node.data) ? (node.data('instrument') || null) : null;
+    if (_sInstr && typeof makeInstrBadge === 'function') {
+      mchip.insertBefore(makeInstrBadge(_sInstr), mchip.firstChild);
+    }
     mchip.title = name + ' — Open Musician panel';
     // ADR-142 §1: lecdem-subject musician chip is an entity chip
     if (typeof applyChipRole === 'function') applyChipRole(mchip, 'entity', 'musician', musicianId);
@@ -3901,6 +3906,11 @@ function _buildLecturerChip(lecturerId, lecturerLabel) {
     const tint  = THEME.eraTintCss(eraId);
     chip.style.setProperty('--chip-era-bg',     tint.bg);
     chip.style.setProperty('--chip-era-border', tint.border);
+  }
+  // ADR-172: instrument glyph on the lecturer chip.
+  const _lInstr = (_lNodeData && _lNodeData.data) ? (_lNodeData.data('instrument') || null) : null;
+  if (_lInstr && typeof makeInstrBadge === 'function') {
+    chip.insertBefore(makeInstrBadge(_lInstr), chip.firstChild);
   }
 
   chip.addEventListener('click', e => {

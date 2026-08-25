@@ -133,13 +133,10 @@ ERA_LABELS = {
     "contemporary":   "Contemporary",
 }
 
-INSTRUMENT_SHAPES = {
-    "vocal":     "ellipse",
-    "veena":     "diamond",
-    "violin":    "rectangle",
-    "flute":     "triangle",
-    "mridangam": "hexagon",
-}
+# ADR-172: INSTRUMENT_SHAPES retired. Instrument is now carried by a drawn
+# glyph, not by node geometry. The registry (label / order / tradition / filter
+# / SVG) lives in carnatic/render/instruments.py, which generates every
+# consumer — see that module's docstring for why it is generated, not mirrored.
 
 NODE_SIZES = {
     "trinity":        80,

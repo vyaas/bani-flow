@@ -13,7 +13,7 @@ import json
 import math
 import re
 from pathlib import Path
-from .graph_builder import INSTRUMENT_SHAPES
+from .instruments import js_registry, sprite_symbols
 from .theme import css_vars, SWARA_COLORS, TOKENS
 
 # ── Favicon: miniature raga wheel as SVG data-URI ─────────────────────────────
@@ -385,6 +385,10 @@ def render_html(
     # ── Inject raga-wheel favicon SVG (data-URI, generated from theme.py colors)
     base = base.replace("INJECT_FAVICON_SVG", _favicon_data_uri())
 
+    # ADR-172: instrument glyphs join the ADR-079 inline sprite. Path data lands
+    # here exactly once; JS references it via <use href="#icon-instr-KEY">.
+    base = base.replace("<!-- INJECT_INSTRUMENT_SPRITE -->", sprite_symbols())
+
     # ── ADR-128 D7: derive panel width from longest composition title + raga name.
     # Both sidebars must be wide enough to render their largest first-class chip
     # (composition title for right panel; raga name + composition title for left
@@ -423,6 +427,7 @@ def render_html(
     script_block = "\n".join([
         "<script>",
         theme_js,          # ← FIRST: defines THEME global
+        js_registry(),     # ← ADR-172: INSTRUMENTS global (graph_view.js needs it)
         data_js,
         plyr_js,           # ← ADR-155: defines window.Plyr (before media_player uses it)
         graph_view,

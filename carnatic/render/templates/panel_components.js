@@ -340,6 +340,11 @@ function buildLecdemSubjectChips(subjects, { excludeMusicianId, excludeRagaId, e
     c.className = 'musician-chip';
     if (typeof applyChipRole === 'function') applyChipRole(c, 'entity', 'musician', mid);
     c.textContent = mLabel;
+    // ADR-172: instrument glyph, matching every other musician chip.
+    const _mInstr = (mNode && mNode.data) ? (mNode.data('instrument') || null) : null;
+    if (_mInstr && typeof makeInstrBadge === 'function') {
+      c.insertBefore(makeInstrBadge(_mInstr), c.firstChild);
+    }
     c.title = 'Open ' + mLabel + '\u2019s panel';
 
     // Era-tint — same pattern as all other musician chips

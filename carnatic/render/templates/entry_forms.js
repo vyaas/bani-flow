@@ -1130,7 +1130,11 @@ const PATCH_METADATA = {
       born:       { inputType: 'number', placeholder: 'e.g. 1908',          min: 1600, max: 2030 },
       died:       { inputType: 'number', placeholder: 'leave blank if living', min: 1600, max: 2030 },
       era:        { inputType: 'select', opts: ['trinity','bridge','golden_age','disseminator','living_pillars','contemporary'] },
-      instrument: { inputType: 'select', opts: ['vocal','veena','violin','flute','mridangam','bharatanatyam','ghatam','other'] },
+      // ADR-172: options derive from the INSTRUMENTS registry. A thunk, not a
+      // literal — editFormSpec is built at module scope, and instrumentKeys()
+      // lives in graph_view.js, which is not guaranteed to be loaded yet (the
+      // patch-cart test harness loads entry_forms.js on its own).
+      instrument: { inputType: 'select', opts: () => instrumentKeys() },
       bani:       { inputType: 'text',   placeholder: 'e.g. Ariyakudi, Semmangudi' },
     },
   },
@@ -1427,23 +1431,9 @@ function buildMusicianForm({ prefill = null, forceCreate = false, prefillEdges =
   eraWrap.appendChild(eraHiddenInp);
   body.appendChild(efRow('Era', true, null, eraWrap));
 
-  // ADR-146 D4: Instrument chip selector — all instruments present in the database
-  const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'bansuri', 'mridangam', 'ghatam', 'khanjira', 'gottuvadyam', 'sitar', 'sarod', 'bharatanatyam', 'other'];
-  const _instrLabels = {
-    vocal:         'Vocal',
-    veena:         'Veena',
-    violin:        'Violin',
-    flute:         'Flute',
-    bansuri:       'Bansuri',
-    mridangam:     'Mridangam',
-    ghatam:        'Ghatam',
-    khanjira:      'Khanjira',
-    gottuvadyam:   'Gottuvadyam',
-    sitar:         'Sitar',
-    sarod:         'Sarod',
-    bharatanatyam: 'Bharatanatyam',
-    other:         'Other',
-  };
+  // ADR-146 D4: Instrument chip selector.
+  // ADR-172: options and labels derive from the generated INSTRUMENTS registry.
+  const instrOpts = instrumentKeys();
   const instrHiddenInp = document.createElement('input');
   instrHiddenInp.type = 'hidden'; instrHiddenInp.id = 'ef_mus_instr'; instrHiddenInp.value = instrOpts[0];
   const instrChipsRow = document.createElement('div');
@@ -1455,7 +1445,7 @@ function buildMusicianForm({ prefill = null, forceCreate = false, prefillEdges =
     chip.dataset.instr = instr;
     if (typeof makeInstrBadge === 'function') chip.appendChild(makeInstrBadge(instr, 11));
     const lblSpan = document.createElement('span');
-    lblSpan.textContent = _instrLabels[instr] || instr;
+    lblSpan.textContent = instrumentLabel(instr);
     chip.appendChild(lblSpan);
     chip.addEventListener('click', () => {
       instrChipsRow.querySelectorAll('.ef-instr-chip').forEach(c => c.classList.remove('ef-instr-chip--active'));
@@ -3085,7 +3075,7 @@ function buildComposerForm() {
   const eraSel  = efSelect('ef_cmp_era', eraOpts, true);
   body.appendChild(efRow('Era', false, null, eraSel));
 
-  const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
+  const instrOpts = instrumentKeys();   // ADR-172
   const instrSel  = efSelect('ef_cmp_instr', instrOpts, true);
   body.appendChild(efRow('Instrument', false, 'optional', instrSel));
 
@@ -4300,7 +4290,7 @@ function _buildCombinedMusicianYouTubeForm() {
   const eraSel   = efSelect('efmr_era', eraOpts, false);
   newSection.appendChild(efRow('Era', true, null, eraSel));
 
-  const instrOpts = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
+  const instrOpts = instrumentKeys();   // ADR-172
   const instrSel  = efSelect('efmr_instr', instrOpts, false);
   newSection.appendChild(efRow('Instrument', true, null, instrSel));
 
@@ -5152,7 +5142,10 @@ function buildEditForm() {
   function buildValueInput(fieldKey, meta) {
     const fm = (meta.fieldMeta && meta.fieldMeta[fieldKey]) || { inputType: 'text' };
     if (fm.inputType === 'select') {
-      const opts = (fm.opts || []).map(o => (typeof o === 'string') ? { value: o, label: o } : o);
+      // ADR-172: `opts` may be a thunk so a spec entry can derive its options
+      // at render time instead of at module-scope evaluation.
+      const _rawOpts = (typeof fm.opts === 'function') ? fm.opts() : fm.opts;
+      const opts = (_rawOpts || []).map(o => (typeof o === 'string') ? { value: o, label: o } : o);
       return efSelect('ef_edit_value', opts, true);
     }
     if (fm.inputType === 'combobox') {
@@ -6524,10 +6517,15 @@ function buildAddMusicianForm({ prefill = null, forceCreate = false, prefillEdge
   const eraSel   = efSelect('ef_adm_era', eraOpts, false);
   body.appendChild(efRow('Era', true, null, eraSel));
 
-  // ADR-115: All instruments (Carnatic + 6 new Hindustani instruments)
-  const _instrCarnaticOpts  = ['vocal', 'veena', 'violin', 'flute', 'mridangam', 'bharatanatyam', 'ghatam', 'other'];
-  const _instrHindustaniOpts = ['sitar', 'sarod', 'bansuri', 'tabla', 'sarangi', 'surbahar'];
-  const instrOpts = [..._instrCarnaticOpts.slice(0, 1), ..._instrHindustaniOpts, ..._instrCarnaticOpts.slice(1)];
+  // ADR-115: All instruments (Carnatic + Hindustani).
+  // ADR-172: grouped by tradition from the INSTRUMENTS registry. Registry order
+  // already runs Carnatic → Hindustani → catch-alls, so `other` (tradition null)
+  // is appended rather than dropped by the two tradition queries.
+  const instrOpts = [
+    ...instrumentKeys({ tradition: 'carnatic' }),
+    ...instrumentKeys({ tradition: 'hindustani' }),
+    ...instrumentKeys().filter(k => !INSTRUMENTS[k].tradition),
+  ];
   const instrSel  = efSelect('ef_adm_instr', instrOpts, false);
   body.appendChild(efRow('Instrument', true, null, instrSel));
 

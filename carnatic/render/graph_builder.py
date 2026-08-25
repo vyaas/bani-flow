@@ -1,13 +1,18 @@
 """
 carnatic/render/graph_builder.py — Cytoscape element construction.
 
-Visual constants (ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES, NODE_SIZES,
-ERA_FONT_SIZES) are imported from theme.py — the single source of truth.
+Visual constants (ERA_COLORS, ERA_LABELS, NODE_SIZES, ERA_FONT_SIZES) are
+imported from theme.py — the single source of truth.
 Implements ADR-028: Design Token Single Source of Truth.
+
+ADR-172: the instrument glyph is baked in as a `background-image` data URI
+(node `icon`), replacing the old `shape` field. Node geometry no longer encodes
+instrument — every musician node is a circle.
 """
 from collections import defaultdict
+from .instruments import icon_data_uri
 from .media_providers import media_key, parse_media_url
-from .theme import ERA_COLORS, ERA_LABELS, INSTRUMENT_SHAPES, NODE_SIZES, ERA_FONT_SIZES, TOKENS
+from .theme import ERA_COLORS, ERA_LABELS, NODE_SIZES, ERA_FONT_SIZES, TOKENS
 
 def build_elements(graph: dict, listenable_set: set | None = None,
                    composer_musician_ids: set | None = None) -> list[dict]:
@@ -27,7 +32,9 @@ def build_elements(graph: dict, listenable_set: set | None = None,
         # dark fallback (labelOutline) for non-musician nodes (no 'era' key).
         _era_raw = node.get("era")
         _label_chip = ERA_COLORS.get(_era_raw, TOKENS["labelOutline"]) if _era_raw else TOKENS["labelOutline"]
-        shape    = INSTRUMENT_SHAPES.get(instr, "ellipse")
+        # ADR-172: near-black glyph holds contrast against all six mid-tone
+        # era fills, so no per-era special case is needed.
+        icon     = icon_data_uri(instr, TOKENS["bgDeep"])
         base     = NODE_SIZES.get(era, 44)
         deg      = degree.get(node["id"], 0)
         size     = base + int((deg / max_degree) * 28)
@@ -102,7 +109,7 @@ def build_elements(graph: dict, listenable_set: set | None = None,
             "color":        color,
             "label_outline": _label_chip,
             "label_bg":      _label_chip,
-            "shape":        shape,
+            "icon":         icon,
             "size":         size,
             "degree":       deg,
             "label_tier":   label_tier,
