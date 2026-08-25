@@ -1,0 +1,96 @@
+{
+  "id": "voice_and_responsibility_g5a",
+  "video_id": "fQZfq9pD7z8",
+  "url": "https://youtu.be/fQZfq9pD7z8",
+  "title": "Voice and Responsibility, G5A",
+  "date": "2026",
+  "venue": null,
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/fQZfq9pD7z8",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "tm_krishna",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "akkarai_subbulakshmi",
+          "role": "violin"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Intro"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "03:33",
+          "offset_seconds": 213,
+          "composition_id": "ee_vasudha_sahana",
+          "raga_id": "sahana",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "27:32",
+          "offset_seconds": 1652,
+          "composition_id": "soundara_rajam_ashraye",
+          "raga_id": "brindavana_saranga",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "01:10:33",
+          "offset_seconds": 4233,
+          "composition_id": "marubari_talalEnurA",
+          "raga_id": "khamas",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "01:36:11",
+          "offset_seconds": 5771,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Viruttam (Desh)"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:50:10",
+          "offset_seconds": 6610,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "multilingual song"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:57:30",
+          "offset_seconds": 7050,
+          "composition_id": null,
+          "raga_id": "shankarabharanam",
+          "tala": null,
+          "display_title": "Nottuswaram"
+        }
+      ]
+    }
+  ]
+}

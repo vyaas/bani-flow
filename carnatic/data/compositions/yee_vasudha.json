@@ -1,16 +1,10 @@
 {
   "id": "yee_vasudha",
-  "title": "Yee Vasudha",
+  "title": "Ee Vasudha",
   "composer_id": "tyagaraja",
-  "raga_id": "kaanada",
-  "tala": "Adi",
+  "raga_id": "sahana",
+  "tala": null,
   "language": "Telugu",
-  "sources": [
-    {
-      "url": "https://en.wikipedia.org/wiki/Yee_Vasudha",
-      "label": "Wikipedia",
-      "type": "wikipedia"
-    }
-  ],
-  "notes": "Tyagaraja kriti in Kanada raga."
+  "sources": [],
+  "notes": null
 }
