@@ -48,6 +48,32 @@
       "label": "Brova Bharama · Bahudari",
       "composition_id": "brova_bharama",
       "raga_id": "bahudari"
+    },
+    {
+      "url": "https://youtu.be/hjp3lZNOiDg",
+      "label": "Rama Nee Samanamevaru · Kharaharapriya · rupakam",
+      "composition_id": "rama_nee_samanamevaru",
+      "raga_id": "kharaharapriya",
+      "tala": "rupakam"
+    },
+    {
+      "url": "https://youtu.be/-InQRT2oevg",
+      "label": "Sri Venkata Girisa · Surutti · adi",
+      "composition_id": "sri_venkata_girisa",
+      "raga_id": "surutti",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/jfP3AhAjo4Q",
+      "label": "Karunimpa · Sahana · adi",
+      "composition_id": "karunimpa",
+      "raga_id": "sahana",
+      "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/j1WGszVZtY0",
+      "label": "RTP",
+      "raga_id": "poorvikalyani"
     }
   ]
 }
