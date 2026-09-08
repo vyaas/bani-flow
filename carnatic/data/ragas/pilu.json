@@ -1,20 +1,21 @@
 {
-  "id": "kafi",
-  "name": "Kafi",
+  "id": "pilu",
+  "name": "Pilu",
   "tradition": "hindustani",
-  "aliases": [],
+  "aliases": [
+    "piloo"
+  ],
   "melakarta": null,
   "parent_raga": null,
   "is_melakarta": false,
   "thaat": "kafi",
   "carnatic_equivalents": [
-    "kharaharapriya"
+    "kapi"
   ],
   "sources": [
     {
-      "url": "https://en.wikipedia.org/wiki/Kafi_(raga)",
-      "label": "Wikipedia",
-      "type": "wikipedia"
+      "url": "https://en.wikipedia.org/wiki/Pilu_%28raga%29",
+      "label": "Wikipedia"
     }
   ]
 }
