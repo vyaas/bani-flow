@@ -1193,5 +1193,11 @@
     "target": "radha_bhaskar",
     "confidence": 0.9,
     "source_url": "https://www.wef.org.in/dr-radha-bhaskar/"
+  },
+  {
+    "source": "tanjore_ponnayya",
+    "target": "ks_narayanaswamy",
+    "confidence": 0.9,
+    "source_url": null
   }
 ]
