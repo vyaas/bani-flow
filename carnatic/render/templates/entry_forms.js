@@ -1261,8 +1261,7 @@ function createEntryWindow(title) {
     win.style.zIndex = topZ;
   });
 
-  const container = document.getElementById('cy-wrap') || document.body;
-  container.appendChild(win);
+  document.body.appendChild(win);
 
   return win;
 }
