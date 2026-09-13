@@ -1,0 +1,14 @@
+{
+  "id": "saindhavi",
+  "name": "Saindhavi",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragass.shtml#saindhavi",
+      "label": "karnatik.com"
+    }
+  ]
+}

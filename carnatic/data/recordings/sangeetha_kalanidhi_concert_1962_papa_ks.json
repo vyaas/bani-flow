@@ -1,0 +1,181 @@
+{
+  "id": "sangeetha_kalanidhi_concert_1962_papa_ks",
+  "video_id": "_JPEcIZSH2w",
+  "url": "https://youtu.be/_JPEcIZSH2w",
+  "title": "Sangeetha Kalanidhi concert  1962 (Papa KS)",
+  "date": "1962",
+  "venue": "Music Academy",
+  "occasion": "Papa KS 1962 Sangeetha Kalanidhi concert",
+  "sources": [
+    {
+      "url": "https://youtu.be/_JPEcIZSH2w",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "alathur_brothers",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "papa_ks_venkataramaiah",
+          "role": "violin"
+        },
+        {
+          "musician_id": "vellore_ramabhadran",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": "vanajakshi_ninne_varnam",
+          "raga_id": "kalyani",
+          "tala": "Khanda Ata",
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:05:02",
+          "offset_seconds": 302,
+          "composition_id": "sugunamule_cheppukonti",
+          "raga_id": "chakravakam",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:11:53",
+          "offset_seconds": 713,
+          "composition_id": "chera_ravademira",
+          "raga_id": "reetigowla",
+          "tala": null,
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:25:55",
+          "offset_seconds": 1555,
+          "composition_id": "paahi_jagajjanani",
+          "raga_id": "vachaspati",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:52:34",
+          "offset_seconds": 3154,
+          "composition_id": "kannulara_kantini",
+          "raga_id": "dhanyasi",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:09:22",
+          "offset_seconds": 4162,
+          "composition_id": "mari_mari_ninne",
+          "raga_id": "kambhoji",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:50:44",
+          "offset_seconds": 6644,
+          "composition_id": "rama_nee_samanamevaru",
+          "raga_id": "kharaharapriya",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "02:09:36",
+          "offset_seconds": 7776,
+          "composition_id": "bantureeti_kolu",
+          "raga_id": "hamsanadam",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:12:09",
+          "offset_seconds": 7929,
+          "composition_id": null,
+          "raga_id": "thodi",
+          "tala": "rupakam",
+          "display_title": "RTP"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "02:47:19",
+          "offset_seconds": 10039,
+          "composition_id": null,
+          "raga_id": "jonepuri",
+          "tala": "adi",
+          "display_title": "Malasai Kopam (Thiruppugazh)"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:50:07",
+          "offset_seconds": 10207,
+          "composition_id": "itu_sahasamula",
+          "raga_id": "saindhavi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:52:06",
+          "offset_seconds": 10326,
+          "composition_id": "ninyako_ninna",
+          "raga_id": "brindavani",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:54:41",
+          "offset_seconds": 10481,
+          "composition_id": "shivanai_ninaindhavar",
+          "raga_id": "hindolam",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:57:32",
+          "offset_seconds": 10652,
+          "composition_id": "chandrashekhara_isha",
+          "raga_id": "sindhu_bhairavi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "03:01:41",
+          "offset_seconds": 10901,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "display_title": "Thillana"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "03:02:50",
+          "offset_seconds": 10970,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "brindavani",
+  "name": "Brindavani",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "kharaharapriya",
+  "sources": [
+    {
+      "url": "https://saidvk.blogspot.com/2013/08/selected-ragam-brindhavani.html",
+      "label": "saidvk.blogspot.com"
+    }
+  ]
+}
