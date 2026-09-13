@@ -91,6 +91,23 @@
       "label": "Sri Venkata Girisa · Surutti",
       "composition_id": "sri_venkata_girisa",
       "raga_id": "surutti"
+    },
+    {
+      "url": "https://youtu.be/xO-aap9ta9U",
+      "label": "anandha naTam aaDuvar · Poorvikalyani · rupakam",
+      "composition_id": "anandha_natam_aaduvar",
+      "raga_id": "poorvikalyani",
+      "tala": "rupakam",
+      "performers": [
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        }
+      ]
     }
   ]
 }
