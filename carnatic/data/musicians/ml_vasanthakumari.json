@@ -35,6 +35,27 @@
       "label": "Sri Venkata Girisa · Surutti",
       "composition_id": "sri_venkata_girisa",
       "raga_id": "surutti"
+    },
+    {
+      "url": "https://youtu.be/qb-m9tVfz6U",
+      "label": "Sri Parthasarathy · Shuddha Dhanyasi · rupakam",
+      "composition_id": "sri_parthasarathy",
+      "raga_id": "shuddha_dhanyasi",
+      "tala": "rupakam",
+      "performers": [
+        {
+          "musician_id": "ml_vasanthakumari",
+          "role": "vocal"
+        },
+        {
+          "musician_id": "a_kanyakumari",
+          "role": "violin"
+        },
+        {
+          "musician_id": "sudha_ragunathan",
+          "role": "vocal"
+        }
+      ]
     }
   ]
 }
