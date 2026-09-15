@@ -1,0 +1,182 @@
+{
+  "id": "music_academy_1956",
+  "video_id": "JaV1IUtlexo",
+  "url": "https://youtu.be/JaV1IUtlexo",
+  "title": "Music Academy, 1956",
+  "date": "1956",
+  "venue": "Music Academy, Chennai",
+  "occasion": "December season move",
+  "sources": [
+    {
+      "url": "https://youtu.be/JaV1IUtlexo",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "ms_subbulakshmi",
+          "role": "vocal"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00",
+          "offset_seconds": 0,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": null,
+          "display_title": "Tuning"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:39",
+          "offset_seconds": 39,
+          "composition_id": "angarakam_ashrayamyaham",
+          "raga_id": "surutti",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "06:13",
+          "offset_seconds": 373,
+          "composition_id": "ramanannu",
+          "raga_id": "harikambhoji",
+          "tala": "rupakam",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:20:34",
+          "offset_seconds": 1234,
+          "composition_id": "sarasaksa_paripalaya",
+          "raga_id": "pantuvarali",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:42:06",
+          "offset_seconds": 2526,
+          "composition_id": "sharanam_sharanam_endrane",
+          "raga_id": "sowrashtram",
+          "tala": "misra_capu",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "00:47:39",
+          "offset_seconds": 2859,
+          "composition_id": "ksheenamai_tiruga",
+          "raga_id": "mukhari",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "00:58:30",
+          "offset_seconds": 3510,
+          "composition_id": "gopananda",
+          "raga_id": "bhooshaavali",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:02:38",
+          "offset_seconds": 3758,
+          "composition_id": "rave_himagiri_kumari",
+          "raga_id": "thodi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:17:40",
+          "offset_seconds": 4660,
+          "composition_id": "gajavadana_karuna",
+          "raga_id": "sriranjini",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:22:53",
+          "offset_seconds": 4973,
+          "composition_id": "sarojadala_netri",
+          "raga_id": "shankarabharanam",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:05:57",
+          "offset_seconds": 7557,
+          "composition_id": "harihara_putram",
+          "raga_id": "vasantha",
+          "tala": "misra_jhampa",
+          "display_title": null
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:14:18",
+          "offset_seconds": 8058,
+          "composition_id": null,
+          "raga_id": "bhairavi",
+          "tala": "tisra_triputa",
+          "display_title": "RTP"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:55:49",
+          "offset_seconds": 10549,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "display_title": "Ragamalika - Kannanidam Eduthu Solladi"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:59:52",
+          "offset_seconds": 10792,
+          "composition_id": "payyedapai_mida",
+          "raga_id": "nadanamakriya",
+          "tala": "tisra_triputa",
+          "display_title": null
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "03:06:02",
+          "offset_seconds": 11162,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "display_title": "Ragamalika - Mudi Ondri (Pashuram)"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "03:10:35",
+          "offset_seconds": 11435,
+          "composition_id": "naadha_vindhu_kalaadhi",
+          "raga_id": "senchurutti",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "03:13:20",
+          "offset_seconds": 11600,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}

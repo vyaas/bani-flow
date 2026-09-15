@@ -1,0 +1,141 @@
+{
+  "id": "srinivasa_sastri_hall_1970s",
+  "video_id": "mlJvfE2X7nE",
+  "url": "https://youtu.be/mlJvfE2X7nE",
+  "title": "Srinivasa Sastri Hall, 1970s",
+  "date": "1970s",
+  "venue": "Mylapore, Madras",
+  "occasion": null,
+  "sources": [
+    {
+      "url": "https://youtu.be/mlJvfE2X7nE",
+      "label": "YouTube",
+      "type": "youtube"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "tn_krishnan",
+          "role": "violin"
+        },
+        {
+          "musician_id": "palghat_mani_iyer",
+          "role": "mridangam"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "maguva_ninnekori",
+          "raga_id": "narayanagowla",
+          "tala": "ata",
+          "display_title": null
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "05:29",
+          "offset_seconds": 329,
+          "composition_id": "sadhinchane",
+          "raga_id": "arabhi",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "12:10",
+          "offset_seconds": 730,
+          "composition_id": "vatapi_ganapathim",
+          "raga_id": "hamsadhwani",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "25:18",
+          "offset_seconds": 1518,
+          "composition_id": "enta_rani",
+          "raga_id": "harikambhoji",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "40:17",
+          "offset_seconds": 2417,
+          "composition_id": "samajavaragamana",
+          "raga_id": "hindolam",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "45:48",
+          "offset_seconds": 2748,
+          "composition_id": "na_jivadara",
+          "raga_id": "bilahari",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:02:13",
+          "offset_seconds": 3733,
+          "composition_id": "vara_narada_narayana",
+          "raga_id": "vijayashri",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:06:37",
+          "offset_seconds": 3997,
+          "composition_id": null,
+          "raga_id": "shankarabharanam",
+          "tala": "adi",
+          "display_title": "RTP"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "02:00:18",
+          "offset_seconds": 7218,
+          "composition_id": "vinayakuni_valenu",
+          "raga_id": "madhyamavati",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "02:02:55",
+          "offset_seconds": 7375,
+          "composition_id": "marubari_talalEnurA",
+          "raga_id": "khamas",
+          "tala": "adi",
+          "display_title": null
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:08:12",
+          "offset_seconds": 7692,
+          "composition_id": null,
+          "raga_id": "jonepuri",
+          "tala": null,
+          "display_title": "Tillana"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:10:37",
+          "offset_seconds": 7837,
+          "composition_id": "ni_nama_roopamulaku",
+          "raga_id": "sowrashtram",
+          "tala": "adi",
+          "display_title": null
+        }
+      ]
+    }
+  ]
+}

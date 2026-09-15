@@ -1,0 +1,14 @@
+{
+  "id": "bhooshaavali",
+  "name": "Bhooshaavali",
+  "tradition": "carnatic",
+  "aliases": [],
+  "melakarta": null,
+  "parent_raga": "vachaspati",
+  "sources": [
+    {
+      "url": "https://www.karnatik.com/ragasb.shtml#bhooshaavaLi",
+      "label": "karnatik.com"
+    }
+  ]
+}
