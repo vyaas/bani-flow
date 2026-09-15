@@ -881,6 +881,21 @@
       "composition_id": "krishna_nee_begane",
       "raga_id": "yamuna_kalyani",
       "version": "Orisai"
+    },
+    {
+      "url": "https://youtu.be/y-GySHK38bA",
+      "label": "Masterclass | Voice and Responsibility",
+      "kind": "lecdem",
+      "subjects": {
+        "raga_ids": [
+          "kambhoji",
+          "shankarabharanam"
+        ],
+        "composition_ids": [],
+        "musician_ids": [
+          "muthuswami_dikshitar"
+        ]
+      }
     }
   ]
 }
