@@ -294,6 +294,18 @@
       "raga_id": "pratapavarali",
       "year": 2018,
       "tala": "adi"
+    },
+    {
+      "url": "https://youtu.be/bywbMCo0-u4",
+      "label": "Meenakshi Me Mudam Dehi · Poorvikalyani",
+      "composition_id": "meenakshi_me_mudam_dehi",
+      "raga_id": "poorvikalyani"
+    },
+    {
+      "url": "https://youtu.be/JxC66kNvApA",
+      "label": "Meenakshi Me Mudam Dehi · Poorvikalyani",
+      "composition_id": "meenakshi_me_mudam_dehi",
+      "raga_id": "poorvikalyani"
     }
   ]
 }
