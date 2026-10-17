@@ -48,7 +48,7 @@ The forces:
 2. ✅ `encodePermalink` emits the persistent-`pl` form when `MediaQueue.playlistId` is set, else the bounded inline form (cap 20, windowed slice, truncation notice via the new `{ fragment, notice }` return).
 3. ✅ Reader rehydrates `MediaQueue` from `q` (`start(items, i, { playlistId, seekSeconds })`, one-shot `_pendingSeek` in `_open`); degrades on missing playlist id to the single-item restore.
 4. ✅ Wire format decided against measured sizes: short-key JSON under the ADR-170 deflate transport; the cap, not the encoding, is the size control.
-5. ⏳ **Test Engineer**: share-from-queue round-trips the sequence + cursor; persistent form survives playlist edits by id; oversized ephemeral queue truncates with a surfaced notice; old permalinks (no `q`) still resolve. (Smoke-verified in Node against the shipped templates during implementation; formal pytest mirror pending.)
+5. ✅ **Test Engineer**: share-from-queue round-trips the sequence + cursor; persistent form survives playlist edits by id; oversized ephemeral queue truncates with a surfaced notice; old permalinks (no `q`) still resolve. Nine node-driven scenarios in `carnatic/tests/js/queue_permalink_behaviour.js` (slice-extracted shipped code, driven by `test_queue_permalink.py`) + rendered-HTML presence guards. The truncation-window test caught a real bug (head of queue dropped near the top cursor) — fixed as `clamp(index-cap+1, 0, len-cap)`.
 
 **Branch**: `adr/164-shareable-queue-permalinks` → PR.
 
