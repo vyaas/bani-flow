@@ -285,6 +285,15 @@ Additive field additions (new optional field on an existing item) do NOT bump th
 Only genuinely-open items live here. When an item is resolved, move it to
 `plans/open-questions-archive.md` rather than marking it in place.
 
+#### ADR-164 queue/playlist permalinks — confirmed next feature (raised 2026-10-17, user)
+User-confirmed live behaviour: Share from inside a running queue encodes only the
+current track (`encodePermalink` emits `{v, m, vid, t, meta, trail, panel}` — no
+`q` block), so the sequence is lost. ADR-164 (Proposed) is the accepted next
+implementation target; ADR-170's `#z=` transport will carry the `q` block for
+free. Entry points when picked up: `encodePermalink` (media_player.js:123),
+`decodePermalinkHash`/`restoreStateFromHash` (permalink.js), `MediaQueue`
+serialisation — UIMAP §5 + §6.2 have the map.
+
 #### Wikipedia URL health (last checked 2026-04-07)
 Nodes whose `wikipedia` field has no own article — flagged for community attention:
 | node id | status | note |
