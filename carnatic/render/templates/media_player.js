@@ -198,8 +198,8 @@ async function encodePermalink(instance) {
           if (all.length > QUEUE_PERMALINK_CAP) {
             // Window the slice so the cursor item always survives: first N
             // when playing near the top, else the N ending at the cursor.
-            start = Math.min(MediaQueue.index, all.length - QUEUE_PERMALINK_CAP);
-            if (start < 0) start = 0;
+            start = Math.max(0, Math.min(MediaQueue.index - QUEUE_PERMALINK_CAP + 1,
+                                         all.length - QUEUE_PERMALINK_CAP));
             notice = 'queue truncated to ' + QUEUE_PERMALINK_CAP + ' of ' + all.length + ' items';
           }
           const kept = all.slice(start, start + QUEUE_PERMALINK_CAP);
