@@ -474,3 +474,7 @@ Format: `- YYYY-MM-DD: <one plain-prose sentence>`. Entries are terse — a log,
 [AGENTS: test-engineer]
 - 2026-08-24: Guarding a cross-file JS interaction with no DOM harness — the chip-filter re-entrancy bug lived in the *interaction* between `graph_view.js` and `bani_flow.js`, so no single-function test would have caught it. Structural assertions against the templates (the source the render pipeline inlines verbatim) work, following AUDIT-019's precedent: pin the *shape* of the fix — `clearBaniFilter(opts)` exists, the cascade is conditional, an unconditional `clearAllChipFilters();` no longer appears at statement level in bani_flow.js, `applyChipFilters` passes `cascade:false`, and `applyZoomLabels`'s `passesFilter` is not merely computed but actually referenced in the `show` expression. That last distinction matters: asserting a variable exists is weaker than asserting it is used, and a refactor can easily leave a dead gate behind.
 [AGENTS: test-engineer]
+
+### 🎛️ Surface
+
+- 2026-10-17: ADR-174 vocabulary layer landed — `carnatic/render/UIMAP.md` (five elements → entry points), `/skill:surface`, drift guard `test_ui_surface_map_drift.py`. The drift guard caught a real error on first run: `_openMusicianPanelForTransit` is *defined* in graph_view.js:1272 but *called* from bani_flow.js — grep a symbol's definition (`function X`), not its call sites, before attributing it to a module.

@@ -33,6 +33,7 @@ Invoke directly, or let the harness match by description:
 | `/skill:librarian` | 📚 Data curation | Adding/editing musicians, recordings, ragas, compositions, edges |
 | `/skill:coder` | 🎵 Toolchain | Writing/fixing `.py` `.js` `.html` `.css` `.sh` |
 | `/skill:tester` | 🧪 Regression guard | Writing/running pytest, render-gate integration tests |
+| `/skill:surface` | 🎛️ UI surface | Changing layout, styling, or interaction of the five graphical elements (bani-flow panel, musician panel, guru-shishya view, mela-janya wheel, media player/queue) — map: `carnatic/render/UIMAP.md` |
 | `/commit` | 🔱 Close session | Push-gate checklist and commit (`.pi/prompts/commit.md`) |
 
 Skill definitions live in `.agents/skills/<role>/SKILL.md` (Agent Skills spec —
@@ -65,6 +66,7 @@ touches schema, adds a field, or spans multiple files.
 
 **Type**: `data` `tool` `render` `schema` `chore` `audit` `test` `fix`
 **Scope**: `node` `lineage` `recording` `composition` `toolchain` `config` `suite` `plans`
+**Scope (render type, ADR-174)**: `bani-panel` `musician-panel` `graph-view` `wheel` `player` `theme`
 
 Branch only when a change is a new paradigm, schema shape, or independently
 revertable unit; everything else goes to `main`. Full push gate: `/commit`.
@@ -81,5 +83,6 @@ revertable unit; everything else goes to `main`. Full push gate: `/commit`.
 ## Reference
 
 - Operating manual: `carnatic/OPERATIONS.md`
+- UI surface map (five graphical elements → code): `carnatic/render/UIMAP.md`
 - Data schema: `carnatic/data/READYOU.md`; recordings: `carnatic/data/recordings/READYOU.md`
 - Architectural decisions: `plans/ADR-*.md`

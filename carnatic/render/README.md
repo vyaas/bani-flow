@@ -27,17 +27,38 @@ carnatic/render/
 └── templates/
     ├── base.html           # HTML skeleton, all CSS, body structure;
     │                       #   <!-- INJECT_SCRIPTS --> placeholder
+    ├── theme.js            # THEME global (ADR-028) — loads FIRST
     ├── graph_view.js       # Cytoscape init, chip filters, zoom labels,
     │                       #   hover popover, selectNode, tap handlers, controls
-    ├── media_player.js     # YouTube player manager, concert bracket (ADR-018),
-    │                       #   buildRecordingsList
+    ├── media_providers.js  # Provider registry (ADR-154): parseMediaUrl/mediaKey
+    ├── panel_components.js # Shared panel constructors (ADR-128)
+    ├── media_player.js     # Player manager, MediaQueue, concert bracket
+    │                       #   (ADR-018), buildRecordingsList
     ├── timeline_view.js    # Timeline layout algorithm + decade ruler SVG
     ├── raga_wheel.js       # Three-view selector (ADR-023) + raga wheel SVG
     ├── bani_flow.js        # Bani Flow filter, listening trail, buildTrailItem,
     │                       #   buildArtistSpan
-    └── search.js           # Shared dropdown helper, musician search,
-                            #   bani flow search
+    ├── search.js           # Shared dropdown helper, musician search,
+    │                       #   bani flow search
+    ├── roles.js            # window.PERFORMER_ROLES (ADR-071)
+    ├── edit_form_spec.js   # window.editFormSpec (ADR-143)
+    ├── entry_forms.js      # Add/edit entry windows + baniBundle staging
+    ├── patch_cart.js       # Patch review surface (ADR-171)
+    ├── chip_dblclick.js    # Chip double-click → edit form (ADR-142)
+    ├── empty_tutorials.js  # Empty-panel tutorials (ADR-086)
+    ├── mobile.js           # Drawer/sheet state machine, mobile player wiring
+    ├── permalink.js        # URL-hash state restoration (ADR-151) — loads LAST
+    └── youtube_kinds.js    # (generated) YouTube kind constants
 ```
+
+(`instruments.py` at the package level emits the JS instrument-glyph registry
+inline — ADR-172; there is no `templates/instruments.js`.)
+
+> **UI work?** `UIMAP.md` (ADR-174) maps the five graphical elements —
+> bani-flow panel, musician panel, guru-shishya view, mela-janya wheel,
+> media player — to DOM ids, entry points, state globals, and the sync logic
+> between them. Consult it before grepping templates. The exact script load
+> order is contractual; see `html_generator.py`.
 
 **Entry point:** `carnatic/render.py` (84 lines) — the orchestrator that calls
 each module in sequence and writes `carnatic/graph.html`.
