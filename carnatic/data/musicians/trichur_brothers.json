@@ -15,5 +15,11 @@
     "carnatic"
   ],
   "bani": null,
-  "youtube": []
+  "youtube": [
+    {
+      "url": "https://youtu.be/tNH6FqmPXi8",
+      "label": "Alapana",
+      "raga_id": "vasantha"
+    }
+  ]
 }

@@ -1217,5 +1217,19 @@
     "target": "trichur_brothers",
     "confidence": 0.9,
     "source_url": null
+  },
+  {
+    "source": "veene_sheshanna",
+    "target": "veena_venkatagiriyappa",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Veena_Venkatagiriyappa",
+    "note": "Studied under Veene Sheshanna (Wikipedia)"
+  },
+  {
+    "source": "veena_venkatagiriyappa",
+    "target": "mysore_doreswamy_iyengar",
+    "confidence": 0.9,
+    "source_url": "https://en.wikipedia.org/wiki/Doreswamy_Iyengar",
+    "note": "Taught by father's friend Veena Venkatagiriyappa (Wikipedia)"
   }
 ]
