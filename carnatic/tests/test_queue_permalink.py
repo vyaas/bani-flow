@@ -68,40 +68,42 @@ def test_queue_permalink_scenario(scenario: str) -> None:
     assert proc.returncode == 0, f"ADR-164 scenario '{scenario}' failed:\n{output}"
 
 
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def _html() -> str:
+    if not GRAPH_HTML.exists():
+        pytest.skip("graph.html not rendered; run bani-render first")
+    return GRAPH_HTML.read_text(encoding="utf-8")
+
+
 class TestQueuePermalinkInRenderedOutput:
     """The q-block wiring must be embedded in graph.html (codec is inlined)."""
 
-    @pytest.fixture(autouse=True, scope="class")
-    def rendered_html(self, request):
-        if not GRAPH_HTML.exists():
-            pytest.skip("graph.html not rendered; run bani-render first")
-        request.cls._html = GRAPH_HTML.read_text(encoding="utf-8")
-
-    _html: str = ""
-
     def test_cap_constant_present(self):
-        assert "QUEUE_PERMALINK_CAP" in self._html
+        assert "QUEUE_PERMALINK_CAP" in _html()
 
     def test_queue_item_encoder_present(self):
-        assert "_encodeQueueItemForPermalink" in self._html
+        assert "_encodeQueueItemForPermalink" in _html()
 
     def test_playlist_identity_present(self):
         """MediaQueue.playlistId — the share-by-reference provenance claim."""
-        assert "playlistId" in self._html
+        assert "playlistId" in _html()
 
     def test_pending_seek_present(self):
         """The one-shot mid-item seek the reader passes via seekSeconds."""
-        assert "_pendingSeek" in self._html
-        assert "seekSeconds" in self._html
+        assert "_pendingSeek" in _html()
+        assert "seekSeconds" in _html()
 
     def test_reader_q_block_present(self):
-        assert "state.q" in self._html
+        assert "state.q" in _html()
 
     def test_truncation_notice_present(self):
-        assert "queue truncated to" in self._html
+        assert "queue truncated to" in _html()
 
     def test_q_rides_v2_no_version_bump(self):
         """ADR-164 D1: q extends v:2 as an optional field — the reader must
         still accept exactly v ∈ {1, 2} (a v:3 would break old readers'
         graceful degradation)."""
-        assert "state.v !== 1 && state.v !== 2" in self._html
+        assert "state.v !== 1 && state.v !== 2" in _html()
