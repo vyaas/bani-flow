@@ -120,6 +120,36 @@ function showCopyLinkToast(msg) {
 // deflate-raw + base64url into a `#z=` fragment (~half the length), falling
 // back to the legacy plain-base64 `#s=` form when CompressionStream is absent.
 // permalink.js reads both prefixes, so old links keep resolving.
+
+// ADR-164: hard cap on inlined ephemeral-queue items. Persistent playlists
+// (ADR-163) ride the permalink by id (`q.pl`) regardless of length — only
+// nameless queues pay the inline cost. 20 items ≈ 2 KB of JSON, which the
+// ADR-170 deflate pass squeezes to a few hundred bytes (repeated keys are
+// nearly free); beyond that we truncate and say so, never silently.
+const QUEUE_PERMALINK_CAP = 20;
+
+// Compact per-item wire form: { m, s?, e?, r?, c?, n?, rec?, l? } — media_key
+// plus only the fields the reader needs to rebuild a playable queue row.
+// `tracks` (segment tracklists) are deliberately NOT inlined (too heavy); the
+// restored item degrades to a plain span, same as the single-item restore.
+function _encodeQueueItemForPermalink(it) {
+  const k = (it && it.media) ? mediaKey(it.media) : null;
+  if (!k) return null;
+  const o = { m: k };
+  if (it.startSeconds > 0) o.s = Math.round(it.startSeconds);
+  const meta = it.meta || {};
+  if (meta.end_seconds > 0) o.e = Math.round(meta.end_seconds);
+  if (meta.ragaId) o.r = meta.ragaId;
+  if (meta.compositionId) o.c = meta.compositionId;
+  if (meta.nodeId) o.n = meta.nodeId;
+  if (meta.recId) o.rec = meta.recId;
+  // Label only when it carries information the chips can't (no composition).
+  if (!o.c && typeof it.label === 'string' && it.label) o.l = it.label.slice(0, 80);
+  return o;
+}
+
+// Returns { fragment, notice } — notice is set when the shared queue had to be
+// truncated to fit the cap, so the share toast can surface it honestly.
 async function encodePermalink(instance) {
   try {
     const trail   = (typeof window.getBaniTrail === 'function')
@@ -152,6 +182,31 @@ async function encodePermalink(instance) {
     if (_trailEntries.length)
       state.trail = _trailEntries.slice(-5);
     if (panelId) state.panel = panelId;
+    // ADR-164: encode the running queue as an optional `q` extension on v:2
+    // (no version bump — old readers ignore unknown fields and degrade to the
+    // single-item restore, which is exactly pre-ADR-164 behaviour). The
+    // position offset stays in the top-level `t`; q carries only the sequence
+    // + cursor. Persistent playlists share by id; ephemeral queues inline.
+    let notice = null;
+    if (window.MediaQueue && MediaQueue.active && MediaQueue.items.length) {
+      if (MediaQueue.playlistId) {
+        state.q = { pl: MediaQueue.playlistId, i: MediaQueue.index };
+      } else {
+        const all = MediaQueue.items.map(_encodeQueueItemForPermalink).filter(Boolean);
+        if (all.length) {
+          let start = 0;
+          if (all.length > QUEUE_PERMALINK_CAP) {
+            // Window the slice so the cursor item always survives: first N
+            // when playing near the top, else the N ending at the cursor.
+            start = Math.min(MediaQueue.index, all.length - QUEUE_PERMALINK_CAP);
+            if (start < 0) start = 0;
+            notice = 'queue truncated to ' + QUEUE_PERMALINK_CAP + ' of ' + all.length + ' items';
+          }
+          const kept = all.slice(start, start + QUEUE_PERMALINK_CAP);
+          state.q = { items: kept, i: Math.max(0, MediaQueue.index - start) };
+        }
+      }
+    }
     const json = JSON.stringify(state);
     // ADR-170: compress with native deflate-raw, then base64url into `#z=`.
     if (typeof CompressionStream === 'function') {
@@ -161,13 +216,13 @@ async function encodePermalink(instance) {
         const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
         let bin = '';
         for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-        return '#z=' + btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        return { fragment: '#z=' + btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''), notice };
       } catch (e) { /* fall through to the legacy plain form */ }
     }
     // Legacy `#s=`: btoa over UTF-8 (percent-escaped bytes → latin1).
     const b64 = btoa(unescape(encodeURIComponent(json)))
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    return '#s=' + b64;
+    return { fragment: '#s=' + b64, notice };
   } catch (err) {
     return null;
   }
@@ -1350,14 +1405,15 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   if (shareBtn) {
     shareBtn.addEventListener('click', async e => {
       e.stopPropagation();
-      const fragment = await encodePermalink(instance);
-      if (!fragment) return;
-      window.location.hash = fragment;
+      const res = await encodePermalink(instance);
+      if (!res || !res.fragment) return;
+      window.location.hash = res.fragment;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(window.location.href).then(() => {
           shareBtn.classList.add('mp-share-copied');
           setTimeout(() => shareBtn.classList.remove('mp-share-copied'), 1500);
-          showCopyLinkToast('Permalink copied!');
+          // ADR-164: surface queue truncation honestly, never silently.
+          showCopyLinkToast(res.notice ? 'Permalink copied! (' + res.notice + ')' : 'Permalink copied!');
         });
       }
     });
@@ -1498,6 +1554,12 @@ const MediaQueue = {
   active: false,
   currentKey: null,
   panelOpen: false,   // ADR-162: whether the "Up Next" panel shows by default
+  // ADR-164: when the queue was started from a saved playlist (ADR-163), its id
+  // rides here so encodePermalink can share the compact reference form
+  // (`q.pl`) instead of inlining items. Any queue edit (add/remove/move) drops
+  // the id — the mutated queue no longer IS the playlist, so it inlines.
+  playlistId: null,
+  _pendingSeek: null, // one-shot startSeconds override for the next _open (permalink restore)
 
   // Queue items arrive with `media` as a raw video_id string (the row thunks store
   // `_p.video_id`). mediaKey() only works on a resolved MediaRef, so an un-resolved
@@ -1511,8 +1573,12 @@ const MediaQueue = {
     return (m === it.media) ? it : Object.assign({}, it, { media: m });
   },
 
-  start(items, startIndex) {
+  // opts: { playlistId } — ADR-164 share-by-reference; { seekSeconds } —
+  // permalink restore lands mid-item (applied once, to the first _open only).
+  start(items, startIndex, opts) {
     const newItems = (Array.isArray(items) ? items : []).map(it => this._normalize(it)).filter(Boolean);
+    this.playlistId = (opts && opts.playlistId) || null;
+    this._pendingSeek = (opts && opts.seekSeconds > 0) ? opts.seekSeconds : null;
     // If the queue is already playing this exact playlist, switch tracks in-place
     // rather than tearing down and re-creating the player window.
     if (this.active && newItems.length === this.items.length &&
@@ -1572,7 +1638,15 @@ const MediaQueue = {
   _open(pos) {
     const it = this.items[this.index];
     if (!it || !it.media) { this.active = false; return; }
-    openOrFocusPlayer(it.media, it.label, it.artistName, it.startSeconds,
+    // ADR-164: a permalink restore seeks mid-item; never rewind before a
+    // span's own start (ADR-156), and consume the override so later _opens
+    // (advance/jump) start items at their natural offsets.
+    let ss = it.startSeconds;
+    if (this._pendingSeek != null) {
+      ss = Math.max(this._pendingSeek, it.startSeconds || 0);
+      this._pendingSeek = null;
+    }
+    openOrFocusPlayer(it.media, it.label, it.artistName, ss,
                       it.concertTitle, it.tracks || [], Object.assign({}, it.meta || {}, { isQueueItem: true }));
     this.currentKey = mediaKey(it.media);
     if (pos) {
@@ -1618,6 +1692,7 @@ const MediaQueue = {
 
   removeAt(i) {
     if (i < 0 || i >= this.items.length) return;
+    this.playlistId = null;   // ADR-164: edited queue no longer mirrors the playlist
     if (i === this.index) {
       // Removing the current item: drop it and play whatever now sits here
       // (the next item), or stop cleanly if it was the last (never stall).
@@ -1649,6 +1724,7 @@ const MediaQueue = {
 
   move(from, to) {
     if (from < 0 || from >= this.items.length || to < 0 || to >= this.items.length || from === to) return;
+    this.playlistId = null;   // ADR-164: reordered queue no longer mirrors the playlist
     const [it] = this.items.splice(from, 1);
     this.items.splice(to, 0, it);
     // Keep `index` pointing at the still-current item after the reorder.
@@ -1666,6 +1742,7 @@ const MediaQueue = {
     const it = this._normalize(item);
     if (!it) return;
     if (!this.active) { this.start([it], 0); return; }
+    this.playlistId = null;   // ADR-164: edited queue no longer mirrors the playlist
     this.items.push(it);
     _refreshQueuePanels();
   },
@@ -1675,14 +1752,15 @@ const MediaQueue = {
     const valid = (items || []).map(it => this._normalize(it)).filter(Boolean);
     if (!valid.length) return;
     if (!this.active) { this.start(valid, 0); return; }
+    this.playlistId = null;   // ADR-164: edited queue no longer mirrors the playlist
     this.items.push(...valid);
     _refreshQueuePanels();
   },
 
-  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; },
+  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; this.playlistId = null; this._pendingSeek = null; },
 };
 window.MediaQueue = MediaQueue;
-window.startMediaQueue = function(items, startIndex) { MediaQueue.start(items, startIndex); };
+window.startMediaQueue = function(items, startIndex, opts) { MediaQueue.start(items, startIndex, opts); };
 
 // ── ADR-165: row registry + harvest primitive ─────────────────────────────────
 // Visibility-channel invariant (§3): filters express exclusion EXCLUSIVELY via
@@ -3358,7 +3436,9 @@ function buildPlaylistRow(pl) {
   play.textContent = '▶';
   play.addEventListener('click', e => {
     e.stopPropagation();
-    if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, 0);
+    // ADR-164: tag the queue with its source playlist so Share encodes the
+    // compact reference form (`q.pl`) rather than inlining every item.
+    if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, 0, { playlistId: pl.id });
   });
   // Wrap in .trail-acts — the row-accordion header gives non-chevron children
   // flex:1, which would stretch a bare play button into an ellipse; .trail-acts
@@ -3398,7 +3478,7 @@ function buildPlaylistRow(pl) {
     tplay.textContent = '▶';
     tplay.addEventListener('click', e => {
       e.stopPropagation();
-      if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, i);
+      if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, i, { playlistId: pl.id });
     });
     // ADR-163 §3: + affordance on each playlist track row
     // ADR-165: same thunk feeds the + menu and the harvest.
@@ -4451,14 +4531,15 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     mobileShareBtn.parentNode.replaceChild(freshShare, mobileShareBtn);
     freshShare.addEventListener('click', async e => {
       e.stopPropagation();
-      const fragment = await encodePermalink(mp);
-      if (!fragment) return;
-      window.location.hash = fragment;
+      const res = await encodePermalink(mp);
+      if (!res || !res.fragment) return;
+      window.location.hash = res.fragment;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(window.location.href).then(() => {
           freshShare.classList.add('mp-share-copied');
           setTimeout(() => freshShare.classList.remove('mp-share-copied'), 1500);
-          showCopyLinkToast('Permalink copied!');
+          // ADR-164: surface queue truncation honestly, never silently.
+          showCopyLinkToast(res.notice ? 'Permalink copied! (' + res.notice + ')' : 'Permalink copied!');
         });
       }
     });

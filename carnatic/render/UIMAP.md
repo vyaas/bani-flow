@@ -270,7 +270,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
 - `openPlayer(videoId, title, playerId, anchorRect)` / `closePlayer(playerId)`
   — *embedded* players (e.g. wheel sruti drone).
 - **`MediaQueue`** (`window.MediaQueue`): `{items, index, active, currentKey,
-  panelOpen}`; `start(items, startIndex)` (also `window.startMediaQueue`),
+  panelOpen, playlistId}` (ADR-164: source-playlist id for share-by-reference,
+  dropped on any queue edit; `_pendingSeek` = one-shot permalink restore seek);
+  `start(items, startIndex, opts)` (also `window.startMediaQueue`),
   `advance`, `jumpTo`/`previous`/`next`, `removeAt(i)`, `move(from,to)`
   (recomputes `index` from `currentKey` — the reorder precedent), `isCurrent`,
   `setPanelOpen`. **Invariant:** items' `media` must be MediaRef-normalised
@@ -299,8 +301,14 @@ upward-surface pattern (`bottom:100%`, flip-down near viewport top);
 **Connects to:** everything plays through here — trail play-acts (§1),
 recording rows (§2), WDP playbacks (§4), sruti drone, tanpura (ADR-029).
 `onEnded` → `MediaQueue.advance()`. `refreshPlayingIndicators()` syncs ▶
-state across panels. Permalink (permalink.js) restores the open player; queue
-in permalink is ADR-164 (open).
+state across panels. Permalink (permalink.js) restores the open player **and
+the queue** (ADR-164): `encodePermalink` emits an optional `q` block on the
+v:2 state — `{pl, i}` for a saved playlist (id + cursor; reader rehydrates
+from `playlists` via `_playlistToQueueItems`, degrades to single item on
+missing id) or `{items, i}` for an ephemeral queue (compact refs,
+hard-capped at `QUEUE_PERMALINK_CAP` = 20 with a surfaced truncation toast).
+Playlist rows start the queue with `{playlistId}` so share-by-reference
+kicks in; `t` stays top-level and seeks mid-item via `_pendingSeek`.
 
 **Gotchas (from LEARNINGS):** queue UI only appears when `MediaQueue.active`
 (correct-by-design, reads as broken); transformed ancestors break
@@ -309,7 +317,8 @@ desktop tracklist and queue are mutually exclusive (both open upward).
 
 **ADRs:** 154 (providers), 155 (Plyr), 156 (spans), 157 (window reuse, queue
 phase A), 158–160, 161 (toggle primitive, upward surfaces), 162 (visible
-queue), 163 (playlists), 165, 168, 170 (permalink). AUDITs: 013 (chip pencil
+queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink).
+AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
 
