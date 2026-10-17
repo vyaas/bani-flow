@@ -52,6 +52,8 @@
       var state = JSON.parse(json);
       // ADR-154: v1 carried a YouTube `vid`; v2 carries a provider-qualified
       // media_key in `m` (and still emits `vid` for YouTube media). Accept both.
+      // ADR-164: the queue rides v2 as an optional `q` extension — no version
+      // bump, so old readers ignore it and degrade to the single-item restore.
       if (state.v !== 1 && state.v !== 2) {
         console.warn('[permalink] unsupported schema version:', state.v);
         return null;
@@ -101,7 +103,62 @@
         }
       }
 
-      // 3. Open the player with the restored state.
+      // 3. ADR-164: rehydrate the queue from the optional `q` block.
+      //    Persistent form (`q.pl`) resolves the ADR-163 playlist by id and
+      //    rebuilds items from the loaded data; inline form (`q.items`)
+      //    rebuilds the (possibly truncated) ephemeral queue. Either way the
+      //    cursor (`q.i`) is clamped and the top-level `t` seeks mid-item.
+      //    Any failure falls through to the single-item restore below.
+      var queueRestored = false;
+      if (state.q && window.MediaQueue) {
+        try {
+          if (state.q.pl) {
+            var pl = (typeof playlists !== 'undefined' && typeof _playlistToQueueItems === 'function')
+              ? playlists.find(function(p) { return p.id === state.q.pl; }) : null;
+            if (pl) {
+              var plItems = _playlistToQueueItems(pl);
+              if (plItems.length) {
+                var pi = Math.max(0, Math.min(state.q.i || 0, plItems.length - 1));
+                MediaQueue.start(plItems, pi, { playlistId: pl.id, seekSeconds: state.t || 0 });
+                queueRestored = true;
+              }
+            } else {
+              // Deleted/unknown playlist: degrade to the single current item.
+              console.warn('[permalink] playlist not found, sharing single item:', state.q.pl);
+            }
+          } else if (Array.isArray(state.q.items)) {
+            var qItems = state.q.items.map(function(qi) {
+              if (!qi || !qi.m) return null;
+              return {
+                media:        qi.m,          // media_key — MediaQueue._normalize resolves it
+                label:        qi.l || qi.c || '',
+                artistName:   '',
+                startSeconds: qi.s || 0,
+                concertTitle: '',
+                tracks:       [],            // tracklists are not inlined (ADR-164)
+                meta: {
+                  nodeId:        qi.n   || null,
+                  ragaId:        qi.r   || null,
+                  compositionId: qi.c   || null,
+                  recId:         qi.rec || null,
+                  end_seconds:   qi.e   || null,
+                },
+              };
+            }).filter(Boolean);
+            if (qItems.length) {
+              var qi2 = Math.max(0, Math.min(state.q.i || 0, qItems.length - 1));
+              MediaQueue.start(qItems, qi2, { seekSeconds: state.t || 0 });
+              queueRestored = true;
+            }
+          }
+        } catch (e) {
+          console.warn('[permalink] queue restore skipped:', e);
+        }
+      }
+
+      // 4. Open the player with the restored state — skipped when the queue
+      //    restore already opened it (the queue head IS the current item).
+      if (queueRestored) return;
       var meta = state.meta || {};
       // ADR-154: prefer the media_key (v2); fall back to the bare vid (v1).
       // openOrFocusPlayer.resolveMedia() accepts a media_key, vid, or url.

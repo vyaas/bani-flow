@@ -6,6 +6,16 @@ resolved, move it here.
 
 ---
 
+#### ADR-164 queue/playlist permalinks (raised 2026-10-17, resolved 2026-10-17)
+- **RESOLVED** — implemented on branch `adr/164-shareable-queue-permalinks`.
+  `encodePermalink` emits an optional `q` block on the v:2 state (no version
+  bump — old readers ignore it and degrade to the single-item restore):
+  `{pl, i}` share-by-reference for saved playlists (MediaQueue.playlistId,
+  dropped on any queue edit), `{items, i}` inline for ephemeral queues
+  (compact refs hard-capped at 20 with a surfaced truncation toast). Reader
+  (permalink.js) rehydrates via `MediaQueue.start(items, i, {playlistId,
+  seekSeconds})`; missing playlist ids degrade to the single current item.
+
 #### Raga wheel — music coverage bug (resolved 2026-04-13)
 - **RESOLVED** — `compsByRaga` in `raga_wheel.js` now indexes three sources: (1) compositions.json compositions[], (2) ragaToPerf structured recording performances, (3) elements[].data.tracks[] youtube entries. hamir_kalyani now shows 2 satellite nodes; 24 synthetic entries added across all ragas. See Carnatic Coder learning log 2026-04-13.
 
