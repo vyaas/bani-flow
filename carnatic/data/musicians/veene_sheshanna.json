@@ -1,0 +1,19 @@
+{
+  "id": "veene_sheshanna",
+  "label": "Veene Sheshanna",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Veene_Sheshanna",
+      "label": "Wikipedia"
+    }
+  ],
+  "born": 1852,
+  "died": 1926,
+  "era": "bridge",
+  "instrument": "veena",
+  "traditions": [
+    "carnatic"
+  ],
+  "bani": null,
+  "youtube": []
+}
