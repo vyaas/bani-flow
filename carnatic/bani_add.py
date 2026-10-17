@@ -761,7 +761,7 @@ def _process_recordings(
             # subjects.raga_ids / subjects.composition_ids / subjects.musician_ids
             # — the writer returns a structured refusal until the architectural
             # question "recording subjects vs. lecdem-only" is resolved (see
-            # .clinerules Open questions 2026-05-16).
+            # plans/open-questions-archive.md 2026-05-16).
             if array_sel.startswith("subjects."):
                 subject_kind = array_sel.split(".", 1)[1]
                 subject_id = value if isinstance(value, str) else (

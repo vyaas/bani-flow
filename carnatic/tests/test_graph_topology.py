@@ -62,7 +62,7 @@ _KNOWN_ISOLATES: frozenset[str] = frozenset({
     "madurai_srinivasa_iyengar",       # Vocal; golden_age; no birth year — Librarian to verify and add data
     "t_kesavulu",                      # Violin; golden_age; no birth year — Librarian to verify and add data
     "dv_gundappa",                     # Kannada poet/philosopher; not a musician per se — Librarian to verify significance
-    # ── Unresolved open questions (see carnatic/.clinerules)
+    # ── Unresolved open questions (see carnatic/OPERATIONS.md)
     "nagapatnam_veeraswamy_pillai",    # Vocal; bridge era; no Wikipedia article found — review for removal
     "tarangampadi_panchanada_iyer",    # No era/instrument/born; completely sparse — review for removal
 })

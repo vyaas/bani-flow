@@ -1,8 +1,9 @@
-# Carnatic Guru-Shishya Knowledge Graph — Roo Session Rules
+# Carnatic Guru-Shishya Knowledge Graph — Operating Manual
 
-**[2026-04-16] MIGRATION NOTE**: Agent personas and workflows are now defined in `CLAUDE.md` (at project root).
-This file (`.clinerules`) contains workflows, CLI tools, and the data model reference — the operating manual. Dated learning logs now live in `carnatic/LEARNINGS.md` (recall on demand, not read at session start).
-See CLAUDE.md for agent boundaries and system overview.
+This is the operating manual: CLI tools, workflows, and the data model reference.
+The agent map (hard rules, roles, commit protocol, startup) is `AGENTS.md` at the
+project root. Dated learning logs live in `carnatic/LEARNINGS.md` (recall on
+demand, not read at session start).
 
 ## Project layout
 ```
@@ -33,9 +34,10 @@ for the moment you actually need to construct a diff, and even then prefer
 
 ## Virtual environment — HARD RULE
 
-All commands in this project must run inside the project `.venv`:
+All commands in this project must run inside the project venv (`.venv` or
+`.bani-flow`, whichever exists in this checkout):
 ```bash
-source .venv/bin/activate   # once per shell session
+source .venv/bin/activate   # once per shell session (or .bani-flow/bin/activate)
 # then:
 bani-render               # rebuild graph.html
 bani-serve                # local dev server
@@ -44,23 +46,11 @@ python3 carnatic/cli.py stats
 If `.venv` is not activated, `bani-render` will not be found on PATH.
 Never use the system `python3` or a global `pip` for this project.
 
-## Agent domain boundaries — HARD RULES
-
-| Agent | May edit | Must never edit |
-|---|---|---|
-| 📚 Librarian | `*.json` data files only | `.py`, `.html`, `.js` code files |
-| 🎵 Carnatic Coder | `.py`, `.html`, `.js`, `.md`, `.sh`, `.css` | Any `.json` file directly |
-| 🏛️ Graph Architect | `plans/*.md` ADRs | Data files, code files |
-
-**The Carnatic Coder must never directly edit or create any `.json` file.** If a JSON file needs changing, the Coder writes a script; the Librarian reviews and applies it.
-
 ## Session startup
-0. **Activate the project venv first:** `source .venv/bin/activate` — all `bani-*` commands and `python3 carnatic/` scripts must run inside this venv.
-1. **Read CLAUDE.md** at the project root — it defines the 4-agent system (Librarian, Coder, Architect, Orchestrator) and agent boundaries.
-2. Run `python3 carnatic/cli.py stats` to orient — replaces reading `musicians.json` and `compositions.json` in full.
-3. Use targeted CLI queries (see **CLI Tools** section below) before any `read_file` call.
-4. Read the **Open questions** section below — it is the living memory of this project.
-5. At the end of every session: update the Open questions section, append your learning log entry (see **Agent learning logs** section below), then **commit and push your work** (see Git protocol below).
+
+See `AGENTS.md` → **Session startup**. In short: activate the venv, orient with
+`cli.py stats`, skim **Open questions** below. Use targeted CLI queries before
+any full-file read.
 
 > **Full file reads** (`read_file: musicians.json`) are reserved for patching sessions where you need to construct an `apply_diff` block. Even then, use `python3 carnatic/cli.py get-musician <id>` to retrieve the exact current value of a field before constructing the diff — not the whole file. For the canonical data schema, see `carnatic/data/READYOU.md`.
 
@@ -172,7 +162,7 @@ Step 2: bani-render && python3 carnatic/cli.py validate
 3. When tagging recordings: also add `composition_id`, `raga_id`, `year` to youtube entries where identifiable
 4. Run `bani-render` — confirm node/edge counts change as expected
 5. Run `python3 carnatic/serve.py` to visualise (or remind user to refresh if already running)
-6. **End of session**: update Open questions below, then **commit and push** — include a plain-prose summary of what changed in the commit body.
+6. **End of session**: update Open questions below if anything was resolved or newly blocked, then commit and push (see `AGENTS.md` → Commit protocol, or `/commit` in pi).
 
 ## Patching rules
 - **Never edit `graph.html` by hand**
@@ -253,36 +243,13 @@ YouTube embeds require localhost — never open graph.html as a file:// URL.
 
 ---
 
-## Git protocol — temporal preservation
+## Schema changes — ADR convention
 
-Carnatic music has endured because each generation transmitted it faithfully and completely.
-Git is our instrument of faithful, complete transmission. **Every agent commits and pushes
-their own work at the end of every session in which files changed.**
-
-### Pre-commit checklist
-- [ ] `git diff --stat` reviewed — no unintended files staged
-- [ ] `bani-render` run if `musicians.json` or `compositions.json` changed (graph.html must be current)
-- [ ] No debug output left in scripts
-- [ ] `carnatic/.clinerules` Open questions section updated
-- [ ] Commit message follows format below
-- [ ] `git push` executed after commit
-
-### Commit message format
-```
-<type>(<scope>): <imperative summary, ≤72 chars>
-
-<body: what changed and why>
-[AGENTS: <comma-separated agent slugs>]
-```
-
-**Type vocabulary:** `data` · `tool` · `render` · `schema` · `fix` · `chore` · `branch`
-**Scope vocabulary:** `lineage` · `node` · `recording` · `composition` · `toolchain` · `config`
-
-### Branching policy
-- **`main`** — always stable; every commit must pass the pre-commit checklist
-- **`experiment/<name>`** — schema experiments or rendering pipeline rewrites
-- **`data/<name>`** — large batch data imports pending review
-- Merge via `git merge --no-ff`; delete branch after merge
+No persona needed. To change the schema: write `plans/ADR-NNN-<slug>.md`
+(next number after the highest existing ADR), status **Proposed**; get user
+approval; mark **Accepted**; implement on a branch `adr/NNN-<slug>` and merge
+via PR. Cite `[ADR: ADR-NNN]` in the implementing commits. An ADR that replaces
+an older one marks the older one **Superseded**.
 
 ---
 
@@ -313,36 +280,10 @@ Additive field additions (new optional field on an existing item) do NOT bump th
 
 ---
 
-## Open questions  ← living memory; update every session
+## Open questions  ← living memory of what is unresolved
 
-
-#### Raga wheel — music coverage bug (resolved 2026-04-13)
-- **RESOLVED** — `compsByRaga` in `raga_wheel.js` now indexes three sources: (1) compositions.json compositions[], (2) ragaToPerf structured recording performances, (3) elements[].data.tracks[] youtube entries. hamir_kalyani now shows 2 satellite nodes; 24 synthetic entries added across all ragas. See Carnatic Coder learning log 2026-04-13.
-
-#### Recording subjects: top-level vs. lecdem-only (resolved 2026-05-16)
-- **RESOLVED — subjects remain lecdem-only.** ADR-143 amended 2026-05-16: subjects live on `musicians/*.json.lecdems[*].subjects` and are appended through the owning musician chip's existing `youtube[vid].subjects.*` surface, not through the recording chip. The recording chip's Edit form drops `subjects.*` from `editFormSpec.recording.appendable`. `writer.append_to_recording_subject` is kept as a hard refusal so v2 bundles authored against the original draft fail with an actionable message rather than writing nowhere; the bani_add dispatcher routes `op=append, array='subjects.*'` on a recording to that refusal at ingest time. Rationale: migrating subjects to top-level recordings would duplicate state and weaken the musician–lecdem provenance link.
-### Resolved
-- **Vina Dhanammal ↔ Trinity**: chain is `shyama_shastri → subbaraya_sastri → vina_dhanammal`
-  (Dhanammal's mother trained under Subbaraya Sastri, son of Shyama Shastri). Confidence 0.90;
-  note records the indirect nature.
-- **T. Muktha dates**: corrected to born 1914, died 2007.
-- **T. Muktha lineage note**: corrected to "via Kamakshi" (not Jayammal).
-- **T. Viswanathan's guru**: formal guru was Tiruppamparam Swaminatha Pillai (~20 years).
-  `vina_dhanammal → t_viswanathan` retained at 0.85 as inherited-bani edge; primary guru
-  edge is `swaminatha_pillai → t_viswanathan` (0.97).
-- **Dhanammal daughter branches**: Kamakshi (→ Brinda, Muktha) and Jayammal (→ Balasaraswati,
-  Viswanathan) are now separate intermediate nodes.
-- **T. Balasaraswati** added (1918–1984, Sangeetha Kalanidhi 1973, Padma Vibhushan 1977).
-- **Kanchipuram Naina Pillai** added — taught both Brinda and Muktha.
-- **ADR-021 Phase 3 melakarta migration** completed 2026-04-12: 13 mela ragas patched with is_melakarta=true and cakra; 53 janya ragas set to is_melakarta=false. ADR-022 UI now fully functional for mela/janya navigation.
-
-### Still open
-
-#### Data integrity — orphan composer_id (raised 2026-06-10, resolved 2026-06-12)
-- **RESOLVED** — `shankari_shankuru.json` `composer_id` was the misspelled
-`"syama_shastri"` (dropped 'h'); corrected to canonical `"shyama_shastri"`.
-`cli.py validate` now reports "Graph is coherent" (0 errors) after `bani-render`.
-Shyama Shastri now links 18 compositions. See Librarian learning log 2026-06-12.
+Only genuinely-open items live here. When an item is resolved, move it to
+`plans/open-questions-archive.md` rather than marking it in place.
 
 #### Wikipedia URL health (last checked 2026-04-07)
 Nodes whose `wikipedia` field has no own article — flagged for community attention:
@@ -419,6 +360,7 @@ archive at session start** — recall from it only when relevant:
 grep -in "<topic>" carnatic/LEARNINGS.md
 ```
 
-**Appending a new entry** (end of session): add one terse dated line to your
-agent's subsection in `carnatic/LEARNINGS.md`, not here.
+**Appending a new entry**: add one terse dated line to the relevant subsection
+in `carnatic/LEARNINGS.md` **only when you hit a reusable pitfall or pattern** —
+not every session.
 Format: `- YYYY-MM-DD: <one plain-prose sentence>`.
