@@ -1211,5 +1211,11 @@
     "target": "palghat_ramprasad",
     "confidence": 0.9,
     "source_url": null
+  },
+  {
+    "source": "ps_narayanaswamy",
+    "target": "trichur_brothers",
+    "confidence": 0.9,
+    "source_url": null
   }
 ]
