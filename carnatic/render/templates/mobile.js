@@ -70,6 +70,35 @@
     if (tabTrail)    tabTrail.classList.toggle('tab-active', state === 'TRAIL');
   }
 
+  // ADR-176: a panel open/close re-insets the view window (the four walls), so
+  // the graph and the raga wheel must re-fit into the new centre. Cytoscape
+  // caches container dimensions; the wheel draws from the SVG's client size.
+  function _refitViews() {
+    // ADR-176: the playlist editor's bottom is the view's top wall. Re-publish
+    // it before measuring so cy / the wheel fit the freshly-inset window.
+    if (typeof _syncViewTopInset === 'function') _syncViewTopInset();
+    if (typeof cy !== 'undefined' && cy) {
+      cy.resize();
+      if (typeof currentView !== 'undefined' && currentView === 'graph' &&
+          typeof cy.fit === 'function') {
+        cy.fit(undefined, 60);
+      }
+    }
+    const wheel = document.getElementById('raga-wheel');
+    if (wheel && wheel.style.display !== 'none' && typeof window.drawRagaWheel === 'function') {
+      window.drawRagaWheel();
+    }
+  }
+
+  // rAF-debounced refit — the playlist editor can change box many times while a
+  // queue renders, and cy.fit()/drawRagaWheel() are not free.
+  let _refitRaf = 0;
+  function _scheduleRefit() {
+    if (_refitRaf) cancelAnimationFrame(_refitRaf);
+    _refitRaf = requestAnimationFrame(function () { _refitRaf = 0; _refitViews(); });
+  }
+  window.refitViewWindow = _scheduleRefit;   // called by media_player.js on editor resize
+
   function setPanelState(newState) {
     // ADR-046: guard removed — desktop now participates in the drawer state machine
 
@@ -100,10 +129,8 @@
     _updateTabs(newState);
     _updateDesktopHandles(newState);
 
-    // Cytoscape caches container dimensions; nudge after transition starts
-    if (typeof cy !== 'undefined') {
-      setTimeout(function () { cy.resize(); }, 30);
-    }
+    // ADR-176: re-fit the view into the re-inset window after the CSS applies.
+    setTimeout(_scheduleRefit, 30);
   }
 
   // ── Backward-compatible public API ───────────────────────────────────────
@@ -237,9 +264,8 @@
     try {
       localStorage.setItem('baniLeftPinned', String(leftPinned));
     } catch (e) { /* storage unavailable — ignore */ }
-    if (typeof cy !== 'undefined') {
-      setTimeout(function () { cy.resize(); }, 50);
-    }
+    // ADR-176: re-fit the view into the re-inset window.
+    setTimeout(_scheduleRefit, 30);
   }
 
   function _applyPinState() {
@@ -258,10 +284,9 @@
       localStorage.setItem('baniRightPinned', String(rightPinned));
     } catch (e) { /* storage unavailable — ignore */ }
 
-    // Cytoscape must recalculate canvas size after grid change
-    if (typeof cy !== 'undefined') {
-      setTimeout(function () { cy.resize(); }, 50);
-    }
+    // ADR-176: the right panel's grid column animates (0.22s), so re-fit after
+    // the transition settles rather than mid-flight.
+    setTimeout(_scheduleRefit, 280);
   }
 
   function toggleRightPin() {

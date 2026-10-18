@@ -173,7 +173,13 @@ timeline_view.js, read by raga_wheel.js's `switchView`);
 
 **CSS hooks:** canvas colors come from `THEME`/Python `graph_builder.py`
 (`ERA_COLORS`, `INSTRUMENT_SHAPES`, `NODE_SIZES`) — change them in Python, not
-JS. Overlay chips use chip classes.
+JS. Overlay chips use chip classes. **View window (ADR-176):** `#canvas-wrap`
+is inset on desktop to the four walls (between the open panels, above the bottom
+floor); its top wall is `max(--chrome-top, --playlist-ui-bottom + gap)` —
+`media_player.js` `_syncViewTopInset()` publishes the playlist UI's live bottom
+so a deepening editor pushes the view (and `#layout-controls-float`) lower.
+`mobile.js` `_refitViews()`/`window.refitViewWindow` re-run `cy.resize()`/
+`cy.fit()` and `drawRagaWheel()` when a panel or the editor re-insets it.
 
 **Connects to:** shown/hidden by `switchView('graph')` in raga_wheel.js
 (re-runs `applyTrinityTriangleLayout` on re-entry, calls `cy.resize()`); node
@@ -182,7 +188,7 @@ tap → `selectNode` → §2. Bani filter dims non-matching nodes.
 **ADRs:** 018, 027, 028 (theme), 033/034, 044, 046, 055 (content-bearing),
 058, 064/066, 068/069/070, 074 (DOM label chips), 078 (lecdem), 080/081, 086,
 110 (composers as musicians), 114, 134, 137, 151, 163, 165/166, 172
-(instrument glyphs), 173 (scholar cap).
+(instrument glyphs), 173 (scholar cap), 176 (inset view window).
 
 ---
 
@@ -229,7 +235,9 @@ mutated only via `_applyTransform()` (`window._wheelApplyTransform`).
 
 **CSS hooks:** SVG colors from `THEME` (e.g. `THEME.bgPanel` via
 `getCakraColor`) and chip tokens via `_readChipTokens()` /
-`_readChipSpacingK()` — never hardcode hex in wheel code.
+`_readChipSpacingK()` — never hardcode hex in wheel code. The wheel is drawn
+into the same inset view window (ADR-176); `mobile.js` `_refitViews()` calls
+`drawRagaWheel()` after a panel re-insets the SVG.
 
 **Connects to:** `switchView('raga')` re-applies `activeBaniFilter` (§1) via
 `syncRagaWheelToFilter`, resolves `window._pendingWheelSubject`, and draws so
@@ -239,7 +247,7 @@ the musician panel (§2). Sruti pie plays drone via `openPlayer`/`closePlayer`
 
 **ADRs:** 023 (three-view selector), 025 (bani↔wheel sync), 030, 035, 073,
 093, 096, 123/124/126, 131 (sruti pie, R3), 132, 140 (WDP anchoring), 151
-(permalink), 169 (tanpura glyph).
+(permalink), 169 (tanpura glyph), 176 (inset view window).
 
 ---
 
@@ -275,19 +283,30 @@ operators**), and non-current rows reserve `.mp-queue-collapse-phantom` /
 `.mp-queue-op-phantom` columns so the text and trailing buttons never shift.
 Utility players (sruti/tanpura) keep `.mp-bar`.
 `_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
-bar + open editor (`_playlistUiRect`; bottom-centre, side if no room below);
-`_snapPlayerIfNearBar` re-docks on drag release, and `_avoidPlaylistUI` clamps a
-drag so the player can never overlap the editor. `_playerMatchWidth` keeps the
-player flush with the playlist UI width unless the user resizes it (`_userResized`).
-z-order: players `≤700`, `#playlist-bar` `750`, modals `1000+` — never occluded.
+bar + open editor (`_playlistUiRect`); `_snapPlayerIfNearBar` re-settles on drag
+release. **ADR-176 (non-overlap contract):** the four app-level surfaces — left
+sidebar, right sidebar, playlist UI, and every floating player — must never
+overlap. `_uiObstacleRects()` unions the two open sidebars (`_openSidebarRects`)
+with `_playlistUiRect()`; `_resolveNonOverlap()` is the pure nearest-free-spot
+solver; `_avoidUIOverlap()` clamps a drag; `_repositionPlayers()` re-runs on
+viewport resize, drawer class flips, transform settle, and bar resize (guards
+installed by `_installPlacementGuards`); `_clampPlayerWidthToColumn()` caps a
+user-widened player to the free column via `max-width`. `_playerMatchWidth` keeps
+the player flush with the playlist UI width unless the user resizes it
+(`_userResized`). z-order: players `≤700`, `#playlist-bar` `750`, modals
+`1000+` — the geometric constraints, not z, are what guarantee non-overlap.
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
 
 **ADR-175: the persistent Playlist Bar** is the one static root:
-`#playlist-bar` (app chrome, top-centre desktop; second top band on mobile) with
-`#pb-prev` / `#pb-play` / `#pb-next` / `#pb-stop` (`#pb-transport`), `#pb-summary`,
-`#pb-count`, `#pb-editor-toggle`. The ADR-162 editor is re-parented into it as
-`.mp-queue-bar` (drops **downward** from the bar) so the playlist is
+`#playlist-bar` (app chrome on desktop, gas-like between the view selector and
+help button and **clamped to the canvas column** — `body:has(#left-sidebar.drawer-open)` /
+`body:has(#right-sidebar.drawer-open)` pin its `left`/`right` to the panel widths so
+it, the `.mp-queue-bar` editor and the docked player never occlude a sidebar;
+second top band on mobile) with `#pb-prev` / `#pb-play` / `#pb-next` / `#pb-stop`
+(`#pb-transport`), `#pb-summary` (thin horizontal scrollbar when the chips
+overflow), `#pb-count`, `#pb-editor-toggle`. The ADR-162 editor is re-parented
+into it as `.mp-queue-bar` (drops **downward** from the bar) so the playlist is
 visible/editable with the player open *or* closed. The playing item's row opens
 with a leftmost `.mp-queue-collapse` chevron (show/hide the player).
 
@@ -357,7 +376,8 @@ desktop tracklist and queue are mutually exclusive (both open upward).
 
 **ADRs:** 154 (providers), 155 (Plyr), 156 (spans), 157 (window reuse, queue
 phase A), 158–160, 161 (toggle primitive, upward surfaces), 162 (visible
-queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink).
+queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
+176 (app-level non-overlap contract).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
@@ -417,7 +437,11 @@ permalink.js    LAST — restores state using every global above
 `mobile.js`: `setPanelState(newState)` — opens/closes `#left-sidebar` /
 `#right-sidebar` via `.drawer-open`; desktop toggles `#left-panel-toggle` /
 `#right-panel-toggle` (`.float-toggle-active`); `peekBottomSheet()` /
-`dismissBottomSheet()` exposed as globals.
+`dismissBottomSheet()` exposed as globals. **View refit (ADR-176):**
+`_refitViews()` re-publishes the playlist top wall (`_syncViewTopInset`) then
+`cy.resize()`/`cy.fit()` + `drawRagaWheel()`; rAF-debounced as
+`window.refitViewWindow`, which `media_player.js` calls when the editor box
+changes.
 
 ### 6.5 Chips (the shared atom)
 

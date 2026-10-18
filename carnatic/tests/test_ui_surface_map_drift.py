@@ -101,7 +101,10 @@ CLAIMS: dict[str, list[str]] = {
         "function _pbPlayPauseCurrent", "function _pbExpandPlayer",
         "function _pbStopCurrent",
         "function _dockPlayer", "function _snapPlayerIfNearBar",
-        "function _playlistUiRect", "function _avoidPlaylistUI",
+        "function _playlistUiRect", "function _avoidUIOverlap",
+        "function _uiObstacleRects", "function _resolveNonOverlap",
+        "function _clampPlayerWidthToColumn", "function _repositionPlayers",
+        "function _syncViewTopInset",
         "function _syncPlayerControls",
         "function _toggleCurrentPlayerCollapse", "function _isCurrentPlayerCollapsed",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
@@ -134,6 +137,8 @@ CLAIMS: dict[str, list[str]] = {
         # §6.4 — drawer state machine
         "function setPanelState", "function peekBottomSheet",
         "function dismissBottomSheet",
+        # §6.4 — ADR-176 view-window refit hook
+        "window.refitViewWindow",
     ],
 }
 

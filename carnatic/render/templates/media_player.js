@@ -333,7 +333,7 @@ function wireDrag(el, bar) {
       if (!dragging) return;
       let left = Math.max(0, Math.min(cx - ox, bounds.width  - el.offsetWidth));
       let top  = Math.max(0, Math.min(cy - oy, bounds.height - el.offsetHeight));
-      const clamped = _avoidPlaylistUI(el, left, top);
+      const clamped = _avoidUIOverlap(el, left, top);
       el.style.left = clamped.left + 'px';
       el.style.top  = clamped.top  + 'px';
       el._detached = true;   // ADR-175: independent of the playlist now
@@ -678,23 +678,129 @@ function _playlistUiRect() {
   return { left, top, right, bottom, width: right - left, height: bottom - top };
 }
 
-// Clamp a proposed parent-space position so the player does not overlap the
-// playlist UI (pushed below it, or to the side when that would overflow).
-function _avoidPlaylistUI(el, left, top) {
+// ADR-176 (view window): the bottom of the playlist UI (bar + open editor) is
+// the top wall of the centre view. Publish it as `--playlist-ui-bottom` so
+// #canvas-wrap's margin-top tracks the editor as it deepens; the matching view
+// re-fit is requested through window.refitViewWindow (mobile.js), which
+// re-centres cy / the raga wheel after the new inset lands.
+function _syncViewTopInset() {
   const ui = _playlistUiRect();
+  const main = document.getElementById('main');
+  const root = document.documentElement;
+  let bottom = 0;
+  if (ui && main) {
+    bottom = Math.max(0, Math.round(ui.bottom - main.getBoundingClientRect().top));
+  }
+  root.style.setProperty('--playlist-ui-bottom', bottom + 'px');
+}
+
+// ── ADR-176: the app-level non-overlap contract ────────────────────────────
+// Four surfaces must never overlap one another: the left (bani-flow) sidebar,
+// the right (musician) sidebar, the playlist UI (bar + open editor), and every
+// floating media player. The first three are laid out by CSS; the player is
+// the only free actor, so every player position funnels through
+// _resolveNonOverlap(). The sidebars animate open/close with a transform, so a
+// closed drawer (translated off-screen) reads as touching the viewport edge
+// and is correctly excluded.
+
+// Viewport-space rects of the sidebars that are actually on screen.
+function _openSidebarRects() {
+  const rects = [];
+  ['left-sidebar', 'right-sidebar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;              // collapsed / display:none
+    if (r.right <= 1 || r.left >= window.innerWidth - 1) return;  // off-screen (closed)
+    rects.push({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });
+  });
+  return rects;
+}
+
+// Every app-level surface a player must stay clear of.
+function _uiObstacleRects() {
+  const rects = _openSidebarRects();
+  const ui = _playlistUiRect();
+  if (ui) rects.push({ left: ui.left, top: ui.top, right: ui.right, bottom: ui.bottom });
+  return rects;
+}
+
+// Pure geometry: do two rects overlap? (margin enlarges `a` before testing.)
+function _rectsOverlap(a, b, margin) {
+  const m = margin || 0;
+  return a.left < b.right + m && a.right > b.left - m &&
+         a.top < b.bottom + m && a.bottom > b.top - m;
+}
+
+// Pure geometry: nearest w×h position to (left, top) that avoids every obstacle
+// and stays inside `bounds` (all viewport coords). Candidates are the proposal
+// plus, for each obstacle, the four edges pushed just clear. Zero-overlap
+// candidates win; among them the closest to the proposal. When none is feasible
+// (a pathologically cramped viewport) the least-overlap candidate is returned
+// so the constraint degrades gracefully instead of teleporting the player.
+function _resolveNonOverlap(left, top, w, h, obstacles, bounds, margin) {
+  const m = (margin == null) ? 6 : margin;
+  const cands = [{ left, top }];
+  obstacles.forEach(o => {
+    // Both a comfortable gap and a flush (zero-gap) edge: when the player is
+    // exactly as wide as the free column, only the flush edge fits.
+    [0, m].forEach(gap => {
+      cands.push({ left, top: o.bottom + gap });
+      cands.push({ left, top: o.top - gap - h });
+      cands.push({ left: o.right + gap, top });
+      cands.push({ left: o.left - gap - w, top });
+      cands.push({ left: o.right + gap, top: o.bottom + gap });
+      cands.push({ left: o.left - gap - w, top: o.bottom + gap });
+    });
+  });
+  const maxL = bounds.right - w, maxT = bounds.bottom - h;
+  let best = null;
+  cands.forEach(c => {
+    const cl = Math.max(bounds.left, Math.min(c.left, maxL));
+    const ct = Math.max(bounds.top,  Math.min(c.top,  maxT));
+    const rect = { left: cl, top: ct, right: cl + w, bottom: ct + h };
+    const inside = cl >= bounds.left - 0.5 && cl <= maxL + 0.5 &&
+                   ct >= bounds.top  - 0.5 && ct <= maxT + 0.5;
+    let area = 0;
+    obstacles.forEach(o => {
+      const ox = Math.min(rect.right, o.right) - Math.max(rect.left, o.left);
+      const oy = Math.min(rect.bottom, o.bottom) - Math.max(rect.top, o.top);
+      if (ox > 0 && oy > 0) area += ox * oy;
+    });
+    const dist = Math.abs(cl - left) + Math.abs(ct - top);
+    const score = (area > 0.5 ? 1e12 : 0) + (inside ? 0 : 1e11) + area + dist;
+    if (!best || score < best.score) best = { left: cl, top: ct, score };
+  });
+  return best ? { left: Math.round(best.left), top: Math.round(best.top) } : { left, top };
+}
+
+// Clamp a proposed parent-space position clear of every obstacle.
+function _avoidUIOverlap(el, left, top) {
   const parent = el.offsetParent || document.getElementById('main');
-  if (!ui || !parent) return { left, top };
+  if (!parent) return { left, top };
+  const obstacles = _uiObstacleRects();
+  if (!obstacles.length) return { left, top };
   const pr = parent.getBoundingClientRect();
-  const w = el.offsetWidth || 480, h = el.offsetHeight || 300, margin = 6;
-  const uiL = ui.left - pr.left, uiT = ui.top - pr.top;
-  const uiR = ui.right - pr.left, uiB = ui.bottom - pr.top;
-  const overlapH = (left + w) > uiL && left < uiR;
-  const overlapV = (top + h) > uiT && top < uiB;
-  if (!(overlapH && overlapV)) return { left, top };
-  if (uiB + margin + h <= pr.height) return { left, top: Math.round(uiB + margin) };
-  if (uiR + margin + w <= pr.width)  return { left: Math.round(uiR + margin), top };
-  if (uiL - margin - w >= 0)         return { left: Math.round(uiL - margin - w), top };
-  return { left, top: Math.round(uiB + margin) };
+  const w = el.offsetWidth || 480, h = el.offsetHeight || 300;
+  const pos = _resolveNonOverlap(pr.left + left, pr.top + top, w, h, obstacles, pr, 6);
+  return { left: pos.left - pr.left, top: pos.top - pr.top };
+}
+
+// ADR-176: a player wider than the free column between the sidebars would spill
+// under a panel. Cap it with max-width (auto-restored when the column widens)
+// rather than overwriting the user's chosen width.
+function _clampPlayerWidthToColumn(el) {
+  const parent = el.offsetParent || document.getElementById('main');
+  if (!parent) return;
+  const pr = parent.getBoundingClientRect();
+  let left = pr.left, right = pr.right;
+  _openSidebarRects().forEach(r => {
+    if (r.left <= pr.left + 1)      left  = Math.max(left, r.right);
+    else if (r.right >= pr.right - 1) right = Math.min(right, r.left);
+  });
+  const available = Math.max(0, right - left);
+  if (available > 0 && el.offsetWidth > available) el.style.maxWidth = available + 'px';
+  else el.style.maxWidth = '';
 }
 
 // ADR-175: match a player's default width to the Playlist UI width (bar /
@@ -718,10 +824,12 @@ function _syncPlayerControls(el) {
 }
 
 // ADR-175: magnetically dock a player under the Playlist UI (bar + open editor).
-// If there is no room below, shove it to the side with the most clearance.
-// left/top are written relative to the player's offsetParent.
+// ADR-176: the dock target is the free column between the sidebars, and the
+// final position clears every obstacle (sidebars + playlist UI). left/top are
+// written relative to the player's offsetParent.
 function _dockPlayer(el) {
   _playerMatchWidth(el);
+  _clampPlayerWidthToColumn(el);
   const ui = _playlistUiRect();
   const parent = el.offsetParent || document.getElementById('main');
   if (!ui || !parent) return;
@@ -729,34 +837,105 @@ function _dockPlayer(el) {
   const pw = el.offsetWidth  || 480;
   const ph = el.offsetHeight || 300;
   const margin = 8;
-  const vw = window.innerWidth, vh = window.innerHeight;
-  let left = ui.left + (ui.width - pw) / 2;   // centred under the playlist UI
-  let top  = ui.bottom + margin;
-  if (top + ph > vh - margin) {
-    // No room below → magnetic shove to the side with more clearance.
-    if ((vw - ui.right) >= ui.left) left = ui.right + margin;
-    else                            left = ui.left - pw - margin;
-    top = ui.top;
-  }
-  left = Math.max(0, Math.min(Math.round(left - pr.left), pr.width  - pw));
-  top  = Math.max(0, Math.min(Math.round(top  - pr.top),  pr.height - ph));
-  el.style.left = left + 'px';
-  el.style.top  = top + 'px';
+  // Preferred target: centred under the playlist UI, just below it.
+  const left = ui.left + (ui.width - pw) / 2;
+  const top  = ui.bottom + margin;
+  const pos = _resolveNonOverlap(left, top, pw, ph, _uiObstacleRects(), pr, margin);
+  el.style.left = (pos.left - pr.left) + 'px';
+  el.style.top  = (pos.top  - pr.top)  + 'px';
   el._detached = false;
   _syncPlayerControls(el);
 }
 
-// Drag release: if the player is dropped onto/near the Playlist UI, snap it
-// back below the dock so the editor never hides the player's header.
+// Drag release: if the player is dropped onto any app-level surface — or just
+// below the Playlist UI — settle it back into a non-overlapping spot. A player
+// dragged clear of everything is left where the user put it.
 function _snapPlayerIfNearBar(el) {
+  if (!el || el.style.display === 'none') return;
   const ui = _playlistUiRect();
-  if (!ui || el.style.display === 'none') return;
   const er = el.getBoundingClientRect();
-  const horizOverlap = er.right > ui.left && er.left < ui.right;
-  const overlaps = horizOverlap && er.top < ui.bottom && er.bottom > ui.top;
-  const near = horizOverlap && Math.abs(er.top - ui.bottom) < 80;
-  if (overlaps || near) _dockPlayer(el);
+  const rect = { left: er.left, top: er.top, right: er.right, bottom: er.bottom };
+  const blocked = _uiObstacleRects().some(o => _rectsOverlap(rect, o, 0));
+  if (blocked) {
+    const parent = el.offsetParent || document.getElementById('main');
+    if (!parent) return;
+    const pr = parent.getBoundingClientRect();
+    _clampPlayerWidthToColumn(el);
+    const pos = _resolveNonOverlap(er.left, er.top, el.offsetWidth, el.offsetHeight,
+                                   _uiObstacleRects(), pr, 6);
+    el.style.left = (pos.left - pr.left) + 'px';
+    el.style.top  = (pos.top  - pr.top)  + 'px';
+    el._detached = true;
+    _syncPlayerControls(el);
+    return;
+  }
+  const near = ui && er.right > ui.left && er.left < ui.right &&
+               Math.abs(er.top - ui.bottom) < 80;
+  // Only content players dock under the playlist; standalone utility players
+  // (sruti/tanpura) keep their own anchor placement.
+  if (near && el.dataset.standalone !== '1') _dockPlayer(el);
 }
+
+// ADR-176: re-establish non-overlap after any layout change beneath the
+// players. A content player attached to the playlist re-docks; a detached one
+// is only nudged clear (its position is the user's choice). Standalone utility
+// players (sruti/tanpura, `namedPlayerRegistry`) are also nudged but never
+// re-docked — they keep their own anchor placement.
+function _repositionPlayers() {
+  if (window.innerWidth <= 768) return;   // floating geometry is desktop-only
+  const parent = document.getElementById('main');
+  if (!parent) return;
+  const pr = parent.getBoundingClientRect();
+  const obstacles = _uiObstacleRects();
+  const settleClamped = el => {
+    if (!el || !el.isConnected || el.style.display === 'none') return;
+    _clampPlayerWidthToColumn(el);
+    const pos = _resolveNonOverlap(pr.left + (el.offsetLeft || 0), pr.top + (el.offsetTop || 0),
+                                   el.offsetWidth, el.offsetHeight, obstacles, pr, 6);
+    el.style.right = 'auto';
+    el.style.left = (pos.left - pr.left) + 'px';
+    el.style.top  = (pos.top  - pr.top)  + 'px';
+    _syncPlayerControls(el);
+  };
+  playerRegistry.forEach(inst => {
+    const el = inst && inst.el;
+    if (!el || !el.isConnected || el.style.display === 'none') return;
+    if (el._detached) settleClamped(el);
+    else _dockPlayer(el);
+  });
+  namedPlayerRegistry.forEach(inst => settleClamped(inst && inst.el));
+}
+
+let _repositionRaf = 0;
+function _scheduleReposition() {
+  if (_repositionRaf) cancelAnimationFrame(_repositionRaf);
+  _repositionRaf = requestAnimationFrame(() => { _repositionRaf = 0; _repositionPlayers(); });
+}
+
+// Watch the surfaces that move under the players: viewport, drawer open/close
+// (class flip + transform settle), and playlist-bar resize.
+function _installPlacementGuards() {
+  window.addEventListener('resize', _scheduleReposition);
+  ['left-sidebar', 'right-sidebar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (typeof MutationObserver !== 'undefined') {
+      new MutationObserver(_scheduleReposition)
+        .observe(el, { attributes: true, attributeFilter: ['class'] });
+    }
+    el.addEventListener('transitionend', e => {
+      if (e.propertyName === 'transform') _scheduleReposition();
+    });
+  });
+  if (typeof ResizeObserver !== 'undefined') {
+    const bar = document.getElementById('playlist-bar');
+    if (bar) new ResizeObserver(_scheduleReposition).observe(bar);
+  }
+  // ADR-176: the bar has no editor yet (created in _initPlaylistBar), but set
+  // the initial top wall now so the first paint is already inset.
+  _syncViewTopInset();
+}
+_installPlacementGuards();
 
 // ADR-175: the current player's collapsed state — a single source of truth read
 // by the editor's per-row minimize/maximize button and the bar.
@@ -2346,6 +2525,8 @@ function _refreshQueuePanels() {
     if (!_cur.el._detached) _dockPlayer(_cur.el);
     _syncPlayerControls(_cur.el);
   }
+  // ADR-176: also sweep detached players clear of the editor after a resize.
+  _scheduleReposition();
 }
 
 // Attach the queue toggle (bar) + panel to a freshly-built player, but only when
@@ -2580,9 +2761,18 @@ function _initPlaylistBar() {
   const editor = buildQueuePanel();
   editor.classList.add('mp-queue-bar');
   bar.appendChild(editor);
+  // ADR-176: as the editor deepens its bottom is the view's top wall — track
+  // the editor's box and re-fit the centre view whenever it changes.
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => {
+      if (typeof window.refitViewWindow === 'function') window.refitViewWindow();
+      else _syncViewTopInset();
+    }).observe(editor);
+  }
   // Full refresh so a permalink-restored queue (which may have run before this
   // init) is rendered into the bar + editor.
   _refreshQueuePanels();
+  _syncViewTopInset();
 }
 window._initPlaylistBar = _initPlaylistBar;
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _initPlaylistBar);
@@ -4611,6 +4801,7 @@ function openPlayer(videoId, title, playerId, anchorRect) {
   if (main) main.appendChild(el);
   bringToFront(instance);
   namedPlayerRegistry.set(playerId, instance);
+  _scheduleReposition();   // ADR-176: settle the utility player clear of every surface
 }
 
 /**

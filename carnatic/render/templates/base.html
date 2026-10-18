@@ -4174,25 +4174,41 @@
     }
 
     /* Canvas column must not collapse below a usable width */
-    /* ADR-129: canvas fills viewport edge-to-edge — floating chrome overlays it
-       (text-shadow keeps labels legible; pointer-events on wrapper let clicks
-       pass through transparent gaps). */
+    /* ADR-176 (view window): the canvas/view lives entirely inside the four
+       walls — below the playlist bar, between the open panels, above the bottom
+       floor. Margins (not grid columns) inset it: the left panel is an absolute
+       overlay, so the vacated margin IS the panel's footprint. The right panel
+       only needs a margin while it is a drawer; pinned, it already owns a grid
+       column. The controls (#layout-controls-float) sit at the top of this
+       inset view, so the playlist bar can never cover them. */
     #canvas-wrap {
       min-width: 200px;
+      /* ADR-176: the top wall is the bottom of the playlist UI (bar + open
+         editor). --playlist-ui-bottom is published by media_player.js, so the
+         view is pushed lower as the editor deepens (never higher than the
+         bar's chrome gap). */
+      margin-top: max(var(--chrome-top), calc(var(--playlist-ui-bottom, 0px) + 10px));
+      margin-bottom: var(--chrome-bottom);
+    }
+    #main:has(#left-sidebar.drawer-open) #canvas-wrap {
+      margin-left: var(--left-panel-width, 280px);
+    }
+    #main:has(#right-sidebar.drawer-open):not(.right-pinned) #canvas-wrap {
+      margin-right: var(--right-panel-width, 280px);
     }
 
     /* ADR-140: WDP left/top are set by JS — no CSS position overrides on desktop. */
 
-    /* Center layout controls inline with the title row on desktop (same top: 10px as
-       #app-title-float and #view-selector-float). max-width guard prevents overlap
-       with the flanking chrome on narrow desktop viewports. */
+    /* ADR-176: controls live at the top of the inset view window — centred as
+       before, but inside the four walls so the playlist bar can never cover
+       them. No longer position:fixed in the top chrome band. */
     #layout-controls-float {
-      position: fixed;
-      top: 10px;
+      position: absolute;
+      top: 4px;
       left: 50%;
       right: auto;
       transform: translateX(-50%);
-      max-width: calc(100vw - 400px);
+      max-width: calc(100% - 20px);
     }
 
     /* Floating edge handles — keep hidden on desktop (ADR-129: bottom toggles take over) */
@@ -5360,7 +5376,7 @@
       <div id="cy"></div>
       <!-- ADR-074: DOM-overlay musician chip labels (replace canvas labels) -->
       <div id="cy-labels" aria-hidden="true"></div>
-      <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:calc(100% - var(--chrome-bottom, 64px));pointer-events:none;overflow:hidden;z-index:50;"></svg>
+      <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:50;"></svg>
       <!-- Raga wheel (ADR-023) -->
       <svg id="raga-wheel" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;z-index:60;background:var(--bg-deep);touch-action:none;"></svg>
       <!-- ADR-169: sruti modal overlay (above raga-wheel z:60; hidden outside raga view) -->
