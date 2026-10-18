@@ -41,7 +41,7 @@ CLAIMS: dict[str, list[str]] = {
         'id="mp-copy-toast"',
         # §5 media player — ADR-175 persistent Playlist Bar
         'id="playlist-bar"', 'id="pb-summary"', 'id="pb-editor-toggle"',
-        'id="pb-expand"', 'id="pb-prev"', 'id="pb-next"', 'id="pb-play"',
+        'id="pb-expand"', 'id="pb-prev"', 'id="pb-next"', 'id="pb-play"', 'id="pb-stop"',
     ],
     "bani_flow.js": [
         # §1
@@ -98,6 +98,7 @@ CLAIMS: dict[str, list[str]] = {
         # §5 — ADR-175 persistent Playlist Bar
         "function _initPlaylistBar", "function _renderPlaylistBar",
         "function _pbPlayPauseCurrent", "function _pbExpandPlayer",
+        "function _pbStopCurrent",
         "window._initPlaylistBar",
         # §5 — chrome
         "function buildPlayerBar", "function buildPlayerRail",

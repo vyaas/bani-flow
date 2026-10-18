@@ -250,11 +250,12 @@ the musician panel (§2). Sruti pie plays drone via `openPlayer`/`closePlayer`
 
 **DOM:** players are **dynamically created** — no static root. Desktop:
 draggable/resizable `.media-player` (spawned at `nextSpawnPosition()`, z-order
-via `bringToFront`/`topZ`). Mobile: bottom-sheet `.media-player.full-mobile` +
-collapsed `.mini` strip. Chrome: bar (`buildPlayerBar`), chip rail
-(`buildPlayerRail`), tracklist (`.mp-tracklist`, opens upward `bottom:100%`),
-queue panel (`.mp-queue`, opens upward; the app-level editor is `.mp-queue-bar`),
-video wrap (`.mp-video-wrap`), copy toast `#mp-copy-toast`.
+via `bringToFront`/`topZ`). Mobile: bottom-sheet `.media-player.full-mobile`
+(the ADR-043 `.mini` strip is **retired** — ADR-175). Chrome: bar
+(`buildPlayerBar`), chip rail (`buildPlayerRail`), tracklist (`.mp-tracklist`,
+opens upward `bottom:100%`), queue panel (`.mp-queue`, opens upward; the
+app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
+`#mp-copy-toast`.
 
 **ADR-175: the persistent Playlist Bar** is the one static root:
 `#playlist-bar` (app chrome, top-centre desktop; second top band on mobile) with
@@ -290,7 +291,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   re-parented the editor to the bar).
 - **ADR-175 Playlist Bar:** `_initPlaylistBar()` (mounts the bar + editor, wires
   transport), `_renderPlaylistBar()` (mirrors MediaQueue into `#playlist-bar`),
-  `_pbPlayPauseCurrent()` / `_pbExpandPlayer()` (control handlers).
+  `_pbPlayPauseCurrent()` / `_pbStopCurrent()` / `_pbExpandPlayer()` (control
+  handlers). Content play routes through `Playlist.playContent` (alias of
+  `MediaQueue`), so `openOrFocusPlayer` is the window primitive again.
 - Row registration: `window.registerQueueItem(rowEl, getItem)` — how bani
   trail and recording rows become queueable; `collectQueueItems(rootEl)`.
 - Chrome: `buildPlayerBar(...)` (transport buttons — new buttons go here),

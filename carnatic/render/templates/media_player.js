@@ -629,12 +629,6 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
     rightGroup.appendChild(toggleBtn);
   }
 
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'mp-close';
-  closeBtn.title = 'Close';
-  closeBtn.textContent = '\u2715';
-  rightGroup.appendChild(closeBtn);
-
   bar.appendChild(rightGroup);
   return bar;
 }
@@ -1156,6 +1150,9 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
       plyr: player,
       iframe: null,
       seek(sec) { try { player.currentTime = sec || 0; player.play(); } catch (e) {} },
+      play()   { try { player.play(); } catch (e) {} },
+      pause()  { try { player.pause(); } catch (e) {} },
+      isPaused() { try { return !!player.paused; } catch (e) { return false; } },
       nudge,                 // ADR-158: clamped relative seek (returns new time, or null)
       seekStep,              // ADR-158: +overlay accumulation; driven by tap + keyboard
       destroy() { try { player.destroy(); } catch (e) {} },
@@ -1176,6 +1173,8 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
     plyr: null,
     iframe,
     seek(sec) { iframe.src = embedUrl(media, sec > 0 ? sec : undefined); },
+    // ADR-155 §4: uncontrollable providers cannot be played/paused programmatically.
+    play() {}, pause() {}, isPaused() { return false; },
     // ADR-158 / ADR-155 §4: uncontrollable providers can neither read nor write
     // currentTime — relative seek degrades to a no-op (no overlay, no affordance).
     nudge() { return null; },
@@ -1377,12 +1376,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
   controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
 
-  el.querySelector('.mp-close').addEventListener('click', () => {
-    controller.destroy();
-    el.remove();
-    playerRegistry.delete(mkey);
-    refreshPlayingIndicators();
-  });
+  // ADR-175: content players have no ✕ any more — a player is minimizable
+  // (fold-cue, ADR-160), never closeable. Stop lives on the Playlist Bar.
 
   // ADR-139: wire clipboard copy button
   const copyBtn = el.querySelector('.mp-copy-btn');
@@ -1478,28 +1473,22 @@ function openOrFocusPlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   const media = resolveMedia(mediaArg);
   if (!media) return;
   const mkey = mediaKey(media);
-  // ADR-157: a single player window is reused — we do not spawn N windows. When a
-  // queue is active, an individual "play" on an item that already lives in the
-  // queue must drive the queue's one window (jump to it) rather than open a second
-  // player (which, since the queue is active, would also show the "Up Next" list).
-  // Guarded by !isQueueItem so the queue's own _open() — which sets that flag —
-  // never recurses back into here. Items not in the queue keep prior behaviour.
-  if (!(meta && meta.isQueueItem) && typeof MediaQueue !== 'undefined' &&
-      MediaQueue.active && !_isMobilePlayer()) {
-    const qIdx = MediaQueue.items.findIndex(it => it && it.media && mediaKey(it.media) === mkey);
-    if (qIdx >= 0 && qIdx !== MediaQueue.index) { MediaQueue.jumpTo(qIdx); return; }
-  }
-  // Toggle-close: if this media is already playing, close it — desktop + mobile.
-  if (playerRegistry.has(mkey)) {
-    const existing = playerRegistry.get(mkey);
-    if (existing._isMobileSingleton) {
-      _closeMobilePlayer();
-    } else {
-      existing.iframe.src = '';
-      existing.el.remove();
-      playerRegistry.delete(mkey);
-      refreshPlayingIndicators();
-    }
+  // ADR-175 Phase 2: content play is the playlist's job. Every non-primitive,
+  // non-utility call enters the Current Playlist and is played from there (the
+  // Winamp contract). `isQueueItem` marks the playlist's own window-open (so
+  // Playlist._open never recurses); `meta.standalone` exempts utility players.
+  // Named players (sruti/tanpura) never reach this on desktop, and call
+  // _openMobilePlayer directly on mobile.
+  if (!(meta && (meta.isQueueItem || meta.standalone))) {
+    MediaQueue.playContent({
+      media,
+      label:         trackLabel || '',
+      artistName:    artistName || '',
+      startSeconds:  startSeconds || 0,
+      concertTitle:  concertTitle || '',
+      tracks:        tracks || [],
+      meta:          meta || {},
+    });
     return;
   }
   // ADR-037: on mobile, delegate to singleton player
@@ -1758,9 +1747,40 @@ const MediaQueue = {
     _refreshQueuePanels();
   },
 
+  // ── ADR-175: Playlist (Current Playlist) public entry points ──────────────
+  // playContent — the Winamp contract. Play a single item by making it part of
+  // the Current Playlist: if it already lives there, jump to it (no duplicate);
+  // otherwise append it and play.
+  playContent(item) {
+    const it = this._normalize(item);
+    if (!it) return;
+    if (!this.active) { this.start([it], 0); return; }
+    const mk = mediaKey(it.media);
+    const ss = it.startSeconds || 0;
+    const i = this.items.findIndex(x => x.media && mediaKey(x.media) === mk && (x.startSeconds || 0) === ss);
+    if (i >= 0) { this.jumpTo(i); return; }
+    this.playlistId = null;   // ADR-164: edited queue no longer mirrors the playlist
+    this.items.push(it);
+    this._switchTo(this.items.length - 1);
+  },
+
+  // playItems — seed/replace the playlist and play index i (play-all, saved list).
+  playItems(items, startIndex, opts) { this.start(items, startIndex, opts); },
+
+  // playSaved — load a persistent playlist (ADR-163) into the Current Playlist.
+  playSaved(playlistId) {
+    const pl = (typeof playlists !== 'undefined' && Array.isArray(playlists))
+      ? playlists.find(p => p.id === playlistId) : null;
+    if (!pl) return;
+    const items = _playlistToQueueItems(pl);
+    if (!items.length) return;
+    this.start(items, 0, { playlistId: pl.id });
+  },
+
   clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; this.playlistId = null; this._pendingSeek = null; },
 };
 window.MediaQueue = MediaQueue;
+window.Playlist = MediaQueue;   // ADR-175: the Current Playlist (alias — one model)
 window.startMediaQueue = function(items, startIndex, opts) { MediaQueue.start(items, startIndex, opts); };
 
 // ── ADR-165: row registry + harvest primitive ─────────────────────────────────
@@ -2199,15 +2219,44 @@ function _addQueueUI(el, skipRefresh) {
 // ADR-162 .mp-queue surface, re-parented to #playlist-bar as .mp-queue-bar so it
 // drops DOWN from the bar and is reachable with the player open or closed.
 function _pbPlayPauseCurrent() {
+  if (!MediaQueue.active || !MediaQueue.items.length) return;
   const key = MediaQueue.currentKey;
   const inst = key ? playerRegistry.get(key) : null;
-  if (!inst || !inst.controller) return;
+  if (!inst || !inst.controller) {
+    // Stopped: restart the current item through the playlist.
+    MediaQueue._open(null);
+    return;
+  }
   const c = inst.controller;
-  if (c.kind === 'plyr' && c.plyr) {
+  if (typeof c.isPaused === 'function') {
+    if (c.isPaused()) c.play(); else c.pause();
+  } else if (c.kind === 'plyr' && c.plyr) {
     try { c.plyr.paused ? c.plyr.play() : c.plyr.pause(); } catch (e) {}
   }
-  // iframe pseudo-instances are not controllable (ADR-155) — no-op, exactly like
-  // the relative-seek degradation. The button keeps its current visual state.
+  // iframe pseudo-instances are not controllable (ADR-155) — no-op.
+  _renderPlaylistBar();
+}
+
+// ADR-175: Stop tears down the current controller but KEEPS MediaQueue.items,
+// so the list survives and any item can be re-played (the Winamp model).
+function _pbStopCurrent() {
+  const key = MediaQueue.currentKey;
+  if (!key) return;
+  const inst = playerRegistry.get(key);
+  if (inst) {
+    if (inst.controller) inst.controller.destroy();
+    if (inst._isMobileSingleton) {
+      if (_mobilePlayer) {
+        _mobilePlayer.el.style.display = 'none';
+        _mobilePlayer.controller = null;
+      }
+    } else if (inst.el) {
+      inst.el.remove();
+    }
+    playerRegistry.delete(key);
+  }
+  MediaQueue.currentKey = null;   // list survives; nothing plays
+  refreshPlayingIndicators();
   _renderPlaylistBar();
 }
 
@@ -2231,6 +2280,7 @@ function _renderPlaylistBar() {
   const count = bar.querySelector('#pb-count');
   const prev = bar.querySelector('#pb-prev');
   const next = bar.querySelector('#pb-next');
+  const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
   const editorBtn = bar.querySelector('#pb-editor-toggle');
 
@@ -2248,15 +2298,16 @@ function _renderPlaylistBar() {
   if (count) count.textContent = has ? (MediaQueue.index + 1) + ' / ' + MediaQueue.items.length : '';
   if (prev) prev.disabled = !has || MediaQueue.index <= 0;
   if (next) next.disabled = !has || MediaQueue.index >= MediaQueue.items.length - 1;
+  if (stop) stop.disabled = !has || !MediaQueue.currentKey;
   if (editorBtn) {
     editorBtn.disabled = !has;
     editorBtn.setAttribute('aria-pressed', (has && MediaQueue.panelOpen) ? 'true' : 'false');
   }
   if (play) {
-    let paused = false;
+    let paused = true;
     const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
-    if (inst && inst.controller && inst.controller.kind === 'plyr' && inst.controller.plyr) {
-      paused = !!inst.controller.plyr.paused;
+    if (inst && inst.controller && typeof inst.controller.isPaused === 'function') {
+      paused = !!inst.controller.isPaused();
     }
     play.innerHTML = paused ? '&#9654;' : '&#10074;&#10074;';   // ▶ / ❚❚
     play.setAttribute('aria-pressed', paused ? 'true' : 'false');
@@ -2269,11 +2320,13 @@ function _initPlaylistBar() {
   bar.dataset.pbReady = '1';
   const prev = bar.querySelector('#pb-prev');
   const next = bar.querySelector('#pb-next');
+  const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
   const editorBtn = bar.querySelector('#pb-editor-toggle');
   const expandBtn = bar.querySelector('#pb-expand');
   if (prev) prev.addEventListener('click', () => MediaQueue.previous());
   if (next) next.addEventListener('click', () => MediaQueue.next());
+  if (stop) stop.addEventListener('click', _pbStopCurrent);
   if (play) play.addEventListener('click', _pbPlayPauseCurrent);
   if (expandBtn) expandBtn.addEventListener('click', _pbExpandPlayer);
   if (editorBtn) editorBtn.addEventListener('click', () => {
@@ -4251,6 +4304,15 @@ function openPlayer(videoId, title, playerId, anchorRect) {
 
   // Build bar via DOM (no innerHTML) — consistent with createPlayer
   const namedBar = buildPlayerBar(resolveMedia(videoId), '', title, title, false, {});
+  // ADR-175: content players lost their ✕ (minimize-only). Utility players
+  // (sruti drone / tanpura) still need an explicit Stop, so re-add one here.
+  const namedClose = document.createElement('button');
+  namedClose.className = 'mp-close';
+  namedClose.title = 'Stop';
+  namedClose.setAttribute('aria-label', 'Stop');
+  namedClose.textContent = '\u2715';
+  const namedRight = namedBar.querySelector('.mp-bar-right');
+  if (namedRight) namedRight.appendChild(namedClose);
   el.appendChild(namedBar);
 
   const namedVideoWrap = document.createElement('div');
@@ -4719,13 +4781,9 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     _initTrack ? (_initTrack.tala || null) : ((mp.meta && mp.meta.tala) || null)
   );
 
-  // Show player in mini mode
-  mp.el.classList.remove('full-mobile');
-  mp.el.classList.add('mini');
-  // ADR-043: slide mini-player into view + lift drawers/canvas
-  showMiniPlayer();
-  // ADR-049: auto-expand to full player; skip the mini strip
-  setTimeout(function () { _expandMobilePlayer(); }, 60);
+  // ADR-175: no bottom mini strip — open straight to the full sheet; the top
+  // Playlist Bar is the persistent face.
+  mp.el.classList.remove('mini');
 
   // Register in playerRegistry (unregister any previous mobile entry first)
   for (const [key, val] of playerRegistry) {
@@ -4738,12 +4796,14 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     _isMobileSingleton: true,
   });
   refreshPlayingIndicators();
+  mp.el.style.display = '';
+  _expandMobilePlayer();
 }
 
 function _expandMobilePlayer() {
   if (!_mobilePlayer) return;
   const mp = _mobilePlayer;
-
+  mp.el.style.display = '';   // ADR-175: reveal the sheet hidden by minimize
   // Save current panel state and dismiss sheet (ADR-036 integration)
   if (typeof window._currentPanelState !== 'undefined') {
     mp._savedPanelState = window._currentPanelState;
@@ -4764,10 +4824,12 @@ function _collapseMobilePlayer(restoreState) {
   if (restoreState === undefined) restoreState = true;
   const mp = _mobilePlayer;
 
+  // ADR-175: no bottom mini strip — hide the player surface; the top Playlist
+  // Bar is the persistent face (and can re-expand it).
   mp.el.classList.remove('full-mobile');
   mp.el.classList.add('mini');
-  // ADR-043: restore mini strip visibility + drawer offset
-  showMiniPlayer();
+  mp.el.style.display = 'none';
+  document.body.classList.remove('mobile-mini-player');
 
   // Restore saved panel state only when called programmatically (restoreState=true).
   // All user-initiated fold gestures (minimize button, handle tap/swipe, bar tap)

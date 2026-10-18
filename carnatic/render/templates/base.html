@@ -2899,7 +2899,7 @@
     position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
     z-index: 240;
     display: flex; align-items: center; gap: 6px;
-    max-width: min(680px, calc(100vw - 380px));
+    width: min(680px, calc(100vw - 380px));
     padding: 4px 8px;
     background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
     border: 1px solid var(--border-strong); border-radius: 6px;
@@ -2936,7 +2936,7 @@
     :root { --chrome-top: 100px; }
     #playlist-bar {
       top: 52px; left: 8px; right: 8px; transform: none;
-      max-width: none;
+      width: auto;
     }
   }
 
@@ -5195,6 +5195,7 @@
     <button type="button" id="pb-prev" class="pb-btn" title="Previous track" aria-label="Previous track">&#9198;</button>
     <button type="button" id="pb-play" class="pb-btn mp-toggle-btn" title="Play / pause" aria-label="Play / pause" aria-pressed="false">&#9654;</button>
     <button type="button" id="pb-next" class="pb-btn" title="Next track" aria-label="Next track">&#9197;</button>
+    <button type="button" id="pb-stop" class="pb-btn" title="Stop" aria-label="Stop">&#9632;</button>
   </div>
   <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>
   <span id="pb-count"></span>
