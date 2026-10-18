@@ -179,7 +179,8 @@ floor); its top wall is `max(--chrome-top, --playlist-ui-bottom + gap)` —
 `media_player.js` `_syncViewTopInset()` publishes the playlist UI's live bottom
 so a deepening editor pushes the view (and `#layout-controls-float`) lower.
 `mobile.js` `_refitViews()`/`window.refitViewWindow` re-run `cy.resize()`/
-`cy.fit()` and `drawRagaWheel()` when a panel or the editor re-insets it.
+`cy.fit()` and `window.refitRagaWheel()` when a panel or the editor re-insets
+it (the wheel's state-preserving redraw, so the open WDP survives).
 
 **Connects to:** shown/hidden by `switchView('graph')` in raga_wheel.js
 (re-runs `applyTrinityTriangleLayout` on re-entry, calls `cy.resize()`); node
@@ -224,7 +225,8 @@ whole app** (`switchView`, `_updateViewportToolbar`, `vpFit`, `vpRelayout`,
   `_lightUpSpineForMela(M)`, `window.lightUpSpine(ragaId)`,
   `window.clearWheelLightUp()`.
 - **Sync:** `syncRagaWheelToFilter(type, id)` (reads bani filter),
-  `window.syncWheelFromBaniSubject(type, id)`, `orientRagaWheel(type, id)`.
+  `window.syncWheelFromBaniSubject(type, id)`, `orientRagaWheel(type, id)`,
+  `window.refitRagaWheel()` (state-preserving redraw for the ADR-176 refit).
 - **View switching:** `switchView('graph'|'raga')`, `showRagaWheel(skipDraw)`,
   `hideRagaWheel()`, `wheelFit()`.
 
@@ -237,7 +239,7 @@ mutated only via `_applyTransform()` (`window._wheelApplyTransform`).
 `getCakraColor`) and chip tokens via `_readChipTokens()` /
 `_readChipSpacingK()` — never hardcode hex in wheel code. The wheel is drawn
 into the same inset view window (ADR-176); `mobile.js` `_refitViews()` calls
-`drawRagaWheel()` after a panel re-insets the SVG.
+`window.refitRagaWheel()` after a panel re-insets the SVG.
 
 **Connects to:** `switchView('raga')` re-applies `activeBaniFilter` (§1) via
 `syncRagaWheelToFilter`, resolves `window._pendingWheelSubject`, and draws so
@@ -445,9 +447,11 @@ permalink.js    LAST — restores state using every global above
 `#right-panel-toggle` (`.float-toggle-active`); `peekBottomSheet()` /
 `dismissBottomSheet()` exposed as globals. **View refit (ADR-176):**
 `_refitViews()` re-publishes the playlist top wall (`_syncViewTopInset`) then
-`cy.resize()`/`cy.fit()` + `drawRagaWheel()`; rAF-debounced as
-`window.refitViewWindow`, which `media_player.js` calls when the editor box
-changes.
+`cy.resize()`/`cy.fit()` and `window.refitRagaWheel()` — the wheel's
+state-preserving redraw (a bare `drawRagaWheel()` would clear the open WDP);
+rAF-debounced as `window.refitViewWindow`, which `media_player.js` calls when
+the editor box changes. `setPanelState` only schedules a refit when a drawer
+actually opened or closed.
 
 ### 6.5 Chips (the shared atom)
 

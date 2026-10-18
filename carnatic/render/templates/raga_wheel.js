@@ -2828,6 +2828,22 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     }
   };
 
+  // ADR-176 fix: state-preserving redraw for the view-window refit. A bare
+  // drawRagaWheel() rebuilds the SVG and calls _closeWheelDetailPanel(), so a
+  // panel open/close (mobile.js _refitViews) would flash the WDP open then
+  // shut. Re-apply the active raga/comp subject through the canonical sync
+  // path, which restores both the spine light-up and the open WDP (including
+  // its pre-selected janya / active composition).
+  window.refitRagaWheel = function() {
+    if (typeof activeBaniFilter !== 'undefined' && activeBaniFilter &&
+        (activeBaniFilter.type === 'raga' || activeBaniFilter.type === 'comp') &&
+        typeof syncRagaWheelToFilter === 'function') {
+      syncRagaWheelToFilter(activeBaniFilter.type, activeBaniFilter.id);
+      return;
+    }
+    window.drawRagaWheel();
+  };
+
 })(); // end raga-wheel IIFE
 
 /**

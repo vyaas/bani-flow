@@ -85,8 +85,11 @@
       }
     }
     const wheel = document.getElementById('raga-wheel');
-    if (wheel && wheel.style.display !== 'none' && typeof window.drawRagaWheel === 'function') {
-      window.drawRagaWheel();
+    if (wheel && wheel.style.display !== 'none') {
+      // ADR-176 fix: redraw without clobbering the open WDP — refitRagaWheel
+      // captures and re-opens it. Fall back to a bare draw if unavailable.
+      if (typeof window.refitRagaWheel === 'function') window.refitRagaWheel();
+      else if (typeof window.drawRagaWheel === 'function') window.drawRagaWheel();
     }
   }
 
@@ -115,6 +118,13 @@
 
     panelState = newState;
 
+    // ADR-176: only a genuine drawer open/close re-insets the view window. A
+    // no-op setPanelState (e.g. triggerBaniSearch re-asserting TRAIL on an
+    // already-open panel) must not force a refit — that redundant redraw is
+    // what flashed the WDP open then shut.
+    const leftWasOpen  = !!(sidebar && sidebar.classList.contains('drawer-open'));
+    const rightWasOpen = !!(rightSidebar && rightSidebar.classList.contains('drawer-open'));
+
     // Close everything first — but respect pin locks
     if (!leftPinned) _closeLeftDrawer();
     if (!rightPinned) _closeRightDrawer();
@@ -129,8 +139,13 @@
     _updateTabs(newState);
     _updateDesktopHandles(newState);
 
-    // ADR-176: re-fit the view into the re-inset window after the CSS applies.
-    setTimeout(_scheduleRefit, 30);
+    // ADR-176: re-fit the view into the re-inset window after the CSS applies,
+    // but only when a drawer actually opened or closed.
+    const leftIsOpen  = !!(sidebar && sidebar.classList.contains('drawer-open'));
+    const rightIsOpen = !!(rightSidebar && rightSidebar.classList.contains('drawer-open'));
+    if (leftWasOpen !== leftIsOpen || rightWasOpen !== rightIsOpen) {
+      setTimeout(_scheduleRefit, 30);
+    }
   }
 
   // ── Backward-compatible public API ───────────────────────────────────────

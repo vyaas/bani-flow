@@ -90,3 +90,30 @@ def test_playlist_ui_bottom_is_published_and_the_view_refits():
     assert "_syncViewTopInset" in mob, (
         "_refitViews must re-publish the top wall before measuring"
     )
+
+
+def test_refit_preserves_the_open_wheel_detail_panel():
+    """ADR-176 regression: a panel re-fit must not clobber the open WDP.
+
+    ``_refitViews`` used to call ``drawRagaWheel()`` directly, which rebuilds
+    the SVG and clears the WDP. Clicking a raga/comp chip (»triggerBaniSearch»
+    re-asserts the TRAIL drawer) therefore flashed the detail panel open then
+    shut. The refit now goes through the wheel's state-preserving
+    ``refitRagaWheel()``, and ``setPanelState`` only refits on a real drawer
+    open/close.
+    """
+    mob = (TEMPLATES / "mobile.js").read_text(encoding="utf-8")
+    assert "window.refitRagaWheel" in mob, (
+        "_refitViews must redraw the wheel through refitRagaWheel"
+    )
+    assert "leftWasOpen" in mob and "rightWasOpen" in mob, (
+        "setPanelState must gate the refit on an actual drawer open/close"
+    )
+
+    wheel = (TEMPLATES / "raga_wheel.js").read_text(encoding="utf-8")
+    assert "window.refitRagaWheel = function" in wheel, (
+        "the wheel must expose a state-preserving refit redraw"
+    )
+    # It re-applies the active subject through the canonical sync path so the
+    # janya pre-selection and active composition are restored too.
+    assert "syncRagaWheelToFilter(activeBaniFilter.type, activeBaniFilter.id)" in wheel
