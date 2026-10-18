@@ -2,7 +2,10 @@
 // ADR-154: the registry is keyed by media_key ("provider:provider_id"), not the
 // bare YouTube vid. Instances carry { el, iframe, titleEl, media, mediaKey }.
 const playerRegistry = new Map();
-let topZ = 800;
+let topZ = 800;            // shared z-counter for entry forms + patch cart (above the Playlist Bar)
+let playerZ = 100;         // media players sit BELOW the Playlist Bar (z-index 750)
+const PLAYER_Z_MAX = 700;
+function _nextPlayerZ() { playerZ = Math.min(playerZ + 1, PLAYER_Z_MAX); return playerZ; }
 let spawnCount = 0;
 
 // ── ADR-158: relative-seek gesture constants ──────────────────────────────────
@@ -296,8 +299,7 @@ function nextSpawnPosition() {
 }
 
 function bringToFront(player) {
-  topZ += 1;
-  player.el.style.zIndex = topZ;
+  player.el.style.zIndex = _nextPlayerZ();
   _activePlayer = player;   // ADR-158: keyboard seek targets the topmost player
 }
 
@@ -333,7 +335,10 @@ function wireDrag(el, bar) {
       el.style.top  = Math.max(0, Math.min(cy - oy, bounds.height - el.offsetHeight)) + 'px';
     });
   });
-  document.addEventListener('mouseup', () => { dragging = false; bounds = null; });
+  document.addEventListener('mouseup', () => {
+    if (dragging) _snapPlayerIfNearBar(el);
+    dragging = false; bounds = null;
+  });
 }
 
 function wireResize(el, handle) {
@@ -577,12 +582,6 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   const rightGroup = document.createElement('span');
   rightGroup.className = 'mp-bar-right';
 
-  // fold-cue (minimize chevron) lives in the button row so chips get full width
-  const foldCue = document.createElement('span');
-  foldCue.className = 'mp-fold-cue';
-  foldCue.textContent = '\u25be'; // ▾ downward-pointing triangle
-  rightGroup.appendChild(foldCue);
-
   // Promoted musician chip: visible only on mobile (CSS hides on desktop).
   // Placed between the fold-cue and action buttons so the top bar reads:
   // [▾] [Musician Name — full wrap] [copy][share][yt][≡?][✕]
@@ -638,11 +637,82 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
 // Toggle the `.minimized` state on a player root: the bar (with its live chip
 // rail) stays; the video, tracklist, and resize handle are hidden via CSS; the
 // media keeps playing (we never tear down the controller). Returns the new state.
+// ADR-175: sync the minimize affordance (button; the old fold-cue may be absent).
+function _syncMinimizeUi(el, minimized) {
+  const label = minimized ? 'Restore' : 'Minimize';
+  const cue = el.querySelector('.mp-fold-cue');
+  if (cue) {
+    cue.textContent = minimized ? '▴' : '▾';
+    cue.title = label;
+  }
+  const btn = el.querySelector('.mp-minimize');
+  if (btn) {
+    btn.textContent = minimized ? '□' : '—';
+    btn.title = label;
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('aria-pressed', minimized ? 'true' : 'false');
+  }
+}
+
+// ADR-175: magnetically dock a player under the Playlist Bar (bottom-centre).
+// If there is no room below, shove it to the side with the most clearance.
+// left/top are written relative to the player's offsetParent.
+function _dockPlayer(el) {
+  const bar = document.getElementById('playlist-bar');
+  const parent = el.offsetParent || document.getElementById('main');
+  if (!bar || !parent) return;
+  const pr = parent.getBoundingClientRect();
+  const br = bar.getBoundingClientRect();
+  const pw = el.offsetWidth  || 480;
+  const ph = el.offsetHeight || 300;
+  const margin = 8;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let left = br.left + (br.width - pw) / 2;   // centred under the bar
+  let top  = br.bottom + margin;
+  if (top + ph > vh - margin) {
+    // No room below → magnetic shove to the side with more clearance.
+    if ((vw - br.right) >= br.left) left = br.right + margin;
+    else                            left = br.left - pw - margin;
+    top = br.top;
+  }
+  left = Math.max(0, Math.min(Math.round(left - pr.left), pr.width  - pw));
+  top  = Math.max(0, Math.min(Math.round(top  - pr.top),  pr.height - ph));
+  el.style.left = left + 'px';
+  el.style.top  = top + 'px';
+}
+
+// Drag release: if the player is dropped onto/near the Playlist Bar, snap it
+// back to the dock so the bar is never occluded and the player rests beneath it.
+function _snapPlayerIfNearBar(el) {
+  const bar = document.getElementById('playlist-bar');
+  if (!bar || el.style.display === 'none') return;
+  const br = bar.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  const horizOverlap = er.right > br.left && er.left < br.right;
+  const overlaps = horizOverlap && er.top < br.bottom && er.bottom > br.top;
+  const near = horizOverlap && Math.abs(er.top - br.bottom) < 80;
+  if (overlaps || near) _dockPlayer(el);
+}
+
 function _toggleMinimized(el) {
+  // ADR-175: a content player collapses INTO the playlist — the window hides,
+  // audio continues, and the Playlist Bar is the persistent face. Standalone
+  // utility players (sruti/tanpura) keep the ADR-160 strip minimize so they
+  // remain restorable (they are not in the playlist).
+  if (el.dataset.standalone !== '1') {
+    const hidden = el.style.display === 'none';
+    if (hidden) {
+      el.style.display = '';
+      el.classList.remove('minimized');
+      _dockPlayer(el);
+    } else {
+      el.style.display = 'none';
+      el.classList.add('minimized');
+    }
+    _syncMinimizeUi(el, !hidden);
+    return !hidden;
+  }
   const min = el.classList.toggle('minimized');
-  // ADR-175: createPlayer sets an INLINE width, which beats the `.minimized`
-  // CSS `width:auto`. Clear it while minimized so the strip truly shrinks to
-  // its bar, then restore it on expand.
   if (min) {
     el._savedWidth = el.style.width;
     el.style.width = 'auto';
@@ -650,19 +720,7 @@ function _toggleMinimized(el) {
     el.style.width = el._savedWidth;
     el._savedWidth = null;
   }
-  const label = min ? 'Restore' : 'Minimize';
-  const cue = el.querySelector('.mp-fold-cue');
-  if (cue) {
-    cue.textContent = min ? '▴' : '▾';   // ▴ restore | ▾ minimize
-    cue.title = label;
-  }
-  const btn = el.querySelector('.mp-minimize');
-  if (btn) {
-    btn.textContent = min ? '□' : '—';   // □ restore | — minimize
-    btn.title = label;
-    btn.setAttribute('aria-label', label);
-    btn.setAttribute('aria-pressed', min ? 'true' : 'false');
-  }
+  _syncMinimizeUi(el, min);
   return min;
 }
 
@@ -1331,7 +1389,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   const pos = nextSpawnPosition();
   const el = document.createElement('div');
   el.className = 'media-player';
-  el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${++topZ}; width:480px;`;
+  el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${_nextPlayerZ()}; width:480px;`;
 
   const bar = buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, meta || {});
   el.appendChild(bar);
@@ -1466,6 +1524,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // el was already appended to #main before mountPlayer (Plyr/YT needs the
   // target connected at init); just raise it to the front now.
   bringToFront(instance);
+  _dockPlayer(el);   // ADR-175: rest beneath the Playlist Bar
   return instance;
 }
 
@@ -1761,7 +1820,12 @@ const MediaQueue = {
     const mk = mediaKey(it.media);
     const ss = it.startSeconds || 0;
     const i = this.items.findIndex(x => x.media && mediaKey(x.media) === mk && (x.startSeconds || 0) === ss);
-    if (i >= 0) { this.jumpTo(i); return; }
+    if (i >= 0) {
+      // Already in the playlist: restore it (if minimised) or jump to it.
+      if (i === this.index && typeof _pbExpandPlayer === 'function') _pbExpandPlayer();
+      else this.jumpTo(i);
+      return;
+    }
     this.playlistId = null;   // ADR-164: edited queue no longer mirrors the playlist
     this.items.push(it);
     this._switchTo(this.items.length - 1);
@@ -2273,6 +2337,7 @@ function _pbExpandPlayer() {
   if (inst && inst.el) {
     if (inst.el.classList.contains('minimized')) _toggleMinimized(inst.el);
     bringToFront(inst);
+    _dockPlayer(inst.el);
   }
 }
 
@@ -4282,7 +4347,7 @@ function openPlayer(videoId, title, playerId, anchorRect) {
 
   el.style.position = 'absolute';
   el.style.width    = playerWidth + 'px';
-  el.style.zIndex   = ++topZ;
+  el.style.zIndex   = _nextPlayerZ();
 
   if (anchorRect) {
     // Open below the anchor; flip left if it overflows right edge, flip up if it overflows bottom
@@ -4341,6 +4406,7 @@ function openPlayer(videoId, title, playerId, anchorRect) {
     vid:     videoId,
     playerId,
   };
+  el.dataset.standalone = '1';   // ADR-175: utility player — keep strip minimize
 
   // Named player: the sruti drone minimizes via the universal fold-cue (ADR-160),
   // so it no longer needs a dedicated minimize button. Its single ✕ close button

@@ -2910,7 +2910,7 @@
      visible with the player open or closed. */
   #playlist-bar {
     position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
-    z-index: 240;
+    z-index: 750;   /* ADR-175: above players (≤700) and drawers; below modals (1000+) */
     display: flex; align-items: center; gap: 6px;
     width: min(680px, calc(100vw - 380px));
     padding: 4px 8px;
