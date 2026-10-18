@@ -2836,6 +2836,13 @@
   }
   .mp-queue-play:not(:disabled):hover { color: var(--accent); }
   .mp-queue-play:disabled { opacity: 0.35; cursor: default; }
+  /* ADR-175: per-row minimize/maximize for the current (playing) item. */
+  .mp-queue-collapse {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.7rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+  }
+  .mp-queue-collapse:hover { color: var(--accent); }
+  .mp-queue-collapse[aria-pressed="true"] { color: var(--accent); }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
     font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;

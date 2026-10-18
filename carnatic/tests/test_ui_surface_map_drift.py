@@ -99,6 +99,9 @@ CLAIMS: dict[str, list[str]] = {
         "function _initPlaylistBar", "function _renderPlaylistBar",
         "function _pbPlayPauseCurrent", "function _pbExpandPlayer",
         "function _pbStopCurrent",
+        "function _dockPlayer", "function _snapPlayerIfNearBar",
+        "function _playlistUiRect", "function _avoidPlaylistUI",
+        "function _toggleCurrentPlayerCollapse", "function _isCurrentPlayerCollapsed",
         "window._initPlaylistBar",
         # §5 — chrome
         "function buildPlayerBar", "function buildPlayerRail",

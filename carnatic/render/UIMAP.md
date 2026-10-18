@@ -260,9 +260,13 @@ app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
 **ADR-175 minimize / dock:** content players have **no ✕** and **no fold-cue**.`.mp-minimize` (the old ✕ slot, `—`/`□`) collapses a content player **into the playlist**
 (the window hides; audio continues; the Playlist Bar is the face) via
 `_toggleMinimized`; utility players (sruti/tanpura) keep a strip minimize.
-`_dockPlayer` magnetically rests a player **under the Playlist Bar** (bottom-centre;
-side if no room below); `_snapPlayerIfNearBar` re-docks on drag release. z-order:
-players `≤700`, `#playlist-bar` `750`, modals `1000+` — the bar is never occluded.
+`_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
+bar + open editor (`_playlistUiRect`; bottom-centre, side if no room below);
+`_snapPlayerIfNearBar` re-docks on drag release, and `_avoidPlaylistUI` clamps a
+drag so the player can never overlap the editor (its header always shows). The
+editor's current row carries `.mp-queue-collapse` → `_toggleCurrentPlayerCollapse`
+(a central minimize/maximize of the playing item). z-order: players `≤700`,
+`#playlist-bar` `750`, modals `1000+` — the bar is never occluded.
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
 

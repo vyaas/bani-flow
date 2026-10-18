@@ -331,8 +331,11 @@ function wireDrag(el, bar) {
     requestAnimationFrame(() => {
       rafPending = false;
       if (!dragging) return;
-      el.style.left = Math.max(0, Math.min(cx - ox, bounds.width  - el.offsetWidth))  + 'px';
-      el.style.top  = Math.max(0, Math.min(cy - oy, bounds.height - el.offsetHeight)) + 'px';
+      let left = Math.max(0, Math.min(cx - ox, bounds.width  - el.offsetWidth));
+      let top  = Math.max(0, Math.min(cy - oy, bounds.height - el.offsetHeight));
+      const clamped = _avoidPlaylistUI(el, left, top);
+      el.style.left = clamped.left + 'px';
+      el.style.top  = clamped.top  + 'px';
     });
   });
   document.addEventListener('mouseup', () => {
@@ -654,26 +657,61 @@ function _syncMinimizeUi(el, minimized) {
   }
 }
 
-// ADR-175: magnetically dock a player under the Playlist Bar (bottom-centre).
+// ADR-175: the union rect (viewport coords) of the Playlist Bar and its editor.
+// The player must always rest OUTSIDE this region so the editor can never hide
+// the player's header, and the player can never occlude the playlist.
+function _playlistUiRect() {
+  const bar = document.getElementById('playlist-bar');
+  if (!bar) return null;
+  const br = bar.getBoundingClientRect();
+  const ed = bar.querySelector('.mp-queue-bar');
+  let left = br.left, top = br.top, right = br.right, bottom = br.bottom;
+  if (ed && ed.style.display !== 'none' && ed.offsetHeight > 0) {
+    const er = ed.getBoundingClientRect();
+    left = Math.min(left, er.left); top = Math.min(top, er.top);
+    right = Math.max(right, er.right); bottom = Math.max(bottom, er.bottom);
+  }
+  return { left, top, right, bottom, width: right - left, height: bottom - top };
+}
+
+// Clamp a proposed parent-space position so the player does not overlap the
+// playlist UI (pushed below it, or to the side when that would overflow).
+function _avoidPlaylistUI(el, left, top) {
+  const ui = _playlistUiRect();
+  const parent = el.offsetParent || document.getElementById('main');
+  if (!ui || !parent) return { left, top };
+  const pr = parent.getBoundingClientRect();
+  const w = el.offsetWidth || 480, h = el.offsetHeight || 300, margin = 6;
+  const uiL = ui.left - pr.left, uiT = ui.top - pr.top;
+  const uiR = ui.right - pr.left, uiB = ui.bottom - pr.top;
+  const overlapH = (left + w) > uiL && left < uiR;
+  const overlapV = (top + h) > uiT && top < uiB;
+  if (!(overlapH && overlapV)) return { left, top };
+  if (uiB + margin + h <= pr.height) return { left, top: Math.round(uiB + margin) };
+  if (uiR + margin + w <= pr.width)  return { left: Math.round(uiR + margin), top };
+  if (uiL - margin - w >= 0)         return { left: Math.round(uiL - margin - w), top };
+  return { left, top: Math.round(uiB + margin) };
+}
+
+// ADR-175: magnetically dock a player under the Playlist UI (bar + open editor).
 // If there is no room below, shove it to the side with the most clearance.
 // left/top are written relative to the player's offsetParent.
 function _dockPlayer(el) {
-  const bar = document.getElementById('playlist-bar');
+  const ui = _playlistUiRect();
   const parent = el.offsetParent || document.getElementById('main');
-  if (!bar || !parent) return;
+  if (!ui || !parent) return;
   const pr = parent.getBoundingClientRect();
-  const br = bar.getBoundingClientRect();
   const pw = el.offsetWidth  || 480;
   const ph = el.offsetHeight || 300;
   const margin = 8;
   const vw = window.innerWidth, vh = window.innerHeight;
-  let left = br.left + (br.width - pw) / 2;   // centred under the bar
-  let top  = br.bottom + margin;
+  let left = ui.left + (ui.width - pw) / 2;   // centred under the playlist UI
+  let top  = ui.bottom + margin;
   if (top + ph > vh - margin) {
     // No room below → magnetic shove to the side with more clearance.
-    if ((vw - br.right) >= br.left) left = br.right + margin;
-    else                            left = br.left - pw - margin;
-    top = br.top;
+    if ((vw - ui.right) >= ui.left) left = ui.right + margin;
+    else                            left = ui.left - pw - margin;
+    top = ui.top;
   }
   left = Math.max(0, Math.min(Math.round(left - pr.left), pr.width  - pw));
   top  = Math.max(0, Math.min(Math.round(top  - pr.top),  pr.height - ph));
@@ -681,17 +719,50 @@ function _dockPlayer(el) {
   el.style.top  = top + 'px';
 }
 
-// Drag release: if the player is dropped onto/near the Playlist Bar, snap it
-// back to the dock so the bar is never occluded and the player rests beneath it.
+// Drag release: if the player is dropped onto/near the Playlist UI, snap it
+// back below the dock so the editor never hides the player's header.
 function _snapPlayerIfNearBar(el) {
-  const bar = document.getElementById('playlist-bar');
-  if (!bar || el.style.display === 'none') return;
-  const br = bar.getBoundingClientRect();
+  const ui = _playlistUiRect();
+  if (!ui || el.style.display === 'none') return;
   const er = el.getBoundingClientRect();
-  const horizOverlap = er.right > br.left && er.left < br.right;
-  const overlaps = horizOverlap && er.top < br.bottom && er.bottom > br.top;
-  const near = horizOverlap && Math.abs(er.top - br.bottom) < 80;
+  const horizOverlap = er.right > ui.left && er.left < ui.right;
+  const overlaps = horizOverlap && er.top < ui.bottom && er.bottom > ui.top;
+  const near = horizOverlap && Math.abs(er.top - ui.bottom) < 80;
   if (overlaps || near) _dockPlayer(el);
+}
+
+// ADR-175: the current player's collapsed state — a single source of truth read
+// by the editor's per-row minimize/maximize button and the bar.
+function _isCurrentPlayerCollapsed() {
+  if (_isMobilePlayer()) {
+    const mp = _mobilePlayer;
+    if (!mp || !mp.controller) return true;
+    return mp.el.style.display === 'none' || !mp.el.classList.contains('full-mobile');
+  }
+  const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
+  if (!inst || !inst.el) return true;
+  return inst.el.style.display === 'none' || inst.el.classList.contains('minimized');
+}
+
+// ADR-175: central collapse control — toggles the current video surface from the
+// playlist editor (the player itself is minimizable; this is the same action).
+function _toggleCurrentPlayerCollapse() {
+  if (_isMobilePlayer()) {
+    const mp = _mobilePlayer;
+    if (!mp || !mp.controller) return;
+    if (mp.el.style.display === 'none' || !mp.el.classList.contains('full-mobile')) {
+      mp.el.style.display = '';
+      _expandMobilePlayer();
+    } else {
+      _collapseMobilePlayer(false);
+    }
+    _refreshQueuePanels();
+    return;
+  }
+  const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
+  if (!inst || !inst.el) return;
+  _toggleMinimized(inst.el);
+  _refreshQueuePanels();
 }
 
 function _toggleMinimized(el) {
@@ -2129,6 +2200,20 @@ function _renderQueuePanel(panel) {
     playBtn.addEventListener('click', e => { e.stopPropagation(); MediaQueue.jumpTo(i); });
     li.appendChild(playBtn);
 
+    // ADR-175: for the playing item, a central minimize/maximize control that
+    // shows/hides the video surface without stopping playback.
+    if (isCurrent) {
+      const collapsed = _isCurrentPlayerCollapsed();
+      const cbtn = document.createElement('button');
+      cbtn.type = 'button'; cbtn.className = 'mp-queue-collapse';
+      cbtn.title = collapsed ? 'Show player' : 'Hide player';
+      cbtn.setAttribute('aria-label', cbtn.title);
+      cbtn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+      cbtn.textContent = collapsed ? '▸' : '▾';
+      cbtn.addEventListener('click', e => { e.stopPropagation(); _toggleCurrentPlayerCollapse(); });
+      li.appendChild(cbtn);
+    }
+
     // + affordance — secondary: add to playlist or session queue
     const qplus = _buildPlusBtn((() => {
       const _item = item;
@@ -2230,6 +2315,12 @@ function _refreshQueuePanels() {
   });
   // ADR-175: the app-level Playlist Bar mirrors every MediaQueue mutation.
   _renderPlaylistBar();
+  // Keep the current player docked under the (possibly just-changed) playlist
+  // UI — expanding the editor must push the player down, never cover its header.
+  const _cur = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
+  if (_cur && _cur.el && !_cur._isMobileSingleton && _cur.el.style.display !== 'none') {
+    _dockPlayer(_cur.el);
+  }
 }
 
 // Attach the queue toggle (bar) + panel to a freshly-built player, but only when
