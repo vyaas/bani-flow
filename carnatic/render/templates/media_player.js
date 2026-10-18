@@ -1458,7 +1458,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     });
   }
 
-  if (meta && meta.isQueueItem) _addQueueUI(el);   // ADR-162: queue UI only on queue-owned windows; standalone players get their own clean instance
+  // ADR-175: no per-player queue UI — the queue editor is app-level
+  // (#playlist-bar); standalone players and queue players both stay queue-free.
   _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
   wireDrag(el, el.querySelector('.mp-bar'));
   wireResize(el, el.querySelector('.mp-resize'));
@@ -2122,15 +2123,9 @@ function buildQueuePanel() {
 // Re-render every open queue panel and sync toggle state/visibility. Called by
 // MediaQueue on any mutation (start/advance/jump/remove/move/clear).
 function _refreshQueuePanels() {
-  // Ensure the queue's own player window has the toggle + panel. We target only
-  // the current queue player (by currentKey) rather than all open players —
-  // standalone players opened while a queue runs must stay queue-free.
-  if (MediaQueue.active && MediaQueue.currentKey) {
-    const _qInst = playerRegistry.get(MediaQueue.currentKey);
-    if (_qInst && _qInst.el && !_qInst._isMobileSingleton && !_qInst.el.querySelector('.mp-queue-toggle')) {
-      _addQueueUI(_qInst.el, true);
-    }
-  }
+  // ADR-175: the queue editor is app-level (re-parented to #playlist-bar), so
+  // there is no per-player toggle/panel to install here any more. The current
+  // player stays queue-free (ADR-162 carve-out); the bar is the single face.
   const show = MediaQueue.active && MediaQueue.panelOpen;
   document.querySelectorAll('.mp-queue').forEach(p => {
     _renderQueuePanel(p);
@@ -2146,6 +2141,8 @@ function _refreshQueuePanels() {
     btn.style.display = MediaQueue.active ? '' : 'none';
     btn.setAttribute('aria-pressed', MediaQueue.panelOpen ? 'true' : 'false');
   });
+  // ADR-175: the app-level Playlist Bar mirrors every MediaQueue mutation.
+  _renderPlaylistBar();
 }
 
 // Attach the queue toggle (bar) + panel to a freshly-built player, but only when
@@ -2195,6 +2192,105 @@ function _addQueueUI(el, skipRefresh) {
   }
   if (!skipRefresh) _refreshQueuePanels();
 }
+
+// ── ADR-175: persistent Playlist Bar (app-level chrome) ───────────────────────
+// The bar is the Current Playlist's always-on face: a pure *view + control* over
+// MediaQueue (Phase 1: play routing is unchanged). The editor is the same
+// ADR-162 .mp-queue surface, re-parented to #playlist-bar as .mp-queue-bar so it
+// drops DOWN from the bar and is reachable with the player open or closed.
+function _pbPlayPauseCurrent() {
+  const key = MediaQueue.currentKey;
+  const inst = key ? playerRegistry.get(key) : null;
+  if (!inst || !inst.controller) return;
+  const c = inst.controller;
+  if (c.kind === 'plyr' && c.plyr) {
+    try { c.plyr.paused ? c.plyr.play() : c.plyr.pause(); } catch (e) {}
+  }
+  // iframe pseudo-instances are not controllable (ADR-155) — no-op, exactly like
+  // the relative-seek degradation. The button keeps its current visual state.
+  _renderPlaylistBar();
+}
+
+function _pbExpandPlayer() {
+  if (_isMobilePlayer()) {
+    const mp = _mobilePlayer;
+    if (mp && mp.controller) { mp.el.style.display = ''; _expandMobilePlayer(); }
+    return;
+  }
+  const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
+  if (inst) bringToFront(inst);
+}
+
+function _renderPlaylistBar() {
+  const bar = document.getElementById('playlist-bar');
+  if (!bar) return;
+  const has = MediaQueue.active && MediaQueue.items.length > 0;
+  bar.classList.toggle('pb-empty', !has);
+
+  const summary = bar.querySelector('#pb-summary');
+  const count = bar.querySelector('#pb-count');
+  const prev = bar.querySelector('#pb-prev');
+  const next = bar.querySelector('#pb-next');
+  const play = bar.querySelector('#pb-play');
+  const editorBtn = bar.querySelector('#pb-editor-toggle');
+
+  if (summary) {
+    summary.innerHTML = '';
+    const item = has ? MediaQueue.items[MediaQueue.index] : null;
+    if (item) summary.appendChild(_buildQueueRowChips(item));
+    else {
+      const hint = document.createElement('span');
+      hint.className = 'pb-empty-hint';
+      hint.textContent = 'Playlist empty';
+      summary.appendChild(hint);
+    }
+  }
+  if (count) count.textContent = has ? (MediaQueue.index + 1) + ' / ' + MediaQueue.items.length : '';
+  if (prev) prev.disabled = !has || MediaQueue.index <= 0;
+  if (next) next.disabled = !has || MediaQueue.index >= MediaQueue.items.length - 1;
+  if (editorBtn) {
+    editorBtn.disabled = !has;
+    editorBtn.setAttribute('aria-pressed', (has && MediaQueue.panelOpen) ? 'true' : 'false');
+  }
+  if (play) {
+    let paused = false;
+    const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
+    if (inst && inst.controller && inst.controller.kind === 'plyr' && inst.controller.plyr) {
+      paused = !!inst.controller.plyr.paused;
+    }
+    play.innerHTML = paused ? '&#9654;' : '&#10074;&#10074;';   // ▶ / ❚❚
+    play.setAttribute('aria-pressed', paused ? 'true' : 'false');
+  }
+}
+
+function _initPlaylistBar() {
+  const bar = document.getElementById('playlist-bar');
+  if (!bar || bar.dataset.pbReady) return;
+  bar.dataset.pbReady = '1';
+  const prev = bar.querySelector('#pb-prev');
+  const next = bar.querySelector('#pb-next');
+  const play = bar.querySelector('#pb-play');
+  const editorBtn = bar.querySelector('#pb-editor-toggle');
+  const expandBtn = bar.querySelector('#pb-expand');
+  if (prev) prev.addEventListener('click', () => MediaQueue.previous());
+  if (next) next.addEventListener('click', () => MediaQueue.next());
+  if (play) play.addEventListener('click', _pbPlayPauseCurrent);
+  if (expandBtn) expandBtn.addEventListener('click', _pbExpandPlayer);
+  if (editorBtn) editorBtn.addEventListener('click', () => {
+    MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
+    _refreshQueuePanels();
+  });
+  // The ADR-162 editor, re-parented to the bar (drops downward).
+  const editor = buildQueuePanel();
+  editor.classList.add('mp-queue-bar');
+  bar.appendChild(editor);
+  // Full refresh so a permalink-restored queue (which may have run before this
+  // init) is rendered into the bar + editor.
+  _refreshQueuePanels();
+}
+window._initPlaylistBar = _initPlaylistBar;
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _initPlaylistBar);
+else _initPlaylistBar();
 
 // ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
 function toggleConcert(headerEl) {
@@ -4474,8 +4570,8 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     });
   }
 
-  // ADR-162: queue toggle + "Up Next" panel on the mobile bar (when a queue is active)
-  _addQueueUI(mp.el);
+  // ADR-175: the queue editor is app-level now; the mobile bar no longer carries
+  // an "Up Next" toggle/panel.
 
   // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
   // Tracklist starts hidden (fold-first); hamburger reveals it.

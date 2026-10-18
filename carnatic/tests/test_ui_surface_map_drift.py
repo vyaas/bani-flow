@@ -39,6 +39,9 @@ CLAIMS: dict[str, list[str]] = {
         'id="raga-wheel"', 'id="wheel-detail-panel"',
         # §5 media player
         'id="mp-copy-toast"',
+        # §5 media player — ADR-175 persistent Playlist Bar
+        'id="playlist-bar"', 'id="pb-summary"', 'id="pb-editor-toggle"',
+        'id="pb-expand"', 'id="pb-prev"', 'id="pb-next"', 'id="pb-play"',
     ],
     "bani_flow.js": [
         # §1
@@ -92,6 +95,10 @@ CLAIMS: dict[str, list[str]] = {
         "function collectQueueItems", "function buildQueuePanel",
         "function _renderQueuePanel", "function _refreshQueuePanels",
         "function _addQueueUI",
+        # §5 — ADR-175 persistent Playlist Bar
+        "function _initPlaylistBar", "function _renderPlaylistBar",
+        "function _pbPlayPauseCurrent", "function _pbExpandPlayer",
+        "window._initPlaylistBar",
         # §5 — chrome
         "function buildPlayerBar", "function buildPlayerRail",
         "function updatePlayerRail", "function buildPlayerTrackList",

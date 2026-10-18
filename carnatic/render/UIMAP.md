@@ -253,8 +253,15 @@ draggable/resizable `.media-player` (spawned at `nextSpawnPosition()`, z-order
 via `bringToFront`/`topZ`). Mobile: bottom-sheet `.media-player.full-mobile` +
 collapsed `.mini` strip. Chrome: bar (`buildPlayerBar`), chip rail
 (`buildPlayerRail`), tracklist (`.mp-tracklist`, opens upward `bottom:100%`),
-queue panel (`.mp-queue`, also upward), video wrap (`.mp-video-wrap`), copy
-toast `#mp-copy-toast`.
+queue panel (`.mp-queue`, opens upward; the app-level editor is `.mp-queue-bar`),
+video wrap (`.mp-video-wrap`), copy toast `#mp-copy-toast`.
+
+**ADR-175: the persistent Playlist Bar** is the one static root:
+`#playlist-bar` (app chrome, top-centre desktop; second top band on mobile) with
+`#pb-prev` / `#pb-play` / `#pb-next` (`#pb-transport`), `#pb-summary`,
+`#pb-count`, `#pb-editor-toggle`, `#pb-expand`. The ADR-162 editor is
+re-parented into it as `.mp-queue-bar` (drops **downward** from the bar) so the
+playlist is visible/editable with the player open *or* closed.
 
 **Owns:** `media_player.js` (~4740 ln) + `media_providers.js` (provider
 registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154)
@@ -279,8 +286,11 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   (`_normalize`) or `currentKey` silently breaks.
 - Queue UI: `buildQueuePanel()` / `_renderQueuePanel(panel)` /
   `_refreshQueuePanels()` (two-way binding — call after every mutation) /
-  `_addQueueUI(el, skipRefresh)` (attach point: called from `createPlayer` AND
-  `_openMobilePlayer`).
+  `_addQueueUI(el, skipRefresh)` (legacy attach point, now **unused** — ADR-175
+  re-parented the editor to the bar).
+- **ADR-175 Playlist Bar:** `_initPlaylistBar()` (mounts the bar + editor, wires
+  transport), `_renderPlaylistBar()` (mirrors MediaQueue into `#playlist-bar`),
+  `_pbPlayPauseCurrent()` / `_pbExpandPlayer()` (control handlers).
 - Row registration: `window.registerQueueItem(rowEl, getItem)` — how bani
   trail and recording rows become queueable; `collectQueueItems(rootEl)`.
 - Chrome: `buildPlayerBar(...)` (transport buttons — new buttons go here),
