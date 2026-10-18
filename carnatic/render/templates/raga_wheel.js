@@ -94,9 +94,10 @@ function switchView(name) {
       window._pendingWheelSubject = null;
     }
     // ADR-151: if syncRagaWheelToFilter returned early (non-raga/comp filter type or
-    // no filter at all), the wheel was made visible but _wdpData is still null.
+    // no filter at all), the wheel was made visible but no data cache exists yet.
     // Draw now so the pending WDP restore (window._pendingWdpPlayback) has data to work with.
-    if (!_wdpData) drawRagaWheel();
+    // The cache is IIFE-private, so readiness is published as a window flag.
+    if (!window._wdpDataReady) drawRagaWheel();
   }
 }
 
@@ -1320,6 +1321,7 @@ window.drawRagaWheel = function() {
 
   // Option B: cache data for the detail panel and clear any stale panel from previous draw
   _wdpData = { janyasByMela, compsByRaga, melaByNum };
+  window._wdpDataReady = true;   // IIFE-private cache, exposed for switchView's fallback draw
   _closeWheelDetailPanel();
 
   // ADR-151: process a deferred WDP open from permalink restore.
@@ -2135,8 +2137,13 @@ window.drawRagaWheel = function() {
         } else {
           _collapseAll(vp, melaByNum);
           // On mobile, dismiss the bani-flow panel before opening the box so
-          // the rasika only sees one thing at a time (wheel tap \u2192 box \u2192 panel cascade).
-          if (window.matchMedia('(max-width: 768px)').matches && typeof window.setPanelState === 'function') {
+          // the rasika only sees one thing at a time (wheel tap -> box -> panel cascade).
+          // Only for a genuine user tap: _triggerMelaExpand runs this same click
+          // programmatically during a sync/refit (guarded by _wheelPreviewNoPanel),
+          // and closing here would withdraw the very panel the sync just opened.
+          if (window.matchMedia('(max-width: 768px)').matches &&
+              typeof window.setPanelState === 'function' &&
+              !window._wheelPreviewNoPanel) {
             window.setPanelState('IDLE');
           }
           // Option B: show mela\u2192janya\u2192comp in the detail panel instead of SVG fans

@@ -2980,8 +2980,8 @@
   }
   /* The sidebars are wider than the floating view selector / help button, so the
      bar must clear them: when a panel is open it starts at the panel's inner
-     edge, never over it. Desktop only — on mobile the bar is a full-width band
-     layered above the drawers (ADR-175). */
+     edge, never over it. Desktop only — on mobile the drawers start BELOW the
+     full-width bar (top: var(--chrome-top)), so the bar never occludes them (ADR-175). */
   @media (min-width: 769px) {
     body:has(#left-sidebar.drawer-open)  #playlist-bar { left:  max(220px, var(--left-panel-width, 280px)); }
     body:has(#right-sidebar.drawer-open) #playlist-bar { right: max(56px,  var(--right-panel-width, 280px)); }
@@ -3025,9 +3025,10 @@
 
   /* Mobile (ADR-175): the bar is a second top band, top-centre full-width.
      Band 1 keeps the view selector + help button; the bar sits directly under
-     it. --chrome-top is widened so the canvas/panels clear both bands. */
+     it. --chrome-top clears both bands AND the 54px bar (bottom = 52 + 54 = 106)
+     with a 10px gap, so the canvas, wheel and both panels never run under the bar. */
   @media (max-width: 768px) {
-    :root { --chrome-top: 100px; }
+    :root { --chrome-top: 116px; }
     #playlist-bar {
       top: 52px; left: 8px; right: 8px; transform: none;
       width: auto;
@@ -4300,7 +4301,7 @@
     /* ADR-075: full-height, covers header; rounded top; hard bottom border */
     #left-sidebar {
       position: fixed;
-      top: env(safe-area-inset-top, 0px);  /* ADR-075: cover header, honour notch */
+      top: var(--chrome-top);  /* ADR-175: start below the top playlist bar — never occluded */
       left: 0;
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       z-index: 220;  /* ADR-075: above header (~auto) and scrims (199); tab-bar is 230 */
@@ -4337,7 +4338,7 @@
     /* ADR-075: full-height, covers header; rounded top; hard bottom border */
     #right-sidebar {
       position: fixed;
-      top: env(safe-area-inset-top, 0px);  /* ADR-075: cover header, honour notch */
+      top: var(--chrome-top);  /* ADR-175: start below the top playlist bar — never occluded */
       right: 0;
       bottom: calc(56px + env(safe-area-inset-bottom, 0px));
       left: auto;

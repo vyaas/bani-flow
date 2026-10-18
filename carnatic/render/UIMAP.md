@@ -227,6 +227,10 @@ whole app** (`switchView`, `_updateViewportToolbar`, `vpFit`, `vpRelayout`,
 - **Sync:** `syncRagaWheelToFilter(type, id)` (reads bani filter),
   `window.syncWheelFromBaniSubject(type, id)`, `orientRagaWheel(type, id)`,
   `window.refitRagaWheel()` (state-preserving redraw for the ADR-176 refit).
+  `_triggerMelaExpand` flags `window._wheelPreviewNoPanel` around its
+  synthesized mela click, so the mela handler's mobile panel-dismissal
+  (`setPanelState('IDLE')`) is skipped for programmatic sync/refit clicks —
+  otherwise a refit would withdraw the panel that just opened.
 - **View switching:** `switchView('graph'|'raga')`, `showRagaWheel(skipDraw)`,
   `hideRagaWheel()`, `wheelFit()`.
 
@@ -455,7 +459,12 @@ permalink.js    LAST — restores state using every global above
 `mobile.js`: `setPanelState(newState)` — opens/closes `#left-sidebar` /
 `#right-sidebar` via `.drawer-open`; desktop toggles `#left-panel-toggle` /
 `#right-panel-toggle` (`.float-toggle-active`); `peekBottomSheet()` /
-`dismissBottomSheet()` exposed as globals. **View refit (ADR-176):**
+`dismissBottomSheet()` exposed as globals. **Mobile geometry (ADR-175):** the
+drawers are `position:fixed` with `top: var(--chrome-top)`, so they start
+**below** the full-width Playlist Bar (never occluded); `--chrome-top` on mobile
+is `116px` (bar bottom 106 + gap). Opening a panel also folds the app-level
+playlist editor (`MediaQueue.setPanelOpen(false)` + `_refreshQueuePanels()`) so
+the bar cannot drop over the panel column. **View refit (ADR-176):**
 `_refitViews()` re-publishes the playlist top wall (`_syncViewTopInset`) then
 `cy.resize()`/`cy.fit()` and `window.refitRagaWheel()` — the wheel's
 state-preserving redraw (a bare `drawRagaWheel()` would clear the open WDP);

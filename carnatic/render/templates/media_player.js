@@ -1965,7 +1965,10 @@ const MediaQueue = {
     this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
     this.active = this.items.length > 0;
     this.activeChapter = null;
-    this.panelOpen = this.active;   // ADR-162: Play all reveals the queue panel
+    // ADR-162: Play all reveals the queue panel on desktop. On mobile the bar
+    // stays minimized by default — the full-width editor must not cover a panel.
+    this.panelOpen = this.active &&
+      !(typeof _isMobilePlayer === 'function' && _isMobilePlayer());
     if (this.active) this._open(pos);
     _refreshQueuePanels();
   },
