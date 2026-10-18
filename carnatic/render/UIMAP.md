@@ -263,19 +263,22 @@ app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
 `_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
 bar + open editor (`_playlistUiRect`; bottom-centre, side if no room below);
 `_snapPlayerIfNearBar` re-docks on drag release, and `_avoidPlaylistUI` clamps a
-drag so the player can never overlap the editor (its header always shows). The
-editor's current row carries `.mp-queue-collapse` → `_toggleCurrentPlayerCollapse`
-(a central minimize/maximize of the playing item). z-order: players `≤700`,
+drag so the player can never overlap the editor (its header always shows).
+`_playerMatchWidth` keeps the player flush with the playlist UI width unless the
+user resizes it (`_userResized`). The editor's current row carries the leftmost
+`.mp-queue-collapse` → `_toggleCurrentPlayerCollapse` (a central minimize/maximize
+of the playing item). z-order: players `≤700`,
 `#playlist-bar` `750`, modals `1000+` — the bar is never occluded.
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
 
 **ADR-175: the persistent Playlist Bar** is the one static root:
 `#playlist-bar` (app chrome, top-centre desktop; second top band on mobile) with
-`#pb-prev` / `#pb-play` / `#pb-next` (`#pb-transport`), `#pb-summary`,
-`#pb-count`, `#pb-editor-toggle`, `#pb-expand`. The ADR-162 editor is
-re-parented into it as `.mp-queue-bar` (drops **downward** from the bar) so the
-playlist is visible/editable with the player open *or* closed.
+`#pb-prev` / `#pb-play` / `#pb-next` / `#pb-stop` (`#pb-transport`), `#pb-summary`,
+`#pb-count`, `#pb-editor-toggle`. The ADR-162 editor is re-parented into it as
+`.mp-queue-bar` (drops **downward** from the bar) so the playlist is
+visible/editable with the player open *or* closed. The playing item's row opens
+with a leftmost `.mp-queue-collapse` chevron (show/hide the player).
 
 **Owns:** `media_player.js` (~4740 ln) + `media_providers.js` (provider
 registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154)

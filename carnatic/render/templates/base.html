@@ -2836,13 +2836,17 @@
   }
   .mp-queue-play:not(:disabled):hover { color: var(--accent); }
   .mp-queue-play:disabled { opacity: 0.35; cursor: default; }
-  /* ADR-175: per-row minimize/maximize for the current (playing) item. */
+  /* ADR-175: per-row minimize/maximize for the current (playing) item. A
+     boxed disclosure chevron — deliberately distinct from the ▶ play button. */
   .mp-queue-collapse {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.7rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+    background: none; border: 1px solid var(--border); border-radius: 3px;
+    color: var(--fg-muted); font-size: 0.8rem; cursor: pointer;
+    padding: 0 4px; line-height: 1.2; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px;
   }
-  .mp-queue-collapse:hover { color: var(--accent); }
-  .mp-queue-collapse[aria-pressed="true"] { color: var(--accent); }
+  .mp-queue-collapse:hover { color: var(--accent); border-color: var(--accent); }
+  .mp-queue-collapse[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
     font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
@@ -5220,7 +5224,6 @@
   <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>
   <span id="pb-count"></span>
   <button type="button" id="pb-editor-toggle" class="pb-btn mp-toggle-btn" title="Playlist" aria-label="Playlist" aria-pressed="false">&#9776;</button>
-  <button type="button" id="pb-expand" class="pb-btn" title="Open player" aria-label="Open player">&#9650;</button>
 </div>
 
 <div id="graph-absent-toast"></div>

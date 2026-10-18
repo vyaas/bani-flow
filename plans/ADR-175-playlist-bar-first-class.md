@@ -74,7 +74,7 @@ A new app-level chrome element `#playlist-bar`, a sibling of the floating chrome
   ├── #pb-transport   [⏮ prev] [▶/⏸ play-pause] [⏭ next] [■ stop]
   ├── #pb-summary     now-playing identity chips (ADR-159 vocabulary) + #pb-count (e.g. 3 / 12)
   ├── #pb-editor-toggle  (≡ playlist)  — opens the CP editor   [.mp-toggle-btn, aria-pressed]
-  └── #pb-expand      (^ open player)  — opens/focuses the video surface
+  └── (the playing item's editor row owns the per-item show/hide player control)
 ```
 
 - **Desktop:** fixed top-centre, in the floating-chrome row between `#view-selector-float` (top-left) and `#app-title-float` (top-right). It stretches only as far as its content; `pointer-events` follow the ADR-129 floating-cluster rule so gaps still click through to the canvas. Transient surfaces it opens drop **downward** from the bar (mirror of ADR-161's upward player surfaces).

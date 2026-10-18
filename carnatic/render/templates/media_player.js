@@ -360,6 +360,7 @@ function wireResize(el, handle) {
       resizeVideoWrap = null, rafResizePending = false;
   handle.addEventListener('mousedown', e => {
     resizing = true;
+    el._userResized = true;   // ADR-175: user chose a width; stop auto-matching
     startX = e.clientX; startY = e.clientY;
     startW = el.offsetWidth;
     // Cache videoWrap reference and current video height once
@@ -693,10 +694,21 @@ function _avoidPlaylistUI(el, left, top) {
   return { left, top: Math.round(uiB + margin) };
 }
 
+// ADR-175: match a player's default width to the Playlist UI width (bar /
+// editor), so the two are flush at every screen size. A user resize sets
+// `_userResized`, after which we never override it (they may expand beyond).
+function _playerMatchWidth(el) {
+  if (el._userResized) return;
+  const ui = _playlistUiRect();
+  if (!ui) return;
+  el.style.width = Math.max(320, Math.round(ui.width)) + 'px';
+}
+
 // ADR-175: magnetically dock a player under the Playlist UI (bar + open editor).
 // If there is no room below, shove it to the side with the most clearance.
 // left/top are written relative to the player's offsetParent.
 function _dockPlayer(el) {
+  _playerMatchWidth(el);
   const ui = _playlistUiRect();
   const parent = el.offsetParent || document.getElementById('main');
   if (!ui || !parent) return;
@@ -2171,6 +2183,23 @@ function _renderQueuePanel(panel) {
     li.className = 'mp-queue-item' + (i === MediaQueue.index ? ' mp-queue-current' : '');
     li.dataset.i = i;
 
+    const isCurrent = (i === MediaQueue.index);
+
+    // ADR-175: leftmost minimize/maximize of the playing item — a boxed
+    // disclosure chevron (deliberately distinct from ▶), the central place
+    // from which to show/hide the playing video.
+    if (isCurrent) {
+      const collapsed = _isCurrentPlayerCollapsed();
+      const cbtn = document.createElement('button');
+      cbtn.type = 'button'; cbtn.className = 'mp-queue-collapse';
+      cbtn.title = collapsed ? 'Show player' : 'Hide player';
+      cbtn.setAttribute('aria-label', cbtn.title);
+      cbtn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+      cbtn.textContent = collapsed ? '\u203a' : '\u2304';   // › collapsed | ⌄ expanded
+      cbtn.addEventListener('click', e => { e.stopPropagation(); _toggleCurrentPlayerCollapse(); });
+      li.appendChild(cbtn);
+    }
+
     const reorder = document.createElement('span');
     reorder.className = 'mp-queue-reorder';
     const up = document.createElement('button');
@@ -2190,7 +2219,6 @@ function _renderQueuePanel(panel) {
     li.appendChild(chips);
 
     // Play button — primary action: jump to this item and start playing
-    const isCurrent = (i === MediaQueue.index);
     const playBtn = document.createElement('button');
     playBtn.type = 'button'; playBtn.className = 'mp-queue-play';
     playBtn.title = isCurrent ? 'Now playing' : 'Play';
@@ -2199,20 +2227,6 @@ function _renderQueuePanel(panel) {
     playBtn.disabled = isCurrent;
     playBtn.addEventListener('click', e => { e.stopPropagation(); MediaQueue.jumpTo(i); });
     li.appendChild(playBtn);
-
-    // ADR-175: for the playing item, a central minimize/maximize control that
-    // shows/hides the video surface without stopping playback.
-    if (isCurrent) {
-      const collapsed = _isCurrentPlayerCollapsed();
-      const cbtn = document.createElement('button');
-      cbtn.type = 'button'; cbtn.className = 'mp-queue-collapse';
-      cbtn.title = collapsed ? 'Show player' : 'Hide player';
-      cbtn.setAttribute('aria-label', cbtn.title);
-      cbtn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
-      cbtn.textContent = collapsed ? '▸' : '▾';
-      cbtn.addEventListener('click', e => { e.stopPropagation(); _toggleCurrentPlayerCollapse(); });
-      li.appendChild(cbtn);
-    }
 
     // + affordance — secondary: add to playlist or session queue
     const qplus = _buildPlusBtn((() => {
@@ -2485,12 +2499,10 @@ function _initPlaylistBar() {
   const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
   const editorBtn = bar.querySelector('#pb-editor-toggle');
-  const expandBtn = bar.querySelector('#pb-expand');
   if (prev) prev.addEventListener('click', () => MediaQueue.previous());
   if (next) next.addEventListener('click', () => MediaQueue.next());
   if (stop) stop.addEventListener('click', _pbStopCurrent);
   if (play) play.addEventListener('click', _pbPlayPauseCurrent);
-  if (expandBtn) expandBtn.addEventListener('click', _pbExpandPlayer);
   if (editorBtn) editorBtn.addEventListener('click', () => {
     MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
     _refreshQueuePanels();
