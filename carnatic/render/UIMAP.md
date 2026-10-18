@@ -257,18 +257,20 @@ opens upward `bottom:100%`), queue panel (`.mp-queue`, opens upward; the
 app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
 `#mp-copy-toast`.
 
-**ADR-175 minimize / dock:** content players have **no ✕** and **no fold-cue**.`.mp-minimize` (the old ✕ slot, `—`/`□`) collapses a content player **into the playlist**
-(the window hides; audio continues; the Playlist Bar is the face) via
-`_toggleMinimized`; utility players (sruti/tanpura) keep a strip minimize.
+**ADR-175 — the playlist row is king:** content players are **bare**
+(`.media-player.bare`: video + `.mp-drag-handle` + `.mp-resize`; **no** `.mp-bar`,
+identity rail, ✕, minimize or fold-cue). Identity lives in the editor row, and
+copy/share/watch move to the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch`
+→ `_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`). Show/hide is driven by the
+row: its current item leads with `.mp-queue-collapse` → `_toggleCurrentPlayerCollapse`,
+and its play button becomes a **stop** (`■`) while playing → `_pbStopCurrent`.
+Utility players (sruti/tanpura) keep `.mp-bar`.
 `_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
 bar + open editor (`_playlistUiRect`; bottom-centre, side if no room below);
 `_snapPlayerIfNearBar` re-docks on drag release, and `_avoidPlaylistUI` clamps a
-drag so the player can never overlap the editor (its header always shows).
-`_playerMatchWidth` keeps the player flush with the playlist UI width unless the
-user resizes it (`_userResized`). The editor's current row carries the leftmost
-`.mp-queue-collapse` → `_toggleCurrentPlayerCollapse` (a central minimize/maximize
-of the playing item). z-order: players `≤700`,
-`#playlist-bar` `750`, modals `1000+` — the bar is never occluded.
+drag so the player can never overlap the editor. `_playerMatchWidth` keeps the
+player flush with the playlist UI width unless the user resizes it (`_userResized`).
+z-order: players `≤700`, `#playlist-bar` `750`, modals `1000+` — never occluded.
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
 

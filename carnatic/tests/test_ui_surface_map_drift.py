@@ -42,6 +42,7 @@ CLAIMS: dict[str, list[str]] = {
         # §5 media player — ADR-175 persistent Playlist Bar
         'id="playlist-bar"', 'id="pb-summary"', 'id="pb-editor-toggle"',
         'id="pb-prev"', 'id="pb-next"', 'id="pb-play"', 'id="pb-stop"',
+        'id="pb-copy"', 'id="pb-share"', 'id="pb-watch"',
     ],
     "bani_flow.js": [
         # §1
@@ -102,6 +103,8 @@ CLAIMS: dict[str, list[str]] = {
         "function _dockPlayer", "function _snapPlayerIfNearBar",
         "function _playlistUiRect", "function _avoidPlaylistUI",
         "function _toggleCurrentPlayerCollapse", "function _isCurrentPlayerCollapsed",
+        "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
+        "function _pbCurrentTarget",
         "window._initPlaylistBar",
         # §5 — chrome
         "function buildPlayerBar", "function buildPlayerRail",

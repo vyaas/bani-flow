@@ -1474,29 +1474,23 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   el.className = 'media-player';
   el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${_nextPlayerZ()}; width:480px;`;
 
-  const bar = buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, meta || {});
-  el.appendChild(bar);
-
-  if (hasTracks) {
-    const tracklistDiv = document.createElement('div');
-    tracklistDiv.className = 'mp-tracklist';
-    tracklistDiv.style.display = 'none';
-    el.appendChild(tracklistDiv);
-  }
+  // ADR-175: content players are BARE. Identity lives in the Playlist editor
+  // row; the player is just the video surface, a thin drag strip, and the
+  // resize grip. Show/hide is driven by the row's collapse control.
+  el.classList.add('bare');
+  const dragHandle = document.createElement('div');
+  dragHandle.className = 'mp-drag-handle';
+  dragHandle.title = 'Drag to move';
+  el.appendChild(dragHandle);
 
   const videoWrap = document.createElement('div');
   videoWrap.className = 'mp-video-wrap';
   el.appendChild(videoWrap);
   // ADR-155: connect the player to the DOM BEFORE mounting Plyr — the YouTube
-  // IFrame API needs the target element attached to initialise. Remaining
-  // children (footer, resize) are appended to the now-connected element below.
+  // IFrame API needs the target element attached to initialise.
   document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
 
-  // ADR-159: the identity rail is built inside buildPlayerBar (in the header);
-  // no below-video footer is appended for the standard recital/concert path.
-  // fullMeta still drives instance.meta so updatePlayerRail can rebuild the
-  // performer chip on every segment/track change.
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
 
   const resizeHandle = document.createElement('div');
@@ -1509,8 +1503,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     controller,                  // ADR-155: uniform media controller (Plyr or iframe)
     iframe:       controller.iframe,   // null when Plyr-backed
     plyr:         controller.plyr,     // null when iframe-backed
-    titleEl:      el.querySelector('.mp-title'),
-    tracklistEl:  el.querySelector('.mp-tracklist') || null,
+    titleEl:      null,   // ADR-175: content players are bare (no header)
+    tracklistEl:  null,
     media,                       // ADR-154: the MediaRef
     mediaKey:     mkey,          // ADR-154: registry key
     // ADR-154 transitional: keep `vid` for YouTube media so older permalink
@@ -1543,71 +1537,15 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
   controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
 
-  // ADR-175: content players have no ✕ any more — a player is minimizable
-  // (fold-cue, ADR-160), never closeable. Stop lives on the Playlist Bar.
-
-  // ADR-139: wire clipboard copy button
-  const copyBtn = el.querySelector('.mp-copy-btn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const url = shareUrl(media, instance.currentOffset);
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(() => {
-          copyBtn.classList.add('mp-copy-copied');
-          setTimeout(() => copyBtn.classList.remove('mp-copy-copied'), 1500);
-          showCopyLinkToast();
-        });
-      }
-    });
-  }
-
-  // ADR-151: wire share button (permalink = trail + player + panel)
-  const shareBtn = el.querySelector('.mp-share-btn');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', async e => {
-      e.stopPropagation();
-      const res = await encodePermalink(instance);
-      if (!res || !res.fragment) return;
-      window.location.hash = res.fragment;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-          shareBtn.classList.add('mp-share-copied');
-          setTimeout(() => shareBtn.classList.remove('mp-share-copied'), 1500);
-          // ADR-164: surface queue truncation honestly, never silently.
-          showCopyLinkToast(res.notice ? 'Permalink copied! (' + res.notice + ')' : 'Permalink copied!');
-        });
-      }
-    });
-  }
-
-  // Watch on YouTube — refresh href with current offset just before the user clicks.
-  const ytLinkEl = el.querySelector('.mp-yt-link');
-  if (ytLinkEl) {
-    ytLinkEl.addEventListener('mouseenter', () => {
-      ytLinkEl.href = shareUrl(media, instance.currentOffset || 0);
-    });
-  }
-
-  // Populate the tracklist DOM, but ADR-175 retired its ≡ toggle: the Playlist
-  // Bar's editor now owns list navigation. The (hidden) tracklist is kept for
-  // the segment rail / future reuse; it is no longer user-openable.
-  if (hasTracks && instance.tracklistEl) {
-    const trackUl = buildPlayerTrackList(mkey, tracks, instance);
-    instance.tracklistEl.appendChild(trackUl);
-  }
-
-  // ADR-175: no per-player queue UI — the queue editor is app-level
-  // (#playlist-bar); standalone players and queue players both stay queue-free.
-  _wireFoldCue(el);   // ADR-160: fold-cue minimizes the player (rail stays, audio continues)
-  wireDrag(el, el.querySelector('.mp-bar'));
-  wireResize(el, el.querySelector('.mp-resize'));
+  // ADR-175: no header chrome, no per-player queue UI, no fold-cue. Copy/share/
+  // watch live on the Playlist Bar (current item's actions). Drag via the thin
+  // strip; resize via the corner grip.
+  wireDrag(el, dragHandle);
+  wireResize(el, resizeHandle);
   el.addEventListener('mousedown', () => bringToFront(instance));
 
-  // el was already appended to #main before mountPlayer (Plyr/YT needs the
-  // target connected at init); just raise it to the front now.
   bringToFront(instance);
-  _dockPlayer(el);   // ADR-175: rest beneath the Playlist Bar
+  _dockPlayer(el);   // ADR-175: rest beneath the Playlist UI, width-matched
   return instance;
 }
 
@@ -2184,11 +2122,12 @@ function _renderQueuePanel(panel) {
     li.dataset.i = i;
 
     const isCurrent = (i === MediaQueue.index);
+    const isPlayingCurrent = isCurrent && !!MediaQueue.currentKey;
 
     // ADR-175: leftmost minimize/maximize of the playing item — a boxed
     // disclosure chevron (deliberately distinct from ▶), the central place
     // from which to show/hide the playing video.
-    if (isCurrent) {
+    if (isPlayingCurrent) {
       const collapsed = _isCurrentPlayerCollapsed();
       const cbtn = document.createElement('button');
       cbtn.type = 'button'; cbtn.className = 'mp-queue-collapse';
@@ -2218,14 +2157,20 @@ function _renderQueuePanel(panel) {
     chips.appendChild(_buildQueueRowChips(item));
     li.appendChild(chips);
 
-    // Play button — primary action: jump to this item and start playing
+    // Primary action: the playing item's button is a STOP (stops playback but
+    // keeps the list); the cursor item after a stop resumes; others play.
     const playBtn = document.createElement('button');
-    playBtn.type = 'button'; playBtn.className = 'mp-queue-play';
-    playBtn.title = isCurrent ? 'Now playing' : 'Play';
-    playBtn.setAttribute('aria-label', isCurrent ? 'Now playing' : 'Play');
-    playBtn.textContent = '▶';
-    playBtn.disabled = isCurrent;
-    playBtn.addEventListener('click', e => { e.stopPropagation(); MediaQueue.jumpTo(i); });
+    playBtn.type = 'button';
+    playBtn.className = 'mp-queue-play' + (isPlayingCurrent ? ' mp-queue-stop' : '');
+    playBtn.title = isPlayingCurrent ? 'Stop' : (isCurrent ? 'Resume' : 'Play');
+    playBtn.setAttribute('aria-label', playBtn.title);
+    playBtn.textContent = isPlayingCurrent ? '\u25a0' : '\u25b6';   // ■ / ▶
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (isPlayingCurrent) _pbStopCurrent();
+      else if (isCurrent) _pbPlayPauseCurrent();
+      else MediaQueue.jumpTo(i);
+    });
     li.appendChild(playBtn);
 
     // + affordance — secondary: add to playlist or session queue
@@ -2429,7 +2374,7 @@ function _pbStopCurrent() {
   }
   MediaQueue.currentKey = null;   // list survives; nothing plays
   refreshPlayingIndicators();
-  _renderPlaylistBar();
+  _refreshQueuePanels();
 }
 
 function _pbExpandPlayer() {
@@ -2446,6 +2391,44 @@ function _pbExpandPlayer() {
   }
 }
 
+// ADR-175: the current item's copy/share/watch actions now live on the Playlist
+// Bar, since the content player is bare.
+function _pbCurrentItem() { return MediaQueue.active ? MediaQueue.items[MediaQueue.index] : null; }
+function _pbCurrentTarget() {
+  const key = MediaQueue.currentKey;
+  const inst = key ? playerRegistry.get(key) : null;
+  if (inst) return inst;
+  const item = _pbCurrentItem();
+  if (!item) return null;
+  return { media: item.media, mediaKey: mediaKey(item.media),
+           currentOffset: item.startSeconds || 0, meta: item.meta || {} };
+}
+function _pbCopyLink() {
+  const t = _pbCurrentTarget();
+  if (!t) return;
+  const url = shareUrl(t.media, t.currentOffset || 0);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => showCopyLinkToast());
+  }
+}
+async function _pbShareLink() {
+  const t = _pbCurrentTarget();
+  if (!t) return;
+  const res = await encodePermalink(t);
+  if (!res || !res.fragment) return;
+  window.location.hash = res.fragment;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showCopyLinkToast(res.notice ? 'Permalink copied! (' + res.notice + ')' : 'Permalink copied!');
+    });
+  }
+}
+function _pbWatchOnYouTube() {
+  const item = _pbCurrentItem();
+  if (!item) return;
+  window.open(shareUrl(item.media, 0), '_blank', 'noopener');
+}
+
 function _renderPlaylistBar() {
   const bar = document.getElementById('playlist-bar');
   if (!bar) return;
@@ -2459,6 +2442,9 @@ function _renderPlaylistBar() {
   const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
   const editorBtn = bar.querySelector('#pb-editor-toggle');
+  const copyBtn = bar.querySelector('#pb-copy');
+  const shareBtn = bar.querySelector('#pb-share');
+  const watchBtn = bar.querySelector('#pb-watch');
 
   if (summary) {
     summary.innerHTML = '';
@@ -2475,6 +2461,9 @@ function _renderPlaylistBar() {
   if (prev) prev.disabled = !has || MediaQueue.index <= 0;
   if (next) next.disabled = !has || MediaQueue.index >= MediaQueue.items.length - 1;
   if (stop) stop.disabled = !has || !MediaQueue.currentKey;
+  if (copyBtn) copyBtn.disabled = !has;
+  if (shareBtn) shareBtn.disabled = !has;
+  if (watchBtn) watchBtn.disabled = !has;
   if (editorBtn) {
     editorBtn.disabled = !has;
     editorBtn.setAttribute('aria-pressed', (has && MediaQueue.panelOpen) ? 'true' : 'false');
@@ -2499,10 +2488,16 @@ function _initPlaylistBar() {
   const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
   const editorBtn = bar.querySelector('#pb-editor-toggle');
+  const copyBtn = bar.querySelector('#pb-copy');
+  const shareBtn = bar.querySelector('#pb-share');
+  const watchBtn = bar.querySelector('#pb-watch');
   if (prev) prev.addEventListener('click', () => MediaQueue.previous());
   if (next) next.addEventListener('click', () => MediaQueue.next());
   if (stop) stop.addEventListener('click', _pbStopCurrent);
   if (play) play.addEventListener('click', _pbPlayPauseCurrent);
+  if (copyBtn) copyBtn.addEventListener('click', _pbCopyLink);
+  if (shareBtn) shareBtn.addEventListener('click', _pbShareLink);
+  if (watchBtn) watchBtn.addEventListener('click', _pbWatchOnYouTube);
   if (editorBtn) editorBtn.addEventListener('click', () => {
     MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
     _refreshQueuePanels();
@@ -4778,11 +4773,17 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     displayTitle || concertTitle || null,
     currentTrack ? (currentTrack.tala || null)           : ((meta && meta.tala) || null));
 
-  // ── Build full-mode bar ─────────────────────────────────────────────────
+  // ── Build full-mode bar (utility players only) ──────────────────────────
+  // ADR-175: content players are BARE — identity lives in the Playlist editor
+  // row; show/hide is driven by that row. Utility players keep their bar.
+  const isContent = !!(meta && meta.isQueueItem);
+  mp.el.classList.toggle('bare', isContent);
   mp.bar.innerHTML = '';
-  const fullBar = buildPlayerBar(media, artistName, concertTitle || trackLabel, trackLabel,
-                                 mp.tracks.length > 0, meta || {});
-  while (fullBar.firstChild) mp.bar.appendChild(fullBar.firstChild);
+  if (!isContent) {
+    const fullBar = buildPlayerBar(media, artistName, concertTitle || trackLabel, trackLabel,
+                                   mp.tracks.length > 0, meta || {});
+    while (fullBar.firstChild) mp.bar.appendChild(fullBar.firstChild);
+  }
 
   // Re-wire close button inside full bar
   const barClose = mp.bar.querySelector('.mp-close');

@@ -1136,6 +1136,18 @@
   }
   .mp-close:hover { color: var(--accent-danger); }
 
+  /* ── ADR-175: content players are BARE ──────────────────────────────────
+     Identity lives in the Playlist editor row; the player is just the video
+     surface + a thin drag strip + the resize grip. Show/hide is driven by the
+     row's collapse control. Utility players (sruti/tanpura) keep .mp-bar. */
+  .mp-drag-handle {
+    height: 10px; flex-shrink: 0;
+    background: var(--bg-input); border-bottom: 1px solid var(--border);
+    border-radius: 4px 4px 0 0; cursor: grab;
+  }
+  .mp-drag-handle:active { cursor: grabbing; }
+  .media-player.bare .mp-bar { display: none; }
+
   /* ADR-139: clipboard copy button in media player title bar */
   .mp-copy-btn {
     background: none; border: none; color: var(--fg-muted);
@@ -5223,6 +5235,9 @@
   </div>
   <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>
   <span id="pb-count"></span>
+  <button type="button" id="pb-copy" class="pb-btn" title="Copy link" aria-label="Copy link">&#10697;</button>
+  <button type="button" id="pb-share" class="pb-btn" title="Copy permalink" aria-label="Copy permalink">&#8679;</button>
+  <button type="button" id="pb-watch" class="pb-btn" title="Watch on YouTube" aria-label="Watch on YouTube">&#8599;</button>
   <button type="button" id="pb-editor-toggle" class="pb-btn mp-toggle-btn" title="Playlist" aria-label="Playlist" aria-pressed="false">&#9776;</button>
 </div>
 
