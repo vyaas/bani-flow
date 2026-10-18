@@ -264,9 +264,16 @@ current row owns the operator set (`.mp-queue-op` copy / permalink / watch →
 `_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`; play↔stop via `_pbStopCurrent`).
 **Parent-inherits rule:** while the editor is open the row holds the operators; the
 Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch`, `#pb-play` / `#pb-stop`) shows
-them only when the row is not visible. `#pb-editor-toggle` is the bar's leftmost
+them only when the row is not visible. The bare player carries its own
+`.mp-player-controls` (minimize `—` + close `✕`) — shown by `_syncPlayerControls`
+whenever the row is not providing them (editor folded, or the player is detached,
+`el._detached`) — so a detached/floating video is independently minimizable and
+closable. `#pb-editor-toggle` is the bar's leftmost
 control and, like the row's `.mp-queue-collapse`, uses the panel chevron glyph
-(`▶`/`▼`). Utility players (sruti/tanpura) keep `.mp-bar`.
+(`▶`/`▼`). Bar and row share the same left→right order (**chevron · text ·
+operators**), and non-current rows reserve `.mp-queue-collapse-phantom` /
+`.mp-queue-op-phantom` columns so the text and trailing buttons never shift.
+Utility players (sruti/tanpura) keep `.mp-bar`.
 `_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
 bar + open editor (`_playlistUiRect`; bottom-centre, side if no room below);
 `_snapPlayerIfNearBar` re-docks on drag release, and `_avoidPlaylistUI` clamps a

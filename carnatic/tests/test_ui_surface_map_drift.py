@@ -102,6 +102,7 @@ CLAIMS: dict[str, list[str]] = {
         "function _pbStopCurrent",
         "function _dockPlayer", "function _snapPlayerIfNearBar",
         "function _playlistUiRect", "function _avoidPlaylistUI",
+        "function _syncPlayerControls",
         "function _toggleCurrentPlayerCollapse", "function _isCurrentPlayerCollapsed",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
         "function _pbCurrentTarget",

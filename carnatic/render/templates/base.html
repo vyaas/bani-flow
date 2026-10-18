@@ -1147,6 +1147,21 @@
   }
   .mp-drag-handle:active { cursor: grabbing; }
   .media-player.bare .mp-bar { display: none; }
+  /* ADR-175: bare content player's own controls — shown only when the editor
+     row is NOT providing them (editor folded, or the player is detached). */
+  .mp-player-controls {
+    position: absolute; top: 6px; right: 6px; z-index: 5;
+    display: flex; gap: 4px;
+    pointer-events: auto;
+  }
+  .mp-player-controls button {
+    width: 24px; height: 24px; padding: 0; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.55); border: 1px solid var(--border-strong);
+    border-radius: 4px; color: var(--fg); cursor: pointer; font-size: 0.8rem;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .mp-player-controls button:hover { color: var(--accent); border-color: var(--accent); }
 
   /* ADR-139: clipboard copy button in media player title bar */
   .mp-copy-btn {

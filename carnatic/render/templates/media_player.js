@@ -336,10 +336,13 @@ function wireDrag(el, bar) {
       const clamped = _avoidPlaylistUI(el, left, top);
       el.style.left = clamped.left + 'px';
       el.style.top  = clamped.top  + 'px';
+      el._detached = true;   // ADR-175: independent of the playlist now
+      _syncPlayerControls(el);
     });
   });
   document.addEventListener('mouseup', () => {
     if (dragging) _snapPlayerIfNearBar(el);
+    _syncPlayerControls(el);
     dragging = false; bounds = null;
   });
 }
@@ -704,6 +707,16 @@ function _playerMatchWidth(el) {
   el.style.width = Math.max(320, Math.round(ui.width)) + 'px';
 }
 
+// ADR-175: the bare player's own controls are visible only when the editor row
+// is not providing them — i.e. the editor is folded, or the player is detached.
+function _syncPlayerControls(el) {
+  if (!el) return;
+  const overlay = el.querySelector('.mp-player-controls');
+  if (!overlay) return;
+  const editorOpen = !!(window.MediaQueue && MediaQueue.active && MediaQueue.panelOpen);
+  overlay.style.display = (!editorOpen || el._detached) ? 'flex' : 'none';
+}
+
 // ADR-175: magnetically dock a player under the Playlist UI (bar + open editor).
 // If there is no room below, shove it to the side with the most clearance.
 // left/top are written relative to the player's offsetParent.
@@ -729,6 +742,8 @@ function _dockPlayer(el) {
   top  = Math.max(0, Math.min(Math.round(top  - pr.top),  pr.height - ph));
   el.style.left = left + 'px';
   el.style.top  = top + 'px';
+  el._detached = false;
+  _syncPlayerControls(el);
 }
 
 // Drag release: if the player is dropped onto/near the Playlist UI, snap it
@@ -1497,6 +1512,26 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   resizeHandle.className = 'mp-resize';
   resizeHandle.title = 'Drag to resize';
   el.appendChild(resizeHandle);
+
+  // ADR-175: the bare player's own minimize + close, inherited when the editor
+  // row is not visible (folded) or the player is detached from the playlist.
+  const controls = document.createElement('div');
+  controls.className = 'mp-player-controls';
+  const minBtn = document.createElement('button');
+  minBtn.type = 'button'; minBtn.className = 'mp-player-min';
+  minBtn.title = 'Minimize'; minBtn.setAttribute('aria-label', 'Minimize');
+  minBtn.textContent = '\u2014';
+  minBtn.addEventListener('mousedown', e => e.stopPropagation());
+  minBtn.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); });
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button'; closeBtn.className = 'mp-player-close';
+  closeBtn.title = 'Close player'; closeBtn.setAttribute('aria-label', 'Close player');
+  closeBtn.textContent = '\u2715';
+  closeBtn.addEventListener('mousedown', e => e.stopPropagation());
+  closeBtn.addEventListener('click', e => { e.stopPropagation(); _pbStopCurrent(); });
+  controls.appendChild(minBtn); controls.appendChild(closeBtn);
+  el.appendChild(controls);
+  _syncPlayerControls(el);
 
   const instance = {
     el,
@@ -2308,7 +2343,8 @@ function _refreshQueuePanels() {
   // UI — expanding the editor must push the player down, never cover its header.
   const _cur = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
   if (_cur && _cur.el && !_cur._isMobileSingleton && _cur.el.style.display !== 'none') {
-    _dockPlayer(_cur.el);
+    if (!_cur.el._detached) _dockPlayer(_cur.el);
+    _syncPlayerControls(_cur.el);
   }
 }
 
