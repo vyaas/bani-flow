@@ -619,15 +619,16 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   ytLink.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg>';
   rightGroup.appendChild(ytLink);
 
-  if (hasTracks) {
-    const toggleBtn = document.createElement('button');
-    // ADR-161: reusable toggle button \u2014 declares open/closed via aria-pressed.
-    toggleBtn.className = 'mp-tracklist-toggle mp-toggle-btn';
-    toggleBtn.title = 'Track list';
-    toggleBtn.setAttribute('aria-pressed', 'false');
-    toggleBtn.textContent = '\u2261';
-    rightGroup.appendChild(toggleBtn);
-  }
+  // ADR-175: the tracklist toggle (burger) is retired — the Playlist Bar's
+  // editor now owns list navigation. The old ✕ slot becomes an explicit
+  // minimize: collapse the video surface while the audio keeps playing.
+  const minBtn = document.createElement('button');
+  minBtn.className = 'mp-minimize';
+  minBtn.title = 'Minimize';
+  minBtn.setAttribute('aria-label', 'Minimize');
+  minBtn.setAttribute('aria-pressed', 'false');
+  minBtn.textContent = '\u2014';
+  rightGroup.appendChild(minBtn);
 
   bar.appendChild(rightGroup);
   return bar;
@@ -639,10 +640,28 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
 // media keeps playing (we never tear down the controller). Returns the new state.
 function _toggleMinimized(el) {
   const min = el.classList.toggle('minimized');
+  // ADR-175: createPlayer sets an INLINE width, which beats the `.minimized`
+  // CSS `width:auto`. Clear it while minimized so the strip truly shrinks to
+  // its bar, then restore it on expand.
+  if (min) {
+    el._savedWidth = el.style.width;
+    el.style.width = 'auto';
+  } else if (el._savedWidth) {
+    el.style.width = el._savedWidth;
+    el._savedWidth = null;
+  }
+  const label = min ? 'Restore' : 'Minimize';
   const cue = el.querySelector('.mp-fold-cue');
   if (cue) {
     cue.textContent = min ? '▴' : '▾';   // ▴ restore | ▾ minimize
-    cue.title = min ? 'Restore' : 'Minimize';
+    cue.title = label;
+  }
+  const btn = el.querySelector('.mp-minimize');
+  if (btn) {
+    btn.textContent = min ? '□' : '—';   // □ restore | — minimize
+    btn.title = label;
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('aria-pressed', min ? 'true' : 'false');
   }
   return min;
 }
@@ -652,11 +671,18 @@ function _toggleMinimized(el) {
 // mousedown so clicking the cue never starts a window drag (the bar is the handle).
 function _wireFoldCue(el) {
   const cue = el.querySelector('.mp-fold-cue');
-  if (!cue) return;
-  cue.classList.add('mp-fold-active');
-  cue.title = 'Minimize';
-  cue.addEventListener('mousedown', e => e.stopPropagation());
-  cue.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); });
+  if (cue) {
+    cue.classList.add('mp-fold-active');
+    cue.title = 'Minimize';
+    cue.addEventListener('mousedown', e => e.stopPropagation());
+    cue.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); });
+  }
+  // ADR-175: explicit minimize button in the old ✕ slot (desktop).
+  const btn = el.querySelector('.mp-minimize');
+  if (btn) {
+    btn.addEventListener('mousedown', e => e.stopPropagation());
+    btn.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); });
+  }
 }
 
 // ── _buildMusicianChipForFooter — era-tinted musician chip with transit fallback ─
@@ -1422,35 +1448,12 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
     });
   }
 
-  // Wire track list toggle and populate track items
+  // Populate the tracklist DOM, but ADR-175 retired its ≡ toggle: the Playlist
+  // Bar's editor now owns list navigation. The (hidden) tracklist is kept for
+  // the segment rail / future reuse; it is no longer user-openable.
   if (hasTracks && instance.tracklistEl) {
     const trackUl = buildPlayerTrackList(mkey, tracks, instance);
     instance.tracklistEl.appendChild(trackUl);
-
-    const toggleBtn = el.querySelector('.mp-tracklist-toggle');
-    toggleBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const willOpen = instance.tracklistEl.style.display === 'none';
-      instance.tracklistEl.style.display = willOpen ? 'block' : 'none';
-      // ADR-161: declare state via aria-pressed (drives the depressed visual).
-      toggleBtn.setAttribute('aria-pressed', willOpen ? 'true' : 'false');
-      if (willOpen) {
-        // ADR-162: tracklist and queue panel are mutually exclusive (both open
-        // upward from the bar) — close the queue panel when opening the tracklist.
-        if (MediaQueue.panelOpen) { MediaQueue.setPanelOpen(false); _refreshQueuePanels(); }
-        // ADR-161: opens above the bar (CSS bottom:100%); flip below only if there
-        // is no room above (player near the top of the viewport).
-        instance.tracklistEl.classList.remove('mp-tracklist-down');
-        if (instance.tracklistEl.getBoundingClientRect().top < 4) {
-          instance.tracklistEl.classList.add('mp-tracklist-down');
-        }
-        // Mark the active track when opening
-        trackUl.querySelectorAll('.mp-track-item').forEach(li => {
-          li.classList.toggle('mp-track-active',
-            parseInt(li.dataset.offset, 10) === instance.currentOffset);
-        });
-      }
-    });
   }
 
   // ADR-175: no per-player queue UI — the queue editor is app-level
@@ -2267,7 +2270,10 @@ function _pbExpandPlayer() {
     return;
   }
   const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
-  if (inst) bringToFront(inst);
+  if (inst && inst.el) {
+    if (inst.el.classList.contains('minimized')) _toggleMinimized(inst.el);
+    bringToFront(inst);
+  }
 }
 
 function _renderPlaylistBar() {
@@ -4635,36 +4641,21 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   // ADR-175: the queue editor is app-level now; the mobile bar no longer carries
   // an "Up Next" toggle/panel.
 
-  // ── ADR-066: wire tracklist toggle button (was unwired on mobile path) ───
-  // Tracklist starts hidden (fold-first); hamburger reveals it.
-  mp.tracklistDiv.classList.remove('mp-tracklist-open');
-  mp.el.classList.remove('mp-tl-expanded');   // ADR-161: reset sheet height on new media
-  const mobileToggleBtn = mp.bar.querySelector('.mp-tracklist-toggle');
-  if (mobileToggleBtn && mp.tracks.length > 0) {
-    // Remove any previous listener by cloning the button node
-    const freshToggle = mobileToggleBtn.cloneNode(true);
-    mobileToggleBtn.parentNode.replaceChild(freshToggle, mobileToggleBtn);
-    freshToggle.classList.remove('mp-tracklist-open');
-    freshToggle.setAttribute('aria-pressed', 'false');
-    freshToggle.addEventListener('click', e => {
+  // ADR-175: the ≡ tracklist toggle is retired (the Playlist Bar editor owns
+  // list navigation); instead wire the explicit minimize button (old ✕ slot)
+  // to the mobile collapse.
+  const mobileMinBtn = mp.bar.querySelector('.mp-minimize');
+  if (mobileMinBtn) {
+    mobileMinBtn.addEventListener('click', e => {
       e.stopPropagation();
-      const isOpen = mp.tracklistDiv.classList.contains('mp-tracklist-open');
-      mp.tracklistDiv.classList.toggle('mp-tracklist-open', !isOpen);
-      freshToggle.classList.toggle('mp-tracklist-open', !isOpen);
-      freshToggle.setAttribute('aria-pressed', String(!isOpen));   // ADR-161: depressed state
-      mp.el.classList.toggle('mp-tl-expanded', !isOpen);           // ADR-161: grow sheet upward
-      if (!isOpen) {
-        mp.tracklistDiv.querySelectorAll('.mp-track-item').forEach((li, idx) => {
-          li.classList.toggle('mp-track-active', idx === mp.trackIndex);
-        });
-      }
+      _collapseMobilePlayer(false);
     });
   }
 
   // ── Wire clipboard copy button on mobile path ────────────────────────────
   // buildPlayerBar() creates a fresh .mp-copy-btn but _openMobilePlayer() only
-  // re-wires .mp-close, .mp-minimize, .mp-tracklist-toggle. Clone to drop any
-  // stale listeners (same pattern as tracklist toggle above), then wire.
+  // re-wires .mp-close, .mp-minimize, .mp-copy-btn. Clone to drop any stale
+  // listeners (same pattern as the minimize button above), then wire.
   const mobileCopyBtn = mp.bar.querySelector('.mp-copy-btn');
   if (mobileCopyBtn) {
     const freshCopy = mobileCopyBtn.cloneNode(true);

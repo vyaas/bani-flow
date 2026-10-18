@@ -257,6 +257,11 @@ opens upward `bottom:100%`), queue panel (`.mp-queue`, opens upward; the
 app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
 `#mp-copy-toast`.
 
+**ADR-175 minimize:** content players have **no ✕** — `.mp-minimize` (the old ✕
+slot, `—`/`□`) collapses the video surface while audio keeps playing (`_toggleMinimized`
+clears the inline width so the strip truly shrinks); the section-6 `.mp-tracklist-toggle`
+(burger) is **retired** — the Playlist Bar's editor owns list navigation.
+
 **ADR-175: the persistent Playlist Bar** is the one static root:
 `#playlist-bar` (app chrome, top-centre desktop; second top band on mobile) with
 `#pb-prev` / `#pb-play` / `#pb-next` (`#pb-transport`), `#pb-summary`,

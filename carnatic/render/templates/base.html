@@ -1171,6 +1171,19 @@
   .mp-yt-link svg { width: 14px; height: 14px; fill: currentColor; display: block; pointer-events: none; }
   .mp-yt-link:hover { color: var(--accent-sub); }
 
+  /* ADR-175: explicit minimize button (the old ✕ slot) — same icon-button family
+     as copy/share. On desktop it collapses the video surface while audio keeps
+     playing; on mobile it collapses the sheet to the Playlist Bar. */
+  .mp-minimize {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.95rem; cursor: pointer; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; line-height: 1;
+    transition: color 0.12s;
+  }
+  .mp-minimize:hover { color: var(--accent-sub); }
+  .mp-minimize[aria-pressed="true"] { color: var(--accent); }
+
   /* ── ADR-161: reusable toggle button — open/closed declared via aria-pressed.
      A strong depressed (filled + inset) state, not a faint tint; reused by the
      tracklist toggle now and the ADR-162 queue toggle later. ── */
