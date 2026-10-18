@@ -269,10 +269,12 @@ app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
 (`.media-player.bare`: video + `.mp-drag-handle` + `.mp-resize`; **no** `.mp-bar`,
 identity rail, ✕, minimize or fold-cue). Identity lives in the editor row; the
 current row owns the operator set (`.mp-queue-op` copy / permalink / watch →
-`_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`; play↔stop via `_pbStopCurrent`).
-**Parent-inherits rule:** while the editor is open the row holds the operators; the
-Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch`, `#pb-play` / `#pb-stop`) shows
-them only when the row is not visible. The bare player carries its own
+`_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`; play↔stop via `_pbStopCurrent`;
+plus the volume slider `.mp-queue-vol` → `_setPlayerVolume`). Copy's tooltip reads
+**Copy YouTube link**; permalink is the TiddlyWiki-style **#** glyph (still
+`Copy permalink`). **Parent-inherits rule:** while the editor is open the row holds
+the operators; the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch` /
+`#pb-volume`, `#pb-play` / `#pb-stop`) shows them only when the row is not visible. The bare player carries its own
 `.mp-player-controls` (minimize `—` + close `✕`) — shown by `_syncPlayerControls`
 whenever the row is not providing them (editor folded, or the player is detached,
 `el._detached`) — so a detached/floating video is independently minimizable and
@@ -305,7 +307,11 @@ help button and **clamped to the canvas column** — `body:has(#left-sidebar.dra
 it, the `.mp-queue-bar` editor and the docked player never occlude a sidebar;
 second top band on mobile) with `#pb-prev` / `#pb-play` / `#pb-next` / `#pb-stop`
 (`#pb-transport`), `#pb-summary` (thin horizontal scrollbar when the chips
-overflow), `#pb-count`, `#pb-editor-toggle`. The ADR-162 editor is re-parented
+overflow), `#pb-count`, `#pb-editor-toggle`, and the operator set inherited from
+the current row: `#pb-copy` / `#pb-share` / `#pb-watch` / `#pb-volume`. The volume
+slider sets the current player's output level via `_setPlayerVolume` and is
+persisted across queue items (`_volumeLevel`); `_syncVolumeControls` mirrors it
+between bar and row and disables it for volume-less (iframe) providers. The ADR-162 editor is re-parented
 into it as `.mp-queue-bar` (drops **downward** from the bar) so the playlist is
 visible/editable with the player open *or* closed. The playing item's row opens
 with a leftmost `.mp-queue-collapse` chevron (show/hide the player).

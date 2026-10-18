@@ -2876,12 +2876,21 @@
      so the phantom slots on non-current rows reserve exactly the same space. */
   .mp-queue-op {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 18px; height: 18px; flex-shrink: 0;
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.72rem; cursor: pointer; padding: 0; line-height: 1;
+    width: 20px; height: 20px; flex-shrink: 0;
+    background: none; border: none; color: var(--fg-sub);
+    font-size: 0.82rem; font-weight: bold; cursor: pointer; padding: 0; line-height: 1;
+    border-radius: 3px; transition: color 0.12s, background 0.12s;
   }
-  .mp-queue-op:hover { color: var(--accent); }
+  .mp-queue-op:hover { color: var(--accent); background: var(--bg-hover); }
   .mp-queue-op-phantom { visibility: hidden; pointer-events: none; }
+  /* ADR-175: the volume slider is one of the current row's operators, so it is
+     inherited by the Playlist Bar when the editor folds. */
+  .mp-queue-vol {
+    width: 68px; height: 16px; margin: 0 2px; flex-shrink: 0;
+    cursor: pointer; accent-color: var(--accent); background: transparent;
+  }
+  .mp-queue-vol:disabled { opacity: 0.35; cursor: default; }
+  .mp-queue-vol-phantom { visibility: hidden; pointer-events: none; }
   .mp-queue-stop { color: var(--accent); }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
@@ -2980,12 +2989,19 @@
   #playlist-bar.pb-empty { opacity: 0.6; }
   #playlist-bar .pb-transport { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
   #playlist-bar .pb-btn {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.85rem; line-height: 1; cursor: pointer;
-    padding: 3px 5px; flex-shrink: 0;
+    background: none; border: none; color: var(--fg-sub);
+    font-size: 0.95rem; font-weight: bold; line-height: 1; cursor: pointer;
+    padding: 3px 6px; flex-shrink: 0;
+    border-radius: 4px; transition: color 0.12s, background 0.12s;
   }
-  #playlist-bar .pb-btn:hover:not(:disabled) { color: var(--accent); }
+  #playlist-bar .pb-btn:hover:not(:disabled) { color: var(--accent); background: var(--bg-hover); }
   #playlist-bar .pb-btn:disabled { opacity: 0.3; cursor: default; }
+  /* Volume — same operator family as copy · permalink · watch. */
+  #playlist-bar .pb-volume {
+    width: 68px; height: 16px; margin: 0 2px; flex-shrink: 0;
+    cursor: pointer; accent-color: var(--accent); background: transparent;
+  }
+  #playlist-bar .pb-volume:disabled { opacity: 0.3; cursor: default; }
   #pb-summary {
     flex: 1; min-width: 0; display: flex; align-items: center; gap: 5px;
     overflow-x: auto; white-space: nowrap;
@@ -5292,9 +5308,11 @@
     <button type="button" id="pb-next" class="pb-btn" title="Next track" aria-label="Next track">&#9197;</button>
     <button type="button" id="pb-stop" class="pb-btn" title="Stop" aria-label="Stop">&#9632;</button>
   </div>
-  <button type="button" id="pb-copy" class="pb-btn" title="Copy link" aria-label="Copy link">&#10697;</button>
-  <button type="button" id="pb-share" class="pb-btn" title="Copy permalink" aria-label="Copy permalink">&#8679;</button>
+  <button type="button" id="pb-copy" class="pb-btn" title="Copy YouTube link" aria-label="Copy YouTube link">&#10697;</button>
+  <button type="button" id="pb-share" class="pb-btn" title="Copy permalink" aria-label="Copy permalink">#</button>
   <button type="button" id="pb-watch" class="pb-btn" title="Watch on YouTube" aria-label="Watch on YouTube">&#8599;</button>
+  <input type="range" id="pb-volume" class="pb-volume" min="0" max="100" step="1" value="100"
+         title="Volume" aria-label="Volume" disabled>
 </div>
 
 <div id="graph-absent-toast"></div>

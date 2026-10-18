@@ -7,6 +7,10 @@ let playerZ = 100;         // media players sit BELOW the Playlist Bar (z-index 
 const PLAYER_Z_MAX = 700;
 function _nextPlayerZ() { playerZ = Math.min(playerZ + 1, PLAYER_Z_MAX); return playerZ; }
 let spawnCount = 0;
+// ADR-175: user-set output volume (0..1), persisted across queue items so a
+// track change never resets the level. The slider in the Playlist Bar / current
+// row reads and writes this through _setPlayerVolume().
+let _volumeLevel = 1;
 
 // ── ADR-158: relative-seek gesture constants ──────────────────────────────────
 // SEEK_STEP is the universal "skip" quantum (YouTube/NewPipe default). Tap-zone
@@ -602,7 +606,7 @@ function buildPlayerBar(media, artistName, concertTitle, trackLabel, hasTracks, 
   // Click handler is wired in createPlayer() after the instance is constructed.
   const copyBtn = document.createElement('button');
   copyBtn.className = 'mp-copy-btn';
-  copyBtn.title = 'Copy link to clipboard';
+  copyBtn.title = 'Copy YouTube link';
   copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
   rightGroup.appendChild(copyBtn);
 
@@ -1441,6 +1445,9 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
       vimeo: { byline: false, portrait: false, title: false },
       markers: { enabled: points.length > 0, points },   // ADR-156: chapter markers
     });
+    // ADR-175: apply the user's persisted volume to every new player so the
+    // level survives queue advances. Autoplay still starts muted (AUDIT-015).
+    try { player.volume = _volumeLevel; } catch (e) {}
     if (startSeconds && startSeconds > 0) {
       player.once('ready', () => { try { player.currentTime = startSeconds; } catch (e) {} });
     }
@@ -1514,6 +1521,14 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
       play()   { try { player.play(); } catch (e) {} },
       pause()  { try { player.pause(); } catch (e) {} },
       isPaused() { try { return !!player.paused; } catch (e) { return false; } },
+      // ADR-175: output volume. getVolume reports the LEVEL (mute is a separate
+      // Plyr control), so the transient autoplay-mute never reads as 0.
+      getVolume() { try { return player.volume; } catch (e) { return null; } },
+      setVolume(v) {
+        const vol = Math.max(0, Math.min(1, Number(v)));
+        if (!isFinite(vol)) return;
+        try { player.volume = vol; if (vol > 0) player.muted = false; } catch (e) {}
+      },
       nudge,                 // ADR-158: clamped relative seek (returns new time, or null)
       seekStep,              // ADR-158: +overlay accumulation; driven by tap + keyboard
       destroy() { try { player.destroy(); } catch (e) {} },
@@ -1539,6 +1554,10 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
     // ADR-158 / ADR-155 §4: uncontrollable providers can neither read nor write
     // currentTime — relative seek degrades to a no-op (no overlay, no affordance).
     nudge() { return null; },
+    // ADR-175: iframe-backed providers expose no volume API — the slider is
+    // disabled rather than lying about control.
+    getVolume() { return null; },
+    setVolume() {},
     seekStep() {},
     destroy() { iframe.src = ''; },
     onTime() {},
@@ -2403,9 +2422,18 @@ function _renderQueuePanel(panel) {
         b.addEventListener('click', e => { e.stopPropagation(); fn(); });
         return b;
       };
-      li.appendChild(mkOp('mp-queue-copy',  'Copy link',          '\u29c9', _pbCopyLink));
-      li.appendChild(mkOp('mp-queue-share', 'Copy permalink',     '\u21e7', _pbShareLink));
-      li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',   '\u2197', _pbWatchOnYouTube));
+      li.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', _pbCopyLink));
+      li.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      _pbShareLink));
+      li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', _pbWatchOnYouTube));
+      // ADR-175: the volume slider is the current row's last operator — the
+      // Playlist Bar inherits it when the editor folds.
+      const vol = document.createElement('input');
+      vol.type = 'range'; vol.className = 'mp-queue-vol';
+      vol.min = '0'; vol.max = '100'; vol.step = '1'; vol.value = '100';
+      vol.title = 'Volume'; vol.setAttribute('aria-label', 'Volume');
+      vol.addEventListener('input', e => { e.stopPropagation(); _setPlayerVolume(vol.value / 100); });
+      vol.addEventListener('click', e => e.stopPropagation());
+      li.appendChild(vol);
     } else {
       // Reserve the operator columns on non-current rows so the trailing
       // buttons (+, remove) keep the same positions relative to the text.
@@ -2415,6 +2443,10 @@ function _renderQueuePanel(panel) {
         ph.setAttribute('aria-hidden', 'true');
         li.appendChild(ph);
       });
+      const volPh = document.createElement('span');
+      volPh.className = 'mp-queue-vol mp-queue-vol-phantom';
+      volPh.setAttribute('aria-hidden', 'true');
+      li.appendChild(volPh);
     }
 
     // + affordance — secondary: add to playlist or session queue
@@ -2439,6 +2471,7 @@ function _renderQueuePanel(panel) {
     li.addEventListener('click', () => MediaQueue.jumpTo(i));
     ul.appendChild(li);
   });
+  _syncVolumeControls();
 }
 
 function buildQueuePanel() {
@@ -2650,6 +2683,35 @@ function _pbCurrentTarget() {
   return { media: item.media, mediaKey: mediaKey(item.media),
            currentOffset: item.startSeconds || 0, meta: item.meta || {} };
 }
+// ADR-175: the single volume primitive. Sets the current player's output level,
+// persists it for future queue items, and mirrors every slider (bar + current
+// row) so the two faces never disagree. Unsupported (iframe) players disable the
+// sliders rather than silently no-op.
+function _setPlayerVolume(v) {
+  const vol = Math.max(0, Math.min(1, Number(v)));
+  if (!isFinite(vol)) return;
+  _volumeLevel = vol;
+  const t = _pbCurrentTarget();
+  if (t && t.controller && typeof t.controller.setVolume === 'function') {
+    t.controller.setVolume(vol);
+  }
+  _syncVolumeControls();
+}
+
+// Reflect the current level on every volume slider and disable them when the
+// current controller exposes no volume API. Safe to call after any render.
+function _syncVolumeControls() {
+  const t = _pbCurrentTarget();
+  const ctrl = t && t.controller;
+  const supported = !!(ctrl && typeof ctrl.getVolume === 'function' && ctrl.getVolume() != null);
+  const level = supported ? ctrl.getVolume() : _volumeLevel;
+  const pct = Math.round(Math.max(0, Math.min(1, level)) * 100) + '';
+  document.querySelectorAll('#pb-volume, .mp-queue-vol').forEach(sl => {
+    sl.value = pct;
+    sl.disabled = !supported;
+  });
+}
+
 function _pbCopyLink() {
   const t = _pbCurrentTarget();
   if (!t) return;
@@ -2692,6 +2754,7 @@ function _renderPlaylistBar() {
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
   const watchBtn = bar.querySelector('#pb-watch');
+  const volume = bar.querySelector('#pb-volume');
 
   if (summary) {
     summary.innerHTML = '';
@@ -2715,9 +2778,10 @@ function _renderPlaylistBar() {
   // the operator set; the bar shows it only when the row is not visible.
   const editorOpen = has && MediaQueue.panelOpen;
   const showOps = has && !editorOpen;
-  [play, stop, copyBtn, shareBtn, watchBtn].forEach(el => {
+  [play, stop, copyBtn, shareBtn, watchBtn, volume].forEach(el => {
     if (el) el.style.display = showOps ? '' : 'none';
   });
+  _syncVolumeControls();
   if (editorBtn) {
     editorBtn.disabled = !has;
     editorBtn.setAttribute('aria-pressed', editorOpen ? 'true' : 'false');
@@ -2746,6 +2810,7 @@ function _initPlaylistBar() {
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
   const watchBtn = bar.querySelector('#pb-watch');
+  const volume = bar.querySelector('#pb-volume');
   if (prev) prev.addEventListener('click', () => MediaQueue.previous());
   if (next) next.addEventListener('click', () => MediaQueue.next());
   if (stop) stop.addEventListener('click', _pbStopCurrent);
@@ -2753,6 +2818,7 @@ function _initPlaylistBar() {
   if (copyBtn) copyBtn.addEventListener('click', _pbCopyLink);
   if (shareBtn) shareBtn.addEventListener('click', _pbShareLink);
   if (watchBtn) watchBtn.addEventListener('click', _pbWatchOnYouTube);
+  if (volume) volume.addEventListener('input', () => _setPlayerVolume(volume.value / 100));
   if (editorBtn) editorBtn.addEventListener('click', () => {
     MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
     _refreshQueuePanels();
