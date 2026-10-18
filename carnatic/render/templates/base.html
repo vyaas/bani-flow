@@ -27,7 +27,7 @@
     --chip-era-border:        var(--border-strong);
     --bg-pressed:             rgba(0, 0, 0, 0.28);
     /* ADR-129: safe-zone tokens — panel/canvas insets that clear the floating chrome */
-    --chrome-top:             50px;   /* bottom of top-chrome (title+view-selector) + gap */
+    --chrome-top:             50px;   /* bottom of top-chrome (view-selector + playlist-bar) + gap */
     --chrome-bottom:          64px;   /* top of bottom-chrome (panel toggles + bundle) + gap */
     /* ADR-063: uniform first-class chip appearance */
     --chip-raga-border:       var(--accent-match, #6ec6a8);   /* teal/green accent */
@@ -68,16 +68,10 @@
   /* pointer-events: none on wrapper so transparent gaps pass clicks to canvas */
   #app-title-float {
     position: fixed; top: 10px; right: 14px;
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center;
     pointer-events: none; z-index: 72;
   }
   #app-title-float > * { pointer-events: auto; }
-  #app-title-float h1 {
-    font-size: 1.0rem; color: var(--accent);
-    letter-spacing: 0.08em; text-transform: uppercase; font-weight: bold;
-    white-space: nowrap;
-    text-shadow: 0 1px 4px var(--bg-deep, #0d0d0d);
-  }
   #view-selector-float {
     position: fixed; top: 10px; left: 14px;
     pointer-events: none; z-index: 72;
@@ -2958,19 +2952,30 @@
 
   /* ── ADR-175: persistent Playlist Bar (app-level chrome) ──────────────────
      The Current Playlist's always-on face: transport + now-playing summary +
-     count + editor toggle + expand. Reuses the ADR-162 .mp-queue editor,
-     re-parented here as .mp-queue-bar so it drops DOWN from the bar and is
-     visible with the player open or closed. */
+     count + editor toggle + expand. Stretches gas-like between the view selector
+     (left) and help button (right), and is clamped to the canvas column so it
+     never occludes an open sidebar — the editor (.mp-queue-bar) and the docked
+     player inherit the bar's width, so they stay clear too. Reuses the ADR-162
+     .mp-queue editor, re-parented here as .mp-queue-bar so it drops DOWN from
+     the bar and is visible with the player open or closed. */
   #playlist-bar {
-    position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+    position: fixed; top: 12px; left: 220px; right: 56px;
     z-index: 750;   /* ADR-175: above players (≤700) and drawers; below modals (1000+) */
     display: flex; align-items: center; gap: 6px;
-    width: min(680px, calc(100vw - 380px));
+    width: auto;
     padding: 4px 8px;
     background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
     border: 1px solid var(--border-strong); border-radius: 6px;
     box-shadow: 0 4px 18px rgba(0,0,0,0.4);
     pointer-events: auto;
+  }
+  /* The sidebars are wider than the floating view selector / help button, so the
+     bar must clear them: when a panel is open it starts at the panel's inner
+     edge, never over it. Desktop only — on mobile the bar is a full-width band
+     layered above the drawers (ADR-175). */
+  @media (min-width: 769px) {
+    body:has(#left-sidebar.drawer-open)  #playlist-bar { left:  max(220px, var(--left-panel-width, 280px)); }
+    body:has(#right-sidebar.drawer-open) #playlist-bar { right: max(56px,  var(--right-panel-width, 280px)); }
   }
   #playlist-bar.pb-empty { opacity: 0.6; }
   #playlist-bar .pb-transport { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
@@ -2983,8 +2988,15 @@
   #playlist-bar .pb-btn:disabled { opacity: 0.3; cursor: default; }
   #pb-summary {
     flex: 1; min-width: 0; display: flex; align-items: center; gap: 5px;
-    overflow: hidden; white-space: nowrap;
+    overflow-x: auto; white-space: nowrap;
+    scrollbar-width: thin;
   }
+  /* Keep the capsule's chips at their natural width so overflow scrolls the
+     strip instead of squashing the labels. */
+  #pb-summary > * { flex-shrink: 0; }
+  #pb-summary::-webkit-scrollbar { height: 4px; }
+  #pb-summary::-webkit-scrollbar-track { background: transparent; }
+  #pb-summary::-webkit-scrollbar-thumb { background: var(--fg-muted); border-radius: 2px; }
   #pb-summary .pb-empty-hint { font-size: 0.72rem; color: var(--fg-muted); font-style: italic; }
   #pb-count { font-size: 0.68rem; color: var(--fg-sub); flex-shrink: 0; white-space: nowrap; }
   #playlist-bar .mp-queue-bar {
@@ -2996,7 +3008,7 @@
   #playlist-bar .mp-queue-bar .mp-queue-head { cursor: default; }
 
   /* Mobile (ADR-175): the bar is a second top band, top-centre full-width.
-     Band 1 keeps the view selector + title/help; the bar sits directly under
+     Band 1 keeps the view selector + help button; the bar sits directly under
      it. --chrome-top is widened so the canvas/panels clear both bands. */
   @media (max-width: 768px) {
     :root { --chrome-top: 100px; }
@@ -4233,9 +4245,8 @@
   /* ── Phase 1: Responsive layout — left drawer + bottom sheet (ADR-034) ── */
   @media (max-width: 768px) {
 
-    /* ADR-129: no <header> on mobile — floating clusters inherit fixed positioning */
-    /* Suppress title text on mobile — only help (?) and view toggle remain */
-    #app-title-float h1 { display: none; }
+    /* ADR-129: no <header> on mobile — floating clusters inherit fixed positioning.
+       The view selector and help button float on the first band. */
     #view-selector-float { top: 8px; left: 8px; }
     #view-selector-float .view-btn { min-height: 36px; padding: 0 7px; font-size: 0.72rem; }
 
@@ -5231,16 +5242,15 @@
   <!-- INJECT_INSTRUMENT_SPRITE -->
 </svg>
 
-<!-- ADR-129 D1: Floating title cluster (top-left) — no backing bar -->
+<!-- ADR-129 D1: Floating help button (top-right) — no backing bar -->
 <div id="app-title-float">
-  <h1>Carnatic Music Explorer</h1>
   <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
 </div>
 
 <!-- ADR-169: sruti seed button + modal pitch picker (replaces ADR-131 R3 permanent pie).
      Seed SVG rendered inside #wheel-viewport; overlay below is the app-level modal. -->
 
-<!-- ADR-129 D1: Floating view selector (top-right) — no backing bar -->
+<!-- ADR-129 D1: Floating view selector (top-left) — no backing bar -->
 <div id="view-selector-float">
   <div class="view-selector" id="view-selector">
     <button class="view-btn active" id="view-btn-raga"
