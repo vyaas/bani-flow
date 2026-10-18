@@ -2848,17 +2848,24 @@
   }
   .mp-queue-play:not(:disabled):hover { color: var(--accent); }
   .mp-queue-play:disabled { opacity: 0.35; cursor: default; }
-  /* ADR-175: per-row minimize/maximize for the current (playing) item. A
-     boxed disclosure chevron — deliberately distinct from the ▶ play button. */
+  /* ADR-175: per-row minimize/maximize for the current item — the SAME chevron
+     geometry as every panel section (ADR-128 D10), placed leftmost. */
   .mp-queue-collapse {
-    background: none; border: 1px solid var(--border); border-radius: 3px;
-    color: var(--fg-muted); font-size: 0.8rem; cursor: pointer;
-    padding: 0 4px; line-height: 1.2; flex-shrink: 0;
     display: inline-flex; align-items: center; justify-content: center;
-    min-width: 18px;
+    width: 18px; height: 18px; flex-shrink: 0;
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.62rem; cursor: pointer; padding: 0;
+    font-family: inherit; line-height: 1; user-select: none;
   }
-  .mp-queue-collapse:hover { color: var(--accent); border-color: var(--accent); }
-  .mp-queue-collapse[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+  .mp-queue-collapse:hover { color: var(--accent); }
+  .mp-queue-collapse[aria-pressed="true"] { color: var(--accent); }
+  /* ADR-175: per-row sibling operators (copy · permalink · watch) */
+  .mp-queue-op {
+    background: none; border: none; color: var(--fg-muted);
+    font-size: 0.72rem; cursor: pointer; padding: 2px 3px; line-height: 1; flex-shrink: 0;
+  }
+  .mp-queue-op:hover { color: var(--accent); }
+  .mp-queue-stop { color: var(--accent); }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
     font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
@@ -5227,6 +5234,7 @@
      expand. The editor (.mp-queue-bar) is appended by media_player.js so it drops
      DOWN from the bar and is visible with the player open or closed. -->
 <div id="playlist-bar" class="pb-empty" aria-label="Playlist">
+  <button type="button" id="pb-editor-toggle" class="pb-btn mp-toggle-btn" title="Playlist" aria-label="Playlist" aria-pressed="false">&#9654;</button>
   <div class="pb-transport">
     <button type="button" id="pb-prev" class="pb-btn" title="Previous track" aria-label="Previous track">&#9198;</button>
     <button type="button" id="pb-play" class="pb-btn mp-toggle-btn" title="Play / pause" aria-label="Play / pause" aria-pressed="false">&#9654;</button>
@@ -5238,7 +5246,6 @@
   <button type="button" id="pb-copy" class="pb-btn" title="Copy link" aria-label="Copy link">&#10697;</button>
   <button type="button" id="pb-share" class="pb-btn" title="Copy permalink" aria-label="Copy permalink">&#8679;</button>
   <button type="button" id="pb-watch" class="pb-btn" title="Watch on YouTube" aria-label="Watch on YouTube">&#8599;</button>
-  <button type="button" id="pb-editor-toggle" class="pb-btn mp-toggle-btn" title="Playlist" aria-label="Playlist" aria-pressed="false">&#9776;</button>
 </div>
 
 <div id="graph-absent-toast"></div>

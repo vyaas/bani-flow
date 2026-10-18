@@ -2134,7 +2134,7 @@ function _renderQueuePanel(panel) {
       cbtn.title = collapsed ? 'Show player' : 'Hide player';
       cbtn.setAttribute('aria-label', cbtn.title);
       cbtn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
-      cbtn.textContent = collapsed ? '\u203a' : '\u2304';   // › collapsed | ⌄ expanded
+      cbtn.textContent = collapsed ? '\u25b6' : '\u25bc';   // same chevron as panels
       cbtn.addEventListener('click', e => { e.stopPropagation(); _toggleCurrentPlayerCollapse(); });
       li.appendChild(cbtn);
     }
@@ -2172,6 +2172,21 @@ function _renderQueuePanel(panel) {
       else MediaQueue.jumpTo(i);
     });
     li.appendChild(playBtn);
+
+    // ADR-175: the current item's sibling operators live in the row (the row is
+    // king). The Playlist Bar inherits them only when the editor is closed.
+    if (isCurrent) {
+      const mkOp = (cls, title, glyph, fn) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'mp-queue-op ' + cls;
+        b.title = title; b.setAttribute('aria-label', title); b.textContent = glyph;
+        b.addEventListener('click', e => { e.stopPropagation(); fn(); });
+        return b;
+      };
+      li.appendChild(mkOp('mp-queue-copy',  'Copy link',          '\u29c9', _pbCopyLink));
+      li.appendChild(mkOp('mp-queue-share', 'Copy permalink',     '\u21e7', _pbShareLink));
+      li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',   '\u2197', _pbWatchOnYouTube));
+    }
 
     // + affordance — secondary: add to playlist or session queue
     const qplus = _buildPlusBtn((() => {
@@ -2464,9 +2479,17 @@ function _renderPlaylistBar() {
   if (copyBtn) copyBtn.disabled = !has;
   if (shareBtn) shareBtn.disabled = !has;
   if (watchBtn) watchBtn.disabled = !has;
+  // ADR-175 parent-inherits rule: while the editor is open the current ROW owns
+  // the operator set; the bar shows it only when the row is not visible.
+  const editorOpen = has && MediaQueue.panelOpen;
+  const showOps = has && !editorOpen;
+  [play, stop, copyBtn, shareBtn, watchBtn].forEach(el => {
+    if (el) el.style.display = showOps ? '' : 'none';
+  });
   if (editorBtn) {
     editorBtn.disabled = !has;
-    editorBtn.setAttribute('aria-pressed', (has && MediaQueue.panelOpen) ? 'true' : 'false');
+    editorBtn.setAttribute('aria-pressed', editorOpen ? 'true' : 'false');
+    editorBtn.textContent = editorOpen ? '\u25bc' : '\u25b6';   // same chevron as panels
   }
   if (play) {
     let paused = true;

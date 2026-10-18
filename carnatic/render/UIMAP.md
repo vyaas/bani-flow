@@ -259,12 +259,14 @@ app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
 
 **ADR-175 — the playlist row is king:** content players are **bare**
 (`.media-player.bare`: video + `.mp-drag-handle` + `.mp-resize`; **no** `.mp-bar`,
-identity rail, ✕, minimize or fold-cue). Identity lives in the editor row, and
-copy/share/watch move to the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch`
-→ `_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`). Show/hide is driven by the
-row: its current item leads with `.mp-queue-collapse` → `_toggleCurrentPlayerCollapse`,
-and its play button becomes a **stop** (`■`) while playing → `_pbStopCurrent`.
-Utility players (sruti/tanpura) keep `.mp-bar`.
+identity rail, ✕, minimize or fold-cue). Identity lives in the editor row; the
+current row owns the operator set (`.mp-queue-op` copy / permalink / watch →
+`_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`; play↔stop via `_pbStopCurrent`).
+**Parent-inherits rule:** while the editor is open the row holds the operators; the
+Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch`, `#pb-play` / `#pb-stop`) shows
+them only when the row is not visible. `#pb-editor-toggle` is the bar's leftmost
+control and, like the row's `.mp-queue-collapse`, uses the panel chevron glyph
+(`▶`/`▼`). Utility players (sruti/tanpura) keep `.mp-bar`.
 `_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
 bar + open editor (`_playlistUiRect`; bottom-centre, side if no room below);
 `_snapPlayerIfNearBar` re-docks on drag release, and `_avoidPlaylistUI` clamps a

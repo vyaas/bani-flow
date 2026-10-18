@@ -348,6 +348,15 @@ Composer of "Enna Punniyam – Huseni – Misra Chapu" (Jamshedpur 1964). No Wik
 #### Note for Graph Architect — edit-existing-entry forms (raised 2026-04-22, librarian)
 ADR-031/082 cover *creation* forms (new musician, new raga, new composition, new recording, new lecdem) but not *mutation* of already-existing entries. Concrete trigger: tagging the eight existing TM Krishna Manodharma youtube[] entries as lecdems required apply_diff edits in the Librarian seat — there is no in-browser path. Proposed scope for an ADR: a per-entry edit affordance (e.g. pencil-icon next to each youtube row in the musician panel; raga/composition node panels gain an analogous control) that opens the same form pre-filled with the current JSON, with the same combobox/validator hygiene as the create form, and exports a diff-JSON or full-JSON that the librarian merges. This makes the system self-editing through the same JSON-form medium that creates entities — the data is reachable not just appendable.
 
+#### Chevron symbol unification — one chevron component (raised 2026-10-17, surface)
+ADR-175 temporarily gave the Playlist Bar's editor toggle and the editor row the
+panel chevron glyph (`▶`/`▼`), but the row's play button also uses `▶`, and the
+app still has several chevron implementations (`.row-accordion-chevron`,
+`.section-collapse-btn`, `.concert-chevron`, `.tree-chevron`, `.mp-queue-collapse`).
+TODO: unify every chevron into one shared component/token (ADR-128 D10 was meant
+to be that single source) and give play a distinct glyph. Deferred to a dedicated
+surface pass.
+
 ---
 
 ## Agent learning logs → moved to `carnatic/LEARNINGS.md`
