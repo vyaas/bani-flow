@@ -996,6 +996,36 @@ function _deriveRowEndSec(row) {
   return next ? next.offset_seconds : null;
 }
 
+// ADR-176 follow-up: the ordered chapter list of the source concert, derived the
+// same way the ▶ player derives it. Carried on the queue item so that if the item
+// is the LAST in the playlist and the video runs on into a later track, the row +
+// bar can name the track actually sounding. Empty for whole-video rows.
+function _deriveRowTracks(row) {
+  if (!(row.isStructured && row.track.recording_id)) return [];
+  const all = Object.values(musicianToPerformances).flat();
+  const seen = new Map();
+  all.forEach(function(sp) {
+    if (sp.recording_id !== row.track.recording_id) return;
+    const key = sp.session_index + '::' + sp.performance_index;
+    if (!seen.has(key)) seen.set(key, sp);
+  });
+  return [...seen.values()]
+    .sort(function(a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); })
+    .map(function(sp) {
+      const spRagaObj = sp.raga_id ? ragas.find(function(r) { return r.id === sp.raga_id; }) : null;
+      return {
+        offset_seconds: sp.offset_seconds || 0,
+        subject:        sp.subject || null,   // ADR-156
+        display_title:  sp.display_title || '',
+        raga_id:        sp.raga_id || null,
+        raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
+        tala:           sp.tala || null,
+        timestamp:      sp.timestamp || '00:00',
+        composition_id: sp.composition_id || null,
+      };
+    });
+}
+
 // ADR-165 §3 (AUDIT-019): canonical queue-item shape for a trail row.
 // One definition reused by both _buildPlusBtn(thunk) and registerQueueItem(li, thunk)
 // so the plus-menu and the harvest cannot disagree by construction.
@@ -1006,7 +1036,7 @@ function _buildRowQueueItem(row) {
     label:        row.track.label || '',
     artistName:   row.artistLabel || '',
     concertTitle: row.track.short_title || row.track.concert_title || '',
-    tracks:       [],
+    tracks:       _deriveRowTracks(row),
     meta: {
       nodeId:        row.nodeId || null,
       ragaId:        row.track.raga_id || null,
@@ -1029,29 +1059,7 @@ function _buildPlayActsDiv(row) {
   playBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     if (row.isStructured && row.track.recording_id) {
-      const allPerfs = Object.values(musicianToPerformances).flat();
-      const concertPerfsMap = new Map();
-      allPerfs.forEach(function(sp) {
-        if (sp.recording_id !== row.track.recording_id) return;
-        const key = sp.session_index + '::' + sp.performance_index;
-        if (!concertPerfsMap.has(key)) concertPerfsMap.set(key, sp);
-      });
-      const concertPerfs = [...concertPerfsMap.values()];
-      const playerTracks = concertPerfs.slice()
-        .sort(function(a, b) { return (a.offset_seconds || 0) - (b.offset_seconds || 0); })
-        .map(function(sp) {
-          const spRagaObj = sp.raga_id ? ragas.find(function(r) { return r.id === sp.raga_id; }) : null;
-          return {
-            offset_seconds: sp.offset_seconds || 0,
-            subject:        sp.subject || null,   // ADR-156
-            display_title:  sp.display_title || '',
-            raga_id:        sp.raga_id || null,
-            raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
-            tala:           sp.tala || null,
-            timestamp:      sp.timestamp || '00:00',
-            composition_id: sp.composition_id || null,
-          };
-        });
+      const playerTracks = _deriveRowTracks(row);
       openOrFocusPlayer(
         row.track.media || row.track.vid, row.track.label, row.artistLabel,
         row.track.offset_seconds || undefined,

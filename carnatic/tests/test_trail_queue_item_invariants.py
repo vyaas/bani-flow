@@ -113,6 +113,48 @@ def test_build_row_queue_item_helper_defined(bani_flow_src: str) -> None:
         assert key in body, f"_buildRowQueueItem missing required field: {key}"
 
 
+def test_derive_row_tracks_helper_defined(bani_flow_src: str) -> None:
+    """
+    ADR-176 follow-up: `_deriveRowTracks(row)` must exist and produce the
+    ordered concert chapter list (offset_seconds + raga/composition fields) so a
+    last-in-playlist concert item can name the track actually sounding while the
+    video runs on into later tracks.
+    """
+    m = re.search(
+        r"function\s+_deriveRowTracks\s*\(\s*row\s*\)\s*\{(.+?)\n\}",
+        bani_flow_src,
+        re.DOTALL,
+    )
+    assert m, "_deriveRowTracks(row) helper is missing — ADR-176 follow-up removed"
+    body = m.group(1)
+
+    assert "row.isStructured" in body and "row.track.recording_id" in body, (
+        "_deriveRowTracks must gate on isStructured + recording_id "
+        "(whole-video rows have no chapters)"
+    )
+    for key in ("offset_seconds", "display_title", "raga_id", "composition_id"):
+        assert key in body, f"_deriveRowTracks missing chapter field: {key}"
+
+
+def test_build_row_queue_item_carries_chapters(bani_flow_src: str) -> None:
+    """
+    ADR-176 follow-up: the canonical queue item must carry the source concert's
+    chapter list, not an empty array — without it the last item's row/bar cannot
+    update as the video advances into later tracks.
+    """
+    m = re.search(
+        r"function\s+_buildRowQueueItem\s*\(\s*row\s*\)\s*\{(.+?)\n\}",
+        bani_flow_src,
+        re.DOTALL,
+    )
+    assert m, "_buildRowQueueItem(row) helper is missing"
+    body = m.group(1)
+    assert "tracks:" in body and "_deriveRowTracks(row)" in body, (
+        "_buildRowQueueItem must emit tracks via _deriveRowTracks(row) so the "
+        "row/bar can track the sounding chapter of the last item"
+    )
+
+
 # ── structural invariant: every callsite routes through the helper ─────────────
 
 

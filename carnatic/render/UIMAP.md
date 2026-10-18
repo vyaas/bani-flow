@@ -348,6 +348,16 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   `_pbPlayPauseCurrent()` / `_pbStopCurrent()` / `_pbExpandPlayer()` (control
   handlers). Content play routes through `Playlist.playContent` (alias of
   `MediaQueue`), so `openOrFocusPlayer` is the window primitive again.
+- **ADR-176 advance/retarget (always know what is playing):** consecutive queue
+  items that share one source video (every track of a concert) must NOT spawn a
+  second window — `MediaQueue._open` detects an already-mounted same-`mediaKey`
+  player and calls `_retarget(inst, item, ss)` (seek + adopt tracks/meta) in
+  place. `_queueItemBoundary(instance, item)` = explicit `meta.end_seconds` or the
+  item's next chapter; `_shouldAdvanceQueue(instance, sec)` makes the boundary
+  **compulsory only when another item follows** (the last item runs on into the
+  concert). While a last item runs past its own start, `_updateActiveSegment`
+  publishes `MediaQueue.activeChapter`, which `_buildQueueRowChips(item,
+  activeChapter)` renders into both the editor row and `#pb-summary`.
 - Row registration: `window.registerQueueItem(rowEl, getItem)` — how bani
   trail and recording rows become queueable; `collectQueueItems(rootEl)`.
 - Chrome: `buildPlayerBar(...)` (transport buttons — new buttons go here),

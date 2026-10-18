@@ -1363,12 +1363,47 @@ function segmentsToTracks(segments) {
   });
 }
 
+// ADR-163 §5 / ADR-176 follow-up: the playhead boundary at which the current
+// queue item gives way to the next playlist item. Prefers the item's explicit
+// end_seconds (set by the enqueue/harvest thunks); falls back to the next
+// chapter after the item's own start when the item carries a track list (the
+// "play this track" path). Returns null for a whole-video item with no boundary.
+function _queueItemBoundary(instance, item) {
+  const m = item && item.meta;
+  if (m && m.end_seconds != null) return m.end_seconds;
+  const tracks = (instance && instance.tracks) || [];
+  const start = item ? (item.startSeconds || 0) : 0;
+  let next = null;
+  for (const t of tracks) {
+    const off = t.offset_seconds || 0;
+    if (off > start && (next == null || off < next)) next = off;
+  }
+  return next;
+}
+
+// ADR-176 follow-up: should the current queue item give way to the next item at
+// `sec`? The boundary is compulsory ONLY when another playlist item follows; the
+// last item is allowed to run on into the rest of the concert. Kept as one
+// named predicate so desktop + mobile onTime share it and tests can drive it.
+function _shouldAdvanceQueue(instance, sec) {
+  if (typeof MediaQueue === 'undefined' || !MediaQueue.isCurrent(instance.mediaKey)) return false;
+  if (MediaQueue.index >= MediaQueue.items.length - 1) return false;
+  const qi = MediaQueue.items[MediaQueue.index];
+  const boundary = _queueItemBoundary(instance, qi);
+  return boundary != null && sec >= boundary;
+}
+
 // ADR-156: live active-segment — given the current playhead, find the segment
 // in progress and (when it changes) sync the footer chips + tracklist highlight.
 // Assumes instance.tracks is sorted ascending by offset_seconds.
 function _updateActiveSegment(instance, sec) {
   const tracks = instance.tracks;
-  if (!tracks || tracks.length === 0) return;
+  if (!tracks || tracks.length === 0) {
+    if (typeof MediaQueue !== 'undefined' && MediaQueue.isCurrent(instance.mediaKey)) {
+      MediaQueue.activeChapter = null;
+    }
+    return;
+  }
   let active = tracks[0];
   for (let i = 0; i < tracks.length; i++) {
     if ((tracks[i].offset_seconds || 0) <= sec) active = tracks[i];
@@ -1384,6 +1419,19 @@ function _updateActiveSegment(instance, sec) {
     instance.tracklistEl.querySelectorAll('.mp-track-item').forEach(li => {
       li.classList.toggle('mp-track-active', parseInt(li.dataset.offset, 10) === active.offset_seconds);
     });
+  }
+  // ADR-176 follow-up: the Current Playlist must always tell us what is playing.
+  // When this player is the queue's current item and the playhead has run past
+  // the item's OWN offset into a later concert chapter (allowed when the item is
+  // the last in the playlist, or when it carries the whole concert as chapters),
+  // publish that chapter so the row + bar re-render with the sounding track.
+  if (typeof MediaQueue !== 'undefined' && MediaQueue.isCurrent(instance.mediaKey)) {
+    const qi = MediaQueue.items[MediaQueue.index];
+    const ownStart = qi ? (qi.startSeconds || 0) : 0;
+    // A stale timeupdate below the item's own start (just after a retarget seek)
+    // must not paint a previous chapter — only publish once the playhead is in.
+    MediaQueue.activeChapter = (qi && sec >= ownStart && (active.offset_seconds || 0) !== ownStart) ? active : null;
+    if (typeof _refreshQueuePanels === 'function') _refreshQueuePanels();
   }
 }
 
@@ -1756,16 +1804,15 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // chapter boundaries.
   controller.onTime(sec => {
     instance.currentOffset = sec;
-    _updateActiveSegment(instance, sec);
-    // ADR-163 §5: cross-recording continuation — if this queue item has an end_seconds
-    // span boundary, advance the playlist the moment the playhead crosses it, even
-    // though the source video keeps running past that point.
-    if (MediaQueue.isCurrent(instance.mediaKey)) {
-      const _qi = MediaQueue.items[MediaQueue.index];
-      if (_qi && _qi.meta && _qi.meta.end_seconds != null && sec >= _qi.meta.end_seconds) {
-        MediaQueue.advance();
-      }
+    // ADR-163 §5 / ADR-176 follow-up: cross-recording continuation — advance the
+    // playlist the moment the playhead crosses this item's span boundary, but only
+    // when another playlist item follows. Do this BEFORE the active-segment update
+    // so a compulsory advance never briefly paints the next chapter on the old row.
+    if (_shouldAdvanceQueue(instance, sec)) {
+      MediaQueue.advance();
+      return;
     }
+    _updateActiveSegment(instance, sec);
   });
   // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
   controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
@@ -1866,6 +1913,10 @@ const MediaQueue = {
   // the id — the mutated queue no longer IS the playlist, so it inlines.
   playlistId: null,
   _pendingSeek: null, // one-shot startSeconds override for the next _open (permalink restore)
+  // ADR-176 follow-up: the chapter currently sounding, when the current item's
+  // source video has run past the item's own start into a later concert track.
+  // A transient display override — never written back into the item's meta.
+  activeChapter: null,
 
   // Queue items arrive with `media` as a raw video_id string (the row thunks store
   // `_p.video_id`). mediaKey() only works on a resolved MediaRef, so an un-resolved
@@ -1913,6 +1964,7 @@ const MediaQueue = {
     this.items = newItems;
     this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
     this.active = this.items.length > 0;
+    this.activeChapter = null;
     this.panelOpen = this.active;   // ADR-162: Play all reveals the queue panel
     if (this.active) this._open(pos);
     _refreshQueuePanels();
@@ -1952,16 +2004,48 @@ const MediaQueue = {
       ss = Math.max(this._pendingSeek, it.startSeconds || 0);
       this._pendingSeek = null;
     }
-    openOrFocusPlayer(it.media, it.label, it.artistName, ss,
-                      it.concertTitle, it.tracks || [], Object.assign({}, it.meta || {}, { isQueueItem: true }));
-    this.currentKey = mediaKey(it.media);
-    if (pos) {
-      const inst = playerRegistry.get(this.currentKey);
-      if (inst && inst.el && !inst._isMobileSingleton) {
-        inst.el.style.top = pos.top; inst.el.style.left = pos.left;
-        if (pos.width) inst.el.style.width = pos.width;
+    this.activeChapter = null;
+    const mkey = mediaKey(it.media);
+    // ADR-176 follow-up: every track of a concert shares one source video, so a
+    // queue can hold several items with the same media_key. If that video is
+    // already mounted as the current player, retarget it in place — seek to the
+    // new item's offset and adopt its chapters/meta — instead of opening a second
+    // window for the same video (which left the first one playing and broke the
+    // compulsory advance to the next playlist item).
+    const mounted = (this.currentKey === mkey) ? playerRegistry.get(mkey) : null;
+    if (mounted && mounted.controller && mounted.el && !mounted._isMobileSingleton) {
+      this._retarget(mounted, it, ss);
+    } else {
+      openOrFocusPlayer(it.media, it.label, it.artistName, ss,
+                        it.concertTitle, it.tracks || [], Object.assign({}, it.meta || {}, { isQueueItem: true }));
+      this.currentKey = mkey;
+      if (pos) {
+        const inst = playerRegistry.get(mkey);
+        if (inst && inst.el && !inst._isMobileSingleton) {
+          inst.el.style.top = pos.top; inst.el.style.left = pos.left;
+          if (pos.width) inst.el.style.width = pos.width;
+        }
       }
     }
+  },
+
+  // ADR-176 follow-up: point an already-mounted player at a new queue item that
+  // shares its media (a concert-track boundary). Seeks the existing controller
+  // and adopts the item's track list + meta so the active-segment rail and the
+  // playlist row stay truthful. No new window is created.
+  _retarget(inst, item, ss) {
+    this.currentKey = mediaKey(item.media);
+    inst.currentOffset = ss || 0;
+    if (inst.controller && typeof inst.controller.seek === 'function') {
+      inst.controller.seek(ss || 0);
+    } else if (inst.iframe && typeof embedUrl === 'function') {
+      inst.iframe.src = embedUrl(item.media, ss || 0);
+    }
+    inst.tracks = (Array.isArray(item.tracks) ? item.tracks.slice() : [])
+      .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0));
+    inst.meta = Object.assign({ artistName: item.artistName || null }, item.meta || {});
+    inst._activeOffset = null;
+    _updateActiveSegment(inst, ss || 0);
   },
 
   // ADR-162: switch to a given index, reusing one desktop window (drop the prev).
@@ -1986,7 +2070,7 @@ const MediaQueue = {
   advance() {
     if (!this.active) return;
     if (this.index >= this.items.length - 1) {
-      this.active = false; this.currentKey = null; _refreshQueuePanels(); return;
+      this.active = false; this.currentKey = null; this.activeChapter = null; _refreshQueuePanels(); return;
     }
     this._switchTo(this.index + 1);
   },
@@ -2098,7 +2182,7 @@ const MediaQueue = {
     this.start(items, 0, { playlistId: pl.id });
   },
 
-  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; this.playlistId = null; this._pendingSeek = null; },
+  clear() { this.items = []; this.index = -1; this.active = false; this.currentKey = null; this.panelOpen = false; this.playlistId = null; this._pendingSeek = null; this.activeChapter = null; },
 };
 window.MediaQueue = MediaQueue;
 window.Playlist = MediaQueue;   // ADR-175: the Current Playlist (alias — one model)
@@ -2164,7 +2248,7 @@ function _buildPlusBtn(getItem) {
       MediaQueue.addItem({
         media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
         startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
-        tracks: [], meta: item.meta || {},
+        tracks: item.tracks || [], meta: item.meta || {},
       });
       btn.textContent = '✓'; setTimeout(() => { btn.textContent = '+'; }, 1000);
       return;
@@ -2290,7 +2374,7 @@ function _openPlusMenu(anchor, getItem) {
     MediaQueue.addItem({
       media: resolvedMedia, label: item.label || '', artistName: item.artistName || '',
       startSeconds: item.startSeconds || 0, concertTitle: item.concertTitle || '',
-      tracks: [], meta: item.meta || {},
+      tracks: item.tracks || [], meta: item.meta || {},
     });
   });
   menu.appendChild(addQ);
@@ -2323,8 +2407,17 @@ function _openPlusMenu(anchor, getItem) {
 // MediaQueue mutations call _refreshQueuePanels() to re-render every open panel.
 const _QUEUE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 5h12v2H3zM3 10h12v2H3zM3 15h8v2H3zM16 9v8l6-4z"/></svg>';
 
-function _buildQueueRowChips(item) {
-  const m = item.meta || {};
+function _buildQueueRowChips(item, activeChapter) {
+  const base = item.meta || {};
+  // ADR-176 follow-up: when the current item's video has advanced into a later
+  // concert chapter, that chapter's identity replaces the item's own chips so the
+  // row/bar always name the sounding track. Scoped per render — never stored on
+  // the item, so saved playlists keep their original identity.
+  const act = activeChapter || null;
+  const m = act
+    ? { nodeId: base.nodeId, ragaId: act.raga_id || null, compositionId: act.composition_id || null }
+    : base;
+  const label = act ? (act.subject || act.display_title || item.label) : item.label;
   const frag = document.createDocumentFragment();
   const perf = _buildMusicianChipForFooter(m.nodeId || null, item.artistName || null);
   if (perf) frag.appendChild(perf);
@@ -2336,10 +2429,10 @@ function _buildQueueRowChips(item) {
       })
     : [];
   subj.forEach(c => frag.appendChild(c));
-  if (!m.compositionId && !subj.length && item.label) {
+  if (!m.compositionId && !subj.length && label) {
     const lbl = document.createElement('span');
     lbl.className = 'yt-label-chip';
-    lbl.textContent = item.label;
+    lbl.textContent = label;
     frag.appendChild(lbl);
   }
   return frag;
@@ -2393,7 +2486,7 @@ function _renderQueuePanel(panel) {
 
     const chips = document.createElement('span');
     chips.className = 'mp-queue-chips';
-    chips.appendChild(_buildQueueRowChips(item));
+    chips.appendChild(_buildQueueRowChips(item, isCurrent ? MediaQueue.activeChapter : null));
     li.appendChild(chips);
 
     // Primary action: the playing item's button is a STOP (stops playback but
@@ -2653,6 +2746,7 @@ function _pbStopCurrent() {
     playerRegistry.delete(key);
   }
   MediaQueue.currentKey = null;   // list survives; nothing plays
+  MediaQueue.activeChapter = null;   // ADR-176: no sounding chapter when stopped
   refreshPlayingIndicators();
   _refreshQueuePanels();
 }
@@ -2759,7 +2853,7 @@ function _renderPlaylistBar() {
   if (summary) {
     summary.innerHTML = '';
     const item = has ? MediaQueue.items[MediaQueue.index] : null;
-    if (item) summary.appendChild(_buildQueueRowChips(item));
+    if (item) summary.appendChild(_buildQueueRowChips(item, MediaQueue.activeChapter));
     else {
       const hint = document.createElement('span');
       hint.className = 'pb-empty-hint';
@@ -3223,6 +3317,10 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     sess.perfs.forEach(sp => { _concertAllTracks.push({ offset_seconds: sp.offset_seconds || 0 }); });
   });
   _concertAllTracks.sort((a, b) => a.offset_seconds - b.offset_seconds);
+  // ADR-176 follow-up: the chapter list every queued row from this bracket
+  // carries, so a last-in-playlist item can keep the row/bar truthful while the
+  // video runs past its own start into a later concert track.
+  const _concertPlayerTracks = _buildConcertTracksFor(concert.recording_id, nodeId);
 
   concert.sessions.forEach(session => {
     // Sort perfs within session by offset_seconds
@@ -3327,6 +3425,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
         return () => ({
           media: _p.video_id, startSeconds: _p.offset_seconds || 0,
           label: _p.display_title || '', artistName: artistLabel,
+          tracks: _concertPlayerTracks,
           meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId, end_seconds: _endSec },
         });
       })();
@@ -3456,15 +3555,13 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     // ADR-165: same thunk feeds the + menu and the harvest.
     const _singleRecThunk = (() => {
       const _p = p;
-      const _endSec = (() => {
-        if (!_p.recording_id) return null;
-        const _tracks = _buildConcertTracksFor(_p.recording_id, nodeId);
-        const _next = _tracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
-        return _next ? _next.offset_seconds : null;
-      })();
+      const _tracks = _p.recording_id ? _buildConcertTracksFor(_p.recording_id, nodeId) : [];
+      const _next = _tracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
+      const _endSec = _next ? _next.offset_seconds : null;
       return () => ({
         media: _p.video_id, startSeconds: _p.offset_seconds || 0,
         label: _p.display_title || '', artistName: artistLabel,
+        tracks: _tracks,
         meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId, end_seconds: _endSec },
       });
     })();
@@ -3541,15 +3638,13 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
       // ADR-165: same thunk feeds the + menu and the harvest.
       const _multiRecThunk = (() => {
         const _p = p;
-        const _endSec = (() => {
-          if (!_p.recording_id) return null;
-          const _tracks = _buildConcertTracksFor(_p.recording_id, nodeId);
-          const _next = _tracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
-          return _next ? _next.offset_seconds : null;
-        })();
+        const _tracks = _p.recording_id ? _buildConcertTracksFor(_p.recording_id, nodeId) : [];
+        const _next = _tracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
+        const _endSec = _next ? _next.offset_seconds : null;
         return () => ({
           media: _p.video_id, startSeconds: _p.offset_seconds || 0,
           label: _p.display_title || '', artistName: artistLabel,
+          tracks: _tracks,
           meta: { ragaId: _p.raga_id || null, compositionId: _p.composition_id || null, nodeId, end_seconds: _endSec },
         });
       })();
@@ -5219,6 +5314,12 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   // segment boundary (mirrors the desktop createPlayer path).
   controller.onTime(sec => {
     mp.currentOffset = sec;
+    // ADR-163 §5 / ADR-176 follow-up: same boundary predicate as desktop
+    // createPlayer — advance before painting the next chapter.
+    if (_shouldAdvanceQueue(mp, sec)) {
+      MediaQueue.advance();
+      return;
+    }
     const prevOffset = mp._activeOffset;
     _updateActiveSegment(mp, sec);
     if (mp._activeOffset !== prevOffset) {
@@ -5229,13 +5330,6 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
         const newIdx = mp.tracks.indexOf(active);
         if (newIdx >= 0) mp.trackIndex = newIdx;
         _updateMiniDots(mp);
-      }
-    }
-    // ADR-163 §5: cross-recording continuation — same boundary check as desktop createPlayer.
-    if (MediaQueue.isCurrent(mp.mediaKey)) {
-      const _qi = MediaQueue.items[MediaQueue.index];
-      if (_qi && _qi.meta && _qi.meta.end_seconds != null && sec >= _qi.meta.end_seconds) {
-        MediaQueue.advance();
       }
     }
   });
