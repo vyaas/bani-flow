@@ -2137,6 +2137,12 @@ function _renderQueuePanel(panel) {
       cbtn.textContent = collapsed ? '\u25b6' : '\u25bc';   // same chevron as panels
       cbtn.addEventListener('click', e => { e.stopPropagation(); _toggleCurrentPlayerCollapse(); });
       li.appendChild(cbtn);
+    } else {
+      // Reserve the chevron column so every row's text stays in one column.
+      const ph = document.createElement('span');
+      ph.className = 'mp-queue-collapse mp-queue-collapse-phantom';
+      ph.setAttribute('aria-hidden', 'true');
+      li.appendChild(ph);
     }
 
     const reorder = document.createElement('span');
@@ -2186,6 +2192,15 @@ function _renderQueuePanel(panel) {
       li.appendChild(mkOp('mp-queue-copy',  'Copy link',          '\u29c9', _pbCopyLink));
       li.appendChild(mkOp('mp-queue-share', 'Copy permalink',     '\u21e7', _pbShareLink));
       li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',   '\u2197', _pbWatchOnYouTube));
+    } else {
+      // Reserve the operator columns on non-current rows so the trailing
+      // buttons (+, remove) keep the same positions relative to the text.
+      ['mp-queue-copy', 'mp-queue-share', 'mp-queue-watch'].forEach(cls => {
+        const ph = document.createElement('span');
+        ph.className = 'mp-queue-op mp-queue-op-phantom ' + cls;
+        ph.setAttribute('aria-hidden', 'true');
+        li.appendChild(ph);
+      });
     }
 
     // + affordance — secondary: add to playlist or session queue

@@ -2859,12 +2859,19 @@
   }
   .mp-queue-collapse:hover { color: var(--accent); }
   .mp-queue-collapse[aria-pressed="true"] { color: var(--accent); }
-  /* ADR-175: per-row sibling operators (copy · permalink · watch) */
+  /* Phantom slot: reserves the chevron column on non-current rows so every
+     row's text (chips) stays in the same vertical column (ADR-175). */
+  .mp-queue-collapse-phantom { visibility: hidden; pointer-events: none; }
+  /* ADR-175: per-row sibling operators (copy · permalink · watch). Fixed 18×18
+     so the phantom slots on non-current rows reserve exactly the same space. */
   .mp-queue-op {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
     background: none; border: none; color: var(--fg-muted);
-    font-size: 0.72rem; cursor: pointer; padding: 2px 3px; line-height: 1; flex-shrink: 0;
+    font-size: 0.72rem; cursor: pointer; padding: 0; line-height: 1;
   }
   .mp-queue-op:hover { color: var(--accent); }
+  .mp-queue-op-phantom { visibility: hidden; pointer-events: none; }
   .mp-queue-stop { color: var(--accent); }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
@@ -5235,14 +5242,14 @@
      DOWN from the bar and is visible with the player open or closed. -->
 <div id="playlist-bar" class="pb-empty" aria-label="Playlist">
   <button type="button" id="pb-editor-toggle" class="pb-btn mp-toggle-btn" title="Playlist" aria-label="Playlist" aria-pressed="false">&#9654;</button>
+  <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>
+  <span id="pb-count"></span>
   <div class="pb-transport">
     <button type="button" id="pb-prev" class="pb-btn" title="Previous track" aria-label="Previous track">&#9198;</button>
     <button type="button" id="pb-play" class="pb-btn mp-toggle-btn" title="Play / pause" aria-label="Play / pause" aria-pressed="false">&#9654;</button>
     <button type="button" id="pb-next" class="pb-btn" title="Next track" aria-label="Next track">&#9197;</button>
     <button type="button" id="pb-stop" class="pb-btn" title="Stop" aria-label="Stop">&#9632;</button>
   </div>
-  <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>
-  <span id="pb-count"></span>
   <button type="button" id="pb-copy" class="pb-btn" title="Copy link" aria-label="Copy link">&#10697;</button>
   <button type="button" id="pb-share" class="pb-btn" title="Copy permalink" aria-label="Copy permalink">&#8679;</button>
   <button type="button" id="pb-watch" class="pb-btn" title="Watch on YouTube" aria-label="Watch on YouTube">&#8599;</button>
