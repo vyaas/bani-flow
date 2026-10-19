@@ -320,7 +320,13 @@ persisted across queue items (`_volumeLevel`); `_syncVolumeControls` mirrors it
 between bar and row and disables it for volume-less (iframe) providers. The ADR-162 editor is re-parented
 into it as `.mp-queue-bar` (drops **downward** from the bar) so the playlist is
 visible/editable with the player open *or* closed. The playing item's row opens
-with a leftmost `.mp-queue-collapse` chevron (show/hide the player).
+with a leftmost `.mp-queue-collapse` chevron (show/hide the player). **Row/bar
+parity:** an editor row's `.mp-queue-chips` is a single-row strip whose capsules
+keep their natural width and scroll horizontally (thin scrollbar) — the exact
+geometry of `#pb-summary`, so the bar reads as an inheritance of the rows. The
+bare-label fallback (`_buildQueueRowChips`'s `.yt-label-chip`) is overridden in
+both contexts to the same single-line, natural-width, centred chip contract, so
+a label item never balloons the row/bar height.
 
 **Owns:** `media_player.js` (~4740 ln) + `media_providers.js` (provider
 registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154)

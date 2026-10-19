@@ -2848,9 +2848,31 @@
   }
   .mp-queue-reorder button:disabled { opacity: 0.25; cursor: default; }
   .mp-queue-reorder button:not(:disabled):hover { color: var(--accent); }
+  /* ADR-175 follow-up: the row is the bar's ancestor, so it mirrors the bar
+     exactly — a single-row strip whose chip capsules keep their natural width
+     and scroll horizontally (thin scrollbar) instead of wrapping to a second
+     line. Same geometry as #pb-summary. */
   .mp-queue-chips {
     flex: 1; min-width: 0;
-    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
+    overflow-x: auto; white-space: nowrap;
+    scrollbar-width: thin;
+  }
+  .mp-queue-chips > * { flex-shrink: 0; }
+  .mp-queue-chips::-webkit-scrollbar { height: 4px; }
+  .mp-queue-chips::-webkit-scrollbar-track { background: transparent; }
+  .mp-queue-chips::-webkit-scrollbar-thumb { background: var(--fg-muted); border-radius: 2px; }
+  /* The fallback label is a chip too. The shared .yt-label-chip atom wraps and
+     top-aligns (right for a panel listing, wrong here), which ballooned the
+     row/bar height whenever an item was a bare label. In the queue row and the
+     Playlist Bar it obeys the same contract as raga/comp/musician chips:
+     single line, natural width, vertically centred, no stray margin. */
+  .mp-queue-chips .yt-label-chip,
+  #pb-summary .yt-label-chip {
+    display: inline-flex; align-items: center;
+    white-space: nowrap; word-break: normal;
+    max-width: none; align-self: center;
+    margin-top: 0; line-height: inherit;
   }
   .mp-queue-play {
     background: none; border: none; color: var(--fg-muted);

@@ -78,3 +78,35 @@ def test_summary_scrolls_with_thin_scrollbar_and_fixed_chips():
     assert re.search(
         r"#pb-summary\s*>\s*\*\s*\{[^}]*flex-shrink:\s*0", css, re.DOTALL
     ), "chips must keep their natural width so the strip scrolls, not squashes"
+
+
+def test_editor_row_chips_scroll_in_one_row_like_the_bar():
+    """The editor row is what the bar inherits, so both faces must render the
+    same: a single-row strip of natural-width capsules that scroll horizontally
+    instead of wrapping."""
+    css = _base()
+    row = _rule(css, ".mp-queue-chips")
+    assert "flex-wrap: nowrap" in row, "row chips must never wrap to a second line"
+    assert "overflow-x: auto" in row, "row chips must scroll horizontally on overflow"
+    assert "scrollbar-width: thin" in row
+    assert re.search(
+        r"\.mp-queue-chips\s*>\s*\*\s*\{[^}]*flex-shrink:\s*0", css, re.DOTALL
+    ), "row chips must keep their natural width so the strip scrolls, not squashes"
+
+
+def test_queue_label_chips_follow_the_same_chip_contract():
+    """A bare-label item must not balloon the row/bar: the fallback
+    .yt-label-chip is overridden in the queue row and Playlist Bar to the same
+    single-line, natural-width, centred contract as every other chip."""
+    css = _base()
+    match = re.search(
+        r"\.mp-queue-chips \.yt-label-chip,\s*#pb-summary \.yt-label-chip\s*\{(.*?)\}",
+        css, re.DOTALL,
+    )
+    assert match, "missing queue-context override for the fallback label chip"
+    block = match.group(1)
+    for decl in (
+        "white-space: nowrap", "max-width: none",
+        "align-self: center", "margin-top: 0",
+    ):
+        assert decl in block, f"label chip override missing: {decl}"
