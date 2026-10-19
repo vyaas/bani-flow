@@ -130,18 +130,29 @@ const scenarios = {
   },
 
   // ADR-176 chrome band: when both panels are withdrawn the Playlist Bar still
-  // starts at its 220px gutter, leaving the floating panel toggle underneath.
-  // A player must observe that same left/right band — never drift to x=0.
+  // starts at its 220px gutter, leaving the floating panel toggles underneath.
+  // The player mirrors that inset on the right so it can never reach the
+  // musician toggle — never drift to x=0 or hug the 56px help-button edge.
   'withdrawn-panels-keep-player-out-of-gutter'() {
     const ui = { left: 220, top: 12, right: 1344, bottom: 43 };
     const bounds = G._columnBounds(VIEW, ui);
     assert.strictEqual(bounds.left, 220, 'column must start at the bar gutter');
-    assert.strictEqual(bounds.right, 1344, 'column must end at the bar inset');
+    assert.strictEqual(bounds.right, VIEW.right - 220,
+                       'right gutter must mirror the left toggle width');
     const w = bounds.right - bounds.left;
     const p = G._resolveNonOverlap(0, 92, w, 320, [ui], bounds, 8);
     assert.strictEqual(p.left, 220, 'player escaped into the left gutter');
     assert.strictEqual(totalOverlap(p, w, 320, [ui]), 0, 'overlaps the bar');
-    assert.ok(inside(p, w, 320, bounds), 'escaped the bar column');
+    assert.ok(inside(p, w, 320, bounds), 'escaped the symmetric chrome band');
+  },
+
+  // An open right sidebar still wins when it is wider than the left inset, but
+  // the mirrored left inset caps the band when only the right panel is open.
+  'column-bounds-keep-open-sidebar-clear'() {
+    const ui = { left: 220, top: 12, right: 1036, bottom: 43 };  // right panel open
+    const b = G._columnBounds(VIEW, ui);
+    assert.strictEqual(b.left, 220);
+    assert.strictEqual(b.right, 1036, 'must not spill under the open right panel');
   },
 
   // The bar can never push the band outside its parent, and a degenerate bar

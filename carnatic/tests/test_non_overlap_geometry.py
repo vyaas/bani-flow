@@ -32,6 +32,7 @@ SCENARIOS = [
     "free-column-between-sidebars-and-ui",
     "wide-player-clear-of-open-sidebar",
     "withdrawn-panels-keep-player-out-of-gutter",
+    "column-bounds-keep-open-sidebar-clear",
     "column-bounds-are-parent-intersected",
     "cramped-degrades-not-crashes",
     "rects-overlap-margin",

@@ -743,14 +743,22 @@ function _rectsOverlap(a, b, margin) {
          a.top < b.bottom + m && a.bottom > b.top - m;
 }
 
-// ADR-176 (chrome band): a floating player observes the SAME left/right limits
-// as the persistent Playlist Bar. The bar is the canvas edge on desktop, so a
-// withdrawn sidebar leaves a gutter (holding its floating toggle) that a player
-// must never spill into. Pure: intersect the parent box with the playlist UI.
+// ADR-176 (chrome band): a floating player observes the persistent Playlist
+// Bar's left inset on BOTH sides. The left inset clears the view selector; the
+// mirrored right inset protects the withdrawn musician panel (and its floating
+// toggle) exactly like the bani-flow panel — the help button's narrower top-right
+// inset is not enough once a tall player reaches the bottom toggle row. Pure:
+// intersect the parent box with the playlist UI, then mirror the left inset.
 function _columnBounds(parentRect, uiRect) {
   if (!parentRect) return null;
-  const left = uiRect ? Math.max(parentRect.left, uiRect.left) : parentRect.left;
-  const right = uiRect ? Math.min(parentRect.right, uiRect.right) : parentRect.right;
+  let left = parentRect.left;
+  let right = parentRect.right;
+  if (uiRect) {
+    left = Math.max(left, uiRect.left);
+    right = Math.min(right, uiRect.right);
+    const leftInset = Math.max(0, left - parentRect.left);
+    right = Math.min(right, parentRect.right - leftInset);
+  }
   return {
     left,
     top: parentRect.top,
