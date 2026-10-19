@@ -81,7 +81,10 @@ bus** read by the wheel and view-switcher. `_currentBaniSubject = {type, id}`.
 **CSS hooks:** `--left-panel-width` (derived from data in `html_generator.py`,
 ADR-128 D7 — never hardcode); `.trail-*` classes; `.panel` base class; chip
 classes (`.raga-chip`, `.comp-chip`, `.musician-chip`); `.section-help-btn`
-(ADR-177 category help trigger).
+(ADR-177 category help trigger). **ADR-180:** fixed `--row-height` ribbons —
+`.row-accordion-scroll` / `.tree-header-text` / `.trail-chips` are the
+horizontal-scroll surfaces; `.trail-acts` / `.tree-comp-acts` are the pinned
+two-slot action column; fold chevrons are retired.
 
 **Connects to:** sets `activeBaniFilter` → `switchView` (in raga_wheel.js)
 re-applies it to the wheel via `syncRagaWheelToFilter`; reverse direction
@@ -93,7 +96,7 @@ re-applies it to the wheel via `syncRagaWheelToFilter`; reverse direction
 tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 149 (subject popup), 150, 151 (permalink), 154/156 (media spans), 157
 (play-all), 163 (playlists), 165, 167, 177 (category help dialog), 178
-(unified content filter).
+(unified content filter), 180 (ribbon rows).
 
 ---
 
@@ -140,12 +143,15 @@ owns the recordings body. A "musician panel" task usually touches both.
 `_focusedGraphNode`.
 
 **CSS hooks:** `--right-panel-width` (derived, ADR-128 D7); `.panel`;
-`.section-collapse-btn`; `.section-play-acts` (play-all/enqueue pair);
+`.section-collapse-btn` (ADR-180: retired); `.section-play-acts` (play-all/enqueue pair);
 `.section-help-btn` (ADR-177 category help trigger);
 `#recordings-panel { padding-top: 0 }` (ADR-011). **ADR-179:** all row action
 groups (`.trail-acts`, `.tree-comp-acts`) reserve a fixed two-slot column and
 header groups (`.section-hdr-right`) three; play/enqueue/count badges share
 `--row-act-size`, and row labels are single-line horizontal-scroll surfaces.
+**ADR-180:** every row is a fixed-height ribbon — the composer chip is inlined
+on the composition line, multi-recording lists are always visible, and the
+perf/bracket fold chevrons are retired.
 
 **Connects to:** invoked from cy canvas tap (§3), WDP/ wheel musician
 expansion (§4), bani trail chips (§1), permalink restore. Recording rows →
@@ -156,7 +162,7 @@ machine: `mobile.js setPanelState`.
 removal), 046 (drawer handles), 086 (empty tutorial), 128 (panel components +
 D7 width), 129 (floating toggles), 137 (lineage popup), 163 (playlists
 section), 177 (category help dialog), 178 (unified content filter), 179
-(single-line rows + shared action column).
+(single-line rows + shared action column), 180 (ribbon rows, chevrons retired).
 
 ---
 
@@ -412,6 +418,9 @@ upward-surface pattern (`bottom:100%`, flip-down near viewport top);
 `.mp-queue.mp-queue-shown`; mobile sheet grows via `:has(...)`. **ADR-179:**
 playlist-track chips are a single non-wrapping scroll line; a playlist row's
 count badge right-aligns ahead of its two-slot `.trail-acts` column.
+**ADR-180:** a playlist is a header ribbon plus one track ribbon per entry
+(the fold is retired); each track's `.mp-playlist-track-chips` scrolls and its
+`.trail-acts` pins.
 
 **Connects to:** everything plays through here — trail play-acts (§1),
 recording rows (§2), WDP playbacks (§4), sruti drone, tanpura (ADR-029).
@@ -434,7 +443,7 @@ desktop tracklist and queue are mutually exclusive (both open upward).
 phase A), 158–160, 161 (toggle primitive, upward surfaces), 162 (visible
 queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
 176 (app-level non-overlap contract), 179 (single-line rows + shared action
-column).
+column), 180 (ribbon rows, chevrons retired).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
@@ -483,7 +492,8 @@ permalink.js    LAST — restores state using every global above
 
 - `render/theme.py` `TOKENS` → `css_vars()` → `:root` CSS vars; also exported
   to `theme.js` as the `THEME` global (ADR-028). **Change colors/sizing here,
-  never in templates.**
+  never in templates.** ADR-179 adds `rowActSize`/`rowActGap` (`--row-act-size`
+  / `--row-act-gap`); ADR-180 adds `rowHeight` (`--row-height`).
 - Panel widths `--left-panel-width` / `--right-panel-width` are **derived from
   data** in `html_generator.py` (ADR-128 D7).
 - Canvas node styling (era colors, sizes, shapes) lives in Python
@@ -514,7 +524,8 @@ helpSlot, …})` (the play-acts pair comes free with `playable:true`; `helpKind`
 `helpSlot` add the `.section-help-btn`; the `(N)` count lives in the right-hand
 `.section-hdr-right` group as `(N) ▶ ⊕`, keeping the `?` flush with the chip),
 `buildSubjectGroup`,
-`buildRowAccordion`, `tagUntaggedChips` / `applyChipRole`. Also the unified
+`buildRowAccordion` (ADR-180: no longer folds — its body chips lay inline on
+one `.row-accordion-scroll` line), `tagUntaggedChips` / `applyChipRole`. Also the unified
 panel **content-filter engine** `applyPanelContentFilter(panelKey, q)` +
 `CONTENT_FILTER_ZONES` (ADR-178) — a textContent matcher that keeps the ADR-165
 §3 inline-`display`-only exclusion channel. Double-click

@@ -5351,6 +5351,12 @@
     width: var(--row-act-strip);
     gap: var(--row-act-gap);
   }
+  /* ADR-180: a section with a count always reserves the full 3-slot group, so
+     every count badge shares one vertical even when the section is not playable. */
+  #left-sidebar .section-hdr-right:has(.section-hdr-count),
+  #right-sidebar .section-hdr-right:has(.section-hdr-count) {
+    width: var(--row-act-strip-3);
+  }
 
   /* Count badges share the button geometry and pin right. */
   .section-hdr-count,
@@ -5485,6 +5491,235 @@
     background: var(--fg-muted);
     border-radius: 2px;
   }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     ADR-180: ribbon rows — retire the fold chevrons
+     ──────────────────────────────────────────────────────────────────────────
+     Every panel entry is one fixed-height (--row-height) horizontal ribbon.
+     Identity/context chips share one non-wrapping line that scrolls sideways
+     when the string outruns the column; the play / enqueue / count column pins
+     to the right edge, so every action lines up on one vertical across rows and
+     categories. The old accordion bodies are inlined, so nothing folds away.
+     ══════════════════════════════════════════════════════════════════════════ */
+
+  /* 1. Kill every surviving fold chevron (row, section, bracket). */
+  .row-accordion-chevron,
+  .row-accordion-chevron-phantom,
+  .tree-comp-chevron,
+  .concert-chevron,
+  .tree-chevron,
+  .section-collapse-btn,
+  .tree-rec-toggle {
+    display: none !important;
+  }
+
+  /* 2. One fixed-height, non-wrapping flex ribbon for every row container.
+        The row clips; a dedicated .*-main child owns the horizontal scroll. */
+  #left-sidebar .row-accordion-header,
+  #right-sidebar .row-accordion-header,
+  #left-sidebar .tree-comp-header,
+  #right-sidebar .tree-comp-header,
+  #left-sidebar .tree-group-header,
+  #right-sidebar .tree-group-header,
+  #left-sidebar .tree-leaf-primary,
+  #right-sidebar .tree-leaf-primary,
+  #left-sidebar .trail-row2,
+  #right-sidebar .trail-row2,
+  #left-sidebar .concert-title-row,
+  #right-sidebar .concert-title-row,
+  #left-sidebar .concert-perf-item,
+  #right-sidebar .concert-perf-item,
+  #left-sidebar .rec-row1,
+  #right-sidebar .rec-row1,
+  #left-sidebar .mp-playlist-track,
+  #right-sidebar .mp-playlist-track {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    min-height: var(--row-height);
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* 3. The single scroll surface of a ribbon: identity/context chips scroll
+        sideways while the action column stays put. */
+  #left-sidebar .row-accordion-scroll,
+  #right-sidebar .row-accordion-scroll,
+  #left-sidebar .tree-comp-main,
+  #right-sidebar .tree-comp-main,
+  #left-sidebar .concert-title-main,
+  #right-sidebar .concert-title-main,
+  #left-sidebar .concert-perf-main,
+  #right-sidebar .concert-perf-main,
+  #left-sidebar .trail-chips,
+  #right-sidebar .trail-chips,
+  #left-sidebar .tree-header-text,
+  #right-sidebar .tree-header-text,
+  #left-sidebar .concert-performers,
+  #right-sidebar .concert-performers,
+  #left-sidebar .mp-playlist-track-chips,
+  #right-sidebar .mp-playlist-track-chips,
+  #left-sidebar .lecdem-subjects-inline,
+  #right-sidebar .lecdem-subjects-inline,
+  #left-sidebar .lecdem-subjects,
+  #right-sidebar .lecdem-subjects,
+  #left-sidebar .lecdem-musician,
+  #right-sidebar .lecdem-musician {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    flex: 1 1 auto !important;
+    min-width: 0;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: thin;
+  }
+  #left-sidebar .row-accordion-scroll > *,
+  #right-sidebar .row-accordion-scroll > *,
+  #left-sidebar .tree-comp-main > *,
+  #right-sidebar .tree-comp-main > *,
+  #left-sidebar .concert-title-main > *,
+  #right-sidebar .concert-title-main > *,
+  #left-sidebar .concert-perf-main > *,
+  #right-sidebar .concert-perf-main > *,
+  #left-sidebar .trail-chips > *,
+  #right-sidebar .trail-chips > *,
+  #left-sidebar .tree-header-text > *,
+  #right-sidebar .tree-header-text > * {
+    flex-shrink: 0;
+  }
+  /* Nested joints: any row class that appears inside a row-accordion scroll
+     surface is just content there, never a second scroller. */
+  #left-sidebar .row-accordion-scroll .tree-group-header,
+  #right-sidebar .row-accordion-scroll .tree-group-header,
+  #left-sidebar .row-accordion-scroll .trail-row2,
+  #right-sidebar .row-accordion-scroll .trail-row2 {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  /* The concert header is just a wrapper; .concert-title-row is the ribbon. */
+  #left-sidebar .concert-header,
+  #right-sidebar .concert-header {
+    display: block !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  /* Co-performers nested inside the title scroll surface ride along with it
+     (no second scroller). */
+  #left-sidebar .concert-title-main .concert-performers,
+  #right-sidebar .concert-title-main .concert-performers {
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+  }
+
+  /* 4. Actions and counts are the fixed right-hand column — never scrolled. */
+  #left-sidebar .trail-acts,
+  #right-sidebar .trail-acts,
+  #left-sidebar .tree-comp-acts,
+  #right-sidebar .tree-comp-acts,
+  #left-sidebar .section-play-acts,
+  #right-sidebar .section-play-acts,
+  #left-sidebar .section-hdr-right,
+  #right-sidebar .section-hdr-right,
+  #left-sidebar .concert-count,
+  #right-sidebar .concert-count,
+  #left-sidebar .rec-group-count,
+  #right-sidebar .rec-group-count,
+  #left-sidebar .mp-playlist-count,
+  #right-sidebar .mp-playlist-count {
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  /* ADR-180: within a fixed action strip the play button must sit in the FIRST
+     (play) slot. Its global margin-left:auto would otherwise push a lone play
+     into the enqueue column and break the shared vertical. */
+  #left-sidebar .trail-acts .rec-play-btn,
+  #right-sidebar .trail-acts .rec-play-btn,
+  #left-sidebar .tree-comp-acts .rec-play-btn,
+  #right-sidebar .tree-comp-acts .rec-play-btn {
+    margin-left: 0;
+  }
+
+  /* 4b. When a label chip is the row's only content (flat lecdem rows have no
+         .trail-chips wrapper) it must shrink and scroll like any other surface. */
+  #left-sidebar .trail-row2 > .lecdem-label-chip,
+  #right-sidebar .trail-row2 > .lecdem-label-chip,
+  #left-sidebar .trail-row2 > .yt-label-chip,
+  #right-sidebar .trail-row2 > .yt-label-chip,
+  #left-sidebar .trail-row2 > .lecdem-label,
+  #right-sidebar .trail-row2 > .lecdem-label,
+  #left-sidebar .trail-row2 > .rec-title,
+  #right-sidebar .trail-row2 > .rec-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+
+  /* 5. Single-line labels: drop every clamp/wrap and let the row scroll. */
+  #left-sidebar .lecdem-label,
+  #right-sidebar .lecdem-label,
+  #left-sidebar .tree-unmatched-title,
+  #right-sidebar .tree-unmatched-title,
+  #left-sidebar .rec-title,
+  #right-sidebar .rec-title,
+  #left-sidebar .yt-label-chip,
+  #right-sidebar .yt-label-chip,
+  #left-sidebar .rec-version-label,
+  #right-sidebar .rec-version-label,
+  #left-sidebar .lecdem-label-chip,
+  #right-sidebar .lecdem-label-chip,
+  #left-sidebar .concert-title,
+  #right-sidebar .concert-title {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    -webkit-line-clamp: unset !important;
+    -webkit-box-orient: unset !important;
+    display: inline-block !important;
+    overflow: visible !important;
+    max-width: none !important;
+  }
+
+  /* 6. Bracket bodies are always visible — the fold is retired. */
+  #left-sidebar .concert-perf-list,
+  #right-sidebar .concert-perf-list { display: block !important; }
+
+  /* 7. Uniform row height: strip vertical padding from every panel list item so
+        the ribbon is the only thing defining height. */
+  #left-sidebar li.tree-group,
+  #right-sidebar li.tree-group,
+  #left-sidebar li.tree-leaf,
+  #right-sidebar li.tree-leaf,
+  #left-sidebar li.tree-comp-node,
+  #right-sidebar li.tree-comp-node,
+  #left-sidebar .lecdem-row,
+  #right-sidebar .lecdem-row,
+  #left-sidebar .concert-header,
+  #right-sidebar .concert-header,
+  #left-sidebar .concert-perf-item,
+  #right-sidebar .concert-perf-item,
+  #left-sidebar .tree-group-header,
+  #right-sidebar .tree-group-header,
+  #left-sidebar .tree-misc-leaf,
+  #right-sidebar .tree-misc-leaf,
+  #left-sidebar .tree-rec-list .tree-leaf,
+  #right-sidebar .tree-rec-list .tree-leaf {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  #left-sidebar .trail-chips,
+  #right-sidebar .trail-chips { gap: 6px; }
 </style>
 <!-- INJECT_PLYR_CSS -->
 </head>

@@ -2977,16 +2977,6 @@ window._initPlaylistBar = _initPlaylistBar;
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _initPlaylistBar);
 else _initPlaylistBar();
 
-// ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
-function toggleConcert(headerEl) {
-  const bracket = headerEl.closest('.concert-bracket');
-  if (!bracket) return;
-  // ADR-165 §3: collapse via the .expanded class only — the .concert-perf-list
-  // visibility is driven by CSS. Never touch inline display here (that is the
-  // filter channel, and doing so would hide folded rows from the harvest).
-  bracket.classList.toggle('expanded');
-}
-
 // buildYtLink removed — ADR-139: external link replaced by clipboard copy in media player bar.
 
 // ── buildComposerChip — composer chip for a given composition_id ────────────────
@@ -3219,12 +3209,9 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   bracket.dataset.recordingId = concert.recording_id;
 
   // ── header ────────────────────────────────────────────────────────────────
+  // ADR-180: no fold chevron — the track list is always shown below.
   const header = document.createElement('div');
   header.className = 'concert-header';
-  header.setAttribute('onclick', 'toggleConcert(this)');
-
-  const chevron = document.createElement('span');
-  chevron.className = 'concert-chevron';
 
   const headerBody = document.createElement('div');
   headerBody.className = 'concert-header-body';
@@ -3236,8 +3223,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   titleSpan.className = 'concert-title recording-chip';
   titleSpan.textContent = concert.short_title || concert.title;
   if (concert.title) titleSpan.title = concert.title;
-  // 'panel-title' role enables the chip_dblclick.js dblclick-to-edit gesture
-  // (single click still falls through to toggleConcert via the header onclick).
+  // 'panel-title' role enables the chip_dblclick.js dblclick-to-edit gesture.
+  // ADR-180: the header is no longer a fold toggle, so a single click is inert.
   if (concert.recording_id && typeof applyChipRole === 'function') {
     applyChipRole(titleSpan, 'panel-title', 'recording', concert.recording_id);
     titleSpan.dataset.musicianId = nodeId;  // passed to buildEditConcertForm via openEditForm
@@ -3249,6 +3236,12 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
 
   titleRow.appendChild(titleSpan);
   titleRow.appendChild(dateSpan);
+
+  // ADR-180: title + date own the row's h-scroll; count + acts stay pinned.
+  const titleMain = document.createElement('div');
+  titleMain.className = 'concert-title-main';
+  while (titleRow.firstChild) titleMain.appendChild(titleRow.firstChild);
+  titleRow.appendChild(titleMain);
 
   // ADR-054: render each co-performer as an era-tinted musician chip
   const performersDiv = document.createElement('div');
@@ -3343,9 +3336,9 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   titleRow.appendChild(countDiv);
   titleRow.appendChild(hdrActs);
   headerBody.appendChild(titleRow);
-  if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
+  // ADR-180: co-performers ride the same ribbon line as the title, not below it.
+  if (coPerformerMap.size > 0) titleMain.appendChild(performersDiv);
 
-  header.appendChild(chevron);
   header.appendChild(headerBody);
   bracket.appendChild(header);
 
@@ -3376,6 +3369,10 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       li.className = 'concert-perf-item' + (playerRegistry.has(p.media_key) ? ' playing' : '');
       li.dataset.vid = p.media_key;
       // ADR-052: container is not a click target; navigation lives in embedded chips.
+      // ADR-180: the raga + composition identity chips share one scroll surface;
+      // the acts column is appended to the li afterwards and stays pinned.
+      const perfMain = document.createElement('div');
+      perfMain.className = 'concert-perf-main';
 
       // ── Raga chip row (top, no tala — matches tree-comp-node aesthetic) ────
       const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
@@ -3390,14 +3387,12 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('raga', p.raga_id);
         });
-        li.appendChild(ragaChip);
+        perfMain.appendChild(ragaChip);
       } else if (!p.raga_id && p.raga_id !== undefined) {
         // no raga — nothing to show at top
       }
 
-      // ── Composition chip + play button (tree-comp-header aesthetic) ─────────
-      const compHeader = document.createElement('div');
-      compHeader.className = 'tree-comp-header';
+      // ── Composition chip + play button (ADR-180 ribbon) ──────────────────
       if (p.composition_id) {
         const comp = compositions.find(c => c.id === p.composition_id);
         const compChip = document.createElement('span');
@@ -3410,13 +3405,13 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
           setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
           triggerBaniSearch('comp', p.composition_id);
         });
-        compHeader.appendChild(compChip);
+        perfMain.appendChild(compChip);
       } else {
         const titleEl = document.createElement('span');
         titleEl.className = 'yt-label-chip';
         const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[p.type] || '';
         titleEl.textContent = typeIcon + (p.display_title || '');
-        compHeader.appendChild(titleEl);
+        perfMain.appendChild(titleEl);
       }
 
       // ▶ button in tree-comp-acts (right-aligned, matches composition tree)
@@ -3475,20 +3470,12 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       })();
       actsDiv.appendChild(_buildPlusBtn(_concertPerfThunk));
       registerQueueItem(li, _concertPerfThunk);
-      compHeader.appendChild(actsDiv);
 
-      // ── Wrap comp header + composer in indented block when raga is present ────
+      // ── ADR-180 ribbon: [raga + comp + composer] … [acts] ────────────────
       const concertComposerChip = buildComposerChip(p.composition_id);
-      const compBlock = document.createElement('div');
-      if (ragaObj) compBlock.className = 'concert-comp-block';
-      compBlock.appendChild(compHeader);
-      if (concertComposerChip) {
-        const metaDiv = document.createElement('div');
-        metaDiv.className = 'tree-comp-meta';
-        metaDiv.appendChild(concertComposerChip);
-        compBlock.appendChild(metaDiv);
-      }
-      li.appendChild(compBlock);
+      if (concertComposerChip) perfMain.appendChild(concertComposerChip);
+      li.appendChild(perfMain);
+      li.appendChild(actsDiv);
       perfList.appendChild(li);
     });
   });
@@ -3548,6 +3535,18 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
 
   // No left-chevron. Acts (play button / right-chevron) always on the right via tree-comp-acts.
   const recCount = sortedPerfs.length;
+
+  // ADR-180: the composer is inlined on the composition's single ribbon line
+  // (it used to stack below in .tree-comp-meta, making the row two lines tall).
+  const composerChip = buildComposerChip(compId);
+  if (composerChip) compHeader.appendChild(composerChip);
+
+  // ADR-180: the identity chips own the row's horizontal scroll; the acts
+  // column is appended to compHeader afterwards and stays pinned right.
+  const compMain = document.createElement('div');
+  compMain.className = 'tree-comp-main';
+  while (compHeader.firstChild) compMain.appendChild(compHeader.firstChild);
+  compHeader.appendChild(compMain);
 
   if (recCount === 1) {
     // ── Single recording: inline year + play on the right ─────────────────
@@ -3613,33 +3612,16 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
     registerQueueItem(li, _singleRecThunk);
     compHeader.appendChild(actsDiv);
   } else {
-    // ── Multiple recordings: right-chevron accordion (starts collapsed) ────
+    // ── Multiple recordings: ADR-180 — no fold; versions render inline-below ──
     const actsDiv = document.createElement('div');
     actsDiv.className = 'tree-comp-acts';
-
-    const chevron = document.createElement('button');
-    chevron.className = 'tree-comp-chevron';
-    chevron.textContent = '\u25b6';  // ▶ collapsed by default
-    chevron.title = 'Show recordings';
-    actsDiv.appendChild(chevron);
     compHeader.appendChild(actsDiv);
 
-    compHeader.style.cursor = 'pointer';
     li.appendChild(compHeader);
 
-    // Composer chip
-    const composerChip = buildComposerChip(compId);
-    if (composerChip) {
-      const metaDiv = document.createElement('div');
-      metaDiv.className = 'tree-comp-meta';
-      metaDiv.appendChild(composerChip);
-      li.appendChild(metaDiv);
-    }
-
-    // Recording rows — start hidden (collapsed by default)
+    // Recording rows — always visible (the fold chevron is retired).
     const recUl = document.createElement('ul');
     recUl.className = 'tree-rec-list';
-    recUl.hidden = true;
 
     sortedPerfs.forEach((p, idx) => {
       const recLi = document.createElement('li');
@@ -3720,32 +3702,10 @@ function buildCompNode(compId, perfs, nodeId, artistLabel) {
 
     li.appendChild(recUl);
 
-    // Chevron button and full-row click both toggle the recording list.
-    const _toggle = function () {
-      recUl.hidden = !recUl.hidden;
-      chevron.textContent = recUl.hidden ? '\u25b6' : '\u25bc';
-      chevron.title = recUl.hidden ? 'Show recordings' : 'Hide recordings';
-    };
-    chevron.addEventListener('click', e => { e.stopPropagation(); _toggle(); });
-    compHeader.addEventListener('click', function (e) {
-      if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
-      _toggle();
-    });
-
     return li;
   }
 
   li.appendChild(compHeader);
-
-  // Composer chip (single-recording path)
-  const composerChip = buildComposerChip(compId);
-  if (composerChip) {
-    const metaDiv = document.createElement('div');
-    metaDiv.className = 'tree-comp-meta';
-    metaDiv.appendChild(composerChip);
-    li.appendChild(metaDiv);
-  }
-
   return li;
 }
 
@@ -3994,7 +3954,10 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
         }
       });
     }
-    row.appendChild(labelSpan);
+    const chips = document.createElement('div');
+    chips.className = 'trail-chips';
+    chips.appendChild(labelSpan);
+    row.appendChild(chips);
 
     const actsDiv = document.createElement('div');
     actsDiv.className = 'trail-acts';
@@ -4023,12 +3986,9 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   bracket.className = 'concert-bracket';
 
   // ── header ──────────────────────────────────────────────────────────────────
+  // ADR-180: no fold chevron — the segment list is always shown below.
   const header = document.createElement('div');
   header.className = 'concert-header';
-  header.setAttribute('onclick', 'toggleConcert(this)');
-
-  const chevron = document.createElement('span');
-  chevron.className = 'concert-chevron';
 
   const headerBody = document.createElement('div');
   headerBody.className = 'concert-header-body';
@@ -4088,7 +4048,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
 
   headerBody.appendChild(titleRow);
 
-  header.appendChild(chevron);
   header.appendChild(headerBody);
   bracket.appendChild(header);
 
@@ -4102,8 +4061,9 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     li.className = 'concert-perf-item';
     li.dataset.vid = ref.media_key;
 
-    const row1 = document.createElement('div');
-    row1.className = 'rec-row1';
+    // ADR-180: identity chips own the row's h-scroll; segActs is a pinned sibling.
+    const segMain = document.createElement('div');
+    segMain.className = 'concert-perf-main';
 
     const ragaObj = seg.raga_id ? ragas.find(r => r.id === seg.raga_id) : null;
     const segLabel = (ragaObj ? ragaObj.name : null) || seg.raga_id || seg.composition_id || '';
@@ -4120,12 +4080,12 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
         setTimeout(() => ragaChip.classList.remove('chip-tapped'), 200);
         if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', seg.raga_id);
       });
-      row1.appendChild(ragaChip);
+      segMain.appendChild(ragaChip);
     } else if (seg.raga_id) {
       const ragaChip = document.createElement('span');
       ragaChip.className = 'raga-chip';
       ragaChip.textContent = seg.raga_id;
-      row1.appendChild(ragaChip);
+      segMain.appendChild(ragaChip);
     }
 
     if (seg.composition_id) {
@@ -4140,7 +4100,7 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
         setTimeout(() => compChip.classList.remove('chip-tapped'), 200);
         if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', seg.composition_id);
       });
-      row1.appendChild(compChip);
+      segMain.appendChild(compChip);
     }
 
     const playBtn = document.createElement('button');
@@ -4167,9 +4127,9 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     const segActs = document.createElement('span');
     segActs.className = 'trail-acts';
     segActs.appendChild(playBtn);
-    row1.appendChild(segActs);
 
-    li.appendChild(row1);
+    li.appendChild(segMain);
+    li.appendChild(segActs);
 
     segList.appendChild(li);
   });
@@ -4290,17 +4250,30 @@ function buildPlaylistRow(pl) {
     });
     const tplus = _buildPlusBtn(_trackThunk);
     registerQueueItem(trow, _trackThunk);
-    trow.appendChild(tplay);
-    trow.appendChild(tplus);
+    const tacts = document.createElement('span');
+    tacts.className = 'trail-acts';
+    tacts.appendChild(tplay);
+    tacts.appendChild(tplus);
+    trow.appendChild(tacts);
     return trow;
   });
 
-  // Tree node: chevron + header + collapsible track children (ADR-128 row-accordion).
-  // ADR-165: register the playlist row with an array thunk so harvest on a PLAYLISTS
-  // section body returns the full concatenation of visible playlists' items.
-  const rowEl = buildRowAccordion({ headerEl, bodyEls, defaultCollapsed: true, chevronPosition: 'left', trailingEl: playActs });
-  registerQueueItem(rowEl, () => queueItems);
-  return rowEl;
+  // ADR-180: the playlist header is one ribbon; every track is its own ribbon
+  // below it (no fold). ADR-165: register the playlist row with an array thunk so
+  // harvest on a PLAYLISTS section body returns the concatenation of its items.
+  const wrap = document.createElement('div');
+  wrap.className = 'row-accordion mp-playlist-row';
+  const headerRow = document.createElement('div');
+  headerRow.className = 'row-accordion-header';
+  const hscroll = document.createElement('div');
+  hscroll.className = 'row-accordion-scroll';
+  hscroll.appendChild(headerEl);
+  headerRow.appendChild(hscroll);
+  headerRow.appendChild(playActs);
+  wrap.appendChild(headerRow);
+  bodyEls.forEach(function (t) { wrap.appendChild(t); });
+  registerQueueItem(wrap, () => queueItems);
+  return wrap;
 }
 
 // Returns a PLAYLISTS buildSection for the given playlist ids, or null if none.
@@ -4399,9 +4372,10 @@ function buildRecordingsList(nodeId, nodeData) {
             li.appendChild(subjectsDiv);
           }
         } else {
-          // Flat row: always wrap in row-accordion so the left chevron is
-          // consistent across all rows. Empty bodyEls → phantom chevron for alignment.
-          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: subjectChips || [], defaultCollapsed: true }));
+          // Flat row: inline subject chips into the single ribbon line.
+          const flatChips = bracketEl.querySelector('.trail-chips');
+          if (flatChips) (subjectChips || []).forEach(function (el) { flatChips.appendChild(el); });
+          li.appendChild(bracketEl);
         }
         // ADR-165: register whole-lecdem item; harvest picks it up per filter visibility.
         // Key on the resolved media (ADR-154), not the YouTube-only video_id — non-YouTube
@@ -4466,8 +4440,10 @@ function buildRecordingsList(nodeId, nodeData) {
           }
           li.appendChild(bracketEl);
         } else {
-          // Flat row: always wrap in row-accordion. Empty bodyEls → phantom chevron.
-          li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
+          // Flat row: inline lecturer + subject chips into the single ribbon line.
+          const flatChips = bracketEl.querySelector('.trail-chips');
+          if (flatChips) bodyEls.forEach(function (el) { flatChips.appendChild(el); });
+          li.appendChild(bracketEl);
         }
         // ADR-165: register whole-lecdem item; harvest picks it up per filter visibility.
         // Key on the resolved media (ADR-154), not the YouTube-only video_id.

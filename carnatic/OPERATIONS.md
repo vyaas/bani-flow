@@ -351,11 +351,14 @@ ADR-031/082 cover *creation* forms (new musician, new raga, new composition, new
 #### Chevron symbol unification — one chevron component (raised 2026-10-17, surface)
 ADR-175 temporarily gave the Playlist Bar's editor toggle and the editor row the
 panel chevron glyph (`▶`/`▼`), but the row's play button also uses `▶`, and the
-app still has several chevron implementations (`.row-accordion-chevron`,
-`.section-collapse-btn`, `.concert-chevron`, `.tree-chevron`, `.mp-queue-collapse`).
-TODO: unify every chevron into one shared component/token (ADR-128 D10 was meant
-to be that single source) and give play a distinct glyph. Deferred to a dedicated
-surface pass.
+app had several chevron implementations (`.row-accordion-chevron`,
+`.section-collapse-btn`, `.concert-chevron`, `.tree-chevron`,
+`.mp-queue-collapse`). **ADR-180 retired every panel fold chevron** (row,
+section, concert/lecdem bracket, comp-version) — the panels now render detail
+inline, so the only surviving chevron is the Playlist Bar's
+`.mp-queue-collapse` editor fold. TODO (smaller now): give play a distinct glyph
+and, if a single chevron component is still wanted, fold `.mp-queue-collapse`
+into it (ADR-128 D10). Deferred to a dedicated surface pass.
 
 ---
 

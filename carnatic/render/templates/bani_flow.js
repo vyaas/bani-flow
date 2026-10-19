@@ -1127,7 +1127,8 @@ function buildTreeLeaf(row, multiVersionKeys, suppressArtist) {
     const labelDiv = document.createElement('div');
     labelDiv.className = 'yt-label-chip';
     labelDiv.textContent = labelText;
-    li.appendChild(labelDiv);
+    // ADR-180: context label joins the primary line instead of stacking below it.
+    primaryDiv.appendChild(labelDiv);
   }
 
   // ── Co-performers: chevron-left accordion ─────────────────────────────────
@@ -1381,15 +1382,8 @@ function buildTreeComp(rows, trailList, multiVersionKeys) {
         registerQueueItem(li, function() { return _buildRowQueueItem(_r0); });
       }
     } else {
-      // Multi-version: whole header bar toggles; artist chip stopPropagation handles its own click
-      const chevron = document.createElement('span');
-      chevron.className = 'tree-chevron';
-      chevron.setAttribute('aria-hidden', 'true');
-      header.insertBefore(chevron, header.firstChild);
-      header.style.cursor = 'pointer';
-      header.addEventListener('click', function() {
-        li.classList.toggle('tree-group-open');
-      });
+      // Multi-version: ADR-180 — no fold chevron; versions always visible.
+      li.classList.add('tree-group-open');
       li.appendChild(header);
     }
 
@@ -1961,8 +1955,10 @@ function _renderBaniFlowLecdemStrip(type, id) {
         }
         li.appendChild(bracketEl);
       } else {
-        // Flat row: always wrap in row-accordion. Empty bodyEls → phantom chevron.
-        li.appendChild(buildRowAccordion({ headerEl: bracketEl, bodyEls: bodyEls, defaultCollapsed: true }));
+        // Flat row: inline lecturer + subject chips into the single ribbon line.
+        const flatChips = bracketEl.querySelector('.trail-chips');
+        if (flatChips) bodyEls.forEach(function (el) { flatChips.appendChild(el); });
+        li.appendChild(bracketEl);
       }
     }
     // ADR-167 §4: register whole-lecdem item for filter-scoped harvest.

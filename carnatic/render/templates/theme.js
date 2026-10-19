@@ -123,6 +123,8 @@ const THEME = (() => {
     // vertical column across all panels (ADR-179).
     rowActSize:   '24px',
     rowActGap:    '4px',
+    // ADR-180: fixed ribbon height — one line per entry, never wraps.
+    rowHeight:    '28px',
   };
 
   // ── Level 2: Era colours (node fill colours) ──────────────────────────────
@@ -228,6 +230,7 @@ const THEME = (() => {
         '--font-mono':     tokens.fontMono,
         '--row-act-size':  tokens.rowActSize,
         '--row-act-gap':   tokens.rowActGap,
+        '--row-height':    tokens.rowHeight,
       };
       return Object.entries(map)
         .map(([k, v]) => `  ${k}: ${v};`)

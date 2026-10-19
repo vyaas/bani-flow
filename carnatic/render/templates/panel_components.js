@@ -58,8 +58,12 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 }
 
 // ── buildSection ─────────────────────────────────────────────────────────────
-// Builds a collapsible section with a standardised flex header row:
-//   [▼ chevron]  [headerChip]  [headerSuffixText]  [(count)]  [+ add]
+// Builds a section with a standardised flex header row:
+//   [headerChip]  [headerSuffixText]  [(count)]  [▶ ⊕]
+//
+// ADR-180: the collapse chevron is retired — sections render their body in
+// full, and the label wrap is the horizontal-scroll surface. The `defaultCollapsed`
+// argument is accepted for backward compatibility but ignored.
 //
 // Returns { sectionEl, bodyEl, headerEl }.
 //
@@ -68,7 +72,6 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 //   count            integer (optional) — shown as "(N)" even when 0
 //   onAdd            function (optional) — if provided, renders a + button
 //   addTitle         string (optional) — tooltip for + button
-//   defaultCollapsed boolean (default false)
 //   helpKind         string (optional) — help-card key (e.g. 'lecdems', 'concerts')
 //   helpSlot         string (optional) — panel slot ('bani' | 'musician') owning the card
 // ADR-177: helpKind + helpSlot render a `?` button beside the section chip that
@@ -81,14 +84,6 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
 
   const headerEl = document.createElement('div');
   headerEl.className = 'rec-section-header-row';
-
-  // Collapse chevron
-  const chevron = document.createElement('button');
-  chevron.type = 'button';
-  chevron.className = 'section-collapse-btn';
-  chevron.textContent = defaultCollapsed ? '\u25b6' : '\u25bc'; // ▶ or ▼
-  chevron.title = 'Collapse / expand';
-  headerEl.appendChild(chevron);
 
   // Label wrapper: chip + suffix text + (count)
   const labelWrap = document.createElement('span');
@@ -135,7 +130,7 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
 
   const bodyEl = document.createElement('div');
   bodyEl.className = 'section-body';
-  bodyEl.hidden = defaultCollapsed;
+  bodyEl.hidden = false;
 
   // ADR-166: play-all / enqueue pair — created after bodyEl so handlers can close over it.
   if (playable) {
@@ -166,20 +161,6 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
     acts.appendChild(enqueueBtn);
     actsRight.appendChild(acts);
   }
-
-  chevron.addEventListener('click', function (e) {
-    e.stopPropagation();
-    bodyEl.hidden = !bodyEl.hidden;
-    chevron.textContent = bodyEl.hidden ? '\u25b6' : '\u25bc';
-  });
-
-  // ADR-128 D9: entire header row toggles collapse — chevron is just an indicator.
-  // Clicks originating from interactive children (chips, the + button, links) are ignored.
-  headerEl.addEventListener('click', function (e) {
-    if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip, .lineage-chip')) return;
-    bodyEl.hidden = !bodyEl.hidden;
-    chevron.textContent = bodyEl.hidden ? '\u25b6' : '\u25bc';
-  });
 
   sectionEl.appendChild(bodyEl);
   return { sectionEl, bodyEl, headerEl };
@@ -221,94 +202,38 @@ function buildSubjectGroup({ chips = [], defaultCollapsed = true, summaryText = 
 }
 
 // ── buildRowAccordion ─────────────────────────────────────────────────────────
-// Wraps a main-content row and a collapsible body using the "winning design":
-//   [▶/▼ chevron] [headerEl — flex: 1]   ← entire row is the click affordance
-//   [bodyEls...]                          ← hidden by default, wrapping flex below
+// ADR-180: the accordion is retired. The body is now an inline detail strip on
+// the same single scrollable line as the header:
+//   [headerEl] [bodyEls...] [trailingEl]
+// The whole `.row-accordion-header` is one fixed-height, non-wrapping flex line;
+// callers keep the name for compatibility, but there is no chevron and no fold.
 //
 // Returns the wrapper container element (a <div.row-accordion>).
 //
-//   headerEl         DOM element — the always-visible primary row content
-//   bodyEls          array of DOM elements to show/hide
-//   defaultCollapsed boolean (default true)
+//   headerEl         DOM element — the primary row content
+//   bodyEls          array of DOM elements placed inline after the header
+//   defaultCollapsed boolean (ignored — kept for call-site compatibility)
+//   chevronPosition  string (ignored — kept for call-site compatibility)
+//   trailingEl       DOM element pinned last (e.g. the play/enqueue acts column)
 function buildRowAccordion({ headerEl, bodyEls = [], defaultCollapsed = true, chevronPosition = 'left', trailingEl = null } = {}) {
   const wrapEl = document.createElement('div');
   wrapEl.className = 'row-accordion';
 
   const headerRow = document.createElement('div');
   headerRow.className = 'row-accordion-header';
+  headerRow.style.cursor = 'default';
 
-  const chevron = document.createElement('button');
-  chevron.type = 'button';
-  chevron.className = 'row-accordion-chevron';
-  chevron.textContent = '\u25b6';
-  // Left chevron: prepend before headerEl (aligns all rows with left-padding).
-  // Right chevron: append after headerEl (artist name always at position 0).
-  if (chevronPosition !== 'right') {
-    headerRow.appendChild(chevron);
-  }
+  // ADR-180: identity + inline detail share one horizontal-scroll surface;
+  // trailingEl (the action column) stays pinned outside it.
+  const scroll = document.createElement('div');
+  scroll.className = 'row-accordion-scroll';
+  scroll.appendChild(headerEl);
+  bodyEls.filter(Boolean).forEach(function (el) { scroll.appendChild(el); });
+  headerRow.appendChild(scroll);
 
-  headerRow.appendChild(headerEl);
-  wrapEl.appendChild(headerRow);
-
-  const filteredEls = bodyEls.filter(Boolean);
-  // When no body elements:
-  // - left chevron: render phantom for spacing/alignment.
-  // - right chevron: no chevron needed (no left-indent effect).
-  if (filteredEls.length === 0) {
-    if (chevronPosition !== 'right') {
-      chevron.classList.add('row-accordion-chevron-phantom');
-    }
-    headerRow.style.cursor = 'default';
-    if (trailingEl) headerRow.appendChild(trailingEl);
-    return wrapEl;
-  }
-
-  // Right chevron: append after headerEl now that body is confirmed non-empty.
-  if (chevronPosition === 'right') {
-    headerRow.appendChild(chevron);
-    // When a trailing play button is also present, the chip+chevron pair should
-    // be left-anchored (natural width) with a spacer pushing the play button
-    // to the right — so the chevron visually neighbours the chip, not the play btn.
-    if (trailingEl) {
-      headerRow.classList.add('has-trail-right');
-      const spacer = document.createElement('span');
-      spacer.className = 'row-accordion-spacer';
-      headerRow.appendChild(spacer);
-    }
-  }
-
-  // trailingEl (e.g. play button) always goes last — after the chevron.
   if (trailingEl) headerRow.appendChild(trailingEl);
 
-  chevron.textContent = defaultCollapsed ? '\u25b6' : '\u25bc';
-  chevron.title = 'Expand / collapse';
-
-  const bodyEl = document.createElement('div');
-  bodyEl.className = 'row-accordion-body';
-  if (chevronPosition === 'right') {
-    bodyEl.style.paddingLeft = 'var(--hier-indent-step)';
-  }
-  bodyEl.hidden = defaultCollapsed;
-  filteredEls.forEach(function (el) { bodyEl.appendChild(el); });
-  wrapEl.appendChild(bodyEl);
-
-  function _toggle() {
-    bodyEl.hidden = !bodyEl.hidden;
-    chevron.textContent = bodyEl.hidden ? '\u25b6' : '\u25bc';
-  }
-
-  // Chevron button has its own handler (stops propagation so header doesn't double-fire).
-  chevron.addEventListener('click', function (e) {
-    e.stopPropagation();
-    _toggle();
-  });
-
-  // Entire header row also toggles collapse; interactive children stop propagation.
-  headerRow.addEventListener('click', function (e) {
-    if (e.target.closest('a, button, .raga-chip, .comp-chip, .musician-chip, .lecdem-chip, .neutral-chip')) return;
-    _toggle();
-  });
-
+  wrapEl.appendChild(headerRow);
   return wrapEl;
 }
 
