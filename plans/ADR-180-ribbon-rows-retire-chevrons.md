@@ -98,7 +98,10 @@ titles stay readable and the play button never leaves the viewport.
 - `theme.py` / `theme.js`: `rowHeight` + `--row-height`.
 - `base.html`: ADR-180 block at the end of the stylesheet (chevron kill,
   ribbon geometry, scroll surfaces, pinned actions, single-line labels,
-  always-visible perf lists, uniform padding).
+  always-visible perf lists, uniform padding), plus an addendum that keeps every
+  panel/playlist scrollbar transparent at rest and reveals it on `:hover`
+  (`scrollbar-color` is inherited, so the sidebar-level transparent value hides
+  every descendant scrollbar).
 - `panel_components.js`: `buildSection` chevron removed; `buildRowAccordion`
   inline ribbon.
 - `bani_flow.js`: `buildTreeComp` multi-version always open; context label

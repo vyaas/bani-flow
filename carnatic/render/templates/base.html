@@ -5720,6 +5720,37 @@
   }
   #left-sidebar .trail-chips,
   #right-sidebar .trail-chips { gap: 6px; }
+
+  /* ADR-180 addendum: scrollbars stay invisible at rest and reveal only while
+     the pointer is over the panel/row. `scrollbar-color` is inherited, so a
+     transparent value on the sidebar hides every descendant scrollbar; the
+     `:hover` rule (which matches the hovered element AND all its ancestors, i.e.
+     the scroll surface) reveals it. */
+  #left-sidebar, #left-sidebar *,
+  #right-sidebar, #right-sidebar *,
+  #playlist-bar, #playlist-bar * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  #left-sidebar *:hover,
+  #right-sidebar *:hover,
+  #playlist-bar *:hover {
+    scrollbar-color: var(--fg-muted) transparent;
+  }
+  /* WebKit fallback (Safari): transparent thumb until hover. */
+  #left-sidebar ::-webkit-scrollbar,
+  #right-sidebar ::-webkit-scrollbar,
+  #playlist-bar ::-webkit-scrollbar {
+    width: 3px; height: 3px; background: transparent;
+  }
+  #left-sidebar ::-webkit-scrollbar-thumb,
+  #right-sidebar ::-webkit-scrollbar-thumb,
+  #playlist-bar ::-webkit-scrollbar-thumb { background: transparent; }
+  #left-sidebar *:hover::-webkit-scrollbar-thumb,
+  #right-sidebar *:hover::-webkit-scrollbar-thumb,
+  #playlist-bar *:hover::-webkit-scrollbar-thumb {
+    background: var(--fg-muted); border-radius: 2px;
+  }
 </style>
 <!-- INJECT_PLYR_CSS -->
 </head>
