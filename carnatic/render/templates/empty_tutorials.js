@@ -1370,101 +1370,54 @@
     if (container) container.style.display = 'none';
   };
 
-  // ── Help-toggle (non-destructive overlay) ────────────────────────────────
-  // Click the `?` button on a panel header → fills the panel with the help
-  // deck without disturbing the existing panel state. Click again → restores
-  // the panel exactly as it was. Lets users peek at help and return to flow.
-  // Help fills only the scrollable area — the sticky zone above (subject
-  // header, search input, trail/recordings filter) stays visible so users
-  // keep their bearings while peeking at help.
-  const SLOT_TO_CONTAINERS = {
-    bani:     ['bani-scroll'],
-    musician: ['right-scroll'],
+  // ── ADR-177: category help cards (dialog-backed) ─────────────────────────
+  // Retired: the panel-wide `?` overlay that filled a panel with the whole
+  // tutorial deck. Help now lives in a modal dialog, one card per category,
+  // triggered by the `?` beside each section header (buildSection,
+  // panel_components.js).
+  //
+  // Each card is the pre-rendered `.pt-v5-section` node from the (hidden)
+  // tutorial deck — the same worked example the old overlay showed — moved into
+  // the shared #help-dialog. Moving (not cloning) preserves every chip handler
+  // inside the card. On close the node returns to its deck slot.
+  const CATEGORY_TITLES = {
+    lecdems:            'Lecdems',
+    compositions:       'Compositions',
+    compositions_empty: 'Compositions',
+    misc:               'Miscellaneous recordings',
+    concerts:           'Concerts',
+    recordings:         'Recordings by raga',
+    playlists:          'Playlists',
   };
-  const SLOT_TO_BTN_ID = {
-    bani:     'bani-reset-btn',
-    musician: 'musician-reset-btn',
-  };
-  const _helpState = { bani: null, musician: null };
 
-  function _exitHelp(slot) {
-    const state = _helpState[slot];
-    if (!state) return;
-    state.hidden.forEach(function (entry) {
-      entry.el.style.display = entry.prevDisplay;
-    });
-    window.hidePanelTutorial(slot);
-    _helpState[slot] = null;
-    const btn = document.getElementById(SLOT_TO_BTN_ID[slot]);
-    if (btn) btn.classList.remove('panel-help-active');
-  }
+  const _cardOrigin = { node: null, parent: null, next: null };
 
-  function _ensureDemoSubjectLoaded(slot) {
-    // ADR-147 polish v3: when the user opens help on an empty panel, first
-    // populate the panel with the tutorial's demo subject so the live header
-    // (raga chip + janya row + HER strip + filter, or musician chip + filter)
-    // sits ABOVE the deck. Pointer-text annotations finally have something to
-    // point at, and the deck becomes a guided tour over real, populated UI
-    // rather than a free-floating brochure.
-    const block = _block(slot);
-    const subject = block && block.subject;
-    if (!subject || !subject.id) return;
-    if (slot === 'bani') {
-      // Only auto-load if no subject is already pinned in the bani panel.
-      // #listening-trail is display:none until a subject is loaded, so its
-      // computed display is the most reliable empty-state signal.
-      const trail = document.getElementById('listening-trail');
-      const cs = trail ? window.getComputedStyle(trail).display : 'none';
-      if (cs !== 'none') return;
-      if (typeof triggerBaniSearch === 'function') {
-        try { triggerBaniSearch(subject.kind || 'raga', subject.id); } catch (_) {}
-      }
-    } else if (slot === 'musician') {
-      // Empty state: #node-name shows the em-dash placeholder (—, U+2014).
-      // Don't rely on #node-info display because CSS keeps it visible even
-      // before a node is selected; the placeholder text is the truth.
-      const nameEl = document.getElementById('node-name');
-      const txt = nameEl ? (nameEl.textContent || '').trim() : '';
-      const empty = !txt || txt === '—' || txt === '-';
-      if (!empty) return;
-      _orientToMusician(subject.id);
+  window.openCategoryHelp = function (slot, kind) {
+    if (!helpEmptyPanels || !kind) return;
+    const deck = _ensureRendered(slot);
+    if (!deck) return;
+    const section = deck.querySelector('.pt-v5-section--' + kind);
+    if (!section) return;
+    // ADR-177: wrap in .panel-tutorial so the pt-* card styles (all scoped to
+    // .panel-tutorial) apply inside the dialog; .help-card flattens the box.
+    const wrap = _el('div', 'panel-tutorial help-card');
+    _cardOrigin.node   = section;
+    _cardOrigin.parent = section.parentNode;
+    _cardOrigin.next   = section.nextSibling;
+    wrap.appendChild(section);
+    if (typeof window.openHelpDialog === 'function') {
+      window.openHelpDialog(CATEGORY_TITLES[kind] || 'Help', wrap);
     }
-  }
-
-  function _enterHelp(slot) {
-    _ensureDemoSubjectLoaded(slot);
-    const tutorialId = SLOT_TO_CONTAINER_ID[slot];
-    const containers = SLOT_TO_CONTAINERS[slot] || [];
-    const hidden = [];
-    containers.forEach(function (cid) {
-      const root = document.getElementById(cid);
-      if (!root) return;
-      Array.prototype.forEach.call(root.children, function (el) {
-        if (el.tagName === 'H3') return;          // keep the panel header
-        if (el.id === tutorialId) return;         // never hide the deck itself
-        const cs = window.getComputedStyle(el).display;
-        if (cs === 'none') return;                // already hidden — leave alone
-        hidden.push({ el: el, prevDisplay: el.style.display || '' });
-        el.style.display = 'none';
-      });
-    });
-    _helpState[slot] = { hidden: hidden };
-    window.showPanelTutorial(slot);
-    const btn = document.getElementById(SLOT_TO_BTN_ID[slot]);
-    if (btn) btn.classList.add('panel-help-active');
-  }
-
-  window.togglePanelHelp = function (slot) {
-    if (!SLOT_TO_CONTAINERS[slot]) return;
-    if (_helpState[slot]) _exitHelp(slot);
-    else                  _enterHelp(slot);
   };
 
-  // Clean up help overlay before any code populates the panel with new
-  // content (e.g. selectNode, applyBaniFilter). Called by callers that
-  // already know they're about to write into the panel.
-  window.dismissPanelHelp = function (slot) {
-    if (_helpState[slot]) _exitHelp(slot);
+  // Called by the shared dialog close handler (base.html) so the borrowed card
+  // returns to its deck slot instead of being orphaned in #hd-body.
+  window._onHelpDialogClosed = function () {
+    if (!_cardOrigin.node || !_cardOrigin.parent) return;
+    _cardOrigin.parent.insertBefore(_cardOrigin.node, _cardOrigin.next);
+    _cardOrigin.node = null;
+    _cardOrigin.parent = null;
+    _cardOrigin.next = null;
   };
 
   // ── Wire preface chips: era tint + background navigation ─────────────────
@@ -1541,12 +1494,14 @@
   }
 
   // ── Initial paint: "hello world" state ───────────────────────────────────
-  // ADR-147 polish v4 (user request): the page should open with both
-  // tutorial subjects already populating their panels AND both help decks
-  // visible — a guided home screen rather than two blank panels.
+  // ADR-177 (user request): the page should open with both tutorial subjects
+  // already populating their panels — reetigowla in Bani Flow on the left,
+  // Ramnad Krishnan in the Musician panel on the right. The old guided
+  // home-screen help decks are gone: help is now per-category, in a dialog.
   //
   // Sequence (order matters):
-  //   1. Render and show tutorials so dataset.rendered=1 (cheap, sync).
+  //   1. Render (hidden) the tutorial decks so their `.pt-v5-section` nodes
+  //      exist as the source of the category help cards (dataset.rendered=1).
   //   2. Wait for cy to be ready (poll for cy + cy.nodes().length>0); raga
   //      arrays (ragas, compositions) are inlined as globals at render time
   //      so they're always available, but cy backs both selectNode (right
@@ -1556,19 +1511,12 @@
   //      scroll-zone listening trail.
   //   4. Load the musician subject via selectNode — populates the
   //      sticky-zone musician chip + wiki link, fills the scroll-zone
-  //      recordings panel. selectNode auto-dismisses any active help
-  //      overlay, which is why we open help AFTER, not before.
-  //   5. Enter help on both panels. _enterHelp hides the scroll-zone
-  //      children (trail, recordings list) and shows the tutorial deck on
-  //      top, while the sticky-zone subject headers stay visible above the
-  //      deck. _ensureDemoSubjectLoaded inside _enterHelp is now idempotent
-  //      against this case — its empty-state checks see the populated panel
-  //      and skip the re-load.
+  //      recordings panel.
   function _bootHelloWorld() {
     if (!helpEmptyPanels) return;
     // ADR-151: if a permalink hash is present, restoreStateFromHash() has
     // already populated both panels synchronously. Proceeding would overwrite
-    // the restored state with the demo subjects and show the help decks on top.
+    // the restored state with the demo subjects.
     if (window.location.hash && window.location.hash.startsWith('#s=')) return;
     // Bani subject (reetigowla by default — kind='raga')
     const baniBlock = helpEmptyPanels.bani_flow_panel || null;
@@ -1590,18 +1538,13 @@
         try { selectNode(n); } catch (_) {}
       }
     }
-    // Now show the help decks on top. selectNode + applyBaniFilter both
-    // call dismissPanelHelp internally, so any prior help state was
-    // already cleared; entering fresh is safe.
-    if (!_helpState.bani)     _enterHelp('bani');
-    if (!_helpState.musician) _enterHelp('musician');
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     if (!helpEmptyPanels) return;
     _tintPrefaceChips();
-    // Pre-render both tutorial DOMs so the deck containers exist before
-    // _enterHelp tries to flip them visible. _ensureRendered is idempotent.
+    // Pre-render both tutorial decks (hidden) so the category help cards have
+    // a source node to borrow. _ensureRendered is idempotent.
     _ensureRendered('bani');
     _ensureRendered('musician');
     // Poll for cy + node count > 0 before booting the hello-world state.

@@ -238,7 +238,6 @@ function applyBaniFilter(type, id) {
 
 function buildListeningTrail(type, id, matchedNodeIds) {
   // ADR-086: subject loaded → dismiss empty-panel tutorial
-  if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('bani');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('bani');
   const trail = document.getElementById('listening-trail');
   const trailList = document.getElementById('trail-list');
@@ -1267,6 +1266,8 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
       headerChip: compTypeChip,
       count: compGroups.length,
       playable: true,
+      helpKind: 'compositions',
+      helpSlot: 'bani',
     });
     compGroups.forEach(function(g) { compSecBody.appendChild(_renderGroup(g)); });
     trailList.appendChild(compSec);
@@ -1290,6 +1291,8 @@ function buildTreeRaga(rows, trailList, multiVersionKeys, trailRagaId) {
       headerSuffixText: '',
       count: miscCount,
       playable: true,
+      helpKind: 'misc',
+      helpSlot: 'bani',
     });
     // Render rows directly into the section body — buildSection already
     // provides the collapsible header. _renderGroup would emit a redundant
@@ -1915,6 +1918,8 @@ function _renderBaniFlowLecdemStrip(type, id) {
     headerChip: hdrChip,
     count: refs.length,
     playable: true,
+    helpKind: 'lecdems',
+    helpSlot: 'bani',
   });
   section.appendChild(lecdemSectionWrap);
 

@@ -69,10 +69,14 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 //   onAdd            function (optional) — if provided, renders a + button
 //   addTitle         string (optional) — tooltip for + button
 //   defaultCollapsed boolean (default false)
+//   helpKind         string (optional) — help-card key (e.g. 'lecdems', 'concerts')
+//   helpSlot         string (optional) — panel slot ('bani' | 'musician') owning the card
+// ADR-177: helpKind + helpSlot render a `?` button beside the section chip that
+// opens the dedicated category help card (replaces the retired panel-help overlay).
 // ADR-166: when playable is true, the header gains ▶ (Play all visible) and
 // ⊕ (Add visible to queue) buttons. Both harvest lazily at click time via
 // collectQueueItems(bodyEl) — no count is shown, no filter coupling required.
-function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCollapsed = false, playable = false } = {}) {
+function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCollapsed = false, playable = false, helpKind = null, helpSlot = null } = {}) {
   const sectionEl = document.createElement('section');
 
   const headerEl = document.createElement('div');
@@ -91,8 +95,39 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
   labelWrap.className = 'rec-section-hdr-label-wrap';
   if (headerChip) labelWrap.appendChild(headerChip);
   if (headerSuffixText) labelWrap.appendChild(document.createTextNode(headerSuffixText));
-  if (count != null) labelWrap.appendChild(document.createTextNode(' (' + count + ')'));
   headerEl.appendChild(labelWrap);
+
+  // ADR-177: category help trigger — sits beside the section chip so every
+  // category carries its own "what is this?" affordance. Opens the dialog card
+  // rendered from helpEmptyPanels (empty_tutorials.js).
+  if (helpKind && helpSlot) {
+    const helpBtn = document.createElement('button');
+    helpBtn.type = 'button';
+    helpBtn.className = 'section-help-btn';
+    helpBtn.textContent = '?';
+    helpBtn.title = 'What is this section?';
+    helpBtn.setAttribute('aria-label', 'Help — what is this section');
+    helpBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (typeof window.openCategoryHelp === 'function') {
+        window.openCategoryHelp(helpSlot, helpKind);
+      }
+    });
+    headerEl.appendChild(helpBtn);
+  }
+
+  // ADR-177 follow-up: the count lives in the right-hand action group, not in
+  // the label wrap, so the `?` stays flush against the category chip. Order is
+  // (N) ▶ ⊕ — count, play-all, enqueue — all pinned right.
+  const actsRight = document.createElement('span');
+  actsRight.className = 'section-hdr-right';
+  if (count != null) {
+    const countEl = document.createElement('span');
+    countEl.className = 'section-hdr-count';
+    countEl.textContent = '(' + count + ')';
+    actsRight.appendChild(countEl);
+  }
+  headerEl.appendChild(actsRight);
 
   sectionEl.appendChild(headerEl);
 
@@ -127,7 +162,7 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
     });
     acts.appendChild(playAllBtn);
     acts.appendChild(enqueueBtn);
-    headerEl.appendChild(acts);
+    actsRight.appendChild(acts);
   }
 
   chevron.addEventListener('click', function (e) {

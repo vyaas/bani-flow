@@ -43,14 +43,14 @@ trail, "her trail".
 subject header (`#bani-subject-header`, `#bani-subject-name`,
 `#bani-subject-popup-btn` → popup `#bani-subject-popup`), search
 (`#bani-search-input`, `#bani-search-dropdown`, scope label `#bani-scope-label`),
-nav (`#bani-back-btn`, `#bani-fwd-btn`, `#bani-reset-btn`). Scroll zone
+nav (`#bani-back-btn`, `#bani-fwd-btn`). Scroll zone
 `#bani-scroll`: `#bani-info`, `#bani-notes-row`, `#bani-playlists`,
 `#bani-lecdem-strip`, `#bani-tutorial`. Toggles: `#left-panel-toggle`,
 `#desktop-left-handle`, scrim `#left-drawer-scrim`.
 
 **Owns:** `templates/bani_flow.js` (~2000 ln) — filter + trail. Supporting:
-`search.js` (bani search dropdown), `empty_tutorials.js` (`#bani-tutorial`),
-`mobile.js` (drawer open/close).
+`search.js` (bani search dropdown), `empty_tutorials.js` (`#bani-tutorial`
+tutorial deck + category help cards), `mobile.js` (drawer open/close).
 
 **Entry points:**
 - `applyBaniFilter(type, id)` — **the funnel**; every bani subject (raga, comp,
@@ -64,13 +64,17 @@ nav (`#bani-back-btn`, `#bani-fwd-btn`, `#bani-reset-btn`). Scroll zone
   — secondary strips.
 - `baniBack()` / `baniForward()` / `_updateBaniNavButtons()` — history.
 - `window.getBaniTrail()` — read current trail from other modules.
+- `window.openCategoryHelp(slot, kind)` (empty_tutorials.js) — ADR-177: opens
+  the category help card in `#help-dialog`; wired from `.section-help-btn` on
+  every section header (buildSection, panel_components.js).
 
 **State globals:** `activeBaniFilter = {type, id} | null` — **the shared state
 bus** read by the wheel and view-switcher. `_currentBaniSubject = {type, id}`.
 
 **CSS hooks:** `--left-panel-width` (derived from data in `html_generator.py`,
 ADR-128 D7 — never hardcode); `.trail-*` classes; `.panel` base class; chip
-classes (`.raga-chip`, `.comp-chip`, `.musician-chip`).
+classes (`.raga-chip`, `.comp-chip`, `.musician-chip`); `.section-help-btn`
+(ADR-177 category help trigger).
 
 **Connects to:** sets `activeBaniFilter` → `switchView` (in raga_wheel.js)
 re-applies it to the wheel via `syncRagaWheelToFilter`; reverse direction
@@ -81,7 +85,7 @@ re-applies it to the wheel via `syncRagaWheelToFilter`; reverse direction
 **ADRs:** 020, 022 (bani flow), 025 (wheel-sync gap), 086 (empty-panel
 tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 149 (subject popup), 150, 151 (permalink), 154/156 (media spans), 157
-(play-all), 163 (playlists), 165, 167.
+(play-all), 163 (playlists), 165, 167, 177 (category help dialog).
 
 ---
 
@@ -94,8 +98,8 @@ recordings panel.
 (header: `#node-info` → `#node-header` → `#node-name`, `#node-shape-icon`,
 `#node-wiki-link`, `#lineage-popup-btn`; `#musician-search-input` +
 `#musician-search-dropdown`; recording filter `#rec-filter-row` → `#rec-filter`,
-`#rec-play-all-btn`, `#rec-enqueue-btn`; `#panel-back-btn`, `#panel-fwd-btn`,
-`#musician-reset-btn`). Scroll zone `#right-scroll` → `#recordings-panel` →
+`#rec-play-all-btn`, `#rec-enqueue-btn`; `#panel-back-btn`, `#panel-fwd-btn`).
+Scroll zone `#right-scroll` → `#recordings-panel` →
 `#recordings-list`; `#edge-info` (selected-edge readout); `#musician-tutorial`.
 Toggles: `#right-panel-toggle`, `#desktop-right-handle`. Popup:
 `#lineage-popup` (ADR-137).
@@ -125,6 +129,7 @@ owns the recordings body. A "musician panel" task usually touches both.
 
 **CSS hooks:** `--right-panel-width` (derived, ADR-128 D7); `.panel`;
 `.section-collapse-btn`; `.section-play-acts` (play-all/enqueue pair);
+`.section-help-btn` (ADR-177 category help trigger);
 `#recordings-panel { padding-top: 0 }` (ADR-011).
 
 **Connects to:** invoked from cy canvas tap (§3), WDP/ wheel musician
@@ -135,7 +140,7 @@ machine: `mobile.js setPanelState`.
 **ADRs:** 018 (concert bracket), 036/039 (mobile sheet), 041 (close-button
 removal), 046 (drawer handles), 086 (empty tutorial), 128 (panel components +
 D7 width), 129 (floating toggles), 137 (lineage popup), 163 (playlists
-section).
+section), 177 (category help dialog).
 
 ---
 
@@ -480,11 +485,26 @@ actually opened or closed.
 
 ### 6.5 Chips (the shared atom)
 
-`panel_components.js`: `buildPanelHeader`, `buildSection({playable, …})` (the
-play-acts pair comes free with `playable:true`), `buildSubjectGroup`,
+`panel_components.js`: `buildPanelHeader`, `buildSection({playable, helpKind,
+helpSlot, …})` (the play-acts pair comes free with `playable:true`; `helpKind` +
+`helpSlot` add the `.section-help-btn`; the `(N)` count lives in the right-hand
+`.section-hdr-right` group as `(N) ▶ ⊕`, keeping the `?` flush with the chip),
+`buildSubjectGroup`,
 `buildRowAccordion`, `tagUntaggedChips` / `applyChipRole`. Double-click
 dispatch: `chip_dblclick.js` → `openEditForm` (entry_forms.js) per
 `edit_form_spec.js` (ADR-142/143).
+
+### 6.6 Help dialog & category cards (ADR-177)
+
+`#help-dialog` / `#help-scrim` / `#hd-body` / `#hd-title` (base.html) is the
+shared modal. Its inline script exposes `window.openHelpDialog(title, node)` and
+`window.closeHelpDialog()`. The floating `#help-btn` shows the preface home
+content; each panel section header's `.section-help-btn` (buildSection) calls
+`window.openCategoryHelp(slot, kind)` (empty_tutorials.js), which borrows the
+matching `.pt-v5-section` node from the hidden tutorial deck and restores it on
+close via `window._onHelpDialogClosed`. The retired panel-wide `?` buttons
+(`#bani-reset-btn`, `#musician-reset-btn`) and the `togglePanelHelp` overlay no
+longer exist.
 
 ---
 

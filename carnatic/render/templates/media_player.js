@@ -4306,6 +4306,8 @@ function buildRecordingsList(nodeId, nodeData) {
       headerChip: lsHdrChip,
       count: lecdemCount,
       playable: true,
+      helpKind: 'lecdems',
+      helpSlot: 'musician',
     });
     lsSection.classList.add('lecdem-section');
     lsSection.dataset.section = 'lecdems';
@@ -4490,6 +4492,8 @@ function buildRecordingsList(nodeId, nodeData) {
     headerChip: _concertsChip,
     count: concerts.length,
     playable: true,
+    helpKind: 'concerts',
+    helpSlot: 'musician',
   });
   concertSection.dataset.section = 'concerts';
   concerts.forEach(concert => {
@@ -4532,6 +4536,8 @@ function buildRecordingsList(nodeId, nodeData) {
     headerChip: _ragaHdrLabel,
     count: allPerfs.length,
     playable: true,
+    helpKind: 'recordings',
+    helpSlot: 'musician',
   });
   ragaSection.dataset.section = 'raga-recordings';
   if (allPerfs.length > 0) {
@@ -4574,6 +4580,8 @@ function buildRecordingsList(nodeId, nodeData) {
     const { sectionEl: compSection, bodyEl: compBody } = buildSection({
       headerChip: _compsChip,
       count: composerComps.length,
+      helpKind: 'compositions_empty',
+      helpSlot: 'musician',
     });
     compSection.classList.add('comp-section');
 

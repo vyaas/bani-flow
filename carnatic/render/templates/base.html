@@ -391,7 +391,9 @@
     margin-bottom: 10px;
     text-align: center;
   }
-  /* ADR-066: Panel header nav layout — back/fwd grouped left, title centered, help isolated right.
+  /* ADR-066: Panel header nav layout — back/fwd grouped left, title centered.
+     (The panel-wide help button was retired by ADR-177: help now lives on each
+     section header via .section-help-btn.)
      grid-template-columns: 1fr auto 1fr — center col is auto (chip's natural width, no stretch),
      flanking cols grow equally so the title is geometrically centered in the h3. */
   #musician-panel h3,
@@ -403,10 +405,6 @@
   #musician-panel h3 > span:first-child,
   #bani-flow-panel > h3 > span:first-child {
     justify-self: start;
-  }
-  #musician-panel h3 > button:last-child,
-  #bani-flow-panel > h3 > button:last-child {
-    justify-self: end;
   }
   .panel-nav-spacer {
     display: inline-block;
@@ -438,11 +436,6 @@
   .panel-nav-btn:not(:disabled):hover {
     border-color: var(--accent-main);
     color: var(--accent-main);
-  }
-  .panel-nav-btn.panel-help-active {
-    border-color: var(--accent-main);
-    color: var(--accent-main);
-    background: rgba(184, 187, 38, 0.12);
   }
 
   /* ── node header — ADR-128 D2: two-row layout (chip row + affordances row) ── */
@@ -778,6 +771,13 @@
   .section-play-acts {
     margin-left: auto; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
   }
+  /* ADR-177 follow-up: right-hand group holding (N) ▶ ⊕, so the category `?`
+     stays flush against the chip. */
+  .section-hdr-right {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
+    flex-shrink: 0;
+  }
+  .section-hdr-count { white-space: nowrap; }
   .section-play-btn, .section-enqueue-btn {
     background: none; border: 1px solid var(--border); border-radius: 50%;
     color: var(--fg-muted); font-size: 0.62rem; line-height: 1;
@@ -792,6 +792,28 @@
     content: ''; position: absolute; inset: -11px;
   }
   .section-play-btn, .section-enqueue-btn { position: relative; }
+  /* ADR-177: category help trigger beside each section chip. Relays to the
+     shared help dialog via window.openCategoryHelp(slot, kind). */
+  .section-help-btn {
+    background: none; border: 1px solid var(--border-strong); border-radius: 50%;
+    color: var(--fg-sub); font-size: 0.62rem; font-weight: bold; line-height: 1;
+    width: 17px; height: 17px; padding: 0;
+    cursor: pointer; flex-shrink: 0; display: inline-flex;
+    align-items: center; justify-content: center; position: relative;
+    font-family: inherit;
+    transition: color 0.12s, border-color 0.12s, background 0.12s;
+  }
+  .section-help-btn:hover {
+    color: var(--bg-panel); border-color: var(--accent); background: var(--accent);
+  }
+  .section-help-btn::after { content: ''; position: absolute; inset: -10px; }
+  /* Card wrapper: inherits the .panel-tutorial card styles inside the dialog
+     (all .pt-* rules are scoped to .panel-tutorial), but flattens the box so
+     the dialog supplies the frame. */
+  #hd-body .help-card {
+    margin: 0; padding: 0; background: none; border: none;
+    color: inherit; font-size: inherit; line-height: inherit;
+  }
   /* Indent section bodies under their header for visual hierarchy. */
   .section-body { padding-left: var(--hier-indent-step, 14px); }
   .section-body[hidden] { padding-left: 0; }
@@ -5354,7 +5376,6 @@
             <button id="bani-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
           </span>
           <span class="bani-chip chip-panel-title" data-chip-role="section-add" data-section-action="add-bani-flow">BANI FLOW</span>
-          <button id="bani-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('bani')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
           <input id="bani-search-input" class="search-input panel-search" type="text"
@@ -5482,7 +5503,6 @@
                 data-chip-role="section-add"
                 data-section-action="add-musician">MUSICIAN</span>
           <!-- + button removed (retired by ADR-142 Phase D) -->
-          <button id="musician-reset-btn" class="panel-nav-btn" title="Toggle help" aria-pressed="false" onclick="togglePanelHelp('musician')">?</button>
         </h3>
         <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
           <input id="musician-search-input" class="search-input panel-search" type="text"
@@ -5627,16 +5647,51 @@
 </div>
 <script>
 (function () {
-  var btn  = document.getElementById('help-btn');
-  var dlg  = document.getElementById('help-dialog');
+  var btn   = document.getElementById('help-btn');
+  var dlg   = document.getElementById('help-dialog');
   var scrim = document.getElementById('help-scrim');
   var close = document.getElementById('hd-close');
-  function openHelp()  { dlg.style.display = 'flex'; scrim.classList.add('scrim-visible'); }
-  function closeHelp() { dlg.style.display = 'none'; scrim.classList.remove('scrim-visible'); }
-  if (btn)   btn.addEventListener('click', openHelp);
-  if (close) close.addEventListener('click', closeHelp);
-  if (scrim) scrim.addEventListener('click', closeHelp);
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeHelp(); });
+  var body  = document.getElementById('hd-body');
+  var title = document.getElementById('hd-title');
+  // ADR-177: keep live references to the preface's child nodes so the floating
+  // '?' can restore them (with their wired chip handlers intact) after a
+  // category card has borrowed the dialog.
+  var homeNodes  = body ? Array.prototype.slice.call(body.childNodes) : [];
+  var homeTitle  = title ? title.textContent : 'Help';
+  var cardActive = false;
+
+  function openHelpDialog(cardTitle, cardNode) {
+    if (!dlg || !body) return;
+    body.innerHTML = '';
+    if (cardNode) {
+      body.appendChild(cardNode);
+      title.textContent = cardTitle || homeTitle;
+      cardActive = true;
+    } else {
+      homeNodes.forEach(function (n) { body.appendChild(n); });
+      title.textContent = homeTitle;
+      cardActive = false;
+    }
+    dlg.style.display = 'flex';
+    scrim.classList.add('scrim-visible');
+  }
+
+  function closeHelpDialog() {
+    if (!dlg) return;
+    dlg.style.display = 'none';
+    scrim.classList.remove('scrim-visible');
+    if (cardActive && typeof window._onHelpDialogClosed === 'function') {
+      window._onHelpDialogClosed();
+    }
+    cardActive = false;
+  }
+
+  window.openHelpDialog  = openHelpDialog;
+  window.closeHelpDialog = closeHelpDialog;
+  if (btn)   btn.addEventListener('click', function () { openHelpDialog(homeTitle, null); });
+  if (close) close.addEventListener('click', closeHelpDialog);
+  if (scrim) scrim.addEventListener('click', closeHelpDialog);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeHelpDialog(); });
 }());
 </script>
 

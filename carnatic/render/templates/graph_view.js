@@ -1208,7 +1208,6 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
   // ADR-086: subject loaded → dismiss empty-panel tutorial
-  if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
   // Clear filter and rebuild unified recordings list
@@ -1303,7 +1302,6 @@ function _openMusicianPanelForTransit(transitId) {
 
   document.getElementById('node-info').style.display = 'block';
   document.getElementById('edge-info').style.display = 'none';
-  if (typeof window.dismissPanelHelp === 'function') window.dismissPanelHelp('musician');
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('musician');
 
   const recFilter = document.getElementById('rec-filter');
