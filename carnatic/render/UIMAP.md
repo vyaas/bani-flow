@@ -316,8 +316,11 @@ with `_playlistUiRect()`; `_resolveNonOverlap()` is the pure nearest-free-spot
 solver; `_avoidUIOverlap()` clamps a drag; `_repositionPlayers()` re-runs on
 viewport resize, drawer class flips, transform settle, and bar resize (guards
 installed by `_installPlacementGuards`); `_clampPlayerWidthToColumn()` caps a
-user-widened player to the free column via `max-width`. `_playerMatchWidth` keeps
-the player flush with the playlist UI width unless the user resizes it
+user-widened player to the free column via `max-width`. **The player observes the
+same left/right limits as the Playlist Bar** — `_columnBounds()` intersects the
+parent box with `_playlistUiRect()`, so a withdrawn sidebar's gutter (and its
+floating toggle) is never invaded by a wide or dragged player. `_playerMatchWidth`
+keeps the player flush with the playlist UI width unless the user resizes it
 (`_userResized`). z-order: players `≤700`, `#playlist-bar` `750`, modals
 `1000+` — the geometric constraints, not z, are what guarantee non-overlap.
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns

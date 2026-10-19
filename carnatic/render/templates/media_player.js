@@ -267,6 +267,13 @@ function _wdpAdjacentPosition(offsetParentEl) {
     const r = rightSb.getBoundingClientRect();
     if (r.left < safeRight - 4) safeRight = r.left;  // sidebar is visually open
   }
+  // ADR-176: a player keeps the Playlist Bar's horizontal limits even beside
+  // the WDP, so it never spills into a withdrawn sidebar's gutter.
+  const ui = _playlistUiRect();
+  if (ui) {
+    safeLeft  = Math.max(safeLeft, ui.left);
+    safeRight = Math.min(safeRight, ui.right);
+  }
 
   // Prefer right of WDP; fall back to left; fall back to null (default spawn).
   let left;
@@ -736,6 +743,29 @@ function _rectsOverlap(a, b, margin) {
          a.top < b.bottom + m && a.bottom > b.top - m;
 }
 
+// ADR-176 (chrome band): a floating player observes the SAME left/right limits
+// as the persistent Playlist Bar. The bar is the canvas edge on desktop, so a
+// withdrawn sidebar leaves a gutter (holding its floating toggle) that a player
+// must never spill into. Pure: intersect the parent box with the playlist UI.
+function _columnBounds(parentRect, uiRect) {
+  if (!parentRect) return null;
+  const left = uiRect ? Math.max(parentRect.left, uiRect.left) : parentRect.left;
+  const right = uiRect ? Math.min(parentRect.right, uiRect.right) : parentRect.right;
+  return {
+    left,
+    top: parentRect.top,
+    right: right > left ? right : parentRect.right,
+    bottom: parentRect.bottom,
+  };
+}
+
+// Viewport-space player band for the current layout (parent ∩ Playlist UI).
+function _playerColumnBounds(parent) {
+  const el = parent || document.getElementById('main');
+  if (!el) return null;
+  return _columnBounds(el.getBoundingClientRect(), _playlistUiRect());
+}
+
 // Pure geometry: nearest w×h position to (left, top) that avoids every obstacle
 // and stays inside `bounds` (all viewport coords). Candidates are the proposal
 // plus, for each obstacle, the four edges pushed just clear. Zero-overlap
@@ -786,7 +816,8 @@ function _avoidUIOverlap(el, left, top) {
   if (!obstacles.length) return { left, top };
   const pr = parent.getBoundingClientRect();
   const w = el.offsetWidth || 480, h = el.offsetHeight || 300;
-  const pos = _resolveNonOverlap(pr.left + left, pr.top + top, w, h, obstacles, pr, 6);
+  const bounds = _columnBounds(pr, _playlistUiRect()) || pr;
+  const pos = _resolveNonOverlap(pr.left + left, pr.top + top, w, h, obstacles, bounds, 6);
   return { left: pos.left - pr.left, top: pos.top - pr.top };
 }
 
@@ -794,15 +825,9 @@ function _avoidUIOverlap(el, left, top) {
 // under a panel. Cap it with max-width (auto-restored when the column widens)
 // rather than overwriting the user's chosen width.
 function _clampPlayerWidthToColumn(el) {
-  const parent = el.offsetParent || document.getElementById('main');
-  if (!parent) return;
-  const pr = parent.getBoundingClientRect();
-  let left = pr.left, right = pr.right;
-  _openSidebarRects().forEach(r => {
-    if (r.left <= pr.left + 1)      left  = Math.max(left, r.right);
-    else if (r.right >= pr.right - 1) right = Math.min(right, r.left);
-  });
-  const available = Math.max(0, right - left);
+  const bounds = _playerColumnBounds(el.offsetParent || document.getElementById('main'));
+  if (!bounds) return;
+  const available = Math.max(0, bounds.right - bounds.left);
   if (available > 0 && el.offsetWidth > available) el.style.maxWidth = available + 'px';
   else el.style.maxWidth = '';
 }
@@ -844,7 +869,8 @@ function _dockPlayer(el) {
   // Preferred target: centred under the playlist UI, just below it.
   const left = ui.left + (ui.width - pw) / 2;
   const top  = ui.bottom + margin;
-  const pos = _resolveNonOverlap(left, top, pw, ph, _uiObstacleRects(), pr, margin);
+  const bounds = _columnBounds(pr, ui) || pr;
+  const pos = _resolveNonOverlap(left, top, pw, ph, _uiObstacleRects(), bounds, margin);
   el.style.left = (pos.left - pr.left) + 'px';
   el.style.top  = (pos.top  - pr.top)  + 'px';
   el._detached = false;
@@ -865,8 +891,9 @@ function _snapPlayerIfNearBar(el) {
     if (!parent) return;
     const pr = parent.getBoundingClientRect();
     _clampPlayerWidthToColumn(el);
+    const bounds = _columnBounds(pr, ui) || pr;
     const pos = _resolveNonOverlap(er.left, er.top, el.offsetWidth, el.offsetHeight,
-                                   _uiObstacleRects(), pr, 6);
+                                   _uiObstacleRects(), bounds, 6);
     el.style.left = (pos.left - pr.left) + 'px';
     el.style.top  = (pos.top  - pr.top)  + 'px';
     el._detached = true;
@@ -891,11 +918,12 @@ function _repositionPlayers() {
   if (!parent) return;
   const pr = parent.getBoundingClientRect();
   const obstacles = _uiObstacleRects();
+  const bounds = _columnBounds(pr, _playlistUiRect()) || pr;
   const settleClamped = el => {
     if (!el || !el.isConnected || el.style.display === 'none') return;
     _clampPlayerWidthToColumn(el);
     const pos = _resolveNonOverlap(pr.left + (el.offsetLeft || 0), pr.top + (el.offsetTop || 0),
-                                   el.offsetWidth, el.offsetHeight, obstacles, pr, 6);
+                                   el.offsetWidth, el.offsetHeight, obstacles, bounds, 6);
     el.style.right = 'auto';
     el.style.left = (pos.left - pr.left) + 'px';
     el.style.top  = (pos.top  - pr.top)  + 'px';

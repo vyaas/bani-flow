@@ -45,7 +45,7 @@ const sandbox = { Math, JSON, Object, Array };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(
-  "'use strict';\n" + SLICE + '\nglobalThis.__G = { _rectsOverlap, _resolveNonOverlap };',
+  "'use strict';\n" + SLICE + '\nglobalThis.__G = { _rectsOverlap, _resolveNonOverlap, _columnBounds };',
   sandbox,
   { filename: 'adr176_geometry.js' },
 );
@@ -127,6 +127,33 @@ const scenarios = {
     const p = G._resolveNonOverlap(720, 372, 900, 320, obs, VIEW, 8);
     assert.strictEqual(totalOverlap(p, 900, 320, obs), 0, 'wide player overlaps');
     assert.ok(inside(p, 900, 320, VIEW), 'escaped the viewport');
+  },
+
+  // ADR-176 chrome band: when both panels are withdrawn the Playlist Bar still
+  // starts at its 220px gutter, leaving the floating panel toggle underneath.
+  // A player must observe that same left/right band — never drift to x=0.
+  'withdrawn-panels-keep-player-out-of-gutter'() {
+    const ui = { left: 220, top: 12, right: 1344, bottom: 43 };
+    const bounds = G._columnBounds(VIEW, ui);
+    assert.strictEqual(bounds.left, 220, 'column must start at the bar gutter');
+    assert.strictEqual(bounds.right, 1344, 'column must end at the bar inset');
+    const w = bounds.right - bounds.left;
+    const p = G._resolveNonOverlap(0, 92, w, 320, [ui], bounds, 8);
+    assert.strictEqual(p.left, 220, 'player escaped into the left gutter');
+    assert.strictEqual(totalOverlap(p, w, 320, [ui]), 0, 'overlaps the bar');
+    assert.ok(inside(p, w, 320, bounds), 'escaped the bar column');
+  },
+
+  // The bar can never push the band outside its parent, and a degenerate bar
+  // (right <= left) falls back to the parent's right edge.
+  'column-bounds-are-parent-intersected'() {
+    const parent = { left: 40, top: 0, right: 900, bottom: 800 };
+    const ui = { left: 10, top: 12, right: 1000, bottom: 43 };
+    const b = G._columnBounds(parent, ui);
+    assert.strictEqual(b.left, 40);
+    assert.strictEqual(b.right, 900);
+    const degenerate = G._columnBounds(parent, { left: 950, right: 400 });
+    assert.strictEqual(degenerate.right, 900);
   },
 
   // Pathologically cramped: an obstacle covers the viewport. Degrade to the
