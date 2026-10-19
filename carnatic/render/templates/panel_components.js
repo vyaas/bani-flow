@@ -494,3 +494,190 @@ function tagUntaggedChips(rootEl) {
     }
   }
 }
+
+// ── Unified content filter (ADR-178) ─────────────────────────────────────────
+// One engine powers both panel filter bars — the musician panel (#rec-filter)
+// and the Bani-flow panel (#trail-filter), now both labelled "Filter content…".
+//
+// Matching is textContent-based: *every* label inside a row counts — chips,
+// lecdem segment names, subject cross-links, years, version badges, misc
+// recording titles, playlist track chips, notes — so broadening the panel
+// vocabulary needs no new selector per label type.
+//
+// Zone contract:
+//   root      — container queried for rows + groups
+//   rows      — atomic content rows; visible iff their own text matches, or an
+//               ancestor group's header matched
+//   groups[]  — { sel, header, expand?, collapseOnClear? }; a group is visible
+//               iff its header matched or a descendant row is visible. `expand`
+//               is a class added on visibility (tree groups are open by
+//               default; .concert-bracket uses it to unroll its perf list).
+//   noMatch   — optional sentinel class created/toggled inside root
+//   rootBase  — optional f(root) returning the root's resting display
+//
+// Visibility-channel invariant (ADR-165 §3): exclusions are expressed ONLY via
+// inline style.display; collapse/fold keeps owning the `hidden` attribute.
+const CONTENT_FILTER_ZONES = {
+  musician: [
+    {
+      root: '#recordings-list',
+      noMatch: 'rec-no-match',
+      rows: [
+        'li.lecdem-row',            // lecdems (flat + segmented brackets)
+        'li.concert-perf-item',     // concert + lecdem segment rows
+        'li.tree-comp-node',        // raga-tree composition nodes
+        'li.tree-misc-leaf',        // raga-tree Misc recordings
+        'li.comp-raga-item',        // Compositions-by-raga rows
+        'li.rec-legacy',            // legacy flat recordings (kept for safety)
+        'section[data-section="playlists"] .row-accordion',
+        'li.notes-item',
+      ],
+      groups: [
+        { sel: ':scope > section', header: ':scope > .rec-section-header-row' },
+        { sel: '.lecdem-subsection', header: ':scope > .lecdem-subsection-header' },
+        { sel: '.concert-bracket', header: ':scope > .concert-header', expand: 'expanded', collapseOnClear: true },
+        { sel: 'li.tree-group', header: ':scope > .tree-group-header', expand: 'tree-group-open' },
+        { sel: 'li.comp-raga-group', header: ':scope > .comp-raga-header' },
+        { sel: '.entity-notes-section', header: ':scope > .notes-section-header' },
+      ],
+    },
+  ],
+  bani: [
+    {
+      root: '#trail-list',
+      noMatch: 'trail-no-match',
+      rows: [
+        'li.tree-leaf',                              // raga/comp tree leaves
+        ':scope > li:not(.trail-no-match)',          // perf/yt flat items
+        'section[data-section="playlists"] .row-accordion',
+      ],
+      groups: [
+        { sel: ':scope > section', header: ':scope > .rec-section-header-row' },
+        { sel: 'li.tree-group', header: ':scope > .tree-group-header', expand: 'tree-group-open' },
+      ],
+    },
+    {
+      // Lecdem strip (ADR-081) — outside #trail-list but in the same filter's ambit.
+      root: '#bani-lecdem-strip',
+      rows: ['li.lecdem-row', 'li.concert-perf-item'],
+      groups: [
+        { sel: ':scope > section', header: ':scope > .rec-section-header-row' },
+        { sel: '.concert-bracket', header: ':scope > .concert-header', expand: 'expanded', collapseOnClear: true },
+      ],
+      rootBase: function(root) { return root.querySelector('li.lecdem-row') ? '' : 'none'; },
+    },
+    {
+      root: '#bani-playlists',
+      rows: ['section[data-section="playlists"] .row-accordion'],
+      groups: [
+        { sel: 'section[data-section="playlists"]', header: ':scope > .rec-section-header-row' },
+      ],
+    },
+  ],
+};
+
+// _contentFilterText — the one matcher: the full rendered text of an element,
+// case-folded. textContent reaches every chip/label descendant by construction.
+function _contentFilterText(el) {
+  return (el && el.textContent ? el.textContent : '').toLowerCase();
+}
+
+// _contentFilterShow — inline display is the filter's exclusive refusal channel.
+function _contentFilterShow(el, visible) {
+  el.style.display = visible ? '' : 'none';
+}
+
+// _contentFilterSetSentinel — create/toggle the "no match" row inside root.
+function _contentFilterSetSentinel(root, className, show) {
+  if (!className) return;
+  let sentinel = null;
+  for (let i = 0; i < root.children.length; i++) {
+    const child = root.children[i];
+    if (child.classList && child.classList.contains(className)) { sentinel = child; break; }
+  }
+  if (!sentinel) {
+    if (!show) return;
+    sentinel = document.createElement('li');
+    sentinel.className = className;
+    sentinel.style.cssText = 'color:var(--gray);font-style:italic;cursor:default;padding:5px 0;';
+    sentinel.textContent = 'no match';
+    root.appendChild(sentinel);
+  }
+  sentinel.style.display = show ? 'flex' : 'none';
+}
+
+function _contentFilterZone(zone, q) {
+  const root = document.querySelector(zone.root);
+  if (!root) return false;
+  const rowSel   = zone.rows.join(', ');
+  const rowEls   = Array.prototype.slice.call(root.querySelectorAll(rowSel));
+  const groupEls = [];
+  zone.groups.forEach(function(g) {
+    Array.prototype.slice.call(root.querySelectorAll(g.sel)).forEach(function(el) {
+      groupEls.push({ el: el, cfg: g });
+    });
+  });
+
+  let any = rowEls.length > 0 || groupEls.length > 0;
+
+  if (!q) {
+    rowEls.forEach(function(r) { _contentFilterShow(r, true); });
+    groupEls.forEach(function(g) {
+      _contentFilterShow(g.el, true);
+      if (g.cfg.expand && g.cfg.collapseOnClear) g.el.classList.remove(g.cfg.expand);
+    });
+  } else {
+    any = false;
+
+    // 1. A matching group header reveals the whole group: typing a raga name
+    //    shows all its compositions; typing "Lecdems" shows the whole section.
+    const forced = new Set();
+    groupEls.forEach(function(g) {
+      if (!g.cfg.header) return;
+      const header = g.el.querySelector(g.cfg.header);
+      if (header && _contentFilterText(header).indexOf(q) !== -1) {
+        Array.prototype.slice.call(g.el.querySelectorAll(rowSel)).forEach(function(r) { forced.add(r); });
+      }
+    });
+
+    // 2. Rows — own text match, or forced by an ancestor header.
+    rowEls.forEach(function(r) {
+      const visible = forced.has(r) || _contentFilterText(r).indexOf(q) !== -1;
+      _contentFilterShow(r, visible);
+      if (visible) any = true;
+    });
+
+    // 3. Groups — header match or any descendant row still visible.
+    groupEls.forEach(function(g) {
+      let visible = false;
+      if (g.cfg.header) {
+        const header = g.el.querySelector(g.cfg.header);
+        if (header && _contentFilterText(header).indexOf(q) !== -1) visible = true;
+      }
+      if (!visible) {
+        const inner = g.el.querySelectorAll(rowSel);
+        for (let i = 0; i < inner.length; i++) {
+          if (inner[i].style.display !== 'none') { visible = true; break; }
+        }
+      }
+      _contentFilterShow(g.el, visible);
+      if (visible) {
+        any = true;
+        if (g.cfg.expand) g.el.classList.add(g.cfg.expand);
+      }
+    });
+  }
+
+  if (zone.rootBase) root.style.display = any ? zone.rootBase(root) : 'none';
+  _contentFilterSetSentinel(root, zone.noMatch, !any && !!q);
+  return any;
+}
+
+// applyPanelContentFilter(panelKey, rawQuery) — the shared entry point.
+function applyPanelContentFilter(panelKey, rawQuery) {
+  const zones = CONTENT_FILTER_ZONES[panelKey];
+  if (!zones) return;
+  const q = (rawQuery || '').toLowerCase().trim();
+  zones.forEach(function(zone) { _contentFilterZone(zone, q); });
+}
+window.applyPanelContentFilter = applyPanelContentFilter;
