@@ -32,7 +32,7 @@ CLAIMS: dict[str, list[str]] = {
         # §2 musician panel
         'id="right-sidebar"', 'id="musician-panel"', 'id="recordings-panel"',
         'id="recordings-list"', 'id="edge-info"', 'id="node-info"',
-        'id="rec-filter"', 'id="lineage-popup"', 'id="right-panel-toggle"',
+        'id="rec-filter"', 'id="trail-filter"', 'id="lineage-popup"', 'id="right-panel-toggle"',
         # §3 guru-shishya view
         'id="cy"', 'id="cy-labels"', 'id="timeline-ruler"',
         # §4 mela-janya view
@@ -133,6 +133,8 @@ CLAIMS: dict[str, list[str]] = {
         "function buildPanelHeader", "function buildSection",
         "function buildSubjectGroup", "function buildRowAccordion",
         "function tagUntaggedChips", "function applyChipRole",
+        # §6.5 — unified panel content filter (ADR-178)
+        "function applyPanelContentFilter", "CONTENT_FILTER_ZONES",
     ],
     "mobile.js": [
         # §6.4 — drawer state machine

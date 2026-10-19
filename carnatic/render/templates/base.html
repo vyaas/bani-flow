@@ -532,7 +532,7 @@
   }
   .node-shape-icon svg { display: block; }
 
-  /* ── recording filter input + trail filter input ── */
+  /* ── panel content filter inputs (#rec-filter / #trail-filter, ADR-178) ── */
   #rec-filter,
   #trail-filter {
     width: 100%; background: var(--bg-input); color: var(--fg-dim);
@@ -5388,7 +5388,7 @@
           </div>
           <!-- Filter + ADR-167 play-all/enqueue pair — flex row below the chip row -->
           <div id="trail-filter-row" style="display:none">
-            <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
+            <input id="trail-filter" type="text" placeholder="Filter content&#8230;"
                    autocomplete="off" spellcheck="false" />
             <span id="trail-play-acts" class="section-play-acts">
               <button id="trail-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
@@ -5507,7 +5507,7 @@
           </div>
         </div>
         <div id="rec-filter-row" style="display:none">
-          <input id="rec-filter" type="text" placeholder="Filter recordings&#8230;"
+          <input id="rec-filter" type="text" placeholder="Filter content&#8230;"
                  autocomplete="off" spellcheck="false" />
           <span id="rec-play-acts" class="section-play-acts">
             <button id="rec-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
