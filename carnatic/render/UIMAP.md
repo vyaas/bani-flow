@@ -142,7 +142,10 @@ owns the recordings body. A "musician panel" task usually touches both.
 **CSS hooks:** `--right-panel-width` (derived, ADR-128 D7); `.panel`;
 `.section-collapse-btn`; `.section-play-acts` (play-all/enqueue pair);
 `.section-help-btn` (ADR-177 category help trigger);
-`#recordings-panel { padding-top: 0 }` (ADR-011).
+`#recordings-panel { padding-top: 0 }` (ADR-011). **ADR-179:** all row action
+groups (`.trail-acts`, `.tree-comp-acts`) reserve a fixed two-slot column and
+header groups (`.section-hdr-right`) three; play/enqueue/count badges share
+`--row-act-size`, and row labels are single-line horizontal-scroll surfaces.
 
 **Connects to:** invoked from cy canvas tap (§3), WDP/ wheel musician
 expansion (§4), bani trail chips (§1), permalink restore. Recording rows →
@@ -152,7 +155,8 @@ machine: `mobile.js setPanelState`.
 **ADRs:** 018 (concert bracket), 036/039 (mobile sheet), 041 (close-button
 removal), 046 (drawer handles), 086 (empty tutorial), 128 (panel components +
 D7 width), 129 (floating toggles), 137 (lineage popup), 163 (playlists
-section), 177 (category help dialog), 178 (unified content filter).
+section), 177 (category help dialog), 178 (unified content filter), 179
+(single-line rows + shared action column).
 
 ---
 
@@ -405,7 +409,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
 **CSS hooks:** `.mp-*` classes; `.mp-toggle-btn[aria-pressed="true"]` — the
 reusable depressed-toggle primitive (ADR-161) for any state-holding button;
 upward-surface pattern (`bottom:100%`, flip-down near viewport top);
-`.mp-queue.mp-queue-shown`; mobile sheet grows via `:has(...)`.
+`.mp-queue.mp-queue-shown`; mobile sheet grows via `:has(...)`. **ADR-179:**
+playlist-track chips are a single non-wrapping scroll line; a playlist row's
+count badge right-aligns ahead of its two-slot `.trail-acts` column.
 
 **Connects to:** everything plays through here — trail play-acts (§1),
 recording rows (§2), WDP playbacks (§4), sruti drone, tanpura (ADR-029).
@@ -427,7 +433,8 @@ desktop tracklist and queue are mutually exclusive (both open upward).
 **ADRs:** 154 (providers), 155 (Plyr), 156 (spans), 157 (window reuse, queue
 phase A), 158–160, 161 (toggle primitive, upward surfaces), 162 (visible
 queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
-176 (app-level non-overlap contract).
+176 (app-level non-overlap contract), 179 (single-line rows + shared action
+column).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).

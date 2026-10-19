@@ -3295,7 +3295,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
 
   const countDiv = document.createElement('div');
   countDiv.className = 'concert-count';
-  countDiv.textContent = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
+  countDiv.textContent = String(totalPieces);
+  countDiv.title = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
 
   // ▶ play-from-beginning button — opens the first track of the concert at 00:00:00
   const _firstPerfVid = (() => {
@@ -3305,12 +3306,13 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     }
     return null;
   })();
+  const hdrActs = document.createElement('span');
+  hdrActs.className = 'trail-acts';
   if (_firstPerfVid) {
     const concertPlayBtn = document.createElement('button');
     concertPlayBtn.className = 'rec-play-btn play-btn-direct';
     concertPlayBtn.title = 'Play from beginning: ' + (concert.short_title || concert.title || 'Concert');
     concertPlayBtn.textContent = '\u25B6';
-    concertPlayBtn.style.cssText = 'margin-left:auto;flex-shrink:0;';
     concertPlayBtn.addEventListener('click', e => {
       e.stopPropagation();
       const _allTracks = [];
@@ -3333,12 +3335,15 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
       _allTracks.sort((a, b) => a.offset_seconds - b.offset_seconds);
       openOrFocusPlayer(_firstPerfVid, concert.short_title || concert.title, artistLabel, 0, concert.short_title || concert.title, _allTracks, { nodeId });
     });
-    titleRow.appendChild(concertPlayBtn);
+    hdrActs.appendChild(concertPlayBtn);
   }
 
+  // ADR-179: count and play share the header's right-hand action column so they
+  // align with the section count + row actions above/below.
+  titleRow.appendChild(countDiv);
+  titleRow.appendChild(hdrActs);
   headerBody.appendChild(titleRow);
   if (coPerformerMap.size > 0) headerBody.appendChild(performersDiv);
-  headerBody.appendChild(countDiv);
 
   header.appendChild(chevron);
   header.appendChild(headerBody);
@@ -4063,22 +4068,25 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
 
   const countDiv = document.createElement('div');
   countDiv.className = 'concert-count';
-  countDiv.textContent = segments.length + (segments.length === 1 ? ' segment' : ' segments');
+  countDiv.textContent = String(segments.length);
+  countDiv.title = segments.length + (segments.length === 1 ? ' segment' : ' segments');
 
   // ▶ play-from-beginning button — opens the lecdem video at 00:00:00
   const lecdemPlayBtn = document.createElement('button');
   lecdemPlayBtn.className = 'rec-play-btn play-btn-direct';
   lecdemPlayBtn.title = 'Play from beginning: ' + (ref.label || 'Lecture-Demo');
   lecdemPlayBtn.textContent = '\u25B6';
-  lecdemPlayBtn.style.cssText = 'margin-left:auto;flex-shrink:0;';
   lecdemPlayBtn.addEventListener('click', e => {
     e.stopPropagation();
     openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, 0, ref.label || 'Lecture-Demo', allTracks, { nodeId });
   });
-  titleRow.appendChild(lecdemPlayBtn);
+  const lecdemActs = document.createElement('span');
+  lecdemActs.className = 'trail-acts';
+  lecdemActs.appendChild(lecdemPlayBtn);
+  titleRow.appendChild(countDiv);
+  titleRow.appendChild(lecdemActs);
 
   headerBody.appendChild(titleRow);
-  headerBody.appendChild(countDiv);
 
   header.appendChild(chevron);
   header.appendChild(headerBody);
@@ -4156,7 +4164,10 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
       };
       openOrFocusPlayer(ref.video_id, segLabel, artistLabel, seg.offset_seconds, ref.label, allTracks, { nodeId, subjects: mergedSubjects });
     });
-    row1.appendChild(playBtn);
+    const segActs = document.createElement('span');
+    segActs.className = 'trail-acts';
+    segActs.appendChild(playBtn);
+    row1.appendChild(segActs);
 
     li.appendChild(row1);
 
@@ -4208,7 +4219,8 @@ function buildPlaylistRow(pl) {
   headerEl.appendChild(chip);
   const count = document.createElement('span');
   count.className = 'mp-playlist-count';
-  count.textContent = items.length + ' track' + (items.length === 1 ? '' : 's');
+  count.textContent = String(items.length);
+  count.title = items.length + ' track' + (items.length === 1 ? '' : 's');
   headerEl.appendChild(count);
 
   const play = document.createElement('button');

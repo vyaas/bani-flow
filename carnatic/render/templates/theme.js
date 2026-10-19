@@ -117,6 +117,12 @@ const THEME = (() => {
     fontSizeXs:   '0.68rem',
     fontSizeLg:   '0.85rem',
     fontSizeH3:   '0.70rem',        // panel section headers (uppercase)
+
+    // Row action geometry — one square size for play / enqueue / count badges.
+    // Every row reserves two action slots, so play and enqueue stay in the same
+    // vertical column across all panels (ADR-179).
+    rowActSize:   '24px',
+    rowActGap:    '4px',
   };
 
   // ── Level 2: Era colours (node fill colours) ──────────────────────────────
@@ -220,6 +226,8 @@ const THEME = (() => {
         '--accent-match':  tokens.accentMatch,
         '--font-ui':       tokens.fontUi,
         '--font-mono':     tokens.fontMono,
+        '--row-act-size':  tokens.rowActSize,
+        '--row-act-gap':   tokens.rowActGap,
       };
       return Object.entries(map)
         .map(([k, v]) => `  ${k}: ${v};`)

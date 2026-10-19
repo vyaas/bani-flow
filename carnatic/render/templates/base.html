@@ -5280,6 +5280,211 @@
       transform: translate(-50%, -50%) scale(1) !important;
     }
   }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     ADR-179: single-line rows + aligned action columns
+     ──────────────────────────────────────────────────────────────────────────
+     Every row item is one line: text never wraps and overflows horizontally
+     with a thin scrollbar, so the full string stays readable. Each row reserves
+     exactly two action slots (play, enqueue) and each section header reserves
+     three (count, play, enqueue), all the same square size. Because the slots
+     are pinned to the panel's right edge, play/enqueue buttons and count badges
+     line up on one vertical across both panels.
+     ══════════════════════════════════════════════════════════════════════════ */
+  :root {
+    --row-act-strip:   calc(var(--row-act-size) * 2 + var(--row-act-gap));
+    --row-act-strip-3: calc(var(--row-act-size) * 3 + var(--row-act-gap) * 2);
+  }
+
+  /* One square for every play / enqueue / count affordance. */
+  .rec-play-btn,
+  .mp-plus-btn,
+  .section-play-btn,
+  .section-enqueue-btn {
+    width: var(--row-act-size);
+    height: var(--row-act-size);
+    flex-shrink: 0;
+  }
+  .rec-play-btn { font-size: 0.66rem; }
+  .section-play-btn,
+  .section-enqueue-btn { font-size: 0.58rem; }
+
+  /* Row action column: exactly two slots, pinned right, play leftmost. A row
+     with only play leaves the enqueue slot blank, keeping play on one line. */
+  #left-sidebar .trail-acts,
+  #right-sidebar .trail-acts,
+  #playlist-bar .trail-acts,
+  #left-sidebar .tree-comp-acts,
+  #right-sidebar .tree-comp-acts {
+    flex: 0 0 var(--row-act-strip);
+    width: var(--row-act-strip);
+    min-width: var(--row-act-strip);
+    justify-content: flex-start;
+    gap: var(--row-act-gap);
+    margin-left: auto;
+  }
+
+  /* Section header action group: count + play + enqueue, three equal slots. */
+  #left-sidebar .section-hdr-right,
+  #right-sidebar .section-hdr-right {
+    margin-left: auto;
+    justify-content: flex-start;
+    gap: var(--row-act-gap);
+    flex-shrink: 0;
+  }
+  #left-sidebar .section-hdr-right:has(.section-play-acts),
+  #right-sidebar .section-hdr-right:has(.section-play-acts) {
+    width: var(--row-act-strip-3);
+  }
+  #left-sidebar .section-hdr-right:has(.section-play-acts):not(:has(.section-hdr-count)),
+  #right-sidebar .section-hdr-right:has(.section-play-acts):not(:has(.section-hdr-count)) {
+    width: var(--row-act-strip);
+  }
+  #left-sidebar .section-hdr-right:not(:has(.section-play-acts)),
+  #right-sidebar .section-hdr-right:not(:has(.section-play-acts)) {
+    width: var(--row-act-size);
+  }
+  #left-sidebar .section-hdr-right .section-play-acts,
+  #right-sidebar .section-hdr-right .section-play-acts {
+    margin-left: 0;
+    flex: 0 0 var(--row-act-strip);
+    width: var(--row-act-strip);
+    gap: var(--row-act-gap);
+  }
+
+  /* Count badges share the button geometry and pin right. */
+  .section-hdr-count,
+  .section-hdr-right .section-hdr-count,
+  .mp-playlist-count,
+  .concert-count,
+  .rec-group-count {
+    box-sizing: border-box;
+    min-width: var(--row-act-size);
+    height: var(--row-act-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--fg-muted);
+    font-size: 0.56rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .mp-playlist-count,
+  .concert-count {
+    margin-left: auto;
+    /* Match the section-count column: count right edge = right - (play + gap). */
+    margin-right: var(--row-act-gap);
+  }
+
+  /* The section label is the scrollable part of the header row. */
+  #left-sidebar .rec-section-hdr-label-wrap,
+  #right-sidebar .rec-section-hdr-label-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: thin;
+  }
+  #left-sidebar .rec-section-hdr-label-wrap > *,
+  #right-sidebar .rec-section-hdr-label-wrap > * { flex-shrink: 0; }
+
+  /* Text leaves: one line, horizontal scroll, never wrap. */
+  #left-sidebar .trail-chips > *,
+  #right-sidebar .trail-chips > *,
+  #left-sidebar .tree-header-text > *,
+  #right-sidebar .tree-header-text > *,
+  #left-sidebar .mp-playlist-track-chips > *,
+  #right-sidebar .mp-playlist-track-chips > *,
+  #left-sidebar .concert-title,
+  #right-sidebar .concert-title,
+  #left-sidebar .lecdem-label-chip,
+  #right-sidebar .lecdem-label-chip,
+  #left-sidebar .yt-label-chip,
+  #right-sidebar .yt-label-chip,
+  #left-sidebar .rec-title,
+  #right-sidebar .rec-title,
+  #left-sidebar .tree-unmatched-title,
+  #right-sidebar .tree-unmatched-title,
+  #left-sidebar .concert-performers,
+  #right-sidebar .concert-performers,
+  #left-sidebar .playlist-chip,
+  #right-sidebar .playlist-chip,
+  #left-sidebar .trail-label,
+  #right-sidebar .trail-label,
+  #left-sidebar .trail-context,
+  #right-sidebar .trail-context,
+  #left-sidebar .rec-version-label,
+  #right-sidebar .rec-version-label {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+  #left-sidebar .concert-title,
+  #right-sidebar .concert-title {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* A chip strip is itself one non-wrapping line that scrolls sideways. */
+  #left-sidebar .tree-rec-list .trail-chips,
+  #right-sidebar .tree-rec-list .trail-chips,
+  #left-sidebar .mp-playlist-track-chips,
+  #right-sidebar .mp-playlist-track-chips,
+  #left-sidebar .comp-raga-header,
+  #right-sidebar .comp-raga-header,
+  #left-sidebar .lecdem-subjects,
+  #right-sidebar .lecdem-subjects,
+  #left-sidebar .lecdem-musician,
+  #right-sidebar .lecdem-musician,
+  #left-sidebar .lecdem-subjects-inline,
+  #right-sidebar .lecdem-subjects-inline,
+  #left-sidebar .tree-leaf-coperformers,
+  #right-sidebar .tree-leaf-coperformers,
+  #left-sidebar .row-accordion-body,
+  #right-sidebar .row-accordion-body,
+  #left-sidebar .subject-group-body,
+  #right-sidebar .subject-group-body {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+
+  /* Thin scrollbars for every single-line item. */
+  #left-sidebar .trail-chips > *::-webkit-scrollbar,
+  #right-sidebar .trail-chips > *::-webkit-scrollbar,
+  #left-sidebar .concert-title::-webkit-scrollbar,
+  #right-sidebar .concert-title::-webkit-scrollbar,
+  #left-sidebar .lecdem-label-chip::-webkit-scrollbar,
+  #right-sidebar .lecdem-label-chip::-webkit-scrollbar,
+  #left-sidebar .yt-label-chip::-webkit-scrollbar,
+  #right-sidebar .yt-label-chip::-webkit-scrollbar {
+    height: 3px;
+  }
+  #left-sidebar .trail-chips > *::-webkit-scrollbar-thumb,
+  #right-sidebar .trail-chips > *::-webkit-scrollbar-thumb,
+  #left-sidebar .concert-title::-webkit-scrollbar-thumb,
+  #right-sidebar .concert-title::-webkit-scrollbar-thumb,
+  #left-sidebar .lecdem-label-chip::-webkit-scrollbar-thumb,
+  #right-sidebar .lecdem-label-chip::-webkit-scrollbar-thumb,
+  #left-sidebar .yt-label-chip::-webkit-scrollbar-thumb,
+  #right-sidebar .yt-label-chip::-webkit-scrollbar-thumb {
+    background: var(--fg-muted);
+    border-radius: 2px;
+  }
 </style>
 <!-- INJECT_PLYR_CSS -->
 </head>

@@ -124,7 +124,9 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
   if (count != null) {
     const countEl = document.createElement('span');
     countEl.className = 'section-hdr-count';
-    countEl.textContent = '(' + count + ')';
+    // ADR-179: bare number in a fixed badge — aligns with the action column.
+    countEl.textContent = String(count);
+    countEl.title = count + (count === 1 ? ' item' : ' items');
     actsRight.appendChild(countEl);
   }
   headerEl.appendChild(actsRight);
