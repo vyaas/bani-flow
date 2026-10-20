@@ -5575,6 +5575,7 @@
     flex-wrap: nowrap !important;
     flex: 1 1 auto !important;
     min-width: 0;
+    gap: var(--chip-gap);
     overflow-x: auto !important;
     overflow-y: hidden;
     white-space: nowrap;
@@ -5599,10 +5600,13 @@
   #left-sidebar .row-accordion-scroll .tree-group-header,
   #right-sidebar .row-accordion-scroll .tree-group-header,
   #left-sidebar .row-accordion-scroll .trail-row2,
-  #right-sidebar .row-accordion-scroll .trail-row2 {
+  #right-sidebar .row-accordion-scroll .trail-row2,
+  #left-sidebar .row-accordion-scroll .tree-leaf-primary,
+  #right-sidebar .row-accordion-scroll .tree-leaf-primary {
     display: flex !important;
     flex: 0 0 auto !important;
     min-height: 0 !important;
+    width: auto !important;
     overflow: visible !important;
   }
   /* The concert header is just a wrapper; .concert-title-row is the ribbon. */
@@ -5728,12 +5732,12 @@
       .composer-label, .lecdem-chip, .neutral-chip, .lineage-chip, .yt-label-chip,
       .lecdem-label-chip, .lecdem-label, .rec-title, .rec-version-label,
       .trail-version, .trail-label, .trail-context, .tree-unmatched-title,
-      .concert-title, .playlist-chip, .rec-year, .rec-group-label),
+      .concert-title, .concert-performers, .playlist-chip, .rec-year, .rec-group-label),
   #right-sidebar :is(.comp-chip, .raga-chip, .musician-chip, .composer-chip,
       .composer-label, .lecdem-chip, .neutral-chip, .lineage-chip, .yt-label-chip,
       .lecdem-label-chip, .lecdem-label, .rec-title, .rec-version-label,
       .trail-version, .trail-label, .trail-context, .tree-unmatched-title,
-      .concert-title, .playlist-chip, .rec-year, .rec-group-label) {
+      .concert-title, .concert-performers, .playlist-chip, .rec-year, .rec-group-label) {
     flex: 0 0 auto !important;
     max-width: none !important;
     overflow: visible !important;
@@ -5741,6 +5745,21 @@
     white-space: nowrap !important;
     -webkit-line-clamp: unset !important;
     -webkit-box-orient: unset !important;
+  }
+
+  /* The uniform chip gap owns inter-chip spacing; clear the ad-hoc composer
+     indent inside row scroll surfaces so every gap is equal. */
+  #left-sidebar .tree-header-text .composer-chip,
+  #right-sidebar .tree-header-text .composer-chip,
+  #left-sidebar .trail-chips .composer-chip,
+  #right-sidebar .trail-chips .composer-chip,
+  #left-sidebar .tree-comp-main .composer-chip,
+  #right-sidebar .tree-comp-main .composer-chip,
+  #left-sidebar .concert-title-main .composer-chip,
+  #right-sidebar .concert-title-main .composer-chip,
+  #left-sidebar .concert-perf-main .composer-chip,
+  #right-sidebar .concert-perf-main .composer-chip {
+    margin-left: 0;
   }
 
   /* ADR-180 addendum: scrollbars stay invisible at rest and reveal only while

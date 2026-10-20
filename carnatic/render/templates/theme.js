@@ -125,6 +125,8 @@ const THEME = (() => {
     rowActGap:    '4px',
     // ADR-180: fixed ribbon height — one line per entry, never wraps.
     rowHeight:    '28px',
+    // ADR-180: uniform minimum gap between chips on a row's scroll line.
+    chipGap:      '6px',
   };
 
   // ── Level 2: Era colours (node fill colours) ──────────────────────────────
@@ -231,6 +233,7 @@ const THEME = (() => {
         '--row-act-size':  tokens.rowActSize,
         '--row-act-gap':   tokens.rowActGap,
         '--row-height':    tokens.rowHeight,
+        '--chip-gap':      tokens.chipGap,
       };
       return Object.entries(map)
         .map(([k, v]) => `  ${k}: ${v};`)

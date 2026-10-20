@@ -60,6 +60,10 @@ ellipsized to make room for the text label beside it (the old
 `.tree-leaf-primary > .musician-chip` and `.rec-row1 .comp-chip` rules did
 exactly that); the row scrolls instead.
 
+Every row scroll surface carries one uniform `--chip-gap` (`chipGap`, 6px), and
+the ad-hoc composer indent inside those surfaces is cleared, so adjacent chips
+can never abut or overlap and the spacing is identical across rows.
+
 ### 3. Detail is inlined, not folded
 
 The fold chevrons are retired and their content is rendered inline or always
@@ -103,7 +107,8 @@ titles stay readable and the play button never leaves the viewport.
 
 ## Implementation (as landed)
 
-- `theme.py` / `theme.js`: `rowHeight` + `--row-height`.
+- `theme.py` / `theme.js`: `rowHeight`, `chipGap` + `--row-height` /
+  `--chip-gap` export.
 - `base.html`: ADR-180 block at the end of the stylesheet (chevron kill,
   ribbon geometry, scroll surfaces, pinned actions, single-line labels,
   always-visible perf lists, uniform padding), plus an addendum that keeps every
