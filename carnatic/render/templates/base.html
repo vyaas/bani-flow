@@ -5721,6 +5721,28 @@
   #left-sidebar .trail-chips,
   #right-sidebar .trail-chips { gap: 6px; }
 
+  /* 8. Chips are immutable: they never shrink, clamp, or ellipsize. The row
+        scrolls to reveal the full chip set. Applies to every identity/label
+        chip atom in both panels. */
+  #left-sidebar :is(.comp-chip, .raga-chip, .musician-chip, .composer-chip,
+      .composer-label, .lecdem-chip, .neutral-chip, .lineage-chip, .yt-label-chip,
+      .lecdem-label-chip, .lecdem-label, .rec-title, .rec-version-label,
+      .trail-version, .trail-label, .trail-context, .tree-unmatched-title,
+      .concert-title, .playlist-chip, .rec-year, .rec-group-label),
+  #right-sidebar :is(.comp-chip, .raga-chip, .musician-chip, .composer-chip,
+      .composer-label, .lecdem-chip, .neutral-chip, .lineage-chip, .yt-label-chip,
+      .lecdem-label-chip, .lecdem-label, .rec-title, .rec-version-label,
+      .trail-version, .trail-label, .trail-context, .tree-unmatched-title,
+      .concert-title, .playlist-chip, .rec-year, .rec-group-label) {
+    flex: 0 0 auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    -webkit-line-clamp: unset !important;
+    -webkit-box-orient: unset !important;
+  }
+
   /* ADR-180 addendum: scrollbars stay invisible at rest and reveal only while
      the pointer is over the panel/row. `scrollbar-color` is inherited, so a
      transparent value on the sidebar hides every descendant scrollbar; the

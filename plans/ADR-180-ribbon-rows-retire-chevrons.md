@@ -52,6 +52,14 @@ A lone play button is forced into the **first** slot (`.rec-play-btn`'s global
 `margin-left:auto` is reset inside the strip), so a single-play lecdem lines up
 with the play column of a play+enqueue row above it.
 
+Identity and label chips are **immutable**: `.comp-chip`, `.raga-chip`,
+`.musician-chip`, `.composer-chip`, `.yt-label-chip`, `.lecdem-label-chip`,
+`.concert-title`, … are forced to `flex: 0 0 auto; max-width: none;
+overflow: visible; text-overflow: clip`. A name chip can never be shrunk or
+ellipsized to make room for the text label beside it (the old
+`.tree-leaf-primary > .musician-chip` and `.rec-row1 .comp-chip` rules did
+exactly that); the row scrolls instead.
+
 ### 3. Detail is inlined, not folded
 
 The fold chevrons are retired and their content is rendered inline or always
