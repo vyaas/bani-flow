@@ -83,7 +83,11 @@ def test_engine_excludes_via_inline_display_only():
     m = re.search(r"function _contentFilterShow\(el, visible\)\s*\{(.*?)\n\}", PANEL_COMPONENTS_CODE, re.S)
     assert m, "_contentFilterShow not found in panel_components.js"
     body = m.group(1)
-    assert "el.style.display = visible ? '' : 'none'" in body
+    # The exclusion must be an inline declaration, and it must be `!important`:
+    # ADR-180's ribbon rules set `display:flex !important` on row containers
+    # (notably `li.concert-perf-item`), which a plain inline `none` cannot beat.
+    assert "el.style.setProperty('display', 'none', 'important')" in body
+    assert "el.style.removeProperty('display')" in body
     assert "hidden" not in body, (
         "the content filter must not toggle the `hidden` attribute — that is "
         "the collapse channel (ADR-165 §3)"

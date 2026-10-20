@@ -510,8 +510,19 @@ function _contentFilterText(el) {
 }
 
 // _contentFilterShow — inline display is the filter's exclusive refusal channel.
+// Priority `important` is required: the ADR-180 ribbon rules set
+// `display:flex !important` on several row containers (notably
+// `li.concert-perf-item`), and a plain inline `none` loses to an
+// author-stylesheet `!important`, leaving filtered-out rows visible. An inline
+// `!important` declaration outranks any author-stylesheet `!important`, so the
+// exclusion wins while `el.style.display` (read by the ADR-165 harvest ancestor
+// walk) still reports `none`.
 function _contentFilterShow(el, visible) {
-  el.style.display = visible ? '' : 'none';
+  if (visible) {
+    el.style.removeProperty('display');
+  } else {
+    el.style.setProperty('display', 'none', 'important');
+  }
 }
 
 // _contentFilterSetSentinel — create/toggle the "no match" row inside root.
