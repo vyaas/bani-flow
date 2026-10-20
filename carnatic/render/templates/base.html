@@ -5609,6 +5609,14 @@
     width: auto !important;
     overflow: visible !important;
   }
+  /* Flatten the leaf's chip holder so its chips are direct flex items of the
+     row's scroll surface — a nested flex item whose content overflowed could
+     otherwise keep its container width and let the co-performer chips overlap
+     the label. The parent's uniform `--chip-gap` then spaces them all. */
+  #left-sidebar .row-accordion-scroll .tree-leaf-primary,
+  #right-sidebar .row-accordion-scroll .tree-leaf-primary {
+    display: contents !important;
+  }
   /* The concert header is just a wrapper; .concert-title-row is the ribbon. */
   #left-sidebar .concert-header,
   #right-sidebar .concert-header {
