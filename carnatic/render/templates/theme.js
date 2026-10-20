@@ -127,6 +127,12 @@ const THEME = (() => {
     rowHeight:    '28px',
     // ADR-180: uniform minimum gap between chips on a row's scroll line.
     chipGap:      '6px',
+    // ADR-182: meta badges (enumeration / help / recording-version chips).
+    // Dedicated tokens so a future theme can restyle the badge surface without
+    // touching the generic bg/fg scale. Bright fg is deliberate (high contrast).
+    chipMetaBg:     P.bg2,   // #504945 — neutral gray badge surface
+    chipMetaFg:     P.fg,    // #ebdbb2 — high-contrast badge text
+    chipMetaBorder: P.bg3,   // #665c54 — subtle chip frame
   };
 
   // ── Level 2: Era colours (node fill colours) ──────────────────────────────
@@ -234,6 +240,9 @@ const THEME = (() => {
         '--row-act-gap':   tokens.rowActGap,
         '--row-height':    tokens.rowHeight,
         '--chip-gap':      tokens.chipGap,
+        '--chip-meta-bg':     tokens.chipMetaBg,
+        '--chip-meta-fg':     tokens.chipMetaFg,
+        '--chip-meta-border': tokens.chipMetaBorder,
       };
       return Object.entries(map)
         .map(([k, v]) => `  ${k}: ${v};`)

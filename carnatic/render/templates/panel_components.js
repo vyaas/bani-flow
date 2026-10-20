@@ -59,17 +59,21 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 
 // ── buildSection ─────────────────────────────────────────────────────────────
 // Builds a section with a standardised flex header row:
-//   [headerChip]  [headerSuffixText]  [(count)]  [▶ ⊕]
+//   [headerChip] [count] [?]  ·······  [▶ +]
 //
 // ADR-180: the collapse chevron is retired — sections render their body in
 // full, and the label wrap is the horizontal-scroll surface. The `defaultCollapsed`
 // argument is accepted for backward compatibility but ignored.
 //
+// ADR-181: the count + `?` are tiny gray meta chips grouped with the category
+// label on the LEFT; the transport pair (play / enqueue) alone owns the right
+// column. Enumeration therefore never competes with the transport controls.
+//
 // Returns { sectionEl, bodyEl, headerEl }.
 //
 //   headerChip       DOM element (optional) — vocabulary chip at section-header scale
 //   headerSuffixText string appended after the chip (optional)
-//   count            integer (optional) — shown as "(N)" even when 0
+//   count            integer (optional) — gray meta chip after the chip
 //   onAdd            function (optional) — if provided, renders a + button
 //   addTitle         string (optional) — tooltip for + button
 //   helpKind         string (optional) — help-card key (e.g. 'lecdems', 'concerts')
@@ -90,11 +94,22 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
   labelWrap.className = 'rec-section-hdr-label-wrap';
   if (headerChip) labelWrap.appendChild(headerChip);
   if (headerSuffixText) labelWrap.appendChild(document.createTextNode(headerSuffixText));
-  headerEl.appendChild(labelWrap);
+
+  // ADR-181: enumeration is a tiny gray meta chip (the .trail-version recipe)
+  // grouped with the category chip, not a right-column badge.
+  if (count != null) {
+    const countEl = document.createElement('span');
+    countEl.className = 'section-hdr-count';
+    countEl.textContent = String(count);
+    countEl.title = count + (count === 1 ? ' item' : ' items');
+    labelWrap.appendChild(countEl);
+  }
 
   // ADR-177: category help trigger — sits beside the section chip so every
   // category carries its own "what is this?" affordance. Opens the dialog card
   // rendered from helpEmptyPanels (empty_tutorials.js).
+  // ADR-181: the `?` is the same gray meta chip as the count — help and
+  // enumeration share one visual family, apart from the transport pair.
   if (helpKind && helpSlot) {
     const helpBtn = document.createElement('button');
     helpBtn.type = 'button';
@@ -108,22 +123,13 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
         window.openCategoryHelp(helpSlot, helpKind);
       }
     });
-    headerEl.appendChild(helpBtn);
+    labelWrap.appendChild(helpBtn);
   }
 
-  // ADR-177 follow-up: the count lives in the right-hand action group, not in
-  // the label wrap, so the `?` stays flush against the category chip. Order is
-  // (N) ▶ ⊕ — count, play-all, enqueue — all pinned right.
+  // Transport column — play-all / enqueue-all only.
+  headerEl.appendChild(labelWrap);
   const actsRight = document.createElement('span');
   actsRight.className = 'section-hdr-right';
-  if (count != null) {
-    const countEl = document.createElement('span');
-    countEl.className = 'section-hdr-count';
-    // ADR-179: bare number in a fixed badge — aligns with the action column.
-    countEl.textContent = String(count);
-    countEl.title = count + (count === 1 ? ' item' : ' items');
-    actsRight.appendChild(countEl);
-  }
   headerEl.appendChild(actsRight);
 
   sectionEl.appendChild(headerEl);
@@ -151,7 +157,8 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
     enqueueBtn.type = 'button';
     enqueueBtn.className = 'section-enqueue-btn';
     enqueueBtn.title = 'Add visible to queue';
-    enqueueBtn.textContent = '\u2295';
+    enqueueBtn.setAttribute('aria-label', 'Add visible to queue');
+    enqueueBtn.textContent = '+';
     enqueueBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       if (typeof collectQueueItems !== 'function' || typeof MediaQueue === 'undefined') return;

@@ -360,6 +360,14 @@ inline, so the only surviving chevron is the Playlist Bar's
 and, if a single chevron component is still wanted, fold `.mp-queue-collapse`
 into it (ADR-128 D10). Deferred to a dedicated surface pass.
 
+#### Theme system — palette switching beyond meta badges (raised 2026-10-20, surface)
+ADR-182 carved the enumeration/help/recording-version badge surface out into
+`--chip-meta-bg` / `--chip-meta-fg` / `--chip-meta-border` tokens so a future
+theme can restyle it in isolation, but the rest of the UI still reads the single
+Gruvbox palette from `theme.py` / `theme.js`. TODO before introducing a second
+palette: define the theme-switch contract (runtime token remap via `THEME.set()`
++ `toCSSVars()`, persistence, and a light-theme contrast pass).
+
 ---
 
 ## Agent learning logs → moved to `carnatic/LEARNINGS.md`

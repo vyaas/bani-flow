@@ -538,6 +538,11 @@
   #trail-filter-row {
     flex-wrap: nowrap; align-items: center; gap: 6px; margin-top: 6px;
   }
+  /* ADR-181: the filter-row transport pair must share the section-header action
+     column's right edge. #node-info/#bani-info carry 14px horizontal padding
+     that the section rows do not, so pull the pair back out by that amount. */
+  #rec-play-acts,
+  #trail-play-acts { margin-right: -14px; }
   #rec-filter, #trail-filter { flex: 1; min-width: 0; width: auto; margin-top: 0; display: block; }
   #rec-filter:focus,
   #trail-filter:focus { outline: none; border-color: var(--accent); }
@@ -572,9 +577,7 @@
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-  #recordings-list .rec-group-count {
-    font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
-  }
+  #recordings-list .rec-group-count { margin-left: 2px; }
   /* ADR-128 D9: raga groups respect .tree-group-open like trail tree;
      the previous override forced them always open and disabled chevrons. */
   #recordings-list .tree-children { list-style: none; padding: 0; margin: 0; }
@@ -687,11 +690,6 @@
     white-space: normal;
   }
 
-  .concert-count {
-    font-size: 0.65rem; color: var(--fg-muted); margin-top: 2px;
-  }
-  .concert-bracket.expanded .concert-count { display: none; }
-
   /* ── ADR-057: composer compositions section below recordings ── */
   .comp-section {
     margin-top: 4px;
@@ -719,9 +717,8 @@
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
     padding: 5px 0 4px;
   }
-  .comp-raga-header .rec-group-count {
-    font-size: 0.63rem; color: var(--fg-muted); margin-left: 2px;
-  }
+  /* ADR-181: the count chip owns its own look; only nudge spacing here. */
+  .comp-raga-header .rec-group-count { margin-left: 2px; }
   /* ADR-072: indents use --hier-indent-step for symmetry with tree-comp-* path. */
   .comp-raga-children {
     list-style: none; padding: 0 0 0 var(--hier-indent-step); margin: 0;
@@ -777,36 +774,30 @@
     margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
     flex-shrink: 0;
   }
-  .section-hdr-count { white-space: nowrap; }
-  .section-play-btn, .section-enqueue-btn {
-    background: none; border: 1px solid var(--border); border-radius: 50%;
-    color: var(--fg-muted); font-size: 0.62rem; line-height: 1;
+  /* ADR-181: play and enqueue are a matched pair of bare, rounded-square icon
+     buttons — ▶ and +. The gray count/help meta chips are defined lower down. */
+  .section-play-btn {
+    background: none; border: none; border-radius: 6px;
+    color: var(--fg-sub); font-size: 0.72rem; line-height: 1;
     width: 18px; height: 18px; padding: 0;
     cursor: pointer; flex-shrink: 0; display: inline-flex;
     align-items: center; justify-content: center;
-    transition: color 0.12s, border-color 0.12s;
+    transition: color 0.12s, background 0.12s;
   }
-  .section-play-btn:hover, .section-enqueue-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .section-play-btn:hover { background: var(--bg-hover); color: var(--accent); }
   /* Expand tap target without inflating the visual button on mobile */
   .section-play-btn::after, .section-enqueue-btn::after {
     content: ''; position: absolute; inset: -11px;
   }
   .section-play-btn, .section-enqueue-btn { position: relative; }
-  /* ADR-177: category help trigger beside each section chip. Relays to the
-     shared help dialog via window.openCategoryHelp(slot, kind). */
-  .section-help-btn {
-    background: none; border: 1px solid var(--border-strong); border-radius: 50%;
-    color: var(--fg-sub); font-size: 0.62rem; font-weight: bold; line-height: 1;
-    width: 17px; height: 17px; padding: 0;
-    cursor: pointer; flex-shrink: 0; display: inline-flex;
-    align-items: center; justify-content: center; position: relative;
-    font-family: inherit;
-    transition: color 0.12s, border-color 0.12s, background 0.12s;
+  /* ADR-177 / ADR-181: category help is a gray meta chip like the count and
+     relays to the shared help dialog via window.openCategoryHelp(slot, kind). */
+  button.section-help-btn {
+    cursor: pointer; position: relative;
+    transition: background 0.12s, color 0.12s;
   }
-  .section-help-btn:hover {
-    color: var(--bg-panel); border-color: var(--accent); background: var(--accent);
-  }
-  .section-help-btn::after { content: ''; position: absolute; inset: -10px; }
+  button.section-help-btn:hover { background: var(--accent); color: var(--bg-deep); }
+  button.section-help-btn::after { content: ''; position: absolute; inset: -10px; }
   /* Card wrapper: inherits the .panel-tutorial card styles inside the dialog
      (all .pt-* rules are scoped to .panel-tutorial), but flattens the box so
      the dialog supplies the frame. */
@@ -879,7 +870,7 @@
     display: none;  /* ADR-063 follow-up: year display removed */
   }
   .rec-version-label {
-    font-size: 0.65rem; color: var(--fg-muted);
+    font-size: 0.65rem; color: var(--fg-sub);
   }
   /* Non-composition label in raga tree — de-emphasized, no chip styling */
   .tree-unmatched-title {
@@ -1756,9 +1747,12 @@
      exist for the same musician in the current trail (ADR-010) */
   .trail-version {
     flex-shrink: 0;
-    font-size: 0.60rem; color: var(--bg-panel);
-    background: var(--bg-active);
-    border-radius: 2px;
+    /* ADR-182: high-contrast, themeable meta badge (same tokens as the
+       enumeration/help chips). */
+    font-size: 0.60rem; color: var(--chip-meta-fg);
+    background: var(--chip-meta-bg);
+    border: 1px solid var(--chip-meta-border);
+    border-radius: 3px;
     padding: 0px 4px;
     white-space: nowrap;
     overflow: hidden;
@@ -1837,7 +1831,7 @@
     font-size: 0.70rem; color: var(--fg-muted); margin-top: 2px;
   }
 
-  /* ── ADR-065: circular play button ── */
+  /* ── ADR-181: bare rounded-square play button (matches the enqueue `+`) ── */
   .rec-play-btn {
     flex-shrink: 0;
     margin-left: auto;   /* right-justified when direct child of rec-row1 */
@@ -1848,14 +1842,14 @@
     width: 26px;
     height: 26px;
     padding: 0;
-    border-radius: 50%;
-    border: 1.5px solid var(--border-strong);
+    border: none;
+    border-radius: 6px;
     background: none;
-    color: var(--accent-sub);
-    font-size: 0.72rem;
+    color: var(--fg-sub);
+    font-size: 0.8rem;
     cursor: pointer;
     line-height: 1;
-    transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
+    transition: background 0.12s, color 0.12s, transform 0.12s;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
@@ -1866,14 +1860,11 @@
     inset: -9px;
   }
   .rec-play-btn:hover {
-    background: var(--bg-input);
-    border-color: var(--accent-sub);
-    color: var(--fg);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-sub) 25%, transparent);
+    background: var(--bg-hover);
+    color: var(--accent);
   }
   .rec-play-btn:active {
-    background: var(--bg-pressed);
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.45);
+    background: var(--bg-active);
     transform: scale(0.93);
   }
   /* YouTube/external link \u2014 plain icon, no circle (ADR-128 D14). */
@@ -2703,20 +2694,11 @@
     font-weight: normal !important;
   }
 
-  /* ── ADR-053/065: dashed ring = concert, solid ring = direct ───────────── */
-  .rec-play-btn.play-btn-concert {
-    border: 1.5px dashed var(--accent-sub);
-    color: var(--accent-sub);
-  }
-  .rec-play-btn.play-btn-concert:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--bg-input);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
-  }
-  .rec-play-btn.play-btn-direct {
-    border: 1.5px solid var(--border-strong);
-  }
+  /* ── ADR-053/181: concert vs direct is carried by glyph colour now that the
+     ring is retired — aqua = part of a concert, neutral = standalone. ────── */
+  .rec-play-btn.play-btn-concert { color: var(--accent-sub); }
+  .rec-play-btn.play-btn-concert:hover { background: var(--bg-hover); color: var(--accent); }
+  .rec-play-btn.play-btn-direct { color: var(--fg-sub); }
   /* ── Composer chip indented under its composition in all contexts ─────── */
   .tree-header-text .composer-chip,
   .trail-chips .composer-chip,
@@ -2737,8 +2719,8 @@
   li.concert-perf-item.playing .rec-play-btn,
   #trail-list li.playing .rec-play-btn,
   .rec-play-btn.playing {
-    color: var(--accent);
-    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg-deep);
     font-size: 0;
   }
   li.rec-legacy.playing .rec-play-btn::before,
@@ -2897,11 +2879,15 @@
     margin-top: 0; line-height: inherit;
   }
   .mp-queue-play {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.7rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+    background: none; border: none; border-radius: 6px;
+    color: var(--fg-sub); font-size: 0.74rem; cursor: pointer; padding: 0; line-height: 1;
+    width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background 0.12s, color 0.12s;
   }
-  .mp-queue-play:not(:disabled):hover { color: var(--accent); }
+  .mp-queue-play:not(:disabled):hover { background: var(--bg-hover); color: var(--accent); }
   .mp-queue-play:disabled { opacity: 0.35; cursor: default; }
+  .mp-queue-play { position: relative; }
+  .mp-queue-play::after { content: ''; position: absolute; inset: -12px; }
   /* ADR-175: per-row minimize/maximize for the current item — the SAME chevron
      geometry as every panel section (ADR-128 D10), placed leftmost. */
   .mp-queue-collapse {
@@ -2935,22 +2921,29 @@
   }
   .mp-queue-vol:disabled { opacity: 0.35; cursor: default; }
   .mp-queue-vol-phantom { visibility: hidden; pointer-events: none; }
-  .mp-queue-stop { color: var(--accent); }
+  .mp-queue-stop { background: var(--accent); color: var(--bg-deep); }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
     font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
   }
   .mp-queue-remove:hover { color: var(--accent-danger); }
-  /* ADR-163 §3: + affordance — add-to-playlist button beside play controls */
+  /* ADR-181: enqueue = a bare, larger plus (no circle), shared by the section
+     headers and every row action column. */
+  .section-enqueue-btn,
   .mp-plus-btn {
-    background: none; border: 1px solid var(--border); border-radius: 50%;
-    color: var(--fg-muted); font-size: 0.75rem; line-height: 1;
+    background: none; border: none; border-radius: 6px;
+    color: var(--fg-sub); font-size: 1.05rem; font-weight: 500; line-height: 1;
     width: 18px; height: 18px; padding: 0;
     cursor: pointer; flex-shrink: 0; display: inline-flex;
-    align-items: center; justify-content: center;
-    transition: color 0.12s, border-color 0.12s;
+    align-items: center; justify-content: center; position: relative;
+    transition: color 0.12s, background 0.12s;
   }
-  .mp-plus-btn:hover { color: var(--accent); border-color: var(--accent); }
+  /* Enlarge the tap target without inflating the visual plus. */
+  .mp-plus-btn::after { content: ''; position: absolute; inset: -10px; }
+  .section-enqueue-btn:hover,
+  .mp-plus-btn:hover { color: var(--accent); background: var(--bg-hover); }
+  .section-enqueue-btn:active,
+  .mp-plus-btn:active { background: var(--bg-active); }
   /* Floating popover menu opened by the + button */
   .mp-plus-menu {
     position: fixed; z-index: 9999;
@@ -3097,7 +3090,7 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     cursor: default;
   }
-  .mp-playlist-count { color: var(--fg-muted); font-size: 0.72rem; flex-shrink: 0; }
+  .mp-playlist-count { flex-shrink: 0; }
   .mp-playlist-track {
     flex: 0 0 100%;
     display: flex; align-items: flex-start; gap: 6px;
@@ -4075,7 +4068,7 @@
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
     /* .vp-btn excluded: same visual size as .filter-dropdown-btn (both are pill controls) */
-    button:not(.rec-play-btn):not(.mp-plus-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn):not(.section-play-btn):not(.section-enqueue-btn) {
+    button:not(.rec-play-btn):not(.mp-plus-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn):not(.section-play-btn):not(.section-enqueue-btn):not(.section-help-btn):not(.mp-queue-play) {
       min-height: 44px;
     }
     .view-btn {
@@ -5285,15 +5278,14 @@
      ADR-179: single-line rows + aligned action columns
      ──────────────────────────────────────────────────────────────────────────
      Every row item is one line: text never wraps and overflows horizontally
-     with a thin scrollbar, so the full string stays readable. Each row reserves
-     exactly two action slots (play, enqueue) and each section header reserves
-     three (count, play, enqueue), all the same square size. Because the slots
-     are pinned to the panel's right edge, play/enqueue buttons and count badges
-     line up on one vertical across both panels.
+     with a thin scrollbar, so the full string stays readable. Every row and
+     every section header reserves exactly two action slots (play, enqueue), all
+     the same square size (ADR-181 moved count/help out of the header column).
+     Because the slots are pinned to the panel's right edge, play/enqueue
+     buttons line up on one vertical across both panels.
      ══════════════════════════════════════════════════════════════════════════ */
   :root {
     --row-act-strip:   calc(var(--row-act-size) * 2 + var(--row-act-gap));
-    --row-act-strip-3: calc(var(--row-act-size) * 3 + var(--row-act-gap) * 2);
   }
 
   /* One square for every play / enqueue / count affordance. */
@@ -5305,9 +5297,9 @@
     height: var(--row-act-size);
     flex-shrink: 0;
   }
-  .rec-play-btn { font-size: 0.66rem; }
-  .section-play-btn,
-  .section-enqueue-btn { font-size: 0.58rem; }
+  .rec-play-btn { font-size: 0.86rem; }
+  .section-play-btn { font-size: 0.8rem; }
+  .section-enqueue-btn { font-size: 1.05rem; }
 
   /* Row action column: exactly two slots, pinned right, play leftmost. A row
      with only play leaves the enqueue slot blank, keeping play on one line. */
@@ -5324,25 +5316,15 @@
     margin-left: auto;
   }
 
-  /* Section header action group: count + play + enqueue, three equal slots. */
+  /* Section header transport group: play + enqueue, exactly two slots.
+     ADR-181 moved count/help into the label group, so the column is always two. */
   #left-sidebar .section-hdr-right,
   #right-sidebar .section-hdr-right {
     margin-left: auto;
-    justify-content: flex-start;
+    justify-content: flex-end;
     gap: var(--row-act-gap);
     flex-shrink: 0;
-  }
-  #left-sidebar .section-hdr-right:has(.section-play-acts),
-  #right-sidebar .section-hdr-right:has(.section-play-acts) {
-    width: var(--row-act-strip-3);
-  }
-  #left-sidebar .section-hdr-right:has(.section-play-acts):not(:has(.section-hdr-count)),
-  #right-sidebar .section-hdr-right:has(.section-play-acts):not(:has(.section-hdr-count)) {
     width: var(--row-act-strip);
-  }
-  #left-sidebar .section-hdr-right:not(:has(.section-play-acts)),
-  #right-sidebar .section-hdr-right:not(:has(.section-play-acts)) {
-    width: var(--row-act-size);
   }
   #left-sidebar .section-hdr-right .section-play-acts,
   #right-sidebar .section-hdr-right .section-play-acts {
@@ -5351,40 +5333,31 @@
     width: var(--row-act-strip);
     gap: var(--row-act-gap);
   }
-  /* ADR-180: a section with a count always reserves the full 3-slot group, so
-     every count badge shares one vertical even when the section is not playable. */
-  #left-sidebar .section-hdr-right:has(.section-hdr-count),
-  #right-sidebar .section-hdr-right:has(.section-hdr-count) {
-    width: var(--row-act-strip-3);
-  }
 
-  /* Count badges share the button geometry and pin right. */
+  /* ADR-181/182: enumeration + help are tiny gray meta chips grouped with the
+     category label. High-contrast and themeable via --chip-meta-* tokens (the
+     same surface as the .trail-version badge); never claim a transport slot. */
   .section-hdr-count,
-  .section-hdr-right .section-hdr-count,
+  .section-help-btn,
   .mp-playlist-count,
-  .concert-count,
   .rec-group-count {
     box-sizing: border-box;
-    min-width: var(--row-act-size);
-    height: var(--row-act-size);
+    min-width: 15px;
+    height: 15px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0 3px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    color: var(--fg-muted);
-    font-size: 0.56rem;
+    padding: 0 4px;
+    border: 1px solid var(--chip-meta-border);
+    border-radius: 3px;
+    background: var(--chip-meta-bg);
+    color: var(--chip-meta-fg);
+    font-size: 0.58rem;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
     line-height: 1;
     white-space: nowrap;
     flex-shrink: 0;
-  }
-  .mp-playlist-count,
-  .concert-count {
-    margin-left: auto;
-    /* Match the section-count column: count right edge = right - (play + gap). */
-    margin-right: var(--row-act-gap);
   }
 
   /* The section label is the scrollable part of the header row. */
@@ -5640,13 +5613,7 @@
   #left-sidebar .section-play-acts,
   #right-sidebar .section-play-acts,
   #left-sidebar .section-hdr-right,
-  #right-sidebar .section-hdr-right,
-  #left-sidebar .concert-count,
-  #right-sidebar .concert-count,
-  #left-sidebar .rec-group-count,
-  #right-sidebar .rec-group-count,
-  #left-sidebar .mp-playlist-count,
-  #right-sidebar .mp-playlist-count {
+  #right-sidebar .section-hdr-right {
     flex: 0 0 auto;
     flex-shrink: 0;
     margin-left: auto;
@@ -5933,7 +5900,7 @@
                    autocomplete="off" spellcheck="false" />
             <span id="trail-play-acts" class="section-play-acts">
               <button id="trail-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
-              <button id="trail-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue">&#x2295;</button>
+              <button id="trail-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue" aria-label="Add visible to queue">+</button>
             </span>
           </div>
         </div>
@@ -6051,7 +6018,7 @@
                  autocomplete="off" spellcheck="false" />
           <span id="rec-play-acts" class="section-play-acts">
             <button id="rec-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
-            <button id="rec-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue">&#x2295;</button>
+            <button id="rec-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue" aria-label="Add visible to queue">+</button>
           </span>
         </div>
       </div>

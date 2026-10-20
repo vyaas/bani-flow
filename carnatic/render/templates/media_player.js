@@ -2275,6 +2275,7 @@ function _buildPlusBtn(getItem) {
   btn.type = 'button';
   btn.className = 'mp-plus-btn';
   btn.title = 'Add to queue';
+  btn.setAttribute('aria-label', 'Add to queue');
   btn.textContent = '+';
   btn.addEventListener('click', e => {
     e.stopPropagation();
@@ -3186,9 +3187,7 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
   // Collect all performers across all sessions, deduplicated, excluding self
   // Each entry: { key, label, musicianId } for era-tinted chips (ADR-054)
   const coPerformerMap = new Map();
-  let totalPieces = 0;
   concert.sessions.forEach(session => {
-    totalPieces += session.perfs.length;
     session.performers.forEach(pf => {
       if (pf.musician_id === nodeId) return;
       const key = pf.musician_id || ('_' + (pf.unmatched_name || '?'));
@@ -3286,12 +3285,8 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     performersDiv.appendChild(chip);
   });
 
-  const countDiv = document.createElement('div');
-  countDiv.className = 'concert-count';
-  countDiv.textContent = String(totalPieces);
-  countDiv.title = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
-
-  // ▶ play-from-beginning button — opens the first track of the concert at 00:00:00
+  // ▶ play-from-beginning + whole-concert enqueue. Both read the same ordered
+  // track list, so the two can never disagree (ADR-181).
   const _firstPerfVid = (() => {
     for (const sess of concert.sessions) {
       const sorted = sess.perfs.slice().sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0));
@@ -3299,6 +3294,24 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     }
     return null;
   })();
+  const _concertHeaderTracks = [];
+  concert.sessions.forEach(sess => {
+    sess.perfs.slice()
+      .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0))
+      .forEach(sp => {
+        const spRagaObj = sp.raga_id ? ragas.find(r => r.id === sp.raga_id) : null;
+        _concertHeaderTracks.push({
+          offset_seconds: sp.offset_seconds || 0,
+          display_title:  sp.display_title || '',
+          raga_id:        sp.raga_id || null,
+          raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
+          tala:           sp.tala || null,
+          timestamp:      sp.timestamp || '00:00',
+          composition_id: sp.composition_id || null,
+        });
+      });
+  });
+  _concertHeaderTracks.sort((a, b) => a.offset_seconds - b.offset_seconds);
   const hdrActs = document.createElement('span');
   hdrActs.className = 'trail-acts';
   if (_firstPerfVid) {
@@ -3308,32 +3321,19 @@ function buildConcertBracket(concert, nodeId, artistLabel) {
     concertPlayBtn.textContent = '\u25B6';
     concertPlayBtn.addEventListener('click', e => {
       e.stopPropagation();
-      const _allTracks = [];
-      concert.sessions.forEach(sess => {
-        sess.perfs.slice()
-          .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0))
-          .forEach(sp => {
-            const spRagaObj = sp.raga_id ? ragas.find(r => r.id === sp.raga_id) : null;
-            _allTracks.push({
-              offset_seconds: sp.offset_seconds || 0,
-              display_title:  sp.display_title || '',
-              raga_id:        sp.raga_id || null,
-              raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
-              tala:           sp.tala || null,
-              timestamp:      sp.timestamp || '00:00',
-              composition_id: sp.composition_id || null,
-            });
-          });
-      });
-      _allTracks.sort((a, b) => a.offset_seconds - b.offset_seconds);
-      openOrFocusPlayer(_firstPerfVid, concert.short_title || concert.title, artistLabel, 0, concert.short_title || concert.title, _allTracks, { nodeId });
+      openOrFocusPlayer(_firstPerfVid, concert.short_title || concert.title, artistLabel, 0, concert.short_title || concert.title, _concertHeaderTracks, { nodeId });
     });
     hdrActs.appendChild(concertPlayBtn);
+    // ADR-181: the whole concert is enqueueable from its header.
+    hdrActs.appendChild(_buildPlusBtn(() => ({
+      media: _firstPerfVid, startSeconds: 0,
+      label: concert.short_title || concert.title || '', artistName: artistLabel,
+      concertTitle: concert.short_title || concert.title || '',
+      tracks: _concertHeaderTracks,
+      meta: { nodeId, recId: concert.recording_id || null },
+    })));
   }
 
-  // ADR-179: count and play share the header's right-hand action column so they
-  // align with the section count + row actions above/below.
-  titleRow.appendChild(countDiv);
   titleRow.appendChild(hdrActs);
   headerBody.appendChild(titleRow);
   // ADR-180: co-performers ride the same ribbon line as the title, not below it.
@@ -3862,6 +3862,21 @@ function buildMiscLeaf(p, nodeId, artistLabel) {
     );
   });
   actsDiv.appendChild(playBtn);
+  // ADR-181: misc recordings carry the same enqueue `+` as every other row.
+  const _miscThunk = (() => {
+    const _p = p;
+    const _tracks = _p.recording_id ? _buildConcertTracksFor(_p.recording_id, nodeId) : [];
+    const _next = _tracks.find(t => t.offset_seconds > (_p.offset_seconds || 0));
+    const _endSec = _next ? _next.offset_seconds : null;
+    return () => ({
+      media: _p.video_id, startSeconds: _p.offset_seconds || 0,
+      label: _p.display_title || _p.short_title || _p.title || '', artistName: artistLabel,
+      tracks: _tracks,
+      meta: { ragaId: null, compositionId: _p.composition_id || null, nodeId, end_seconds: _endSec },
+    });
+  })();
+  actsDiv.appendChild(_buildPlusBtn(_miscThunk));
+  registerQueueItem(li, _miscThunk);
   row.appendChild(actsDiv);
 
   li.appendChild(row);
@@ -3973,6 +3988,14 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
       openOrFocusPlayer(ref.video_id, ref.label || 'Lecture-Demo', artistLabel, undefined, ref.label || 'Lecture-Demo', segmentsToTracks(ref.segments || []), { nodeId, subjects: ref.subjects || null });
     });
     actsDiv.appendChild(playBtn);
+    // ADR-181: a flat lecdem is enqueueable as a whole.
+    actsDiv.appendChild(_buildPlusBtn(() => ({
+      media: ref.media || ref.media_key || ref.video_id, startSeconds: 0,
+      label: ref.label || 'Lecture-Demo', artistName: artistLabel || '',
+      concertTitle: ref.label || 'Lecture-Demo',
+      tracks: segmentsToTracks(ref.segments || []),
+      meta: { nodeId: nodeId || null, subjects: ref.subjects || null },
+    })));
 
     row.appendChild(actsDiv);
     return row;
@@ -4026,11 +4049,6 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     titleRow.appendChild(yearSpan);
   }
 
-  const countDiv = document.createElement('div');
-  countDiv.className = 'concert-count';
-  countDiv.textContent = String(segments.length);
-  countDiv.title = segments.length + (segments.length === 1 ? ' segment' : ' segments');
-
   // ▶ play-from-beginning button — opens the lecdem video at 00:00:00
   const lecdemPlayBtn = document.createElement('button');
   lecdemPlayBtn.className = 'rec-play-btn play-btn-direct';
@@ -4043,7 +4061,14 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
   const lecdemActs = document.createElement('span');
   lecdemActs.className = 'trail-acts';
   lecdemActs.appendChild(lecdemPlayBtn);
-  titleRow.appendChild(countDiv);
+  // ADR-181: the whole lecture-demo is enqueueable from its header.
+  lecdemActs.appendChild(_buildPlusBtn(() => ({
+    media: ref.media || ref.media_key || ref.video_id, startSeconds: 0,
+    label: ref.label || 'Lecture-Demo', artistName: artistLabel || '',
+    concertTitle: ref.label || 'Lecture-Demo',
+    tracks: allTracks,
+    meta: { nodeId, subjects: ref.subjects || null },
+  })));
   titleRow.appendChild(lecdemActs);
 
   headerBody.appendChild(titleRow);
@@ -4127,6 +4152,15 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
     const segActs = document.createElement('span');
     segActs.className = 'trail-acts';
     segActs.appendChild(playBtn);
+    // ADR-181: every lecdem segment is individually enqueueable.
+    const _segNext = allTracks.find(t => t.offset_seconds > (seg.offset_seconds || 0));
+    segActs.appendChild(_buildPlusBtn(() => ({
+      media: ref.media || ref.media_key || ref.video_id, startSeconds: seg.offset_seconds || 0,
+      label: segLabel, artistName: artistLabel || '',
+      concertTitle: ref.label || 'Lecture-Demo',
+      tracks: allTracks,
+      meta: { nodeId, subjects: ref.subjects || null, end_seconds: _segNext ? _segNext.offset_seconds : null },
+    })));
 
     li.appendChild(segMain);
     li.appendChild(segActs);
@@ -4200,6 +4234,20 @@ function buildPlaylistRow(pl) {
   const playActs = document.createElement('span');
   playActs.className = 'trail-acts';
   playActs.appendChild(play);
+  // ADR-181: the whole playlist is enqueueable, not just its tracks.
+  const enq = document.createElement('button');
+  enq.type = 'button';
+  enq.className = 'mp-plus-btn';
+  enq.title = 'Add playlist to queue';
+  enq.setAttribute('aria-label', 'Add playlist to queue');
+  enq.textContent = '+';
+  enq.addEventListener('click', e => {
+    e.stopPropagation();
+    if (queueItems.length && typeof MediaQueue !== 'undefined' && MediaQueue.addItems) {
+      MediaQueue.addItems(queueItems);
+    }
+  });
+  playActs.appendChild(enq);
 
   // Children: one tree-leaf per track — chips + play-from-here (queue at index i).
   const bodyEls = items.map((it, i) => {
@@ -4667,7 +4715,8 @@ function buildRecordingsList(nodeId, nodeData) {
 
         const countBadge = document.createElement('span');
         countBadge.className = 'rec-group-count';
-        countBadge.textContent = `(${compsInRaga.length})`;
+        countBadge.textContent = String(compsInRaga.length);
+        countBadge.title = compsInRaga.length + (compsInRaga.length === 1 ? ' composition' : ' compositions');
         groupHeader.appendChild(countBadge);
         groupLi.appendChild(groupHeader);
 

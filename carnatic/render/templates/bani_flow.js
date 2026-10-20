@@ -963,6 +963,8 @@ function buildTrailItem(row, type, id, multiVersionKeys) {
   const actsDiv = document.createElement('div');
   actsDiv.className = 'trail-acts';
   actsDiv.appendChild(trailPlayBtn);
+  // ADR-181: every playable trail row also carries an enqueue `+`.
+  actsDiv.appendChild(_buildPlusBtn(function() { return _buildRowQueueItem(row); }));
   row2Div.appendChild(actsDiv);
 
   li.appendChild(headerDiv);

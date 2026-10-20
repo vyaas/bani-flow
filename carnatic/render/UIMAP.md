@@ -81,7 +81,7 @@ bus** read by the wheel and view-switcher. `_currentBaniSubject = {type, id}`.
 **CSS hooks:** `--left-panel-width` (derived from data in `html_generator.py`,
 ADR-128 D7 — never hardcode); `.trail-*` classes; `.panel` base class; chip
 classes (`.raga-chip`, `.comp-chip`, `.musician-chip`); `.section-help-btn`
-(ADR-177 category help trigger). **ADR-180:** fixed `--row-height` ribbons —
+(ADR-177 category help trigger — ADR-181: gray meta chip). **ADR-180:** fixed `--row-height` ribbons —
 `.row-accordion-scroll` / `.tree-header-text` / `.trail-chips` are the
 horizontal-scroll surfaces; `.trail-acts` / `.tree-comp-acts` are the pinned
 two-slot action column; fold chevrons are retired.
@@ -96,7 +96,8 @@ re-applies it to the wheel via `syncRagaWheelToFilter`; reverse direction
 tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 149 (subject popup), 150, 151 (permalink), 154/156 (media spans), 157
 (play-all), 163 (playlists), 165, 167, 177 (category help dialog), 178
-(unified content filter), 180 (ribbon rows).
+(unified content filter), 180 (ribbon rows), 181 (transport buttons + meta chips),
+182 (themeable meta badges).
 
 ---
 
@@ -144,14 +145,18 @@ owns the recordings body. A "musician panel" task usually touches both.
 
 **CSS hooks:** `--right-panel-width` (derived, ADR-128 D7); `.panel`;
 `.section-collapse-btn` (ADR-180: retired); `.section-play-acts` (play-all/enqueue pair);
-`.section-help-btn` (ADR-177 category help trigger);
+`.section-help-btn` (ADR-177 category help trigger — ADR-181: a gray meta chip
+grouped with the section label);
 `#recordings-panel { padding-top: 0 }` (ADR-011). **ADR-179:** all row action
 groups (`.trail-acts`, `.tree-comp-acts`) reserve a fixed two-slot column and
-header groups (`.section-hdr-right`) three; play/enqueue/count badges share
+section headers (`.section-hdr-right`) two; play/enqueue badges share
 `--row-act-size`, and row labels are single-line horizontal-scroll surfaces.
 **ADR-180:** every row is a fixed-height ribbon — the composer chip is inlined
 on the composition line, multi-recording lists are always visible, and the
-perf/bracket fold chevrons are retired.
+perf/bracket fold chevrons are retired. **ADR-181:** `.section-hdr-count`,
+`.section-help-btn`, `.mp-playlist-count`, `.rec-group-count` are the gray meta
+chips (the `.trail-version` recipe); count/help sit left with the label, only
+play + enqueue (the bare `+`) occupy `.section-hdr-right`.
 
 **Connects to:** invoked from cy canvas tap (§3), WDP/ wheel musician
 expansion (§4), bani trail chips (§1), permalink restore. Recording rows →
@@ -162,7 +167,8 @@ machine: `mobile.js setPanelState`.
 removal), 046 (drawer handles), 086 (empty tutorial), 128 (panel components +
 D7 width), 129 (floating toggles), 137 (lineage popup), 163 (playlists
 section), 177 (category help dialog), 178 (unified content filter), 179
-(single-line rows + shared action column), 180 (ribbon rows, chevrons retired).
+(single-line rows + shared action column), 180 (ribbon rows, chevrons retired),
+181 (transport buttons + left-aligned meta chips), 182 (themeable meta badges).
 
 ---
 
@@ -443,7 +449,8 @@ desktop tracklist and queue are mutually exclusive (both open upward).
 phase A), 158–160, 161 (toggle primitive, upward surfaces), 162 (visible
 queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
 176 (app-level non-overlap contract), 179 (single-line rows + shared action
-column), 180 (ribbon rows, chevrons retired).
+column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-aligned meta chips),
+182 (themeable meta badges).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
@@ -493,7 +500,9 @@ permalink.js    LAST — restores state using every global above
 - `render/theme.py` `TOKENS` → `css_vars()` → `:root` CSS vars; also exported
   to `theme.js` as the `THEME` global (ADR-028). **Change colors/sizing here,
   never in templates.** ADR-179 adds `rowActSize`/`rowActGap` (`--row-act-size`
-  / `--row-act-gap`); ADR-180 adds `rowHeight` (`--row-height`).
+  / `--row-act-gap`); ADR-180 adds `rowHeight` (`--row-height`); ADR-182 adds
+  `chipMetaBg`/`chipMetaFg`/`chipMetaBorder` (`--chip-meta-bg` / `-fg` / `-border`)
+  — the themeable, high-contrast meta-badge surface.
 - Panel widths `--left-panel-width` / `--right-panel-width` are **derived from
   data** in `html_generator.py` (ADR-128 D7).
 - Canvas node styling (era colors, sizes, shapes) lives in Python
@@ -521,8 +530,11 @@ actually opened or closed.
 
 `panel_components.js`: `buildPanelHeader`, `buildSection({playable, helpKind,
 helpSlot, …})` (the play-acts pair comes free with `playable:true`; `helpKind` +
-`helpSlot` add the `.section-help-btn`; the `(N)` count lives in the right-hand
-`.section-hdr-right` group as `(N) ▶ ⊕`, keeping the `?` flush with the chip),
+`helpSlot` add the `.section-help-btn`; ADR-181: the count and the `?` are gray
+meta chips inside `.rec-section-hdr-label-wrap` — `[CHIP] [N] [?] ······ [▶ +]`
+— leaving `.section-hdr-right` with only the transport pair; ADR-182: those
+chips (plus `.trail-version` and `.mp-playlist-count`) share the
+`--chip-meta-*` tokens for a high-contrast, themeable badge),
 `buildSubjectGroup`,
 `buildRowAccordion` (ADR-180: no longer folds — its body chips lay inline on
 one `.row-accordion-scroll` line), `tagUntaggedChips` / `applyChipRole`. Also the unified
