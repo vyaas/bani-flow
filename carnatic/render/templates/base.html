@@ -1906,14 +1906,17 @@
   .yt-ext-link:active {
     transform: scale(0.92);
   }
-  /* ── Height parity: ↗ matches the subject chip beside it ─────────────────
-     In the bani subject row and the musician chip row the ↗ link is a flex
-     sibling of a vocabulary chip. Stretching it (height:auto) to the row's
-     cross size makes its box exactly as tall as the chip, so the glyph centres
-     on the chip instead of hanging from the chip's top edge. */
+  /* ── Height parity: chip-row controls match the subject chip beside them ──
+     In the bani subject row and the musician chip row, the ↗ link and the
+     lineage/popup button are flex siblings of a vocabulary chip. Stretching
+     them (height:auto) to the row's cross size makes their boxes exactly as
+     tall as the chip, so glyphs and counts centre on the chip instead of
+     hanging from its top edge. */
   #bani-subject-name-row .panel-header-affordances { align-self: stretch; }
   #bani-subject-name-row .panel-header-affordances .yt-ext-link,
-  #node-header-chip-row .yt-ext-link {
+  #node-header-chip-row .yt-ext-link,
+  #bani-subject-name-row .lineage-popup-btn,
+  #node-header-chip-row .lineage-popup-btn {
     height: auto;
     align-self: stretch;
   }
