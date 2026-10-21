@@ -1887,7 +1887,9 @@
     background: var(--bg-active);
     transform: scale(0.93);
   }
-  /* YouTube/external link \u2014 plain icon, no circle (ADR-128 D14). */
+  /* YouTube/external link. Bare icon by default; the subject-header rows
+     override it into an encircled chip-height button (see the height-parity
+     block below). */
   .yt-ext-link {
     flex-shrink: 0;
     position: relative;
@@ -1931,7 +1933,9 @@
      lineage/popup button are flex siblings of a vocabulary chip. Stretching
      them (height:auto) to the row's cross size makes their boxes exactly as
      tall as the chip, so glyphs and counts centre on the chip instead of
-     hanging from its top edge. */
+     hanging from its top edge. The ↗ is drawn as an encircled chip-height
+     button (ADR-128's prominent-affordance intent) so that height is visible,
+     not just an invisible tap box. */
   #bani-subject-name-row .panel-header-affordances { align-self: stretch; }
   #bani-subject-name-row .panel-header-affordances .yt-ext-link,
   #node-header-chip-row .yt-ext-link,
@@ -1939,6 +1943,13 @@
   #node-header-chip-row .lineage-popup-btn {
     height: auto;
     align-self: stretch;
+  }
+  #bani-subject-name-row .panel-header-affordances .yt-ext-link,
+  #node-header-chip-row .yt-ext-link {
+    width: auto;
+    padding: 0 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--chip-border-radius, 4px);
   }
   /* trail-acts: ▶ + ↗ always right-aligned in any flex parent */
   .trail-acts {
