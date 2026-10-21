@@ -294,7 +294,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const compSrc = comp && comp.sources && comp.sources[0];
     if (compSrc) {
       subjectLink.href = compSrc.url;
-      subjectLink.style.display = 'inline';
+      subjectLink.style.display = '';
     }
     // Notes section (ADR-097 §7)
     if (_notesRow && comp && Array.isArray(comp.notes) && comp.notes.length > 0) {
@@ -344,7 +344,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
       const offsetSecs = ref.offset_seconds || 0;
       subjectLink.href = `https://www.youtube.com/watch?v=${ref.video_id}` +
         (offsetSecs > 0 ? `&t=${offsetSecs}s` : '');
-      subjectLink.style.display = 'inline';
+      subjectLink.style.display = '';
     }
 
     // Row 2: raga (linked) · tala · concert
@@ -405,7 +405,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     subjectName.textContent = ytShort;
     subjectName.title = ytLabel;  // full label as tooltip
     subjectLink.href = `https://www.youtube.com/watch?v=${ytVid}`;
-    subjectLink.style.display = 'inline';
+    subjectLink.style.display = '';
 
     // Row 2: raga (linked) · YouTube recording
     const ytParts = [];
@@ -458,7 +458,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const ragaSrc = raga && raga.sources && raga.sources[0];
     if (ragaSrc) {
       subjectLink.href = ragaSrc.url;
-      subjectLink.style.display = 'inline';
+      subjectLink.style.display = '';
     }
     // Notes section (ADR-097 §7) — array-shaped notes only; string notes stay as tooltip
     if (_notesRow && raga && Array.isArray(raga.notes) && raga.notes.length > 0) {

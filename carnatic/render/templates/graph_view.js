@@ -1200,7 +1200,7 @@ function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   if (primarySrc) {
     wikiLink.href         = primarySrc.url;
     wikiLink.title        = primarySrc.label;
-    wikiLink.style.display = 'inline';
+    wikiLink.style.display = '';
   } else {
     wikiLink.style.display = 'none';
   }
@@ -1295,7 +1295,7 @@ function _openMusicianPanelForTransit(transitId) {
   if (primarySrc) {
     wikiLink.href          = primarySrc.url;
     wikiLink.title         = primarySrc.label;
-    wikiLink.style.display = 'inline';
+    wikiLink.style.display = '';
   } else {
     wikiLink.style.display = 'none';
   }
