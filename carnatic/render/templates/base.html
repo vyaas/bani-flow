@@ -27,7 +27,7 @@
     --chip-era-border:        var(--border-strong);
     --bg-pressed:             rgba(0, 0, 0, 0.28);
     /* ADR-129: safe-zone tokens — panel/canvas insets that clear the floating chrome */
-    --chrome-top:             50px;   /* bottom of top-chrome (view-selector + playlist-bar) + gap */
+    --chrome-top:             96px;   /* bottom of top-chrome (search bar + editor bar) + gap */
     --chrome-bottom:          64px;   /* top of bottom-chrome (panel toggles + bundle) + gap */
     /* ADR-063: uniform first-class chip appearance */
     --chip-raga-border:       var(--accent-match, #6ec6a8);   /* teal/green accent */
@@ -2891,12 +2891,27 @@
      Playlist Bar it obeys the same contract as raga/comp/musician chips:
      single line, natural width, vertically centred, no stray margin. */
   .mp-queue-chips .yt-label-chip,
+  .track-result-chips .yt-label-chip,
   #pb-summary .yt-label-chip {
     display: inline-flex; align-items: center;
     white-space: nowrap; word-break: normal;
     max-width: none; align-self: center;
     margin-top: 0; line-height: inherit;
   }
+  /* ADR-184: the now-playing overlay — a thin chip strip pinned to the video
+     frame (below the player's own minimize/close row). It is a sibling of
+     .plyr inside .mp-video-wrap, so the Fullscreen API hides it automatically
+     when the video is maximized. Read-only: only the chips take pointer events. */
+  .mp-now-playing {
+    position: absolute; left: 0; right: 0; top: 34px;
+    display: none; align-items: center; gap: 4px;
+    padding: 3px 8px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.72), rgba(0,0,0,0));
+    overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+    pointer-events: none; z-index: 4;
+  }
+  .mp-now-playing::-webkit-scrollbar { display: none; }
+  .mp-now-playing > * { flex-shrink: 0; pointer-events: auto; }
   .mp-queue-play {
     background: none; border: none; border-radius: 6px;
     color: var(--fg-sub); font-size: 0.74rem; cursor: pointer; padding: 0; line-height: 1;
@@ -3015,15 +3030,6 @@
   }
   /* "New playlist…" gets a subtle separator from the list */
   .mp-plus-menu-new { color: var(--accent); }
-  /* Queue toggle button in the bar (same icon-button family as copy/share) */
-  .mp-queue-toggle {
-    background: none; border: none; color: var(--fg-muted);
-    cursor: pointer; padding: 0 4px; flex-shrink: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-  }
-  .mp-queue-toggle svg { width: 15px; height: 15px; fill: currentColor; display: block; pointer-events: none; }
-  .mp-queue-toggle:hover { color: var(--accent-sub); }
-
   /* ── ADR-175: persistent Playlist Bar (app-level chrome) ──────────────────
      The Current Playlist's always-on face: transport + now-playing summary +
      count + editor toggle + expand. Stretches gas-like between the view selector
@@ -3032,8 +3038,59 @@
      player inherit the bar's width, so they stay clear too. Reuses the ADR-162
      .mp-queue editor, re-parented here as .mp-queue-bar so it drops DOWN from
      the bar and is visible with the player open or closed. */
-  #playlist-bar {
+  /* ADR-184: the grand track search sits in the old top slot; the thin editor
+     bar moves below it. Both stretch gas-like and are clamped to the canvas
+     column (see the drawer rules below). */
+  #search-bar {
     position: fixed; top: 12px; left: 220px; right: 56px;
+    z-index: 751;   /* above the editor bar (750) so its dropdown clears it */
+    display: flex; align-items: center; gap: 6px;
+    width: auto;
+    padding: 4px 8px;
+    background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+    pointer-events: auto;
+  }
+  #search-bar .search-bar-icon { color: var(--fg-muted); font-size: 0.9rem; flex-shrink: 0; }
+  #track-search-input {
+    flex: 1; min-width: 0; width: auto;
+    background: var(--bg-input); color: var(--fg-main);
+    border: 1px solid var(--border-strong); border-radius: 4px;
+    padding: 4px 9px; font-family: inherit; font-size: 0.78rem; outline: none;
+  }
+  #track-search-input:focus { border-color: var(--accent); }
+  #track-search-input::placeholder { color: var(--fg-muted); font-style: italic; }
+  #track-search-dropdown {
+    top: calc(100% + 4px);
+    max-height: min(60vh, 420px);
+    z-index: 10;
+  }
+  /* ADR-184: a track result row — chips (horizontal-scroll) + play + enqueue. */
+  .track-result {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 8px; border-bottom: 1px solid var(--border); cursor: pointer;
+  }
+  .track-result:last-child { border-bottom: none; }
+  .track-result:hover, .track-result.active { background: var(--bg-input); }
+  .track-result-chips {
+    flex: 1; min-width: 0;
+    display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
+    overflow-x: auto; white-space: nowrap; scrollbar-width: thin;
+  }
+  .track-result-chips > * { flex-shrink: 0; }
+  .track-result-play, .track-result-enqueue {
+    background: none; border: none; color: var(--fg-sub);
+    width: 22px; height: 22px; padding: 0; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 5px; cursor: pointer; font-size: 0.78rem; line-height: 1;
+    transition: color 0.12s, background 0.12s;
+  }
+  .track-result-play:hover, .track-result-enqueue:hover { color: var(--accent); background: var(--bg-hover); }
+  .track-result-enqueue { font-size: 1rem; font-weight: 500; }
+  .track-result-empty { color: var(--fg-muted); font-style: italic; font-size: 0.74rem; cursor: default; }
+  #playlist-bar {
+    position: fixed; top: 56px; left: 220px; right: 56px;
     z-index: 750;   /* ADR-175: above players (≤700) and drawers; below modals (1000+) */
     display: flex; align-items: center; gap: 6px;
     width: auto;
@@ -3050,6 +3107,8 @@
   @media (min-width: 769px) {
     body:has(#left-sidebar.drawer-open)  #playlist-bar { left:  max(220px, var(--left-panel-width, 280px)); }
     body:has(#right-sidebar.drawer-open) #playlist-bar { right: max(56px,  var(--right-panel-width, 280px)); }
+    body:has(#left-sidebar.drawer-open)  #search-bar  { left:  max(220px, var(--left-panel-width, 280px)); }
+    body:has(#right-sidebar.drawer-open) #search-bar  { right: max(56px,  var(--right-panel-width, 280px)); }
   }
   #playlist-bar.pb-empty { opacity: 0.6; }
   #playlist-bar .pb-transport { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
@@ -3095,9 +3154,12 @@
      it. --chrome-top clears both bands AND the 54px bar (bottom = 52 + 54 = 106)
      with a 10px gap, so the canvas, wheel and both panels never run under the bar. */
   @media (max-width: 768px) {
-    :root { --chrome-top: 116px; }
+    :root { --chrome-top: 176px; }
+    #search-bar {
+      top: 52px; left: 8px; right: 8px; transform: none; width: auto;
+    }
     #playlist-bar {
-      top: 52px; left: 8px; right: 8px; transform: none;
+      top: 112px; left: 8px; right: 8px; transform: none;
       width: auto;
     }
   }
@@ -4562,8 +4624,7 @@
     .media-player.full-mobile .mp-copy-btn,
     .media-player.full-mobile .mp-share-btn,
     .media-player.full-mobile .mp-yt-link,
-    .media-player.full-mobile .mp-tracklist-toggle,
-    .media-player.full-mobile .mp-queue-toggle {
+    .media-player.full-mobile .mp-tracklist-toggle {
       min-width: 44px; min-height: 44px;
       display: inline-flex; align-items: center; justify-content: center;
     }
@@ -5872,10 +5933,25 @@
   </div>
 </div>
 
-<!-- ADR-175: persistent Playlist Bar (app-level chrome). The Current Playlist's
-     always-on face — transport + now-playing summary + count + editor toggle +
-     expand. The editor (.mp-queue-bar) is appended by media_player.js so it drops
-     DOWN from the bar and is visible with the player open or closed. -->
+<!-- ADR-184: the grand track search — the entry point for all of bani-flow.
+     Type a musician, raga, composition or recording and get playable track
+     rows (chips + play + enqueue) in a scrollable dropdown. Index + handlers
+     live in search.js; results are built from perfToPerf (one row per
+     performance). -->
+<div id="search-bar" aria-label="Search all tracks">
+  <span class="search-bar-icon" aria-hidden="true">&#9906;</span>
+  <input id="track-search-input" class="search-input track-search-input" type="text"
+         placeholder="Search musicians, ragas, compositions, recordings…"
+         autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false"
+         aria-controls="track-search-dropdown" aria-label="Search all tracks">
+  <div id="track-search-dropdown" class="search-dropdown track-search-dropdown" style="display:none"></div>
+</div>
+
+<!-- ADR-175 / ADR-184: persistent Playlist Bar (app-level chrome), now the thin
+     editor bar BELOW the search bar. The Current Playlist's always-on face —
+     editor toggle + transport + now-playing summary + count + inherited
+     operators. The editor (.mp-queue-bar) is appended by media_player.js so it
+     drops DOWN from the bar and is visible with the player open or closed. -->
 <div id="playlist-bar" class="pb-empty" aria-label="Playlist">
   <button type="button" id="pb-editor-toggle" class="pb-btn mp-toggle-btn" title="Playlist" aria-label="Playlist" aria-pressed="false">&#9654;</button>
   <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>

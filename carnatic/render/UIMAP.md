@@ -308,14 +308,20 @@ bottom-sheet `.media-player.full-mobile`
 (`buildPlayerBar`), chip rail (`buildPlayerRail`), tracklist (`.mp-tracklist`,
 opens upward `bottom:100%`), queue panel (`.mp-queue`, opens upward; the
 app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
-`#mp-copy-toast`.
+`#mp-copy-toast`. **ADR-184:** the now-playing overlay
+`.mp-now-playing` is a sibling of `.plyr` inside `.mp-video-wrap` (so the
+Fullscreen API hides it automatically); the grand search is the static
+`#search-bar` (`#track-search-input` + `#track-search-dropdown`) at the top of
+the viewport.
 
 **ADR-175 / ADR-183 — the playlist row is king:** content players are **bare**
 (`.media-player.bare`: the video surface only; **no** `.mp-bar`, drag handle,
 resize grip, identity rail, ✕, minimize or fold-cue). Identity lives in the editor row; the
-current row owns the operator set (`.mp-queue-op` copy / permalink / watch →
-`_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`; play↔stop via `_pbStopCurrent`;
-plus the volume slider `.mp-queue-vol` → `_setPlayerVolume`). Copy's tooltip reads
+current row owns the transport (`.mp-queue-play`; play↔stop via `_pbStopCurrent`;
+plus the volume slider `.mp-queue-vol` → `_setPlayerVolume`). **ADR-184:** every
+row owns its own operator set (`.mp-queue-op` copy / permalink / watch →
+`_copyMediaLink` / `_copyMediaPermalink` / `_openMediaOnYouTube`, the row's own
+track), not just the current one. Copy's tooltip reads
 **Copy YouTube link**; permalink is the TiddlyWiki-style **#** glyph (still
 `Copy permalink`). **Parent-inherits rule:** while the editor is open the row holds
 the operators; the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch` /
@@ -355,7 +361,21 @@ resize). z-order: players `≤700`, `#playlist-bar` `750`, modals
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
 
-**ADR-175: the persistent Playlist Bar** is the one static root:
+**ADR-184: the grand track search.** `#search-bar` occupies the old top slot
+(desktop `top:12px`, the thin editor bar moves to `top:56px`; mobile `52px` /
+`112px`). `search.js`'s grand-search IIFE indexes every recorded performance
+(`perfToPerf`) **and** every `musician.youtube[]` recital track (host entry
+preferred; accompanist cross-links dropped by `media_key`). Matching is
+word-prefix over dots-fused initials (so `tm krishna` matches T.M. Krishna but
+not the `tm` inside `atma`); when the whole query is a prefix of one entity name
+the results narrow to that name (`_getIndex`, `_entryFromPerf`,
+`_entryFromTrack`). Each result row (`.track-result`) is the shared chip strip +
+**play** (`MediaQueue.playContent`) + **enqueue** (`MediaQueue.addItem`).
+`#track-search-dropdown` is scrollable and sits above players (bar `750`,
+search `751`, dropdown `10` inside it).
+
+**ADR-175: the persistent Playlist Bar** is the thin editor bar below the
+search bar:
 `#playlist-bar` (app chrome on desktop, gas-like between the view selector and
 help button and **clamped to the canvas column** — `body:has(#left-sidebar.drawer-open)` /
 `body:has(#right-sidebar.drawer-open)` pin its `left`/`right` to the panel widths so
@@ -377,6 +397,12 @@ geometry of `#pb-summary`, so the bar reads as an inheritance of the rows. The
 bare-label fallback (`_buildQueueRowChips`'s `.yt-label-chip`) is overridden in
 both contexts to the same single-line, natural-width, centred chip contract, so
 a label item never balloons the row/bar height.
+
+**ADR-184: the now-playing overlay.** `_syncNowPlayingOverlays()` (called from
+`_refreshQueuePanels`) paints `_buildQueueRowChips(item, activeChapter)` into
+every mounted player's `.mp-now-playing`, so the video itself always names the
+sounding track — even with the editor folded. It is refreshed on queue advance
+and ADR-176 `activeChapter` changes.
 
 **Owns:** `media_player.js` (~4740 ln) + `media_providers.js` (provider
 registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154)
@@ -401,8 +427,7 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   (`_normalize`) or `currentKey` silently breaks.
 - Queue UI: `buildQueuePanel()` / `_renderQueuePanel(panel)` /
   `_refreshQueuePanels()` (two-way binding — call after every mutation) /
-  `_addQueueUI(el, skipRefresh)` (legacy attach point, now **unused** — ADR-175
-  re-parented the editor to the bar).
+  `_syncNowPlayingOverlays()` (ADR-184: paints `.mp-now-playing`).
 - **ADR-175 Playlist Bar:** `_initPlaylistBar()` (mounts the bar + editor, wires
   transport), `_renderPlaylistBar()` (mirrors MediaQueue into `#playlist-bar`),
   `_pbPlayPauseCurrent()` / `_pbStopCurrent()` / `_pbExpandPlayer()` (control
@@ -463,7 +488,7 @@ queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
 176 (app-level non-overlap contract), 179 (single-line rows + shared action
 column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-aligned meta chips),
 182 (themeable meta badges), 183 (fixed docked player; no drag/resize, editor
-height cap).
+height cap), 184 (grand track search, thin editor bar, now-playing overlay).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
@@ -580,8 +605,8 @@ longer exist.
    current track keeps playing, then `_refreshQueuePanels()`.
 2. Chrome: add the button in `buildPlayerBar` (`.mp-bar-right`); if it holds
    state use the `.mp-toggle-btn` primitive (ADR-161).
-3. Mirror in `_openMobilePlayer`'s bar (`_addQueueUI` attach point covers the
-   panel; the button itself is bar chrome).
+3. Mirror in `_openMobilePlayer`'s bar (mobile chrome changes go in the
+   `_openMobilePlayer` branch, not only `buildPlayerBar`).
 4. Style in `base.html` using THEME vars only.
 5. Gate: `bani-render` → `pytest carnatic/tests/` (queue invariants:
    `test_trail_queue_item_invariants.py`).

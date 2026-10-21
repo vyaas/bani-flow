@@ -100,7 +100,9 @@ def test_queue_label_chips_follow_the_same_chip_contract():
     single-line, natural-width, centred contract as every other chip."""
     css = _base()
     match = re.search(
-        r"\.mp-queue-chips \.yt-label-chip,\s*#pb-summary \.yt-label-chip\s*\{(.*?)\}",
+        r"\.mp-queue-chips \.yt-label-chip,\s*"
+        r"(?:\.track-result-chips \.yt-label-chip,\s*)?"
+        r"#pb-summary \.yt-label-chip\s*\{(.*?)\}",
         css, re.DOTALL,
     )
     assert match, "missing queue-context override for the fallback label chip"

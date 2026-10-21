@@ -1720,6 +1720,11 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // IFrame API needs the target element attached to initialise.
   document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
+  // ADR-184: now-playing chip overlay — a sibling of .plyr (so fullscreen hides
+  // it automatically); the chips name the sounding track on the video itself.
+  const nowPlaying = document.createElement('div');
+  nowPlaying.className = 'mp-now-playing';
+  videoWrap.appendChild(nowPlaying);
 
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
 
@@ -2346,8 +2351,6 @@ function _openPlusMenu(anchor, getItem) {
 // items with a now-playing highlight, per-row reorder/remove, row-click to jump,
 // and prev/next transport. Two-way bound: every control mutates MediaQueue, and
 // MediaQueue mutations call _refreshQueuePanels() to re-render every open panel.
-const _QUEUE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 5h12v2H3zM3 10h12v2H3zM3 15h8v2H3zM16 9v8l6-4z"/></svg>';
-
 function _buildQueueRowChips(item, activeChapter) {
   const base = item.meta || {};
   // ADR-176 follow-up: when the current item's video has advanced into a later
@@ -2492,6 +2495,26 @@ function buildQueuePanel() {
   return panel;
 }
 
+// ADR-184: paint the sounding track's chips onto every mounted player's video
+// overlay. Read-only; refreshed from _refreshQueuePanels so queue advances and
+// ADR-176 activeChapter changes both land. The overlay is a sibling of .plyr,
+// so the Fullscreen API hides it when the video is maximized.
+function _syncNowPlayingOverlays() {
+  const item = (MediaQueue.active && MediaQueue.index >= 0)
+    ? MediaQueue.items[MediaQueue.index] : null;
+  playerRegistry.forEach(inst => {
+    const el = inst && inst.el;
+    if (!el) return;
+    const ov = el.querySelector('.mp-now-playing');
+    if (!ov) return;
+    const isCurrent = !!(item && MediaQueue.currentKey && inst.mediaKey === MediaQueue.currentKey);
+    ov.innerHTML = '';
+    if (!isCurrent) { ov.style.display = 'none'; return; }
+    ov.appendChild(_buildQueueRowChips(item, MediaQueue.activeChapter));
+    ov.style.display = 'flex';
+  });
+}
+
 // Re-render every open queue panel and sync toggle state/visibility. Called by
 // MediaQueue on any mutation (start/advance/jump/remove/move/clear).
 function _refreshQueuePanels() {
@@ -2509,12 +2532,10 @@ function _refreshQueuePanels() {
       if (p.getBoundingClientRect().top < 4) p.classList.add('mp-queue-down');
     }
   });
-  document.querySelectorAll('.mp-queue-toggle').forEach(btn => {
-    btn.style.display = MediaQueue.active ? '' : 'none';
-    btn.setAttribute('aria-pressed', MediaQueue.panelOpen ? 'true' : 'false');
-  });
   // ADR-175: the app-level Playlist Bar mirrors every MediaQueue mutation.
   _renderPlaylistBar();
+  // ADR-184: keep the video's now-playing overlay truthful.
+  _syncNowPlayingOverlays();
   // Keep the current player docked under the (possibly just-changed) playlist
   // UI — expanding the editor must push the player down, never cover its header.
   const _cur = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
@@ -2524,54 +2545,6 @@ function _refreshQueuePanels() {
   }
   // ADR-176: also sweep detached players clear of the editor after a resize.
   _scheduleReposition();
-}
-
-// Attach the queue toggle (bar) + panel to a freshly-built player, but only when
-// a queue is active. The panel is a sibling before .mp-video-wrap so its upward
-// (bottom:100%) anchor sits above the bar, never over the video (ADR-161 §3).
-function _addQueueUI(el, skipRefresh) {
-  if (!MediaQueue.active || !el) return;
-  const bar = el.querySelector('.mp-bar');
-  if (!bar) return;
-  const rightGroup = bar.querySelector('.mp-bar-right');
-  if (rightGroup && !rightGroup.querySelector('.mp-queue-toggle')) {
-    const qBtn = document.createElement('button');
-    qBtn.type = 'button';
-    qBtn.className = 'mp-queue-toggle mp-toggle-btn';
-    qBtn.title = 'Up Next (queue)';
-    qBtn.setAttribute('aria-pressed', MediaQueue.panelOpen ? 'true' : 'false');
-    qBtn.innerHTML = _QUEUE_ICON;
-    const closeBtn = rightGroup.querySelector('.mp-close');
-    if (closeBtn) rightGroup.insertBefore(qBtn, closeBtn); else rightGroup.appendChild(qBtn);
-    qBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
-      // Desktop: tracklist + queue both open upward from the bar (absolute), so
-      // they're mutually exclusive. Mobile panels are in-flow and simply stack.
-      const onMobile = (typeof _isMobilePlayer === 'function' && _isMobilePlayer());
-      if (MediaQueue.panelOpen && !onMobile) {
-        const tl = el.querySelector('.mp-tracklist');
-        if (tl) { tl.style.display = 'none'; tl.classList.remove('mp-tracklist-down'); }
-        const tlBtn = el.querySelector('.mp-tracklist-toggle');
-        if (tlBtn) tlBtn.setAttribute('aria-pressed', 'false');
-      }
-      _refreshQueuePanels();
-    });
-  }
-  if (!el.querySelector('.mp-queue')) {
-    const panel = buildQueuePanel();
-    const videoWrap = el.querySelector('.mp-video-wrap');
-    if (videoWrap) el.insertBefore(panel, videoWrap); else bar.after(panel);
-    // Wire the queue head as a second drag handle for the player container —
-    // the user naturally expects to grab it just like the bar. Buttons inside
-    // the head stop propagation so their clicks never start a drag.
-    const queueHead = panel.querySelector('.mp-queue-head');
-    if (queueHead) {
-      wireDrag(el, queueHead);
-      queueHead.querySelectorAll('button').forEach(b => b.addEventListener('mousedown', e => e.stopPropagation()));
-    }
-  }
-  if (!skipRefresh) _refreshQueuePanels();
 }
 
 // ── ADR-175: persistent Playlist Bar (app-level chrome) ───────────────────────
@@ -5257,6 +5230,10 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   const controller = mountPlayer(mp.videoWrap, media, startSeconds, markerPointsFromTracks(mp.tracks));
   mp.controller = controller;
   mp.iframe = controller.iframe;   // null when Plyr-backed
+  // ADR-184: now-playing chip overlay on the mobile video surface too.
+  const mpNowPlaying = document.createElement('div');
+  mpNowPlaying.className = 'mp-now-playing';
+  mp.videoWrap.appendChild(mpNowPlaying);
   // Live playhead so share/copy capture the real position (AUDIT-014 F-04).
   // Also advance the header rail and mini-strip when the playhead crosses a
   // segment boundary (mirrors the desktop createPlayer path).

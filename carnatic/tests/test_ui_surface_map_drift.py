@@ -39,6 +39,8 @@ CLAIMS: dict[str, list[str]] = {
         'id="raga-wheel"', 'id="wheel-detail-panel"',
         # §5 media player
         'id="mp-copy-toast"',
+        # §5 media player — ADR-184 grand track search
+        'id="search-bar"', 'id="track-search-input"', 'id="track-search-dropdown"',
         # §5 media player — ADR-175 persistent Playlist Bar
         'id="playlist-bar"', 'id="pb-summary"', 'id="pb-editor-toggle"',
         'id="pb-prev"', 'id="pb-next"', 'id="pb-play"', 'id="pb-stop"',
@@ -95,7 +97,6 @@ CLAIMS: dict[str, list[str]] = {
         "const MediaQueue", "window.startMediaQueue", "window.registerQueueItem",
         "function collectQueueItems", "function buildQueuePanel",
         "function _renderQueuePanel", "function _refreshQueuePanels",
-        "function _addQueueUI",
         # §5 — ADR-175 persistent Playlist Bar
         "function _initPlaylistBar", "function _renderPlaylistBar",
         "function _pbPlayPauseCurrent", "function _pbExpandPlayer",
@@ -107,6 +108,8 @@ CLAIMS: dict[str, list[str]] = {
         "function _syncViewTopInset", "function _clampPlaylistEditorHeight",
         "function _syncPlayerControls",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
+        "function _copyMediaLink", "function _copyMediaPermalink", "function _openMediaOnYouTube",
+        "function _syncNowPlayingOverlays",
         "function _pbCurrentTarget",
         "function _setPlayerVolume", "function _syncVolumeControls",
         "window._initPlaylistBar",
@@ -126,6 +129,11 @@ CLAIMS: dict[str, list[str]] = {
     "media_providers.js": [
         # §5 — provider registry (ADR-154)
         "parseMediaUrl", "mediaKey", "embedSource",
+    ],
+    "search.js": [
+        # §5 — ADR-184 grand track search (index over performances + youtube[])
+        "function _getIndex", "function _entryFromPerf", "function _entryFromTrack",
+        "getElementById('track-search-input')",
     ],
     "panel_components.js": [
         # §6.5 — shared panel/chip constructors (ADR-128)
