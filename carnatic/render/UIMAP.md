@@ -84,7 +84,10 @@ classes (`.raga-chip`, `.comp-chip`, `.musician-chip`); `.section-help-btn`
 (ADR-177 category help trigger — ADR-181: gray meta chip). **ADR-180:** fixed `--row-height` ribbons —
 `.row-accordion-scroll` / `.tree-header-text` / `.trail-chips` are the
 horizontal-scroll surfaces; `.trail-acts` / `.tree-comp-acts` are the pinned
-two-slot action column; fold chevrons are retired.
+two-slot action column; fold chevrons are retired. The subject chip row
+follows the same pattern: `#bani-subject-name` is itself the nowrap
+horizontal-scroll surface, with `#bani-subject-popup-btn` and the `↗`
+affordances pinned.
 
 **Connects to:** sets `activeBaniFilter` → `switchView` (in raga_wheel.js)
 re-applies it to the wheel via `syncRagaWheelToFilter`; reverse direction
@@ -156,7 +159,9 @@ on the composition line, multi-recording lists are always visible, and the
 perf/bracket fold chevrons are retired. **ADR-181:** `.section-hdr-count`,
 `.section-help-btn`, `.mp-playlist-count`, `.rec-group-count` are the gray meta
 chips (the `.trail-version` recipe); count/help sit left with the label, only
-play + enqueue (the bare `+`) occupy `.section-hdr-right`.
+play + enqueue (the bare `+`) occupy `.section-hdr-right`. The subject chip row
+reuses the ADR-180 mechanism: `#node-name` is the nowrap horizontal-scroll
+surface, with `#lineage-popup-btn` / `#node-wiki-link` pinned.
 
 **Connects to:** invoked from cy canvas tap (§3), WDP/ wheel musician
 expansion (§4), bani trail chips (§1), permalink restore. Recording rows →

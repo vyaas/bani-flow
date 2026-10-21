@@ -443,9 +443,22 @@
   /* ── bani subject info — mirrors #node-info: chip row + trail filter as one unit ── */
   #bani-info { padding: 8px 14px; flex-shrink: 0; }
   #node-header { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-  #node-header-chip-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px; }
-  /* #node-name is now a transparent wrapper — the .musician-chip inside it carries all styles */
-  #node-name { display: inline-flex; align-items: center; min-width: 0; flex: 0 1 auto; }
+  #node-header-chip-row { display: flex; align-items: center; flex-wrap: nowrap; gap: 5px; min-width: 0; max-width: 100%; }
+  /* #node-name is the chip row's single horizontal-scroll surface (ADR-180,
+     same mechanism as the panel ribbons): a long musician name scrolls
+     sideways instead of wrapping the row, so the popup / ↗ controls stay
+     pinned on the chip's line and keep the chip's height. */
+  #node-name {
+    display: inline-flex; align-items: center; min-width: 0; flex: 0 1 auto;
+    overflow-x: auto; overflow-y: hidden; white-space: nowrap; scrollbar-width: thin;
+  }
+  /* Never bleed the name back into the row: the chip keeps its intrinsic width
+     and the wrapper scrolls. Trailing controls are pinned so only the name
+     moves. */
+  #node-name > .musician-chip,
+  #node-name > .composer-chip { flex: 0 0 auto; }
+  #node-header-chip-row > .lineage-popup-btn { flex-shrink: 0; }
+  #node-header-chip-row > .yt-ext-link { flex-shrink: 0; }
   /* ADR-072: search-subject prominence — match left-sidebar bani-subject sizing */
   #node-header .musician-chip,
   #node-header .composer-chip {
@@ -1498,21 +1511,28 @@
     flex-shrink: 0;
   }
   #bani-subject-name-row {
-    display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px;
+    display: flex; align-items: center; flex-wrap: nowrap; gap: 5px;
   }
   #bani-subject-name-row .panel-header-affordances {
-    padding: 0; flex-wrap: nowrap;
+    padding: 0; flex-wrap: nowrap; flex-shrink: 0;
   }
+  /* Pin the small controls; only the subject name scrolls. The name is the
+     chip itself, so it is the row's horizontal-scroll surface (ADR-180) —
+     a long composition/raga name scrolls sideways rather than wrapping the
+     row or folding onto a second line. */
+  #bani-subject-name-row > .lineage-popup-btn,
+  #bani-subject-icon,
+  #bani-her-prefix { flex-shrink: 0; }
   #bani-subject-name {
     font-size: 0.85rem; color: var(--accent); font-weight: bold;
     flex: 1; min-width: 0;
-    white-space: normal; word-break: break-word; overflow: visible;
+    white-space: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin;
   }
   /* When subject name is rendered as a chip, let the chip control its own sizing
      and colour — override the ID-level accent/bold defaults */
   #bani-subject-name.comp-chip {
     flex: 0 1 auto;
-    overflow: visible;
+    overflow-x: auto; overflow-y: hidden;
     text-overflow: clip;
     /* ADR-072: subject prominence */
     font-size: var(--subject-size);
@@ -1521,7 +1541,7 @@
   }
   #bani-subject-name.raga-chip {
     flex: 0 1 auto;
-    overflow: visible;
+    overflow-x: auto; overflow-y: hidden;
     text-overflow: clip;
     /* ADR-072: subject prominence */
     font-size: var(--subject-size);
@@ -5476,7 +5496,9 @@
   #left-sidebar .lecdem-label-chip::-webkit-scrollbar,
   #right-sidebar .lecdem-label-chip::-webkit-scrollbar,
   #left-sidebar .yt-label-chip::-webkit-scrollbar,
-  #right-sidebar .yt-label-chip::-webkit-scrollbar {
+  #right-sidebar .yt-label-chip::-webkit-scrollbar,
+  #node-name::-webkit-scrollbar,
+  #bani-subject-name::-webkit-scrollbar {
     height: 3px;
   }
   #left-sidebar .trail-chips > *::-webkit-scrollbar-thumb,
@@ -5486,7 +5508,9 @@
   #left-sidebar .lecdem-label-chip::-webkit-scrollbar-thumb,
   #right-sidebar .lecdem-label-chip::-webkit-scrollbar-thumb,
   #left-sidebar .yt-label-chip::-webkit-scrollbar-thumb,
-  #right-sidebar .yt-label-chip::-webkit-scrollbar-thumb {
+  #right-sidebar .yt-label-chip::-webkit-scrollbar-thumb,
+  #node-name::-webkit-scrollbar-thumb,
+  #bani-subject-name::-webkit-scrollbar-thumb {
     background: var(--fg-muted);
     border-radius: 2px;
   }
