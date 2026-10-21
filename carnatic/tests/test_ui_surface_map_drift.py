@@ -106,7 +106,6 @@ CLAIMS: dict[str, list[str]] = {
         "function _clampPlayerWidthToColumn", "function _repositionPlayers",
         "function _syncViewTopInset", "function _clampPlaylistEditorHeight",
         "function _syncPlayerControls",
-        "function _toggleCurrentPlayerCollapse", "function _isCurrentPlayerCollapsed",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
         "function _pbCurrentTarget",
         "function _setPlayerVolume", "function _syncVolumeControls",

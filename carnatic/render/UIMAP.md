@@ -324,11 +324,13 @@ the operators; the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch` /
 `_syncPlayerControls` (ADR-183: the video is permanently docked on screen, so its
 top controls stay reachable regardless of the editor row) — so the docked video is
 independently minimizable and closable. `#pb-editor-toggle` is the bar's leftmost
-control and, like the row's `.mp-queue-collapse`, uses the panel chevron glyph
-(`▶`/`▼`). Bar and row share the same left→right order (**chevron · text ·
-operators**), and non-current rows reserve `.mp-queue-collapse-phantom` /
-`.mp-queue-op-phantom` columns so the text and trailing buttons never shift.
-Utility players (sruti/tanpura) keep `.mp-bar` and their own drag/resize.
+control and uses the panel chevron glyph (`▶`/`▼`). Bar and row share the same
+left→right order (**toggle · text · operators**). **ADR-184:** every row owns the
+copy · permalink · watch operator set (no phantom columns); the volume slider
+stays the current row's last operator and is inherited by the bar when the
+editor folds. The per-row ``.mp-queue-collapse`` chevron is retired — the video's
+own `.mp-player-min` and the bar's `#pb-editor-toggle` are the show/hide
+affordances. Utility players (sruti/tanpura) keep `.mp-bar` and their own drag/resize.
 `_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
 bar + open editor (`_playlistUiRect`) — and is the only placement path for
 content players (ADR-183; `_snapPlayerIfNearBar` still serves the utility
@@ -366,8 +368,9 @@ slider sets the current player's output level via `_setPlayerVolume` and is
 persisted across queue items (`_volumeLevel`); `_syncVolumeControls` mirrors it
 between bar and row and disables it for volume-less (iframe) providers. The ADR-162 editor is re-parented
 into it as `.mp-queue-bar` (drops **downward** from the bar) so the playlist is
-visible/editable with the player open *or* closed. The playing item's row opens
-with a leftmost `.mp-queue-collapse` chevron (show/hide the player). **Row/bar
+visible/editable with the player open *or* closed. **ADR-184:** the ADR-162 "Up
+Next" head (`.mp-queue-head`: title, prev/next transport, "Save queue as
+playlist") is retired — the editor is the list alone. **Row/bar
 parity:** an editor row's `.mp-queue-chips` is a single-row strip whose capsules
 keep their natural width and scroll horizontally (thin scrollbar) — the exact
 geometry of `#pb-summary`, so the bar reads as an inheritance of the rows. The

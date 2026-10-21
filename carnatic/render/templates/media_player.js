@@ -947,40 +947,6 @@ function _installPlacementGuards() {
 }
 _installPlacementGuards();
 
-// ADR-175: the current player's collapsed state — a single source of truth read
-// by the editor's per-row minimize/maximize button and the bar.
-function _isCurrentPlayerCollapsed() {
-  if (_isMobilePlayer()) {
-    const mp = _mobilePlayer;
-    if (!mp || !mp.controller) return true;
-    return mp.el.style.display === 'none' || !mp.el.classList.contains('full-mobile');
-  }
-  const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
-  if (!inst || !inst.el) return true;
-  return inst.el.style.display === 'none' || inst.el.classList.contains('minimized');
-}
-
-// ADR-175: central collapse control — toggles the current video surface from the
-// playlist editor (the player itself is minimizable; this is the same action).
-function _toggleCurrentPlayerCollapse() {
-  if (_isMobilePlayer()) {
-    const mp = _mobilePlayer;
-    if (!mp || !mp.controller) return;
-    if (mp.el.style.display === 'none' || !mp.el.classList.contains('full-mobile')) {
-      mp.el.style.display = '';
-      _expandMobilePlayer();
-    } else {
-      _collapseMobilePlayer(false);
-    }
-    _refreshQueuePanels();
-    return;
-  }
-  const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
-  if (!inst || !inst.el) return;
-  _toggleMinimized(inst.el);
-  _refreshQueuePanels();
-}
-
 function _toggleMinimized(el) {
   // ADR-175: a content player collapses INTO the playlist — the window hides,
   // audio continues, and the Playlist Bar is the persistent face. Standalone
@@ -2425,26 +2391,9 @@ function _renderQueuePanel(panel) {
     const isCurrent = (i === MediaQueue.index);
     const isPlayingCurrent = isCurrent && !!MediaQueue.currentKey;
 
-    // ADR-175: leftmost minimize/maximize of the playing item — a boxed
-    // disclosure chevron (deliberately distinct from ▶), the central place
-    // from which to show/hide the playing video.
-    if (isPlayingCurrent) {
-      const collapsed = _isCurrentPlayerCollapsed();
-      const cbtn = document.createElement('button');
-      cbtn.type = 'button'; cbtn.className = 'mp-queue-collapse';
-      cbtn.title = collapsed ? 'Show player' : 'Hide player';
-      cbtn.setAttribute('aria-label', cbtn.title);
-      cbtn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
-      cbtn.textContent = collapsed ? '\u25b6' : '\u25bc';   // same chevron as panels
-      cbtn.addEventListener('click', e => { e.stopPropagation(); _toggleCurrentPlayerCollapse(); });
-      li.appendChild(cbtn);
-    } else {
-      // Reserve the chevron column so every row's text stays in one column.
-      const ph = document.createElement('span');
-      ph.className = 'mp-queue-collapse mp-queue-collapse-phantom';
-      ph.setAttribute('aria-hidden', 'true');
-      li.appendChild(ph);
-    }
+    // ADR-184: the per-row minimize chevron is retired. The bare video owns a
+    // permanent minimize button, and the editor bar owns the editor fold — the
+    // chevron only cost width in an already crowded row.
 
     const reorder = document.createElement('span');
     reorder.className = 'mp-queue-reorder';
@@ -2480,21 +2429,21 @@ function _renderQueuePanel(panel) {
     });
     li.appendChild(playBtn);
 
-    // ADR-175: the current item's sibling operators live in the row (the row is
-    // king). The Playlist Bar inherits them only when the editor is closed.
+    // ADR-184: every row owns the operator set — copy · permalink · watch act
+    // on THIS row's track, not the currently-playing one. The volume slider
+    // stays the current item's last operator (it controls the live player) and
+    // is inherited by the editor bar when the editor folds (ADR-175).
+    const mkOp = (cls, title, glyph, fn) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'mp-queue-op ' + cls;
+      b.title = title; b.setAttribute('aria-label', title); b.textContent = glyph;
+      b.addEventListener('click', e => { e.stopPropagation(); fn(); });
+      return b;
+    };
+    li.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
+    li.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
+    li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', () => _openMediaOnYouTube(item)));
     if (isCurrent) {
-      const mkOp = (cls, title, glyph, fn) => {
-        const b = document.createElement('button');
-        b.type = 'button'; b.className = 'mp-queue-op ' + cls;
-        b.title = title; b.setAttribute('aria-label', title); b.textContent = glyph;
-        b.addEventListener('click', e => { e.stopPropagation(); fn(); });
-        return b;
-      };
-      li.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', _pbCopyLink));
-      li.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      _pbShareLink));
-      li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', _pbWatchOnYouTube));
-      // ADR-175: the volume slider is the current row's last operator — the
-      // Playlist Bar inherits it when the editor folds.
       const vol = document.createElement('input');
       vol.type = 'range'; vol.className = 'mp-queue-vol';
       vol.min = '0'; vol.max = '100'; vol.step = '1'; vol.value = '100';
@@ -2502,19 +2451,6 @@ function _renderQueuePanel(panel) {
       vol.addEventListener('input', e => { e.stopPropagation(); _setPlayerVolume(vol.value / 100); });
       vol.addEventListener('click', e => e.stopPropagation());
       li.appendChild(vol);
-    } else {
-      // Reserve the operator columns on non-current rows so the trailing
-      // buttons (+, remove) keep the same positions relative to the text.
-      ['mp-queue-copy', 'mp-queue-share', 'mp-queue-watch'].forEach(cls => {
-        const ph = document.createElement('span');
-        ph.className = 'mp-queue-op mp-queue-op-phantom ' + cls;
-        ph.setAttribute('aria-hidden', 'true');
-        li.appendChild(ph);
-      });
-      const volPh = document.createElement('span');
-      volPh.className = 'mp-queue-vol mp-queue-vol-phantom';
-      volPh.setAttribute('aria-hidden', 'true');
-      li.appendChild(volPh);
     }
 
     // + affordance — secondary: add to playlist or session queue
@@ -2543,55 +2479,15 @@ function _renderQueuePanel(panel) {
 }
 
 function buildQueuePanel() {
+  // ADR-184: the "Up Next" head is retired. Its title, prev/next transport
+  // (the bar owns transport) and "Save queue as playlist" (playlists are built
+  // one track at a time) served no purpose. The editor is the list alone.
   const panel = document.createElement('div');
   panel.className = 'mp-queue';
   panel.style.display = 'none';
-  const head = document.createElement('div');
-  head.className = 'mp-queue-head';
-  const title = document.createElement('span');
-  title.className = 'mp-queue-title';
-  title.textContent = 'Up Next';
-  const prev = document.createElement('button');
-  prev.type = 'button'; prev.className = 'mp-queue-prev'; prev.title = 'Previous'; prev.textContent = '⏮';
-  prev.addEventListener('click', e => { e.stopPropagation(); MediaQueue.previous(); });
-  const next = document.createElement('button');
-  next.type = 'button'; next.className = 'mp-queue-next'; next.title = 'Next'; next.textContent = '⏭';
-  next.addEventListener('click', e => { e.stopPropagation(); MediaQueue.next(); });
-  // ADR-163 §3: "Save as playlist" — turns the current queue into a create op for the patch loop
-  const saveBtn = document.createElement('button');
-  saveBtn.type = 'button'; saveBtn.className = 'mp-queue-save mp-toggle-btn';
-  saveBtn.title = 'Save queue as playlist…';
-  saveBtn.textContent = '⊕';
-  saveBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    if (!MediaQueue.items.length) return;
-    const pTitle = window.prompt('Playlist name:');
-    if (!pTitle) return;
-    const pId = pTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || ('pl_' + Date.now());
-    const items = MediaQueue.items.map(qi => {
-      const mk = (qi.media && typeof mediaKey === 'function') ? mediaKey(qi.media) : null;
-      if (!mk) return null;
-      const it = { media_key: mk };
-      if (qi.startSeconds) it.start_seconds = qi.startSeconds;
-      const m = qi.meta || {};
-      if (m.end_seconds) it.end_seconds = m.end_seconds;
-      if (m.ragaId) it.raga_id = m.ragaId;
-      if (m.compositionId) it.composition_id = m.compositionId;
-      if (m.nodeId) it.musician_ids = [m.nodeId];
-      if (qi.label) it.note = qi.label;
-      return it;
-    }).filter(Boolean);
-    if (!items.length) return;
-    const op = { op: 'create', id: pId, title: pTitle, description: '', items, kind: 'user', sources: [] };
-    if (typeof window.addToBundle === 'function') {
-      window.addToBundle('playlists', op);
-      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = '⊕'; }, 2000);
-    }
-  });
-  head.appendChild(title); head.appendChild(prev); head.appendChild(next); head.appendChild(saveBtn);
   const ul = document.createElement('ul');
   ul.className = 'mp-queue-items';
-  panel.appendChild(head); panel.appendChild(ul);
+  panel.appendChild(ul);
   _renderQueuePanel(panel);
   return panel;
 }
@@ -2804,6 +2700,38 @@ async function _pbShareLink() {
 function _pbWatchOnYouTube() {
   const item = _pbCurrentItem();
   if (!item) return;
+  window.open(shareUrl(item.media, 0), '_blank', 'noopener');
+}
+
+// ── ADR-184: per-row operator variants ──────────────────────────────────────
+// Every playlist row is shareable, not just the current one. These act on an
+// arbitrary queue item (the row's own track) instead of the live current item.
+function _copyMediaLink(item) {
+  if (!item || !item.media) return;
+  const url = shareUrl(item.media, item.startSeconds || 0);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => showCopyLinkToast());
+  }
+}
+async function _copyMediaPermalink(item) {
+  if (!item || !item.media) return;
+  const target = {
+    media: item.media,
+    mediaKey: mediaKey(item.media),
+    currentOffset: item.startSeconds || 0,
+    meta: item.meta || {},
+  };
+  const res = await encodePermalink(target);
+  if (!res || !res.fragment) return;
+  window.location.hash = res.fragment;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showCopyLinkToast(res.notice ? 'Permalink copied! (' + res.notice + ')' : 'Permalink copied!');
+    });
+  }
+}
+function _openMediaOnYouTube(item) {
+  if (!item || !item.media) return;
   window.open(shareUrl(item.media, 0), '_blank', 'noopener');
 }
 

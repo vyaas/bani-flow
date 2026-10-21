@@ -2851,31 +2851,6 @@
     border-radius: 0 0 4px 4px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.45);
   }
-  .mp-queue-head {
-    display: flex; align-items: center; gap: 6px;
-    padding: 5px 8px;
-    position: sticky; top: 0;
-    background: var(--bg-panel);
-    border-bottom: 1px solid var(--border-strong);
-    cursor: grab; user-select: none;
-  }
-  .mp-queue-head:active { cursor: grabbing; }
-  .mp-queue-head button { cursor: pointer; }
-  .mp-queue-title {
-    flex: 1; font-size: 0.68rem; font-weight: bold; color: var(--fg-sub);
-    letter-spacing: 0.06em; text-transform: uppercase;
-  }
-  .mp-queue-prev, .mp-queue-next {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.9rem; cursor: pointer; padding: 2px 4px; line-height: 1;
-  }
-  .mp-queue-prev:hover, .mp-queue-next:hover { color: var(--accent); }
-  /* ADR-163: "Save as playlist" button in queue head */
-  .mp-queue-save {
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.95rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
-  }
-  .mp-queue-save:hover { color: var(--accent); }
   .mp-queue-items { list-style: none; margin: 0; padding: 0; }
   .mp-queue-item {
     display: flex; align-items: center; gap: 6px;
@@ -2932,22 +2907,8 @@
   .mp-queue-play:disabled { opacity: 0.35; cursor: default; }
   .mp-queue-play { position: relative; }
   .mp-queue-play::after { content: ''; position: absolute; inset: -12px; }
-  /* ADR-175: per-row minimize/maximize for the current item — the SAME chevron
-     geometry as every panel section (ADR-128 D10), placed leftmost. */
-  .mp-queue-collapse {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 18px; height: 18px; flex-shrink: 0;
-    background: none; border: none; color: var(--fg-muted);
-    font-size: 0.62rem; cursor: pointer; padding: 0;
-    font-family: inherit; line-height: 1; user-select: none;
-  }
-  .mp-queue-collapse:hover { color: var(--accent); }
-  .mp-queue-collapse[aria-pressed="true"] { color: var(--accent); }
-  /* Phantom slot: reserves the chevron column on non-current rows so every
-     row's text (chips) stays in the same vertical column (ADR-175). */
-  .mp-queue-collapse-phantom { visibility: hidden; pointer-events: none; }
-  /* ADR-175: per-row sibling operators (copy · permalink · watch). Fixed 18×18
-     so the phantom slots on non-current rows reserve exactly the same space. */
+  /* ADR-184: every row owns copy · permalink · watch (the chevron and its
+     phantom slot are retired). */
   .mp-queue-op {
     display: inline-flex; align-items: center; justify-content: center;
     width: 20px; height: 20px; flex-shrink: 0;
@@ -2956,15 +2917,38 @@
     border-radius: 3px; transition: color 0.12s, background 0.12s;
   }
   .mp-queue-op:hover { color: var(--accent); background: var(--bg-hover); }
-  .mp-queue-op-phantom { visibility: hidden; pointer-events: none; }
   /* ADR-175: the volume slider is one of the current row's operators, so it is
      inherited by the Playlist Bar when the editor folds. */
   .mp-queue-vol {
     width: 68px; height: 16px; margin: 0 2px; flex-shrink: 0;
-    cursor: pointer; accent-color: var(--accent); background: transparent;
+    cursor: pointer; background: transparent;
   }
   .mp-queue-vol:disabled { opacity: 0.35; cursor: default; }
-  .mp-queue-vol-phantom { visibility: hidden; pointer-events: none; }
+  /* ADR-184: right-size the range thumb. The browser default reads as a
+     disproportionately large circle beside the 16px control; pin it to a 10px
+     accent dot on a 3px rail, using theme tokens, for BOTH slider faces. */
+  #pb-volume, .mp-queue-vol {
+    -webkit-appearance: none; appearance: none;
+  }
+  #pb-volume::-webkit-slider-runnable-track,
+  .mp-queue-vol::-webkit-slider-runnable-track {
+    height: 3px; border-radius: 2px; background: var(--border-strong);
+  }
+  #pb-volume::-webkit-slider-thumb,
+  .mp-queue-vol::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 10px; height: 10px; margin-top: -3.5px;
+    border-radius: 50%; background: var(--accent); border: none;
+  }
+  #pb-volume::-moz-range-track,
+  .mp-queue-vol::-moz-range-track {
+    height: 3px; border-radius: 2px; background: var(--border-strong);
+  }
+  #pb-volume::-moz-range-thumb,
+  .mp-queue-vol::-moz-range-thumb {
+    width: 10px; height: 10px; border: none; border-radius: 50%;
+    background: var(--accent);
+  }
   .mp-queue-stop { background: var(--accent); color: var(--bg-deep); }
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
@@ -3105,7 +3089,6 @@
     border-radius: 0 0 6px 6px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.45);
   }
-  #playlist-bar .mp-queue-bar .mp-queue-head { cursor: default; }
 
   /* Mobile (ADR-175): the bar is a second top band, top-centre full-width.
      Band 1 keeps the view selector + help button; the bar sits directly under
