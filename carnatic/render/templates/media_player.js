@@ -235,65 +235,9 @@ async function encodePermalink(instance) {
   }
 }
 
-// Returns { top, left } positioning the player flush-right (or left) of the
-// open Wheel Detail Panel, relative to the given offsetParent element.
-// Avoids placing the player over any open sidebar panel (#left-sidebar,
-// #right-sidebar). Returns null when: WDP is not open, view is not raga, or
-// neither side of the WDP has enough room.
-function _wdpAdjacentPosition(offsetParentEl) {
-  const panel = document.getElementById('wheel-detail-panel');
-  if (!panel || !panel.classList.contains('wdp-open')) return null;
-  if (typeof currentView !== 'undefined' && currentView !== 'raga') return null;
-  const wdpRect = panel.getBoundingClientRect();
-  if (!wdpRect.width) return null;
-  const parentEl = offsetParentEl || document.getElementById('main');
-  if (!parentEl) return null;
-  const parentRect = parentEl.getBoundingClientRect();
-  const PW = 480; // player width
-  const GAP = 16;
-
-  // Compute the safe horizontal zone (viewport x) that doesn't overlap open sidebars.
-  // getBoundingClientRect() returns post-transform coords, so closed sidebars
-  // (translated off-screen) return rects outside the visible area and are ignored.
-  let safeLeft  = parentRect.left;  // viewport x: left edge of available zone
-  let safeRight = parentRect.right; // viewport x: right edge of available zone
-  const leftSb = document.getElementById('left-sidebar');
-  if (leftSb) {
-    const r = leftSb.getBoundingClientRect();
-    if (r.right > safeLeft + 4) safeLeft = r.right;  // sidebar is visually open
-  }
-  const rightSb = document.getElementById('right-sidebar');
-  if (rightSb) {
-    const r = rightSb.getBoundingClientRect();
-    if (r.left < safeRight - 4) safeRight = r.left;  // sidebar is visually open
-  }
-  // ADR-176: a player keeps the Playlist Bar's horizontal limits even beside
-  // the WDP, so it never spills into a withdrawn sidebar's gutter.
-  const ui = _playlistUiRect();
-  if (ui) {
-    safeLeft  = Math.max(safeLeft, ui.left);
-    safeRight = Math.min(safeRight, ui.right);
-  }
-
-  // Prefer right of WDP; fall back to left; fall back to null (default spawn).
-  let left;
-  const rightClearance = safeRight - (wdpRect.right + GAP);
-  const leftClearance  = (wdpRect.left - GAP) - safeLeft;
-  if (rightClearance >= PW) {
-    left = wdpRect.right + GAP - parentRect.left;
-  } else if (leftClearance >= PW) {
-    left = wdpRect.left - GAP - PW - parentRect.left;
-  } else {
-    return null;
-  }
-
-  // Align player top to WDP top, clamped inside parent bounds.
-  const rawTop = wdpRect.top - parentRect.top;
-  const parentH = parentEl.offsetHeight || (window.innerHeight - parentRect.top);
-  const top = Math.max(0, Math.min(rawTop, parentH - 220));
-  return { top: Math.round(top), left: Math.round(left) };
-}
-
+// Initial spawn position before _dockPlayer() takes over. ADR-183: the content
+// player is always re-docked beneath the playlist UI, so this only seeds the
+// first paint (and the fallback when no playlist UI exists yet).
 function nextSpawnPosition() {
   const offset = (spawnCount % 8) * 28;
   spawnCount += 1;
@@ -705,6 +649,30 @@ function _syncViewTopInset() {
   root.style.setProperty('--playlist-ui-bottom', bottom + 'px');
 }
 
+// ADR-183 (fixed dock): the playlist editor deepens downward and the docked
+// player sits directly beneath it, so an unbounded editor would push the video
+// out of the viewport. Cap the editor's height to leave room for the full
+// player (16:9 video + its controls strip) plus a bottom gap; `.mp-queue`
+// already scrolls vertically, so extra rows reveal a scrollbar instead of
+// shoving the video away. Desktop only — the mobile player is a full-screen
+// sheet and is not docked under the editor.
+function _clampPlaylistEditorHeight() {
+  const bar = document.getElementById('playlist-bar');
+  const ed = bar && bar.querySelector('.mp-queue-bar');
+  if (!ed) return;
+  if (window.innerWidth <= 768) { ed.style.maxHeight = ''; return; }
+  const ui = _playlistUiRect();
+  if (!ui) return;
+  const main = document.getElementById('main');
+  const bounds = main ? _columnBounds(main.getBoundingClientRect(), ui) : null;
+  const colW = bounds ? Math.max(0, bounds.right - bounds.left) : ui.width;
+  const playerW = Math.max(320, Math.round(Math.min(ui.width, colW)));
+  const playerH = Math.round(playerW * 9 / 16) + 10;   // video + controls strip
+  const bottomGap = 16;
+  const avail = window.innerHeight - bar.getBoundingClientRect().bottom - playerH - bottomGap;
+  ed.style.maxHeight = Math.max(120, Math.round(avail)) + 'px';
+}
+
 // ── ADR-176: the app-level non-overlap contract ────────────────────────────
 // Four surfaces must never overlap one another: the left (bani-flow) sidebar,
 // the right (musician) sidebar, the playlist UI (bar + open editor), and every
@@ -840,24 +808,24 @@ function _clampPlayerWidthToColumn(el) {
   else el.style.maxWidth = '';
 }
 
-// ADR-175: match a player's default width to the Playlist UI width (bar /
-// editor), so the two are flush at every screen size. A user resize sets
-// `_userResized`, after which we never override it (they may expand beyond).
+// ADR-175 / ADR-183: match a player's width to the Playlist UI width (bar /
+// editor), so the two are flush at every screen size. The player is not
+// resizable, so this is always the authoritative width (capped by
+// _clampPlayerWidthToColumn for the free column between sidebars).
 function _playerMatchWidth(el) {
-  if (el._userResized) return;
   const ui = _playlistUiRect();
   if (!ui) return;
   el.style.width = Math.max(320, Math.round(ui.width)) + 'px';
 }
 
-// ADR-175: the bare player's own controls are visible only when the editor row
-// is not providing them — i.e. the editor is folded, or the player is detached.
+// ADR-175 / ADR-183: the bare player's own minimize + close are ALWAYS shown —
+// the video is permanently docked and on screen, so its top controls must stay
+// reachable regardless of the editor row's own controls.
 function _syncPlayerControls(el) {
   if (!el) return;
   const overlay = el.querySelector('.mp-player-controls');
   if (!overlay) return;
-  const editorOpen = !!(window.MediaQueue && MediaQueue.active && MediaQueue.panelOpen);
-  overlay.style.display = (!editorOpen || el._detached) ? 'flex' : 'none';
+  overlay.style.display = 'flex';
 }
 
 // ADR-175: magnetically dock a player under the Playlist UI (bar + open editor).
@@ -865,6 +833,7 @@ function _syncPlayerControls(el) {
 // final position clears every obstacle (sidebars + playlist UI). left/top are
 // written relative to the player's offsetParent.
 function _dockPlayer(el) {
+  _clampPlaylistEditorHeight();
   _playerMatchWidth(el);
   _clampPlayerWidthToColumn(el);
   const ui = _playlistUiRect();
@@ -922,6 +891,7 @@ function _snapPlayerIfNearBar(el) {
 // re-docked — they keep their own anchor placement.
 function _repositionPlayers() {
   if (window.innerWidth <= 768) return;   // floating geometry is desktop-only
+  _clampPlaylistEditorHeight();
   const parent = document.getElementById('main');
   if (!parent) return;
   const pr = parent.getBoundingClientRect();
@@ -1771,14 +1741,11 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   el.className = 'media-player';
   el.style.cssText = `top:${pos.top}px; left:${pos.left}px; z-index:${_nextPlayerZ()}; width:480px;`;
 
-  // ADR-175: content players are BARE. Identity lives in the Playlist editor
-  // row; the player is just the video surface, a thin drag strip, and the
-  // resize grip. Show/hide is driven by the row's collapse control.
+  // ADR-175 / ADR-183: content players are BARE and FIXED — the video surface
+  // only. Identity lives in the Playlist editor row; the window is docked under
+  // the playlist UI and is neither draggable nor resizable. Show/hide is driven
+  // by the row's collapse control; the bare player keeps its own minimize/close.
   el.classList.add('bare');
-  const dragHandle = document.createElement('div');
-  dragHandle.className = 'mp-drag-handle';
-  dragHandle.title = 'Drag to move';
-  el.appendChild(dragHandle);
 
   const videoWrap = document.createElement('div');
   videoWrap.className = 'mp-video-wrap';
@@ -1790,13 +1757,8 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
 
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
 
-  const resizeHandle = document.createElement('div');
-  resizeHandle.className = 'mp-resize';
-  resizeHandle.title = 'Drag to resize';
-  el.appendChild(resizeHandle);
-
-  // ADR-175: the bare player's own minimize + close, inherited when the editor
-  // row is not visible (folded) or the player is detached from the playlist.
+  // ADR-175 / ADR-183: the bare player's own minimize + close — always shown
+  // (see _syncPlayerControls), since the video is permanently docked on screen.
   const controls = document.createElement('div');
   controls.className = 'mp-player-controls';
   const minBtn = document.createElement('button');
@@ -1853,11 +1815,9 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // ADR-157: auto-advance the queue when this item ends (if it's the queue's current).
   controller.onEnded(() => { if (MediaQueue.isCurrent(instance.mediaKey)) MediaQueue.advance(); });
 
-  // ADR-175: no header chrome, no per-player queue UI, no fold-cue. Copy/share/
-  // watch live on the Playlist Bar (current item's actions). Drag via the thin
-  // strip; resize via the corner grip.
-  wireDrag(el, dragHandle);
-  wireResize(el, resizeHandle);
+  // ADR-175 / ADR-183: no header chrome, no per-player queue UI, no fold-cue,
+  // and no drag/resize grips — copy/share/watch live on the Playlist Bar and
+  // the window is locked to its docked position beneath the playlist UI.
   el.addEventListener('mousedown', () => bringToFront(instance));
 
   bringToFront(instance);
@@ -1897,34 +1857,9 @@ function openOrFocusPlayer(mediaArg, trackLabel, artistName, startSeconds, conce
     const p = createPlayer(media, trackLabel, artistName, startSeconds, concertTitle, tracks, meta || {});
     playerRegistry.set(mkey, p);
     refreshPlayingIndicators();
-    // Position player next to the Wheel Detail Panel when a raga context is present.
-    // Queue/playlist players are pinned — skip repositioning so they stay put.
-    if (meta && meta.ragaId && !meta.isQueueItem) {
-      const wdpPanel = document.getElementById('wheel-detail-panel');
-      const wdpAlreadyOpen = wdpPanel && wdpPanel.classList.contains('wdp-open') &&
-                             (typeof currentView === 'undefined' || currentView === 'raga');
-      if (wdpAlreadyOpen) {
-        // Case A: WDP is already visible — reposition after one rAF so the player
-        // has been laid out and has valid offsetParent/offsetWidth.
-        requestAnimationFrame(() => {
-          const pos = _wdpAdjacentPosition(p.el.offsetParent);
-          if (pos) { p.el.style.left = pos.left + 'px'; p.el.style.top = pos.top + 'px'; }
-        });
-      } else {
-        // Case B: WDP will open after wheel pan animation completes (wdp-settled fires).
-        let settled = false;
-        const fallbackTimer = setTimeout(() => {
-          if (!settled) window.removeEventListener('wdp-settled', handler);
-        }, 2500);
-        function handler() {
-          settled = true;
-          clearTimeout(fallbackTimer);
-          const pos = _wdpAdjacentPosition(p.el.offsetParent);
-          if (pos) { p.el.style.left = pos.left + 'px'; p.el.style.top = pos.top + 'px'; }
-        }
-        window.addEventListener('wdp-settled', handler, { once: true });
-      }
-    }
+    // ADR-183: the player is locked to the playlist UI. A raga context still
+    // opens the Wheel Detail Panel below, but the video no longer jumps beside
+    // it — it stays magnetically docked beneath the playlist editor.
   }
   if (meta && meta.ragaId && !meta.isQueueItem && typeof window._openWdpForPlayback === 'function') {
     window._openWdpForPlayback(meta.ragaId, meta.compositionId || null);
@@ -2930,6 +2865,7 @@ function _renderPlaylistBar() {
     play.innerHTML = paused ? '&#9654;' : '&#10074;&#10074;';   // ▶ / ❚❚
     play.setAttribute('aria-pressed', paused ? 'true' : 'false');
   }
+  _clampPlaylistEditorHeight();
 }
 
 function _initPlaylistBar() {

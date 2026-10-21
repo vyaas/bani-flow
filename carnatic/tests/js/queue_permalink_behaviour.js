@@ -43,7 +43,7 @@ const plSrc = fs.readFileSync(path.join(TEMPLATES, 'permalink.js'), 'utf8');
 const providersSrc = fs.readFileSync(path.join(TEMPLATES, 'media_providers.js'), 'utf8');
 
 const SLICE_RESOLVE_MEDIA = grab(mpSrc, 'function resolveMedia(arg)', '// embedUrl(media', 'media_player.js');
-const SLICE_ENCODE = grab(mpSrc, 'const QUEUE_PERMALINK_CAP', '// Returns { top, left }', 'media_player.js');
+const SLICE_ENCODE = grab(mpSrc, 'const QUEUE_PERMALINK_CAP', 'function nextSpawnPosition()', 'media_player.js');
 const SLICE_QUEUE = grab(mpSrc, 'const MediaQueue = {', '// ── ADR-165: row registry', 'media_player.js');
 const SLICE_PL_ITEMS = grab(mpSrc, 'function _playlistToQueueItems', 'function buildPlaylistRow', 'media_player.js');
 const SLICE_READER = grab(plSrc, 'function _bytesFromB64url', '  // Expose for unit testing.', 'permalink.js');

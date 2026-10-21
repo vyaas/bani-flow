@@ -1156,19 +1156,18 @@
   }
   .mp-close:hover { color: var(--accent-danger); }
 
-  /* ── ADR-175: content players are BARE ──────────────────────────────────
-     Identity lives in the Playlist editor row; the player is just the video
-     surface + a thin drag strip + the resize grip. Show/hide is driven by the
-     row's collapse control. Utility players (sruti/tanpura) keep .mp-bar. */
-  .mp-drag-handle {
-    height: 10px; flex-shrink: 0;
-    background: var(--bg-input); border-bottom: 1px solid var(--border);
-    border-radius: 4px 4px 0 0; cursor: grab;
-  }
-  .mp-drag-handle:active { cursor: grabbing; }
+  /* ── ADR-175 / ADR-183: content players are BARE and FIXED ──────────────
+     Identity lives in the Playlist editor row; the player is the video surface
+     only, docked beneath the playlist UI. It is neither draggable nor
+     resizable. Show/hide is driven by the row's collapse control. Utility
+     players (sruti/tanpura) keep .mp-bar. */
   .media-player.bare .mp-bar { display: none; }
-  /* ADR-175: bare content player's own controls — shown only when the editor
-     row is NOT providing them (editor folded, or the player is detached). */
+  /* ADR-183: clip the video to the player's rounded frame — the drag/resize
+     strips that used to provide it are gone. Desktop content players only;
+     the mobile sheet owns its own overflow. */
+  .media-player.bare:not(.full-mobile) { overflow: hidden; }
+  /* ADR-175 / ADR-183: bare content player's own minimize + close — always
+     shown, so the docked video's controls are always reachable. */
   .mp-player-controls {
     position: absolute; top: 6px; left: 6px; right: 6px; z-index: 5;
     display: flex; justify-content: space-between;
@@ -3097,6 +3096,9 @@
   #pb-summary::-webkit-scrollbar-thumb { background: var(--fg-muted); border-radius: 2px; }
   #pb-summary .pb-empty-hint { font-size: 0.72rem; color: var(--fg-muted); font-style: italic; }
   #pb-count { font-size: 0.68rem; color: var(--fg-sub); flex-shrink: 0; white-space: nowrap; }
+  /* ADR-183: max-height is further tightened at runtime by
+     _clampPlaylistEditorHeight() so the docked player always fits below the
+     editor; extra rows then scroll (`.mp-queue` has overflow-y:auto). */
   #playlist-bar .mp-queue-bar {
     position: absolute; top: 100%; left: 0; right: 0; bottom: auto;
     max-height: min(60vh, 420px);

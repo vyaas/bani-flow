@@ -104,7 +104,7 @@ CLAIMS: dict[str, list[str]] = {
         "function _playlistUiRect", "function _avoidUIOverlap",
         "function _uiObstacleRects", "function _resolveNonOverlap",
         "function _clampPlayerWidthToColumn", "function _repositionPlayers",
-        "function _syncViewTopInset",
+        "function _syncViewTopInset", "function _clampPlaylistEditorHeight",
         "function _syncPlayerControls",
         "function _toggleCurrentPlayerCollapse", "function _isCurrentPlayerCollapsed",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",

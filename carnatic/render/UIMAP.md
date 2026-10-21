@@ -300,18 +300,19 @@ the musician panel (§2). Sruti pie plays drone via `openPlayer`/`closePlayer`
 **Aliases:** media player, the player, now playing, playlist, queue,
 "Up Next", mini player.
 
-**DOM:** players are **dynamically created** — no static root. Desktop:
-draggable/resizable `.media-player` (spawned at `nextSpawnPosition()`, z-order
-via `bringToFront`/`topZ`). Mobile: bottom-sheet `.media-player.full-mobile`
+**DOM:** players are **dynamically created** — no static root. Desktop: fixed,
+docked `.media-player` (spawned at `nextSpawnPosition()`, z-order via
+`bringToFront`/`topZ`; ADR-183: not draggable or resizable). Mobile:
+bottom-sheet `.media-player.full-mobile`
 (the ADR-043 `.mini` strip is **retired** — ADR-175). Chrome: bar
 (`buildPlayerBar`), chip rail (`buildPlayerRail`), tracklist (`.mp-tracklist`,
 opens upward `bottom:100%`), queue panel (`.mp-queue`, opens upward; the
 app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
 `#mp-copy-toast`.
 
-**ADR-175 — the playlist row is king:** content players are **bare**
-(`.media-player.bare`: video + `.mp-drag-handle` + `.mp-resize`; **no** `.mp-bar`,
-identity rail, ✕, minimize or fold-cue). Identity lives in the editor row; the
+**ADR-175 / ADR-183 — the playlist row is king:** content players are **bare**
+(`.media-player.bare`: the video surface only; **no** `.mp-bar`, drag handle,
+resize grip, identity rail, ✕, minimize or fold-cue). Identity lives in the editor row; the
 current row owns the operator set (`.mp-queue-op` copy / permalink / watch →
 `_pbCopyLink` / `_pbShareLink` / `_pbWatchOnYouTube`; play↔stop via `_pbStopCurrent`;
 plus the volume slider `.mp-queue-vol` → `_setPlayerVolume`). Copy's tooltip reads
@@ -319,32 +320,35 @@ plus the volume slider `.mp-queue-vol` → `_setPlayerVolume`). Copy's tooltip r
 `Copy permalink`). **Parent-inherits rule:** while the editor is open the row holds
 the operators; the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch` /
 `#pb-volume`, `#pb-play` / `#pb-stop`) shows them only when the row is not visible. The bare player carries its own
-`.mp-player-controls` (minimize `—` + close `✕`) — shown by `_syncPlayerControls`
-whenever the row is not providing them (editor folded, or the player is detached,
-`el._detached`) — so a detached/floating video is independently minimizable and
-closable. `#pb-editor-toggle` is the bar's leftmost
+`.mp-player-controls` (minimize `—` + close `✕`) — **always shown** by
+`_syncPlayerControls` (ADR-183: the video is permanently docked on screen, so its
+top controls stay reachable regardless of the editor row) — so the docked video is
+independently minimizable and closable. `#pb-editor-toggle` is the bar's leftmost
 control and, like the row's `.mp-queue-collapse`, uses the panel chevron glyph
 (`▶`/`▼`). Bar and row share the same left→right order (**chevron · text ·
 operators**), and non-current rows reserve `.mp-queue-collapse-phantom` /
 `.mp-queue-op-phantom` columns so the text and trailing buttons never shift.
-Utility players (sruti/tanpura) keep `.mp-bar`.
+Utility players (sruti/tanpura) keep `.mp-bar` and their own drag/resize.
 `_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
-bar + open editor (`_playlistUiRect`); `_snapPlayerIfNearBar` re-settles on drag
-release. **ADR-176 (non-overlap contract):** the four app-level surfaces — left
+bar + open editor (`_playlistUiRect`) — and is the only placement path for
+content players (ADR-183; `_snapPlayerIfNearBar` still serves the utility
+players' drag release). `_clampPlaylistEditorHeight()` caps the editor so the
+docked player always fits below it (overflow scrolls). **ADR-176 (non-overlap
+contract):** the four app-level surfaces — left
 sidebar, right sidebar, playlist UI, and every floating player — must never
 overlap. `_uiObstacleRects()` unions the two open sidebars (`_openSidebarRects`)
 with `_playlistUiRect()`; `_resolveNonOverlap()` is the pure nearest-free-spot
 solver; `_avoidUIOverlap()` clamps a drag; `_repositionPlayers()` re-runs on
 viewport resize, drawer class flips, transform settle, and bar resize (guards
-installed by `_installPlacementGuards`); `_clampPlayerWidthToColumn()` caps a
-user-widened player to the free column via `max-width`. **The player observes the
+installed by `_installPlacementGuards`); `_clampPlayerWidthToColumn()` caps the
+width-matched player to the free column via `max-width`. **The player observes the
 Playlist Bar's left inset on both sides** — `_columnBounds()` intersects the
 parent box with `_playlistUiRect()`, then mirrors the left (view-selector) inset
 on the right. That protects the withdrawn musician panel and its bottom-right
 toggle just as the left inset protects the bani-flow toggle; the help button's
 narrower top-right inset is deliberately not the player's limit. `_playerMatchWidth`
-keeps the player flush with the playlist UI width unless the user resizes it
-(`_userResized`). z-order: players `≤700`, `#playlist-bar` `750`, modals
+always keeps the player flush with the playlist UI width (ADR-183: no user
+resize). z-order: players `≤700`, `#playlist-bar` `750`, modals
 `1000+` — the geometric constraints, not z, are what guarantee non-overlap.
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
@@ -455,7 +459,8 @@ phase A), 158–160, 161 (toggle primitive, upward surfaces), 162 (visible
 queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
 176 (app-level non-overlap contract), 179 (single-line rows + shared action
 column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-aligned meta chips),
-182 (themeable meta badges).
+182 (themeable meta badges), 183 (fixed docked player; no drag/resize, editor
+height cap).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
