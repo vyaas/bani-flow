@@ -1906,6 +1906,17 @@
   .yt-ext-link:active {
     transform: scale(0.92);
   }
+  /* ── Height parity: ↗ matches the subject chip beside it ─────────────────
+     In the bani subject row and the musician chip row the ↗ link is a flex
+     sibling of a vocabulary chip. Stretching it (height:auto) to the row's
+     cross size makes its box exactly as tall as the chip, so the glyph centres
+     on the chip instead of hanging from the chip's top edge. */
+  #bani-subject-name-row .panel-header-affordances { align-self: stretch; }
+  #bani-subject-name-row .panel-header-affordances .yt-ext-link,
+  #node-header-chip-row .yt-ext-link {
+    height: auto;
+    align-self: stretch;
+  }
   /* trail-acts: ▶ + ↗ always right-aligned in any flex parent */
   .trail-acts {
     flex-shrink: 0;
@@ -5358,6 +5369,18 @@
     line-height: 1;
     white-space: nowrap;
     flex-shrink: 0;
+  }
+
+  /* ── Height parity: enumeration + `?` match the section chip beside them ──
+     Inside the label wrap the category chip is the tallest child; stretching
+     count/help (height:auto) to that same cross size aligns the badge row
+     flush with the chip instead of floating short beside it. Scoped to the
+     label wrap so the shared badge surfaces (.mp-playlist-count,
+     .rec-group-count) keep their compact 15px form elsewhere. */
+  .rec-section-hdr-label-wrap .section-hdr-count,
+  .rec-section-hdr-label-wrap .section-help-btn {
+    height: auto;
+    align-self: stretch;
   }
 
   /* The section label is the scrollable part of the header row. */
