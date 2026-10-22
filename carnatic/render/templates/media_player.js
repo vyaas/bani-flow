@@ -4127,35 +4127,133 @@ function _buildLecdemBracket(ref, nodeId, artistLabel) {
 // ── ADR-163: PLAYLISTS section helpers (shared by all panels) ────────────────
 // A saved playlist appears in the PLAYLISTS section of every panel whose subject
 // it touches (musician / raga / composition), resolved from the render-time
-// back-index. A row plays the whole playlist into the ADR-162 queue.
-function _playlistToQueueItems(pl) {
-  return (pl.items || []).map(it => {
-    const media = (typeof resolveMedia === 'function') ? resolveMedia(it.media_key) : null;
-    if (!media) return null;
-    return {
-      media,
-      label:        it.note || it.composition_id || pl.title || '',
-      artistName:   '',
-      startSeconds: it.start_seconds || 0,
-      concertTitle: pl.title || '',
-      tracks:       [],
-      meta: {
-        nodeId:        (it.musician_ids && it.musician_ids[0]) || null,
-        ragaId:        it.raga_id || null,
-        compositionId: it.composition_id || null,
-        recId:         it.recording_id || null,
-        end_seconds:   it.end_seconds || null,   // ADR-163 slice 3: cross-recording advance
-      },
-    };
-  }).filter(Boolean);
+// back-index. ADR-189: the row shows only the items that match the panel's
+// subject — the full playlist lives behind the ⓘ info affordance — so a raga
+// search never has to sift a playlist's unrelated ragas.
+function _playlistToQueueItems(pl, items) {
+  return (items || pl.items || []).map(it => _playlistItemToQueueItem(pl, it)).filter(Boolean);
 }
 
-function buildPlaylistRow(pl) {
-  const items = pl.items || [];
-  const queueItems = _playlistToQueueItems(pl);
+// One playlist item → one MediaQueue item. Split out so _playlistEntries can
+// keep the rendered index aligned with the queue index even when an item's
+// media fails to resolve and is dropped.
+function _playlistItemToQueueItem(pl, it) {
+  const media = (typeof resolveMedia === 'function') ? resolveMedia(it.media_key) : null;
+  if (!media) return null;
+  return {
+    media,
+    label:        it.note || it.composition_id || pl.title || '',
+    artistName:   '',
+    startSeconds: it.start_seconds || 0,
+    concertTitle: pl.title || '',
+    tracks:       [],
+    meta: {
+      nodeId:        (it.musician_ids && it.musician_ids[0]) || null,
+      ragaId:        it.raga_id || null,
+      compositionId: it.composition_id || null,
+      recId:         it.recording_id || null,
+      end_seconds:   it.end_seconds || null,   // ADR-163 slice 3: cross-recording advance
+    },
+  };
+}
 
-  // Header: name chip (hugs its text) + track count. The header wrapper stretches
-  // (row-accordion gives it flex:1), so the play button pins to the right.
+// ADR-189: [{ it, qi }] — the raw playlist item paired with its resolved queue
+// item, so a track's play-from-here index is always truthful.
+function _playlistEntries(pl, items) {
+  return (items || pl.items || [])
+    .map(it => ({ it, qi: _playlistItemToQueueItem(pl, it) }))
+    .filter(e => e.qi);
+}
+
+// ADR-189: the playlist items belonging to the panel's current subject.
+// context: { type: 'raga' | 'comp' | 'musician', id }. Missing context → all.
+function _playlistItemsForContext(pl, context) {
+  const items = pl.items || [];
+  if (!context || !context.id) return items;
+  if (context.type === 'raga') return items.filter(it => it.raga_id === context.id);
+  if (context.type === 'comp') return items.filter(it => it.composition_id === context.id);
+  if (context.type === 'musician') {
+    return items.filter(it => Array.isArray(it.musician_ids) && it.musician_ids.includes(context.id));
+  }
+  return items;
+}
+
+// One track ribbon — identity chips + play-from-here + add. Shared by the
+// context-scoped panel row and the full-playlist info dialog (ADR-189).
+// `queueItems[idx]` is the item this row plays from; `opts` is passed to
+// startMediaQueue so a context subset inlines rather than sharing by reference.
+function _buildPlaylistTrackRow(it, idx, pl, queueItems, opts) {
+  const trow = document.createElement('div');
+  trow.className = 'mp-playlist-track';
+  // Chips live in their own flex-wrap container: a single line by default that
+  // grows downward to as many lines as the tags need, while the ▶ stays pinned.
+  const chipsWrap = document.createElement('span');
+  chipsWrap.className = 'mp-playlist-track-chips';
+  const perf = _buildMusicianChipForFooter((it.musician_ids && it.musician_ids[0]) || null, null);
+  if (perf) chipsWrap.appendChild(perf);
+  if (typeof _buildSubjectChips === 'function') {
+    _buildSubjectChips({
+      raga_ids:        it.raga_id ? [it.raga_id] : [],
+      composition_ids: it.composition_id ? [it.composition_id] : [],
+      musician_ids:    [],
+    }).forEach(c => chipsWrap.appendChild(c));
+  }
+  if (!it.composition_id && it.note) {
+    const lbl = document.createElement('span');
+    lbl.className = 'yt-label-chip';
+    lbl.textContent = it.note;
+    chipsWrap.appendChild(lbl);
+  }
+  trow.appendChild(chipsWrap);
+  const tplay = document.createElement('button');
+  tplay.type = 'button';
+  tplay.className = 'rec-play-btn play-btn-concert';
+  tplay.title = 'Play from here';
+  tplay.textContent = '▶';
+  tplay.addEventListener('click', e => {
+    e.stopPropagation();
+    if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, idx, opts || {});
+  });
+  // ADR-163 §3: + affordance on each playlist track row
+  // ADR-165: same thunk feeds the + menu and the harvest.
+  const qiCopy = queueItems[idx];
+  const _trackThunk = () => ({
+    media: qiCopy && qiCopy.media,
+    startSeconds: it.start_seconds || 0,
+    meta: {
+      ragaId: it.raga_id || null, compositionId: it.composition_id || null,
+      nodeId: (it.musician_ids && it.musician_ids[0]) || null,
+      end_seconds: it.end_seconds || null,
+    },
+    label: it.note || it.composition_id || '',
+  });
+  const tplus = _buildPlusBtn(_trackThunk);
+  registerQueueItem(trow, _trackThunk);
+  const tacts = document.createElement('span');
+  tacts.className = 'trail-acts';
+  tacts.appendChild(tplay);
+  tacts.appendChild(tplus);
+  trow.appendChild(tacts);
+  return trow;
+}
+
+function buildPlaylistRow(pl, context) {
+  const allItems    = pl.items || [];
+  const fullEntries = _playlistEntries(pl);
+  const fullQueue   = fullEntries.map(e => e.qi);
+
+  // ADR-189: scope the visible tracks to the panel subject.
+  const contextItems = _playlistItemsForContext(pl, context);
+  const shownEntries = _playlistEntries(pl, contextItems);
+  const shownQueue   = shownEntries.map(e => e.qi);
+  const filtered     = contextItems.length !== allItems.length;
+
+  // ADR-164: share-by-reference is only truthful when the row IS the whole
+  // playlist; a context subset inlines so the permalink cursor stays aligned.
+  const playOpts = filtered ? {} : { playlistId: pl.id };
+
+  // Header: name (concert-title styling, ADR-189) + track count + ⓘ. The header
+  // wrapper stretches (row-accordion gives it flex:1), so the transport pins right.
   const headerEl = document.createElement('div');
   headerEl.className = 'mp-playlist-hdr';
   const chip = document.createElement('span');
@@ -4165,20 +4263,36 @@ function buildPlaylistRow(pl) {
   headerEl.appendChild(chip);
   const count = document.createElement('span');
   count.className = 'mp-playlist-count';
-  count.textContent = String(items.length);
-  count.title = items.length + ' track' + (items.length === 1 ? '' : 's');
+  count.textContent = filtered
+    ? (shownEntries.length + '/' + allItems.length)
+    : String(allItems.length);
+  count.title = filtered
+    ? (shownEntries.length + ' of ' + allItems.length + ' tracks in this context')
+    : (allItems.length + ' track' + (allItems.length === 1 ? '' : 's'));
   headerEl.appendChild(count);
+
+  // ADR-189: ⓘ opens the full playlist (all tracks + play-all) in the shared dialog.
+  const info = document.createElement('button');
+  info.type = 'button';
+  info.className = 'mp-playlist-info-btn';
+  info.title = 'Playlist info — all ' + allItems.length + ' tracks';
+  info.setAttribute('aria-label', 'Playlist info');
+  info.textContent = 'ⓘ';
+  info.addEventListener('click', e => { e.stopPropagation(); _openPlaylistInfo(pl); });
+  headerEl.appendChild(info);
 
   const play = document.createElement('button');
   play.type = 'button';
   play.className = 'rec-play-btn play-btn-direct';
-  play.title = 'Play "' + (pl.title || pl.id) + '"';
+  play.title = filtered
+    ? ('Play ' + shownEntries.length + ' matching track' + (shownEntries.length === 1 ? '' : 's'))
+    : ('Play "' + (pl.title || pl.id) + '"');
   play.textContent = '▶';
   play.addEventListener('click', e => {
     e.stopPropagation();
     // ADR-164: tag the queue with its source playlist so Share encodes the
     // compact reference form (`q.pl`) rather than inlining every item.
-    if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, 0, { playlistId: pl.id });
+    if (shownQueue.length && typeof startMediaQueue === 'function') startMediaQueue(shownQueue, 0, playOpts);
   });
   // Wrap in .trail-acts — the row-accordion header gives non-chevron children
   // flex:1, which would stretch a bare play button into an ellipse; .trail-acts
@@ -4186,81 +4300,29 @@ function buildPlaylistRow(pl) {
   const playActs = document.createElement('span');
   playActs.className = 'trail-acts';
   playActs.appendChild(play);
-  // ADR-181: the whole playlist is enqueueable, not just its tracks.
+  // ADR-181: the whole playlist is enqueueable, not just the visible tracks.
   const enq = document.createElement('button');
   enq.type = 'button';
   enq.className = 'mp-plus-btn';
-  enq.title = 'Add playlist to queue';
+  enq.title = 'Add playlist to queue (' + allItems.length + ' tracks)';
   enq.setAttribute('aria-label', 'Add playlist to queue');
   enq.textContent = '+';
   enq.addEventListener('click', e => {
     e.stopPropagation();
-    if (queueItems.length && typeof MediaQueue !== 'undefined' && MediaQueue.addItems) {
-      MediaQueue.addItems(queueItems);
+    if (fullQueue.length && typeof MediaQueue !== 'undefined' && MediaQueue.addItems) {
+      MediaQueue.addItems(fullQueue);
     }
   });
   playActs.appendChild(enq);
 
-  // Children: one tree-leaf per track — chips + play-from-here (queue at index i).
-  const bodyEls = items.map((it, i) => {
-    const trow = document.createElement('div');
-    trow.className = 'mp-playlist-track';
-    // Chips live in their own flex-wrap container: a single line by default that
-    // grows downward to as many lines as the tags need, while the ▶ stays pinned.
-    const chipsWrap = document.createElement('span');
-    chipsWrap.className = 'mp-playlist-track-chips';
-    const perf = _buildMusicianChipForFooter((it.musician_ids && it.musician_ids[0]) || null, null);
-    if (perf) chipsWrap.appendChild(perf);
-    if (typeof _buildSubjectChips === 'function') {
-      _buildSubjectChips({
-        raga_ids:        it.raga_id ? [it.raga_id] : [],
-        composition_ids: it.composition_id ? [it.composition_id] : [],
-        musician_ids:    [],
-      }).forEach(c => chipsWrap.appendChild(c));
-    }
-    if (!it.composition_id && it.note) {
-      const lbl = document.createElement('span');
-      lbl.className = 'yt-label-chip';
-      lbl.textContent = it.note;
-      chipsWrap.appendChild(lbl);
-    }
-    trow.appendChild(chipsWrap);
-    const tplay = document.createElement('button');
-    tplay.type = 'button';
-    tplay.className = 'rec-play-btn play-btn-concert';
-    tplay.title = 'Play from here';
-    tplay.textContent = '▶';
-    tplay.addEventListener('click', e => {
-      e.stopPropagation();
-      if (queueItems.length && typeof startMediaQueue === 'function') startMediaQueue(queueItems, i, { playlistId: pl.id });
-    });
-    // ADR-163 §3: + affordance on each playlist track row
-    // ADR-165: same thunk feeds the + menu and the harvest.
-    const itCopy = it;
-    const qiCopy = queueItems[i];
-    const _trackThunk = () => ({
-      media: qiCopy && qiCopy.media,
-      startSeconds: itCopy.start_seconds || 0,
-      meta: {
-        ragaId: itCopy.raga_id || null, compositionId: itCopy.composition_id || null,
-        nodeId: (itCopy.musician_ids && itCopy.musician_ids[0]) || null,
-        end_seconds: itCopy.end_seconds || null,
-      },
-      label: itCopy.note || itCopy.composition_id || '',
-    });
-    const tplus = _buildPlusBtn(_trackThunk);
-    registerQueueItem(trow, _trackThunk);
-    const tacts = document.createElement('span');
-    tacts.className = 'trail-acts';
-    tacts.appendChild(tplay);
-    tacts.appendChild(tplus);
-    trow.appendChild(tacts);
-    return trow;
-  });
+  // Children: one ribbon per context-matching track.
+  const bodyEls = shownEntries.map((entry, i) =>
+    _buildPlaylistTrackRow(entry.it, i, pl, shownQueue, playOpts));
 
   // ADR-180: the playlist header is one ribbon; every track is its own ribbon
-  // below it (no fold). ADR-165: register the playlist row with an array thunk so
-  // harvest on a PLAYLISTS section body returns the concatenation of its items.
+  // below it (no fold). ADR-189: the per-track rows — not the playlist wrapper —
+  // are the harvest units, so a section "play all visible" never reaches a
+  // context-hidden track.
   const wrap = document.createElement('div');
   wrap.className = 'row-accordion mp-playlist-row';
   const headerRow = document.createElement('div');
@@ -4272,12 +4334,79 @@ function buildPlaylistRow(pl) {
   headerRow.appendChild(playActs);
   wrap.appendChild(headerRow);
   bodyEls.forEach(function (t) { wrap.appendChild(t); });
-  registerQueueItem(wrap, () => queueItems);
   return wrap;
 }
 
+// ADR-189: the full playlist behind the ⓘ — every track, not just the context
+// slice, with a Play all button. Hosted by the shared help dialog so scrim,
+// Escape, and the close affordance come for free.
+function _openPlaylistInfo(pl) {
+  if (typeof window.openHelpDialog !== 'function') return;
+  const entries = _playlistEntries(pl);
+  const queueItems = entries.map(e => e.qi);
+
+  const card = document.createElement('div');
+  card.className = 'playlist-info-card';
+
+  const head = document.createElement('div');
+  head.className = 'playlist-info-head';
+  if (pl.description) {
+    const desc = document.createElement('p');
+    desc.className = 'playlist-info-desc';
+    desc.textContent = pl.description;
+    head.appendChild(desc);
+  }
+  const meta = document.createElement('span');
+  meta.className = 'playlist-info-meta';
+  meta.textContent = queueItems.length + (queueItems.length === 1 ? ' track' : ' tracks');
+  head.appendChild(meta);
+  const acts = document.createElement('span');
+  acts.className = 'playlist-info-acts';
+  const playAll = document.createElement('button');
+  playAll.type = 'button';
+  playAll.className = 'section-play-btn playlist-info-playall';
+  playAll.title = 'Play all ' + queueItems.length + ' tracks';
+  playAll.setAttribute('aria-label', 'Play all tracks');
+  playAll.textContent = '▶';
+  playAll.addEventListener('click', e => {
+    e.stopPropagation();
+    if (queueItems.length && typeof startMediaQueue === 'function') {
+      startMediaQueue(queueItems, 0, { playlistId: pl.id });
+    }
+  });
+  const enqAll = document.createElement('button');
+  enqAll.type = 'button';
+  enqAll.className = 'section-enqueue-btn playlist-info-enqueue';
+  enqAll.title = 'Add all tracks to queue';
+  enqAll.setAttribute('aria-label', 'Add all tracks to queue');
+  enqAll.textContent = '+';
+  enqAll.addEventListener('click', e => {
+    e.stopPropagation();
+    if (queueItems.length && typeof MediaQueue !== 'undefined' && MediaQueue.addItems) {
+      MediaQueue.addItems(queueItems);
+    }
+  });
+  acts.appendChild(playAll);
+  acts.appendChild(enqAll);
+  head.appendChild(acts);
+  card.appendChild(head);
+
+  const list = document.createElement('ul');
+  list.className = 'playlist-info-list';
+  entries.forEach((entry, i) => {
+    const li = document.createElement('li');
+    li.className = 'playlist-info-item';
+    li.appendChild(_buildPlaylistTrackRow(entry.it, i, pl, queueItems, { playlistId: pl.id }));
+    list.appendChild(li);
+  });
+  card.appendChild(list);
+
+  window.openHelpDialog(pl.title || pl.id, card);
+}
+
 // Returns a PLAYLISTS buildSection for the given playlist ids, or null if none.
-function buildPlaylistsSection(playlistIds) {
+// `context` ({type, id}) scopes each row to the panel's subject (ADR-189).
+function buildPlaylistsSection(playlistIds, context) {
   if (!Array.isArray(playlistIds) || !playlistIds.length) return null;
   if (typeof playlists === 'undefined' || typeof buildSection !== 'function') return null;
   const pls = playlistIds.map(id => playlists.find(p => p.id === id)).filter(Boolean);
@@ -4289,7 +4418,7 @@ function buildPlaylistsSection(playlistIds) {
   chip.textContent = 'PLAYLISTS';
   const { sectionEl, bodyEl } = buildSection({ headerChip: chip, count: pls.length, defaultCollapsed: false, playable: true });
   sectionEl.dataset.section = 'playlists';
-  pls.forEach(pl => bodyEl.appendChild(buildPlaylistRow(pl)));
+  pls.forEach(pl => bodyEl.appendChild(buildPlaylistRow(pl, context)));
   return sectionEl;
 }
 
@@ -4709,7 +4838,8 @@ function buildRecordingsList(nodeId, nodeData) {
   // music, the highest abstraction in the panel. unshift so it leads the
   // populated sections (the count>0 partition preserves insertion order).
   const _plSection = buildPlaylistsSection(
-    (typeof playlistsByMusician !== 'undefined' ? playlistsByMusician[nodeId] : null)
+    (typeof playlistsByMusician !== 'undefined' ? playlistsByMusician[nodeId] : null),
+    { type: 'musician', id: nodeId }   // ADR-189: only this musician's tracks
   );
   if (_plSection) _sections.unshift({ sectionEl: _plSection, count: 1 });
 

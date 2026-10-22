@@ -760,7 +760,10 @@ function _renderBaniFlowPlaylists(type, id) {
   let ids = null;
   if (type === 'raga' && typeof playlistsByRaga !== 'undefined') ids = playlistsByRaga[id];
   else if (type === 'comp' && typeof playlistsByComposition !== 'undefined') ids = playlistsByComposition[id];
-  const sec = (typeof buildPlaylistsSection === 'function') ? buildPlaylistsSection(ids) : null;
+  // ADR-189: scope the row to the raga/composition this panel is showing.
+  const sec = (typeof buildPlaylistsSection === 'function')
+    ? buildPlaylistsSection(ids, { type: type, id: id })
+    : null;
   if (!sec) return;
   section.appendChild(sec);
   section.style.display = 'block';

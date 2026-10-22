@@ -3193,20 +3193,37 @@
     display: flex; align-items: center; gap: 8px; min-width: 0;
     font-size: 0.78rem;
   }
+  /* ADR-189: a playlist name reads like a concert title (bold, quiet) rather
+     than a bordered composition chip, so the two are never confused. */
   .playlist-chip {
-    /* hug the text — a label, not a bar */
-    flex: 0 1 auto; max-width: 100%;
-    display: inline-block; padding: 1px 7px;
-    border: 1px solid var(--accent); border-radius: 4px;
-    color: var(--accent); font-weight: 600;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 0 1 auto; min-width: 0;
+    display: inline-block;
+    font-size: 0.78rem; font-weight: bold; color: var(--fg-sub);
+    white-space: nowrap;
     cursor: default;
   }
   .mp-playlist-count { flex-shrink: 0; }
+  /* ADR-189: ⓘ opens the full playlist (all tracks + play-all) in the dialog. */
+  .mp-playlist-info-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+    padding: 1px 5px;
+    background: transparent;
+    border: 1px solid var(--border-strong, #555);
+    border-radius: var(--chip-border-radius, 4px);
+    color: var(--fg-muted);
+    font-size: 0.68rem; line-height: 1.2; font-weight: 600;
+    cursor: pointer; user-select: none;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .mp-playlist-info-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .mp-playlist-info-btn:active { filter: brightness(1.25); }
   .mp-playlist-track {
     flex: 0 0 100%;
     display: flex; align-items: flex-start; gap: 6px;
     font-size: 0.76rem;
+    /* ADR-189: indent a playlist's tracks under its name so the hierarchy reads. */
+    padding-left: var(--hier-indent-step, 14px);
   }
   /* Chips wrap downward across as many lines as the tags need; the ▶ stays put. */
   .mp-playlist-track-chips {
@@ -3214,6 +3231,28 @@
     display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
   }
   .mp-playlist-track .rec-play-btn { flex-shrink: 0; }
+
+  /* ── ADR-189: playlist info dialog (full track list behind the ⓘ) ── */
+  #hd-body .playlist-info-card { line-height: 1.4; }
+  #hd-body .playlist-info-head {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 10px;
+  }
+  #hd-body .playlist-info-desc {
+    flex: 1 1 100%; margin: 0;
+    color: var(--fg-dim); font-size: 0.82rem;
+  }
+  #hd-body .playlist-info-meta {
+    color: var(--fg-muted); font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #hd-body .playlist-info-acts {
+    display: inline-flex; align-items: center; gap: 4px; margin-left: auto;
+  }
+  #hd-body .playlist-info-list { list-style: none; margin: 0; padding: 0; }
+  #hd-body .playlist-info-item { border-top: 1px solid var(--border); }
+  #hd-body .playlist-info-item .mp-playlist-track { padding-left: 0; }
+  #hd-body .playlist-info-item .mp-playlist-track-chips { flex-wrap: wrap; }
 
   .mp-track-items {
     list-style: none;
@@ -4180,7 +4219,7 @@
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
     /* .vp-btn excluded: same visual size as .filter-dropdown-btn (both are pill controls) */
-    button:not(.rec-play-btn):not(.mp-plus-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn):not(.section-play-btn):not(.section-enqueue-btn):not(.section-help-btn):not(.mp-queue-play) {
+    button:not(.rec-play-btn):not(.mp-plus-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn):not(.section-play-btn):not(.section-enqueue-btn):not(.section-help-btn):not(.mp-playlist-info-btn):not(.mp-queue-play) {
       min-height: 44px;
     }
     .view-btn {

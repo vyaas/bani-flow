@@ -65,7 +65,9 @@ lives in `panel_components.js` and is shared with the musician panel (ADR-178).
   delegates to `buildTreeRaga` / `buildTreeComp` / `buildTreeLeaf`,
   `buildTrailItem(row, …)`, `buildArtistSpan`.
 - `_renderBaniFlowPlaylists(type, id)`, `_renderBaniFlowLecdemStrip(type, id)`
-  — secondary strips.
+  — secondary strips. `_renderBaniFlowPlaylists` passes `{type, id}` to
+  `buildPlaylistsSection` so each playlist row shows only the items matching
+  the subject (ADR-189).
 - `baniBack()` / `baniForward()` / `_updateBaniNavButtons()` — history.
 - `window.getBaniTrail()` — read current trail from other modules.
 - `window.openCategoryHelp(slot, kind)` (empty_tutorials.js) — ADR-177: opens
@@ -100,7 +102,7 @@ tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 149 (subject popup), 150, 151 (permalink), 154/156 (media spans), 157
 (play-all), 163 (playlists), 165, 167, 177 (category help dialog), 178
 (unified content filter), 180 (ribbon rows), 181 (transport buttons + meta chips),
-182 (themeable meta badges).
+182 (themeable meta badges), 189 (context-scoped playlist rows + ⓘ info dialog).
 
 ---
 
@@ -132,7 +134,7 @@ owns the recordings body. A "musician panel" task usually touches both.
   nodeData)` (body).
 - `buildRecordingsList` (media_player.js) → `buildRagaTree` →
   `buildConcertBracket` / `buildCompNode` / `buildMiscLeaf` /
-  `buildPlaylistsSection` / `_buildLecdemBracket`.
+  `buildPlaylistsSection` (context-scoped, ADR-189) / `_buildLecdemBracket`.
 - `window.clearMusicianPanel()` — reset (also hides `#recordings-panel`).
 - `panelBack()` / `panelForward()` / `window.getCurrentPanelNode()`.
 - `gurusOf(nodeId)` / `shishyasOf(nodeId)` / `_makeLineageChip(d)` —
@@ -173,7 +175,8 @@ removal), 046 (drawer handles), 086 (empty tutorial), 128 (panel components +
 D7 width), 129 (floating toggles), 137 (lineage popup), 163 (playlists
 section), 177 (category help dialog), 178 (unified content filter), 179
 (single-line rows + shared action column), 180 (ribbon rows, chevrons retired),
-181 (transport buttons + left-aligned meta chips), 182 (themeable meta badges).
+181 (transport buttons + left-aligned meta chips), 182 (themeable meta badges),
+189 (context-scoped playlist rows + ⓘ info dialog).
 
 ---
 
@@ -490,7 +493,13 @@ playlist-track chips are a single non-wrapping scroll line; a playlist row's
 count badge right-aligns ahead of its two-slot `.trail-acts` column.
 **ADR-180:** a playlist is a header ribbon plus one track ribbon per entry
 (the fold is retired); each track's `.mp-playlist-track-chips` scrolls and its
-`.trail-acts` pins.
+`.trail-acts` pins. **ADR-189:** a playlist row is scoped to the panel's
+subject — `buildPlaylistRow(pl, context)` filters items by raga / composition /
+musician, the count reads `shown/total`, and the row ▶ plays the subset while
+`+` enqueues the whole list. The name reads as a `.concert-title` (no pill),
+tracks indent by `--hier-indent-step`, and `ⓘ` (`.mp-playlist-info-btn`) opens
+the full playlist in `#help-dialog` as a `.playlist-info-card` with a **Play
+all** `▶` / enqueue-all `+`.
 
 **Connects to:** everything plays through here — trail play-acts (§1),
 recording rows (§2), WDP playbacks (§4), sruti drone, tanpura (ADR-029).
@@ -516,7 +525,8 @@ queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
 column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-aligned meta chips),
 182 (themeable meta badges), 183 (fixed docked player; no drag/resize, editor
 height cap), 184 (grand track search, thin editor bar, now-playing overlay),
-185 (ephemeral Playlist Bar — hidden when empty, second band reclaimed).
+185 (ephemeral Playlist Bar — hidden when empty, second band reclaimed),
+189 (context-scoped playlist rows + ⓘ info dialog).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
