@@ -43,7 +43,7 @@ CLAIMS: dict[str, list[str]] = {
         'id="search-bar"', 'id="track-search-input"', 'id="track-search-dropdown"',
         # §5 media player — ADR-175 persistent Playlist Bar
         'id="playlist-bar"', 'id="pb-summary"', 'id="pb-editor-toggle"',
-        'id="pb-prev"', 'id="pb-next"', 'id="pb-play"', 'id="pb-pause"', 'id="pb-stop"',
+        'id="pb-prev"', 'id="pb-next"', 'id="pb-play"', 'id="pb-stop"',
         'id="pb-copy"', 'id="pb-share"', 'id="pb-watch"', 'id="pb-volume"',
         # §5 media player — ADR-186 film-strip video toggle
         'id="pb-video-toggle"',
@@ -109,8 +109,7 @@ CLAIMS: dict[str, list[str]] = {
         "function _clampPlayerWidthToColumn", "function _repositionPlayers",
         "function _syncViewTopInset", "function _clampPlaylistEditorHeight",
         "function _syncPlayerControls",
-        "function _pbPlayCurrent", "function _pbPauseCurrent", "function _pbSetPaused",
-        "function _isCurrentPlaying", "function _isCurrentActive",
+        "function _pbSetPaused", "function _isCurrentPlaying",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
         # §5 — ADR-186 film-strip video toggle
         "function _currentPlayerInst", "function _videoVisible",

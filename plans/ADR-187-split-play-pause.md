@@ -1,6 +1,7 @@
 # ADR-187 — Separate Play/Resume and Pause Controls
 
-**Status**: Proposed → Accepted (user directive 2026-10-25)
+**Status**: Superseded by ADR-188 (2026-10-25) — the split play/pause pair was
+replaced by a single play/pause toggle plus a dedicated stop.
 **Date**: 2026-10-25
 **Author**: pi (`surface` skill)
 **Depends on**: ADR-161 (`.mp-toggle-btn` primitive), ADR-175 (Playlist Bar /

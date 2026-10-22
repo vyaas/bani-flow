@@ -329,10 +329,10 @@ track), not just the current one. Copy's tooltip reads
 **Copy YouTube link**; permalink is the TiddlyWiki-style **#** glyph (still
 `Copy permalink`). **Parent-inherits rule:** while the editor is open the row holds
 the operators; the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch` /
-`#pb-volume`, `#pb-play` / `#pb-pause` / `#pb-stop`) shows them only when the row is not visible. **ADR-187:**
-play is play/resume (`_pbPlayCurrent`) and pause is its own button (`_pbPauseCurrent`,
-disabled unless the current controller is playing); the row carries the same pair
-next to its per-item `mp-queue-play`. The bare player carries its own
+`#pb-volume`, `#pb-play` / `#pb-stop`) shows them only when the row is not visible. **ADR-188:**
+`#pb-play` is a play/pause toggle (`❚❚` while the current item sounds, `▶`
+otherwise, `_pbPlayPauseCurrent`) and `#pb-stop` is a dedicated, non-toggling
+stop; the current row carries the same toggle plus an `mp-queue-stop` button. The bare player carries its own
 `.mp-player-controls` (minimize `—` + close `✕`) — **always shown** by
 `_syncPlayerControls` (ADR-183: the video is permanently docked on screen, so its
 top controls stay reachable regardless of the editor row) — so the docked video is
@@ -388,7 +388,7 @@ the second band is reclaimed; it appears only with ≥ 1 item**):
 help button and **clamped to the canvas column** — `body:has(#left-sidebar.drawer-open)` /
 `body:has(#right-sidebar.drawer-open)` pin its `left`/`right` to the panel widths so
 it, the `.mp-queue-bar` editor and the docked player never occlude a sidebar;
-second top band on mobile) with `#pb-prev` / `#pb-play` / `#pb-pause` / `#pb-next` /
+second top band on mobile) with `#pb-prev` / `#pb-play` / `#pb-next` /
 `#pb-stop` (`#pb-transport`), `#pb-summary` (thin horizontal scrollbar when the chips
 overflow), `#pb-count`, `#pb-editor-toggle`, and the operator set inherited from
 the current row: `#pb-copy` / `#pb-share` / `#pb-watch` / `#pb-volume`. The volume
@@ -452,9 +452,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   `_syncNowPlayingOverlays()` (ADR-184: paints `.mp-now-playing`).
 - **ADR-175 Playlist Bar:** `_initPlaylistBar()` (mounts the bar + editor, wires
   transport), `_renderPlaylistBar()` (mirrors MediaQueue into `#playlist-bar`),
-  `_pbPlayCurrent()` / `_pbPauseCurrent()` / `_pbPlayPauseCurrent()` /
-  `_pbStopCurrent()` / `_pbExpandPlayer()` (control handlers; ADR-186 splits the
-  bar's old play/pause toggle into play/resume + pause). Content play routes through `Playlist.playContent` (alias of
+  `_pbPlayPauseCurrent()` / `_pbStopCurrent()` / `_pbExpandPlayer()` (control
+  handlers; ADR-188 makes the bar transport a play/pause toggle + a dedicated
+  stop). Content play routes through `Playlist.playContent` (alias of
   `MediaQueue`), so `openOrFocusPlayer` is the window primitive again.
 - **ADR-186 video toggle:** `_currentPlayerInst()` / `_videoVisible()` /
   `_toggleVideoVisibility()` (bar `#pb-video-toggle`, current row
