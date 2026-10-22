@@ -216,6 +216,10 @@ is inset on desktop to the four walls (between the open panels, above the bottom
 floor); its top wall is `max(--chrome-top, --playlist-ui-bottom + gap)` —
 `media_player.js` `_syncViewTopInset()` publishes the playlist UI's live bottom
 so a deepening editor pushes the view (and `#layout-controls-float`) lower.
+**(ADR-185:** the static `--chrome-top` now clears only the grand search bar
+(desktop `56px`), and the ephemeral Playlist Bar is `display:none` when empty,
+so `_playlistUiRect()` collapses to `null` and the view reclaims the second
+band; `_renderPlaylistBar()` re-publishes the wall on every queue render.)
 `mobile.js` `_refitViews()`/`window.refitViewWindow` re-run `cy.resize()`/
 `cy.fit()` and `window.refitRagaWheel()` when a panel or the editor re-insets
 it (the wheel's state-preserving redraw, so the open WDP survives).
@@ -375,7 +379,8 @@ the results narrow to that name (`_getIndex`, `_entryFromPerf`,
 search `751`, dropdown `10` inside it).
 
 **ADR-175: the persistent Playlist Bar** is the thin editor bar below the
-search bar:
+search bar (**ADR-185: ephemeral — `display:none` when the queue is empty, so
+the second band is reclaimed; it appears only with ≥ 1 item**):
 `#playlist-bar` (app chrome on desktop, gas-like between the view selector and
 help button and **clamped to the canvas column** — `body:has(#left-sidebar.drawer-open)` /
 `body:has(#right-sidebar.drawer-open)` pin its `left`/`right` to the panel widths so
@@ -488,7 +493,8 @@ queue), 163 (playlists), 164 (queue permalinks), 165, 168, 170 (permalink),
 176 (app-level non-overlap contract), 179 (single-line rows + shared action
 column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-aligned meta chips),
 182 (themeable meta badges), 183 (fixed docked player; no drag/resize, editor
-height cap), 184 (grand track search, thin editor bar, now-playing overlay).
+height cap), 184 (grand track search, thin editor bar, now-playing overlay),
+185 (ephemeral Playlist Bar — hidden when empty, second band reclaimed).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).

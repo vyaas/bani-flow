@@ -622,6 +622,9 @@ function _syncMinimizeUi(el, minimized) {
 function _playlistUiRect() {
   const bar = document.getElementById('playlist-bar');
   if (!bar) return null;
+  // ADR-185: an empty Playlist Bar is display:none; treat it as absent so the
+  // dynamic top wall collapses and the view reclaims the band.
+  if (bar.offsetWidth === 0 && bar.offsetHeight === 0) return null;
   const br = bar.getBoundingClientRect();
   const ed = bar.querySelector('.mp-queue-bar');
   let left = br.left, top = br.top, right = br.right, bottom = br.bottom;
@@ -2767,6 +2770,11 @@ function _renderPlaylistBar() {
     play.setAttribute('aria-pressed', paused ? 'true' : 'false');
   }
   _clampPlaylistEditorHeight();
+  // ADR-185: the bar's own visibility drives the view's top wall (the editor
+  // ResizeObserver only fires when the editor box changes, not when the bar
+  // appears/disappears), so publish the inset and re-fit here too.
+  _syncViewTopInset();
+  if (typeof window.refitViewWindow === 'function') window.refitViewWindow();
 }
 
 function _initPlaylistBar() {

@@ -112,3 +112,42 @@ def test_queue_label_chips_follow_the_same_chip_contract():
         "align-self: center", "margin-top: 0",
     ):
         assert decl in block, f"label chip override missing: {decl}"
+
+
+def test_empty_playlist_bar_is_hidden_not_faded():
+    """ADR-185: the bar is ephemeral chrome. With an empty queue it must be
+    gone entirely (display:none), not a dimmed "Playlist empty" hint."""
+    css = _base()
+    block = _rule(css, "#playlist-bar.pb-empty")
+    assert "display: none" in block, "an empty Playlist Bar must be hidden"
+    assert "opacity" not in block, "the old faded-empty state is retired"
+
+
+def test_render_playlist_bar_publishes_the_view_wall():
+    """The bar's own appear/disappear changes the view's top wall, but the
+    editor ResizeObserver only fires on editor-box changes — so every bar
+    render must publish the inset and request a refit (ADR-185 D3)."""
+    mp = (PROJECT_ROOT / "carnatic" / "render" / "templates" / "media_player.js").read_text(
+        encoding="utf-8"
+    )
+    start = mp.index("function _renderPlaylistBar()")
+    body = mp[start:start + 4000]
+    assert "_syncViewTopInset()" in body, (
+        "_renderPlaylistBar must re-publish --playlist-ui-bottom"
+    )
+    assert "refitViewWindow" in body, (
+        "_renderPlaylistBar must request a view refit when the bar toggles"
+    )
+
+
+def test_hidden_bar_collapses_the_playlist_ui_wall():
+    """_playlistUiRect must report a hidden (display:none, zero-size) bar as
+    absent so the dynamic wall collapses to --chrome-top."""
+    mp = (PROJECT_ROOT / "carnatic" / "render" / "templates" / "media_player.js").read_text(
+        encoding="utf-8"
+    )
+    start = mp.index("function _playlistUiRect()")
+    body = mp[start:start + 600]
+    assert "return null" in body, (
+        "a display:none Playlist Bar must yield no playlist-UI rect"
+    )
