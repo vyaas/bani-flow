@@ -133,6 +133,14 @@ const THEME = (() => {
     chipMetaBg:     P.bg2,   // #504945 — neutral gray badge surface
     chipMetaFg:     P.fg,    // #ebdbb2 — high-contrast badge text
     chipMetaBorder: P.bg3,   // #665c54 — subtle chip frame
+
+    // ADR-190: the search field — ONE shell for the grand track search and both
+    // panel searches, so they read as the same affordance at different reach.
+    searchFieldBg:     P.bg0,   // #282828 — raised field surface
+    searchFieldBorder: P.bg3,   // #665c54 — hairline frame
+    searchFieldRadius: '8px',
+    searchFieldHeight: '32px',
+    searchFieldRing:   `color-mix(in srgb, ${P.yellow} 20%, transparent)`,
   };
 
   // ── Level 2: Era colours (node fill colours) ──────────────────────────────
@@ -243,6 +251,12 @@ const THEME = (() => {
         '--chip-meta-bg':     tokens.chipMetaBg,
         '--chip-meta-fg':     tokens.chipMetaFg,
         '--chip-meta-border': tokens.chipMetaBorder,
+        // ADR-190: shared search-field geometry + surfaces
+        '--search-bg':        tokens.searchFieldBg,
+        '--search-border':    tokens.searchFieldBorder,
+        '--search-radius':    tokens.searchFieldRadius,
+        '--search-height':    tokens.searchFieldHeight,
+        '--search-ring':      tokens.searchFieldRing,
       };
       return Object.entries(map)
         .map(([k, v]) => `  ${k}: ${v};`)

@@ -581,3 +581,19 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
     setTimeout(() => { if (dropdown.style.display !== 'none') _close(); }, 150);
   });
 })();
+
+// ── ADR-190: shared search-field clear affordance ────────────────────────────
+// Every search shell (grand + both panels) carries a ✕ that CSS reveals only
+// while the field holds text. Delegated so each module's own input listener
+// still runs — clearing dispatches a real `input` event, so dropdowns close
+// or re-render exactly as if the user had backspaced.
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.search-clear');
+  if (!btn) return;
+  const field = btn.closest('.search-field');
+  const input = field && field.querySelector('.search-input');
+  if (!input) return;
+  input.value = '';
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  input.focus();
+});

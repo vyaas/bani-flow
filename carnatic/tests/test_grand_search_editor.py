@@ -151,3 +151,33 @@ def test_rendered_graph_contains_the_new_surface():
         "function _getIndex", "function _entryFromTrack",
     ):
         assert needle in html, f"rendered graph.html missing {needle!r}"
+
+
+# ── ADR-190: one search shell, three scopes ──────────────────────────────────
+
+
+def test_all_three_search_surfaces_share_one_shell():
+    """The grand bar and both panel searches are the same .search-field."""
+    css = _base()
+    for needle in (
+        ".search-field {", ".search-field:focus-within", ".search-glyph",
+        ".search-clear", "var(--search-radius", "var(--search-height",
+        "var(--search-bg", "var(--search-ring",
+    ):
+        assert needle in css, f"shared search-field contract missing {needle!r}"
+    assert 'id="search-bar" class="search-field"' in css
+    assert css.count('class="search-field"') == 3, "grand + both panels, no more"
+    assert css.count('class="search-glyph"') == 3
+    assert css.count('class="search-clear"') == 3
+    for wrap in ("bani-search-wrap", "musician-search-wrap"):
+        assert f'id="{wrap}"' in css
+    # One glyph for all three; the OS-dependent emoji placeholder is retired.
+    assert 'id="icon-search"' in css
+    assert "&#128269;" not in css
+    # The inner input is no longer a bordered box — the shell is the field.
+    field = re.search(r"\.search-input\s*\{([^}]*)\}", css, re.DOTALL).group(1)
+    assert "border: none" in field
+    # Clear is delegated once in search.js, dispatching a real input event.
+    src = _search()
+    assert src.count("closest('.search-clear')") == 1
+    assert "dispatchEvent(new Event('input'" in src

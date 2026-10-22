@@ -40,11 +40,14 @@ Governing decision: ADR-174.
 trail, "her trail".
 
 **DOM:** `#left-sidebar` → `#bani-flow-panel`. Sticky zone `#bani-sticky`:
-subject header (`#bani-subject-header`, `#bani-subject-name`,
-`#bani-subject-popup-btn` → popup `#bani-subject-popup`), search
-(`#bani-search-input`, `#bani-search-dropdown`, scope label `#bani-scope-label`),
-nav (`#bani-back-btn`, `#bani-fwd-btn`); content filter
-`#trail-filter-row` → `#trail-filter` (placeholder "Filter content…", ADR-178).
+`.panel-top-row` (ADR-191) = nav group (`#bani-back-btn`, `#bani-fwd-btn`,
+square) + search (`#bani-search-input`, `#bani-search-dropdown`, scope label
+`#bani-scope-label`; inside the shared `.search-field` shell — ADR-190) + add
+(`#bani-add-btn`, single-click raga-or-composition picker). The old BANI FLOW
+title banner is retired. Then subject header (`#bani-subject-header`,
+`#bani-subject-name`, `#bani-subject-popup-btn` → popup `#bani-subject-popup`);
+content filter `#trail-filter-row` → `#trail-filter` (placeholder "Filter
+content…", ADR-178).
 Scroll zone
 `#bani-scroll`: `#bani-info`, `#bani-notes-row`, `#bani-playlists`,
 `#bani-lecdem-strip`, `#bani-tutorial`. Toggles: `#left-panel-toggle`,
@@ -102,7 +105,9 @@ tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 149 (subject popup), 150, 151 (permalink), 154/156 (media spans), 157
 (play-all), 163 (playlists), 165, 167, 177 (category help dialog), 178
 (unified content filter), 180 (ribbon rows), 181 (transport buttons + meta chips),
-182 (themeable meta badges), 189 (context-scoped playlist rows + ⓘ info dialog).
+182 (themeable meta badges), 189 (context-scoped playlist rows + ⓘ info dialog),
+190 (shared search-field shell across grand + both panels), 191 (panel top
+row — banners retired, square nav + add).
 
 ---
 
@@ -112,11 +117,14 @@ tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 recordings panel.
 
 **DOM:** `#right-sidebar` → sticky zone `#right-sticky` → `#musician-panel`
-(header: `#node-info` → `#node-header` → `#node-name`, `#node-shape-icon`,
-`#node-wiki-link`, `#lineage-popup-btn`; `#musician-search-input` +
-`#musician-search-dropdown`; content filter `#rec-filter-row` → `#rec-filter`
-(placeholder "Filter content…", ADR-178), `#rec-play-all-btn`,
-`#rec-enqueue-btn`; `#panel-back-btn`, `#panel-fwd-btn`).
+(`.panel-top-row` (ADR-191) = nav group (`#panel-back-btn`, `#panel-fwd-btn`,
+square) + `#musician-search-input` + `#musician-search-dropdown` (inside the
+shared `.search-field` shell, ADR-190) + add (`#panel-add-btn`, single-click
+add-musician form). The old MUSICIAN title banner is retired. Then header:
+`#node-info` → `#node-header` → `#node-name`, `#node-shape-icon`,
+`#node-wiki-link`, `#lineage-popup-btn`; content filter `#rec-filter-row` →
+`#rec-filter` (placeholder "Filter content…", ADR-178), `#rec-play-all-btn`,
+`#rec-enqueue-btn`).
 Scroll zone `#right-scroll` → `#recordings-panel` →
 `#recordings-list`; `#edge-info` (selected-edge readout); `#musician-tutorial`.
 Toggles: `#right-panel-toggle`, `#desktop-right-handle`. Popup:
@@ -176,7 +184,9 @@ D7 width), 129 (floating toggles), 137 (lineage popup), 163 (playlists
 section), 177 (category help dialog), 178 (unified content filter), 179
 (single-line rows + shared action column), 180 (ribbon rows, chevrons retired),
 181 (transport buttons + left-aligned meta chips), 182 (themeable meta badges),
-189 (context-scoped playlist rows + ⓘ info dialog).
+189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
+shell — the panel search is the grand search's sibling), 191 (panel top row —
+banners retired, square nav + add).
 
 ---
 
@@ -372,6 +382,18 @@ resize). z-order: players `≤700`, `#playlist-bar` `750`, modals
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
 
+**ADR-190: the search field is ONE component, three scopes.** `#search-bar`
+(grand), `#bani-search-wrap .search-field`, and
+`#musician-search-wrap .search-field` are all `.search-field`: raised
+`--search-bg` surface, `--search-border` hairline, `--search-radius` (8px),
+`--search-height` (32px), accent ring on `:focus-within` (`--search-ring`),
+the shared `#icon-search` sprite glyph (`.search-glyph`, accent on focus), and
+a `.search-clear` ✕ revealed by `:has(.search-input:not(:placeholder-shown))`
+(delegated handler at the end of `search.js`). The inner `.search-input` is
+borderless and transparent — the shell is the field. `#search-bar` overrides
+only reach (fixed placement, drop shadow, taller dropdown); the panel shells
+override only the inset. A new search surface must adopt the same three parts.
+
 **ADR-184: the grand track search.** `#search-bar` occupies the old top slot
 (desktop `top:12px`, the thin editor bar moves to `top:56px`; mobile `52px` /
 `112px`). `search.js`'s grand-search IIFE indexes every recorded performance
@@ -383,7 +405,8 @@ the results narrow to that name (`_getIndex`, `_entryFromPerf`,
 `_entryFromTrack`). Each result row (`.track-result`) is the shared chip strip +
 **play** (`MediaQueue.playContent`) + **enqueue** (`MediaQueue.addItem`).
 `#track-search-dropdown` is scrollable and sits above players (bar `750`,
-search `751`, dropdown `10` inside it).
+search `751`, dropdown `10` inside it). ADR-190: the dropdown anchors to the
+`.search-field` shell (4px below it, same `--search-radius`).
 
 **ADR-175: the persistent Playlist Bar** is the thin editor bar below the
 search bar (**ADR-185: ephemeral — `display:none` when the queue is empty, so
@@ -526,7 +549,8 @@ column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-alig
 182 (themeable meta badges), 183 (fixed docked player; no drag/resize, editor
 height cap), 184 (grand track search, thin editor bar, now-playing overlay),
 185 (ephemeral Playlist Bar — hidden when empty, second band reclaimed),
-189 (context-scoped playlist rows + ⓘ info dialog).
+189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
+shell across grand + both panels).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).

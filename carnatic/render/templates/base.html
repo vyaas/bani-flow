@@ -382,51 +382,34 @@
     font-size: 0.72rem; color: var(--fg-sub);
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
   }
-  /* Sidebar panel titles (BANI FLOW / MUSICIAN) — larger, more prominent */
-  #bani-flow-panel > h3,
-  #musician-panel > h3 {
-    font-size: 1.0rem;
-    letter-spacing: 0.12em;
-    color: var(--accent);
-    margin-bottom: 10px;
-    text-align: center;
+  /* ADR-191: panel top row — the BANI FLOW / MUSICIAN title banners are
+     retired. Back/forward nav, the panel add control and the panel search now
+     share one row; the search flexes to fill, reclaiming the banner's height.
+     Nav buttons are square (chip radius) and sized to the search field. */
+  .panel-top-row {
+    display: flex; align-items: flex-start; gap: 8px;
   }
-  /* ADR-066: Panel header nav layout — back/fwd grouped left, title centered.
-     (The panel-wide help button was retired by ADR-177: help now lives on each
-     section header via .section-help-btn.)
-     grid-template-columns: 1fr auto 1fr — center col is auto (chip's natural width, no stretch),
-     flanking cols grow equally so the title is geometrically centered in the h3. */
-  #musician-panel h3,
-  #bani-flow-panel > h3 {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
+  .panel-nav-group {
+    display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
   }
-  #musician-panel h3 > span:first-child,
-  #bani-flow-panel > h3 > span:first-child {
-    justify-self: start;
-  }
-  .panel-nav-spacer {
-    display: inline-block;
-    width: 22px;
-    flex-shrink: 0;
-  }
+  .panel-top-row .panel-search-wrap { flex: 1; min-width: 0; padding: 0; }
   .panel-nav-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: var(--search-height, 32px);
+    height: var(--search-height, 32px);
     background: none;
     border: 1px solid var(--border-strong);
-    border-radius: 50%;
+    border-radius: var(--chip-border-radius, 4px);
     color: var(--fg-sub);
-    font-size: 0.875rem;
+    font-size: 1rem;
     cursor: pointer;
     flex-shrink: 0;
     position: relative;
-    transition: opacity 0.15s, border-color 0.15s, color 0.15s;
+    transition: opacity 0.15s, border-color 0.15s, color 0.15s, background 0.15s;
   }
+  .panel-add-btn { color: var(--fg); font-size: 1.15rem; line-height: 1; }
   .panel-nav-btn::after { content: ''; position: absolute; inset: -8px; }
   .panel-nav-btn:disabled {
     opacity: 0.25;
@@ -436,6 +419,7 @@
   .panel-nav-btn:not(:disabled):hover {
     border-color: var(--accent-main);
     color: var(--accent-main);
+    background: var(--bg-input);
   }
 
   /* ── node header — ADR-128 D2: two-row layout (chip row + affordances row) ── */
@@ -1817,43 +1801,77 @@
     text-overflow: ellipsis;
   }
 
-  /* ── panel-level search bars ── */
-  .panel-search-wrap {
-    padding: 8px 14px 0;
-  }
-  .panel-search {
-    width: 100% !important;
-    box-sizing: border-box;
-    background: var(--bg-input); color: var(--fg-dim); border: 1px solid var(--border-strong);
-    padding: 4px 8px; font-family: inherit; font-size: 0.72rem;
-    border-radius: 2px;
-  }
-  .panel-search:focus { outline: none; border-color: var(--accent); }
-  .panel-search::placeholder { color: var(--fg-muted); font-style: italic; }
-  .search-wrap {
+  /* ── ADR-190: the search field — one shell, three scopes ─────────────────
+     The grand track search (#search-bar) and both panel searches
+     (#bani-search-wrap, #musician-search-wrap) are the SAME affordance at
+     different reach. They therefore share one surface contract: a raised
+     field (bg0 over the bg_h panel/canvas), a hairline frame, a leading
+     magnifier that carries the focus colour, and an accent ring on
+     focus-within. Only the width and the result set differ — that is what
+     tells the user the three bars are siblings, not unrelated widgets. */
+  .search-field {
     position: relative;
+    display: flex; align-items: center; gap: 7px;
+    box-sizing: border-box;
+    min-height: var(--search-height, 32px);
+    padding: 0 8px 0 10px;
+    background: var(--search-bg, var(--bg-input));
+    border: 1px solid var(--search-border, var(--border-strong));
+    border-radius: var(--search-radius, 8px);
+    transition: border-color 0.12s ease, box-shadow 0.12s ease;
   }
+  .search-field:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--search-ring, transparent);
+  }
+  .search-glyph {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: 13px; height: 13px;
+    color: var(--fg-muted); pointer-events: none;
+    transition: color 0.12s ease;
+  }
+  .search-glyph svg { display: block; width: 100%; height: 100%; }
+  .search-field:focus-within .search-glyph { color: var(--accent); }
   .search-input {
-    background: var(--bg-input); color: var(--fg-dim); border: 1px solid var(--border-strong);
-    padding: 4px 10px; font-family: inherit; font-size: 0.75rem;
-    cursor: text; border-radius: 2px; width: 200px;
+    flex: 1; min-width: 0; width: auto;
+    padding: 5px 0; margin: 0;
+    background: none; border: none; border-radius: 0;
+    color: var(--fg); font-family: inherit; font-size: 0.75rem;
+    line-height: 1.3; outline: none; cursor: text;
   }
-  .search-input:focus {
-    outline: none; border-color: var(--accent);
+  .search-input::placeholder { color: var(--fg-muted); font-style: normal; opacity: 1; }
+  /* Clear affordance — appears only with text (:placeholder-shown proxy). */
+  .search-clear {
+    display: none; flex-shrink: 0;
+    align-items: center; justify-content: center;
+    width: 17px; height: 17px; padding: 0;
+    background: none; border: none; border-radius: 50%;
+    color: var(--fg-muted); font-size: 0.62rem; line-height: 1;
+    cursor: pointer;
   }
+  .search-field:has(.search-input:not(:placeholder-shown)) .search-clear {
+    display: inline-flex;
+  }
+  .search-clear:hover { color: var(--fg); background: var(--bg-active); }
+  .search-clear:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+
+  .search-wrap { position: relative; }
+  /* The panel shell is inset from the panel edges; the grand bar is full-bleed. */
+  .panel-search-wrap { padding: 8px 14px 0; }
   .search-dropdown {
-    position: absolute; top: 100%; left: 0; width: 100%;
-    background: var(--bg-panel); border: 1px solid var(--border-strong);
-    border-radius: 0 0 3px 3px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    position: absolute; top: calc(100% + 4px); left: 0;
+    box-sizing: border-box; width: 100%;
+    padding: 3px;
+    background: var(--bg-panel); border: 1px solid var(--search-border, var(--border-strong));
+    border-radius: var(--search-radius, 8px);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.55);
     max-height: 280px; overflow-y: auto; z-index: 950;
   }
   .search-result-item {
-    padding: 6px 10px; cursor: pointer;
-    border-bottom: 1px solid var(--border);
+    padding: 6px 8px; cursor: pointer;
+    border-radius: 5px;
     font-size: 0.78rem;
   }
-  .search-result-item:last-child { border-bottom: none; }
   .search-result-item:hover,
   .search-result-item.active {
     background: var(--bg-input); color: var(--accent);
@@ -2415,10 +2433,10 @@
   }
 
   /* ── ADR-127: Vocabulary chip scale modifiers ─────────────────────────────
-     Three scale levels for each vocabulary chip:
+     Two scale levels for each vocabulary chip (the panel-title level was
+     retired with the banners — ADR-191):
        (inline base)        — 0.74rem, cursor:pointer (click affordance)
        .chip-section-hdr    — 0.85rem, cursor:default, hover:no-underline
-       .chip-panel-title    — 1.0rem,  cursor:default, uppercase, spaced
      Modifier rules are noun-agnostic; adding a new chip family opts in
      automatically without changing these patterns.                          */
 
@@ -2461,24 +2479,6 @@
     user-select: none;
   }
 
-  /* ── Panel-title scale (BANI FLOW / MUSICIAN panel headers) ── */
-  .raga-chip.chip-panel-title,
-  .comp-chip.chip-panel-title,
-  .musician-chip.chip-panel-title,
-  .lecdem-chip.chip-panel-title {
-    font-size: 1.0rem;
-    padding: 5px 14px;
-    letter-spacing: 0.12em;
-    cursor: default;
-    text-transform: uppercase;
-    vertical-align: middle;
-  }
-  .raga-chip.chip-panel-title:hover,
-  .comp-chip.chip-panel-title:hover,
-  .lecdem-chip.chip-panel-title:hover {
-    filter: none;
-    outline: none;
-  }
   /* Pencil affordance for section-add and row-block is supplied by the unified
      [data-editable] rule above (applyChipRole marks these roles editable). Only
      their role-specific cursors remain here: section-add chips lack an entity-id
@@ -2486,39 +2486,6 @@
      context-menu to signal a secondary (non-link) action. */
   [data-chip-role="section-add"]:hover { cursor: pointer; }
   [data-chip-role="row-block"] { cursor: context-menu; }
-  /* Musician panel title: use accent border fallback (no inline era vars at panel level) */
-  .musician-chip.chip-panel-title {
-    --chip-era-border: var(--accent, #d79921);
-    --chip-era-bg: color-mix(in srgb, var(--accent, #d79921) 10%, transparent);
-  }
-
-  /* ── ADR-127 D3: .bani-chip — composite gradient, panel-title scale only ──
-     Blends raga teal and comp gold at 45°. Only used for BANI FLOW header;
-     never applied as a navigable instance chip.                             */
-  .bani-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: linear-gradient(135deg,
-      color-mix(in srgb, var(--chip-raga-border) 18%, transparent) 0%,
-      color-mix(in srgb, var(--chip-comp-border) 18%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--chip-raga-border) 50%, var(--chip-comp-border) 50%);
-    border-left-width: 3px;
-    color: var(--fg);
-    font-weight: bold;
-    border-radius: var(--chip-border-radius, 4px);
-    white-space: nowrap;
-    user-select: none;
-    transition: none;
-  }
-  .bani-chip.chip-panel-title {
-    font-size: 1.0rem;
-    padding: 5px 14px;
-    letter-spacing: 0.12em;
-    cursor: default;
-    text-transform: uppercase;
-    vertical-align: middle;
-    /* position: relative is set above in the shared ADR-145 rule */
-  }
-
   /* ── ADR-127 D5: Non-chip section header label (Concerts, Other recordings) ──
      Scale and contrast lift without a colored chip palette.                 */
   .rec-section-hdr-label {
@@ -3060,25 +3027,14 @@
   #search-bar {
     position: fixed; top: 12px; left: 220px; right: 56px;
     z-index: 751;   /* above the editor bar (750) so its dropdown clears it */
-    display: flex; align-items: center; gap: 6px;
     width: auto;
-    padding: 4px 8px;
-    background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
-    border: 1px solid var(--border-strong); border-radius: 6px;
+    /* ADR-190: the grand bar IS a .search-field — the same shell the panels
+       use. It only overrides reach: fixed placement, full column width, a
+       wider result pane. */
     box-shadow: 0 4px 18px rgba(0,0,0,0.4);
     pointer-events: auto;
   }
-  #search-bar .search-bar-icon { color: var(--fg-muted); font-size: 0.9rem; flex-shrink: 0; }
-  #track-search-input {
-    flex: 1; min-width: 0; width: auto;
-    background: var(--bg-input); color: var(--fg-main);
-    border: 1px solid var(--border-strong); border-radius: 4px;
-    padding: 4px 9px; font-family: inherit; font-size: 0.78rem; outline: none;
-  }
-  #track-search-input:focus { border-color: var(--accent); }
-  #track-search-input::placeholder { color: var(--fg-muted); font-style: italic; }
   #track-search-dropdown {
-    top: calc(100% + 4px);
     max-height: min(60vh, 420px);
     z-index: 10;
   }
@@ -5946,6 +5902,13 @@
     <path d="M4 19h16v2H4zm2-2 6-12 6 12H6z" />
     <path d="M9 4 a4 4 0 0 1 6 0" fill="none" stroke="currentColor" stroke-width="1.6"/>
   </symbol>
+  <!-- ADR-190: the shared search-field magnifier. One glyph for the grand
+       track search and both panel searches — the visual thread that says
+       "same affordance, different scope". -->
+  <symbol id="icon-search" viewBox="0 0 24 24">
+    <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <path d="M15.4 15.4 21 21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
   <symbol id="icon-tanpura" viewBox="0 0 24 24">
     <!-- Filled tanpura silhouette: pear-shaped gourd body with a decorative
          rim + sound slot, tapered neck, and 4 tuning pegs (2 right / 2 left,
@@ -5997,12 +5960,13 @@
      rows (chips + play + enqueue) in a scrollable dropdown. Index + handlers
      live in search.js; results are built from perfToPerf (one row per
      performance). -->
-<div id="search-bar" aria-label="Search all tracks">
-  <span class="search-bar-icon" aria-hidden="true">&#9906;</span>
+<div id="search-bar" class="search-field" aria-label="Search all tracks">
+  <span class="search-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#icon-search"/></svg></span>
   <input id="track-search-input" class="search-input track-search-input" type="text"
-         placeholder="Search musicians, ragas, compositions, recordings…"
+         placeholder="Search musicians, ragas, compositions, recordings"
          autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false"
          aria-controls="track-search-dropdown" aria-label="Search all tracks">
+  <button type="button" class="search-clear" aria-label="Clear search">&#10005;</button>
   <div id="track-search-dropdown" class="search-dropdown track-search-dropdown" style="display:none"></div>
 </div>
 
@@ -6039,21 +6003,27 @@
     <!-- ── sticky zone: search bar + subject header + trail filter ── -->
     <div id="bani-sticky">
       <div class="panel" id="bani-flow-panel">
-        <h3>
-          <span style="display:inline-flex;align-items:center;gap:4px">
+        <div class="panel-top-row">
+          <span class="panel-nav-group">
             <button id="bani-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
             <button id="bani-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
           </span>
-          <span class="bani-chip chip-panel-title" data-chip-role="section-add" data-section-action="add-bani-flow">BANI FLOW</span>
-        </h3>
-        <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
-          <input id="bani-search-input" class="search-input panel-search" type="text"
-                 placeholder="&#128269; Search raga / composition"
-                 autocomplete="off" spellcheck="false">
-          <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
-          <div class="search-scope-label" id="bani-scope-label" style="display:none">
-            searching all compositions
+          <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
+            <div class="search-field">
+              <span class="search-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#icon-search"/></svg></span>
+              <input id="bani-search-input" class="search-input panel-search" type="text"
+                     placeholder="Search raga or composition"
+                     autocomplete="off" spellcheck="false">
+              <button type="button" class="search-clear" aria-label="Clear search">&#10005;</button>
+              <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
+            </div>
+            <div class="search-scope-label" id="bani-scope-label" style="display:none">
+              searching all compositions
+            </div>
           </div>
+          <button id="bani-add-btn" class="panel-nav-btn panel-add-btn"
+                  title="Add to Bani Flow" aria-label="Add to Bani Flow"
+                  onclick="openEntryForm('bani-flow-picker')">+</button>
         </div>
         <!-- bani-info: chip row + trail filter as one unit, mirrors #node-info (ADR-020) -->
         <div id="bani-info" style="display:none">
@@ -6162,25 +6132,27 @@
     <!-- ── sticky zone: musician search + node header + rec filter ── -->
     <div id="right-sticky">
       <div class="panel" id="musician-panel">
-        <h3>
-          <span style="display:inline-flex;align-items:center;gap:4px">
+        <div class="panel-top-row">
+          <span class="panel-nav-group">
             <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
             <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
           </span>
-          <!-- ADR-144 Phase A: dblclick MUSICIAN header chip → add-musician form -->
-          <span class="musician-chip chip-panel-title"
-                data-chip-role="section-add"
-                data-section-action="add-musician">MUSICIAN</span>
-          <!-- + button removed (retired by ADR-142 Phase D) -->
-        </h3>
-        <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
-          <input id="musician-search-input" class="search-input panel-search" type="text"
-                 placeholder="&#128269; Search musician / composer"
-                 autocomplete="off" spellcheck="false">
-          <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
-          <div class="search-scope-label" id="musician-scope-label" style="display:none">
-            searching all {node_count} musicians
+          <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
+            <div class="search-field">
+              <span class="search-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#icon-search"/></svg></span>
+              <input id="musician-search-input" class="search-input panel-search" type="text"
+                     placeholder="Search musician or composer"
+                     autocomplete="off" spellcheck="false">
+              <button type="button" class="search-clear" aria-label="Clear search">&#10005;</button>
+              <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
+            </div>
+            <div class="search-scope-label" id="musician-scope-label" style="display:none">
+              searching all {node_count} musicians
+            </div>
           </div>
+          <button id="panel-add-btn" class="panel-nav-btn panel-add-btn"
+                  title="Add musician" aria-label="Add musician"
+                  onclick="openEntryForm('musician')">+</button>
         </div>
       <div id="node-info">
         <div id="node-header">
