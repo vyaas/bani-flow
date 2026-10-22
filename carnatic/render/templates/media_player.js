@@ -2449,7 +2449,7 @@ function _renderQueuePanel(panel) {
     if (isCurrent) {
       const stopBtn = document.createElement('button');
       stopBtn.type = 'button';
-      stopBtn.className = 'mp-queue-op mp-queue-stop';
+      stopBtn.className = 'pb-btn mp-queue-stop';
       stopBtn.title = 'Stop'; stopBtn.setAttribute('aria-label', 'Stop');
       stopBtn.textContent = '\u25a0';   // ■
       stopBtn.disabled = !_currentPlayerInst();

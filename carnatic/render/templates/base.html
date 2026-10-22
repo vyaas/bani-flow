@@ -2978,7 +2978,9 @@
     width: 10px; height: 10px; border: none; border-radius: 50%;
     background: var(--accent);
   }
-  .mp-queue-stop { background: var(--accent); color: var(--bg-deep); }
+  /* ADR-188: the row's stop is styled by the Playlist Bar's `.pb-btn` (the
+     editor lives inside #playlist-bar), so both stop buttons read identically.
+     The old accent-fill rule for the retired play/stop toggle is gone. */
   .mp-queue-remove {
     background: none; border: none; color: var(--fg-muted);
     font-size: 0.85rem; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;

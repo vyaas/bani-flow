@@ -40,9 +40,11 @@ playback.
 ### D2 — Stop is a dedicated, non-toggling button
 
 `#pb-stop` stays the bar's Stop. The **current** row gains its own
-`mp-queue-stop` (`■`, `.mp-queue-op`), disabled when there is no mounted
-controller. It never wears a play glyph, so "stop" is unambiguous and the
-play/pause toggle is never confused with Stop.
+`mp-queue-stop` (`■`), disabled when there is no mounted controller. It never
+wears a play glyph, so "stop" is unambiguous and the play/pause toggle is never
+confused with Stop. The row stop carries the bar's `.pb-btn` class (the editor
+is a child of `#playlist-bar`), so both stops read identically; the retired
+`.mp-queue-stop { background: var(--accent) }` accent-fill rule is gone.
 
 `_pbSetPaused(bool)` remains the shared pause/resume primitive;
 `_pbPlayPauseCurrent` is the toggle handler; `_pbStopCurrent` destroys the

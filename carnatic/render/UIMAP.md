@@ -332,7 +332,8 @@ the operators; the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch` /
 `#pb-volume`, `#pb-play` / `#pb-stop`) shows them only when the row is not visible. **ADR-188:**
 `#pb-play` is a play/pause toggle (`❚❚` while the current item sounds, `▶`
 otherwise, `_pbPlayPauseCurrent`) and `#pb-stop` is a dedicated, non-toggling
-stop; the current row carries the same toggle plus an `mp-queue-stop` button. The bare player carries its own
+stop; the current row carries the same toggle plus an `mp-queue-stop` button
+(styled by the bar's `.pb-btn`, so both stops read identically). The bare player carries its own
 `.mp-player-controls` (minimize `—` + close `✕`) — **always shown** by
 `_syncPlayerControls` (ADR-183: the video is permanently docked on screen, so its
 top controls stay reachable regardless of the editor row) — so the docked video is
