@@ -1182,6 +1182,14 @@
     pointer-events: auto;
   }
   .mp-player-controls button:hover { color: var(--accent); border-color: var(--accent); }
+  /* ADR-186: on desktop the now-playing chips share the video's own control
+     row — [minimize] [chips] [close] — instead of a second strip below it.
+     The base .mp-now-playing absolute rule still serves the mobile overlay
+     inside .mp-video-wrap. */
+  .mp-player-controls .mp-now-playing {
+    position: static; flex: 1 1 auto; min-width: 0; margin: 0 6px;
+    padding: 0; background: none; align-self: center;
+  }
 
   /* ADR-139: clipboard copy button in media player title bar */
   .mp-copy-btn {
@@ -1230,6 +1238,10 @@
   }
   .mp-minimize:hover { color: var(--accent-sub); }
   .mp-minimize[aria-pressed="true"] { color: var(--accent); }
+  /* ADR-186: the film-strip video toggle (Playlist Bar + current queue row).
+     Same icon-button family as copy/share/watch; its aria-pressed declares
+     whether the docked video is visible (pressed) or minimized. */
+  .mp-video-toggle svg { width: 14px; height: 14px; display: block; pointer-events: none; }
 
   /* ── ADR-161: reusable toggle button — open/closed declared via aria-pressed.
      A strong depressed (filled + inset) state, not a faint tint; reused by the
@@ -5969,6 +5981,7 @@
   <button type="button" id="pb-copy" class="pb-btn" title="Copy YouTube link" aria-label="Copy YouTube link">&#10697;</button>
   <button type="button" id="pb-share" class="pb-btn" title="Copy permalink" aria-label="Copy permalink">#</button>
   <button type="button" id="pb-watch" class="pb-btn" title="Watch on YouTube" aria-label="Watch on YouTube">&#8599;</button>
+  <button type="button" id="pb-video-toggle" class="pb-btn mp-toggle-btn mp-video-toggle" title="Hide video" aria-label="Hide video" aria-pressed="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M2.5 9h19M2.5 15h19"/><path d="M6 5v4M10 5v4M14 5v4M18 5v4M6 15v4M10 15v4M14 15v4M18 15v4"/></svg></button>
   <input type="range" id="pb-volume" class="pb-volume" min="0" max="100" step="1" value="100"
          title="Volume" aria-label="Volume" disabled>
 </div>

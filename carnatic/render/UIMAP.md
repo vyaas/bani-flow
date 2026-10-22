@@ -407,7 +407,21 @@ a label item never balloons the row/bar height.
 `_refreshQueuePanels`) paints `_buildQueueRowChips(item, activeChapter)` into
 every mounted player's `.mp-now-playing`, so the video itself always names the
 sounding track — even with the editor folded. It is refreshed on queue advance
-and ADR-176 `activeChapter` changes.
+and ADR-176 `activeChapter` changes. **ADR-186:** on desktop the strip is a
+child of `.mp-player-controls`, so the chips share the video's own control row —
+`[minimize] · chips · [close]` — instead of a second line below it (the base
+absolute `.mp-now-playing` rule still serves the mobile overlay inside
+`.mp-video-wrap`).
+
+**ADR-186: the film-strip video toggle.** Minimizing a content player hides the
+whole docked window (`display:none`); the Playlist Bar's `#pb-video-toggle` and
+the current row's `.mp-video-toggle` are the always-reachable way back, placed
+next to the play / copy / share / watch operators (bar inherits the row's set,
+per ADR-175). `_videoVisible()` reads the current instance's display state;
+`_toggleVideoVisibility()` calls `_toggleMinimized` (desktop) or the mobile
+expand/collapse pair, then `_refreshQueuePanels()` re-renders both faces. Pressed
+(`aria-pressed="true"`) = video shown; the icon is the `.mp-video-toggle` film
+strip, `.mp-toggle-btn` supplies the depressed state (ADR-161).
 
 **Owns:** `media_player.js` (~4740 ln) + `media_providers.js` (provider
 registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154)
@@ -438,6 +452,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   `_pbPlayPauseCurrent()` / `_pbStopCurrent()` / `_pbExpandPlayer()` (control
   handlers). Content play routes through `Playlist.playContent` (alias of
   `MediaQueue`), so `openOrFocusPlayer` is the window primitive again.
+- **ADR-186 video toggle:** `_currentPlayerInst()` / `_videoVisible()` /
+  `_toggleVideoVisibility()` (bar `#pb-video-toggle`, current row
+  `.mp-video-toggle`).
 - **ADR-176 advance/retarget (always know what is playing):** consecutive queue
   items that share one source video (every track of a concert) must NOT spawn a
   second window — `MediaQueue._open` detects an already-mounted same-`mediaKey`

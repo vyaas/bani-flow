@@ -11,6 +11,9 @@ let spawnCount = 0;
 // track change never resets the level. The slider in the Playlist Bar / current
 // row reads and writes this through _setPlayerVolume().
 let _volumeLevel = 1;
+// ADR-186: film-strip glyph for the video show/hide toggle (Playlist Bar +
+// current queue row). `currentColor` keeps it on the theme's text colour.
+const _MEDIA_TOGGLE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M2.5 9h19M2.5 15h19"/><path d="M6 5v4M10 5v4M14 5v4M18 5v4M6 15v4M10 15v4M14 15v4M18 15v4"/></svg>';
 
 // ── ADR-158: relative-seek gesture constants ──────────────────────────────────
 // SEEK_STEP is the universal "skip" quantum (YouTube/NewPipe default). Tap-zone
@@ -1723,11 +1726,13 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // IFrame API needs the target element attached to initialise.
   document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
-  // ADR-184: now-playing chip overlay — a sibling of .plyr (so fullscreen hides
-  // it automatically); the chips name the sounding track on the video itself.
+  // ADR-184 / ADR-186: now-playing chip strip. Built here but appended into the
+  // player's own control row below (between minimize and close), so the track
+  // chips and the window controls share one line. It is no longer a descendant
+  // of .mp-video-wrap, but still outside the Fullscreen element (.plyr), so the
+  // Fullscreen API continues to hide it automatically.
   const nowPlaying = document.createElement('div');
   nowPlaying.className = 'mp-now-playing';
-  videoWrap.appendChild(nowPlaying);
 
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
 
@@ -1740,14 +1745,18 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   minBtn.title = 'Minimize'; minBtn.setAttribute('aria-label', 'Minimize');
   minBtn.textContent = '\u2014';
   minBtn.addEventListener('mousedown', e => e.stopPropagation());
-  minBtn.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); });
+  // ADR-186: keep the row/bar film-strip toggle in step with the video's own
+  // minimize button.
+  minBtn.addEventListener('click', e => { e.stopPropagation(); _toggleMinimized(el); _refreshQueuePanels(); });
   const closeBtn = document.createElement('button');
   closeBtn.type = 'button'; closeBtn.className = 'mp-player-close';
   closeBtn.title = 'Close player'; closeBtn.setAttribute('aria-label', 'Close player');
   closeBtn.textContent = '\u2715';
   closeBtn.addEventListener('mousedown', e => e.stopPropagation());
   closeBtn.addEventListener('click', e => { e.stopPropagation(); _pbStopCurrent(); });
-  controls.appendChild(minBtn); controls.appendChild(closeBtn);
+  controls.appendChild(minBtn);
+  controls.appendChild(nowPlaying);
+  controls.appendChild(closeBtn);
   el.appendChild(controls);
   _syncPlayerControls(el);
 
@@ -2449,6 +2458,21 @@ function _renderQueuePanel(panel) {
     li.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
     li.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
     li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', () => _openMediaOnYouTube(item)));
+    // ADR-186: the current row owns the film-strip video toggle (the Playlist
+    // Bar inherits it when the editor folds). Restores a minimized docked video.
+    if (isCurrent) {
+      const vt = document.createElement('button');
+      vt.type = 'button';
+      vt.className = 'mp-queue-op mp-video-toggle mp-toggle-btn';
+      vt.innerHTML = _MEDIA_TOGGLE_SVG;
+      const shown = _videoVisible();
+      vt.disabled = !_currentPlayerInst();
+      vt.title = shown ? 'Hide video' : 'Show video';
+      vt.setAttribute('aria-label', vt.title);
+      vt.setAttribute('aria-pressed', shown ? 'true' : 'false');
+      vt.addEventListener('click', e => { e.stopPropagation(); _toggleVideoVisibility(); });
+      li.appendChild(vt);
+    }
     if (isCurrent) {
       const vol = document.createElement('input');
       vol.type = 'range'; vol.className = 'mp-queue-vol';
@@ -2612,6 +2636,34 @@ function _pbExpandPlayer() {
   }
 }
 
+// ── ADR-186: film-strip video toggle ─────────────────────────────────────────
+// The video's own minimize button hides the docked window entirely, leaving no
+// way back. This toggle is the always-reachable affordance: it lives in the
+// current playlist row and the Playlist Bar next to the play/copy/share/watch
+// operators. Pressed (`aria-pressed="true"`) means the video is shown.
+function _currentPlayerInst() {
+  const key = MediaQueue.currentKey;
+  return key ? playerRegistry.get(key) : null;
+}
+
+function _videoVisible() {
+  const inst = _currentPlayerInst();
+  if (!inst || !inst.el) return false;
+  return inst.el.style.display !== 'none';
+}
+
+function _toggleVideoVisibility() {
+  const inst = _currentPlayerInst();
+  if (!inst || !inst.el) return;
+  if (inst._isMobileSingleton) {
+    if (inst.el.style.display === 'none') _pbExpandPlayer();
+    else _collapseMobilePlayer(false);
+  } else {
+    _toggleMinimized(inst.el);
+  }
+  _refreshQueuePanels();
+}
+
 // ADR-175: the current item's copy/share/watch actions now live on the Playlist
 // Bar, since the content player is bare.
 function _pbCurrentItem() { return MediaQueue.active ? MediaQueue.items[MediaQueue.index] : null; }
@@ -2727,6 +2779,7 @@ function _renderPlaylistBar() {
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
   const watchBtn = bar.querySelector('#pb-watch');
+  const videoBtn = bar.querySelector('#pb-video-toggle');
   const volume = bar.querySelector('#pb-volume');
 
   if (summary) {
@@ -2747,11 +2800,18 @@ function _renderPlaylistBar() {
   if (copyBtn) copyBtn.disabled = !has;
   if (shareBtn) shareBtn.disabled = !has;
   if (watchBtn) watchBtn.disabled = !has;
+  if (videoBtn) {
+    videoBtn.disabled = !has || !_currentPlayerInst();
+    const shown = _videoVisible();
+    videoBtn.title = shown ? 'Hide video' : 'Show video';
+    videoBtn.setAttribute('aria-label', videoBtn.title);
+    videoBtn.setAttribute('aria-pressed', shown ? 'true' : 'false');
+  }
   // ADR-175 parent-inherits rule: while the editor is open the current ROW owns
   // the operator set; the bar shows it only when the row is not visible.
   const editorOpen = has && MediaQueue.panelOpen;
   const showOps = has && !editorOpen;
-  [play, stop, copyBtn, shareBtn, watchBtn, volume].forEach(el => {
+  [play, stop, copyBtn, shareBtn, watchBtn, videoBtn, volume].forEach(el => {
     if (el) el.style.display = showOps ? '' : 'none';
   });
   _syncVolumeControls();
@@ -2789,6 +2849,7 @@ function _initPlaylistBar() {
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
   const watchBtn = bar.querySelector('#pb-watch');
+  const videoBtn = bar.querySelector('#pb-video-toggle');
   const volume = bar.querySelector('#pb-volume');
   if (prev) prev.addEventListener('click', () => MediaQueue.previous());
   if (next) next.addEventListener('click', () => MediaQueue.next());
@@ -2797,6 +2858,7 @@ function _initPlaylistBar() {
   if (copyBtn) copyBtn.addEventListener('click', _pbCopyLink);
   if (shareBtn) shareBtn.addEventListener('click', _pbShareLink);
   if (watchBtn) watchBtn.addEventListener('click', _pbWatchOnYouTube);
+  if (videoBtn) videoBtn.addEventListener('click', _toggleVideoVisibility);
   if (volume) volume.addEventListener('input', () => _setPlayerVolume(volume.value / 100));
   if (editorBtn) editorBtn.addEventListener('click', () => {
     MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
