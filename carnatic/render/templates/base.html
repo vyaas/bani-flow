@@ -2944,6 +2944,8 @@
     border-radius: 3px; transition: color 0.12s, background 0.12s;
   }
   .mp-queue-op:hover { color: var(--accent); background: var(--bg-hover); }
+  .mp-queue-op:disabled { opacity: 0.35; cursor: default; }
+  .mp-queue-op:disabled:hover { color: var(--fg-sub); background: none; }
   /* ADR-175: the volume slider is one of the current row's operators, so it is
      inherited by the Playlist Bar when the editor folds. */
   .mp-queue-vol {
@@ -5974,7 +5976,8 @@
   <span id="pb-count"></span>
   <div class="pb-transport">
     <button type="button" id="pb-prev" class="pb-btn" title="Previous track" aria-label="Previous track">&#9198;</button>
-    <button type="button" id="pb-play" class="pb-btn mp-toggle-btn" title="Play / pause" aria-label="Play / pause" aria-pressed="false">&#9654;</button>
+    <button type="button" id="pb-play" class="pb-btn" title="Play / resume" aria-label="Play / resume">&#9654;</button>
+    <button type="button" id="pb-pause" class="pb-btn" title="Pause" aria-label="Pause" disabled>&#10074;&#10074;</button>
     <button type="button" id="pb-next" class="pb-btn" title="Next track" aria-label="Next track">&#9197;</button>
     <button type="button" id="pb-stop" class="pb-btn" title="Stop" aria-label="Stop">&#9632;</button>
   </div>

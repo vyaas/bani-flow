@@ -2404,7 +2404,7 @@ function _renderQueuePanel(panel) {
     li.dataset.i = i;
 
     const isCurrent = (i === MediaQueue.index);
-    const isPlayingCurrent = isCurrent && !!MediaQueue.currentKey;
+    const isPlayingCurrent = isCurrent && !!MediaQueue.currentKey && _isCurrentActive();
 
     // ADR-184: the per-row minimize chevron is retired. The bare video owns a
     // permanent minimize button, and the editor bar owns the editor fold — the
@@ -2443,6 +2443,18 @@ function _renderQueuePanel(panel) {
       else MediaQueue.jumpTo(i);
     });
     li.appendChild(playBtn);
+    // ADR-187: pause sits beside play for the current item (pause ≠ stop —
+    // stop tears the controller down, pause keeps the position).
+    if (isCurrent) {
+      const pauseBtn = document.createElement('button');
+      pauseBtn.type = 'button';
+      pauseBtn.className = 'mp-queue-op mp-queue-pause';
+      pauseBtn.title = 'Pause'; pauseBtn.setAttribute('aria-label', 'Pause');
+      pauseBtn.textContent = '\u275a\u275a';   // ❚❚
+      pauseBtn.disabled = !isPlayingCurrent || !_isCurrentPlaying();
+      pauseBtn.addEventListener('click', e => { e.stopPropagation(); _pbPauseCurrent(); });
+      li.appendChild(pauseBtn);
+    }
 
     // ADR-184: every row owns the operator set — copy · permalink · watch act
     // on THIS row's track, not the currently-playing one. The volume slider
@@ -2579,23 +2591,59 @@ function _refreshQueuePanels() {
 // MediaQueue (Phase 1: play routing is unchanged). The editor is the same
 // ADR-162 .mp-queue surface, re-parented to #playlist-bar as .mp-queue-bar so it
 // drops DOWN from the bar and is reachable with the player open or closed.
+// ADR-187: explicit transport primitives. `_pbPlayPauseCurrent` (the original
+// toggle) remains for the row's resume path; the Playlist Bar now exposes a
+// separate play/resume and pause button.
+function _pbSetPaused(paused) {
+  const inst = _currentPlayerInst();
+  if (!inst || !inst.controller) return false;
+  const c = inst.controller;
+  if (typeof c.isPaused === 'function' && typeof c.play === 'function' && typeof c.pause === 'function') {
+    if (paused && !c.isPaused()) c.pause();
+    else if (!paused && c.isPaused()) c.play();
+    return true;
+  }
+  if (c.kind === 'plyr' && c.plyr) {
+    try {
+      if (paused && !c.plyr.paused) c.plyr.pause();
+      else if (!paused && c.plyr.paused) c.plyr.play();
+    } catch (e) {}
+    return true;
+  }
+  // iframe pseudo-instances are not controllable (ADR-155) — no-op.
+  return false;
+}
+
+function _pbPlayCurrent() {
+  if (!MediaQueue.active || !MediaQueue.items.length) return;
+  const inst = _currentPlayerInst();
+  if (!inst || !inst.controller) {
+    // Stopped: restart the current item through the playlist.
+    MediaQueue._open(null);
+    return;
+  }
+  _pbSetPaused(false);
+  _refreshQueuePanels();
+}
+
+function _pbPauseCurrent() {
+  if (_pbSetPaused(true)) _refreshQueuePanels();
+}
+
 function _pbPlayPauseCurrent() {
   if (!MediaQueue.active || !MediaQueue.items.length) return;
-  const key = MediaQueue.currentKey;
-  const inst = key ? playerRegistry.get(key) : null;
+  const inst = _currentPlayerInst();
   if (!inst || !inst.controller) {
     // Stopped: restart the current item through the playlist.
     MediaQueue._open(null);
     return;
   }
   const c = inst.controller;
-  if (typeof c.isPaused === 'function') {
-    if (c.isPaused()) c.play(); else c.pause();
-  } else if (c.kind === 'plyr' && c.plyr) {
-    try { c.plyr.paused ? c.plyr.play() : c.plyr.pause(); } catch (e) {}
-  }
-  // iframe pseudo-instances are not controllable (ADR-155) — no-op.
-  _renderPlaylistBar();
+  let paused = false;
+  if (typeof c.isPaused === 'function') paused = !!c.isPaused();
+  else if (c.kind === 'plyr' && c.plyr) paused = !!c.plyr.paused;
+  _pbSetPaused(!paused);
+  _refreshQueuePanels();
 }
 
 // ADR-175: Stop tears down the current controller but KEEPS MediaQueue.items,
@@ -2650,6 +2698,27 @@ function _videoVisible() {
   const inst = _currentPlayerInst();
   if (!inst || !inst.el) return false;
   return inst.el.style.display !== 'none';
+}
+
+function _isCurrentPlaying() {
+  const inst = _currentPlayerInst();
+  if (!inst || !inst.controller) return false;
+  const c = inst.controller;
+  if (typeof c.isPaused === 'function') return !c.isPaused();
+  if (c.kind === 'plyr' && c.plyr) return !c.plyr.paused;
+  return false;
+}
+
+// True when the current item is the sounding item even if it cannot be paused
+// (iframe pseudo-instances, ADR-155). Drives the row's play/stop glyph so an
+// uncontrollable track still offers Stop; pause stays disabled for it.
+function _isCurrentActive() {
+  const inst = _currentPlayerInst();
+  if (!inst || !inst.controller) return false;
+  const c = inst.controller;
+  if (typeof c.isPaused === 'function') return !c.isPaused();
+  if (c.kind === 'plyr' && c.plyr) return !c.plyr.paused;
+  return true;
 }
 
 function _toggleVideoVisibility() {
@@ -2775,6 +2844,7 @@ function _renderPlaylistBar() {
   const next = bar.querySelector('#pb-next');
   const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
+  const pauseBtn = bar.querySelector('#pb-pause');
   const editorBtn = bar.querySelector('#pb-editor-toggle');
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
@@ -2811,7 +2881,7 @@ function _renderPlaylistBar() {
   // the operator set; the bar shows it only when the row is not visible.
   const editorOpen = has && MediaQueue.panelOpen;
   const showOps = has && !editorOpen;
-  [play, stop, copyBtn, shareBtn, watchBtn, videoBtn, volume].forEach(el => {
+  [play, pauseBtn, stop, copyBtn, shareBtn, watchBtn, videoBtn, volume].forEach(el => {
     if (el) el.style.display = showOps ? '' : 'none';
   });
   _syncVolumeControls();
@@ -2821,14 +2891,10 @@ function _renderPlaylistBar() {
     editorBtn.textContent = editorOpen ? '\u25bc' : '\u25b6';   // same chevron as panels
   }
   if (play) {
-    let paused = true;
-    const inst = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
-    if (inst && inst.controller && typeof inst.controller.isPaused === 'function') {
-      paused = !!inst.controller.isPaused();
-    }
-    play.innerHTML = paused ? '&#9654;' : '&#10074;&#10074;';   // ▶ / ❚❚
-    play.setAttribute('aria-pressed', paused ? 'true' : 'false');
+    // ADR-187: play is play/resume; the playing state is carried by #pb-pause.
+    play.innerHTML = '&#9654;';
   }
+  if (pauseBtn) pauseBtn.disabled = !has || !_isCurrentPlaying();
   _clampPlaylistEditorHeight();
   // ADR-185: the bar's own visibility drives the view's top wall (the editor
   // ResizeObserver only fires when the editor box changes, not when the bar
@@ -2845,6 +2911,7 @@ function _initPlaylistBar() {
   const next = bar.querySelector('#pb-next');
   const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
+  const pauseBtn = bar.querySelector('#pb-pause');
   const editorBtn = bar.querySelector('#pb-editor-toggle');
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
@@ -2854,7 +2921,8 @@ function _initPlaylistBar() {
   if (prev) prev.addEventListener('click', () => MediaQueue.previous());
   if (next) next.addEventListener('click', () => MediaQueue.next());
   if (stop) stop.addEventListener('click', _pbStopCurrent);
-  if (play) play.addEventListener('click', _pbPlayPauseCurrent);
+  if (play) play.addEventListener('click', _pbPlayCurrent);
+  if (pauseBtn) pauseBtn.addEventListener('click', _pbPauseCurrent);
   if (copyBtn) copyBtn.addEventListener('click', _pbCopyLink);
   if (shareBtn) shareBtn.addEventListener('click', _pbShareLink);
   if (watchBtn) watchBtn.addEventListener('click', _pbWatchOnYouTube);
