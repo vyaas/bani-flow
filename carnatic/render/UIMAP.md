@@ -255,11 +255,15 @@ wheel, the wheel.
 
 **DOM:** `#raga-wheel` (container; SVG built imperatively by `svgEl()`);
 `#wheel-detail-panel` (**WDP** — the raga panel: mela chip + its janya chips);
-`#wheel-comp-panel` (**child panel**, ADR-192 — the selected raga's compositions,
-opened by clicking a raga chip and placed beside that chip: outside the WDP's
-outward edge, vertically centred on the chip's row; **desktop-only** — on
-≤768px a raga tap draws the bani-flow panel instead); tooltip group. Permanent
-centre annotation: the 12-sector sruti pie (ADR-131 R3).
+`#wheel-comp-panel` (**composition branch card**, ADR-192/193 — the selected
+raga's compositions as composition+composer pair rows, opened by clicking a raga
+chip and placed beside that chip: outside the WDP's outward edge, vertically
+centred on the chip's row); `#wheel-rec-panel` (**recordings leaf card**,
+ADR-193 — the selected composition's recordings, placed outside the composition
+card and centred on the selected pair row, opened by clicking a pair row); all
+three child cards are **desktop-only** — on ≤768px a raga tap draws the
+bani-flow panel instead; tooltip group. Permanent centre annotation: the
+12-sector sruti pie (ADR-131 R3).
 
 **Owns:** `raga_wheel.js` (~2890 ln) — **also owns view switching for the
 whole app** (`switchView`, `_updateViewportToolbar`, `vpFit`, `vpRelayout`,
@@ -277,15 +281,22 @@ whole app** (`switchView`, `_updateViewportToolbar`, `vpFit`, `vpRelayout`,
 - **Expansion chain:** `_expandMela(vp, svg, raga, melaAngle, …)` →
   `_expandComps(vp, svg, janya, …)` → `_expandMusicians(vp, svg, comp, …)`;
   `_collapseAll(vp, melaByNum)`.
-- **WDP (two-panel telescoping, ADR-192):** `_openWheelDetailPanel(raga)`
+- **WDP (telescoping three-card chain, ADR-192/193):** `_openWheelDetailPanel(raga)`
   builds the raga panel (mela + janyas, no comps); `_wdpSelectJanya(raga, chipEl,
-  suppressFilter, activeCompId)` opens/closes the child panel and populates the
-  bani filter; `_openCompPanel(raga, activeCompId)`, `_wdpRenderComps`,
-  `window._closeWheelCompPanel()`, `window._positionCompPanel()` (anchors the
-  child beside the `.wdp-selected` chip — outward edge + `_WDP_COMP_GAP`,
-  centred on the chip's measured screen row and clamped to the view window;
-  re-runs on list scroll; no-op on ≤768px, where a raga tap draws the
-  bani-flow panel); `window._closeWheelDetailPanel()` clears both;
+  suppressFilter, activeCompId)` opens/closes the composition card and populates
+  the bani filter; `_openCompPanel(raga, activeCompId)` renders composition+composer
+  pair rows via `_wdpRenderCompRows` (opening the recordings leaf for a permalink
+  `activeCompId`); `_wdpToggleCompItem` → `_openRecPanel(item, ragaId, rowEl)`
+  builds the recordings leaf (`_wdpRecordingsFor` → `_wdpRecRow` → `_wdpPlayRef`);
+  `window._closeWheelCompPanel()` clears the composition card + leaf;
+  `window._closeWheelRecPanel()` clears the leaf;
+  `window._positionCompPanel()` / `window._positionRecPanel()` anchor each child
+  beside the previous card's selected chip/row (outward edge + `_WDP_COMP_GAP` /
+  `_WDP_REC_GAP`, vertically centred on the measured screen row, clamped to the
+  view window; re-run on list/panel scroll; no-op on ≤768px);
+  `_panChainIntoView()` nudges the wheel pan so the whole open chain stays
+  inside the visible window between the two sidebars;
+  `window._closeWheelDetailPanel()` clears all three;
   `_positionWdpAtMela(melaNum)`, `_animateWheelToMela(melaNum, ms)`.
 - **Light-up API:** `_lightUpMelas(melaNumbers, strokeHint)`,
   `_lightUpSpineForMela(M)`, `window.lightUpSpine(ragaId)`,
@@ -301,7 +312,8 @@ whole app** (`switchView`, `_updateViewportToolbar`, `vpFit`, `vpRelayout`,
   `hideRagaWheel()`, `wheelFit()`.
 
 **State globals:** `currentView` ('graph'|'raga'); `_wdpData`, `_wdpMelaNum`,
-`_wdpCorner`, `_wdpCompRaga` (ADR-192: raga id whose child comp panel is open);
+`_wdpCorner`, `_wdpCompRaga` (ADR-192: raga id whose child comp panel is open),
+`_wdpRecComp` (ADR-193: composition id whose recordings leaf is open);
 `_expandedMela/_expandedJanya/_expandedComp`; `_litMelaId`;
 pan/zoom transform state (`_dragging`, `_gestureMode`, `_pinchStartScale`) —
 mutated only via `_applyTransform()` (`window._wheelApplyTransform`).
@@ -321,7 +333,8 @@ the musician panel (§2). Sruti pie plays drone via `openPlayer`/`closePlayer`
 **ADRs:** 023 (three-view selector), 025 (bani↔wheel sync), 030, 035, 073,
 093, 096, 123/124/126, 131 (sruti pie, R3), 132, 140 (WDP anchoring), 151
 (permalink), 169 (tanpura glyph), 176 (inset view window), 192 (telescoping
-raga panel + composition child panel).
+raga panel + composition child panel), 193 (composition composer pair +
+recordings leaf card).
 
 ---
 

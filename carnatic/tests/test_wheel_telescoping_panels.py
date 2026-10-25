@@ -1,18 +1,21 @@
 """
-test_wheel_telescoping_panels.py — ADR-192 regression guard.
+test_wheel_telescoping_panels.py — ADR-192/193 regression guard.
 
-The mela-janya view is a two-panel telescoping chain:
+The mela-janya view is a three-card telescoping chain:
 
 * ``#wheel-detail-panel`` (the raga panel) shows the mela chip and its janya
   chips only — it must never render composition chips itself.
-* ``#wheel-comp-panel`` (the child panel) shows the compositions of whichever
-  raga chip was clicked, and is pinned just outside the raga panel's outward
-  edge by ``_positionCompPanel``.
+* ``#wheel-comp-panel`` (the composition branch card) shows the selected raga's
+  compositions as composition+composer pair rows, pinned just outside the raga
+  panel's outward edge by ``_positionCompPanel``.
+* ``#wheel-rec-panel`` (the recordings leaf card, ADR-193) shows the recordings
+  of the selected pair row, pinned outside the composition card by
+  ``_positionRecPanel``.
 
-Failure here means the shallow/child split drifted — e.g. compositions were
-pre-rendered back into the raga panel, or the child panel is no longer opened
-by a raga chip. Update raga_wheel.js / base.html (and UIMAP.md §4) in the same
-commit.
+Failure here means the telescoping split drifted — e.g. compositions were
+pre-rendered back into the raga panel, the composition rows lost their
+composer, or the leaf is no longer opened by a pair row. Update raga_wheel.js /
+base.html (and UIMAP.md §4) in the same commit.
 """
 from __future__ import annotations
 
@@ -41,8 +44,9 @@ def test_child_panel_is_a_sibling_in_the_markup():
     html = BASE.read_text(encoding="utf-8")
     assert 'id="wheel-detail-panel"' in html
     assert 'id="wheel-comp-panel"' in html
-    # Same surface: both ids are styled together.
-    assert "#wheel-detail-panel, #wheel-comp-panel" in html
+    assert 'id="wheel-rec-panel"' in html
+    # Same surface: all three cards are styled together.
+    assert "#wheel-detail-panel, #wheel-comp-panel, #wheel-rec-panel" in html
 
 
 def test_raga_panel_lists_janyas_but_never_compositions():
@@ -63,8 +67,9 @@ def test_raga_chip_opens_the_child_panel():
 def test_child_panel_renders_comps_and_pins_beside_the_clicked_chip():
     src = _wheel_src()
     body = _fn(src, "_openCompPanel")
-    assert "_wdpRenderComps(body" in body, "child panel must render the raga's compositions"
+    assert "_wdpRenderCompRows(body" in body, "child panel must render the raga's compositions"
     assert "_positionCompPanel()" in body, "child panel must anchor to the clicked chip"
+    assert "_closeWheelRecPanel()" in body, "a new raga must clear the stale leaf"
 
     pos = _fn(src, "_positionCompPanel")
     assert "wheel-comp-panel" in pos
@@ -75,9 +80,42 @@ def test_child_panel_renders_comps_and_pins_beside_the_clicked_chip():
     assert "getBoundingClientRect" in pos, "child must track the chip's on-screen row"
 
 
+def test_composition_rows_pair_composer_and_open_recordings():
+    src = _wheel_src()
+    rows = _fn(src, "_wdpRenderCompRows")
+    assert "buildComposerChip" in rows, "composition row must carry its composer chip"
+    assert "wdp-comp-row" in rows and "wdp-pair-title" in rows, (
+        "composition+composer must render as a side-by-side pair row"
+    )
+    assert "_wdpToggleCompItem" in rows, "clicking a pair row must open its recordings leaf"
+
+    toggle = _fn(src, "_wdpToggleCompItem")
+    assert "_openRecPanel" in toggle
+    leaf = _fn(src, "_openRecPanel")
+    assert "_wdpRecordingsFor" in leaf, "leaf must resolve the composition's recordings"
+    assert "wheel-rec-panel" in leaf
+    assert "matchMedia('(max-width: 768px)')" in leaf, "recordings leaf is desktop-only"
+
+
+def test_recordings_leaf_pins_beside_the_composition_card():
+    pos = _fn(_wheel_src(), "_positionRecPanel")
+    assert "wheel-rec-panel" in pos
+    assert "wheel-comp-panel" in pos
+    assert "_WDP_REC_GAP" in pos, "leaf must keep the telescoping gap from the comp card"
+    assert "wdp-comp-row" in pos and "wdp-active" in pos, (
+        "leaf must align to the selected pair row"
+    )
+    assert "getBoundingClientRect" in pos, "leaf must track the selected row's on-screen position"
+
+
 def test_closing_the_raga_panel_closes_the_child():
     body = _fn(_wheel_src(), "_closeWheelDetailPanel")
     assert "_closeWheelCompPanel()" in body
+
+
+def test_closing_the_composition_card_closes_the_leaf():
+    body = _fn(_wheel_src(), "_closeWheelCompPanel")
+    assert "_closeWheelRecPanel()" in body
 
 
 def test_composition_child_is_desktop_only():

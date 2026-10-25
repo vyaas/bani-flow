@@ -38,6 +38,7 @@ CLAIMS: dict[str, list[str]] = {
         'id="cy"', 'id="cy-labels"', 'id="timeline-ruler"',
         # §4 mela-janya view
         'id="raga-wheel"', 'id="wheel-detail-panel"', 'id="wheel-comp-panel"',
+        'id="wheel-rec-panel"',
         # §5 media player
         'id="mp-copy-toast"',
         # §5 media player — ADR-184 grand track search
@@ -87,6 +88,10 @@ CLAIMS: dict[str, list[str]] = {
         "window._closeWheelDetailPanel", "function _openCompPanel",
         "window._closeWheelCompPanel", "window._positionCompPanel",
         "function _wdpSelectJanya", "_wdpCompRaga",
+        # §4 — ADR-193 composition pair rows + recordings leaf
+        "function _wdpRenderCompRows", "function _openRecPanel",
+        "window._closeWheelRecPanel", "window._positionRecPanel", "_wdpRecComp",
+        "function _panChainIntoView",
         # §4 — light-up + sync
         "function _lightUpMelas", "window.lightUpSpine",
         "window.clearWheelLightUp", "function syncRagaWheelToFilter",

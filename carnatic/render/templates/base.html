@@ -1410,15 +1410,17 @@
   }
 
   /* ── Viewport toolbar — compact overlay, top-right of graph canvas (ADR-030) ── */
-  /* ── Wheel Detail Panels (ADR-096 / ADR-140 / ADR-192) ─────────────────────────
-     ADR-192: the WDP is a two-panel telescoping chain. #wheel-detail-panel holds
-     the mela + its janyas; #wheel-comp-panel is the child card holding the
-     compositions of whichever raga chip was clicked. The child pins the parent's
-     outer corner (+gap) so it fans further out in the same direction.
+  /* ── Wheel Detail Panels (ADR-096 / ADR-140 / ADR-192 / ADR-193) ─────────────────
+     ADR-192: the WDP is a telescoping chain. #wheel-detail-panel holds the mela +
+     its janyas; #wheel-comp-panel is the child card holding the compositions of
+     whichever raga chip was clicked. The child pins the parent's outer corner
+     (+gap) so it fans further out in the same direction.
+     ADR-193: each composition in the child card is a composition+composer pair,
+     and #wheel-rec-panel is the true leaf — the recordings for the selected pair.
      ADR-140: left/top are set dynamically by JS, anchored to the mela that opened it.
      Layout: fixed-height box with sticky header + scrollable body so offsetHeight is
      stable for the entire panel lifetime — prevents the corner-anchor shift on janya click. */
-  #wheel-detail-panel, #wheel-comp-panel {
+  #wheel-detail-panel, #wheel-comp-panel, #wheel-rec-panel {
     display: none;
     position: absolute;
     width: 228px; max-height: 60vh;
@@ -1429,14 +1431,19 @@
     pointer-events: all; box-sizing: border-box;
     transform-origin: top left;
   }
-  #wheel-detail-panel.wdp-open, #wheel-comp-panel.wdp-open { display: flex; flex-direction: column; }
+  #wheel-detail-panel.wdp-open, #wheel-comp-panel.wdp-open, #wheel-rec-panel.wdp-open { display: flex; flex-direction: column; }
   /* ADR-192: the child card reads as a descendant of the raga panel — an amber
      header rail echoes the composition chips it contains, and its comp rows are
      flush (no indent) since the card itself is the group. */
-  #wheel-comp-panel { z-index: 66; }
+  #wheel-comp-panel { z-index: 66; width: 268px; }
   #wheel-comp-panel .wdp-header { border-bottom-color: var(--chip-comp-border); }
   #wheel-comp-panel .wdp-comp-group { margin-left: 0; }
   #wheel-comp-panel .wdp-chip.wdp-parent { cursor: default; }
+  /* ADR-193: the recordings card is the leaf — one hop further out, slightly
+     narrower, and tinted by the raga accent so the chain reads outward. */
+  #wheel-rec-panel { z-index: 67; width: 244px; }
+  #wheel-rec-panel .wdp-header { border-bottom-color: var(--chip-raga-border); }
+  #wheel-rec-panel .wdp-chip.wdp-parent { cursor: default; }
   /* Scrollable body below the sticky header */
   .wdp-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-top: 5px; }
   .wdp-header {
@@ -1463,6 +1470,78 @@
   .wdp-chip.wdp-comp { border-color: var(--chip-comp-border); color: var(--chip-comp-border); background: var(--chip-comp-bg); }
   .wdp-chip.wdp-comp.wdp-active { background: var(--chip-comp-border); color: var(--bg-deep); font-weight: 600; border-left: 3px solid var(--accent-select); }
   .wdp-chip-count { margin-left: auto; font-size: 0.66rem; opacity: 0.65; flex-shrink: 0; padding-left: 4px; }
+
+  /* ── ADR-193: composition ⇄ composer pair rows ───────────────────────────────
+     Each composition is a branch point: the title on the left, its composer chip
+     on the right, side by side. Clicking the title half opens the recordings
+     leaf; the composer chip keeps its own navigation. */
+  .wdp-comp-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px; border-radius: 6px;
+    border: 1px solid var(--chip-comp-border);
+    background: var(--chip-comp-bg);
+    cursor: pointer;
+    transition: filter 0.12s, border-color 0.12s;
+  }
+  .wdp-comp-row:hover { filter: brightness(1.12); }
+  .wdp-comp-row.wdp-active {
+    background: var(--chip-comp-border);
+    border-color: var(--accent-select, #ffb347);
+    box-shadow: inset 3px 0 0 var(--accent-select, #ffb347);
+  }
+  .wdp-comp-row.wdp-active .wdp-pair-title { color: var(--bg-deep); }
+  .wdp-pair-title {
+    flex: 1; min-width: 0;
+    font-size: 0.76rem; line-height: 1.3; font-weight: 600;
+    color: var(--chip-comp-border);
+    overflow-wrap: anywhere;
+  }
+  .wdp-pair-title::before { content: '\266a '; opacity: 0.8; font-weight: normal; }
+  /* The composer is a relation, not the subject — quieter, hairline-separated. */
+  .wdp-comp-row > .composer-chip {
+    flex-shrink: 0; max-width: 45%;
+    font-size: 0.62rem; padding: 1px 5px;
+    opacity: 0.9;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;
+  }
+  .wdp-comp-row.wdp-active > .composer-chip { filter: brightness(1.25); }
+
+  /* ── ADR-193: recordings leaf rows ──────────────────────────────────────────── */
+  .wdp-rec-row {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 6px; border-radius: 6px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-input);
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .wdp-rec-row:hover { border-color: var(--chip-raga-border); background: var(--chip-raga-bg); }
+  .wdp-rec-play {
+    flex-shrink: 0; width: 20px; height: 20px; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%; border: 1px solid var(--chip-raga-border);
+    background: transparent; color: var(--chip-raga-border);
+    font-size: 0.6rem; line-height: 1; cursor: pointer;
+  }
+  .wdp-rec-play:hover { background: var(--chip-raga-border); color: var(--bg-deep); }
+  .wdp-rec-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .wdp-rec-title {
+    font-size: 0.75rem; color: var(--fg); line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+  .wdp-rec-meta {
+    font-size: 0.66rem; color: var(--fg-sub); line-height: 1.3;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .wdp-rec-meta:empty { display: none; }
+  /* Footer escape hatch to the richer Bani-flow catalogue. */
+  .wdp-leaf-link {
+    margin-top: 4px; padding-top: 6px;
+    border-top: 1px solid var(--border-strong);
+    font-size: 0.68rem; color: var(--accent-link); cursor: pointer;
+    text-align: center; user-select: none;
+  }
+  .wdp-leaf-link:hover { text-decoration: underline; }
 
   /* ADR-135: layout-controls-float — single row, all controls inline */
   #layout-controls-float {
@@ -3598,7 +3677,8 @@
   #mi-pre,
   .ew-body,
   #wheel-detail-panel,
-  #wheel-comp-panel {
+  #wheel-comp-panel,
+  #wheel-rec-panel {
     scrollbar-width: thin;
     scrollbar-color: var(--bg-active) var(--bg-panel);
   }
@@ -3611,7 +3691,8 @@
   #mi-pre::-webkit-scrollbar,
   .ew-body::-webkit-scrollbar,
   #wheel-detail-panel::-webkit-scrollbar,
-  #wheel-comp-panel::-webkit-scrollbar {
+  #wheel-comp-panel::-webkit-scrollbar,
+  #wheel-rec-panel::-webkit-scrollbar {
     width: 6px;
   }
 
@@ -3623,7 +3704,8 @@
   #mi-pre::-webkit-scrollbar-track,
   .ew-body::-webkit-scrollbar-track,
   #wheel-detail-panel::-webkit-scrollbar-track,
-  #wheel-comp-panel::-webkit-scrollbar-track {
+  #wheel-comp-panel::-webkit-scrollbar-track,
+  #wheel-rec-panel::-webkit-scrollbar-track {
     background: var(--bg-panel);
   }
 
@@ -3635,7 +3717,8 @@
   #mi-pre::-webkit-scrollbar-thumb,
   .ew-body::-webkit-scrollbar-thumb,
   #wheel-detail-panel::-webkit-scrollbar-thumb,
-  #wheel-comp-panel::-webkit-scrollbar-thumb {
+  #wheel-comp-panel::-webkit-scrollbar-thumb,
+  #wheel-rec-panel::-webkit-scrollbar-thumb {
     background: var(--bg-active);   /* #665c54 — gruvbox bg3 */
     border-radius: 3px;
     border: 1px solid var(--bg-panel);
@@ -3649,7 +3732,8 @@
   #mi-pre::-webkit-scrollbar-thumb:hover,
   .ew-body::-webkit-scrollbar-thumb:hover,
   #wheel-detail-panel::-webkit-scrollbar-thumb:hover,
-  #wheel-comp-panel::-webkit-scrollbar-thumb:hover {
+  #wheel-comp-panel::-webkit-scrollbar-thumb:hover,
+  #wheel-rec-panel::-webkit-scrollbar-thumb:hover {
     background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
   }
 
@@ -6101,9 +6185,11 @@
         <div class="sruti-scrim"></div>
         <div class="sruti-ring"></div>
       </div>
-      <!-- ADR-096 Option B / ADR-192: telescoping mela→janya panel + child comp panel -->
+      <!-- ADR-096 Option B / ADR-192 / ADR-193: telescoping mela→janya panel +
+           composition branch card + recordings leaf card -->
       <div id="wheel-detail-panel"></div>
       <div id="wheel-comp-panel"></div>
+      <div id="wheel-rec-panel"></div>
       <!-- ADR-135: layout-controls-float — single row: all layout + filter controls inline -->
       <div id="layout-controls-float">
         <div class="lc-row-layout">

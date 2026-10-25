@@ -447,18 +447,44 @@ let _wdpData = null;     // Option B: panel data cache (set in drawRagaWheel)
 let _wdpMelaNum = null;  // ADR-140: melakarta number of the currently open WDP (null = closed)
 let _wdpCorner  = null;  // ADR-140: anchor corner of current WDP ('tl'|'tr'|'bl'|'br')
 let _wdpCompRaga = null; // ADR-192: raga id whose composition panel is open (null = closed)
+let _wdpRecComp  = null; // ADR-193: composition id whose recordings leaf is open (null = closed)
 
 // ADR-192: gap (screen px) between the raga panel's outer corner and the child
 // composition panel, so the two cards read as a chain rather than one blob.
 const _WDP_COMP_GAP = 6;
+// ADR-193: same idea for the next hop — composition card to recordings leaf.
+const _WDP_REC_GAP = _WDP_COMP_GAP;
 
-// ── Wheel Detail Panels (Option B, ADR-096; telescoping ADR-192) ───────────
+// ── Wheel Detail Panels (Option B, ADR-096; telescoping ADR-192/193) ───────
 // #wheel-detail-panel is the raga panel (mela + its janyas). #wheel-comp-panel
-// is the child card holding the compositions of whichever raga chip was clicked;
-// it pins the raga panel's outward corner so detail telescopes away from the wheel.
+// is the child card holding composition+composer pair rows for whichever raga
+// chip was clicked; #wheel-rec-panel is the leaf holding the recordings of the
+// selected composition. Each card pins the previous card's outward edge so
+// detail telescopes away from the wheel.
+
+function _closeWheelRecPanel() {
+  _wdpRecComp = null;
+  // Clear the selected pair row so re-clicking it opens a fresh leaf (the × on
+  // the leaf would otherwise leave the row stuck in its active state).
+  const compPanel = document.getElementById('wheel-comp-panel');
+  if (compPanel) {
+    compPanel.querySelectorAll('.wdp-comp-row.wdp-active').forEach(r => r.classList.remove('wdp-active'));
+  }
+  const panel = document.getElementById('wheel-rec-panel');
+  if (panel) {
+    panel.classList.remove('wdp-open');
+    panel.innerHTML = '';
+    panel.style.left            = '';
+    panel.style.top             = '';
+    panel.style.transform       = '';
+    panel.style.transformOrigin = '';
+  }
+}
+window._closeWheelRecPanel = _closeWheelRecPanel;
 
 function _closeWheelCompPanel() {
   _wdpCompRaga = null;
+  _closeWheelRecPanel();
   const panel = document.getElementById('wheel-comp-panel');
   if (panel) {
     panel.classList.remove('wdp-open');
@@ -564,14 +590,20 @@ function _positionCompPanel() {
 
   const wrapRect  = wrap.getBoundingClientRect();
   const panelRect = ragaPanel.getBoundingClientRect();
+  // offset* coordinates are measured from the offsetParent's padding edge, which
+  // is shifted by wrap.scrollLeft/scrollTop — subtract the scroll so screen rects
+  // map back into the coordinate space style.left/top are written in (the wrap
+  // can scroll horizontally when the view window is inset).
+  const wrapLeft = wrapRect.left - (wrap.scrollLeft || 0);
+  const wrapTop  = wrapRect.top  - (wrap.scrollTop  || 0);
   const CW = comp.offsetWidth  || 0;
   const CH = comp.offsetHeight || 0;
   const GAP = _WDP_COMP_GAP;
 
   // Horizontal: just outside the raga panel's outward edge.
   const left = toRight
-    ? (panelRect.right - wrapRect.left) + GAP
-    : (panelRect.left - wrapRect.left) - CW * s.scale - GAP;
+    ? (panelRect.right - wrapLeft) + GAP
+    : (panelRect.left - wrapLeft) - CW * s.scale - GAP;
 
   // Vertical: centre the child on the clicked chip's row so the selected raga
   // points into the compositions it owns, then clamp to the view window so the
@@ -580,10 +612,10 @@ function _positionCompPanel() {
   let top;
   if (chip) {
     const chipRect = chip.getBoundingClientRect();
-    const chipCenter = chipRect.top - wrapRect.top + chipRect.height / 2;
+    const chipCenter = chipRect.top - wrapTop + chipRect.height / 2;
     top = chipCenter - CH * s.scale / 2;
   } else {
-    top = panelRect.top - wrapRect.top;
+    top = panelRect.top - wrapTop;
   }
   const maxTop = wrapRect.height - CH * s.scale - 8;
   top = (maxTop > 8) ? Math.min(Math.max(top, 8), maxTop) : 8;
@@ -592,8 +624,120 @@ function _positionCompPanel() {
   comp.style.top             = top + 'px';
   comp.style.transform       = 'scale(' + s.scale + ')';
   comp.style.transformOrigin = '0 0';
+  _positionRecPanel();
 }
 window._positionCompPanel = _positionCompPanel;
+
+// ADR-193: place the recordings leaf immediately outside the composition card,
+// on the side the composition card already occupies, vertically centred on the
+// selected composition+composer row. Same clamping contract as the comp card.
+function _positionRecPanel() {
+  const rec = document.getElementById('wheel-rec-panel');
+  if (!rec || !rec.classList.contains('wdp-open')) return;
+  const compPanel = document.getElementById('wheel-comp-panel');
+  const ragaPanel = document.getElementById('wheel-detail-panel');
+  if (!compPanel || !compPanel.classList.contains('wdp-open')) return;
+  if (!ragaPanel || !ragaPanel.classList.contains('wdp-open')) return;
+  const wrap = document.getElementById('cy-wrap') || compPanel.offsetParent;
+  if (!wrap) return;
+
+  const s = RagaWheel._state;
+  const wrapRect  = wrap.getBoundingClientRect();
+  const compRect  = compPanel.getBoundingClientRect();
+  const ragaRect  = ragaPanel.getBoundingClientRect();
+  // Same scroll correction as _positionCompPanel: map screen rects into the
+  // offsetParent coordinate space that style.left/top are written in.
+  const wrapLeft = wrapRect.left - (wrap.scrollLeft || 0);
+  const wrapTop  = wrapRect.top  - (wrap.scrollTop  || 0);
+  const RW = rec.offsetWidth  || 0;
+  const RH = rec.offsetHeight || 0;
+  const GAP = _WDP_REC_GAP;
+
+  // Inherit the composition card's direction relative to the raga panel so the
+  // chain keeps fanning outward instead of folding back over itself.
+  const toRight = compRect.left >= ragaRect.left;
+  const left = toRight
+    ? (compRect.right - wrapLeft) + GAP
+    : (compRect.left - wrapLeft) - RW * s.scale - GAP;
+
+  const row = compPanel.querySelector('.wdp-comp-row.wdp-active');
+  let top;
+  if (row) {
+    const rowRect = row.getBoundingClientRect();
+    const rowCenter = rowRect.top - wrapTop + rowRect.height / 2;
+    top = rowCenter - RH * s.scale / 2;
+  } else {
+    top = compRect.top - wrapTop;
+  }
+  const maxTop = wrapRect.height - RH * s.scale - 8;
+  top = (maxTop > 8) ? Math.min(Math.max(top, 8), maxTop) : 8;
+
+  rec.style.left            = left + 'px';
+  rec.style.top             = top + 'px';
+  rec.style.transform       = 'scale(' + s.scale + ')';
+  rec.style.transformOrigin = '0 0';
+}
+window._positionRecPanel = _positionRecPanel;
+
+// ADR-193: the three-card chain can outgrow the view window between the two
+// sidebars. After the leaf opens, nudge the wheel pan just enough to bring the
+// whole chain inside the visible area (sidebars are the horizontal bounds).
+function _visibleSidebarEdge(side) {
+  const el = document.getElementById(side === 'left' ? 'left-sidebar' : 'right-sidebar');
+  if (!el || getComputedStyle(el).display === 'none') {
+    return side === 'left' ? 0 : window.innerWidth;
+  }
+  const r = el.getBoundingClientRect();
+  if (side === 'left') return (r.width > 0 && r.right > 0) ? Math.max(0, r.right) : 0;
+  return (r.width > 0 && r.left < window.innerWidth) ? Math.min(window.innerWidth, r.left) : window.innerWidth;
+}
+
+function _panChainIntoView() {
+  const s = RagaWheel._state;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  ['wheel-detail-panel', 'wheel-comp-panel', 'wheel-rec-panel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !el.classList.contains('wdp-open')) return;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    minX = Math.min(minX, r.left); maxX = Math.max(maxX, r.right);
+    minY = Math.min(minY, r.top);  maxY = Math.max(maxY, r.bottom);
+  });
+  if (!isFinite(minX)) return;
+
+  const pad = 10;
+  const leftBound  = _visibleSidebarEdge('left')  + pad;
+  const rightBound = _visibleSidebarEdge('right') - pad;
+  const topBound   = 60;
+  const bottomBound = window.innerHeight - 80;
+  let dx = 0, dy = 0;
+  if (maxX - minX > rightBound - leftBound) {
+    // Chain wider than the window — centre it; some clipping is unavoidable.
+    dx = (leftBound + rightBound) / 2 - (minX + maxX) / 2;
+  } else if (minX < leftBound) {
+    dx = leftBound - minX;
+  } else if (maxX > rightBound) {
+    dx = rightBound - maxX;
+  }
+  if (minY < topBound) dy = topBound - minY;
+  else if (maxY > bottomBound) dy = bottomBound - maxY;
+  if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+
+  if (_animRafId) { cancelAnimationFrame(_animRafId); _animRafId = null; }
+  const startX = s.panX, startY = s.panY;
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / 220, 1);
+    const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    s.panX = startX + dx * e;
+    s.panY = startY + dy * e;
+    _applyTransform();
+    if (t < 1) { _animRafId = requestAnimationFrame(step); }
+    else { _animRafId = null; }
+  }
+  _animRafId = requestAnimationFrame(step);
+}
+window._panChainIntoView = _panChainIntoView;
 
 // ADR-140: Smoothly pan the wheel so the mela arc centre lands at the middle
 // of the viewport. Zoom is preserved. Uses the _animRafId slot so any
@@ -769,8 +913,9 @@ function _openWheelDetailPanel(raga) {
 }
 
 // ADR-192: the child composition panel — opened by clicking any raga chip in the
-// raga panel. Lists that raga's compositions and pins itself just outside the raga
-// panel's outward edge. activeCompId pre-marks a composition chip (sync/permalink).
+// raga panel. ADR-193: lists composition+composer pair rows and pins itself just
+// outside the raga panel's outward edge. activeCompId pre-marks the target row
+// (sync/permalink) and opens its recordings leaf.
 function _openCompPanel(raga, activeCompId) {
   if (!_wdpData || !raga) return;
   // ADR-192 (mobile): the composition card is desktop-only. On a narrow viewport
@@ -779,6 +924,7 @@ function _openCompPanel(raga, activeCompId) {
   if (window.matchMedia('(max-width: 768px)').matches) return;
   const comp = document.getElementById('wheel-comp-panel');
   if (!comp) return;
+  _closeWheelRecPanel();  // ADR-193: a new raga starts a fresh leaf
   const comps = _wdpData.compsByRaga[raga.id] || [];
   comp.innerHTML = '';
 
@@ -807,9 +953,11 @@ function _openCompPanel(raga, activeCompId) {
   const body = document.createElement('div');
   body.className = 'wdp-body';
   comp.appendChild(body);
+  // ADR-193: the recordings leaf tracks the selected pair row while the card scrolls.
+  body.addEventListener('scroll', _positionRecPanel, { passive: true });
 
   if (comps.length > 0) {
-    _wdpRenderComps(body, comps, raga.id, null, activeCompId || null);
+    _wdpRenderCompRows(body, comps, raga.id, activeCompId || null);
   } else {
     const empty = document.createElement('div');
     empty.className = 'wdp-empty';
@@ -824,6 +972,14 @@ function _openCompPanel(raga, activeCompId) {
   // Reposition once the browser has laid the child out (offsetWidth is 0 on the
   // synchronous first pass) so it lands flush beside the clicked chip.
   requestAnimationFrame(() => _positionCompPanel());
+  // ADR-193: a permalink target composition lands on its recordings leaf too.
+  if (activeCompId) {
+    const activeItem = comps.find(c => c.id === activeCompId);
+    if (activeItem) {
+      const rowEl = body.querySelector(`.wdp-comp-row[data-id="${CSS.escape(activeCompId)}"]`);
+      requestAnimationFrame(() => _openRecPanel(activeItem, raga.id, rowEl));
+    }
+  }
 }
 window._openCompPanel = _openCompPanel;
 
@@ -866,60 +1022,292 @@ function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
   }
 }
 
-// activeCompId: if non-null and matches item.id, the chip gets wdp-active at render time.
-function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
-  const group = document.createElement('div');
-  group.className = 'wdp-comp-group';
+// ADR-193: resolve a composer id for a wheel composition item — canonical
+// compositions carry composer_id directly; performance/YouTube items may only
+// reach it via a canonical lookup or their own performance ref.
+function _wdpComposerId(item) {
+  if (!item) return null;
+  if (item.composer_id) return item.composer_id;
+  if (item.id && typeof compositions !== 'undefined') {
+    const c = compositions.find(x => x.id === item.id);
+    if (c && c.composer_id) return c.composer_id;
+  }
+  if (item._isPerf && item._recording_id && item._perf_index != null && typeof perfToPerf !== 'undefined') {
+    const refs = perfToPerf[item._recording_id + '::' + item._perf_index];
+    if (refs && refs[0] && refs[0].composer_id) return refs[0].composer_id;
+  }
+  return null;
+}
+
+// ADR-193: composition rows. Each row is a branch point — composition title on
+// the left, composer chip on the right. Clicking the row opens the recordings
+// leaf; the composer chip keeps its own navigation (buildComposerChip stops
+// propagation). activeCompId marks the permalink/sync target as selected.
+function _wdpRenderCompRows(panel, items, ragaId, activeCompId) {
   items.forEach(item => {
-    const chip = document.createElement('div');
-    chip.className = 'wdp-chip wdp-comp';
-    chip.dataset.id = item.id || '';
-    if (activeCompId && item.id && item.id === activeCompId) chip.classList.add('wdp-active');
-    chip.textContent = '\u266a ' + (item.title || item.id || '');
-    chip.addEventListener('click', (e) => {
+    const row = document.createElement('div');
+    row.className = 'wdp-comp-row';
+    row.dataset.id = item.id || '';
+    if (activeCompId && item.id && item.id === activeCompId) row.classList.add('wdp-active');
+
+    const title = document.createElement('span');
+    title.className = 'wdp-pair-title';
+    title.textContent = item.title || item.id || '';
+    if (item._fullLabel) title.title = item._fullLabel;
+    row.appendChild(title);
+
+    const composerChip = (typeof buildComposerChip === 'function')
+      ? buildComposerChip(item.id, _wdpComposerId(item))
+      : null;
+    if (composerChip) row.appendChild(composerChip);
+
+    row.addEventListener('click', (e) => {
       e.stopPropagation();
       // Ghost-click guard: ignore native ghost clicks that arrive within 300 ms of
       // the panel opening (mobile browsers can fire a delayed isTrusted click at
-      // the original touch coordinates, which now points at this freshly rendered chip).
+      // the original touch coordinates, which now points at this freshly rendered row).
       if (Date.now() - (window._wdpOpenTime || 0) < 300) return;
-      // Mark this chip active immediately — wdp-active cannot be set via the normal
-      // syncRagaWheelToFilter path because _wheelSyncInProgress=true blocks it.
-      // ADR-192: the comp chips may live in either the raga panel or the child panel.
-      document.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
-      chip.classList.add('wdp-active');
-      // Scroll the parent janya chip to the top so the raga anchor is always
-      // visible above its compositions. For mela-direct comps (no janya), scroll
-      // the comp chip itself to the top.
-      const _compGroup = chip.closest('.wdp-comp-group');
-      if (_compGroup) {
-        const _janyaChip = _compGroup.previousElementSibling;
-        if (_janyaChip && _janyaChip.classList.contains('wdp-raga')) {
-          _janyaChip.scrollIntoView({ block: 'start', behavior: 'smooth' });
-        }
-      } else {
-        chip.scrollIntoView({ block: 'start', behavior: 'smooth' });
-      }
-      window._wheelSyncInProgress = true;
-      window._wheelOriginatedTrigger = true;
-      if (!item._isPerf) {
-        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('comp', item.id);
-      } else if (item._recording_id && item._perf_index != null) {
-        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('perf', item._recording_id + '::' + item._perf_index);
-      } else if (item._ytVid) {
-        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('yt', item._ytVid + '::' + ragaId);
-      } else {
-        if (typeof triggerBaniSearch === 'function') triggerBaniSearch('raga', ragaId);
-      }
-      window._wheelSyncInProgress = false;
-      window._wheelOriginatedTrigger = false;
+      _wdpToggleCompItem(item, ragaId, row);
     });
-    group.appendChild(chip);
+    panel.appendChild(row);
   });
-  if (afterChip) {
-    afterChip.insertAdjacentElement('afterend', group);
-  } else {
-    panel.appendChild(group);
+}
+
+// Toggle the recordings leaf for a composition row.
+function _wdpToggleCompItem(item, ragaId, rowEl) {
+  if (!item) return;
+  if (rowEl && rowEl.classList.contains('wdp-active')) {
+    rowEl.classList.remove('wdp-active');
+    _closeWheelRecPanel();
+    return;
   }
+  _openRecPanel(item, ragaId, rowEl);
+}
+
+// ADR-193: the recordings leaf — lists every performance indexed for the
+// selected composition. Desktop-only, like the composition card it hangs off.
+function _openRecPanel(item, ragaId, rowEl) {
+  if (!item) return;
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+  const panel = document.getElementById('wheel-rec-panel');
+  if (!panel) return;
+
+  const compPanel = document.getElementById('wheel-comp-panel');
+  if (compPanel) {
+    compPanel.querySelectorAll('.wdp-comp-row.wdp-active').forEach(r => r.classList.remove('wdp-active'));
+    if (rowEl) rowEl.classList.add('wdp-active');
+  }
+
+  const refs = _wdpRecordingsFor(item);
+  panel.innerHTML = '';
+
+  // Header: the composition, with a recording count subtitle.
+  const header = document.createElement('div');
+  header.className = 'wdp-header';
+  const titleEl = document.createElement('div');
+  titleEl.className = 'wdp-title';
+  const chip = document.createElement('span');
+  chip.className = 'wdp-chip wdp-comp wdp-parent';
+  chip.textContent = '\u266a ' + (item.title || item.id || 'Composition');
+  titleEl.appendChild(chip);
+  const sub = document.createElement('span');
+  sub.className = 'wdp-subtitle';
+  sub.textContent = refs.length + ' recording' + (refs.length === 1 ? '' : 's');
+  titleEl.appendChild(sub);
+  header.appendChild(titleEl);
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'wdp-close';
+  closeBtn.setAttribute('aria-label', 'Close recordings');
+  closeBtn.textContent = '\u00d7';
+  closeBtn.addEventListener('click', (e) => { e.stopPropagation(); _closeWheelRecPanel(); });
+  header.appendChild(closeBtn);
+  panel.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'wdp-body';
+  panel.appendChild(body);
+
+  if (refs.length > 0) {
+    refs.forEach(ref => body.appendChild(_wdpRecRow(item, ref, ragaId)));
+  } else {
+    const empty = document.createElement('div');
+    empty.className = 'wdp-empty';
+    empty.textContent = 'No structured recordings indexed for this composition.';
+    body.appendChild(empty);
+  }
+
+  // Escape hatch to the richer Bani-flow catalogue (lecdems, misc recordings).
+  const link = document.createElement('div');
+  link.className = 'wdp-leaf-link';
+  link.textContent = 'Open in Bani Flow \u2192';
+  link.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const target = _wdpBaniTargetFor(item, ragaId);
+    if (target && typeof triggerBaniSearch === 'function') triggerBaniSearch(target[0], target[1]);
+  });
+  body.appendChild(link);
+
+  _wdpRecComp = item.id || null;
+  panel.classList.add('wdp-open');
+  window._wdpOpenTime = Date.now();  // same ghost-click guard for the leaf panel
+  _positionRecPanel();
+  requestAnimationFrame(() => {
+    _positionRecPanel();
+    _panChainIntoView();
+  });
+}
+window._openRecPanel = _openRecPanel;
+
+// Map a wheel composition item back to its Bani-flow subject (canonical comp,
+// single performance, or YouTube-only entry) — preserves the old comp-chip routing.
+function _wdpBaniTargetFor(item, ragaId) {
+  if (!item) return null;
+  if (!item._isPerf) return ['comp', item.id];
+  if (item._recording_id && item._perf_index != null) return ['perf', item._recording_id + '::' + item._perf_index];
+  if (item._ytVid) return ['yt', item._ytVid + '::' + ragaId];
+  return ['raga', ragaId];
+}
+
+// ADR-193: one playable recording row inside the leaf card.
+function _wdpRecRow(item, ref, ragaId) {
+  const row = document.createElement('div');
+  row.className = 'wdp-rec-row';
+
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'wdp-rec-play';
+  play.textContent = '\u25b6';
+  play.title = 'Play';
+  play.addEventListener('click', (e) => { e.stopPropagation(); _wdpPlayRef(item, ref, ragaId); });
+  row.appendChild(play);
+
+  const info = document.createElement('div');
+  info.className = 'wdp-rec-info';
+  const title = document.createElement('div');
+  title.className = 'wdp-rec-title';
+  title.textContent = ref.display_title || ref.title || item.title || 'Recording';
+  info.appendChild(title);
+  const metaBits = [];
+  const performers = _wdpPerformersLabel(ref);
+  if (performers) metaBits.push(performers);
+  if (ref.short_title) metaBits.push(ref.short_title);
+  else if (ref.title && ref.title !== title.textContent) metaBits.push(ref.title);
+  if (ref.date) metaBits.push(ref.date);
+  else if (ref.year) metaBits.push(String(ref.year));
+  const meta = document.createElement('div');
+  meta.className = 'wdp-rec-meta';
+  meta.textContent = metaBits.join(' \u00b7 ');
+  info.appendChild(meta);
+  row.appendChild(info);
+
+  row.addEventListener('click', (e) => { e.stopPropagation(); _wdpPlayRef(item, ref, ragaId); });
+  return row;
+}
+
+// ADR-193: recordings for a wheel composition item, from the three wheel sources.
+function _wdpRecordingsFor(item) {
+  if (!item) return [];
+  // 1. Structured performances indexed by canonical composition id.
+  if (item.id && typeof compositionToPerf !== 'undefined' &&
+      compositionToPerf[item.id] && compositionToPerf[item.id].length) {
+    return compositionToPerf[item.id]
+      .slice()
+      .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0));
+  }
+  // 2. A performance-sourced wheel item — its own structured performance.
+  if (item._isPerf && item._recording_id && item._perf_index != null && typeof perfToPerf !== 'undefined') {
+    const refs = perfToPerf[item._recording_id + '::' + item._perf_index];
+    if (refs && refs.length) return refs.slice();
+  }
+  // 3. YouTube-only wheel item — synthesise a minimal playable ref.
+  if (item._ytVid) {
+    return [{
+      video_id:       item._ytVid,
+      media:          null,
+      display_title:  item._fullLabel || item.title || '',
+      title:          item.title || '',
+      raga_id:        item.raga_id || null,
+      composition_id: item.id || null,
+      year:           item.year || null,
+      performers:     [],
+      offset_seconds: 0,
+    }];
+  }
+  return [];
+}
+
+// Ordered chapter list of the source concert, matching the bani-flow player.
+function _wdpConcertTracks(recordingId) {
+  if (!recordingId || typeof musicianToPerformances === 'undefined') return [];
+  const seen = new Map();
+  Object.values(musicianToPerformances).forEach(list => {
+    (list || []).forEach(sp => {
+      if (sp.recording_id !== recordingId) return;
+      const key = sp.session_index + '::' + sp.performance_index;
+      if (!seen.has(key)) seen.set(key, sp);
+    });
+  });
+  return [...seen.values()]
+    .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0))
+    .map(sp => {
+      const raga = (sp.raga_id && typeof ragas !== 'undefined')
+        ? ragas.find(r => r.id === sp.raga_id) : null;
+      return {
+        offset_seconds: sp.offset_seconds || 0,
+        subject:        sp.subject || null,
+        display_title:  sp.display_title || '',
+        raga_id:        sp.raga_id || null,
+        raga_name:      raga ? raga.name : (sp.raga_id || ''),
+        tala:           sp.tala || null,
+        timestamp:      sp.timestamp || '00:00',
+        composition_id: sp.composition_id || null,
+      };
+    });
+}
+
+function _wdpMusicianName(id) {
+  if (!id) return '';
+  if (typeof elements !== 'undefined') {
+    const node = elements.find(e => !e.data.source && e.data.id === id);
+    if (node) return node.data.label || id;
+  }
+  return id;
+}
+
+function _wdpPrimaryPerformer(ref) {
+  const p = (ref.performers || [])[0];
+  if (p && p.musician_id) return _wdpMusicianName(p.musician_id);
+  return p && typeof p === 'string' ? p : '';
+}
+
+function _wdpPerformersLabel(ref) {
+  const names = (ref.performers || []).map(p => {
+    if (p && p.musician_id) return _wdpMusicianName(p.musician_id);
+    return p && typeof p === 'string' ? p : '';
+  }).filter(Boolean);
+  if (!names.length) return '';
+  if (names.length <= 2) return names.join(', ');
+  return names.slice(0, 2).join(', ') + ' +' + (names.length - 2);
+}
+
+function _wdpPlayRef(item, ref, ragaId) {
+  if (typeof openOrFocusPlayer !== 'function') return;
+  const media = ref.media || (ref.video_id ? 'https://youtu.be/' + ref.video_id : null);
+  if (!media) return;
+  const label = ref.display_title || ref.title || item.title || 'Recording';
+  const artist = _wdpPrimaryPerformer(ref);
+  const tracks = _wdpConcertTracks(ref.recording_id);
+  openOrFocusPlayer(
+    media, label, artist, ref.offset_seconds || undefined,
+    ref.short_title || ref.concert || undefined, tracks,
+    {
+      nodeId:        null,
+      ragaId:        ref.raga_id || ragaId || null,
+      compositionId: ref.composition_id || (item._isPerf ? null : (item.id || null)),
+      recId:         ref.recording_id || null,
+    }
+  );
 }
 // AbortController for SVG-level event listeners — aborted and re-created on
 // each drawRagaWheel() call so stale handlers from previous draws don't

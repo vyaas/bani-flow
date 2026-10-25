@@ -2934,14 +2934,21 @@ else _initPlaylistBar();
 
 // ── buildComposerChip — composer chip for a given composition_id ────────────────
 // Returns a .composer-chip <span> (navigable if musician_node_id is set) or null.
-function buildComposerChip(compositionId) {
-  if (!compositionId) return null;
-  const comp = (typeof compositions !== 'undefined' ? compositions : []).find(
-    c => c.id === compositionId
-  );
-  if (!comp || !comp.composer_id) return null;
+// ADR-193: composerIdOverride lets the raga-wheel child card render a composer
+// for a synthetic (performance / YouTube-only) wheel item whose id is not a
+// canonical composition id.
+function buildComposerChip(compositionId, composerIdOverride) {
+  let composerId = composerIdOverride || null;
+  if (!composerId) {
+    if (!compositionId) return null;
+    const comp = (typeof compositions !== 'undefined' ? compositions : []).find(
+      c => c.id === compositionId
+    );
+    if (!comp || !comp.composer_id) return null;
+    composerId = comp.composer_id;
+  }
   const composerObj = (typeof composers !== 'undefined' ? composers : []).find(
-    c => c.id === comp.composer_id
+    c => c.id === composerId
   );
   if (!composerObj) return null;
 
