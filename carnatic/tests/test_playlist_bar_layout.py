@@ -180,6 +180,33 @@ def test_empty_playlist_bar_is_hidden_not_faded():
     assert "opacity" not in block, "the old faded-empty state is retired"
 
 
+def test_desktop_bar_surface_toggles_the_video_without_stealing_controls():
+    """ADR-204: a press on a non-control part of the desktop Playlist Bar
+    toggles the docked video through the ADR-186 primitive. Controls and chips
+    keep their own actions, and mobile keeps its bottom-sheet pair."""
+    mp = (PROJECT_ROOT / "carnatic" / "render" / "templates" / "media_player.js").read_text(
+        encoding="utf-8"
+    )
+    assert "bar.addEventListener('click', _onPlaylistBarClick)" in mp
+    start = mp.index("function _onPlaylistBarClick(e)")
+    body = mp[start:start + 500]
+    assert "_isMobilePlayer()" in body, "the whole-bar toggle is desktop-only"
+    assert "_isPlaylistBarControl(e.target)" in body, (
+        "buttons, chips and the volume slider must not toggle the video"
+    )
+    assert "_toggleVideoVisibility()" in body, (
+        "the bar must reuse the ADR-186 show/hide primitive"
+    )
+    assert re.search(
+        r"button, input, select, textarea, a, \[role=\"button\"\], \[class\*=\"chip\"\]",
+        mp,
+    ), "control exclusion must cover buttons, inputs, links and chips"
+    css = _base()
+    assert "cursor: pointer" in _rule(css, "#playlist-bar"), (
+        "the non-control bar surface should read as clickable"
+    )
+
+
 def test_render_playlist_bar_publishes_the_view_wall():
     """The bar's own appear/disappear changes the view's top wall, but the
     editor ResizeObserver only fires on editor-box changes — so every bar

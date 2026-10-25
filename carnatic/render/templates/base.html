@@ -3218,6 +3218,9 @@
     border: 1px solid var(--border-strong); border-radius: 6px;
     box-shadow: 0 4px 18px rgba(0,0,0,0.4);
     pointer-events: auto;
+    /* ADR-204: the non-control surface toggles the docked video; controls
+       override this with their own cursor. */
+    cursor: pointer;
   }
   /* The sidebars are wider than the floating view selector / help button, so the
      bar must clear them: when a panel is open it starts at the panel's inner

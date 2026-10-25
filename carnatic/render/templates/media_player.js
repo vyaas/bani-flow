@@ -3075,6 +3075,25 @@ function _renderPlaylistBar() {
   if (typeof window.refitViewWindow === 'function') window.refitViewWindow();
 }
 
+// ADR-204: on desktop the Playlist Bar itself is a video show/hide toggle. A
+// press on any non-control region (background, summary gap, transport gap)
+// toggles the docked video, so the bar becomes a large, always-reachable hit
+// target next to the film-strip button. Controls, chips and the volume slider
+// keep their own actions; mobile keeps its bottom-sheet expand/collapse pair.
+function _isPlaylistBarControl(target) {
+  if (!target || !target.closest) return false;
+  return !!target.closest(
+    'button, input, select, textarea, a, [role="button"], [class*="chip"]'
+  );
+}
+
+function _onPlaylistBarClick(e) {
+  if (_isMobilePlayer()) return;
+  if (_isPlaylistBarControl(e.target)) return;
+  if (!MediaQueue.active || !_currentPlayerInst()) return;
+  _toggleVideoVisibility();
+}
+
 function _initPlaylistBar() {
   const bar = document.getElementById('playlist-bar');
   if (!bar || bar.dataset.pbReady) return;
@@ -3100,6 +3119,8 @@ function _initPlaylistBar() {
   if (volume) volume.addEventListener('input', () => _setPlayerVolume(volume.value / 100));
   // ADR-195: the count toggles the Playlist Editor modal.
   if (count) count.addEventListener('click', _togglePlaylistEditor);
+  // ADR-204: the bar background is the video show/hide toggle.
+  bar.addEventListener('click', _onPlaylistBarClick);
   // Full refresh so a permalink-restored queue (which may have run before this
   // init) is rendered into the bar.
   _refreshQueuePanels();

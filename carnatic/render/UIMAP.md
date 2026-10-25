@@ -556,6 +556,16 @@ expand/collapse pair, then `_refreshQueuePanels()` re-renders both faces. Presse
 (`aria-pressed="true"`) = video shown; the icon is the `.mp-video-toggle` film
 strip, `.mp-toggle-btn` supplies the depressed state (ADR-161).
 
+**ADR-204: the bar is a large video toggle.** On desktop a press anywhere on
+`#playlist-bar` that is not a control (button, range input, link, chip) calls
+the same `_toggleVideoVisibility()` primitive, so the whole bar is the
+show/hide hit target — useful for clearing the video to read behind it and
+restoring it without finding the film-strip button. `_onPlaylistBarClick`
+ignores `_isMobilePlayer()` (the mobile sheet owns its expand/collapse pair)
+and controls keep their own handlers. The bar's `cursor: pointer` signals the
+non-control surface; accessible activation remains the `#pb-video-toggle`
+button.
+
 **Owns:** `media_player.js` (~4740 ln) + `media_providers.js` (provider
 registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154)
 + vendored Plyr (ADR-155: `window.Plyr`, local sprite).
@@ -595,7 +605,8 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   `MediaQueue`), so `openOrFocusPlayer` is the window primitive again.
 - **ADR-186 video toggle:** `_currentPlayerInst()` / `_videoVisible()` /
   `_toggleVideoVisibility()` (bar `#pb-video-toggle`, current row
-  `.mp-video-toggle`).
+  `.mp-video-toggle`). ADR-204 routes non-control `#playlist-bar` presses
+  through `_onPlaylistBarClick()` / `_isPlaylistBarControl()`.
 - **ADR-176 advance/retarget (always know what is playing):** consecutive queue
   items that share one source video (every track of a concert) must NOT spawn a
   second window — `MediaQueue._open` detects an already-mounted same-`mediaKey`

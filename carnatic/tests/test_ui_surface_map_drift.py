@@ -123,9 +123,10 @@ CLAIMS: dict[str, list[str]] = {
         "function _syncPlayerControls",
         "function _pbSetPaused", "function _isCurrentPlaying",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
-        # §5 — ADR-186 film-strip video toggle
+        # §5 — ADR-186 film-strip video toggle + ADR-204 whole-bar toggle
         "function _currentPlayerInst", "function _videoVisible",
         "function _toggleVideoVisibility",
+        "function _onPlaylistBarClick", "function _isPlaylistBarControl",
         "function _copyMediaLink", "function _copyMediaPermalink", "function _openMediaOnYouTube",
         "function _syncNowPlayingOverlays",
         # §5 — ADR-194 bottom placard + vertical operator rail
