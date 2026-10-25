@@ -63,6 +63,19 @@ def test_player_width_always_matches_the_playlist_ui():
     assert "el.style.width" in body
 
 
+def test_window_controls_group_at_the_top_right():
+    """Minimize + close read as an OS title-bar pair: grouped at the top-right,
+    not split across the two top corners."""
+    css = BASE.read_text(encoding="utf-8")
+    block = re.search(r"\.mp-player-controls\s*\{(.*?)\}", css, re.DOTALL)
+    assert block, "missing .mp-player-controls rule"
+    body = block.group(1)
+    assert "justify-content: flex-end" in body, (
+        "minimize + close must both sit at the top-right"
+    )
+    assert "gap:" in body, "the two window buttons need a visible gap"
+
+
 def test_player_controls_are_always_shown():
     body = _function_body(_mp(), "_syncPlayerControls")
     assert "overlay.style.display = 'flex'" in body, (

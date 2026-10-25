@@ -381,9 +381,10 @@ is a play/pause toggle (`❚❚` while the current item sounds, `▶` otherwise,
 `_pbPlayPauseCurrent`) and `#pb-stop` is a dedicated, non-toggling stop; the
 current row carries the same toggle plus an `mp-queue-stop` button (styled by
 the bar's `.pb-btn`, so both stops read identically). The bare player carries
-its own `.mp-player-controls` (minimize `—` + close `✕`) — **always shown** by
-`_syncPlayerControls` (ADR-183: the video is permanently docked) — so the
-docked video is independently minimizable and closable. **ADR-195:** the bar is
+its own `.mp-player-controls` (minimize `—` + close `✕`, a **top-right**
+title-bar cluster) — **always shown** by `_syncPlayerControls` (ADR-183: the
+video is permanently docked) — so the docked video is independently minimizable
+and closable. **ADR-195:** the bar is
 a passive face — it shows the current item's operators (`#pb-copy` / `#pb-share`
 / `#pb-watch` / `#pb-video-toggle` / `#pb-volume`, `#pb-play` / `#pb-stop`)
 whenever the queue is non-empty; the ADR-175 parent-inherits rule is retired
@@ -495,8 +496,9 @@ glyph). The external-play button is the vendored Plyr sprite's own
 part of the player's icon set. On a fine pointer both surfaces are
 hover-revealed (YouTube-style) and also shown on `:focus-within`; touch/coarse
 pointers keep them visible. The window's own minimize/close stay in
-`.mp-player-controls` at the top corners (ADR-183: always reachable) on a
-top gradient mirroring Plyr's control-bar gradient.
+`.mp-player-controls` grouped at the **top-right** (minimize · close, the
+usual OS title-bar pair; ADR-183: always reachable) on a top gradient
+mirroring Plyr's control-bar gradient.
 
 **ADR-186: the film-strip video toggle.** Minimizing a content player hides the
 whole docked window (`display:none`); the Playlist Bar's `#pb-video-toggle` and

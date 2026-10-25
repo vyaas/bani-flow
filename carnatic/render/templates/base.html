@@ -1153,10 +1153,12 @@
   /* ADR-175 / ADR-183: bare content player's own minimize + close — always
      shown, so the docked video's controls are always reachable. ADR-194: Plyr
      sits its controls on a gradient; the window controls get the same top
-     gradient so their borderless icons stay legible over any frame. */
+     gradient so their borderless icons stay legible over any frame. The two
+     window controls are grouped at the TOP-RIGHT (minimize · close), the usual
+     OS title-bar cluster, so open/close reads like a window. */
   .mp-player-controls {
     position: absolute; top: 0; left: 0; right: 0; z-index: 5;
-    display: flex; justify-content: space-between;
+    display: flex; justify-content: flex-end; gap: 4px;
     padding: 6px;
     background: linear-gradient(180deg,
       color-mix(in srgb, var(--bg-deep) 60%, transparent), transparent);
