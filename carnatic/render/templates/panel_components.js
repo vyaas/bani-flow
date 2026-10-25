@@ -59,21 +59,21 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 
 // ── buildSection ─────────────────────────────────────────────────────────────
 // Builds a section with a standardised flex header row:
-//   [headerChip] [count] [?]  ·······  [▶ +]
+//   [headerChip] [?]  ·······  [▶ +]
 //
 // ADR-180: the collapse chevron is retired — sections render their body in
 // full, and the label wrap is the horizontal-scroll surface. The `defaultCollapsed`
 // argument is accepted for backward compatibility but ignored.
 //
-// ADR-181: the count + `?` are tiny gray meta chips grouped with the category
-// label on the LEFT; the transport pair (play / enqueue) alone owns the right
-// column. Enumeration therefore never competes with the transport controls.
+// ADR-199: category enumeration is retired from panel headers — only the help
+// chip sits beside the category label. The transport pair (play / enqueue)
+// alone owns the right column, and is dimmed when the category has no items.
 //
 // Returns { sectionEl, bodyEl, headerEl }.
 //
 //   headerChip       DOM element (optional) — vocabulary chip at section-header scale
 //   headerSuffixText string appended after the chip (optional)
-//   count            integer (optional) — gray meta chip after the chip
+//   count            integer (optional) — empty-state signal for the transport pair
 //   onAdd            function (optional) — if provided, renders a + button
 //   addTitle         string (optional) — tooltip for + button
 //   helpKind         string (optional) — help-card key (e.g. 'lecdems', 'concerts')
@@ -82,34 +82,25 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 // opens the dedicated category help card (replaces the retired panel-help overlay).
 // ADR-166: when playable is true, the header gains ▶ (Play all visible) and
 // ⊕ (Add visible to queue) buttons. Both harvest lazily at click time via
-// collectQueueItems(bodyEl) — no count is shown, no filter coupling required.
+// collectQueueItems(bodyEl). ADR-199: both are disabled when count is zero (and
+// resynced after content filtering, so a no-match section cannot be transported).
 function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCollapsed = false, playable = false, helpKind = null, helpSlot = null } = {}) {
   const sectionEl = document.createElement('section');
 
   const headerEl = document.createElement('div');
   headerEl.className = 'rec-section-header-row';
 
-  // Label wrapper: chip + suffix text + (count)
+  // Label wrapper: chip + suffix text + help chip.
   const labelWrap = document.createElement('span');
   labelWrap.className = 'rec-section-hdr-label-wrap';
   if (headerChip) labelWrap.appendChild(headerChip);
   if (headerSuffixText) labelWrap.appendChild(document.createTextNode(headerSuffixText));
 
-  // ADR-181: enumeration is a tiny gray meta chip (the .trail-version recipe)
-  // grouped with the category chip, not a right-column badge.
-  if (count != null) {
-    const countEl = document.createElement('span');
-    countEl.className = 'section-hdr-count';
-    countEl.textContent = String(count);
-    countEl.title = count + (count === 1 ? ' item' : ' items');
-    labelWrap.appendChild(countEl);
-  }
-
   // ADR-177: category help trigger — sits beside the section chip so every
   // category carries its own "what is this?" affordance. Opens the dialog card
   // rendered from helpEmptyPanels (empty_tutorials.js).
-  // ADR-181: the `?` is the same gray meta chip as the count — help and
-  // enumeration share one visual family, apart from the transport pair.
+  // ADR-199: help is the ONLY chip beside the category label; item counts are
+  // retired. The transport pair lives in the right column.
   if (helpKind && helpSlot) {
     const helpBtn = document.createElement('button');
     helpBtn.type = 'button';
@@ -147,6 +138,7 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
     playAllBtn.className = 'section-play-btn';
     playAllBtn.title = 'Play all visible';
     playAllBtn.textContent = '\u25b6';
+    playAllBtn.disabled = count != null && count <= 0;
     playAllBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       if (typeof collectQueueItems !== 'function') return;
@@ -159,6 +151,7 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
     enqueueBtn.title = 'Add visible to queue';
     enqueueBtn.setAttribute('aria-label', 'Add visible to queue');
     enqueueBtn.textContent = '+';
+    enqueueBtn.disabled = count != null && count <= 0;
     enqueueBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       if (typeof collectQueueItems !== 'function' || typeof MediaQueue === 'undefined') return;
@@ -618,11 +611,34 @@ function _contentFilterZone(zone, q) {
   return any;
 }
 
+// ADR-199: a section's transport pair mirrors its harvestable contents. The
+// count argument seeds the initial state; this resync keeps it honest after
+// the content filter hides every row (the no-match case).
+function _syncSectionTransport(headerRow) {
+  if (!headerRow || typeof collectQueueItems !== 'function') return;
+  const acts = headerRow.querySelector('.section-hdr-right .section-play-acts');
+  const sectionEl = headerRow.parentElement;
+  if (!acts || !sectionEl) return;
+  const bodyEl = sectionEl.querySelector(':scope > .section-body');
+  const empty = !bodyEl || collectQueueItems(bodyEl).length === 0;
+  acts.querySelectorAll('button').forEach(function(btn) {
+    btn.disabled = empty;
+  });
+}
+
+function syncSectionTransportStates(root) {
+  const scope = root || document;
+  if (!scope.querySelectorAll) return;
+  scope.querySelectorAll('.rec-section-header-row').forEach(_syncSectionTransport);
+}
+window.syncSectionTransportStates = syncSectionTransportStates;
+
 // applyPanelContentFilter(panelKey, rawQuery) — the shared entry point.
 function applyPanelContentFilter(panelKey, rawQuery) {
   const zones = CONTENT_FILTER_ZONES[panelKey];
   if (!zones) return;
   const q = (rawQuery || '').toLowerCase().trim();
   zones.forEach(function(zone) { _contentFilterZone(zone, q); });
+  syncSectionTransportStates();
 }
 window.applyPanelContentFilter = applyPanelContentFilter;

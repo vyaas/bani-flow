@@ -224,10 +224,8 @@ function applyBaniFilter(type, id) {
 
   // Build listening trail
   document.getElementById('bani-info').style.display = '';
+  document.getElementById('bani-flow-panel').classList.remove('panel-empty');
   buildListeningTrail(type, id, matchedNodeIds);
-
-  const _tfRow = document.getElementById('trail-filter-row');
-  if (_tfRow) _tfRow.style.display = 'flex';
   document.getElementById('trail-filter').value = '';
 
   // Sync raga wheel if it is the active view
@@ -1498,11 +1496,8 @@ function buildArtistSpan(artistRow, isPrimary, type, id) {
 function clearBaniFilter(opts) {
   activeBaniFilter = null;
   cy.elements().removeClass('faded highlighted bani-match');
-  document.getElementById('bani-search-input').value = '';
-  document.getElementById('bani-info').style.display = 'none';
+  document.getElementById('bani-flow-panel').classList.add('panel-empty');
   document.getElementById('trail-filter').value = '';
-  const _clearTfRow = document.getElementById('trail-filter-row');
-  if (_clearTfRow) _clearTfRow.style.display = 'none';
   document.getElementById('listening-trail').style.display = 'none';
   const _bfStrip = document.getElementById('bani-lecdem-strip');
   if (_bfStrip) { _bfStrip.style.display = 'none'; _bfStrip.innerHTML = ''; }
@@ -1845,7 +1840,7 @@ function _positionBaniPopup(btn) {
 /**
  * Programmatically trigger a Bani Flow search for a raga, composition,
  * single structured performance, or YouTube-only recording.
- * Equivalent to the user selecting an item from the bani-search-dropdown.
+ * Equivalent to selecting a subject from the grand track search or a chip.
  * @param {'raga'|'comp'|'perf'|'yt'} type
  * @param {string} id
  *   - 'raga': raga id
@@ -1870,10 +1865,9 @@ function triggerBaniSearch(type, id, fromHistory = false, opts = {}) {
   _currentBaniSubject = { type, id };
   _updateBaniNavButtons();
 
-  // The search input is a pure input widget — the current subject is shown
-  // in #bani-subject-name (populated by applyBaniFilter below). Writing a
-  // label back here would overwrite whatever the user typed and make every
-  // chip click pollute the search bar. See AUDIT-002.
+  // The current subject is shown in #bani-subject-name (populated by
+  // applyBaniFilter below); the retired panel search used to write labels back
+  // here and pollute the input. See AUDIT-002.
   applyBaniFilter(type, id);
 
   // Canonical cross-view wheel sync bridge.

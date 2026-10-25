@@ -4435,8 +4435,9 @@ function buildPlaylistRow(pl, context) {
   // playlist; a context subset inlines so the permalink cursor stays aligned.
   const playOpts = filtered ? {} : { playlistId: pl.id };
 
-  // Header: name (concert-title styling, ADR-189) + track count + ⓘ. The header
-  // wrapper stretches (row-accordion gives it flex:1), so the transport pins right.
+  // Header: name (concert-title styling, ADR-189) + ⓘ. ADR-199 retires the
+  // track-count chip; the header wrapper stretches (row-accordion gives it
+  // flex:1), so the transport pins right.
   const headerEl = document.createElement('div');
   headerEl.className = 'mp-playlist-hdr';
   const chip = document.createElement('span');
@@ -4444,15 +4445,6 @@ function buildPlaylistRow(pl, context) {
   chip.textContent = pl.title || pl.id;
   chip.title = pl.description || pl.title || pl.id;
   headerEl.appendChild(chip);
-  const count = document.createElement('span');
-  count.className = 'mp-playlist-count';
-  count.textContent = filtered
-    ? (shownEntries.length + '/' + allItems.length)
-    : String(allItems.length);
-  count.title = filtered
-    ? (shownEntries.length + ' of ' + allItems.length + ' tracks in this context')
-    : (allItems.length + ' track' + (allItems.length === 1 ? '' : 's'));
-  headerEl.appendChild(count);
 
   // ADR-189: ⓘ opens the full playlist (all tracks + play-all) in the shared dialog.
   const info = document.createElement('button');
@@ -4471,6 +4463,8 @@ function buildPlaylistRow(pl, context) {
     ? ('Play ' + shownEntries.length + ' matching track' + (shownEntries.length === 1 ? '' : 's'))
     : ('Play "' + (pl.title || pl.id) + '"');
   play.textContent = '▶';
+  // ADR-199: a playlist with no (matching) tracks cannot be transported.
+  play.disabled = shownQueue.length === 0;
   play.addEventListener('click', e => {
     e.stopPropagation();
     // ADR-164: tag the queue with its source playlist so Share encodes the
@@ -4490,6 +4484,7 @@ function buildPlaylistRow(pl, context) {
   enq.title = 'Add playlist to queue (' + allItems.length + ' tracks)';
   enq.setAttribute('aria-label', 'Add playlist to queue');
   enq.textContent = '+';
+  enq.disabled = fullQueue.length === 0;
   enq.addEventListener('click', e => {
     e.stopPropagation();
     if (fullQueue.length && typeof MediaQueue !== 'undefined' && MediaQueue.addItems) {
@@ -4602,6 +4597,9 @@ function buildPlaylistsSection(playlistIds, context) {
   const { sectionEl, bodyEl } = buildSection({ headerChip: chip, count: pls.length, defaultCollapsed: false, playable: true });
   sectionEl.dataset.section = 'playlists';
   pls.forEach(pl => bodyEl.appendChild(buildPlaylistRow(pl, context)));
+  // ADR-199: the count is the number of playlists, not their tracks; resync
+  // from the actual harvest so an all-empty context dims the transport pair.
+  if (typeof syncSectionTransportStates === 'function') syncSectionTransportStates(sectionEl);
   return sectionEl;
 }
 
@@ -4609,7 +4607,6 @@ function buildPlaylistsSection(playlistIds, context) {
 function buildRecordingsList(nodeId, nodeData) {
   const recPanel  = document.getElementById('recordings-panel');
   const recList   = document.getElementById('recordings-list');
-  const recFilterRow = document.getElementById('rec-filter-row');
   recList.innerHTML = '';
 
   // ADR-150: resolveNode falls back to elements[] for transit musicians; avoids
@@ -4977,11 +4974,7 @@ function buildRecordingsList(nodeId, nodeData) {
           groupHeader.appendChild(unknownLabel);
         }
 
-        const countBadge = document.createElement('span');
-        countBadge.className = 'rec-group-count';
-        countBadge.textContent = String(compsInRaga.length);
-        countBadge.title = compsInRaga.length + (compsInRaga.length === 1 ? ' composition' : ' compositions');
-        groupHeader.appendChild(countBadge);
+        // ADR-199: the compositions-per-raga enumeration is retired.
         groupLi.appendChild(groupHeader);
 
         // Composition items indented under raga
@@ -5040,7 +5033,7 @@ function buildRecordingsList(nodeId, nodeData) {
     || lecdemsBy_.length > 0 || lecdemsAbout_.length > 0
     || !!nodeId;  // always true when called from selectNode
   recPanel.style.display     = hasContent ? 'block' : 'none';
-  recFilterRow.style.display = hasContent ? 'flex'  : 'none';
+  document.getElementById('musician-panel').classList.toggle('panel-empty', !hasContent);
 
   // ── 7. Notes section (ADR-097 §7) ────────────────────────────────────────
   // If the musician node carries a notes[] array, append it as a soft

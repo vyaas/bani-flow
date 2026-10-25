@@ -40,21 +40,23 @@ Governing decision: ADR-174.
 trail, "her trail".
 
 **DOM:** `#left-sidebar` → `#bani-flow-panel`. Sticky zone `#bani-sticky`:
-`.panel-top-row` (ADR-191) = nav group (`#bani-back-btn`, `#bani-fwd-btn`,
-square) + search (`#bani-search-input`, `#bani-search-dropdown`, scope label
-`#bani-scope-label`; inside the shared `.search-field` shell — ADR-190) + add
-(`#bani-add-btn`, single-click raga-or-composition picker). The old BANI FLOW
-title banner is retired. Then subject header (`#bani-subject-header`,
-`#bani-subject-name`, `#bani-subject-popup-btn` → popup `#bani-subject-popup`);
-content filter `#trail-filter-row` → `#trail-filter` (placeholder "Filter
-content…", ADR-178).
-Scroll zone
-`#bani-scroll`: `#bani-info`, `#bani-notes-row`, `#bani-playlists`,
-`#bani-lecdem-strip`, `#bani-tutorial`. Toggles: `#left-panel-toggle`,
+`#bani-info` → subject chip row (`#bani-subject-header`, `#bani-subject-name`,
+`#bani-subject-popup-btn` → popup `#bani-subject-popup`) with pinned
+`.panel-chip-actions` = nav group (`#bani-back-btn`, `#bani-fwd-btn`, square).
+Below it the content filter row `#trail-filter-row` = add (`#bani-add-btn`,
+single-click raga-or-composition picker) + `#trail-filter` (placeholder "Filter
+content…", ADR-178) + play/enqueue pair; the add stays leftmost so the filter
+reads as indented under the chip. The filter/transport hide when empty
+(`.panel-empty`), the add remains. The panel search is retired — the grand track
+search (§5, ADR-184) is the lookup surface. The old BANI FLOW title banner is
+also retired; `#bani-info` is always present so the chip row can host nav even
+when empty.
+Scroll zone `#bani-scroll`: `#bani-tutorial`, `#bani-playlists`,
+`#bani-lecdem-strip`, `#listening-trail`. Toggles: `#left-panel-toggle`,
 `#desktop-left-handle`, scrim `#left-drawer-scrim`.
 
 **Owns:** `templates/bani_flow.js` (~2000 ln) — filter + trail. Supporting:
-`search.js` (bani search dropdown), `empty_tutorials.js` (`#bani-tutorial`
+`empty_tutorials.js` (`#bani-tutorial`
 tutorial deck + category help cards), `mobile.js` (drawer open/close). The
 **content-filter engine** (`applyPanelContentFilter`, `CONTENT_FILTER_ZONES`)
 lives in `panel_components.js` and is shared with the musician panel (ADR-178).
@@ -86,7 +88,8 @@ bus** read by the wheel and view-switcher. `_currentBaniSubject = {type, id}`.
 **CSS hooks:** `--left-panel-width` (derived from data in `html_generator.py`,
 ADR-128 D7 — never hardcode); `.trail-*` classes; `.panel` base class; chip
 classes (`.raga-chip`, `.comp-chip`, `.musician-chip`); `.section-help-btn`
-(ADR-177 category help trigger — ADR-181: gray meta chip). **ADR-180:** fixed `--row-height` ribbons —
+(ADR-177 category help trigger — ADR-181: gray meta chip; ADR-199: the only
+chip beside a category label). **ADR-180:** fixed `--row-height` ribbons —
 `.row-accordion-scroll` / `.tree-header-text` / `.trail-chips` are the
 horizontal-scroll surfaces; `.trail-acts` / `.tree-comp-acts` are the pinned
 two-slot action column; fold chevrons are retired. The subject chip row
@@ -106,8 +109,9 @@ tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 (play-all), 163 (playlists), 165, 167, 177 (category help dialog), 178
 (unified content filter), 180 (ribbon rows), 181 (transport buttons + meta chips),
 182 (themeable meta badges), 189 (context-scoped playlist rows + ⓘ info dialog),
-190 (shared search-field shell across grand + both panels), 191 (panel top
-row — banners retired, square nav + add).
+190 (shared search-field shell, now grand-only), 191 (panel top row — banners
+retired, square nav + add), 198 (panel searches retired; nav/add move into the
+content-filter command row).
 
 ---
 
@@ -117,14 +121,16 @@ row — banners retired, square nav + add).
 recordings panel.
 
 **DOM:** `#right-sidebar` → sticky zone `#right-sticky` → `#musician-panel`
-(`.panel-top-row` (ADR-191) = nav group (`#panel-back-btn`, `#panel-fwd-btn`,
-square) + `#musician-search-input` + `#musician-search-dropdown` (inside the
-shared `.search-field` shell, ADR-190) + add (`#panel-add-btn`, single-click
-add-musician form). The old MUSICIAN title banner is retired. Then header:
-`#node-info` → `#node-header` → `#node-name`, `#node-shape-icon`,
-`#node-wiki-link`, `#lineage-popup-btn`; content filter `#rec-filter-row` →
-`#rec-filter` (placeholder "Filter content…", ADR-178), `#rec-play-all-btn`,
-`#rec-enqueue-btn`).
+header: `#node-info` → `#node-header` → `#node-name`, `#node-shape-icon`,
+`#node-wiki-link`, `#lineage-popup-btn`, with pinned `.panel-chip-actions` =
+nav group (`#panel-back-btn`, `#panel-fwd-btn`, square). Below it the content
+filter row `#rec-filter-row` = add (`#panel-add-btn`, single-click add-musician
+form) + `#rec-filter` (placeholder "Filter content…", ADR-178) +
+`#rec-play-all-btn`, `#rec-enqueue-btn`; the add stays leftmost so the filter
+reads as indented under the chip. Filter/transport hide when a node is not
+selected (`.panel-empty`), the add remains. The panel search is retired — the
+grand track search (§5, ADR-184) is the lookup surface. The old MUSICIAN title
+banner is also retired.
 Scroll zone `#right-scroll` → `#recordings-panel` →
 `#recordings-list`; `#edge-info` (selected-edge readout); `#musician-tutorial`.
 Toggles: `#right-panel-toggle`, `#desktop-right-handle`. Popup:
@@ -159,17 +165,19 @@ owns the recordings body. A "musician panel" task usually touches both.
 **CSS hooks:** `--right-panel-width` (derived, ADR-128 D7); `.panel`;
 `.section-collapse-btn` (ADR-180: retired); `.section-play-acts` (play-all/enqueue pair);
 `.section-help-btn` (ADR-177 category help trigger — ADR-181: a gray meta chip
-grouped with the section label);
+grouped with the section label; ADR-199: the only chip beside a category
+label);
 `#recordings-panel { padding-top: 0 }` (ADR-011). **ADR-179:** all row action
 groups (`.trail-acts`, `.tree-comp-acts`) reserve a fixed two-slot column and
 section headers (`.section-hdr-right`) two; play/enqueue badges share
 `--row-act-size`, and row labels are single-line horizontal-scroll surfaces.
 **ADR-180:** every row is a fixed-height ribbon — the composer chip is inlined
 on the composition line, multi-recording lists are always visible, and the
-perf/bracket fold chevrons are retired. **ADR-181:** `.section-hdr-count`,
-`.section-help-btn`, `.mp-playlist-count`, `.rec-group-count` are the gray meta
-chips (the `.trail-version` recipe); count/help sit left with the label, only
-play + enqueue (the bare `+`) occupy `.section-hdr-right`. The subject chip row
+perf/bracket fold chevrons are retired. **ADR-199:** panel category
+enumeration is retired — `.section-help-btn` is the only meta chip beside a
+category label, while play + enqueue (the bare `▶` / `+`) occupy
+`.section-hdr-right` and are disabled (dimmed) when the category has zero
+items. The subject chip row
 reuses the ADR-180 mechanism: `#node-name` is the nowrap horizontal-scroll
 surface, with `#lineage-popup-btn` / `#node-wiki-link` pinned.
 
@@ -185,8 +193,9 @@ section), 177 (category help dialog), 178 (unified content filter), 179
 (single-line rows + shared action column), 180 (ribbon rows, chevrons retired),
 181 (transport buttons + left-aligned meta chips), 182 (themeable meta badges),
 189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
-shell — the panel search is the grand search's sibling), 191 (panel top row —
-banners retired, square nav + add).
+shell, now grand-only), 191 (panel top row — banners retired, square nav +
+add), 198 (panel searches retired; nav/add move into the content-filter
+command row).
 
 ---
 
@@ -418,17 +427,17 @@ resize). z-order: players `≤700`, `#playlist-bar` `750`, modals
 The `.mp-tracklist-toggle` (burger) is retired — the Playlist Bar editor owns
 list navigation.
 
-**ADR-190: the search field is ONE component, three scopes.** `#search-bar`
-(grand), `#bani-search-wrap .search-field`, and
-`#musician-search-wrap .search-field` are all `.search-field`: raised
+**ADR-190 / ADR-198: the search field is ONE component, one scope.**
+`#search-bar` is now the app's only search surface (the panel searches were
+retired in ADR-198). It keeps the `.search-field` contract: raised
 `--search-bg` surface, `--search-border` hairline, `--search-radius` (8px),
 `--search-height` (32px), accent ring on `:focus-within` (`--search-ring`),
 the shared `#icon-search` sprite glyph (`.search-glyph`, accent on focus), and
 a `.search-clear` ✕ revealed by `:has(.search-input:not(:placeholder-shown))`
 (delegated handler at the end of `search.js`). The inner `.search-input` is
 borderless and transparent — the shell is the field. `#search-bar` overrides
-only reach (fixed placement, drop shadow, taller dropdown); the panel shells
-override only the inset. A new search surface must adopt the same three parts.
+only reach (fixed placement, drop shadow, taller dropdown). A new search
+surface must adopt the same three parts.
 
 **ADR-184: the grand track search.** `#search-bar` occupies the old top slot
 (desktop `top:12px`, the thin editor bar moves to `top:56px`; mobile `52px` /
@@ -598,13 +607,14 @@ compact six-dot handle; rows carry no ordinal badge) / `.mp-queue-dragging` /
 `.mp-queue-drop-before/-after`.
 **ADR-179:**
 playlist-track chips are a single non-wrapping scroll line; a playlist row's
-count badge right-aligns ahead of its two-slot `.trail-acts` column.
+`.trail-acts` column stays pinned right.
 **ADR-180:** a playlist is a header ribbon plus one track ribbon per entry
 (the fold is retired); each track's `.mp-playlist-track-chips` scrolls and its
 `.trail-acts` pins. **ADR-189:** a playlist row is scoped to the panel's
 subject — `buildPlaylistRow(pl, context)` filters items by raga / composition /
-musician, the count reads `shown/total`, and the row ▶ plays the subset while
-`+` enqueues the whole list. The name reads as a `.concert-title` (no pill),
+musician; the row ▶ plays the subset while `+` enqueues the whole list, and
+both are dimmed when their respective set is empty (ADR-199). The name reads
+as a `.concert-title` (no pill),
 tracks indent by `--hier-indent-step`, and `ⓘ` (`.mp-playlist-info-btn`) opens
 the full playlist in `#help-dialog` as a `.playlist-info-card` with a **Play
 all** `▶` / enqueue-all `+`.
@@ -635,10 +645,11 @@ column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-alig
 height cap), 184 (grand track search, thin editor bar, now-playing overlay),
 185 (ephemeral Playlist Bar — hidden when empty, second band reclaimed),
 189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
-shell across grand + both panels), 194 (bottom placard + vertical operator rail
+shell, now grand-only), 194 (bottom placard + vertical operator rail
 on the video surface), 195 (Playlist Editor is a modal form — bar chevron
 retired, `#pb-count` opens it; draggable rows), 196 (playlist rows capped at two
-lines — meta + actions groups, chips scroll, mobile current wraps).
+lines — meta + actions groups, chips scroll, mobile current wraps), 198 (panel
+searches retired; nav/add move into the content-filter command row).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
@@ -723,11 +734,13 @@ panels (the pin restore in `mobile.js` runs first).
 
 `panel_components.js`: `buildPanelHeader`, `buildSection({playable, helpKind,
 helpSlot, …})` (the play-acts pair comes free with `playable:true`; `helpKind` +
-`helpSlot` add the `.section-help-btn`; ADR-181: the count and the `?` are gray
-meta chips inside `.rec-section-hdr-label-wrap` — `[CHIP] [N] [?] ······ [▶ +]`
-— leaving `.section-hdr-right` with only the transport pair; ADR-182: those
-chips (plus `.trail-version` and `.mp-playlist-count`) share the
-`--chip-meta-*` tokens for a high-contrast, themeable badge),
+`helpSlot` add the `.section-help-btn`; ADR-181/182: the `?` is a gray meta
+chip inside `.rec-section-hdr-label-wrap`; ADR-199: it is the only chip beside
+the category label — `[CHIP] [?] ······ [▶ +]` — leaving `.section-hdr-right`
+with only the transport pair. `syncSectionTransportStates(root)` dims that
+pair whenever the section's filter-visible harvest is empty. The remaining
+meta chip (plus `.trail-version`) shares the `--chip-meta-*` tokens for a
+high-contrast, themeable badge),
 `buildSubjectGroup`,
 `buildRowAccordion` (ADR-180: no longer folds — its body chips lay inline on
 one `.row-accordion-scroll` line), `tagUntaggedChips` / `applyChipRole`. Also the unified
@@ -782,8 +795,9 @@ longer exist.
 ### R3 — "Add a section to a panel"
 
 Use `buildSection({headerChip, count, playable:true})` from
-`panel_components.js` — `playable:true` yields the ▶/⊕ play-acts pair; register
-rows with `registerQueueItem` so they enqueue like everything else.
+`panel_components.js` — `playable:true` yields the ▶/+ play-acts pair and
+`count` is the empty-state signal (it is not rendered, ADR-199); register rows
+with `registerQueueItem` so they enqueue like everything else.
 
 ### R4 — "Change the look and feel"
 

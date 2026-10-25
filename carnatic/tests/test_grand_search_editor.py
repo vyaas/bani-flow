@@ -188,11 +188,11 @@ def test_rendered_graph_contains_the_new_surface():
         assert needle in html, f"rendered graph.html missing {needle!r}"
 
 
-# ── ADR-190: one search shell, three scopes ──────────────────────────────────
+# ── ADR-190 / ADR-198: the grand search is the only search shell ────────────
 
 
-def test_all_three_search_surfaces_share_one_shell():
-    """The grand bar and both panel searches are the same .search-field."""
+def test_grand_search_owns_the_shared_search_shell():
+    """ADR-198 retired both panel searches; the grand bar keeps the shell."""
     css = _base()
     for needle in (
         ".search-field {", ".search-field:focus-within", ".search-glyph",
@@ -201,12 +201,15 @@ def test_all_three_search_surfaces_share_one_shell():
     ):
         assert needle in css, f"shared search-field contract missing {needle!r}"
     assert 'id="search-bar" class="search-field"' in css
-    assert css.count('class="search-field"') == 3, "grand + both panels, no more"
-    assert css.count('class="search-glyph"') == 3
-    assert css.count('class="search-clear"') == 3
-    for wrap in ("bani-search-wrap", "musician-search-wrap"):
-        assert f'id="{wrap}"' in css
-    # One glyph for all three; the OS-dependent emoji placeholder is retired.
+    assert css.count('class="search-field"') == 1, "grand search only"
+    assert css.count('class="search-glyph"') == 1
+    assert css.count('class="search-clear"') == 1
+    for retired in (
+        "bani-search-wrap", "musician-search-wrap",
+        "bani-search-input", "musician-search-input",
+    ):
+        assert retired not in css, f"retired panel search still present: {retired}"
+    # One glyph; the OS-dependent emoji placeholder is retired.
     assert 'id="icon-search"' in css
     assert "&#128269;" not in css
     # The inner input is no longer a bordered box — the shell is the field.
@@ -216,3 +219,44 @@ def test_all_three_search_surfaces_share_one_shell():
     src = _search()
     assert src.count("closest('.search-clear')") == 1
     assert "dispatchEvent(new Event('input'" in src
+
+
+def test_chip_rows_keep_nav_and_filter_rows_lead_with_add():
+    """Nav rides the chip row; add is the filter row's leftmost control."""
+    css = _base()
+    for needle in (
+        'id="trail-filter-row"', 'id="rec-filter-row"',
+        'id="bani-back-btn"', 'id="bani-fwd-btn"',
+        'id="panel-back-btn"', 'id="panel-fwd-btn"',
+        'id="bani-add-btn"', 'id="panel-add-btn"',
+        'class="panel panel-empty"',
+    ):
+        assert needle in css
+    assert css.count('class="panel-chip-actions"') == 2
+    # Left panel: nav in the chip row, add in the filter row.
+    left_chip = css[css.index('id="bani-subject-name-row"'):css.index('id="trail-filter-row"')]
+    left_filter = css[css.index('id="trail-filter-row"'):css.index('id="bani-scroll"')]
+    for needle in ('id="bani-back-btn"', 'id="bani-fwd-btn"'):
+        assert needle in left_chip
+        assert needle not in left_filter
+    assert 'id="bani-add-btn"' in left_filter
+    assert 'id="bani-add-btn"' not in left_chip
+    # Right panel: same split — nav above, add leads the filter row.
+    right_chip = css[css.index('id="node-header-chip-row"'):css.index('id="rec-filter-row"')]
+    right_filter = css[css.index('id="rec-filter-row"'):css.index('id="right-scroll"')]
+    for needle in ('id="panel-back-btn"', 'id="panel-fwd-btn"'):
+        assert needle in right_chip
+        assert needle not in right_filter
+    assert 'id="panel-add-btn"' in right_filter
+    assert 'id="panel-add-btn"' not in right_chip
+    # Add is the first control in each filter row.
+    assert left_filter.index('id="bani-add-btn"') < left_filter.index('id="trail-filter"')
+    assert right_filter.index('id="panel-add-btn"') < right_filter.index('id="rec-filter"')
+    # The filter row still carries the transport pair aligned to section rows.
+    for needle in ('id="trail-play-acts"', 'id="rec-play-acts"'):
+        assert needle in left_filter or needle in right_filter
+    # No standalone top row, and no retired panel search chrome.
+    assert 'class="panel-top-row"' not in css
+    for retired in ("bani-search-dropdown", "musician-search-dropdown",
+                    "bani-scope-label", "musician-scope-label"):
+        assert retired not in css

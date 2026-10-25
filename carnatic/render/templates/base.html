@@ -262,11 +262,6 @@
   .chip-secondary .chip-scholar-cap { width: 9px; height: 9px; }
   .chip-secondary .chip-instr-icon { width: 11px; height: 11px; }
 
-  /* ── scope label ── */
-  .search-scope-label {
-    font-size: 0.65rem; color: var(--fg-muted);
-    font-style: italic; padding: 2px 0 4px 2px; line-height: 1.3;
-  }
   button {
     background: var(--bg-input); color: var(--fg-sub); border: 1px solid var(--border-strong);
     padding: 5px 11px; font-family: inherit; font-size: 0.78rem;
@@ -382,17 +377,13 @@
     font-size: 0.72rem; color: var(--fg-sub);
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
   }
-  /* ADR-191: panel top row — the BANI FLOW / MUSICIAN title banners are
-     retired. Back/forward nav, the panel add control and the panel search now
-     share one row; the search flexes to fill, reclaiming the banner's height.
-     Nav buttons are square (chip radius) and sized to the search field. */
-  .panel-top-row {
-    display: flex; align-items: flex-start; gap: 8px;
-  }
+  /* ADR-198: panel search bars are retired (the grand track search owns lookup).
+     Back/forward nav and the panel add control now ride in the content-filter
+     row, so the panel's first row is useful content instead of chrome. Nav
+     buttons stay square (chip radius) and sized to the search-field height. */
   .panel-nav-group {
     display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
   }
-  .panel-top-row .panel-search-wrap { flex: 1; min-width: 0; padding: 0; }
   .panel-nav-btn {
     display: inline-flex;
     align-items: center;
@@ -423,11 +414,19 @@
   }
 
   /* ── node header — ADR-128 D2: two-row layout (chip row + affordances row) ── */
-  #node-info { padding: 8px 14px; flex-shrink: 0; }
-  /* ── bani subject info — mirrors #node-info: chip row + trail filter as one unit ── */
-  #bani-info { padding: 8px 14px; flex-shrink: 0; }
+  /* ADR-198: `.panel` already supplies the 14px side inset. Adding it again
+     here made the subject chip start 14px right of the add button in the
+     filter row; keep only the vertical padding so both justify to the same
+     left edge (and both end at the same right edge). */
+  #node-info { padding: 8px 0; flex-shrink: 0; }
+  /* ── bani subject info — mirrors #node-info ── */
+  #bani-info { padding: 8px 0; flex-shrink: 0; }
   #node-header { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-  #node-header-chip-row { display: flex; align-items: center; flex-wrap: nowrap; gap: 5px; min-width: 0; max-width: 100%; }
+  /* ADR-198: the chip row must fill the panel, not shrink to its content —
+     otherwise a short musician name leaves no free space for the nav cluster's
+     `margin-left: auto` and the arrows sit next to the chip instead of the
+     panel's right edge. */
+  #node-header-chip-row { display: flex; align-items: center; flex-wrap: nowrap; gap: 5px; min-width: 0; max-width: 100%; width: 100%; }
   /* #node-name is the chip row's single horizontal-scroll surface (ADR-180,
      same mechanism as the panel ribbons): a long musician name scrolls
      sideways instead of wrapping the row, so the popup / ↗ controls stay
@@ -530,16 +529,43 @@
     font-family: inherit; font-size: 0.72rem; border-radius: 2px;
     margin-top: 6px; display: none; box-sizing: border-box;
   }
-  /* ADR-166/167: both filters live inside their own flex rows; rows handle visibility/layout */
+  /* ADR-198: nav + add live on the chip row; the filter row beneath it is a
+     pure content-filter affordance, present only once a subject is loaded.
+     Its transport pair shares the right edge of the section rows below. */
+  .panel-chip-actions {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-left: auto; flex-shrink: 0; justify-content: flex-end;
+  }
+  /* ADR-198: history nav is the chip row's right-hand anchor, whatever the
+     subject-name width. These explicit hooks keep it right-justified against
+     the same content edge as the section/filter-row actions. */
+  #bani-subject-name-row > .panel-chip-actions,
+  #node-header-chip-row > .panel-chip-actions {
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+  /* The musician panel's history pair hugs the panel's right edge (the Bani
+     panel's 14px inset reads correctly against the canvas; the right sidebar
+     borders the viewport, so it gets the tighter gutter). */
+  #right-sidebar #node-header-chip-row > .panel-chip-actions {
+    margin-right: -12px;
+  }
   #rec-filter-row,
   #trail-filter-row {
-    flex-wrap: nowrap; align-items: center; gap: 6px; margin-top: 6px;
+    display: flex; flex-wrap: nowrap; align-items: center; gap: 6px;
+    /* The panel already supplies the 14px side inset; adding it here would
+       push the transport pair off the section rows' right edge. */
+    padding: 0 0 8px; margin-top: 0; flex-shrink: 0;
   }
-  /* ADR-181: the filter-row transport pair must share the section-header action
-     column's right edge. #node-info/#bani-info carry 14px horizontal padding
-     that the section rows do not, so pull the pair back out by that amount. */
-  #rec-play-acts,
-  #trail-play-acts { margin-right: -14px; }
+  /* Empty panels keep the add control, hide the filter and transport pair. */
+  #bani-flow-panel.panel-empty #trail-filter,
+  #bani-flow-panel.panel-empty #trail-play-acts,
+  #musician-panel.panel-empty #rec-filter,
+  #musician-panel.panel-empty #rec-play-acts { display: none; }
+  /* With no subject loaded, the bani chip row keeps only its nav cluster. */
+  #bani-flow-panel.panel-empty #bani-subject-name-row > :not(.panel-chip-actions),
+  #bani-flow-panel.panel-empty #bani-notes-row,
+  #bani-flow-panel.panel-empty #bani-subject-sub { display: none; }
   #rec-filter, #trail-filter { flex: 1; min-width: 0; width: auto; margin-top: 0; display: block; }
   #rec-filter:focus,
   #trail-filter:focus { outline: none; border-color: var(--accent); }
@@ -574,7 +600,6 @@
     cursor: default; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-  #recordings-list .rec-group-count { margin-left: 2px; }
   /* ADR-128 D9: raga groups respect .tree-group-open like trail tree;
      the previous override forced them always open and disabled chevrons. */
   #recordings-list .tree-children { list-style: none; padding: 0; margin: 0; }
@@ -714,8 +739,6 @@
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
     padding: 5px 0 4px;
   }
-  /* ADR-181: the count chip owns its own look; only nudge spacing here. */
-  .comp-raga-header .rec-group-count { margin-left: 2px; }
   /* ADR-072: indents use --hier-indent-step for symmetry with tree-comp-* path. */
   .comp-raga-children {
     list-style: none; padding: 0 0 0 var(--hier-indent-step); margin: 0;
@@ -782,6 +805,17 @@
     transition: color 0.12s, background 0.12s;
   }
   .section-play-btn:hover { background: var(--bg-hover); color: var(--accent); }
+  /* ADR-199: no items in the category → the transport pair is visibly inert. */
+  .section-play-btn:disabled,
+  .section-enqueue-btn:disabled,
+  .rec-play-btn:disabled,
+  .mp-plus-btn:disabled {
+    opacity: 0.35; cursor: default; pointer-events: none;
+  }
+  .section-play-btn:disabled:hover,
+  .section-enqueue-btn:disabled:hover,
+  .rec-play-btn:disabled:hover,
+  .mp-plus-btn:disabled:hover { background: none; color: var(--fg-sub); }
   /* Expand tap target without inflating the visual button on mobile */
   .section-play-btn::after, .section-enqueue-btn::after {
     content: ''; position: absolute; inset: -11px;
@@ -1605,7 +1639,7 @@
   /* When subject name is rendered as a chip, let the chip control its own sizing
      and colour — override the ID-level accent/bold defaults */
   #bani-subject-name.comp-chip {
-    flex: 0 1 auto;
+    flex: 0 1 auto; min-width: 0;
     overflow-x: auto; overflow-y: hidden;
     text-overflow: clip;
     /* ADR-072: subject prominence */
@@ -1614,13 +1648,24 @@
     color: var(--chip-comp-border);
   }
   #bani-subject-name.raga-chip {
-    flex: 0 1 auto;
+    flex: 0 1 auto; min-width: 0;
     overflow-x: auto; overflow-y: hidden;
     text-overflow: clip;
     /* ADR-072: subject prominence */
     font-size: var(--subject-size);
     padding: var(--subject-padding);
     color: var(--chip-raga-border);
+  }
+  /* ADR-198: the subject-name chip is the row's scroll surface, so it must be
+     allowed to shrink when the pinned nav/add cluster shares the row. Overrides
+     the sidebar-wide "chips never shrink" ribbon rule (ADR-180). */
+  #left-sidebar #bani-subject-name.raga-chip,
+  #left-sidebar #bani-subject-name.comp-chip {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    max-width: 100% !important;
   }
   .bani-subject-link {
     margin-left: auto; flex-shrink: 0;
@@ -1880,14 +1925,12 @@
     text-overflow: ellipsis;
   }
 
-  /* ── ADR-190: the search field — one shell, three scopes ─────────────────
-     The grand track search (#search-bar) and both panel searches
-     (#bani-search-wrap, #musician-search-wrap) are the SAME affordance at
-     different reach. They therefore share one surface contract: a raised
-     field (bg0 over the bg_h panel/canvas), a hairline frame, a leading
-     magnifier that carries the focus colour, and an accent ring on
-     focus-within. Only the width and the result set differ — that is what
-     tells the user the three bars are siblings, not unrelated widgets. */
+  /* ── ADR-190 / ADR-198: the grand search field ───────────────────────────
+     The grand track search (#search-bar) is now the app's only search bar;
+     the retired panel searches used the same shell. It keeps the shared
+     surface contract: a raised field (bg0 over the bg_h panel/canvas), a
+     hairline frame, a leading magnifier that carries the focus colour, and
+     an accent ring on focus-within. */
   .search-field {
     position: relative;
     display: flex; align-items: center; gap: 7px;
@@ -1934,9 +1977,6 @@
   .search-clear:hover { color: var(--fg); background: var(--bg-active); }
   .search-clear:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
 
-  .search-wrap { position: relative; }
-  /* The panel shell is inset from the panel edges; the grand bar is full-bleed. */
-  .panel-search-wrap { padding: 8px 14px 0; }
   .search-dropdown {
     position: absolute; top: calc(100% + 4px); left: 0;
     box-sizing: border-box; width: 100%;
@@ -1945,18 +1985,6 @@
     border-radius: var(--search-radius, 8px);
     box-shadow: 0 10px 26px rgba(0,0,0,0.55);
     max-height: 280px; overflow-y: auto; z-index: 950;
-  }
-  .search-result-item {
-    padding: 6px 8px; cursor: pointer;
-    border-radius: 5px;
-    font-size: 0.78rem;
-  }
-  .search-result-item:hover,
-  .search-result-item.active {
-    background: var(--bg-input); color: var(--accent);
-  }
-  .search-result-secondary {
-    font-size: 0.70rem; color: var(--fg-muted); margin-top: 2px;
   }
 
   /* ── ADR-181: bare rounded-square play button (matches the enqueue `+`) ── */
@@ -3354,7 +3382,6 @@
     white-space: nowrap;
     cursor: default;
   }
-  .mp-playlist-count { flex-shrink: 0; }
   /* ADR-189: ⓘ opens the full playlist (all tracks + play-all) in the dialog. */
   .mp-playlist-info-btn {
     display: inline-flex; align-items: center; justify-content: center;
@@ -3841,6 +3868,20 @@
   #wheel-comp-panel::-webkit-scrollbar-thumb:hover,
   #wheel-rec-panel::-webkit-scrollbar-thumb:hover {
     background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
+  }
+
+  /* Shared dropdown rows — the entry forms' searchable pickers still use these. */
+  .search-result-item {
+    padding: 6px 8px; cursor: pointer;
+    border-radius: 5px;
+    font-size: 0.78rem;
+  }
+  .search-result-item:hover,
+  .search-result-item.active {
+    background: var(--bg-input); color: var(--accent);
+  }
+  .search-result-secondary {
+    font-size: 0.70rem; color: var(--fg-muted); margin-top: 2px;
   }
 
   /* ── ADR-031/111: entry button base (footer bar removed in ADR-111) ── */
@@ -5645,13 +5686,10 @@
     gap: var(--row-act-gap);
   }
 
-  /* ADR-181/182: enumeration + help are tiny gray meta chips grouped with the
+  /* ADR-181/182/199: help is the remaining gray meta chip grouped with the
      category label. High-contrast and themeable via --chip-meta-* tokens (the
-     same surface as the .trail-version badge); never claim a transport slot. */
-  .section-hdr-count,
-  .section-help-btn,
-  .mp-playlist-count,
-  .rec-group-count {
+     same surface as the .trail-version badge); never claims a transport slot. */
+  .section-help-btn {
     box-sizing: border-box;
     min-width: 15px;
     height: 15px;
@@ -5671,13 +5709,10 @@
     flex-shrink: 0;
   }
 
-  /* ── Height parity: enumeration + `?` match the section chip beside them ──
+  /* ── Height parity: `?` matches the section chip beside it ──
      Inside the label wrap the category chip is the tallest child; stretching
-     count/help (height:auto) to that same cross size aligns the badge row
-     flush with the chip instead of floating short beside it. Scoped to the
-     label wrap so the shared badge surfaces (.mp-playlist-count,
-     .rec-group-count) keep their compact 15px form elsewhere. */
-  .rec-section-hdr-label-wrap .section-hdr-count,
+     help (height:auto) to that same cross size aligns the badge row flush with
+     the chip instead of floating short beside it. */
   .rec-section-hdr-label-wrap .section-help-btn {
     height: auto;
     align-self: stretch;
@@ -6039,9 +6074,8 @@
     <path d="M4 19h16v2H4zm2-2 6-12 6 12H6z" />
     <path d="M9 4 a4 4 0 0 1 6 0" fill="none" stroke="currentColor" stroke-width="1.6"/>
   </symbol>
-  <!-- ADR-190: the shared search-field magnifier. One glyph for the grand
-       track search and both panel searches — the visual thread that says
-       "same affordance, different scope". -->
+  <!-- ADR-190 / ADR-198: the grand track search's magnifier. The panel
+       searches are retired, so this is the app's single search glyph. -->
   <symbol id="icon-search" viewBox="0 0 24 24">
     <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
     <path d="M15.4 15.4 21 21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -6136,33 +6170,11 @@
   <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->
   <div id="left-sidebar">
     <!-- ADR-041: close button removed — tab bar toggle dismisses drawer -->
-    <!-- ── sticky zone: search bar + subject header + trail filter ── -->
+    <!-- ── sticky zone: subject header + command row (ADR-198) ── -->
     <div id="bani-sticky">
-      <div class="panel" id="bani-flow-panel">
-        <div class="panel-top-row">
-          <span class="panel-nav-group">
-            <button id="bani-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-            <button id="bani-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-          </span>
-          <div class="search-wrap panel-search-wrap" id="bani-search-wrap">
-            <div class="search-field">
-              <span class="search-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#icon-search"/></svg></span>
-              <input id="bani-search-input" class="search-input panel-search" type="text"
-                     placeholder="Search raga or composition"
-                     autocomplete="off" spellcheck="false">
-              <button type="button" class="search-clear" aria-label="Clear search">&#10005;</button>
-              <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
-            </div>
-            <div class="search-scope-label" id="bani-scope-label" style="display:none">
-              searching all compositions
-            </div>
-          </div>
-          <button id="bani-add-btn" class="panel-nav-btn panel-add-btn"
-                  title="Add to Bani Flow" aria-label="Add to Bani Flow"
-                  onclick="openEntryForm('bani-flow-picker')">+</button>
-        </div>
-        <!-- bani-info: chip row + trail filter as one unit, mirrors #node-info (ADR-020) -->
-        <div id="bani-info" style="display:none">
+      <div class="panel panel-empty" id="bani-flow-panel">
+        <!-- bani-info: subject chip row, mirrors #node-info (ADR-020) -->
+        <div id="bani-info">
           <div id="bani-subject-header">
             <div id="bani-subject-name-row">
               <span id="bani-subject-icon" class="bani-subject-icon"></span>
@@ -6176,21 +6188,32 @@
                 <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
                    target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
               </div>
+              <!-- ADR-198: history rides the subject chip row -->
+              <span class="panel-chip-actions">
+                <span class="panel-nav-group">
+                  <button id="bani-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
+                  <button id="bani-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+                </span>
+              </span>
             </div>
             <!-- notes[] section (ADR-097 §7, shown when entity has notes array) -->
             <div id="bani-notes-row" style="display:none"></div>
             <!-- Inline meta chips: HER/CER for raga, raga+composer for comp -->
             <div id="bani-subject-sub" style="display:none"></div>
           </div>
-          <!-- Filter + ADR-167 play-all/enqueue pair — flex row below the chip row -->
-          <div id="trail-filter-row" style="display:none">
-            <input id="trail-filter" type="text" placeholder="Filter content&#8230;"
-                   autocomplete="off" spellcheck="false" />
-            <span id="trail-play-acts" class="section-play-acts">
-              <button id="trail-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
-              <button id="trail-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue" aria-label="Add visible to queue">+</button>
-            </span>
-          </div>
+        </div>
+        <!-- ADR-198: add stays leftmost; the filter reads as indented under the
+             subject chip and disappears when the panel is empty. -->
+        <div id="trail-filter-row">
+          <button id="bani-add-btn" class="panel-nav-btn panel-add-btn"
+                  title="Add raga or composition" aria-label="Add raga or composition"
+                  onclick="openEntryForm('bani-flow-picker')">+</button>
+          <input id="trail-filter" type="text" placeholder="Filter content&#8230;"
+                 autocomplete="off" spellcheck="false" />
+          <span id="trail-play-acts" class="section-play-acts">
+            <button id="trail-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
+            <button id="trail-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue" aria-label="Add visible to queue">+</button>
+          </span>
         </div>
       </div>
     </div>
@@ -6268,31 +6291,9 @@
     <div id="sheet-handle" aria-hidden="true"></div>
     <!-- ADR-036: contextual peek label (hidden on mobile per ADR-039) -->
     <div id="sheet-peek-label">Tap a musician to explore &#8593;</div>
-    <!-- ── sticky zone: musician search + node header + rec filter ── -->
+    <!-- ── sticky zone: node header + command row (ADR-198) ── -->
     <div id="right-sticky">
-      <div class="panel" id="musician-panel">
-        <div class="panel-top-row">
-          <span class="panel-nav-group">
-            <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-            <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-          </span>
-          <div class="search-wrap panel-search-wrap" id="musician-search-wrap">
-            <div class="search-field">
-              <span class="search-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#icon-search"/></svg></span>
-              <input id="musician-search-input" class="search-input panel-search" type="text"
-                     placeholder="Search musician or composer"
-                     autocomplete="off" spellcheck="false">
-              <button type="button" class="search-clear" aria-label="Clear search">&#10005;</button>
-              <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
-            </div>
-            <div class="search-scope-label" id="musician-scope-label" style="display:none">
-              searching all {node_count} musicians
-            </div>
-          </div>
-          <button id="panel-add-btn" class="panel-nav-btn panel-add-btn"
-                  title="Add musician" aria-label="Add musician"
-                  onclick="openEntryForm('musician')">+</button>
-        </div>
+      <div class="panel panel-empty" id="musician-panel">
       <div id="node-info">
         <div id="node-header">
           <!-- Row 1: musician chip (ADR-128 D2) -->
@@ -6304,16 +6305,28 @@
             <!-- wiki link inline with chip row (birth/death years removed) -->
             <a id="node-wiki-link" class="yt-ext-link panel-hdr-ext-link" href="#" target="_blank"
                style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
+            <!-- ADR-198: history rides the subject chip row -->
+            <span class="panel-chip-actions">
+              <span class="panel-nav-group">
+                <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
+                <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+              </span>
+            </span>
           </div>
         </div>
-        <div id="rec-filter-row" style="display:none">
-          <input id="rec-filter" type="text" placeholder="Filter content&#8230;"
-                 autocomplete="off" spellcheck="false" />
-          <span id="rec-play-acts" class="section-play-acts">
-            <button id="rec-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
-            <button id="rec-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue" aria-label="Add visible to queue">+</button>
-          </span>
-        </div>
+      </div>
+      <!-- ADR-198: add stays leftmost; the filter reads as indented under the
+           subject chip and disappears when the panel is empty. -->
+      <div id="rec-filter-row">
+        <button id="panel-add-btn" class="panel-nav-btn panel-add-btn"
+                title="Add musician" aria-label="Add musician"
+                onclick="openEntryForm('musician')">+</button>
+        <input id="rec-filter" type="text" placeholder="Filter content&#8230;"
+               autocomplete="off" spellcheck="false" />
+        <span id="rec-play-acts" class="section-play-acts">
+          <button id="rec-play-all-btn" class="section-play-btn" title="Play all visible">&#x25b6;</button>
+          <button id="rec-enqueue-btn" class="section-enqueue-btn" title="Add visible to queue" aria-label="Add visible to queue">+</button>
+        </span>
       </div>
       </div>
     </div>

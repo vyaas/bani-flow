@@ -27,8 +27,7 @@ CLAIMS: dict[str, list[str]] = {
     "base.html": [
         # §1 bani-flow panel
         'id="bani-flow-panel"', 'id="bani-scroll"', 'id="bani-sticky"',
-        'id="bani-search-input"', 'id="bani-subject-popup"',
-        'id="bani-add-btn"', 'id="panel-add-btn"',
+        'id="bani-subject-popup"', 'id="bani-add-btn"', 'id="panel-add-btn"',
         'id="left-panel-toggle"', 'id="left-sidebar"',
         # §2 musician panel
         'id="right-sidebar"', 'id="musician-panel"', 'id="recordings-panel"',

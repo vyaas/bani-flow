@@ -285,7 +285,8 @@ injected. Placeholders `{node_count}` and `{edge_count}` are substituted by
 
 **Defines:** DOM structure — `#cy` (Cytoscape canvas), `#left-sidebar`,
 `#right-sidebar`, `#filter-bar`, `#timeline-ruler`, `#raga-wheel-container`,
-`#bani-flow-panel`, `#hover-popover`, `#search-input`, `#bani-search-input`.
+`#bani-flow-panel`, `#hover-popover`, `#track-search-input` (the grand search;
+the former panel searches are retired per ADR-198).
 
 ---
 
@@ -405,17 +406,12 @@ Bani Flow filter panel and listening trail builder.
 
 ### `search.js`
 
-Shared dropdown helper and search box wiring.
+Grand track search (ADR-184) plus the shared `normText()` helper.
 
-| Symbol | Kind | Description |
-|---|---|---|
-| `makeDropdown(inputEl, dropdownEl, getItems, onSelect)` | function | Generic keyboard-navigable dropdown: handles input, arrow keys, Enter, Escape, outside-click |
-
-Also wires (inline, no exported function):
-- **Musician search** (`#search-input`) — filters `elements` by label, calls
-  `selectNode()` on selection
-- **Bani Flow search** (`#bani-search-input`) — searches compositions and
-  ragas by name, calls `triggerBaniSearch()` on selection
+- **`#track-search-input`** — indexes recorded performances and
+  `musician.youtube[]` tracks, renders playable rows (chips + play + enqueue).
+  The panel searches were retired in ADR-198; this is the app's only search
+  surface.
 
 ---
 

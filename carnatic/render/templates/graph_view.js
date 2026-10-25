@@ -612,7 +612,6 @@ function applyChipFilters() {
   if (!anyActive) {
     cy.elements().removeClass('chip-faded');
     if (clearBtn) clearBtn.hidden = true;
-    setScopeLabels(false);
     return;
   }
 
@@ -639,7 +638,6 @@ function applyChipFilters() {
   });
 
   if (clearBtn) clearBtn.hidden = false;
-  setScopeLabels(true);
 
   // ADR-134 D4: show empty-state hint when the filter yields no visible nodes.
   const anyVisible = cy.nodes().some(n => !n.hasClass('chip-faded'));
@@ -669,7 +667,6 @@ function clearAllChipFilters() {
     .forEach(i => i.setAttribute('aria-selected', 'false'));
   cy.elements().removeClass('chip-faded');
   _updateFilterBtnLabels();
-  setScopeLabels(false);
   _setLineageEmptyMsg(false);
   applyZoomLabels();
 }
@@ -678,12 +675,6 @@ function clearAllChipFilters() {
 function _setLineageEmptyMsg(show) {
   const msg = document.getElementById('cy-lineage-empty-msg');
   if (msg) msg.style.display = show ? 'block' : 'none';
-}
-
-function setScopeLabels(visible) {
-  const display = visible ? 'block' : 'none';
-  document.getElementById('musician-scope-label').style.display = display;
-  document.getElementById('bani-scope-label').style.display     = display;
 }
 
 // ── ADR-074: DOM-overlay musician chip labels ───────────────────────────────
@@ -1559,7 +1550,7 @@ cy.on('tap', evt => {
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—'; // clear chip
   document.getElementById('node-wiki-link').style.display   = 'none';
-  document.getElementById('rec-filter-row').style.display   = 'none';
+  document.getElementById('musician-panel').classList.add('panel-empty');
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';
   var _lgBgTap = document.getElementById('lineage-popup-btn');
@@ -1584,7 +1575,7 @@ window.clearMusicianPanel = function () {
   cy.elements().removeClass('faded highlighted');
   document.getElementById('node-name').textContent          = '—';
   document.getElementById('node-wiki-link').style.display   = 'none';
-  document.getElementById('rec-filter-row').style.display   = 'none';
+  document.getElementById('musician-panel').classList.add('panel-empty');
   document.getElementById('rec-filter').value               = '';
   document.getElementById('node-info').style.display        = 'block';
   var _lgReset = document.getElementById('lineage-popup-btn');
