@@ -3349,18 +3349,25 @@
     .playlist-editor .mp-queue-reorder { flex-direction: row; }
   }
 
-  /* Mobile (ADR-175): the bar is a second top band, top-centre full-width.
-     Band 1 keeps the view selector + help button; the bar sits directly under
-     it. --chrome-top clears both bands AND the 54px bar (bottom = 52 + 54 = 106)
-     with a 10px gap, so the canvas, wheel and both panels never run under the bar. */
+  /* Mobile (ADR-200): the search bar's bottom edge is the chrome line. Band 1
+     keeps the view selector + help button; band 2 is the grand search; the
+     Playlist Bar and both drawers share the line just under the search (8px
+     gap). The bar is no longer reserved a full band above the panels — a
+     drawer starts on the same line and is layered above it, so an open panel
+     draws over the bar (ADR-175's "nothing occludes the bar" guarantee is now
+     desktop-only). Only the canvas is pushed clear of the bar, via #main's
+     padding-top below. */
   @media (max-width: 768px) {
-    :root { --chrome-top: 176px; }
+    :root { --chrome-top: calc(52px + var(--search-height, 32px) + 8px); }
     #search-bar {
       top: 52px; left: 8px; right: 8px; transform: none; width: auto;
     }
     #playlist-bar {
-      top: 112px; left: 8px; right: 8px; transform: none;
+      top: var(--chrome-top); left: 8px; right: 8px; transform: none;
       width: auto;
+      /* Below the drawers (220) so an open panel covers the bar, but still
+         above the mobile player (205) and the drawer scrim (199). */
+      z-index: 210;
     }
   }
 
@@ -4679,7 +4686,11 @@
     /* Pad top so filter bar / canvas never overlap the fixed help + view-toggle chrome */
     #main {
       position: relative;
-      padding-top: var(--chrome-top);
+      /* ADR-200: the drawers ride the search bar (--chrome-top), but the canvas
+         must still clear the Playlist Bar when it is live. Mirror the desktop
+         #canvas-wrap top wall: the bar's published bottom, else the bare
+         chrome line. An empty bar collapses to --chrome-top. */
+      padding-top: max(var(--chrome-top), calc(var(--playlist-ui-bottom, 0px) + 8px));
       padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
     }
     #canvas-wrap {

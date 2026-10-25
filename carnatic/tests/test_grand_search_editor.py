@@ -67,17 +67,20 @@ def test_both_bands_clamp_to_open_sidebars():
         ), f"{band} must clamp to the open right panel"
 
 
-def test_mobile_chrome_clears_both_bands():
+def test_mobile_search_bar_is_the_chrome_line():
+    """ADR-200: mobile --chrome-top is the search bar's bottom edge + gap; the
+    Playlist Bar and the drawers share it instead of stacking a third band."""
     css = _base()
     block = re.search(
-        r"@media \(max-width: 768px\) \{\s*:root \{ --chrome-top: (\d+)px; \}", css
+        r"@media \(max-width: 768px\) \{\s*:root \{ --chrome-top: "
+        r"calc\(52px \+ var\(--search-height, 32px\) \+ 8px\); \}",
+        css,
     )
-    assert block, "missing mobile --chrome-top override"
-    assert int(block.group(1)) >= 168, (
-        "mobile --chrome-top must clear BOTH the search and editor bands"
-    )
+    assert block, "mobile --chrome-top must be the search bar's bottom edge + gap"
     assert re.search(r"#search-bar\s*\{[^}]*top: 52px", css, re.DOTALL)
-    assert re.search(r"#playlist-bar\s*\{[^}]*top: 112px", css, re.DOTALL)
+    assert re.search(
+        r"#playlist-bar\s*\{[^}]*top: var\(--chrome-top\)", css, re.DOTALL
+    ), "the mobile bar must ride the search bar's bottom edge, not a fixed 112px"
 
 
 # ── the playlist row contract ─────────────────────────────────────────────────

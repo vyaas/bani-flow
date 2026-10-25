@@ -468,7 +468,11 @@ the second band is reclaimed; it appears only with ≥ 1 item**):
 `#playlist-bar` (app chrome on desktop, gas-like between the view selector and
 help button and **clamped to the canvas column** — `body:has(#left-sidebar.drawer-open)` /
 `body:has(#right-sidebar.drawer-open)` pin its `left`/`right` to the panel widths
-so it and the docked player never occlude a sidebar; second top band on mobile)
+so it and the docked player never occlude a sidebar; **ADR-200:** on mobile it
+rides the chrome line under the search bar (`top: var(--chrome-top)`) at
+`z-index: 210`, below the drawers (220) so an open panel draws over it — the
+"nothing occludes the bar" guarantee is desktop-only, and the bar stays above
+the mobile player (205) and the scrim (199))
 with `#pb-prev` / `#pb-play` / `#pb-next` / `#pb-stop` (`#pb-transport`),
 `#pb-summary` (thin horizontal scrollbar when the chips overflow), **`#pb-count`**
 (`x / y`, a `<button>` that toggles the Playlist Editor modal — the only editor
@@ -649,7 +653,9 @@ shell, now grand-only), 194 (bottom placard + vertical operator rail
 on the video surface), 195 (Playlist Editor is a modal form — bar chevron
 retired, `#pb-count` opens it; draggable rows), 196 (playlist rows capped at two
 lines — meta + actions groups, chips scroll, mobile current wraps), 198 (panel
-searches retired; nav/add move into the content-filter command row).
+searches retired; nav/add move into the content-filter command row), 200
+(mobile chrome line — drawers and the Playlist Bar ride the search bar's bottom
+edge; a drawer covers the bar; the canvas still clears a live bar).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
@@ -712,10 +718,14 @@ permalink.js    LAST — restores state using every global above
 `mobile.js`: `setPanelState(newState)` — opens/closes `#left-sidebar` /
 `#right-sidebar` via `.drawer-open`; desktop toggles `#left-panel-toggle` /
 `#right-panel-toggle` (`.float-toggle-active`); `peekBottomSheet()` /
-`dismissBottomSheet()` exposed as globals. **Mobile geometry (ADR-175):** the
-drawers are `position:fixed` with `top: var(--chrome-top)`, so they start
-**below** the full-width Playlist Bar (never occluded); `--chrome-top` on mobile
-is `116px` (bar bottom 106 + gap). **ADR-195:** opening a panel no longer folds
+`dismissBottomSheet()` exposed as globals. **Mobile geometry (ADR-200):** the
+drawers are `position:fixed` with `top: var(--chrome-top)` — the search bar's
+bottom edge + 8px gap (`--search-height` derived, ≈ 92px). The full-width
+Playlist Bar shares that line at `z-index: 210`, so an open drawer draws **over**
+the bar (ADR-175's "never occluded" guarantee is desktop-only). The canvas alone
+is pushed clear of a live bar: mobile `#main` `padding-top` is
+`max(var(--chrome-top), calc(var(--playlist-ui-bottom) + 8px))`, the same top
+wall the desktop `#canvas-wrap` uses. **ADR-195:** opening a panel no longer folds
 anything — the Playlist Editor is a modal above the drawers. **View refit
 (ADR-176):** `_refitViews()` re-publishes the playlist top wall
 (`_syncViewTopInset`) then `cy.resize()`/`cy.fit()` and

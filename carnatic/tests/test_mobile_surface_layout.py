@@ -8,11 +8,11 @@ test_mobile_surface_layout.py — regression guard for two mobile rendering bugs
    ``setPanelState('IDLE')`` on mobile. The handler must ignore programmatic
    sync clicks (``window._wheelPreviewNoPanel``).
 
-2. The playlist bar occluded the panels. On mobile the bar is a full-width top
-   band at z-index 750 over drawers at 220, and the drawers started at the
-   viewport top. The drawers (and the canvas chrome gap) must start below the
-   bar, and an open playlist editor must fold when a panel opens so the bar
-   never draws over the panel column.
+2. The mobile chrome line. ADR-200: the search bar's bottom edge is the line
+   shared by the Playlist Bar and both drawers (top: var(--chrome-top)); the
+   mobile bar sits below the drawers (z-index 210 vs 220) so an open panel
+   draws over it. The canvas alone is pushed clear of a live bar via
+   --playlist-ui-bottom, so the view never runs under it.
 
 Also pins a scope fix: ``switchView`` (defined outside the wheel IIFE) referenced
 the IIFE-private ``_wdpData`` and threw a ReferenceError on raga-view entry.
@@ -36,33 +36,44 @@ EMPTY = TEMPLATES / "empty_tutorials.js"
 BANI = TEMPLATES / "bani_flow.js"
 
 
-def test_mobile_drawers_start_below_the_playlist_bar():
+def test_mobile_drawers_ride_the_search_bar_chrome_line():
     css = BASE.read_text(encoding="utf-8")
     for sel in ("#left-sidebar", "#right-sidebar"):
         blocks = re.findall(re.escape(sel) + r"\s*\{(.*?)\}", css, re.DOTALL)
         assert blocks, f"{sel} rule missing"
         mobile = [b for b in blocks if "top: var(--chrome-top)" in b]
         assert mobile, (
-            f"{sel} must start below the playlist bar (top: var(--chrome-top)) "
-            "so the bar never occludes the panel"
+            f"{sel} must ride the mobile chrome line (top: var(--chrome-top))"
         )
         assert all("bottom: calc(56px" in b for b in mobile), (
             f"{sel} must still stop above the mobile tab bar"
         )
 
 
-def test_mobile_chrome_top_clears_the_bar():
+def test_mobile_chrome_line_is_the_search_bar_bottom():
+    """ADR-200: --chrome-top is the search bar's bottom edge + gap, shared by
+    the Playlist Bar and both drawers; the canvas alone clears a live bar."""
     css = BASE.read_text(encoding="utf-8")
     block = re.search(
-        r"@media \(max-width: 768px\) \{\s*:root \{ --chrome-top: (\d+)px; \}",
+        r"@media \(max-width: 768px\) \{\s*:root \{ --chrome-top: "
+        r"calc\(52px \+ var\(--search-height, 32px\) \+ 8px\); \}",
         css,
     )
-    assert block, "mobile --chrome-top override missing"
-    # Bar: top 52px + 54px height = 106px bottom; chrome-top must clear it.
-    assert int(block.group(1)) >= 112, (
-        "mobile --chrome-top must clear the playlist bar's bottom (106px) so the "
-        "canvas, wheel and panels never run under it"
+    assert block, (
+        "mobile --chrome-top must be the search bar's bottom edge + gap, not a "
+        "fixed band that also clears the ephemeral Playlist Bar"
     )
+    # The bar and the drawers share that line; the bar drops below the drawers.
+    assert re.search(
+        r"#playlist-bar \{[^}]*top: var\(--chrome-top\);[^}]*z-index: 210;",
+        css, re.DOTALL,
+    ), "the mobile bar must ride the chrome line and sit below the drawers (220)"
+    # The canvas still never runs under a live bar.
+    assert re.search(
+        r"#main \{[^}]*padding-top:\s*max\(var\(--chrome-top\),\s*"
+        r"calc\(var\(--playlist-ui-bottom, 0px\) \+ 8px\)\)",
+        css, re.DOTALL,
+    ), "the mobile canvas must clear a live Playlist Bar via --playlist-ui-bottom"
 
 
 def test_mela_click_ignores_programmatic_sync_when_dismissing_panels():

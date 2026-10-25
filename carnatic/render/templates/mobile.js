@@ -110,7 +110,9 @@
 
     // ADR-050/ADR-175: collapse the full mobile player when the user begins
     // exploring a panel, so the panel has the full viewport. Playback continues;
-    // the top Playlist Bar remains the persistent face (it is layered above drawers).
+    // the top Playlist Bar remains the persistent face. ADR-200: on mobile the
+    // drawer is layered above the bar and covers it; the bar is reachable again
+    // once the drawer closes.
     if (newState !== 'IDLE' && typeof window._collapseMobilePlayer === 'function') {
       const mp = document.querySelector('.media-player.full-mobile');
       if (mp) window._collapseMobilePlayer();

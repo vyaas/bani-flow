@@ -41,6 +41,20 @@ def test_view_window_is_inset_inside_the_four_walls():
     )
 
 
+def test_mobile_view_top_wall_clears_the_playlist_bar():
+    """ADR-200: on mobile the drawers ride --chrome-top, so #main (not
+    #canvas-wrap) carries the top wall that clears a live Playlist Bar."""
+    css = _base()
+    assert re.search(
+        r"#main\s*\{[^}]*padding-top:\s*max\(var\(--chrome-top\),\s*"
+        r"calc\(var\(--playlist-ui-bottom, 0px\) \+ 8px\)\)",
+        css, re.DOTALL,
+    ), (
+        "the mobile view must clear a live Playlist Bar via the same "
+        "--playlist-ui-bottom wall the desktop view uses"
+    )
+
+
 def test_view_window_is_inset_by_open_panels():
     css = _base()
     assert re.search(
