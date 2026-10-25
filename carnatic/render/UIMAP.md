@@ -287,7 +287,11 @@ whole app** (`switchView`, `_updateViewportToolbar`, `vpFit`, `vpRelayout`,
   the bani filter; `_openCompPanel(raga, activeCompId)` renders composition+composer
   pair rows via `_wdpRenderCompRows` (opening the recordings leaf for a permalink
   `activeCompId`); `_wdpToggleCompItem` → `_openRecPanel(item, ragaId, rowEl)`
-  builds the recordings leaf (`_wdpRecordingsFor` → `_wdpRecRow` → `_wdpPlayRef`);
+  builds the recordings leaf by re-representing the §1 Bani-flow trail
+  (`_wdpBaniTargetFor` → `window.buildRecordingsTrail(type, id)` → the shared
+  `_collectTrailRows` pipeline, rendered into `<ul class="trail-list">`), so the
+  leaf's musician/composer chips and play/enqueue controls are the panel's own; the
+  composition chip in the leaf header opens the subject in Bani Flow;
   `window._closeWheelCompPanel()` clears the composition card + leaf;
   `window._closeWheelRecPanel()` clears the leaf;
   `window._positionCompPanel()` / `window._positionRecPanel()` anchor each child

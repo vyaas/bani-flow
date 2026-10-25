@@ -35,15 +35,18 @@ Grow the telescoping chain to **three cards**:
 
 1. **Raga panel** (`#wheel-detail-panel`) — unchanged (ADR-192).
 2. **Composition panel** (`#wheel-comp-panel`) — each composition is now a
-   **pair row**: the composition title on the left, its composer chip on the
-   right, side by side. The composer chip keeps its navigable behaviour
-   (`buildComposerChip`); clicking the composition half selects the row and
-   opens the recordings leaf.
-3. **Recordings panel** (`#wheel-rec-panel`, new) — the terminal leaf. Lists
-   every PerformanceRef indexed for the selected composition
-   (`compositionToPerf`, `perfToPerf`, or a YouTube-only synthetic ref), each
-   row playable through `openOrFocusPlayer`. When no structured recordings are
-   indexed it offers an "Open in Bani Flow" link, which is the richer surface.
+   **pair row** of real chips: the composition chip (`.comp-chip`, amber) and
+   its composer chip (`.composer-chip`, era-tinted, `buildComposerChip`) side
+   by side. The pair is one clickable entity that explodes the recordings leaf;
+   the composer chip keeps its own navigable behaviour.
+3. **Recordings panel** (`#wheel-rec-panel`, new) — the terminal leaf. It is
+   the Bani-flow trail for the selected subject, re-represented verbatim:
+   `buildRecordingsTrail(type, id)` runs the *same* row pipeline as
+   `buildListeningTrail` (`_collectTrailRows`) and renders it into a detached
+   `<ul class="trail-list">`, so the musician chips, co-performer chips, scroll
+   surfaces and play/enqueue controls are byte-for-byte the panel's own rows.
+   The subject resolves through `_wdpBaniTargetFor` (canonical composition,
+   single performance, or YouTube-only entry).
 
 Positioning follows the ADR-192 anchor rule, extended one hop: the recordings
 card pins the composition panel's outward edge, vertically centred on the
@@ -75,8 +78,12 @@ sync/permalink restore lands on the same three-card view.
   re-centres the chain so the leaf stays visible next to (not under) a drawer.
 - The composer chip reuses the shared `buildComposerChip`, so composer
   navigation (musician panel, era tint) is identical to every other surface.
-- Clicking a composition row no longer re-homes the Bani-flow subject. The
-  Bani-flow panel is reached deliberately from the recordings card's
-  "Open in Bani Flow" affordance; the wheel chain stays stable while browsing.
+- The leaf introduces no bespoke row markup: it inherits the Bani-flow panel's
+  look and feel by construction. `_collectTrailRows` is the single source of
+  truth for the panel's rows, so the wheel and the sidebar cannot drift.
+- Chips stay the functional vocabulary: composition, composer, musician and
+  raga labels are always chips. There is no separate "Open in Bani Flow"
+  affordance — the composition chip in the leaf header navigates to the
+  subject's Bani-flow panel, and musician chips open the Musician panel.
 - Playback enters the media queue through the normal `openOrFocusPlayer` path,
   so compositions played from the leaf obey the Current Playlist contract.

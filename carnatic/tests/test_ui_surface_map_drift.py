@@ -57,6 +57,9 @@ CLAIMS: dict[str, list[str]] = {
         "function buildTrailItem", "window.getBaniTrail",
         "function _renderBaniFlowPlaylists", "function _renderBaniFlowLecdemStrip",
         "activeBaniFilter",
+        # §4 — ADR-193 shared row pipeline re-used by the recordings leaf
+        "function _collectTrailRows", "function buildRecordingsTrail",
+        "window.buildRecordingsTrail",
     ],
     "graph_view.js": [
         # §2 (header/selection half of the musician panel)

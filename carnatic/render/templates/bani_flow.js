@@ -236,6 +236,252 @@ function applyBaniFilter(type, id) {
   }
 }
 
+// ADR-193: shared trail-row pipeline (collect → dedup → sort → version-label)
+// extracted from buildListeningTrail so the raga wheel's recordings leaf can
+// re-represent the exact same bani-flow rows.
+function _collectTrailRows(type, id, matchedNodeIds) {
+
+  // Legacy youtube[] entries from matched musician nodes.
+  // Skipped for 'perf' type (structured recordings only).
+  // For 'yt' type: id = "vid::ragaId" — match only the specific vid.
+  const rawRows = [];
+  if (type !== 'perf') {
+    const ytVidFilter = type === 'yt' ? id.split('::')[0] : null;
+    matchedNodeIds.forEach(nid => {
+      const n = cy.getElementById(nid);
+      // ADR-138: transit/isolated nodes are culled from _cyElements; cy.getElementById()
+      // returns an empty Collection (truthy!) for them — fall back to raw elements array
+      // so musicians with no lineage edges still appear in raga/comp panels.
+      let d;
+      if (n && n.length) {
+        d = n.data();
+      } else {
+        const rawEl = elements.find(function(e) { return !e.data.source && e.data.id === nid; });
+        if (!rawEl) return;
+        d = rawEl.data;
+      }
+      if (!d || !d.tracks) return;
+      d.tracks.forEach(t => {
+        let matches;
+        if (type === 'comp') {
+          matches = t.composition_id === id;
+        } else if (type === 'yt') {
+          // Match only the specific YouTube video id
+          matches = t.vid === ytVidFilter;
+        } else {
+          // 'raga': match by raga_id directly or via composition
+          matches = t.raga_id === id || (t.composition_id && (() => {
+            const c = compositions.find(x => x.id === t.composition_id);
+            return c && c.raga_id === id;
+          })());
+        }
+        if (matches) {
+          const vid = t.vid || '';
+          const offset = t.offset_seconds || 0;
+          // ADR-070: when this track is cross-linked from a host (i.e. the
+          // current node is an accompanist on someone else's recording), use
+          // the host's identity for the primary row so the lead is never
+          // displaced. The accompanist still surfaces via co-performer chips
+          // built from allPerformers below.
+          let primaryNid = nid;
+          let primaryD   = d;
+          if (t.host_id && t.host_id !== nid) {
+            const hostNode = cy.getElementById(t.host_id);
+            if (hostNode && hostNode.length) {
+              primaryNid = t.host_id;
+              primaryD   = hostNode.data();
+            } else {
+              // Host is also a transit node — fall back to raw elements
+              const rawHost = elements.find(function(e) { return !e.data.source && e.data.id === t.host_id; });
+              if (rawHost) { primaryNid = t.host_id; primaryD = rawHost.data; }
+            }
+          }
+          rawRows.push({
+            nodeId: primaryNid, artistLabel: primaryD.label, born: primaryD.born,
+            lifespan: primaryD.lifespan, color: primaryD.color, shape: primaryD.shape,
+            track: t, isStructured: false,
+            perfKey: `${vid}::${offset}`,
+            // ADR-070: legacy youtube entries may carry performers[] for
+            // accompanists; use it for co-performer chips just like
+            // structured-recording rows.
+            allPerformers: (t.performers && t.performers.length) ? t.performers : null,
+          });
+        }
+      });
+    });
+  }
+
+  // Structured recordings.
+  // 'perf': use perfToPerf[id] — exactly the one PerformanceRef for this track.
+  // 'yt':   no structured perfs — youtube-only entries have no session data.
+  const structuredPerfs = type === 'comp'
+    ? (compositionToPerf[id] || [])
+    : type === 'perf'
+      ? (perfToPerf[id] || [])
+      : type === 'yt'
+        ? []
+        : (ragaToPerf[id] || []);
+
+  structuredPerfs.forEach(p => {
+    const primaryPerformer = p.performers.find(pf => pf.role === 'vocal') || p.performers[0];
+    let artistLabel, nodeId, born, pNode;
+    if (primaryPerformer && primaryPerformer.musician_id) {
+      pNode = resolveNode(primaryPerformer.musician_id);
+      artistLabel = (pNode ? pNode.data('label') : null) || primaryPerformer.unmatched_name || p.title;
+      nodeId = primaryPerformer.musician_id;
+      born   = pNode ? pNode.data('born') : null;
+    } else {
+      pNode = null;
+      artistLabel = (primaryPerformer && primaryPerformer.unmatched_name) || p.title;
+      nodeId = null;
+      born   = null;
+    }
+    rawRows.push({
+      nodeId,
+      artistLabel,
+      born,
+      lifespan: pNode ? pNode.data('lifespan') : null,
+      color:    pNode ? pNode.data('color')    : null,
+      shape:    pNode ? pNode.data('shape')    : null,
+      track: {
+        vid:            p.video_id,
+        label:          p.display_title,
+        year:           p.date ? parseInt(p.date) : null,
+        offset_seconds: p.offset_seconds,
+        composition_id: p.composition_id,
+        recording_id:   p.recording_id,
+        short_title:    p.short_title,
+        concert_title:  p.title,
+        timestamp:      p.timestamp || '00:00',
+        raga_id:        p.raga_id || null,
+        tala:           p.tala || null,
+        version:        p.version || null,
+      },
+      isStructured: true,
+      perfKey: `${p.recording_id}::${p.session_index}::${p.performance_index}`,
+      allPerformers: p.performers,
+    });
+  });
+
+  // ── 2. Deduplicate by perfKey ──────────────────────────────────────────────
+  const perfMap = new Map(); // perfKey → merged row
+
+  rawRows.forEach(row => {
+    if (!perfMap.has(row.perfKey)) {
+      perfMap.set(row.perfKey, { ...row, coPerformers: [] });
+    } else {
+      const existing = perfMap.get(row.perfKey);
+      const alreadyPresent = existing.nodeId === row.nodeId ||
+        existing.coPerformers.some(cp => cp.nodeId === row.nodeId);
+      if (!alreadyPresent) {
+        existing.coPerformers.push({
+          nodeId:      row.nodeId,
+          artistLabel: row.artistLabel,
+          color:       row.color,
+          shape:       row.shape,
+        });
+      }
+    }
+  });
+
+  // Placeholder labels that should never appear in the UI
+  const UNKNOWN_LABELS = new Set(['Unknown', 'Unidentified artiste', '?']);
+
+  // For structured recordings: populate coPerformers from performers[] directly
+  // (more reliable than relying on node-iteration order).
+  // ADR-070: legacy youtube entries with a performers[] array also opt in.
+  perfMap.forEach(row => {
+    if (row.allPerformers) {
+      row.coPerformers = [];
+      row.allPerformers.forEach(pf => {
+        if (pf.musician_id === row.nodeId) return; // skip primary
+        const coNode = resolveNode(pf.musician_id);
+        const coLabel = coNode ? coNode.data('label') : (pf.unmatched_name || null);
+        if (!coLabel || UNKNOWN_LABELS.has(coLabel)) return; // skip unknown/placeholder names
+        row.coPerformers.push({
+          nodeId:      pf.musician_id || null,
+          artistLabel: coLabel,
+          color:       coNode ? coNode.data('color') : null,
+          shape:       coNode ? coNode.data('shape') : null,
+        });
+      });
+    }
+  });
+
+  // ── 3. Sort deduplicated rows ──────────────────────────────────────────────
+  const rows = [...perfMap.values()].sort((a, b) => {
+    const ay = a.track.year, by = b.track.year;
+    if (ay !== by) {
+      if (ay == null) return 1;
+      if (by == null) return -1;
+      return ay - by;
+    }
+    const ab = a.born, bb = b.born;
+    if (ab !== bb) {
+      if (ab == null) return 1;
+      if (bb == null) return -1;
+      return ab - bb;
+    }
+    return a.artistLabel.localeCompare(b.artistLabel);
+  });
+
+  // ── 4. Assign ordinal version labels for nodeId::composition_id groups ─────
+  // When the same musician has multiple recordings of the same composition,
+  // each entry gets a version label. If `track.version` is set, use it verbatim.
+  // Otherwise assign a 1-based ordinal: v1, v2, v3, … in trail order.
+  const compVersionCount = new Map(); // "nodeId::composition_id" → count
+  rows.forEach(row => {
+    const cid = row.track.composition_id;
+    if (!cid || !row.nodeId) return;
+    const key = `${row.nodeId}::${cid}`;
+    compVersionCount.set(key, (compVersionCount.get(key) || 0) + 1);
+  });
+  const multiVersionKeys = new Set(
+    [...compVersionCount.entries()].filter(([, n]) => n > 1).map(([k]) => k)
+  );
+
+  // Assign ordinal counters per group (in sorted trail order)
+  const compVersionOrdinal = new Map(); // "nodeId::composition_id" → next ordinal
+  rows.forEach(row => {
+    const cid = row.track.composition_id;
+    if (!cid || !row.nodeId) return;
+    const key = `${row.nodeId}::${cid}`;
+    if (!multiVersionKeys.has(key)) return;
+    const n = (compVersionOrdinal.get(key) || 0) + 1;
+    compVersionOrdinal.set(key, n);
+    // Attach resolved version label directly onto the track object for this row
+    row.track._versionLabel = row.track.version || `v${n}`;
+  });
+
+  return { rows, multiVersionKeys };
+}
+
+// ADR-193: build the bani-flow recordings tree for a subject (comp | perf | yt)
+// as a detached <ul class="trail-list"> — the exact rows the Bani-flow panel
+// would render, reused verbatim in the raga wheel's recordings leaf.
+function buildRecordingsTrail(type, id) {
+  let matchedNodeIds = [];
+  if (type === 'comp' && typeof compositionToNodes !== 'undefined') {
+    matchedNodeIds = compositionToNodes[id] || [];
+  } else if (type === 'yt') {
+    const ytVid = (id || '').split('::')[0];
+    const set = new Set();
+    elements.forEach(function(e) {
+      if (e.data.source) return;
+      (e.data.tracks || []).forEach(function(t) { if (t.vid === ytVid) set.add(e.data.id); });
+    });
+    matchedNodeIds = [...set];
+  }
+  const res = _collectTrailRows(type, id, matchedNodeIds);
+  const ul = document.createElement('ul');
+  ul.className = 'trail-list';
+  ul.dataset.count = String(res.rows.length);
+  if (type === 'comp') buildTreeComp(res.rows, ul, res.multiVersionKeys);
+  else res.rows.forEach(function(row) { ul.appendChild(buildTrailItem(row, type, id, res.multiVersionKeys)); });
+  return res.rows.length ? ul : null;
+}
+window.buildRecordingsTrail = buildRecordingsTrail;
+
 function buildListeningTrail(type, id, matchedNodeIds) {
   // ADR-086: subject loaded → dismiss empty-panel tutorial
   if (typeof window.hidePanelTutorial === 'function') window.hidePanelTutorial('bani');
@@ -518,219 +764,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {
   // ADR-081: render lecdem strip above the trail (raga/comp subjects only)
   _renderBaniFlowLecdemStrip(type, id);
 
-  // ── 1. Collect raw rows ────────────────────────────────────────────────────
-
-  // Legacy youtube[] entries from matched musician nodes.
-  // Skipped for 'perf' type (structured recordings only).
-  // For 'yt' type: id = "vid::ragaId" — match only the specific vid.
-  const rawRows = [];
-  if (type !== 'perf') {
-    const ytVidFilter = type === 'yt' ? id.split('::')[0] : null;
-    matchedNodeIds.forEach(nid => {
-      const n = cy.getElementById(nid);
-      // ADR-138: transit/isolated nodes are culled from _cyElements; cy.getElementById()
-      // returns an empty Collection (truthy!) for them — fall back to raw elements array
-      // so musicians with no lineage edges still appear in raga/comp panels.
-      let d;
-      if (n && n.length) {
-        d = n.data();
-      } else {
-        const rawEl = elements.find(function(e) { return !e.data.source && e.data.id === nid; });
-        if (!rawEl) return;
-        d = rawEl.data;
-      }
-      if (!d || !d.tracks) return;
-      d.tracks.forEach(t => {
-        let matches;
-        if (type === 'comp') {
-          matches = t.composition_id === id;
-        } else if (type === 'yt') {
-          // Match only the specific YouTube video id
-          matches = t.vid === ytVidFilter;
-        } else {
-          // 'raga': match by raga_id directly or via composition
-          matches = t.raga_id === id || (t.composition_id && (() => {
-            const c = compositions.find(x => x.id === t.composition_id);
-            return c && c.raga_id === id;
-          })());
-        }
-        if (matches) {
-          const vid = t.vid || '';
-          const offset = t.offset_seconds || 0;
-          // ADR-070: when this track is cross-linked from a host (i.e. the
-          // current node is an accompanist on someone else's recording), use
-          // the host's identity for the primary row so the lead is never
-          // displaced. The accompanist still surfaces via co-performer chips
-          // built from allPerformers below.
-          let primaryNid = nid;
-          let primaryD   = d;
-          if (t.host_id && t.host_id !== nid) {
-            const hostNode = cy.getElementById(t.host_id);
-            if (hostNode && hostNode.length) {
-              primaryNid = t.host_id;
-              primaryD   = hostNode.data();
-            } else {
-              // Host is also a transit node — fall back to raw elements
-              const rawHost = elements.find(function(e) { return !e.data.source && e.data.id === t.host_id; });
-              if (rawHost) { primaryNid = t.host_id; primaryD = rawHost.data; }
-            }
-          }
-          rawRows.push({
-            nodeId: primaryNid, artistLabel: primaryD.label, born: primaryD.born,
-            lifespan: primaryD.lifespan, color: primaryD.color, shape: primaryD.shape,
-            track: t, isStructured: false,
-            perfKey: `${vid}::${offset}`,
-            // ADR-070: legacy youtube entries may carry performers[] for
-            // accompanists; use it for co-performer chips just like
-            // structured-recording rows.
-            allPerformers: (t.performers && t.performers.length) ? t.performers : null,
-          });
-        }
-      });
-    });
-  }
-
-  // Structured recordings.
-  // 'perf': use perfToPerf[id] — exactly the one PerformanceRef for this track.
-  // 'yt':   no structured perfs — youtube-only entries have no session data.
-  const structuredPerfs = type === 'comp'
-    ? (compositionToPerf[id] || [])
-    : type === 'perf'
-      ? (perfToPerf[id] || [])
-      : type === 'yt'
-        ? []
-        : (ragaToPerf[id] || []);
-
-  structuredPerfs.forEach(p => {
-    const primaryPerformer = p.performers.find(pf => pf.role === 'vocal') || p.performers[0];
-    let artistLabel, nodeId, born, pNode;
-    if (primaryPerformer && primaryPerformer.musician_id) {
-      pNode = resolveNode(primaryPerformer.musician_id);
-      artistLabel = (pNode ? pNode.data('label') : null) || primaryPerformer.unmatched_name || p.title;
-      nodeId = primaryPerformer.musician_id;
-      born   = pNode ? pNode.data('born') : null;
-    } else {
-      pNode = null;
-      artistLabel = (primaryPerformer && primaryPerformer.unmatched_name) || p.title;
-      nodeId = null;
-      born   = null;
-    }
-    rawRows.push({
-      nodeId,
-      artistLabel,
-      born,
-      lifespan: pNode ? pNode.data('lifespan') : null,
-      color:    pNode ? pNode.data('color')    : null,
-      shape:    pNode ? pNode.data('shape')    : null,
-      track: {
-        vid:            p.video_id,
-        label:          p.display_title,
-        year:           p.date ? parseInt(p.date) : null,
-        offset_seconds: p.offset_seconds,
-        composition_id: p.composition_id,
-        recording_id:   p.recording_id,
-        short_title:    p.short_title,
-        concert_title:  p.title,
-        timestamp:      p.timestamp || '00:00',
-        raga_id:        p.raga_id || null,
-        tala:           p.tala || null,
-        version:        p.version || null,
-      },
-      isStructured: true,
-      perfKey: `${p.recording_id}::${p.session_index}::${p.performance_index}`,
-      allPerformers: p.performers,
-    });
-  });
-
-  // ── 2. Deduplicate by perfKey ──────────────────────────────────────────────
-  const perfMap = new Map(); // perfKey → merged row
-
-  rawRows.forEach(row => {
-    if (!perfMap.has(row.perfKey)) {
-      perfMap.set(row.perfKey, { ...row, coPerformers: [] });
-    } else {
-      const existing = perfMap.get(row.perfKey);
-      const alreadyPresent = existing.nodeId === row.nodeId ||
-        existing.coPerformers.some(cp => cp.nodeId === row.nodeId);
-      if (!alreadyPresent) {
-        existing.coPerformers.push({
-          nodeId:      row.nodeId,
-          artistLabel: row.artistLabel,
-          color:       row.color,
-          shape:       row.shape,
-        });
-      }
-    }
-  });
-
-  // Placeholder labels that should never appear in the UI
-  const UNKNOWN_LABELS = new Set(['Unknown', 'Unidentified artiste', '?']);
-
-  // For structured recordings: populate coPerformers from performers[] directly
-  // (more reliable than relying on node-iteration order).
-  // ADR-070: legacy youtube entries with a performers[] array also opt in.
-  perfMap.forEach(row => {
-    if (row.allPerformers) {
-      row.coPerformers = [];
-      row.allPerformers.forEach(pf => {
-        if (pf.musician_id === row.nodeId) return; // skip primary
-        const coNode = resolveNode(pf.musician_id);
-        const coLabel = coNode ? coNode.data('label') : (pf.unmatched_name || null);
-        if (!coLabel || UNKNOWN_LABELS.has(coLabel)) return; // skip unknown/placeholder names
-        row.coPerformers.push({
-          nodeId:      pf.musician_id || null,
-          artistLabel: coLabel,
-          color:       coNode ? coNode.data('color') : null,
-          shape:       coNode ? coNode.data('shape') : null,
-        });
-      });
-    }
-  });
-
-  // ── 3. Sort deduplicated rows ──────────────────────────────────────────────
-  const rows = [...perfMap.values()].sort((a, b) => {
-    const ay = a.track.year, by = b.track.year;
-    if (ay !== by) {
-      if (ay == null) return 1;
-      if (by == null) return -1;
-      return ay - by;
-    }
-    const ab = a.born, bb = b.born;
-    if (ab !== bb) {
-      if (ab == null) return 1;
-      if (bb == null) return -1;
-      return ab - bb;
-    }
-    return a.artistLabel.localeCompare(b.artistLabel);
-  });
-
-  // ── 4. Assign ordinal version labels for nodeId::composition_id groups ─────
-  // When the same musician has multiple recordings of the same composition,
-  // each entry gets a version label. If `track.version` is set, use it verbatim.
-  // Otherwise assign a 1-based ordinal: v1, v2, v3, … in trail order.
-  const compVersionCount = new Map(); // "nodeId::composition_id" → count
-  rows.forEach(row => {
-    const cid = row.track.composition_id;
-    if (!cid || !row.nodeId) return;
-    const key = `${row.nodeId}::${cid}`;
-    compVersionCount.set(key, (compVersionCount.get(key) || 0) + 1);
-  });
-  const multiVersionKeys = new Set(
-    [...compVersionCount.entries()].filter(([, n]) => n > 1).map(([k]) => k)
-  );
-
-  // Assign ordinal counters per group (in sorted trail order)
-  const compVersionOrdinal = new Map(); // "nodeId::composition_id" → next ordinal
-  rows.forEach(row => {
-    const cid = row.track.composition_id;
-    if (!cid || !row.nodeId) return;
-    const key = `${row.nodeId}::${cid}`;
-    if (!multiVersionKeys.has(key)) return;
-    const n = (compVersionOrdinal.get(key) || 0) + 1;
-    compVersionOrdinal.set(key, n);
-    // Attach resolved version label directly onto the track object for this row
-    row.track._versionLabel = row.track.version || `v${n}`;
-  });
+  const { rows, multiVersionKeys } = _collectTrailRows(type, id, matchedNodeIds);
 
   // ── 5. Render trail — tree for raga/comp, flat list for perf/yt ──────────
   // ADR-167: supersedes ADR-157's eager _qItems block and bottom play-all button.

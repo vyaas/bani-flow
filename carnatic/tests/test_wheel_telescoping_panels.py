@@ -84,17 +84,33 @@ def test_composition_rows_pair_composer_and_open_recordings():
     src = _wheel_src()
     rows = _fn(src, "_wdpRenderCompRows")
     assert "buildComposerChip" in rows, "composition row must carry its composer chip"
-    assert "wdp-comp-row" in rows and "wdp-pair-title" in rows, (
-        "composition+composer must render as a side-by-side pair row"
+    assert "wdp-comp-row" in rows and "comp-chip" in rows, (
+        "composition+composer must render as a side-by-side pair row of real chips"
     )
     assert "_wdpToggleCompItem" in rows, "clicking a pair row must open its recordings leaf"
 
     toggle = _fn(src, "_wdpToggleCompItem")
     assert "_openRecPanel" in toggle
     leaf = _fn(src, "_openRecPanel")
-    assert "_wdpRecordingsFor" in leaf, "leaf must resolve the composition's recordings"
+    assert "buildRecordingsTrail" in leaf, (
+        "leaf must re-represent the bani-flow recordings trail, not reimplement rows"
+    )
     assert "wheel-rec-panel" in leaf
     assert "matchMedia('(max-width: 768px)')" in leaf, "recordings leaf is desktop-only"
+    assert "Open in Bani Flow" not in leaf, "the leaf must not advertise a separate Bani-flow escape hatch"
+
+
+def test_recordings_leaf_reuses_the_bani_flow_trail():
+    bani = (TEMPLATES / "bani_flow.js").read_text(encoding="utf-8")
+    assert "function _collectTrailRows(" in bani, "the row pipeline must be extracted from buildListeningTrail"
+    assert "function buildRecordingsTrail(" in bani, "bani-flow must expose a detached recordings tree"
+    assert "window.buildRecordingsTrail" in bani
+    assert "_collectTrailRows(type, id, matchedNodeIds)" in bani, (
+        "buildListeningTrail must keep using the shared pipeline"
+    )
+    assert "ul.className = 'trail-list'" in bani, (
+        "the leaf tree must adopt the shared .trail-list styling"
+    )
 
 
 def test_recordings_leaf_pins_beside_the_composition_card():

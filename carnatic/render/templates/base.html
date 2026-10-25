@@ -1472,76 +1472,34 @@
   .wdp-chip-count { margin-left: auto; font-size: 0.66rem; opacity: 0.65; flex-shrink: 0; padding-left: 4px; }
 
   /* ── ADR-193: composition ⇄ composer pair rows ───────────────────────────────
-     Each composition is a branch point: the title on the left, its composer chip
-     on the right, side by side. Clicking the title half opens the recordings
-     leaf; the composer chip keeps its own navigation. */
+     The composition chip and its composer chip sit side by side in their own
+     colour schemes. The pair is one clickable entity that explodes the
+     recordings leaf; the composer chip keeps its own navigation. */
   .wdp-comp-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 5px 8px; border-radius: 6px;
-    border: 1px solid var(--chip-comp-border);
-    background: var(--chip-comp-bg);
+    display: flex; align-items: center; gap: 5px;
+    padding: 3px 4px; border-radius: 5px;
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: filter 0.12s, border-color 0.12s;
+    transition: background 0.12s, border-color 0.12s;
   }
-  .wdp-comp-row:hover { filter: brightness(1.12); }
+  .wdp-comp-row:hover { background: var(--bg-input); border-color: var(--border-strong); }
   .wdp-comp-row.wdp-active {
-    background: var(--chip-comp-border);
-    border-color: var(--accent-select, #ffb347);
-    box-shadow: inset 3px 0 0 var(--accent-select, #ffb347);
+    background: var(--chip-comp-bg);
+    border-color: var(--chip-comp-border);
   }
-  .wdp-comp-row.wdp-active .wdp-pair-title { color: var(--bg-deep); }
-  .wdp-pair-title {
-    flex: 1; min-width: 0;
-    font-size: 0.76rem; line-height: 1.3; font-weight: 600;
-    color: var(--chip-comp-border);
-    overflow-wrap: anywhere;
-  }
-  .wdp-pair-title::before { content: '\266a '; opacity: 0.8; font-weight: normal; }
-  /* The composer is a relation, not the subject — quieter, hairline-separated. */
+  /* Both chips share the bani-flow shrink/ellipsize contract (ADR-180). */
+  .wdp-comp-row > .comp-chip,
   .wdp-comp-row > .composer-chip {
-    flex-shrink: 0; max-width: 45%;
-    font-size: 0.62rem; padding: 1px 5px;
-    opacity: 0.9;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;
-  }
-  .wdp-comp-row.wdp-active > .composer-chip { filter: brightness(1.25); }
-
-  /* ── ADR-193: recordings leaf rows ──────────────────────────────────────────── */
-  .wdp-rec-row {
-    display: flex; align-items: center; gap: 7px;
-    padding: 5px 6px; border-radius: 6px;
-    border: 1px solid var(--border-strong);
-    background: var(--bg-input);
-    cursor: pointer;
-    transition: border-color 0.12s, background 0.12s;
-  }
-  .wdp-rec-row:hover { border-color: var(--chip-raga-border); background: var(--chip-raga-bg); }
-  .wdp-rec-play {
-    flex-shrink: 0; width: 20px; height: 20px; padding: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-    border-radius: 50%; border: 1px solid var(--chip-raga-border);
-    background: transparent; color: var(--chip-raga-border);
-    font-size: 0.6rem; line-height: 1; cursor: pointer;
-  }
-  .wdp-rec-play:hover { background: var(--chip-raga-border); color: var(--bg-deep); }
-  .wdp-rec-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-  .wdp-rec-title {
-    font-size: 0.75rem; color: var(--fg); line-height: 1.3;
-    overflow-wrap: anywhere;
-  }
-  .wdp-rec-meta {
-    font-size: 0.66rem; color: var(--fg-sub); line-height: 1.3;
+    flex: 0 1 auto; min-width: 0;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .wdp-rec-meta:empty { display: none; }
-  /* Footer escape hatch to the richer Bani-flow catalogue. */
-  .wdp-leaf-link {
-    margin-top: 4px; padding-top: 6px;
-    border-top: 1px solid var(--border-strong);
-    font-size: 0.68rem; color: var(--accent-link); cursor: pointer;
-    text-align: center; user-select: none;
+  .wdp-comp-row > .comp-chip { flex-grow: 1; }
+  .wdp-comp-row > .composer-chip {
+    max-width: 48%;
+    font-size: 0.62rem; padding: 1px 5px;
+    opacity: 0.9;
   }
-  .wdp-leaf-link:hover { text-decoration: underline; }
+  .wdp-comp-row.wdp-active > .composer-chip { filter: brightness(1.25); }
 
   /* ADR-135: layout-controls-float — single row, all controls inline */
   #layout-controls-float {
@@ -1708,7 +1666,7 @@
   .bani-janyas-empty {
     padding: 2px 4px; font-size: 0.68rem; color: var(--fg-muted);
   }
-  #trail-list { list-style: none; }
+  .trail-list { list-style: none; }
   /* ADR-157: "Play all" queue button at the top of the trail */
   .trail-play-all {
     display: inline-flex; align-items: center; gap: 4px;
@@ -1718,7 +1676,7 @@
     border: none; border-radius: 12px; white-space: nowrap;
   }
   .trail-play-all:hover { background: var(--accent-sub, var(--accent)); }
-  #trail-list li {
+  .trail-list li {
     padding: 5px 0;
     font-size: 0.74rem; color: var(--fg-dim);
     display: flex; flex-direction: column; gap: 2px; line-height: 1.4;
@@ -1728,16 +1686,16 @@
     cursor: default;
     -webkit-tap-highlight-color: transparent;
   }
-  #trail-list li.playing { color: var(--accent-sub); }
+  .trail-list li.playing { color: var(--accent-sub); }
 
   /* ── ADR-061: tree-structured trail ──────────────────────────────── */
   /* .tree-group is a flat-separator group — mirrors #recordings-list style */
-  #trail-list li.tree-group {
+  .trail-list li.tree-group {
     padding: 0; border-bottom: none; gap: 0;
     list-style: none; margin: 4px 0;
   }
   /* Flat horizontal separator between composition groups */
-  #trail-list li.tree-group + li.tree-group {
+  .trail-list li.tree-group + li.tree-group {
     margin-top: 6px;
     padding-top: 4px;
     border-top: 1px solid var(--border);
@@ -1751,10 +1709,10 @@
   }
   /* trail-list: no horizontal padding on group headers — play buttons align
      to the right edge, matching #recordings-list .tree-group-header style. */
-  #trail-list .tree-group-header { padding: 5px 0 4px; }
+  .trail-list .tree-group-header { padding: 5px 0 4px; }
   /* In the trail-list comp-tree, multi-version chevron sits left of the artist chip
      (mirroring the single-version row-accordion-chevron phantom). */
-  #trail-list .tree-chevron { margin-left: 0; }
+  .trail-list .tree-chevron { margin-left: 0; }
   /* Chevron — circular icon button matching play/link size (ADR-065) */
   .tree-chevron {
     flex-shrink: 0;
@@ -1794,10 +1752,10 @@
   /* Children list — shown when group is open */
   .tree-children { list-style: none; padding: 0; margin: 0; display: none; }
   .tree-group-open > .tree-children { display: block; }
-  /* Leaf rows — inherits #trail-list li base styles but indented.
+  /* Leaf rows — inherits .trail-list li base styles but indented.
      ADR-072: padding-left uses 2× --hier-indent-step (level 2 — lead musician).
      border-left dashed rail mirrors .tree-rec-list .tree-leaf in musician panel. */
-  #trail-list li.tree-leaf {
+  .trail-list li.tree-leaf {
     padding: 4px 0 4px calc(var(--hier-indent-step) * 2);
     border-left: 1px dashed var(--border);
   }
@@ -2822,7 +2780,7 @@
   /* ── ADR-053: pressed-row state for the currently-playing track ──────── */
   li.rec-legacy.playing,
   li.concert-perf-item.playing,
-  #trail-list li.playing {
+  .trail-list li.playing {
     background: var(--bg-pressed);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45),
                 inset 0 0 0 1px var(--accent-sub);
@@ -2830,7 +2788,7 @@
   }
   li.rec-legacy.playing .rec-play-btn,
   li.concert-perf-item.playing .rec-play-btn,
-  #trail-list li.playing .rec-play-btn,
+  .trail-list li.playing .rec-play-btn,
   .rec-play-btn.playing {
     background: var(--accent);
     color: var(--bg-deep);
@@ -2838,7 +2796,7 @@
   }
   li.rec-legacy.playing .rec-play-btn::before,
   li.concert-perf-item.playing .rec-play-btn::before,
-  #trail-list li.playing .rec-play-btn::before,
+  .trail-list li.playing .rec-play-btn::before,
   .rec-play-btn.playing::before {
     content: '\25a0';
     font-size: 13px;
@@ -2847,7 +2805,7 @@
   /* ── ADR-052: extend tap-highlight suppression to all row containers ── */
   li.rec-legacy,
   li.concert-perf-item,
-  #trail-list li {
+  .trail-list li {
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -6166,7 +6124,7 @@
       <section id="bani-playlists" style="display:none"></section>
       <section id="bani-lecdem-strip" class="lecdem-strip" style="display:none"></section>
       <div id="listening-trail" style="display:none; padding: 0 14px;">
-        <ul id="trail-list"></ul>
+        <ul id="trail-list" class="trail-list"></ul>
       </div>
     </div>
   </div>
