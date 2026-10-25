@@ -127,6 +127,9 @@ CLAIMS: dict[str, list[str]] = {
         "function _toggleVideoVisibility",
         "function _copyMediaLink", "function _copyMediaPermalink", "function _openMediaOnYouTube",
         "function _syncNowPlayingOverlays",
+        # §5 — ADR-194 bottom placard + vertical operator rail
+        "function _buildPlayerOps", "function _syncPlayerOverlayInset",
+        "function _pollPlayerOverlayInset", "mp-player-ops",
         "function _pbCurrentTarget",
         "function _setPlayerVolume", "function _syncVolumeControls",
         "window._initPlaylistBar",

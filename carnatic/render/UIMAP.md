@@ -481,11 +481,22 @@ a label item never balloons the row/bar height.
 `_refreshQueuePanels`) paints `_buildQueueRowChips(item, activeChapter)` into
 every mounted player's `.mp-now-playing`, so the video itself always names the
 sounding track — even with the editor folded. It is refreshed on queue advance
-and ADR-176 `activeChapter` changes. **ADR-186:** on desktop the strip is a
-child of `.mp-player-controls`, so the chips share the video's own control row —
-`[minimize] · chips · [close]` — instead of a second line below it (the base
-absolute `.mp-now-playing` rule still serves the mobile overlay inside
-`.mp-video-wrap`).
+and ADR-176 `activeChapter` changes.
+
+**ADR-194: the placard + operator rail (supersedes ADR-186's top-row strip).**
+`.mp-now-playing` and `.mp-player-ops` are now children of `.mp-video-wrap`
+(siblings of `.plyr`, so the Fullscreen API still hides them) and anchor to the
+frame's **bottom edge, just above Plyr's control row**. The placard is a large,
+clickable chip strip on a semitransparent, theme-derived scrim (`--bg-deep`
+mixed toward transparent) so chip text stays legible over any frame; its bottom
+offset is the measured control-bar height (`--mp-controls-h`, published by
+`_syncPlayerOverlayInset`). The operator rail stacks the sounding row's
+external-play · copy-YouTube-link · copy-permalink buttons vertically at the
+bottom-right edge (`_buildPlayerOps`, rebuilt per advance so every button acts
+on the current item). On a fine pointer both surfaces are hover-revealed
+(YouTube-style) and also shown on `:focus-within`; touch/coarse pointers keep
+them visible. The window's own minimize/close stay in `.mp-player-controls` at
+the top corners (ADR-183: always reachable).
 
 **ADR-186: the film-strip video toggle.** Minimizing a content player hides the
 whole docked window (`display:none`); the Playlist Bar's `#pb-video-toggle` and
@@ -520,7 +531,10 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   (`_normalize`) or `currentKey` silently breaks.
 - Queue UI: `buildQueuePanel()` / `_renderQueuePanel(panel)` /
   `_refreshQueuePanels()` (two-way binding — call after every mutation) /
-  `_syncNowPlayingOverlays()` (ADR-184: paints `.mp-now-playing`).
+  `_syncNowPlayingOverlays()` (ADR-184: paints `.mp-now-playing`) /
+  `_buildPlayerOps(item)` (ADR-194: fills `.mp-player-ops`) /
+  `_syncPlayerOverlayInset(el)` / `_pollPlayerOverlayInset(el)` (ADR-194:
+  publish `--mp-controls-h`, polling past Plyr's async control-bar build).
 - **ADR-175 Playlist Bar:** `_initPlaylistBar()` (mounts the bar + editor, wires
   transport), `_renderPlaylistBar()` (mirrors MediaQueue into `#playlist-bar`),
   `_pbPlayPauseCurrent()` / `_pbStopCurrent()` / `_pbExpandPlayer()` (control
@@ -594,7 +608,8 @@ column), 180 (ribbon rows, chevrons retired), 181 (transport buttons + left-alig
 height cap), 184 (grand track search, thin editor bar, now-playing overlay),
 185 (ephemeral Playlist Bar — hidden when empty, second band reclaimed),
 189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
-shell across grand + both panels).
+shell across grand + both panels), 194 (bottom placard + vertical operator rail
+on the video surface).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).

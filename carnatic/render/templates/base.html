@@ -1166,14 +1166,38 @@
     pointer-events: auto;
   }
   .mp-player-controls button:hover { color: var(--accent); border-color: var(--accent); }
-  /* ADR-186: on desktop the now-playing chips share the video's own control
-     row — [minimize] [chips] [close] — instead of a second strip below it.
-     The base .mp-now-playing absolute rule still serves the mobile overlay
-     inside .mp-video-wrap. */
-  .mp-player-controls .mp-now-playing {
-    position: static; flex: 1 1 auto; min-width: 0; margin: 0 6px;
-    padding: 0; background: none; align-self: center;
+  /* ADR-194: the operator rail — the sounding row's external-play / copy /
+     permalink actions, stacked vertically at the player's bottom-right edge,
+     just above Plyr's control row. Hidden until the player is hovered (or a
+     child is focused), like the placard. */
+  .mp-player-ops {
+    position: absolute; right: 8px;
+    bottom: var(--mp-controls-h, 56px);
+    display: none; flex-direction: column; gap: 4px;
+    z-index: 5; pointer-events: none;
   }
+  .mp-player-ops > * { pointer-events: auto; }
+  .mp-player-op {
+    width: calc(var(--row-act-size) * 1.5);
+    height: calc(var(--row-act-size) * 1.5);
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0; line-height: 1;
+    font-size: calc(var(--chip-size-primary) * 1.2);
+    color: var(--fg);
+    background: color-mix(in srgb, var(--bg-deep) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--fg) 24%, transparent);
+    border-radius: 8px; cursor: pointer;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    transition: color 0.12s, border-color 0.12s, background 0.12s;
+  }
+  .mp-player-op:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, var(--bg-deep));
+  }
+  /* ADR-194: on desktop the placard and rail share the video's bottom edge;
+     reserve the rail's column on the right so chips never run under it. */
+  .media-player.bare:not(.full-mobile) .mp-now-playing { right: 56px; }
 
   /* ADR-139: clipboard copy button in media player title bar */
   .mp-copy-btn {
@@ -2927,20 +2951,75 @@
     max-width: none; align-self: center;
     margin-top: 0; line-height: inherit;
   }
-  /* ADR-184: the now-playing overlay — a thin chip strip pinned to the video
-     frame (below the player's own minimize/close row). It is a sibling of
-     .plyr inside .mp-video-wrap, so the Fullscreen API hides it automatically
-     when the video is maximized. Read-only: only the chips take pointer events. */
+  /* ADR-184 / ADR-194: the now-playing placard — a large chip strip pinned to
+     the video frame's bottom edge, just above Plyr's control row. It is a
+     sibling of .plyr inside .mp-video-wrap, so the Fullscreen API hides it
+     automatically when the video is maximized. Read-only: only the chips take
+     pointer events (and only while the placard is revealed). */
   .mp-now-playing {
-    position: absolute; left: 0; right: 0; top: 34px;
-    display: none; align-items: center; gap: 4px;
-    padding: 3px 8px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.72), rgba(0,0,0,0));
+    position: absolute; left: 0; right: 0;
+    /* ADR-194: the placard sits just above Plyr's control row. The offset is
+       the measured control-bar height (--mp-controls-h, published by
+       _syncPlayerOverlayInset) with a static fallback for first paint. */
+    bottom: var(--mp-controls-h, 56px);
+    display: none; align-items: center; gap: 6px;
+    padding: calc(var(--chip-size-primary) * 0.6) calc(var(--chip-size-primary) * 1.2);
+    /* ADR-194: a semitransparent, theme-derived scrim keeps the chip text
+       legible over any frame the video happens to show. */
+    background: color-mix(in srgb, var(--bg-deep) 76%, transparent);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border-top: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
     overflow-x: auto; white-space: nowrap; scrollbar-width: none;
     pointer-events: none; z-index: 4;
   }
   .mp-now-playing::-webkit-scrollbar { display: none; }
   .mp-now-playing > * { flex-shrink: 0; pointer-events: auto; }
+  /* ADR-194: large, clickable chips — a recital-programme placard rather than a
+     thin strip. Scoped so the shared chip atoms keep their panel size. */
+  .mp-now-playing .musician-chip,
+  .mp-now-playing .raga-chip,
+  .mp-now-playing .comp-chip,
+  .mp-now-playing .composer-chip,
+  .mp-now-playing .yt-label-chip {
+    font-size: calc(var(--chip-size-primary) * 1.24);
+    padding: calc(var(--chip-size-primary) * 0.55) calc(var(--chip-size-primary) * 1.1);
+    border-radius: 6px;
+  }
+  .mp-now-playing .yt-label-chip {
+    display: inline-flex; align-items: center; margin-top: 0;
+    background: color-mix(in srgb, var(--fg) 12%, transparent);
+    color: var(--fg);
+    border-color: color-mix(in srgb, var(--fg) 32%, transparent);
+  }
+  /* ADR-194: the placard and operator rail surface on hover (or keyboard focus)
+     over a fine pointer, YouTube-style. Touch and coarse pointers keep them
+     visible so a tap never has to guess where the controls are. */
+  @media (hover: hover) and (pointer: fine) {
+    .media-player.bare:not(.full-mobile) .mp-now-playing,
+    .media-player.bare:not(.full-mobile) .mp-player-ops {
+      opacity: 0;
+      transition: opacity 0.16s ease;
+    }
+    .media-player.bare:not(.full-mobile) .mp-now-playing > *,
+    .media-player.bare:not(.full-mobile) .mp-player-ops > * {
+      pointer-events: none;
+    }
+    .media-player.bare:not(.full-mobile):hover .mp-now-playing,
+    .media-player.bare:not(.full-mobile):hover .mp-player-ops,
+    .media-player.bare:not(.full-mobile):focus-within .mp-now-playing,
+    .media-player.bare:not(.full-mobile):focus-within .mp-player-ops {
+      opacity: 1;
+    }
+    .media-player.bare:not(.full-mobile):hover .mp-now-playing > *,
+    .media-player.bare:not(.full-mobile):hover .mp-player-ops > *,
+    .media-player.bare:not(.full-mobile):focus-within .mp-now-playing > *,
+    .media-player.bare:not(.full-mobile):focus-within .mp-player-ops > * {
+      pointer-events: auto;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mp-now-playing, .mp-player-ops { transition: none; }
+  }
   .mp-queue-play {
     background: none; border: none; border-radius: 6px;
     color: var(--fg-sub); font-size: 0.74rem; cursor: pointer; padding: 0; line-height: 1;

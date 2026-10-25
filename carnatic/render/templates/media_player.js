@@ -834,6 +834,33 @@ function _syncPlayerControls(el) {
   overlay.style.display = 'flex';
 }
 
+// ADR-194: the now-playing placard floats just above Plyr's control row.
+// Measure the real control-bar height and publish it as --mp-controls-h on the
+// player so the offset survives Plyr's responsive padding changes. Called after
+// mount and from every reflow path; a zero measurement (minimized/hidden) is
+// ignored so the last good value sticks.
+function _syncPlayerOverlayInset(el) {
+  if (!el) return;
+  const controls = el.querySelector('.plyr .plyr__controls');
+  if (!controls) { el.style.removeProperty('--mp-controls-h'); return; }
+  const h = Math.round(controls.getBoundingClientRect().height);
+  if (h > 0) el.style.setProperty('--mp-controls-h', h + 'px');
+}
+
+// ADR-194: Plyr builds its control bar asynchronously (embeds wait on the
+// provider API), so poll a few frames until the measured height lands, then
+// stop. Reflow paths (_dockPlayer / _repositionPlayers) keep it current later.
+function _pollPlayerOverlayInset(el) {
+  let tries = 0;
+  const tick = () => {
+    _syncPlayerOverlayInset(el);
+    if (!el.style.getPropertyValue('--mp-controls-h') && ++tries < 60) {
+      requestAnimationFrame(tick);
+    }
+  };
+  requestAnimationFrame(tick);
+}
+
 // ADR-175: magnetically dock a player under the Playlist UI (bar + open editor).
 // ADR-176: the dock target is the free column between the sidebars, and the
 // final position clears every obstacle (sidebars + playlist UI). left/top are
@@ -858,6 +885,7 @@ function _dockPlayer(el) {
   el.style.top  = (pos.top  - pr.top)  + 'px';
   el._detached = false;
   _syncPlayerControls(el);
+  _syncPlayerOverlayInset(el);
 }
 
 // Drag release: if the player is dropped onto any app-level surface — or just
@@ -912,6 +940,7 @@ function _repositionPlayers() {
     el.style.left = (pos.left - pr.left) + 'px';
     el.style.top  = (pos.top  - pr.top)  + 'px';
     _syncPlayerControls(el);
+    _syncPlayerOverlayInset(el);
   };
   playerRegistry.forEach(inst => {
     const el = inst && inst.el;
@@ -1536,6 +1565,11 @@ function mountPlayer(videoWrap, media, startSeconds, markerPoints) {
           wireTapGestures(catcher, wrap, player, seekStep);
           wrap.appendChild(catcher);
         }
+        // ADR-194: now that Plyr has built its control bar, publish its height
+        // so the now-playing placard clears it (covers slow/async embeds the
+        // bounded poll may have given up on).
+        const mpRoot = videoWrap.closest('.media-player');
+        if (mpRoot && typeof _syncPlayerOverlayInset === 'function') _syncPlayerOverlayInset(mpRoot);
       } catch (e) {}
     });
 
@@ -1726,13 +1760,17 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   // IFrame API needs the target element attached to initialise.
   document.getElementById('main').appendChild(el);
   const controller = mountPlayer(videoWrap, media, startSeconds, markerPointsFromTracks(tracks));
-  // ADR-184 / ADR-186: now-playing chip strip. Built here but appended into the
-  // player's own control row below (between minimize and close), so the track
-  // chips and the window controls share one line. It is no longer a descendant
-  // of .mp-video-wrap, but still outside the Fullscreen element (.plyr), so the
-  // Fullscreen API continues to hide it automatically.
+  // ADR-194: the now-playing placard. Appended into .mp-video-wrap below (as a
+  // sibling of .plyr) so the Fullscreen API hides it and it anchors to the
+  // frame's bottom edge, just above Plyr's own control row.
   const nowPlaying = document.createElement('div');
   nowPlaying.className = 'mp-now-playing';
+
+  // ADR-194: the operator rail — the sounding row's external-play / copy /
+  // permalink actions, stacked vertically at the player's bottom-right edge.
+  // Filled by _syncNowPlayingOverlays so each button acts on the current item.
+  const ops = document.createElement('div');
+  ops.className = 'mp-player-ops';
 
   const fullMeta = Object.assign({ artistName: artistName || null }, meta || {});
 
@@ -1755,10 +1793,14 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   closeBtn.addEventListener('mousedown', e => e.stopPropagation());
   closeBtn.addEventListener('click', e => { e.stopPropagation(); _pbStopCurrent(); });
   controls.appendChild(minBtn);
-  controls.appendChild(nowPlaying);
   controls.appendChild(closeBtn);
   el.appendChild(controls);
+  videoWrap.appendChild(nowPlaying);
+  videoWrap.appendChild(ops);
   _syncPlayerControls(el);
+  // ADR-194: the control bar has no height until Plyr builds it; poll until the
+  // placard's offset lands above the real controls.
+  _pollPlayerOverlayInset(el);
 
   const instance = {
     el,
@@ -2546,13 +2588,54 @@ function _syncNowPlayingOverlays() {
     const el = inst && inst.el;
     if (!el) return;
     const ov = el.querySelector('.mp-now-playing');
-    if (!ov) return;
+    const ops = el.querySelector('.mp-player-ops');
     const isCurrent = !!(item && MediaQueue.currentKey && inst.mediaKey === MediaQueue.currentKey);
-    ov.innerHTML = '';
-    if (!isCurrent) { ov.style.display = 'none'; return; }
-    ov.appendChild(_buildQueueRowChips(item, MediaQueue.activeChapter));
-    ov.style.display = 'flex';
+    if (ov) {
+      ov.innerHTML = '';
+      if (isCurrent) {
+        ov.appendChild(_buildQueueRowChips(item, MediaQueue.activeChapter));
+        ov.style.display = 'flex';
+      } else {
+        ov.style.display = 'none';
+      }
+    }
+    // ADR-194: the operator rail mirrors the current row's operator set, so the
+    // video surface itself can play externally / copy / permalink the item.
+    if (ops) {
+      ops.innerHTML = '';
+      if (isCurrent) {
+        ops.appendChild(_buildPlayerOps(item));
+        ops.style.display = 'flex';
+      } else {
+        ops.style.display = 'none';
+      }
+    }
   });
+}
+
+// ADR-194: the player's operator rail — the current row's external-play,
+// copy-YouTube-link and copy-permalink actions, stacked vertically at the
+// video's bottom-right edge. Rebuilt on every queue advance by
+// _syncNowPlayingOverlays, so each button always acts on the sounding item
+// (mirrors the row's own operator set, ADR-184).
+function _buildPlayerOps(item) {
+  const frag = document.createDocumentFragment();
+  if (!item || !item.media) return frag;
+  const mk = (cls, title, glyph, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mp-player-op ' + cls;
+    b.title = title;
+    b.setAttribute('aria-label', title);
+    b.textContent = glyph;
+    b.addEventListener('mousedown', e => e.stopPropagation());
+    b.addEventListener('click', e => { e.stopPropagation(); fn(); });
+    return b;
+  };
+  frag.appendChild(mk('mp-player-op-watch', 'Play externally',   '\u2197', () => _openMediaOnYouTube(item)));
+  frag.appendChild(mk('mp-player-op-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
+  frag.appendChild(mk('mp-player-op-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
+  return frag;
 }
 
 // Re-render every open queue panel and sync toggle state/visibility. Called by
@@ -5561,6 +5644,8 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   refreshPlayingIndicators();
   mp.el.style.display = '';
   _expandMobilePlayer();
+  // ADR-194: size the placard's bottom offset to this player's control row.
+  _pollPlayerOverlayInset(mp.el);
 }
 
 function _expandMobilePlayer() {
