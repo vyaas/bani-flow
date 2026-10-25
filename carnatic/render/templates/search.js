@@ -397,6 +397,20 @@ function normText(s) {
       _dismiss();
     }
   }, true);
+
+  // ADR-205: a result row's chips scroll sideways when the row is wider than the
+  // dropdown, but the horizontal scrollbar is an affordance, not chrome — the CSS
+  // keeps it transparent until the strip is hovered or thumbed. Scroll events do
+  // not bubble, so listen in the capture phase on the dropdown and clear the
+  // marker shortly after the gesture ends.
+  let _chipScrollTimer = null;
+  dropdown.addEventListener('scroll', e => {
+    const strip = e.target;
+    if (!strip || !strip.classList || !strip.classList.contains('track-result-chips')) return;
+    strip.classList.add('is-scrolling');
+    clearTimeout(_chipScrollTimer);
+    _chipScrollTimer = setTimeout(() => strip.classList.remove('is-scrolling'), 700);
+  }, true);
 })();
 
 // ── ADR-190: search-field clear affordance ───────────────────────────────────

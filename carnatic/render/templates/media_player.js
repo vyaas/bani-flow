@@ -3005,7 +3005,6 @@ function _renderPlaylistBar() {
   const has = MediaQueue.active && MediaQueue.items.length > 0;
   bar.classList.toggle('pb-empty', !has);
 
-  const summary = bar.querySelector('#pb-summary');
   const count = bar.querySelector('#pb-count');
   const prev = bar.querySelector('#pb-prev');
   const next = bar.querySelector('#pb-next');
@@ -3017,17 +3016,6 @@ function _renderPlaylistBar() {
   const videoBtn = bar.querySelector('#pb-video-toggle');
   const volume = bar.querySelector('#pb-volume');
 
-  if (summary) {
-    summary.innerHTML = '';
-    const item = has ? MediaQueue.items[MediaQueue.index] : null;
-    if (item) summary.appendChild(_buildQueueRowChips(item, MediaQueue.activeChapter));
-    else {
-      const hint = document.createElement('span');
-      hint.className = 'pb-empty-hint';
-      hint.textContent = 'Playlist empty';
-      summary.appendChild(hint);
-    }
-  }
   if (count) {
     count.textContent = has ? (MediaQueue.index + 1) + ' / ' + MediaQueue.items.length : '';
     // ADR-195: the count IS the editor control; its pressed state mirrors the
@@ -3076,7 +3064,7 @@ function _renderPlaylistBar() {
 }
 
 // ADR-204: on desktop the Playlist Bar itself is a video show/hide toggle. A
-// press on any non-control region (background, summary gap, transport gap)
+// press on any non-control region (background, transport gap)
 // toggles the docked video, so the bar becomes a large, always-reachable hit
 // target next to the film-strip button. Controls, chips and the volume slider
 // keep their own actions; mobile keeps its bottom-sheet expand/collapse pair.

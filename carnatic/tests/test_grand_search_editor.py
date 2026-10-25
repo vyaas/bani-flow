@@ -149,6 +149,33 @@ def test_search_rows_have_play_and_enqueue():
     assert "track-result-play" in src and "track-result-enqueue" in src
 
 
+def test_search_rows_are_compact_and_the_scrollbar_waits_for_inquiry():
+    """ADR-205: a result row is a compact single line — the play/enqueue pair
+    is excluded from the blanket mobile 44px touch floor (its hit area is
+    expanded off-layout) — and the strip's horizontal scrollbar is transparent
+    at rest, revealed on hover / while `.is-scrolling` (toggled by search.js)."""
+    css = _base()
+    row = re.search(r"\.track-result\s*\{([^}]*)\}", css, re.DOTALL).group(1)
+    assert "padding: 2px 8px" in row, "the row must be vertically tight"
+    assert ":not(.track-result-play):not(.track-result-enqueue)" in css, (
+        "the search icon buttons must not take the mobile 44px touch floor"
+    )
+    assert re.search(
+        r"\.track-result-play::after,\s*\.track-result-enqueue::after", css
+    ), "the icon buttons need an off-layout hit expansion"
+    strip = re.search(r"\.track-result-chips\s*\{([^}]*)\}", css, re.DOTALL).group(1)
+    assert "scrollbar-color: transparent transparent" in strip, (
+        "the strip scrollbar must be invisible at rest"
+    )
+    assert ".track-result-chips.is-scrolling" in css
+    src = _search()
+    assert "classList.add('is-scrolling')" in src
+    assert "classList.remove('is-scrolling')" in src
+    assert re.search(r"addEventListener\('scroll'[\s\S]*?\}, true\)", src), (
+        "the scroll marker must be toggled by a capture-phase listener"
+    )
+
+
 def test_grand_results_are_ephemeral():
     """The result list dismisses on commit and never strands itself over the
     surface it just revealed. Guards the dismiss contract:

@@ -459,6 +459,11 @@ not the `tm` inside `atma`); when the whole query is a prefix of one entity name
 the results narrow to that name (`_getIndex`, `_entryFromPerf`,
 `_entryFromTrack`). Each result row (`.track-result`) is the shared chip strip +
 **play** (`MediaQueue.playContent`) + **enqueue** (`MediaQueue.addItem`).
+**ADR-205:** a row is a compact single line — the play/enqueue pair is icon-
+sized (excluded from the mobile 44px touch floor, with an off-layout hit
+expansion) — and the strip's horizontal scrollbar stays invisible until the
+pointer is over it or it is being thumbed (`.is-scrolling`, set by
+`search.js`).
 `#track-search-dropdown` is scrollable and sits above players (bar `750`,
 search `751`, dropdown `10` inside it). ADR-190: the dropdown anchors to the
 `.search-field` shell (4px below it, same `--search-radius`).
@@ -484,11 +489,14 @@ rides the chrome line under the search bar (`top: var(--chrome-top)`) at
 "nothing occludes the bar" guarantee is desktop-only, and the bar stays above
 the mobile player (205) and the scrim (199))
 with `#pb-prev` / `#pb-play` / `#pb-next` / `#pb-stop` (`#pb-transport`),
-`#pb-summary` (thin horizontal scrollbar when the chips overflow), **`#pb-count`**
-(`x / y`, a `<button>` that toggles the Playlist Editor modal — the only editor
-control; the chevron `#pb-editor-toggle` is retired), and the current item's
-operators `#pb-copy` / `#pb-share` / `#pb-watch` / `#pb-video-toggle` /
-`#pb-volume`. The volume slider sets the current player's output level via
+**`#pb-count`** (`x / y`, a `<button>` that toggles the Playlist Editor modal —
+the only editor control; the chevron `#pb-editor-toggle` is retired), and the
+current item's operators `#pb-copy` / `#pb-share` / `#pb-watch` /
+`#pb-video-toggle` / `#pb-volume`. **ADR-205:** the ADR-175 chip summary
+(`#pb-summary`) is retired — the bar carries controls, not identity (the editor
+and the video placard own now-playing), so the strip centres on desktop and
+`space-between`s across the freed width on mobile. The volume slider sets the
+current player's output level via
 `_setPlayerVolume` and is persisted across queue items (`_volumeLevel`);
 `_syncVolumeControls` mirrors it between bar and editor row and disables it for
 volume-less (iframe) providers. The track's filled (left) portion is painted
@@ -496,12 +504,11 @@ accent via the `--vol-fill` custom property set by `_syncVolumeControls`.
 **Mobile:** the bar drops `#pb-volume` (no room at phone width; volume stays
 controllable in the video itself). **ADR-184:** the ADR-162 "Up Next" head
 (`.mp-queue-head`) is retired — the editor is the list alone. **Chip geometry:**
-the bar's `#pb-summary` scrolls its capsules on one line (ADR-179); the editor
-rows keep the same single-line scroll (`#hd-body .playlist-editor .mp-queue-chips`
+the editor rows keep the single-line scroll (`#hd-body .playlist-editor .mp-queue-chips`
 — ADR-196 supersedes ADR-195's chip-wrap clause). The bare-label fallback
-(`_buildQueueRowChips`'s `.yt-label-chip`) is overridden in both contexts to the
-same natural-width, centred chip contract, so a label item never balloons a
-row/bar height.
+(`_buildQueueRowChips`'s `.yt-label-chip`) is overridden in the queue-row and
+search-result contexts to the same natural-width, centred chip contract, so a
+label item never balloons a row/bar height.
 
 **ADR-196: a playlist row is capped at two lines.** `_renderQueuePanel` builds
 each row as exactly two non-wrapping flex groups — `.mp-queue-meta`
@@ -616,7 +623,8 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   **compulsory only when another item follows** (the last item runs on into the
   concert). While a last item runs past its own start, `_updateActiveSegment`
   publishes `MediaQueue.activeChapter`, which `_buildQueueRowChips(item,
-  activeChapter)` renders into both the editor row and `#pb-summary`.
+  activeChapter)` renders into each editor row (the bar's `#pb-summary` is
+  retired by ADR-205).
 - Row registration: `window.registerQueueItem(rowEl, getItem)` — how bani
   trail and recording rows become queueable; `collectQueueItems(rootEl)`.
 - Chrome: `buildPlayerBar(...)` (transport buttons — new buttons go here),
@@ -681,7 +689,9 @@ retired, `#pb-count` opens it; draggable rows), 196 (playlist rows capped at two
 lines — meta + actions groups, chips scroll, mobile current wraps), 198 (panel
 searches retired; nav/add move into the content-filter command row), 200
 (mobile chrome line — drawers and the Playlist Bar ride the search bar's bottom
-edge; a drawer covers the bar; the canvas still clears a live bar).
+edge; a drawer covers the bar; the canvas still clears a live bar), 205
+(Playlist Bar retires the chip summary; compact search rows + scrollbar on
+inquiry).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).

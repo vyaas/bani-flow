@@ -9,8 +9,8 @@ Pins three layout contracts that a previous revision got wrong:
 2. On desktop the bar is clamped to the canvas column whenever a sidebar is
    open, so the bar (and the docked player that inherits its width) never
    occlude the bani-flow or musician panel.
-3. `#pb-summary` scrolls horizontally with a thin scrollbar when its chips
-   overflow, and the chips keep their natural width (no squashing).
+3. The bar no longer carries a chip summary (ADR-205): the control strip
+   centres on desktop and spreads across the freed width on mobile.
 
 ADR-195 adds the modal-editor contract: #pb-count is the only editor control
 (the chevron is retired) and the editor rows are draggable. ADR-196 caps a row
@@ -74,15 +74,22 @@ def test_bar_is_clamped_to_open_sidebars_on_desktop():
     assert "--right-panel-width" in right.group(0)
 
 
-def test_summary_scrolls_with_thin_scrollbar_and_fixed_chips():
+def test_bar_retires_the_chip_summary_and_lays_out_the_controls():
+    """ADR-205: the bar is controls, not identity. The `#pb-summary` chip strip
+    is retired (the editor and video placard own now-playing), so the freed
+    band centres the strip on desktop and spreads it on mobile."""
     css = _base()
+    assert "#pb-summary" not in css, "the Playlist Bar chip summary must be retired"
+    assert "pb-empty-hint" not in css, "the empty hint went with the summary"
+    bar = _rule(css, "#playlist-bar")
+    assert "justify-content: center" in bar, "the desktop strip must centre"
     assert re.search(
-        r"#pb-summary\s*\{[^}]*overflow-x:\s*auto", css, re.DOTALL
-    ), "#pb-summary must scroll horizontally on overflow"
-    assert "scrollbar-width: thin" in _rule(css, "#pb-summary")
-    assert re.search(
-        r"#pb-summary\s*>\s*\*\s*\{[^}]*flex-shrink:\s*0", css, re.DOTALL
-    ), "chips must keep their natural width so the strip scrolls, not squashes"
+        r"#playlist-bar\s*\{[^}]*justify-content:\s*space-between", css, re.DOTALL
+    ), "the mobile strip must spread across the freed width"
+    mp = (
+        PROJECT_ROOT / "carnatic" / "render" / "templates" / "media_player.js"
+    ).read_text(encoding="utf-8")
+    assert "#pb-summary" not in mp, "_renderPlaylistBar must not build a summary"
 
 
 def test_playlist_rows_are_capped_at_two_lines():
@@ -152,17 +159,17 @@ def test_editor_is_a_modal_with_draggable_rows():
 
 
 def test_queue_label_chips_follow_the_same_chip_contract():
-    """A bare-label item must not balloon the row/bar: the fallback
-    .yt-label-chip is overridden in the queue row and Playlist Bar to the same
+    """A bare-label item must not balloon the row: the fallback
+    .yt-label-chip is overridden in the queue row and search result to the same
     single-line, natural-width, centred contract as every other chip."""
     css = _base()
     match = re.search(
         r"\.mp-queue-chips \.yt-label-chip,\s*"
-        r"(?:\.track-result-chips \.yt-label-chip,\s*)?"
-        r"#pb-summary \.yt-label-chip\s*\{(.*?)\}",
+        r"\.track-result-chips \.yt-label-chip\s*\{(.*?)\}",
         css, re.DOTALL,
     )
     assert match, "missing queue-context override for the fallback label chip"
+    assert "#pb-summary" not in css, "the bar summary is retired (ADR-205)"
     block = match.group(1)
     for decl in (
         "white-space: nowrap", "max-width: none",

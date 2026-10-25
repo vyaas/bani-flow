@@ -43,7 +43,7 @@ CLAIMS: dict[str, list[str]] = {
         # §5 media player — ADR-184 grand track search
         'id="search-bar"', 'id="track-search-input"', 'id="track-search-dropdown"',
         # §5 media player — ADR-175 persistent Playlist Bar + ADR-195 editor
-        'id="playlist-bar"', 'id="pb-summary"', 'id="pb-count"',
+        'id="playlist-bar"', 'id="pb-count"',
         'id="pb-prev"', 'id="pb-next"', 'id="pb-play"', 'id="pb-stop"',
         'id="pb-copy"', 'id="pb-share"', 'id="pb-watch"', 'id="pb-volume"',
         # §5 media player — ADR-186 film-strip video toggle

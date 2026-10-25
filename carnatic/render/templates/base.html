@@ -2936,10 +2936,10 @@
   }
   .mp-queue-reorder button:disabled { opacity: 0.25; cursor: default; }
   .mp-queue-reorder button:not(:disabled):hover { color: var(--accent); }
-  /* ADR-175 follow-up: the row is the bar's ancestor, so it mirrors the bar
-     exactly — a single-row strip whose chip capsules keep their natural width
-     and scroll horizontally (thin scrollbar) instead of wrapping to a second
-     line. Same geometry as #pb-summary. */
+  /* ADR-175 follow-up: a single-row strip whose chip capsules keep their
+     natural width and scroll horizontally (thin scrollbar) instead of wrapping
+     to a second line. ADR-205 retired the Playlist Bar summary this once
+     mirrored. */
   .mp-queue-chips {
     flex: 1; min-width: 0;
     display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
@@ -2956,8 +2956,7 @@
      Playlist Bar it obeys the same contract as raga/comp/musician chips:
      single line, natural width, vertically centred, no stray margin. */
   .mp-queue-chips .yt-label-chip,
-  .track-result-chips .yt-label-chip,
-  #pb-summary .yt-label-chip {
+  .track-result-chips .yt-label-chip {
     display: inline-flex; align-items: center;
     white-space: nowrap; word-break: normal;
     max-width: none; align-self: center;
@@ -3162,12 +3161,13 @@
   }
   /* "New playlist…" gets a subtle separator from the list */
   .mp-plus-menu-new { color: var(--accent); }
-  /* ── ADR-175 / ADR-195: persistent Playlist Bar (app-level chrome) ────────
-     The Current Playlist's always-on, PASSIVE face: transport + now-playing
-     summary + a clickable x / y count + the current item's operators. Stretches
-     gas-like between the view selector (left) and help button (right), and is
-     clamped to the canvas column so it never occludes an open sidebar. The
-     editor itself is a modal (#help-dialog), opened by #pb-count (ADR-195). */
+  /* ── ADR-175 / ADR-195 / ADR-205: persistent Playlist Bar (app chrome) ────
+     The Current Playlist's always-on, PASSIVE face: transport + a clickable
+     x / y count + the current item's operators (the chip summary is retired —
+     ADR-205; the editor and the video placard own now-playing). Centres in the
+     band on desktop, spreads on mobile, and is clamped to the canvas column so
+     it never occludes an open sidebar. The editor itself is a modal
+     (#help-dialog), opened by #pb-count (ADR-195). */
   /* ADR-184: the grand track search sits in the old top slot; the thin editor
      bar moves below it. Both stretch gas-like and are clamped to the canvas
      column (see the drawer rules below). */
@@ -3185,25 +3185,47 @@
     max-height: min(60vh, 420px);
     z-index: 10;
   }
-  /* ADR-184: a track result row — chips (horizontal-scroll) + play + enqueue. */
+  /* ADR-184: a track result row — chips (horizontal-scroll) + play + enqueue.
+     ADR-205: the row is a compact single line. The play/enqueue pair is sized
+     by its icon (the blanket 44px mobile touch floor is excluded below), with
+     the touch area expanded off-layout so the row stays short. */
   .track-result {
     display: flex; align-items: center; gap: 6px;
-    padding: 4px 8px; border-bottom: 1px solid var(--border); cursor: pointer;
+    padding: 2px 8px; border-bottom: 1px solid var(--border); cursor: pointer;
   }
   .track-result:last-child { border-bottom: none; }
   .track-result:hover, .track-result.active { background: var(--bg-input); }
   .track-result-chips {
     flex: 1; min-width: 0;
     display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
-    overflow-x: auto; white-space: nowrap; scrollbar-width: thin;
+    overflow-x: auto; white-space: nowrap;
+    /* ADR-205: the horizontal scrollbar is an affordance, not chrome — it stays
+       invisible until the pointer is over the strip or the strip is being
+       thumbed (`.is-scrolling`, toggled by search.js). */
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
   }
   .track-result-chips > * { flex-shrink: 0; }
+  .track-result-chips:hover,
+  .track-result-chips:focus-within,
+  .track-result-chips.is-scrolling { scrollbar-color: var(--fg-muted) transparent; }
+  .track-result-chips::-webkit-scrollbar { height: 4px; background: transparent; }
+  .track-result-chips::-webkit-scrollbar-track { background: transparent; }
+  .track-result-chips::-webkit-scrollbar-thumb { background: transparent; border-radius: 2px; }
+  .track-result-chips:hover::-webkit-scrollbar-thumb,
+  .track-result-chips:focus-within::-webkit-scrollbar-thumb,
+  .track-result-chips.is-scrolling::-webkit-scrollbar-thumb { background: var(--fg-muted); }
   .track-result-play, .track-result-enqueue {
+    position: relative;
     background: none; border: none; color: var(--fg-sub);
     width: 22px; height: 22px; padding: 0; flex-shrink: 0;
     display: inline-flex; align-items: center; justify-content: center;
     border-radius: 5px; cursor: pointer; font-size: 0.78rem; line-height: 1;
     transition: color 0.12s, background 0.12s;
+  }
+  /* ADR-205: grow the touch area within the compact row without raising it. */
+  .track-result-play::after, .track-result-enqueue::after {
+    content: ''; position: absolute; inset: -3px -3px;
   }
   .track-result-play:hover, .track-result-enqueue:hover { color: var(--accent); background: var(--bg-hover); }
   .track-result-enqueue { font-size: 1rem; font-weight: 500; }
@@ -3212,6 +3234,9 @@
     position: fixed; top: 56px; left: 220px; right: 56px;
     z-index: 750;   /* ADR-175: above players (≤700) and drawers; below modals (1000+) */
     display: flex; align-items: center; gap: 6px;
+    justify-content: center;   /* ADR-205: the bar no longer carries a chip
+       summary, so the control strip centres in the band (mobile spreads it
+       full-width); the empty bands are the ADR-204 video-toggle hit area. */
     width: auto;
     padding: 4px 8px;
     background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
@@ -3252,18 +3277,6 @@
     cursor: pointer; accent-color: var(--accent); background: transparent;
   }
   #playlist-bar .pb-volume:disabled { opacity: 0.3; cursor: default; }
-  #pb-summary {
-    flex: 1; min-width: 0; display: flex; align-items: center; gap: 5px;
-    overflow-x: auto; white-space: nowrap;
-    scrollbar-width: thin;
-  }
-  /* Keep the capsule's chips at their natural width so overflow scrolls the
-     strip instead of squashing the labels. */
-  #pb-summary > * { flex-shrink: 0; }
-  #pb-summary::-webkit-scrollbar { height: 4px; }
-  #pb-summary::-webkit-scrollbar-track { background: transparent; }
-  #pb-summary::-webkit-scrollbar-thumb { background: var(--fg-muted); border-radius: 2px; }
-  #pb-summary .pb-empty-hint { font-size: 0.72rem; color: var(--fg-muted); font-style: italic; }
   #pb-count { font-size: 0.68rem; color: var(--fg-sub); flex-shrink: 0; white-space: nowrap; }
   /* ADR-195: the count is the editor control (current item / total). It is a
      quiet bar button, not a badge. */
@@ -3367,6 +3380,9 @@
     #playlist-bar {
       top: var(--chrome-top); left: 8px; right: 8px; transform: none;
       width: auto;
+      /* ADR-205: with the chip summary gone, spread the controls across the
+         freed phone width instead of centring them. */
+      justify-content: space-between;
       /* Below the drawers (220) so an open panel covers the bar, but still
          above the mobile player (205) and the drawer scrim (199). */
       z-index: 210;
@@ -4435,7 +4451,7 @@
     }
     /* Exclude circular icon buttons and inline tree toggles — they size themselves */
     /* .vp-btn excluded: same visual size as .filter-dropdown-btn (both are pill controls) */
-    button:not(.rec-play-btn):not(.mp-plus-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn):not(.section-play-btn):not(.section-enqueue-btn):not(.section-help-btn):not(.mp-playlist-info-btn):not(.mp-queue-play) {
+    button:not(.rec-play-btn):not(.mp-plus-btn):not(.tree-rec-toggle):not(.row-accordion-chevron):not(.filter-dropdown-btn):not(.filter-clear):not(.help-btn):not(.co-add-chip):not(.co-edit-chip):not(.panel-nav-btn):not(.vp-btn):not(.lineage-popup-btn):not(.section-play-btn):not(.section-enqueue-btn):not(.section-help-btn):not(.mp-playlist-info-btn):not(.mp-queue-play):not(.track-result-play):not(.track-result-enqueue) {
       min-height: 44px;
     }
     .view-btn {
@@ -6143,13 +6159,12 @@
   <div id="track-search-dropdown" class="search-dropdown track-search-dropdown" style="display:none"></div>
 </div>
 
-<!-- ADR-175 / ADR-184 / ADR-195: persistent Playlist Bar (app-level chrome),
-     the thin band BELOW the search bar. The Current Playlist's always-on, PASSIVE
-     face — transport + now-playing summary + a clickable x / y count + the
-     current item's operators. The editor itself is a modal (ADR-195) opened by
-     #pb-count; no chevron, no popdown. -->
+<!-- ADR-175 / ADR-184 / ADR-195 / ADR-205: persistent Playlist Bar (app
+     chrome), the thin band BELOW the search bar. The Current Playlist's
+     always-on, PASSIVE face — transport + a clickable x / y count + the current
+     item's operators (the chip summary is retired — ADR-205). The editor itself
+     is a modal (ADR-195) opened by #pb-count; no chevron, no popdown. -->
 <div id="playlist-bar" class="pb-empty" aria-label="Playlist">
-  <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>
   <button type="button" id="pb-count" class="pb-btn" title="Edit playlist" aria-label="Edit playlist" aria-pressed="false"></button>
   <div class="pb-transport">
     <button type="button" id="pb-prev" class="pb-btn" title="Previous track" aria-label="Previous track">&#9198;</button>
