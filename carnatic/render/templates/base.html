@@ -1151,50 +1151,53 @@
      the mobile sheet owns its own overflow. */
   .media-player.bare:not(.full-mobile) { overflow: hidden; }
   /* ADR-175 / ADR-183: bare content player's own minimize + close — always
-     shown, so the docked video's controls are always reachable. */
+     shown, so the docked video's controls are always reachable. ADR-194: Plyr
+     sits its controls on a gradient; the window controls get the same top
+     gradient so their borderless icons stay legible over any frame. */
   .mp-player-controls {
-    position: absolute; top: 6px; left: 6px; right: 6px; z-index: 5;
+    position: absolute; top: 0; left: 0; right: 0; z-index: 5;
     display: flex; justify-content: space-between;
+    padding: 6px;
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--bg-deep) 60%, transparent), transparent);
     pointer-events: none;   /* only the buttons take clicks, not the strip */
   }
-  .mp-player-controls button {
-    width: 24px; height: 24px; padding: 0; line-height: 1;
+  /* ADR-194: every player-chrome button (minimize, close, operator rail)
+     speaks Plyr's control language — borderless, an 18px currentColor glyph on
+     a 4px-radius hit target, with the player's accent as the hover chip. */
+  .mp-player-controls button,
+  .mp-player-op {
+    width: 32px; height: 32px; padding: 7px;
     display: inline-flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.55); border: 1px solid var(--border-strong);
-    border-radius: 4px; color: var(--fg); cursor: pointer; font-size: 0.8rem;
-    transition: color 0.12s, border-color 0.12s;
+    background: transparent; border: 0; border-radius: 4px;
+    color: var(--fg); cursor: pointer; line-height: 1;
+    transition: background 0.1s ease-in-out, color 0.1s ease-in-out;
     pointer-events: auto;
   }
-  .mp-player-controls button:hover { color: var(--accent); border-color: var(--accent); }
+  .mp-player-controls button svg,
+  .mp-player-op svg {
+    width: 18px; height: 18px; fill: currentColor; display: block; pointer-events: none;
+  }
+  .mp-player-controls button:hover,
+  .mp-player-op:hover {
+    background: var(--accent);
+    color: var(--bg-deep);
+  }
   /* ADR-194: the operator rail — the sounding row's external-play / copy /
      permalink actions, stacked vertically at the player's bottom-right edge,
      just above Plyr's control row. Hidden until the player is hovered (or a
-     child is focused), like the placard. */
+     child is focused), like the placard. A subtle scrim keeps the borderless
+     icons legible over video; the buttons themselves stay Plyr-transparent. */
   .mp-player-ops {
     position: absolute; right: 8px;
     bottom: var(--mp-controls-h, 56px);
-    display: none; flex-direction: column; gap: 4px;
+    display: none; flex-direction: column; gap: 2px;
+    padding: 4px; border-radius: 8px;
+    background: color-mix(in srgb, var(--bg-deep) 58%, transparent);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
     z-index: 5; pointer-events: none;
   }
   .mp-player-ops > * { pointer-events: auto; }
-  .mp-player-op {
-    width: calc(var(--row-act-size) * 1.5);
-    height: calc(var(--row-act-size) * 1.5);
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 0; line-height: 1;
-    font-size: calc(var(--chip-size-primary) * 1.2);
-    color: var(--fg);
-    background: color-mix(in srgb, var(--bg-deep) 72%, transparent);
-    border: 1px solid color-mix(in srgb, var(--fg) 24%, transparent);
-    border-radius: 8px; cursor: pointer;
-    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-    transition: color 0.12s, border-color 0.12s, background 0.12s;
-  }
-  .mp-player-op:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 18%, var(--bg-deep));
-  }
   /* ADR-194: on desktop the placard and rail share the video's bottom edge;
      reserve the rail's column on the right so chips never run under it. */
   .media-player.bare:not(.full-mobile) .mp-now-playing { right: 56px; }

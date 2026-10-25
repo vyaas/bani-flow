@@ -493,10 +493,16 @@ offset is the measured control-bar height (`--mp-controls-h`, published by
 `_syncPlayerOverlayInset`). The operator rail stacks the sounding row's
 external-play · copy-YouTube-link · copy-permalink buttons vertically at the
 bottom-right edge (`_buildPlayerOps`, rebuilt per advance so every button acts
-on the current item). On a fine pointer both surfaces are hover-revealed
-(YouTube-style) and also shown on `:focus-within`; touch/coarse pointers keep
-them visible. The window's own minimize/close stay in `.mp-player-controls` at
-the top corners (ADR-183: always reachable).
+on the current item). Every player-chrome button — the rail, minimize and
+close — speaks **Plyr's control language**: borderless, an 18px `currentColor`
+glyph on a 4px-radius hit target, accent hover (`--accent` chip, `--bg-deep`
+glyph). The external-play button is the vendored Plyr sprite's own
+`#plyr-logo-youtube` symbol (`_ICON_PLAYER_WATCH`), so the overlay is literally
+part of the player's icon set. On a fine pointer both surfaces are
+hover-revealed (YouTube-style) and also shown on `:focus-within`; touch/coarse
+pointers keep them visible. The window's own minimize/close stay in
+`.mp-player-controls` at the top corners (ADR-183: always reachable) on a
+top gradient mirroring Plyr's control-bar gradient.
 
 **ADR-186: the film-strip video toggle.** Minimizing a content player hides the
 whole docked window (`display:none`); the Playlist Bar's `#pb-video-toggle` and

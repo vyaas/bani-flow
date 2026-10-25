@@ -130,6 +130,9 @@ CLAIMS: dict[str, list[str]] = {
         # §5 — ADR-194 bottom placard + vertical operator rail
         "function _buildPlayerOps", "function _syncPlayerOverlayInset",
         "function _pollPlayerOverlayInset", "mp-player-ops",
+        # §5 — ADR-194 Plyr-language chrome icons (external play = Plyr sprite)
+        "_ICON_PLAYER_MIN", "_ICON_PLAYER_CLOSE", "_ICON_PLAYER_WATCH",
+        "plyr-logo-youtube",
         "function _pbCurrentTarget",
         "function _setPlayerVolume", "function _syncVolumeControls",
         "window._initPlaylistBar",

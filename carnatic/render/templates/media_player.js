@@ -15,6 +15,16 @@ let _volumeLevel = 1;
 // current queue row). `currentColor` keeps it on the theme's text colour.
 const _MEDIA_TOGGLE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M2.5 9h19M2.5 15h19"/><path d="M6 5v4M10 5v4M14 5v4M18 5v4M6 15v4M10 15v4M14 15v4M18 15v4"/></svg>';
 
+// ADR-194: player-chrome glyphs. They speak Plyr's 18px solid-fill control
+// language (ADR-155), and the external-play button uses the vendored Plyr
+// sprite's own YouTube symbol, so the whole overlay is literally part of the
+// player's icon set. Colours come from `fill: currentColor` (base.html).
+const _ICON_PLAYER_MIN = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 12.6 2.7 6.3l1.4-1.4L9 9.8l4.9-4.9 1.4 1.4z"/></svg>';
+const _ICON_PLAYER_CLOSE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden="true"><path d="M14.5 4.9 13.1 3.5 9 7.6 4.9 3.5 3.5 4.9 7.6 9l-4.1 4.1 1.4 1.4L9 10.4l4.1 4.1 1.4-1.4L10.4 9z"/></svg>';
+const _ICON_PLAYER_WATCH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden="true"><use href="#plyr-logo-youtube" xlink:href="#plyr-logo-youtube"/></svg>';
+const _ICON_PLAYER_COPY = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+const _ICON_PLAYER_PERMALINK = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.9 12c0-1.7 1.4-3.1 3.1-3.1h4V7H7a5 5 0 0 0 0 10h4v-1.9H7c-1.7 0-3.1-1.4-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.7 0 3.1 1.4 3.1 3.1s-1.4 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 0-10z"/></svg>';
+
 // ── ADR-158: relative-seek gesture constants ──────────────────────────────────
 // SEEK_STEP is the universal "skip" quantum (YouTube/NewPipe default). Tap-zone
 // double-taps and arrow keys both move the playhead in multiples of it.
@@ -1781,7 +1791,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   const minBtn = document.createElement('button');
   minBtn.type = 'button'; minBtn.className = 'mp-player-min';
   minBtn.title = 'Minimize'; minBtn.setAttribute('aria-label', 'Minimize');
-  minBtn.textContent = '\u2014';
+  minBtn.innerHTML = _ICON_PLAYER_MIN;
   minBtn.addEventListener('mousedown', e => e.stopPropagation());
   // ADR-186: keep the row/bar film-strip toggle in step with the video's own
   // minimize button.
@@ -1789,7 +1799,7 @@ function createPlayer(media, trackLabel, artistName, startSeconds, concertTitle,
   const closeBtn = document.createElement('button');
   closeBtn.type = 'button'; closeBtn.className = 'mp-player-close';
   closeBtn.title = 'Close player'; closeBtn.setAttribute('aria-label', 'Close player');
-  closeBtn.textContent = '\u2715';
+  closeBtn.innerHTML = _ICON_PLAYER_CLOSE;
   closeBtn.addEventListener('mousedown', e => e.stopPropagation());
   closeBtn.addEventListener('click', e => { e.stopPropagation(); _pbStopCurrent(); });
   controls.appendChild(minBtn);
@@ -2621,20 +2631,20 @@ function _syncNowPlayingOverlays() {
 function _buildPlayerOps(item) {
   const frag = document.createDocumentFragment();
   if (!item || !item.media) return frag;
-  const mk = (cls, title, glyph, fn) => {
+  const mk = (cls, title, icon, fn) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'mp-player-op ' + cls;
     b.title = title;
     b.setAttribute('aria-label', title);
-    b.textContent = glyph;
+    b.innerHTML = icon;
     b.addEventListener('mousedown', e => e.stopPropagation());
     b.addEventListener('click', e => { e.stopPropagation(); fn(); });
     return b;
   };
-  frag.appendChild(mk('mp-player-op-watch', 'Play externally',   '\u2197', () => _openMediaOnYouTube(item)));
-  frag.appendChild(mk('mp-player-op-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
-  frag.appendChild(mk('mp-player-op-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
+  frag.appendChild(mk('mp-player-op-watch', 'Play externally',   _ICON_PLAYER_WATCH,     () => _openMediaOnYouTube(item)));
+  frag.appendChild(mk('mp-player-op-copy',  'Copy YouTube link', _ICON_PLAYER_COPY,      () => _copyMediaLink(item)));
+  frag.appendChild(mk('mp-player-op-share', 'Copy permalink',    _ICON_PLAYER_PERMALINK, () => _copyMediaPermalink(item)));
   return frag;
 }
 

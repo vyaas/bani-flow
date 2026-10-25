@@ -63,15 +63,26 @@ The strip itself carries a theme-derived, semitransparent scrim
 blur and a hairline top rule, so chip text is legible over any frame. No raw
 hex is introduced.
 
-### D3 — The operator rail
+### D3 — The operator rail, in Plyr's control language
 
 `_buildPlayerOps(item)` returns the current row's operator set — **Play
-externally** (`↗`, `_openMediaOnYouTube`), **Copy YouTube link** (`⧉`,
-`_copyMediaLink`), **Copy permalink** (`#`, `_copyMediaPermalink`) — stacked
-vertically at the bottom-right edge. `_syncNowPlayingOverlays()` rebuilds it on
-every queue advance, so each button always acts on the sounding item. On
-desktop the placard reserves the rail's column (`right: 56px`) so chips never
-run under the buttons.
+externally** (`_openMediaOnYouTube`), **Copy YouTube link** (`_copyMediaLink`),
+**Copy permalink** (`_copyMediaPermalink`) — stacked vertically at the
+bottom-right edge. `_syncNowPlayingOverlays()` rebuilds it on every queue
+advance, so each button always acts on the sounding item. On desktop the
+placard reserves the rail's column (`right: 56px`) so chips never run under the
+buttons.
+
+Every player-chrome button — the rail plus the window's minimize and close —
+now speaks **Plyr's control language** rather than the Playlist row's boxed text
+glyphs: borderless, a 18px `currentColor` glyph on a 4px-radius hit target,
+and the player accent as the hover chip (`--accent` background, `--bg-deep`
+glyph — the app's own accent pairing, and a deliberate contrast improvement
+over Plyr's white-on-yellow). The glyphs are 18px solid-fill SVGs; the
+external-play button is the vendored Plyr sprite's own `#plyr-logo-youtube`
+symbol, so the overlay is literally part of the player's icon set. The
+minimize/close strip sits on a top gradient mirroring Plyr's control-bar
+gradient; the rail gets a subtle rounded scrim behind its borderless icons.
 
 ### D4 — Hover reveal, with a touch fallback
 
