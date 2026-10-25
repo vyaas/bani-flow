@@ -2529,20 +2529,25 @@ function _renderQueuePanel(panel) {
       actions.appendChild(stopBtn);
     }
 
-    // ADR-184: every row owns the operator set — copy · permalink · watch act
-    // on THIS row's track, not the currently-playing one. The volume slider
-    // stays the current item's last operator (it controls the live player) and
-    // is inherited by the editor bar when the editor folds (ADR-175).
-    const mkOp = (cls, title, glyph, fn) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'mp-queue-op ' + cls;
-      b.title = title; b.setAttribute('aria-label', title); b.textContent = glyph;
-      b.addEventListener('click', e => { e.stopPropagation(); fn(); });
-      return b;
-    };
-    actions.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
-    actions.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
-    actions.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', () => _openMediaOnYouTube(item)));
+    // ADR-197: the copy · permalink · watch operators belong to the playing
+    // row only. On a non-playing row they were three buttons of noise over the
+    // playlist contents on a phone; acting on an idle track is a bar/rail job
+    // (the Playlist Bar and the placard rail already carry the current item's
+    // set). The volume slider stays the current item's last operator (it
+    // controls the live player) and is inherited by the editor bar when the
+    // editor folds (ADR-175).
+    if (isCurrent) {
+      const mkOp = (cls, title, glyph, fn) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'mp-queue-op ' + cls;
+        b.title = title; b.setAttribute('aria-label', title); b.textContent = glyph;
+        b.addEventListener('click', e => { e.stopPropagation(); fn(); });
+        return b;
+      };
+      actions.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
+      actions.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
+      actions.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', () => _openMediaOnYouTube(item)));
+    }
     // ADR-186: the current row owns the film-strip video toggle (the Playlist
     // Bar inherits it when the editor folds). Restores a minimized docked video.
     if (isCurrent) {
@@ -2568,16 +2573,9 @@ function _renderQueuePanel(panel) {
       actions.appendChild(vol);
     }
 
-    // + affordance — secondary: add to playlist or session queue
-    const qplus = _buildPlusBtn((() => {
-      const _item = item;
-      return () => ({
-        media: _item.media, startSeconds: _item.startSeconds || 0,
-        concertTitle: _item.concertTitle || '', label: _item.label || '',
-        artistName: _item.artistName || '', meta: _item.meta || {},
-      });
-    })());
-    actions.appendChild(qplus);
+    // ADR-197: no + affordance on a queue row — the row already IS a queue
+    // item, so "add to queue" is adding to self. Enqueue lives on the lists
+    // whose rows are not yet queued (trail, recordings, search, tracklist).
 
     const rm = document.createElement('button');
     rm.type = 'button'; rm.className = 'mp-queue-remove';

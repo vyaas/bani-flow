@@ -3023,8 +3023,8 @@
   .mp-queue-play:disabled { opacity: 0.35; cursor: default; }
   .mp-queue-play { position: relative; }
   .mp-queue-play::after { content: ''; position: absolute; inset: -12px; }
-  /* ADR-184: every row owns copy · permalink · watch (the chevron and its
-     phantom slot are retired). */
+  /* ADR-197: the copy · permalink · watch operators belong to the playing row
+     only (the chevron and its phantom slot stay retired, ADR-184). */
   .mp-queue-op {
     display: inline-flex; align-items: center; justify-content: center;
     width: 20px; height: 20px; flex-shrink: 0;

@@ -8,7 +8,8 @@ Pins the architecture the ADR introduces:
   band; `#playlist-bar` is the thin editor band BELOW it.
 * `search.js` indexes both `perfToPerf` (recorded concerts) and
   `musician.youtube[]` tracks; word-prefix matching with a whole-name boost.
-* Every playlist row owns copy/permalink/watch (no phantom columns) and the
+* Only the playing playlist row owns copy/permalink/watch (ADR-197 retires
+  ADR-184's per-row clause); no row carries a self-enqueue `+`, and the
   retired per-row chevron / "Up Next" head are gone.
 * `_syncNowPlayingOverlays()` paints `.mp-now-playing` (sibling of `.plyr`, so
   fullscreen hides it) from `_refreshQueuePanels`.
@@ -91,13 +92,20 @@ def test_row_chevron_and_up_next_head_are_retired():
     assert "mp-queue-save" not in src, "save-queue-as-playlist was retired"
 
 
-def test_every_row_owns_the_operator_set_unconditionally():
-    """The copy/share/watch mkOp calls must not be guarded by `if (isCurrent)`."""
+def test_only_the_playing_row_owns_the_operator_set():
+    """ADR-197: copy/permalink/watch live on the current row only, and no row
+    carries the self-enqueue `+`."""
     src = _mp()
-    assert "() => _copyMediaLink(item)" in src
-    assert "() => _copyMediaPermalink(item)" in src
-    assert "() => _openMediaOnYouTube(item)" in src
-    # The old phantoms were the tell of a current-only operator set.
+    start = src.index("function _renderQueuePanel(panel)")
+    body = src[start:src.index("function _refreshQueuePanels", start)]
+    assert re.search(
+        r"if \(isCurrent\) \{\s*const mkOp[\s\S]*?_openMediaOnYouTube\(item\)",
+        body,
+    ), "copy/permalink/watch must sit inside an `if (isCurrent)` guard (ADR-197)"
+    assert "_buildPlusBtn" not in body, (
+        "a queue row must not carry the + (it would add to self — ADR-197)"
+    )
+    # The old phantoms stay retired.
     assert "mp-queue-op-phantom" not in src
 
 

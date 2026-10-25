@@ -372,11 +372,15 @@ the viewport.
 handle, resize grip, identity rail, ✕, minimize or fold-cue). Identity lives in
 the Playlist Editor row; the current row owns the transport (`.mp-queue-play`;
 play↔stop via `_pbStopCurrent`; plus the volume slider `.mp-queue-vol` →
-`_setPlayerVolume`). **ADR-184:** every row owns its own operator set
-(`.mp-queue-op` copy / permalink / watch → `_copyMediaLink` /
-`_copyMediaPermalink` / `_openMediaOnYouTube`, the row's own track), not just
-the current one. Copy's tooltip reads **Copy YouTube link**; permalink is the
-TiddlyWiki-style **#** glyph (still `Copy permalink`). **ADR-188:** `#pb-play`
+`_setPlayerVolume`). **ADR-197 (supersedes ADR-184's per-row operator
+clause):** only the **playing row** owns the operator set (`.mp-queue-op` copy
+/ permalink / watch → `_copyMediaLink` / `_copyMediaPermalink` /
+`_openMediaOnYouTube`, the row's own track); a non-playing row is play · remove
+only, so the playlist contents stay readable on a phone. No queue row carries a
+`+` — the row already *is* a queue item, so enqueue-into-self is retired
+(`_buildPlusBtn` remains on the not-yet-queued lists: trail, recordings,
+grand search, tracklist). Copy's tooltip reads **Copy YouTube link**; permalink
+is the TiddlyWiki-style **#** glyph (still `Copy permalink`). **ADR-188:** `#pb-play`
 is a play/pause toggle (`❚❚` while the current item sounds, `▶` otherwise,
 `_pbPlayPauseCurrent`) and `#pb-stop` is a dedicated, non-toggling stop; the
 current row carries the same toggle plus an `mp-queue-stop` button (styled by
@@ -476,7 +480,8 @@ row/bar height.
 **ADR-196: a playlist row is capped at two lines.** `_renderQueuePanel` builds
 each row as exactly two non-wrapping flex groups — `.mp-queue-meta`
 (grip · pos · reorder · chips) and `.mp-queue-actions` (play · stop · operators ·
-video-toggle · volume · enqueue · remove). The outer `.mp-queue-item`
+video-toggle · volume · remove, with the copy / permalink / watch trio present
+only on the current row — ADR-197). The outer `.mp-queue-item`
 (`flex-wrap: wrap`) can wrap only *between* the groups, so the row is at most
 `metadata + actions`. Desktop: `.mp-queue-meta { flex: 1 1 0 }` yields width so
 the current row collapses to the non-current single-line form. Mobile
