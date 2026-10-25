@@ -2890,23 +2890,11 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.45);
   }
 
-  /* ── ADR-162: "Up Next" queue panel — bar-summoned, opens above the bar ── */
-  .mp-queue {
-    position: absolute;
-    bottom: 100%; left: 0; right: 0;
-    z-index: 11;
-    max-height: min(340px, 65vh);
-    overflow-y: auto;
-    background: var(--bg-panel);
-    border: 1px solid var(--border-strong);
-    border-radius: 4px 4px 0 0;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.45);
-  }
-  .mp-queue.mp-queue-down {
-    bottom: auto; top: 100%;
-    border-radius: 0 0 4px 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
-  }
+  /* ── ADR-195: the playlist editor is a MODAL form, not a bar popdown ──
+     The list is hosted by the shared help dialog (#hd-body), so it owns the
+     full viewport and never competes with the docked video for a band. The
+     base row/chip/operator atoms below are shared with the bar; the
+     `.playlist-editor` rules further down re-shape a row into a draggable card. */
   .mp-queue-items { list-style: none; margin: 0; padding: 0; }
   .mp-queue-item {
     display: flex; align-items: center; gap: 6px;
@@ -3145,14 +3133,12 @@
   }
   /* "New playlist…" gets a subtle separator from the list */
   .mp-plus-menu-new { color: var(--accent); }
-  /* ── ADR-175: persistent Playlist Bar (app-level chrome) ──────────────────
-     The Current Playlist's always-on face: transport + now-playing summary +
-     count + editor toggle + expand. Stretches gas-like between the view selector
-     (left) and help button (right), and is clamped to the canvas column so it
-     never occludes an open sidebar — the editor (.mp-queue-bar) and the docked
-     player inherit the bar's width, so they stay clear too. Reuses the ADR-162
-     .mp-queue editor, re-parented here as .mp-queue-bar so it drops DOWN from
-     the bar and is visible with the player open or closed. */
+  /* ── ADR-175 / ADR-195: persistent Playlist Bar (app-level chrome) ────────
+     The Current Playlist's always-on, PASSIVE face: transport + now-playing
+     summary + a clickable x / y count + the current item's operators. Stretches
+     gas-like between the view selector (left) and help button (right), and is
+     clamped to the canvas column so it never occludes an open sidebar. The
+     editor itself is a modal (#help-dialog), opened by #pb-count (ADR-195). */
   /* ADR-184: the grand track search sits in the old top slot; the thin editor
      bar moves below it. Both stretch gas-like and are clamped to the canvas
      column (see the drawer rules below). */
@@ -3247,14 +3233,73 @@
   #pb-summary::-webkit-scrollbar-thumb { background: var(--fg-muted); border-radius: 2px; }
   #pb-summary .pb-empty-hint { font-size: 0.72rem; color: var(--fg-muted); font-style: italic; }
   #pb-count { font-size: 0.68rem; color: var(--fg-sub); flex-shrink: 0; white-space: nowrap; }
-  /* ADR-183: max-height is further tightened at runtime by
-     _clampPlaylistEditorHeight() so the docked player always fits below the
-     editor; extra rows then scroll (`.mp-queue` has overflow-y:auto). */
-  #playlist-bar .mp-queue-bar {
-    position: absolute; top: 100%; left: 0; right: 0; bottom: auto;
-    max-height: min(60vh, 420px);
-    border-radius: 0 0 6px 6px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+  /* ADR-195: the count is the editor control (current item / total). It is a
+     quiet bar button, not a badge. */
+  #playlist-bar #pb-count { font-size: 0.68rem; font-weight: normal; color: var(--fg-sub); }
+  #playlist-bar #pb-count:hover:not(:disabled) { color: var(--accent); }
+
+  /* ── ADR-195: the Playlist Editor form (hosted by #help-dialog) ───────────
+     A draggable card per track: grip · position · wrapping chips · operators.
+     The form is the one place the playlist breathes, so chips wrap here (the
+     bar keeps its single-line scroll, ADR-179/ADR-184). All colour/space
+     comes from theme tokens (ADR-028). */
+  .playlist-editor { line-height: 1.5; }
+  .playlist-editor .pe-head {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .playlist-editor .pe-count { font-size: 0.72rem; color: var(--fg-muted); }
+  .playlist-editor .pe-hint {
+    margin-left: auto; font-size: 0.68rem; color: var(--fg-muted);
+  }
+  .playlist-editor .mp-queue-items {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .playlist-editor .mp-queue-item {
+    align-items: center; flex-wrap: wrap; gap: 6px;
+    padding: 6px 8px;
+    border: 1px solid var(--border); border-left: 2px solid transparent;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--bg-input) 34%, transparent);
+  }
+  .playlist-editor .mp-queue-item:hover { background: var(--bg-input); }
+  .playlist-editor .mp-queue-current {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    border-left-color: var(--accent);
+  }
+  /* CSS-drawn grip (no font dependency) — the row's drag affordance. */
+  .mp-queue-grip {
+    flex-shrink: 0; width: 14px; height: 22px; cursor: grab;
+    background-image: radial-gradient(circle, var(--fg-muted) 1.1px, transparent 1.4px);
+    background-size: 6px 6px; background-position: 1px 3px;
+    opacity: 0.55;
+  }
+  .playlist-editor .mp-queue-item:hover .mp-queue-grip { opacity: 1; }
+  .mp-queue-grip:active { cursor: grabbing; }
+  /* Position badge — the track's ordinal in the current playlist. */
+  .mp-queue-pos {
+    flex-shrink: 0; min-width: 1.4em; text-align: right;
+    font-size: 0.68rem; font-variant-numeric: tabular-nums;
+    color: var(--fg-muted);
+  }
+  .playlist-editor .mp-queue-current .mp-queue-pos { color: var(--accent); font-weight: bold; }
+  /* Chips WRAP in the form (the bar's one-line scroll is overridden here). */
+  #hd-body .playlist-editor .mp-queue-chips {
+    flex: 1 1 220px; min-width: 0;
+    flex-wrap: wrap; overflow-x: visible; white-space: normal;
+    row-gap: 3px;
+  }
+  /* Drag states. */
+  .playlist-editor .mp-queue-item.mp-queue-dragging { opacity: 0.4; }
+  .playlist-editor .mp-queue-item.mp-queue-drop-before {
+    box-shadow: 0 -3px 0 -1px var(--accent);
+  }
+  .playlist-editor .mp-queue-item.mp-queue-drop-after {
+    box-shadow: 0 3px 0 -1px var(--accent);
+  }
+  @media (max-width: 768px) {
+    /* The operator rail drops below the chips so neither is squeezed. */
+    #hd-body .playlist-editor .mp-queue-chips { flex-basis: 100%; }
   }
 
   /* Mobile (ADR-175): the bar is a second top band, top-centre full-width.
@@ -4829,10 +4874,9 @@
       border-radius: 0; box-shadow: none;
       border-left: none; border-right: none; border-top: none;
     }
-    .media-player.mini .mp-queue { display: none !important; }
-    /* Grow the sheet upward when the tracklist OR the queue panel opens. */
-    .media-player.full-mobile.mp-tl-expanded,
-    .media-player.full-mobile:has(.mp-queue.mp-queue-shown) { height: calc(85vh - 56px); }
+    /* Grow the sheet upward when the tracklist opens. The queue panel is no
+       longer part of the player (ADR-195: it is a modal), so it is gone here. */
+    .media-player.full-mobile.mp-tl-expanded { height: calc(85vh - 56px); }
     /* No tracks → tracklist is empty; keep hidden regardless of class */
     .media-player.full-mobile .mp-tracklist:empty { display: none !important; }
     .media-player.full-mobile .mp-footer { flex-shrink: 0; }
@@ -6044,15 +6088,14 @@
   <div id="track-search-dropdown" class="search-dropdown track-search-dropdown" style="display:none"></div>
 </div>
 
-<!-- ADR-175 / ADR-184: persistent Playlist Bar (app-level chrome), now the thin
-     editor bar BELOW the search bar. The Current Playlist's always-on face —
-     editor toggle + transport + now-playing summary + count + inherited
-     operators. The editor (.mp-queue-bar) is appended by media_player.js so it
-     drops DOWN from the bar and is visible with the player open or closed. -->
+<!-- ADR-175 / ADR-184 / ADR-195: persistent Playlist Bar (app-level chrome),
+     the thin band BELOW the search bar. The Current Playlist's always-on, PASSIVE
+     face — transport + now-playing summary + a clickable x / y count + the
+     current item's operators. The editor itself is a modal (ADR-195) opened by
+     #pb-count; no chevron, no popdown. -->
 <div id="playlist-bar" class="pb-empty" aria-label="Playlist">
-  <button type="button" id="pb-editor-toggle" class="pb-btn mp-toggle-btn" title="Playlist" aria-label="Playlist" aria-pressed="false">&#9654;</button>
   <div id="pb-summary"><span class="pb-empty-hint">Playlist empty</span></div>
-  <span id="pb-count"></span>
+  <button type="button" id="pb-count" class="pb-btn" title="Edit playlist" aria-label="Edit playlist" aria-pressed="false"></button>
   <div class="pb-transport">
     <button type="button" id="pb-prev" class="pb-btn" title="Previous track" aria-label="Previous track">&#9198;</button>
     <button type="button" id="pb-play" class="pb-btn mp-toggle-btn" title="Play / pause" aria-label="Play / pause" aria-pressed="false">&#9654;</button>
@@ -6377,12 +6420,16 @@
   var homeNodes  = body ? Array.prototype.slice.call(body.childNodes) : [];
   var homeTitle  = title ? title.textContent : 'Help';
   var cardActive = false;
+  // ADR-195: the card currently hosted (if any), so live-content hosts such as
+  // the Playlist Editor can mirror the dialog's open/closed state.
+  var cardNode   = null;
 
-  function openHelpDialog(cardTitle, cardNode) {
+  function openHelpDialog(cardTitle, node) {
     if (!dlg || !body) return;
     body.innerHTML = '';
-    if (cardNode) {
-      body.appendChild(cardNode);
+    cardNode = node || null;
+    if (node) {
+      body.appendChild(node);
       title.textContent = cardTitle || homeTitle;
       cardActive = true;
     } else {
@@ -6392,6 +6439,9 @@
     }
     dlg.style.display = 'flex';
     scrim.classList.add('scrim-visible');
+    try {
+      window.dispatchEvent(new CustomEvent('helpdialogopened', { detail: { node: cardNode } }));
+    } catch (e) {}
   }
 
   function closeHelpDialog() {
@@ -6402,6 +6452,11 @@
       window._onHelpDialogClosed();
     }
     cardActive = false;
+    var closed = cardNode;
+    cardNode = null;
+    try {
+      window.dispatchEvent(new CustomEvent('helpdialogclosed', { detail: { node: closed } }));
+    } catch (e) {}
   }
 
   window.openHelpDialog  = openHelpDialog;

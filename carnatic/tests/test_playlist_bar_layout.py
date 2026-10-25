@@ -7,10 +7,13 @@ Pins three layout contracts that a previous revision got wrong:
 1. The bar stretches gas-like between the floating view selector and help
    button (`left`/`right` anchors) — it is not a centred fixed-width pill.
 2. On desktop the bar is clamped to the canvas column whenever a sidebar is
-   open, so the bar (and the editor / docked player that inherit its width)
-   never occlude the bani-flow or musician panel.
+   open, so the bar (and the docked player that inherits its width) never
+   occlude the bani-flow or musician panel.
 3. `#pb-summary` scrolls horizontally with a thin scrollbar when its chips
    overflow, and the chips keep their natural width (no squashing).
+
+ADR-195 adds the modal-editor contract: #pb-count is the only editor control
+(the chevron is retired) and the editor's draggable rows wrap their chips.
 
 The on-screen "Carnatic Music Explorer" title is retired; only the help button
 remains in the top-right cluster.
@@ -80,18 +83,49 @@ def test_summary_scrolls_with_thin_scrollbar_and_fixed_chips():
     ), "chips must keep their natural width so the strip scrolls, not squashes"
 
 
-def test_editor_row_chips_scroll_in_one_row_like_the_bar():
-    """The editor row is what the bar inherits, so both faces must render the
-    same: a single-row strip of natural-width capsules that scroll horizontally
-    instead of wrapping."""
+def test_editor_rows_wrap_while_the_bar_scrolls():
+    """ADR-195: the modal form has the width, so its chip cluster WRAPS; the
+    bar keeps the ADR-179 single-line scroll (its base .mp-queue-chips rule)."""
     css = _base()
     row = _rule(css, ".mp-queue-chips")
-    assert "flex-wrap: nowrap" in row, "row chips must never wrap to a second line"
-    assert "overflow-x: auto" in row, "row chips must scroll horizontally on overflow"
-    assert "scrollbar-width: thin" in row
+    assert "flex-wrap: nowrap" in row, "the shared row base still scrolls"
     assert re.search(
         r"\.mp-queue-chips\s*>\s*\*\s*\{[^}]*flex-shrink:\s*0", css, re.DOTALL
-    ), "row chips must keep their natural width so the strip scrolls, not squashes"
+    ), "chips keep their natural width so the strip scrolls, not squashes"
+    editor = re.search(
+        r"#hd-body \.playlist-editor \.mp-queue-chips\s*\{(.*?)\}",
+        css, re.DOTALL,
+    )
+    assert editor, "missing the modal chip-wrap override (ADR-195)"
+    block = editor.group(1)
+    assert "flex-wrap: wrap" in block, "the modal editor rows must wrap chips"
+    assert "overflow-x: visible" in block, "the modal editor must not scroll chips"
+
+
+def test_bar_count_is_the_only_editor_control():
+    """ADR-195: the chevron is retired; the x / y count button toggles the
+    Playlist Editor modal."""
+    css = _base()
+    assert 'id="pb-count"' in css and 'id="pb-editor-toggle"' not in css
+    mp = (PROJECT_ROOT / "carnatic" / "render" / "templates" / "media_player.js").read_text(
+        encoding="utf-8"
+    )
+    assert "count.addEventListener('click', _togglePlaylistEditor)" in mp
+    assert "function _togglePlaylistEditor" in mp
+
+
+def test_editor_is_a_modal_with_draggable_rows():
+    """ADR-195: the editor is hosted by the shared help dialog and its rows
+    reorder by native drag-and-drop through MediaQueue.move()."""
+    mp = (PROJECT_ROOT / "carnatic" / "render" / "templates" / "media_player.js").read_text(
+        encoding="utf-8"
+    )
+    assert "playlist-editor" in mp
+    assert "openHelpDialog('Playlist'" in mp, "editor must open as a dialog"
+    assert "helpdialogclosed" in mp, "the dialog close must sync MediaQueue.panelOpen"
+    assert "draggable = true" in mp, "editor rows must be draggable entities"
+    assert "MediaQueue.move(from, to)" in mp, "drop must reuse the queue move()"
+    assert "mp-queue-grip" in mp and "mp-queue-pos" in mp
 
 
 def test_queue_label_chips_follow_the_same_chip_contract():

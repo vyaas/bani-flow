@@ -116,19 +116,8 @@
       if (mp) window._collapseMobilePlayer();
     }
 
-    // ADR-175: on mobile the bar spans the full width, so an open editor would
-    // drop down over the panel (the bar's z-index is above the drawers). Fold it
-    // whenever a panel opens — the playlist stays minimized and never draws over
-    // a panel. Desktop keeps its bar clamp to the canvas column instead.
-    if (newState !== 'IDLE' &&
-        typeof MediaQueue !== 'undefined' && MediaQueue &&
-        typeof MediaQueue.setPanelOpen === 'function' &&
-        typeof _isMobilePlayer === 'function' && _isMobilePlayer() &&
-        MediaQueue.panelOpen) {
-      MediaQueue.setPanelOpen(false);
-      if (typeof _refreshQueuePanels === 'function') _refreshQueuePanels();
-    }
-
+    // ADR-195: the Playlist Editor is a modal above the drawers, so opening a
+    // panel no longer needs to fold anything (the ADR-175 mobile fold is gone).
     panelState = newState;
 
     // ADR-176: only a genuine drawer open/close re-insets the view window. A
