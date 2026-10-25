@@ -446,10 +446,30 @@ let _labelLayer = null;  // top-most <g> in vp — all text labels go here
 let _wdpData = null;     // Option B: panel data cache (set in drawRagaWheel)
 let _wdpMelaNum = null;  // ADR-140: melakarta number of the currently open WDP (null = closed)
 let _wdpCorner  = null;  // ADR-140: anchor corner of current WDP ('tl'|'tr'|'bl'|'br')
+let _wdpCompRaga = null; // ADR-192: raga id whose composition panel is open (null = closed)
 
-// ── Wheel Detail Panel (Option B, ADR-096) ─────────────────────────────────
-// Shows mela→janya→comp as a scrollable HTML overlay panel, replacing SVG
-// satellite fans. The wheel stays fully at overview scale; detail is beside it.
+// ADR-192: gap (screen px) between the raga panel's outer corner and the child
+// composition panel, so the two cards read as a chain rather than one blob.
+const _WDP_COMP_GAP = 6;
+
+// ── Wheel Detail Panels (Option B, ADR-096; telescoping ADR-192) ───────────
+// #wheel-detail-panel is the raga panel (mela + its janyas). #wheel-comp-panel
+// is the child card holding the compositions of whichever raga chip was clicked;
+// it pins the raga panel's outward corner so detail telescopes away from the wheel.
+
+function _closeWheelCompPanel() {
+  _wdpCompRaga = null;
+  const panel = document.getElementById('wheel-comp-panel');
+  if (panel) {
+    panel.classList.remove('wdp-open');
+    panel.innerHTML = '';
+    panel.style.left            = '';
+    panel.style.top             = '';
+    panel.style.transform       = '';
+    panel.style.transformOrigin = '';
+  }
+}
+window._closeWheelCompPanel = _closeWheelCompPanel;
 
 function _closeWheelDetailPanel() {
   _wdpMelaNum = null;
@@ -463,6 +483,7 @@ function _closeWheelDetailPanel() {
     panel.style.transform       = '';
     panel.style.transformOrigin = '';
   }
+  _closeWheelCompPanel();
 }
 window._closeWheelDetailPanel = _closeWheelDetailPanel;
 
@@ -522,7 +543,57 @@ function _positionWdpAtMela(melaNum) {
   panel.style.top             = T + 'px';
   panel.style.transform       = 'scale(' + s.scale + ')';
   panel.style.transformOrigin = ORIGINS[corner];
+  _positionCompPanel();
 }
+
+// ADR-192: place the composition child immediately beside the raga chip that
+// opened it — same outward side as the WDP fan, top aligned to the chip's row —
+// so the click and its result stay spatially tied. Clamped to the parent panel's
+// vertical span. Called on every _applyTransform() frame and on list scroll.
+function _positionCompPanel() {
+  const comp = document.getElementById('wheel-comp-panel');
+  if (!comp || !comp.classList.contains('wdp-open')) return;
+  const ragaPanel = document.getElementById('wheel-detail-panel');
+  if (!ragaPanel || !ragaPanel.classList.contains('wdp-open')) return;
+  const wrap = document.getElementById('cy-wrap') || ragaPanel.offsetParent;
+  if (!wrap) return;
+
+  const s = RagaWheel._state;
+  const c = _wdpCorner || 'bl';
+  const toRight = (c === 'bl' || c === 'tl');  // same fan rule as _positionWdpAtMela
+
+  const wrapRect  = wrap.getBoundingClientRect();
+  const panelRect = ragaPanel.getBoundingClientRect();
+  const CW = comp.offsetWidth  || 0;
+  const CH = comp.offsetHeight || 0;
+  const GAP = _WDP_COMP_GAP;
+
+  // Horizontal: just outside the raga panel's outward edge.
+  const left = toRight
+    ? (panelRect.right - wrapRect.left) + GAP
+    : (panelRect.left - wrapRect.left) - CW * s.scale - GAP;
+
+  // Vertical: centre the child on the clicked chip's row so the selected raga
+  // points into the compositions it owns, then clamp to the view window so the
+  // card never runs off-screen (the child sits beside the parent, not on it).
+  const chip = ragaPanel.querySelector('.wdp-chip.wdp-raga.wdp-selected');
+  let top;
+  if (chip) {
+    const chipRect = chip.getBoundingClientRect();
+    const chipCenter = chipRect.top - wrapRect.top + chipRect.height / 2;
+    top = chipCenter - CH * s.scale / 2;
+  } else {
+    top = panelRect.top - wrapRect.top;
+  }
+  const maxTop = wrapRect.height - CH * s.scale - 8;
+  top = (maxTop > 8) ? Math.min(Math.max(top, 8), maxTop) : 8;
+
+  comp.style.left            = left + 'px';
+  comp.style.top             = top + 'px';
+  comp.style.transform       = 'scale(' + s.scale + ')';
+  comp.style.transformOrigin = '0 0';
+}
+window._positionCompPanel = _positionCompPanel;
 
 // ADR-140: Smoothly pan the wheel so the mela arc centre lands at the middle
 // of the viewport. Zoom is preserved. Uses the _animRafId slot so any
@@ -595,10 +666,11 @@ function _animateWheelToMela(melaNum, durationMs) {
 
 function _openWheelDetailPanel(raga) {
   if (!_wdpData || !raga) return;
-  const { janyasByMela, compsByRaga, melaByNum } = _wdpData;
+  const { janyasByMela } = _wdpData;
   const panel = document.getElementById('wheel-detail-panel');
   if (!panel) return;
   panel.innerHTML = '';
+  _closeWheelCompPanel();  // a new mela replaces any stale composition child
 
   // Header: mela name + cakra label + close button
   const cakra = raga.melakarta ? Math.ceil(raga.melakarta / 6) : null;
@@ -608,8 +680,9 @@ function _openWheelDetailPanel(raga) {
   titleEl.className = 'wdp-title';
   const nameChip = document.createElement('span');
   nameChip.className = 'wdp-chip wdp-raga';
+  nameChip.dataset.id = raga.id;
   nameChip.textContent = '\u25c8 ' + raga.name;
-  nameChip.title = 'Open ' + raga.name + ' in BaniFlow panel';
+  nameChip.title = 'Show ' + raga.name + ' compositions';
   nameChip.addEventListener('click', (e) => {
     e.stopPropagation();
     _wdpSelectJanya(raga, nameChip);
@@ -620,8 +693,20 @@ function _openWheelDetailPanel(raga) {
     sub.className = 'wdp-subtitle';
     sub.textContent = 'Mela ' + raga.melakarta + ' \u00b7 ' + (CAKRA_NAMES[cakra] || 'Cakra ' + cakra);
     titleEl.appendChild(sub);
+  } else {
+    const sub = document.createElement('span');
+    sub.className = 'wdp-subtitle';
+    sub.textContent = 'Janya raga';
+    titleEl.appendChild(sub);
   }
   header.appendChild(titleEl);
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'wdp-close';
+  closeBtn.setAttribute('aria-label', 'Close raga panel');
+  closeBtn.textContent = '\u00d7';
+  closeBtn.addEventListener('click', (e) => { e.stopPropagation(); _closeWheelDetailPanel(); });
+  header.appendChild(closeBtn);
   panel.appendChild(header);
 
   // Scrollable body — all content below the sticky header lives here so that
@@ -632,19 +717,11 @@ function _openWheelDetailPanel(raga) {
   wdpBody.className = 'wdp-body';
   wdpBody.id = 'wdp-body';
   panel.appendChild(wdpBody);
+  // Keep the companion composition card glued to its chip while the list scrolls.
+  wdpBody.addEventListener('scroll', _positionCompPanel, { passive: true });
 
-  // Direct mela compositions (no janya intermediary)
-  const melaDirect = compsByRaga[raga.id] || [];
-  if (melaDirect.length > 0) {
-    const lbl = document.createElement('div');
-    lbl.className = 'wdp-section-label';
-    lbl.textContent = melaDirect.length + ' composition' + (melaDirect.length > 1 ? 's' : '') + ' (mela direct)';
-    wdpBody.appendChild(lbl);
-    _wdpRenderComps(wdpBody, melaDirect, raga.id, null);
-  }
-
-  // Janyas — sorted alphabetically; all comp groups pre-rendered so the tree is fully
-  // unfolded from the start and panel height is stable (no DOM mutations on janya click).
+  // ADR-192: janyas only — compositions live in the child composition panel,
+  // opened by clicking a raga chip. The raga panel stays shallow (mela \u2192 janyas).
   const janyas = (janyasByMela[raga.id] || []).slice()
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   if (janyas.length > 0) {
@@ -655,30 +732,22 @@ function _openWheelDetailPanel(raga) {
     const janyaList = document.createElement('div');
     janyaList.className = 'wdp-chips'; janyaList.id = 'wdp-janya-list';
     janyas.forEach(janya => {
-      const comps = compsByRaga[janya.id] || [];
+      const comps = _wdpData.compsByRaga[janya.id] || [];
       const chip = document.createElement('div');
       chip.className = 'wdp-chip wdp-raga'; chip.dataset.id = janya.id;
       chip.textContent = '\u25c8 ' + janya.name;
-      if (comps.length) {
-        const cnt = document.createElement('span');
-        cnt.className = 'wdp-chip-count'; cnt.textContent = comps.length;
-        chip.appendChild(cnt);
-      }
+      const cnt = document.createElement('span');
+      cnt.className = 'wdp-chip-count';
+      cnt.textContent = comps.length || '\u2013';
+      chip.appendChild(cnt);
       chip.addEventListener('click', (e) => { e.stopPropagation(); _wdpSelectJanya(janya, chip); });
       janyaList.appendChild(chip);
-      // Pre-render the comp group immediately after the chip so the tree is complete
-      // at open time — _wdpSelectJanya only toggles highlight state, never mutates structure.
-      if (comps.length > 0) {
-        _wdpRenderComps(janyaList, comps, janya.id, chip);
-      }
     });
     wdpBody.appendChild(janyaList);
-  }
-
-  if (janyas.length === 0 && melaDirect.length === 0) {
+  } else {
     const empty = document.createElement('div');
     empty.className = 'wdp-empty';
-    empty.textContent = 'No compositions or janyas recorded';
+    empty.textContent = 'No janya ragas \u2014 click the mela above for its compositions';
     wdpBody.appendChild(empty);
   }
 
@@ -699,31 +768,87 @@ function _openWheelDetailPanel(raga) {
   window._wdpOpenTime = Date.now();
 }
 
+// ADR-192: the child composition panel — opened by clicking any raga chip in the
+// raga panel. Lists that raga's compositions and pins itself just outside the raga
+// panel's outward edge. activeCompId pre-marks a composition chip (sync/permalink).
+function _openCompPanel(raga, activeCompId) {
+  if (!_wdpData || !raga) return;
+  // ADR-192 (mobile): the composition card is desktop-only. On a narrow viewport
+  // a raga tap instead draws the bani-flow panel, whose trail already carries the
+  // raga's compositions — a second floating card is overkill there.
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+  const comp = document.getElementById('wheel-comp-panel');
+  if (!comp) return;
+  const comps = _wdpData.compsByRaga[raga.id] || [];
+  comp.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'wdp-header';
+  const titleEl = document.createElement('div');
+  titleEl.className = 'wdp-title';
+  const chip = document.createElement('span');
+  chip.className = 'wdp-chip wdp-raga wdp-parent';
+  chip.textContent = '\u25c8 ' + raga.name;
+  titleEl.appendChild(chip);
+  const sub = document.createElement('span');
+  sub.className = 'wdp-subtitle';
+  sub.textContent = comps.length + ' composition' + (comps.length === 1 ? '' : 's');
+  titleEl.appendChild(sub);
+  header.appendChild(titleEl);
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'wdp-close';
+  closeBtn.setAttribute('aria-label', 'Close compositions');
+  closeBtn.textContent = '\u00d7';
+  closeBtn.addEventListener('click', (e) => { e.stopPropagation(); _closeWheelCompPanel(); });
+  header.appendChild(closeBtn);
+  comp.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'wdp-body';
+  comp.appendChild(body);
+
+  if (comps.length > 0) {
+    _wdpRenderComps(body, comps, raga.id, null, activeCompId || null);
+  } else {
+    const empty = document.createElement('div');
+    empty.className = 'wdp-empty';
+    empty.textContent = 'No compositions recorded for this raga';
+    body.appendChild(empty);
+  }
+
+  _wdpCompRaga = raga.id;
+  comp.classList.add('wdp-open');
+  window._wdpOpenTime = Date.now();  // same ghost-click guard for the child panel
+  _positionCompPanel();               // anchor to the chip at the current layout
+  // Reposition once the browser has laid the child out (offsetWidth is 0 on the
+  // synchronous first pass) so it lands flush beside the clicked chip.
+  requestAnimationFrame(() => _positionCompPanel());
+}
+window._openCompPanel = _openCompPanel;
+
 // suppressFilter=true: visual-only selection — do NOT override the active bani filter.
 // Used by _triggerMelaExpand when syncing the wheel to a composition search result;
 // the bani filter was already set to 'comp' and must not be clobbered by 'raga'.
 // activeCompId: if set, the matching comp chip gets wdp-active at render time.
 function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
-  if (!_wdpData) return;
+  if (!_wdpData || !janya) return;
   const panel = document.getElementById('wheel-detail-panel');
   if (!panel) return;
 
-  // Toggle: clicking the already-selected janya deselects it (highlight-only; comp list stays).
+  // Toggle: clicking the already-selected raga chip closes its composition panel.
   const wasSelected = !suppressFilter && chipEl && chipEl.classList.contains('wdp-selected');
-  panel.querySelectorAll('.wdp-chip.wdp-raga').forEach(c => c.classList.remove('wdp-selected'));
-  panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
-  // NOTE: .wdp-comp-group elements are NOT removed — the tree is fully pre-rendered at
-  // _openWheelDetailPanel time. _wdpSelectJanya only toggles highlight state.
-  if (wasSelected) return;
-
-  if (chipEl) {
-    chipEl.classList.add('wdp-selected');
-    chipEl.scrollIntoView({ block: 'start', behavior: 'smooth' });
-  }
-  // Mark the active comp chip (already in the DOM — find it by data-id selector).
-  if (activeCompId) {
-    const activeChip = panel.querySelector('.wdp-chip.wdp-comp[data-id="' + CSS.escape(activeCompId) + '"]');
-    if (activeChip) activeChip.classList.add('wdp-active');
+  panel.querySelectorAll('.wdp-chip.wdp-raga.wdp-selected').forEach(c => c.classList.remove('wdp-selected'));
+  if (wasSelected) {
+    _closeWheelCompPanel();
+  } else {
+    if (chipEl) {
+      chipEl.classList.add('wdp-selected');
+      // Instant (not smooth): the child panel anchors to the chip's rect, so the
+      // chip must be in its final scroll position before we position the child.
+      chipEl.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+    }
+    _openCompPanel(janya, activeCompId || null);
   }
 
   // Load bani-flow trail for this janya — only when user clicks, not during programmatic sync.
@@ -733,8 +858,8 @@ function _wdpSelectJanya(janya, chipEl, suppressFilter, activeCompId) {
     window._wheelSyncInProgress = true;
     if (typeof applyBaniFilter === 'function') applyBaniFilter('raga', janya.id);
     window._wheelSyncInProgress = false;
-    // On mobile, open the bani-flow panel after loading the trail so the rasika
-    // sees the trail slide in alongside the still-open box (box → panel cascade).
+    // On mobile the composition card is suppressed (ADR-192), so the bani-flow
+    // drawer IS the composition surface — draw it out over the still-open raga panel.
     if (window.matchMedia('(max-width: 768px)').matches && typeof window.setPanelState === 'function') {
       setTimeout(function () { window.setPanelState('TRAIL'); }, 50);
     }
@@ -759,10 +884,8 @@ function _wdpRenderComps(panel, items, ragaId, afterChip, activeCompId) {
       if (Date.now() - (window._wdpOpenTime || 0) < 300) return;
       // Mark this chip active immediately — wdp-active cannot be set via the normal
       // syncRagaWheelToFilter path because _wheelSyncInProgress=true blocks it.
-      const panel = document.getElementById('wheel-detail-panel');
-      if (panel) {
-        panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
-      }
+      // ADR-192: the comp chips may live in either the raga panel or the child panel.
+      document.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
       chip.classList.add('wdp-active');
       // Scroll the parent janya chip to the top so the raga anchor is always
       // visible above its compositions. For mela-direct comps (no janya), scroll
@@ -2743,34 +2866,27 @@ function _expandMusicians(vp, svg, comp, cAngle, cPos, cx, cyCY,
     }
     window._wheelPreviewNoPanel = false;
 
-    // Pre-select the target janya in the panel — visual only (suppressFilter=true so the
-    // bani filter already set by the caller is not overridden by the parent raga).
-    if (targetRagaId && _wdpData) {
+    // ADR-192: the raga panel lists janyas only; the target raga's compositions
+    // live one level deeper in the child composition panel. Resolve the target
+    // raga (janya when named, else the mela itself) and open that child.
+    // suppressFilter=true: the caller already set the bani filter — don't clobber it.
+    if (_wdpData && (targetRagaId || targetCompId)) {
       setTimeout(() => {
-        const janya = (_wdpData.janyasByMela[raga.id] || []).find(j => j.id === targetRagaId);
-        if (janya) {
-          const chipEl = document.querySelector(
-            `#wdp-janya-list .wdp-chip.wdp-raga[data-id="${CSS.escape(targetRagaId)}"]`
-          );
+        const targetRaga = targetRagaId
+          ? (_wdpData.janyasByMela[raga.id] || []).find(j => j.id === targetRagaId)
+          : raga;
+        if (targetRaga) {
+          const chipEl = targetRagaId
+            ? document.querySelector(
+                `#wdp-janya-list .wdp-chip.wdp-raga[data-id="${CSS.escape(targetRagaId)}"]`
+              )
+            : document.querySelector(
+                `#wheel-detail-panel .wdp-header .wdp-chip.wdp-raga[data-id="${CSS.escape(raga.id)}"]`
+              );
           // Pass targetCompId so the matching comp chip is marked wdp-active during render.
-          _wdpSelectJanya(janya, chipEl, true, targetCompId || null);
+          _wdpSelectJanya(targetRaga, chipEl, true, targetCompId || null);
         }
         setTimeout(() => { window._wheelSyncInProgress = false; }, 50);
-      }, 50);
-    } else if (targetCompId && _wdpData) {
-      // Mela-direct composition (no janya intermediary) —
-      // The comp group is pre-rendered; just mark the chip wdp-active by selector.
-      setTimeout(() => {
-        const panel = document.getElementById('wheel-detail-panel');
-        if (panel) {
-          panel.querySelectorAll('.wdp-chip.wdp-comp.wdp-active').forEach(c => c.classList.remove('wdp-active'));
-          const activeChip = panel.querySelector('.wdp-chip.wdp-comp[data-id="' + CSS.escape(targetCompId) + '"]');
-          if (activeChip) {
-            activeChip.classList.add('wdp-active');
-            activeChip.scrollIntoView({ block: 'start', behavior: 'smooth' });
-          }
-        }
-        window._wheelSyncInProgress = false;
       }, 50);
     } else {
       window._wheelSyncInProgress = false;

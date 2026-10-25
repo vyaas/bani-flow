@@ -37,7 +37,7 @@ CLAIMS: dict[str, list[str]] = {
         # §3 guru-shishya view
         'id="cy"', 'id="cy-labels"', 'id="timeline-ruler"',
         # §4 mela-janya view
-        'id="raga-wheel"', 'id="wheel-detail-panel"',
+        'id="raga-wheel"', 'id="wheel-detail-panel"', 'id="wheel-comp-panel"',
         # §5 media player
         'id="mp-copy-toast"',
         # §5 media player — ADR-184 grand track search
@@ -84,7 +84,9 @@ CLAIMS: dict[str, list[str]] = {
         # §4 — expansion chain + WDP
         "function _expandMela", "function _expandComps", "function _expandMusicians",
         "function _collapseAll", "function _openWheelDetailPanel",
-        "window._closeWheelDetailPanel",
+        "window._closeWheelDetailPanel", "function _openCompPanel",
+        "window._closeWheelCompPanel", "window._positionCompPanel",
+        "function _wdpSelectJanya", "_wdpCompRaga",
         # §4 — light-up + sync
         "function _lightUpMelas", "window.lightUpSpine",
         "window.clearWheelLightUp", "function syncRagaWheelToFilter",

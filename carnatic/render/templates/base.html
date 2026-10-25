@@ -1410,11 +1410,15 @@
   }
 
   /* ── Viewport toolbar — compact overlay, top-right of graph canvas (ADR-030) ── */
-  /* ── Wheel Detail Panel (Option B, ADR-096 / ADR-140): mela→janya→comp list overlay ── */
-  /* ADR-140: left/top are set dynamically by JS, anchored to the mela that opened it. */
-  /* Layout: fixed-height box with sticky header + scrollable body so offsetHeight is
+  /* ── Wheel Detail Panels (ADR-096 / ADR-140 / ADR-192) ─────────────────────────
+     ADR-192: the WDP is a two-panel telescoping chain. #wheel-detail-panel holds
+     the mela + its janyas; #wheel-comp-panel is the child card holding the
+     compositions of whichever raga chip was clicked. The child pins the parent's
+     outer corner (+gap) so it fans further out in the same direction.
+     ADR-140: left/top are set dynamically by JS, anchored to the mela that opened it.
+     Layout: fixed-height box with sticky header + scrollable body so offsetHeight is
      stable for the entire panel lifetime — prevents the corner-anchor shift on janya click. */
-  #wheel-detail-panel {
+  #wheel-detail-panel, #wheel-comp-panel {
     display: none;
     position: absolute;
     width: 228px; max-height: 60vh;
@@ -1425,7 +1429,14 @@
     pointer-events: all; box-sizing: border-box;
     transform-origin: top left;
   }
-  #wheel-detail-panel.wdp-open { display: flex; flex-direction: column; }
+  #wheel-detail-panel.wdp-open, #wheel-comp-panel.wdp-open { display: flex; flex-direction: column; }
+  /* ADR-192: the child card reads as a descendant of the raga panel — an amber
+     header rail echoes the composition chips it contains, and its comp rows are
+     flush (no indent) since the card itself is the group. */
+  #wheel-comp-panel { z-index: 66; }
+  #wheel-comp-panel .wdp-header { border-bottom-color: var(--chip-comp-border); }
+  #wheel-comp-panel .wdp-comp-group { margin-left: 0; }
+  #wheel-comp-panel .wdp-chip.wdp-parent { cursor: default; }
   /* Scrollable body below the sticky header */
   .wdp-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-top: 5px; }
   .wdp-header {
@@ -3586,7 +3597,8 @@
   .search-dropdown,
   #mi-pre,
   .ew-body,
-  #wheel-detail-panel {
+  #wheel-detail-panel,
+  #wheel-comp-panel {
     scrollbar-width: thin;
     scrollbar-color: var(--bg-active) var(--bg-panel);
   }
@@ -3598,7 +3610,8 @@
   .search-dropdown::-webkit-scrollbar,
   #mi-pre::-webkit-scrollbar,
   .ew-body::-webkit-scrollbar,
-  #wheel-detail-panel::-webkit-scrollbar {
+  #wheel-detail-panel::-webkit-scrollbar,
+  #wheel-comp-panel::-webkit-scrollbar {
     width: 6px;
   }
 
@@ -3609,7 +3622,8 @@
   .search-dropdown::-webkit-scrollbar-track,
   #mi-pre::-webkit-scrollbar-track,
   .ew-body::-webkit-scrollbar-track,
-  #wheel-detail-panel::-webkit-scrollbar-track {
+  #wheel-detail-panel::-webkit-scrollbar-track,
+  #wheel-comp-panel::-webkit-scrollbar-track {
     background: var(--bg-panel);
   }
 
@@ -3620,7 +3634,8 @@
   .search-dropdown::-webkit-scrollbar-thumb,
   #mi-pre::-webkit-scrollbar-thumb,
   .ew-body::-webkit-scrollbar-thumb,
-  #wheel-detail-panel::-webkit-scrollbar-thumb {
+  #wheel-detail-panel::-webkit-scrollbar-thumb,
+  #wheel-comp-panel::-webkit-scrollbar-thumb {
     background: var(--bg-active);   /* #665c54 — gruvbox bg3 */
     border-radius: 3px;
     border: 1px solid var(--bg-panel);
@@ -3633,7 +3648,8 @@
   .search-dropdown::-webkit-scrollbar-thumb:hover,
   #mi-pre::-webkit-scrollbar-thumb:hover,
   .ew-body::-webkit-scrollbar-thumb:hover,
-  #wheel-detail-panel::-webkit-scrollbar-thumb:hover {
+  #wheel-detail-panel::-webkit-scrollbar-thumb:hover,
+  #wheel-comp-panel::-webkit-scrollbar-thumb:hover {
     background: var(--fg-muted);    /* #a89984 — gruvbox fg3, visible on hover */
   }
 
@@ -6085,8 +6101,9 @@
         <div class="sruti-scrim"></div>
         <div class="sruti-ring"></div>
       </div>
-      <!-- ADR-096 Option B: mela→janya→comp detail panel (replaces SVG satellite fans) -->
+      <!-- ADR-096 Option B / ADR-192: telescoping mela→janya panel + child comp panel -->
       <div id="wheel-detail-panel"></div>
+      <div id="wheel-comp-panel"></div>
       <!-- ADR-135: layout-controls-float — single row: all layout + filter controls inline -->
       <div id="layout-controls-float">
         <div class="lc-row-layout">
