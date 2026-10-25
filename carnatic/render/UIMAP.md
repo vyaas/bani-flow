@@ -443,6 +443,15 @@ the results narrow to that name (`_getIndex`, `_entryFromPerf`,
 search `751`, dropdown `10` inside it). ADR-190: the dropdown anchors to the
 `.search-field` shell (4px below it, same `--search-radius`).
 
+**ADR-184 (ephemeral results):** the dropdown is a temporary overlay, never
+chrome. It dismisses on every commit — **play**, **enqueue**, any **chip**
+follow-through, and any press outside `#search-bar` (`_dismiss` / `_close`;
+the outside listener is capture-phase so it fires even when the pressed element
+calls `preventDefault()` on mousedown to hold focus). Dismissal keeps the query
+and re-focusing/clicking the field recalls the same results (`_reopen`); play
+alone clears the field. The list must never stay open over the panel, wheel or
+graph it just revealed.
+
 **ADR-175: the persistent Playlist Bar** is the thin editor bar below the
 search bar (**ADR-185: ephemeral — `display:none` when the queue is empty, so
 the second band is reclaimed; it appears only with ≥ 1 item**):

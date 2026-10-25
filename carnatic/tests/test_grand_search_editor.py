@@ -138,6 +138,33 @@ def test_search_rows_have_play_and_enqueue():
     assert "track-result-play" in src and "track-result-enqueue" in src
 
 
+def test_grand_results_are_ephemeral():
+    """The result list dismisses on commit and never strands itself over the
+    surface it just revealed. Guards the dismiss contract:
+
+    * play / enqueue / chip click each dismiss the overlay (`_dismiss`);
+    * a press outside `#search-bar` dismisses even when the pressed element
+      calls `preventDefault()` on mousedown to hold focus (capture phase);
+    * the query is preserved, so re-focusing recalls the same results.
+    """
+    src = _search()
+    assert "function _dismiss" in src
+    assert "function _reopen" in src
+    # Enqueue dismisses (play already did); _dismiss is invoked from a handler.
+    assert re.search(r"MediaQueue\.addItem\(item\);\s*_dismiss\(\)", src)
+    # Outside press: capture-phase mousedown, filtered by the search shell.
+    assert re.search(
+        r"document\.addEventListener\('mousedown', e => \{[\s\S]*?"
+        r"closest\('#search-bar'\)[\s\S]*?\}, true\)",
+        src,
+    )
+    # Result chips stop propagation, so their dismissal is captured too.
+    assert re.search(
+        r"dropdown\.addEventListener\('click',[\s\S]*?\.musician-chip[\s\S]*?\}, true\)",
+        src,
+    )
+
+
 # ── rendered output ───────────────────────────────────────────────────────────
 
 

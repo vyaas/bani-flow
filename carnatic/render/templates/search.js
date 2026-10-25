@@ -243,6 +243,7 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
   let _index = null;
   let _activeIdx = -1;
   let _items = [];
+  let _lastQuery = '';
 
   // Resolve a musician/composer id to its display label (cy first, then elements).
   function _labelFor(id) {
@@ -487,7 +488,17 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
     _activeIdx = -1;
   }
 
+  // ADR-184: the result list is an ephemeral overlay. `_dismiss` hides it and
+  // drops focus (mobile keyboard down) but KEEPS the query, so re-focusing the
+  // field recalls the same results. Play clears outright (below); enqueue and
+  // chip follow-through only dismiss.
+  function _dismiss() {
+    _close();
+    input.blur();
+  }
+
   function _render(q) {
+    _lastQuery = q;
     _items = _search(q);
     dropdown.innerHTML = '';
     _activeIdx = -1;
@@ -531,8 +542,7 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
       enq.addEventListener('click', e => {
         e.stopPropagation();
         MediaQueue.addItem(item);
-        enq.textContent = '\u2713';
-        setTimeout(() => { enq.textContent = '+'; }, 1000);
+        _dismiss();
       });
       row.appendChild(enq);
 
@@ -554,6 +564,17 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
     if (!q) { _close(); return; }
     _render(q);
   });
+
+  // Recall: once dismissed, re-focusing or clicking the field restores the
+  // same results (the query is preserved by _dismiss). Play clears the field,
+  // so it does not return.
+  function _reopen() {
+    const q = input.value.trim();
+    if (!q || dropdown.style.display !== 'none') return;
+    if (q === _lastQuery) _open(); else _render(q);
+  }
+  input.addEventListener('focus', _reopen);
+  input.addEventListener('click', _reopen);
 
   input.addEventListener('keydown', e => {
     if (e.key === 'ArrowDown') {
@@ -580,6 +601,26 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {
   input.addEventListener('blur', () => {
     setTimeout(() => { if (dropdown.style.display !== 'none') _close(); }, 150);
   });
+
+  // Any press outside the search field dismisses the list. Capture phase, so
+  // it still fires when the pressed element calls preventDefault() on mousedown
+  // to hold focus — chips across the app do exactly that, which would otherwise
+  // leave the overlay stuck open over the revealed panel.
+  document.addEventListener('mousedown', e => {
+    if (dropdown.style.display === 'none') return;
+    if (e.target.closest('#search-bar')) return;
+    _close();
+  }, true);
+
+  // A result chip navigates away from search and stops propagation, so the
+  // row's own handler never sees it. Capture on the dropdown runs first and
+  // dismisses the list before the chip opens its panel — the revealed panel,
+  // wheel or graph is never occluded by a stale result list.
+  dropdown.addEventListener('click', e => {
+    if (e.target.closest('.raga-chip, .comp-chip, .musician-chip, .composer-chip, .yt-label-chip')) {
+      _dismiss();
+    }
+  }, true);
 })();
 
 // ── ADR-190: shared search-field clear affordance ────────────────────────────
