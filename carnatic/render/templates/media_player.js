@@ -629,9 +629,9 @@ function _syncMinimizeUi(el, minimized) {
   }
 }
 
-// ADR-175: the union rect (viewport coords) of the Playlist Bar and its editor.
-// The player must always rest OUTSIDE this region so the editor can never hide
-// the player's header, and the player can never occlude the playlist.
+// ADR-175 / ADR-195: the viewport rect of the Playlist Bar. Since ADR-195 the
+// editor is a modal dialog (z-index 1000+), so it is intentionally NOT unioned
+// in — the player only needs to stay clear of the always-on bar band.
 function _playlistUiRect() {
   const bar = document.getElementById('playlist-bar');
   if (!bar) return null;
@@ -639,14 +639,8 @@ function _playlistUiRect() {
   // dynamic top wall collapses and the view reclaims the band.
   if (bar.offsetWidth === 0 && bar.offsetHeight === 0) return null;
   const br = bar.getBoundingClientRect();
-  const ed = bar.querySelector('.mp-queue-bar');
-  let left = br.left, top = br.top, right = br.right, bottom = br.bottom;
-  if (ed && ed.style.display !== 'none' && ed.offsetHeight > 0) {
-    const er = ed.getBoundingClientRect();
-    left = Math.min(left, er.left); top = Math.min(top, er.top);
-    right = Math.max(right, er.right); bottom = Math.max(bottom, er.bottom);
-  }
-  return { left, top, right, bottom, width: right - left, height: bottom - top };
+  return { left: br.left, top: br.top, right: br.right, bottom: br.bottom,
+           width: br.width, height: br.height };
 }
 
 // ADR-176 (view window): the bottom of the playlist UI (bar + open editor) is
@@ -665,29 +659,9 @@ function _syncViewTopInset() {
   root.style.setProperty('--playlist-ui-bottom', bottom + 'px');
 }
 
-// ADR-183 (fixed dock): the playlist editor deepens downward and the docked
-// player sits directly beneath it, so an unbounded editor would push the video
-// out of the viewport. Cap the editor's height to leave room for the full
-// player (16:9 video + its controls strip) plus a bottom gap; `.mp-queue`
-// already scrolls vertically, so extra rows reveal a scrollbar instead of
-// shoving the video away. Desktop only — the mobile player is a full-screen
-// sheet and is not docked under the editor.
-function _clampPlaylistEditorHeight() {
-  const bar = document.getElementById('playlist-bar');
-  const ed = bar && bar.querySelector('.mp-queue-bar');
-  if (!ed) return;
-  if (window.innerWidth <= 768) { ed.style.maxHeight = ''; return; }
-  const ui = _playlistUiRect();
-  if (!ui) return;
-  const main = document.getElementById('main');
-  const bounds = main ? _columnBounds(main.getBoundingClientRect(), ui) : null;
-  const colW = bounds ? Math.max(0, bounds.right - bounds.left) : ui.width;
-  const playerW = Math.max(320, Math.round(Math.min(ui.width, colW)));
-  const playerH = Math.round(playerW * 9 / 16) + 10;   // video + controls strip
-  const bottomGap = 16;
-  const avail = window.innerHeight - bar.getBoundingClientRect().bottom - playerH - bottomGap;
-  ed.style.maxHeight = Math.max(120, Math.round(avail)) + 'px';
-}
+// ADR-195: _clampPlaylistEditorHeight() is retired — the editor is a modal
+// and no longer shares the bar's vertical band with the docked player, so
+// there is no height to reserve. The dialog body scrolls on its own.
 
 // ── ADR-176: the app-level non-overlap contract ────────────────────────────
 // Four surfaces must never overlap one another: the left (bani-flow) sidebar,
@@ -876,7 +850,6 @@ function _pollPlayerOverlayInset(el) {
 // final position clears every obstacle (sidebars + playlist UI). left/top are
 // written relative to the player's offsetParent.
 function _dockPlayer(el) {
-  _clampPlaylistEditorHeight();
   _playerMatchWidth(el);
   _clampPlayerWidthToColumn(el);
   const ui = _playlistUiRect();
@@ -935,7 +908,6 @@ function _snapPlayerIfNearBar(el) {
 // re-docked — they keep their own anchor placement.
 function _repositionPlayers() {
   if (window.innerWidth <= 768) return;   // floating geometry is desktop-only
-  _clampPlaylistEditorHeight();
   const parent = document.getElementById('main');
   if (!parent) return;
   const pr = parent.getBoundingClientRect();
@@ -1971,10 +1943,9 @@ const MediaQueue = {
     this.index = Math.max(0, Math.min(startIndex || 0, this.items.length - 1));
     this.active = this.items.length > 0;
     this.activeChapter = null;
-    // ADR-162: Play all reveals the queue panel on desktop. On mobile the bar
-    // stays minimized by default — the full-width editor must not cover a panel.
-    this.panelOpen = this.active &&
-      !(typeof _isMobilePlayer === 'function' && _isMobilePlayer());
+    // ADR-195: starting a queue no longer auto-opens the editor — it is a modal
+    // now, opened only from the bar's count. Leave `panelOpen` as-is so an
+    // already-open editor keeps tracking the new queue.
     if (this.active) this._open(pos);
     _refreshQueuePanels();
   },
@@ -2446,21 +2417,59 @@ function _buildQueueRowChips(item, activeChapter) {
   return frag;
 }
 
+// ADR-195: the editor rows are draggable cards. `_qDragFrom` is the row being
+// dragged; the drop index is derived from which half of the hovered row the
+// pointer is over. `MediaQueue.move(from, to)` expects the target computed on
+// the ORIGINAL list, so `_qDropIndex` adjusts for the earlier splice.
+let _qDragFrom = -1;
+
+function _qClearDropMarks(ul) {
+  if (!ul) return;
+  ul.querySelectorAll('.mp-queue-drop-before, .mp-queue-drop-after').forEach(el => {
+    el.classList.remove('mp-queue-drop-before', 'mp-queue-drop-after');
+  });
+}
+
+function _qDropIndex(from, hoverIndex, rect, clientY) {
+  const after = clientY > rect.top + rect.height / 2;
+  let to = hoverIndex + (after ? 1 : 0);
+  if (from < to) to -= 1;   // removing `from` first shifts every later slot down
+  return to;
+}
+
 function _renderQueuePanel(panel) {
   const ul = panel.querySelector('.mp-queue-items');
   if (!ul) return;
   ul.innerHTML = '';
+  const total = MediaQueue.items.length;
+  const peCount = panel.querySelector('.pe-count');
+  if (peCount) peCount.textContent = total + (total === 1 ? ' track' : ' tracks');
   MediaQueue.items.forEach((item, i) => {
     const li = document.createElement('li');
     li.className = 'mp-queue-item' + (i === MediaQueue.index ? ' mp-queue-current' : '');
     li.dataset.i = i;
+    li.setAttribute('role', 'listitem');
 
     const isCurrent = (i === MediaQueue.index);
     const isCurrentPlaying = isCurrent && _isCurrentPlaying();
 
-    // ADR-184: the per-row minimize chevron is retired. The bare video owns a
-    // permanent minimize button, and the editor bar owns the editor fold — the
-    // chevron only cost width in an already crowded row.
+    // ADR-195: drag grip + whole-row draggable. Native HTML5 drag-and-drop is
+    // the pointer path; the ▴/▾ buttons below stay the keyboard/touch path
+    // (HTML5 drag is unavailable on touch).
+    li.draggable = true;
+    const grip = document.createElement('span');
+    grip.className = 'mp-queue-grip';
+    grip.title = 'Drag to reorder';
+    grip.setAttribute('aria-hidden', 'true');
+    grip.addEventListener('mousedown', e => e.stopPropagation());
+    grip.addEventListener('click', e => e.stopPropagation());
+    li.appendChild(grip);
+
+    const pos = document.createElement('span');
+    pos.className = 'mp-queue-pos';
+    pos.textContent = i + 1;
+    pos.setAttribute('aria-label', 'Track ' + (i + 1) + ' of ' + total);
+    li.appendChild(pos);
 
     const reorder = document.createElement('span');
     reorder.className = 'mp-queue-reorder';
@@ -2470,7 +2479,7 @@ function _renderQueuePanel(panel) {
     up.addEventListener('click', e => { e.stopPropagation(); MediaQueue.move(i, i - 1); });
     const down = document.createElement('button');
     down.type = 'button'; down.className = 'mp-queue-down'; down.title = 'Move down'; down.textContent = '▾';
-    down.disabled = (i === MediaQueue.items.length - 1);
+    down.disabled = (i === total - 1);
     down.addEventListener('click', e => { e.stopPropagation(); MediaQueue.move(i, i + 1); });
     reorder.appendChild(up); reorder.appendChild(down);
     li.appendChild(reorder);
@@ -2566,6 +2575,40 @@ function _renderQueuePanel(panel) {
     rm.addEventListener('click', e => { e.stopPropagation(); MediaQueue.removeAt(i); });
     li.appendChild(rm);
 
+    // ADR-195: drag-and-drop reorder. Drop marks paint an accent edge on the
+    // hovered row's leading or trailing side.
+    li.addEventListener('dragstart', e => {
+      _qDragFrom = i;
+      li.classList.add('mp-queue-dragging');
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(i));
+      }
+    });
+    li.addEventListener('dragend', () => {
+      li.classList.remove('mp-queue-dragging');
+      _qClearDropMarks(ul);
+      _qDragFrom = -1;
+    });
+    li.addEventListener('dragover', e => {
+      if (_qDragFrom < 0) return;
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+      const rect = li.getBoundingClientRect();
+      const after = e.clientY > rect.top + rect.height / 2;
+      _qClearDropMarks(ul);
+      li.classList.add(after ? 'mp-queue-drop-after' : 'mp-queue-drop-before');
+    });
+    li.addEventListener('drop', e => {
+      if (_qDragFrom < 0) return;
+      e.preventDefault();
+      const from = _qDragFrom;
+      const to = _qDropIndex(from, i, li.getBoundingClientRect(), e.clientY);
+      _qClearDropMarks(ul);
+      _qDragFrom = -1;
+      if (to !== from) MediaQueue.move(from, to);
+    });
+
     // Row body (outside chips/buttons) jumps to this item.
     li.addEventListener('click', () => MediaQueue.jumpTo(i));
     ul.appendChild(li);
@@ -2574,12 +2617,22 @@ function _renderQueuePanel(panel) {
 }
 
 function buildQueuePanel() {
-  // ADR-184: the "Up Next" head is retired. Its title, prev/next transport
-  // (the bar owns transport) and "Save queue as playlist" (playlists are built
-  // one track at a time) served no purpose. The editor is the list alone.
+  // ADR-195: the editor is a MODAL form (hosted by the shared help dialog),
+  // not a bar-docked popdown. The content is a small head + the draggable list;
+  // all positioning and scrolling belong to the dialog.
   const panel = document.createElement('div');
-  panel.className = 'mp-queue';
-  panel.style.display = 'none';
+  panel.className = 'mp-queue playlist-editor';
+  const head = document.createElement('div');
+  head.className = 'pe-head';
+  const count = document.createElement('span');
+  count.className = 'pe-count';
+  count.textContent = MediaQueue.items.length + (MediaQueue.items.length === 1 ? ' track' : ' tracks');
+  head.appendChild(count);
+  const hint = document.createElement('span');
+  hint.className = 'pe-hint';
+  hint.textContent = 'Drag to reorder';
+  head.appendChild(hint);
+  panel.appendChild(head);
   const ul = document.createElement('ul');
   ul.className = 'mp-queue-items';
   panel.appendChild(ul);
@@ -2648,43 +2701,83 @@ function _buildPlayerOps(item) {
   return frag;
 }
 
-// Re-render every open queue panel and sync toggle state/visibility. Called by
+// Re-render the editor (when open) and sync the bar + overlays. Called by
 // MediaQueue on any mutation (start/advance/jump/remove/move/clear).
 function _refreshQueuePanels() {
-  // ADR-175: the queue editor is app-level (re-parented to #playlist-bar), so
-  // there is no per-player toggle/panel to install here any more. The current
-  // player stays queue-free (ADR-162 carve-out); the bar is the single face.
-  const show = MediaQueue.active && MediaQueue.panelOpen;
-  document.querySelectorAll('.mp-queue').forEach(p => {
-    _renderQueuePanel(p);
-    p.style.display = show ? 'block' : 'none';
-    p.classList.toggle('mp-queue-shown', show);   // hook for the mobile sheet-grow (:has)
-    if (show) {
-      // ADR-161 §3: open above the bar; flip below only if no room above.
-      p.classList.remove('mp-queue-down');
-      if (p.getBoundingClientRect().top < 4) p.classList.add('mp-queue-down');
-    }
-  });
+  const has = MediaQueue.active && MediaQueue.items.length > 0;
+  // ADR-195: an empty queue has no bar and no editor — dismiss the modal if it
+  // is somehow still open (the bar is hidden, so its control is gone too).
+  if (!has && _playlistEditorEl && typeof window.closeHelpDialog === 'function') {
+    window.closeHelpDialog();
+  }
+  // ADR-195: the editor is a live modal card; re-render it in place so edits
+  // keep landing while it is open. Everything else is the bar's business.
+  if (MediaQueue.panelOpen && _playlistEditorEl) _renderQueuePanel(_playlistEditorEl);
   // ADR-175: the app-level Playlist Bar mirrors every MediaQueue mutation.
   _renderPlaylistBar();
   // ADR-184: keep the video's now-playing overlay truthful.
   _syncNowPlayingOverlays();
-  // Keep the current player docked under the (possibly just-changed) playlist
-  // UI — expanding the editor must push the player down, never cover its header.
+  // Keep the current player docked under the always-on Playlist Bar.
   const _cur = MediaQueue.currentKey ? playerRegistry.get(MediaQueue.currentKey) : null;
   if (_cur && _cur.el && !_cur._isMobileSingleton && _cur.el.style.display !== 'none') {
     if (!_cur.el._detached) _dockPlayer(_cur.el);
     _syncPlayerControls(_cur.el);
   }
-  // ADR-176: also sweep detached players clear of the editor after a resize.
+  // ADR-176: also sweep detached players clear of the bar after a resize.
   _scheduleReposition();
 }
 
+// ── ADR-195: the Playlist Editor modal ───────────────────────────────────────
+// The editor is the ADR-162 .mp-queue list hosted by the shared help dialog so
+// it opens/closes like every other dialog (scrim, Escape, ✕). `panelOpen`
+// mirrors the dialog; the close listener below keeps the two in lockstep.
+let _playlistEditorEl = null;
+
+function _openPlaylistEditor() {
+  if (!MediaQueue.active || !MediaQueue.items.length) return;
+  if (typeof window.openHelpDialog !== 'function') return;
+  _playlistEditorEl = buildQueuePanel();
+  MediaQueue.setPanelOpen(true);
+  window.openHelpDialog('Playlist', _playlistEditorEl);
+  _renderPlaylistBar();
+}
+
+function _closePlaylistEditor() {
+  if (typeof window.closeHelpDialog === 'function') window.closeHelpDialog();
+}
+
+function _togglePlaylistEditor() {
+  if (MediaQueue.panelOpen && _playlistEditorEl) _closePlaylistEditor();
+  else _openPlaylistEditor();
+}
+
+// The dialog owns dismissal (Escape / scrim / ✕). When it closes, reflect that
+// on `panelOpen` — but only if the closed card was the editor (a category help
+// card closing must not touch the queue).
+window.addEventListener('helpdialogclosed', function (e) {
+  const node = e && e.detail ? e.detail.node : null;
+  if (!_playlistEditorEl || node !== _playlistEditorEl) return;
+  _playlistEditorEl = null;
+  MediaQueue.panelOpen = false;
+  _renderPlaylistBar();
+});
+
+// If some other card (help preface / category) takes the shared dialog while the
+// editor is open, the editor is no longer mounted — drop its state so the count
+// button and the next toggle agree with the DOM.
+window.addEventListener('helpdialogopened', function (e) {
+  const node = e && e.detail ? e.detail.node : null;
+  if (!_playlistEditorEl || node === _playlistEditorEl) return;
+  _playlistEditorEl = null;
+  MediaQueue.panelOpen = false;
+  _renderPlaylistBar();
+});
+
 // ── ADR-175: persistent Playlist Bar (app-level chrome) ───────────────────────
-// The bar is the Current Playlist's always-on face: a pure *view + control* over
-// MediaQueue (Phase 1: play routing is unchanged). The editor is the same
-// ADR-162 .mp-queue surface, re-parented to #playlist-bar as .mp-queue-bar so it
-// drops DOWN from the bar and is reachable with the player open or closed.
+// The bar is the Current Playlist's always-on, PASSIVE face: a pure *view +
+// control* over MediaQueue. ADR-195 retires the bar-docked popdown — the editor
+// is now a modal opened by #pb-count — so the bar always shows the current
+// item's operators (`showOps = has`); the ADR-175 parent-inherits rule is gone.
 // ADR-188: the bar's transport is a single play/pause toggle plus a dedicated
 // stop. `_pbSetPaused` is the shared pause/resume primitive; the toggle handler
 // is `_pbPlayPauseCurrent`.
@@ -2912,7 +3005,6 @@ function _renderPlaylistBar() {
   const next = bar.querySelector('#pb-next');
   const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
-  const editorBtn = bar.querySelector('#pb-editor-toggle');
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
   const watchBtn = bar.querySelector('#pb-watch');
@@ -2930,7 +3022,16 @@ function _renderPlaylistBar() {
       summary.appendChild(hint);
     }
   }
-  if (count) count.textContent = has ? (MediaQueue.index + 1) + ' / ' + MediaQueue.items.length : '';
+  if (count) {
+    count.textContent = has ? (MediaQueue.index + 1) + ' / ' + MediaQueue.items.length : '';
+    // ADR-195: the count IS the editor control; its pressed state mirrors the
+    // modal and its title names the action.
+    count.disabled = !has;
+    count.setAttribute('aria-pressed', (has && MediaQueue.panelOpen) ? 'true' : 'false');
+    count.title = has
+      ? 'Edit playlist (' + (MediaQueue.index + 1) + ' of ' + MediaQueue.items.length + ')'
+      : 'Edit playlist';
+  }
   if (prev) prev.disabled = !has || MediaQueue.index <= 0;
   if (next) next.disabled = !has || MediaQueue.index >= MediaQueue.items.length - 1;
   if (stop) stop.disabled = !has || !MediaQueue.currentKey;
@@ -2944,19 +3045,14 @@ function _renderPlaylistBar() {
     videoBtn.setAttribute('aria-label', videoBtn.title);
     videoBtn.setAttribute('aria-pressed', shown ? 'true' : 'false');
   }
-  // ADR-175 parent-inherits rule: while the editor is open the current ROW owns
-  // the operator set; the bar shows it only when the row is not visible.
-  const editorOpen = has && MediaQueue.panelOpen;
-  const showOps = has && !editorOpen;
+  // ADR-195: the editor is a separate modal, so the bar is always the passive
+  // face — it shows the current item's operators whenever the queue is live.
+  // (The ADR-175 parent-inherits rule is retired.)
+  const showOps = !!has;
   [play, stop, copyBtn, shareBtn, watchBtn, videoBtn, volume].forEach(el => {
     if (el) el.style.display = showOps ? '' : 'none';
   });
   _syncVolumeControls();
-  if (editorBtn) {
-    editorBtn.disabled = !has;
-    editorBtn.setAttribute('aria-pressed', editorOpen ? 'true' : 'false');
-    editorBtn.textContent = editorOpen ? '\u25bc' : '\u25b6';   // same chevron as panels
-  }
   if (play) {
     // ADR-188: play is a play/pause toggle — ❚❚ while the current item sounds,
     // ▶ otherwise. Pressing it flips to the other glyph.
@@ -2967,10 +3063,8 @@ function _renderPlaylistBar() {
     play.setAttribute('aria-label', play.title);
     play.disabled = !has;
   }
-  _clampPlaylistEditorHeight();
-  // ADR-185: the bar's own visibility drives the view's top wall (the editor
-  // ResizeObserver only fires when the editor box changes, not when the bar
-  // appears/disappears), so publish the inset and re-fit here too.
+  // ADR-185: the bar's own visibility drives the view's top wall, so publish
+  // the inset and re-fit here too.
   _syncViewTopInset();
   if (typeof window.refitViewWindow === 'function') window.refitViewWindow();
 }
@@ -2983,7 +3077,7 @@ function _initPlaylistBar() {
   const next = bar.querySelector('#pb-next');
   const stop = bar.querySelector('#pb-stop');
   const play = bar.querySelector('#pb-play');
-  const editorBtn = bar.querySelector('#pb-editor-toggle');
+  const count = bar.querySelector('#pb-count');
   const copyBtn = bar.querySelector('#pb-copy');
   const shareBtn = bar.querySelector('#pb-share');
   const watchBtn = bar.querySelector('#pb-watch');
@@ -2998,24 +3092,10 @@ function _initPlaylistBar() {
   if (watchBtn) watchBtn.addEventListener('click', _pbWatchOnYouTube);
   if (videoBtn) videoBtn.addEventListener('click', _toggleVideoVisibility);
   if (volume) volume.addEventListener('input', () => _setPlayerVolume(volume.value / 100));
-  if (editorBtn) editorBtn.addEventListener('click', () => {
-    MediaQueue.setPanelOpen(!MediaQueue.panelOpen);
-    _refreshQueuePanels();
-  });
-  // The ADR-162 editor, re-parented to the bar (drops downward).
-  const editor = buildQueuePanel();
-  editor.classList.add('mp-queue-bar');
-  bar.appendChild(editor);
-  // ADR-176: as the editor deepens its bottom is the view's top wall — track
-  // the editor's box and re-fit the centre view whenever it changes.
-  if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => {
-      if (typeof window.refitViewWindow === 'function') window.refitViewWindow();
-      else _syncViewTopInset();
-    }).observe(editor);
-  }
+  // ADR-195: the count toggles the Playlist Editor modal.
+  if (count) count.addEventListener('click', _togglePlaylistEditor);
   // Full refresh so a permalink-restored queue (which may have run before this
-  // init) is rendered into the bar + editor.
+  // init) is rendered into the bar.
   _refreshQueuePanels();
   _syncViewTopInset();
 }

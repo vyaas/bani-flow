@@ -358,46 +358,43 @@ docked `.media-player` (spawned at `nextSpawnPosition()`, z-order via
 bottom-sheet `.media-player.full-mobile`
 (the ADR-043 `.mini` strip is **retired** — ADR-175). Chrome: bar
 (`buildPlayerBar`), chip rail (`buildPlayerRail`), tracklist (`.mp-tracklist`,
-opens upward `bottom:100%`), queue panel (`.mp-queue`, opens upward; the
-app-level editor is `.mp-queue-bar`), video wrap (`.mp-video-wrap`), copy toast
+opens upward `bottom:100%`), the Playlist Editor modal
+(`.mp-queue.playlist-editor`, hosted by `#help-dialog` — ADR-195), video wrap
+(`.mp-video-wrap`), copy toast
 `#mp-copy-toast`. **ADR-184:** the now-playing overlay
 `.mp-now-playing` is a sibling of `.plyr` inside `.mp-video-wrap` (so the
 Fullscreen API hides it automatically); the grand search is the static
 `#search-bar` (`#track-search-input` + `#track-search-dropdown`) at the top of
 the viewport.
 
-**ADR-175 / ADR-183 — the playlist row is king:** content players are **bare**
-(`.media-player.bare`: the video surface only; **no** `.mp-bar`, drag handle,
-resize grip, identity rail, ✕, minimize or fold-cue). Identity lives in the editor row; the
-current row owns the transport (`.mp-queue-play`; play↔stop via `_pbStopCurrent`;
-plus the volume slider `.mp-queue-vol` → `_setPlayerVolume`). **ADR-184:** every
-row owns its own operator set (`.mp-queue-op` copy / permalink / watch →
-`_copyMediaLink` / `_copyMediaPermalink` / `_openMediaOnYouTube`, the row's own
-track), not just the current one. Copy's tooltip reads
-**Copy YouTube link**; permalink is the TiddlyWiki-style **#** glyph (still
-`Copy permalink`). **Parent-inherits rule:** while the editor is open the row holds
-the operators; the Playlist Bar (`#pb-copy` / `#pb-share` / `#pb-watch` /
-`#pb-volume`, `#pb-play` / `#pb-stop`) shows them only when the row is not visible. **ADR-188:**
-`#pb-play` is a play/pause toggle (`❚❚` while the current item sounds, `▶`
-otherwise, `_pbPlayPauseCurrent`) and `#pb-stop` is a dedicated, non-toggling
-stop; the current row carries the same toggle plus an `mp-queue-stop` button
-(styled by the bar's `.pb-btn`, so both stops read identically). The bare player carries its own
-`.mp-player-controls` (minimize `—` + close `✕`) — **always shown** by
-`_syncPlayerControls` (ADR-183: the video is permanently docked on screen, so its
-top controls stay reachable regardless of the editor row) — so the docked video is
-independently minimizable and closable. `#pb-editor-toggle` is the bar's leftmost
-control and uses the panel chevron glyph (`▶`/`▼`). Bar and row share the same
-left→right order (**toggle · text · operators**). **ADR-184:** every row owns the
-copy · permalink · watch operator set (no phantom columns); the volume slider
-stays the current row's last operator and is inherited by the bar when the
-editor folds. The per-row ``.mp-queue-collapse`` chevron is retired — the video's
-own `.mp-player-min` and the bar's `#pb-editor-toggle` are the show/hide
-affordances. Utility players (sruti/tanpura) keep `.mp-bar` and their own drag/resize.
-`_dockPlayer` magnetically rests a player **under the Playlist UI** — the union of
-bar + open editor (`_playlistUiRect`) — and is the only placement path for
-content players (ADR-183; `_snapPlayerIfNearBar` still serves the utility
-players' drag release). `_clampPlaylistEditorHeight()` caps the editor so the
-docked player always fits below it (overflow scrolls). **ADR-176 (non-overlap
+**ADR-175 / ADR-183 / ADR-195 — the playlist row is king:** content players are
+**bare** (`.media-player.bare`: the video surface only; **no** `.mp-bar`, drag
+handle, resize grip, identity rail, ✕, minimize or fold-cue). Identity lives in
+the Playlist Editor row; the current row owns the transport (`.mp-queue-play`;
+play↔stop via `_pbStopCurrent`; plus the volume slider `.mp-queue-vol` →
+`_setPlayerVolume`). **ADR-184:** every row owns its own operator set
+(`.mp-queue-op` copy / permalink / watch → `_copyMediaLink` /
+`_copyMediaPermalink` / `_openMediaOnYouTube`, the row's own track), not just
+the current one. Copy's tooltip reads **Copy YouTube link**; permalink is the
+TiddlyWiki-style **#** glyph (still `Copy permalink`). **ADR-188:** `#pb-play`
+is a play/pause toggle (`❚❚` while the current item sounds, `▶` otherwise,
+`_pbPlayPauseCurrent`) and `#pb-stop` is a dedicated, non-toggling stop; the
+current row carries the same toggle plus an `mp-queue-stop` button (styled by
+the bar's `.pb-btn`, so both stops read identically). The bare player carries
+its own `.mp-player-controls` (minimize `—` + close `✕`, a **top-right**
+title-bar cluster) — **always shown** by `_syncPlayerControls` (ADR-183: the
+video is permanently docked) — so the docked video is independently minimizable
+and closable. **ADR-195:** the bar is
+a passive face — it shows the current item's operators (`#pb-copy` / `#pb-share`
+/ `#pb-watch` / `#pb-video-toggle` / `#pb-volume`, `#pb-play` / `#pb-stop`)
+whenever the queue is non-empty; the ADR-175 parent-inherits rule is retired
+(editor and bar no longer share a band). `.mp-queue-collapse` (per-row) and
+`#pb-editor-toggle` (bar chevron) are both retired. Utility players
+(sruti/tanpura) keep `.mp-bar` and their own drag/resize. `_dockPlayer`
+magnetically rests a player **under the Playlist Bar** (`_playlistUiRect` = the
+bar alone — the modal editor no longer unions in) and is the only placement path
+for content players (ADR-183; `_snapPlayerIfNearBar` still serves the utility
+players' drag release). **ADR-176 (non-overlap
 contract):** the four app-level surfaces — left
 sidebar, right sidebar, playlist UI, and every floating player — must never
 overlap. `_uiObstacleRects()` unions the two open sidebars (`_openSidebarRects`)
@@ -452,30 +449,28 @@ and re-focusing/clicking the field recalls the same results (`_reopen`); play
 alone clears the field. The list must never stay open over the panel, wheel or
 graph it just revealed.
 
-**ADR-175: the persistent Playlist Bar** is the thin editor bar below the
+**ADR-175 / ADR-195: the persistent Playlist Bar** is the thin band below the
 search bar (**ADR-185: ephemeral — `display:none` when the queue is empty, so
 the second band is reclaimed; it appears only with ≥ 1 item**):
 `#playlist-bar` (app chrome on desktop, gas-like between the view selector and
 help button and **clamped to the canvas column** — `body:has(#left-sidebar.drawer-open)` /
-`body:has(#right-sidebar.drawer-open)` pin its `left`/`right` to the panel widths so
-it, the `.mp-queue-bar` editor and the docked player never occlude a sidebar;
-second top band on mobile) with `#pb-prev` / `#pb-play` / `#pb-next` /
-`#pb-stop` (`#pb-transport`), `#pb-summary` (thin horizontal scrollbar when the chips
-overflow), `#pb-count`, `#pb-editor-toggle`, and the operator set inherited from
-the current row: `#pb-copy` / `#pb-share` / `#pb-watch` / `#pb-volume`. The volume
-slider sets the current player's output level via `_setPlayerVolume` and is
-persisted across queue items (`_volumeLevel`); `_syncVolumeControls` mirrors it
-between bar and row and disables it for volume-less (iframe) providers. The ADR-162 editor is re-parented
-into it as `.mp-queue-bar` (drops **downward** from the bar) so the playlist is
-visible/editable with the player open *or* closed. **ADR-184:** the ADR-162 "Up
-Next" head (`.mp-queue-head`: title, prev/next transport, "Save queue as
-playlist") is retired — the editor is the list alone. **Row/bar
-parity:** an editor row's `.mp-queue-chips` is a single-row strip whose capsules
-keep their natural width and scroll horizontally (thin scrollbar) — the exact
-geometry of `#pb-summary`, so the bar reads as an inheritance of the rows. The
-bare-label fallback (`_buildQueueRowChips`'s `.yt-label-chip`) is overridden in
-both contexts to the same single-line, natural-width, centred chip contract, so
-a label item never balloons the row/bar height.
+`body:has(#right-sidebar.drawer-open)` pin its `left`/`right` to the panel widths
+so it and the docked player never occlude a sidebar; second top band on mobile)
+with `#pb-prev` / `#pb-play` / `#pb-next` / `#pb-stop` (`#pb-transport`),
+`#pb-summary` (thin horizontal scrollbar when the chips overflow), **`#pb-count`**
+(`x / y`, a `<button>` that toggles the Playlist Editor modal — the only editor
+control; the chevron `#pb-editor-toggle` is retired), and the current item's
+operators `#pb-copy` / `#pb-share` / `#pb-watch` / `#pb-video-toggle` /
+`#pb-volume`. The volume slider sets the current player's output level via
+`_setPlayerVolume` and is persisted across queue items (`_volumeLevel`);
+`_syncVolumeControls` mirrors it between bar and editor row and disables it for
+volume-less (iframe) providers. **ADR-184:** the ADR-162 "Up Next" head
+(`.mp-queue-head`) is retired — the editor is the list alone. **Chip geometry:**
+the bar's `#pb-summary` scrolls its capsules on one line (ADR-179); the editor
+rows wrap (`.playlist-editor .mp-queue-chips`), because the modal has the width.
+The bare-label fallback (`_buildQueueRowChips`'s `.yt-label-chip`) is overridden
+in both contexts to the same natural-width, centred chip contract, so a label
+item never balloons a row/bar height.
 
 **ADR-184: the now-playing overlay.** `_syncNowPlayingOverlays()` (called from
 `_refreshQueuePanels`) paints `_buildQueueRowChips(item, activeChapter)` into
@@ -501,8 +496,9 @@ glyph). The external-play button is the vendored Plyr sprite's own
 part of the player's icon set. On a fine pointer both surfaces are
 hover-revealed (YouTube-style) and also shown on `:focus-within`; touch/coarse
 pointers keep them visible. The window's own minimize/close stay in
-`.mp-player-controls` at the top corners (ADR-183: always reachable) on a
-top gradient mirroring Plyr's control-bar gradient.
+`.mp-player-controls` grouped at the **top-right** (minimize · close, the
+usual OS title-bar pair; ADR-183: always reachable) on a top gradient
+mirroring Plyr's control-bar gradient.
 
 **ADR-186: the film-strip video toggle.** Minimizing a content player hides the
 whole docked window (`display:none`); the Playlist Bar's `#pb-video-toggle` and
@@ -534,6 +530,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   `advance`, `jumpTo`/`previous`/`next`, `removeAt(i)`, `move(from,to)`
   (recomputes `index` from `currentKey` — the reorder precedent), `isCurrent`,
   `setPanelOpen`. **Invariant:** items' `media` must be MediaRef-normalised
+  (`_normalize`) or `currentKey` silently breaks. The **ADR-195 editor
+  entry points** are `_openPlaylistEditor()` / `_closePlaylistEditor()` /
+  `_togglePlaylistEditor()` (host `buildQueuePanel()` in `#help-dialog`).
   (`_normalize`) or `currentKey` silently breaks.
 - Queue UI: `buildQueuePanel()` / `_renderQueuePanel(panel)` /
   `_refreshQueuePanels()` (two-way binding — call after every mutation) /
@@ -541,8 +540,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
   `_buildPlayerOps(item)` (ADR-194: fills `.mp-player-ops`) /
   `_syncPlayerOverlayInset(el)` / `_pollPlayerOverlayInset(el)` (ADR-194:
   publish `--mp-controls-h`, polling past Plyr's async control-bar build).
-- **ADR-175 Playlist Bar:** `_initPlaylistBar()` (mounts the bar + editor, wires
-  transport), `_renderPlaylistBar()` (mirrors MediaQueue into `#playlist-bar`),
+- **ADR-175 Playlist Bar:** `_initPlaylistBar()` (mounts the bar, wires
+  transport + `#pb-count`), `_renderPlaylistBar()` (mirrors MediaQueue into
+  `#playlist-bar`),
   `_pbPlayPauseCurrent()` / `_pbStopCurrent()` / `_pbExpandPlayer()` (control
   handlers; ADR-188 makes the bar transport a play/pause toggle + a dedicated
   stop). Content play routes through `Playlist.playContent` (alias of
@@ -575,7 +575,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
 **CSS hooks:** `.mp-*` classes; `.mp-toggle-btn[aria-pressed="true"]` — the
 reusable depressed-toggle primitive (ADR-161) for any state-holding button;
 upward-surface pattern (`bottom:100%`, flip-down near viewport top);
-`.mp-queue.mp-queue-shown`; mobile sheet grows via `:has(...)`. **ADR-179:**
+`.mp-queue.playlist-editor` (the modal form rows) with `.mp-queue-grip` /
+`.mp-queue-pos` / `.mp-queue-dragging` / `.mp-queue-drop-before/-after`.
+**ADR-179:**
 playlist-track chips are a single non-wrapping scroll line; a playlist row's
 count badge right-aligns ahead of its two-slot `.trail-acts` column.
 **ADR-180:** a playlist is a header ribbon plus one track ribbon per entry
@@ -615,7 +617,8 @@ height cap), 184 (grand track search, thin editor bar, now-playing overlay),
 185 (ephemeral Playlist Bar — hidden when empty, second band reclaimed),
 189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
 shell across grand + both panels), 194 (bottom placard + vertical operator rail
-on the video surface).
+on the video surface), 195 (Playlist Editor is a modal form — bar chevron
+retired, `#pb-count` opens it; draggable rows).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).
@@ -681,14 +684,14 @@ permalink.js    LAST — restores state using every global above
 `dismissBottomSheet()` exposed as globals. **Mobile geometry (ADR-175):** the
 drawers are `position:fixed` with `top: var(--chrome-top)`, so they start
 **below** the full-width Playlist Bar (never occluded); `--chrome-top` on mobile
-is `116px` (bar bottom 106 + gap). Opening a panel also folds the app-level
-playlist editor (`MediaQueue.setPanelOpen(false)` + `_refreshQueuePanels()`) so
-the bar cannot drop over the panel column. **View refit (ADR-176):**
-`_refitViews()` re-publishes the playlist top wall (`_syncViewTopInset`) then
-`cy.resize()`/`cy.fit()` and `window.refitRagaWheel()` — the wheel's
-state-preserving redraw (a bare `drawRagaWheel()` would clear the open WDP);
-rAF-debounced as `window.refitViewWindow`, which `media_player.js` calls when
-the editor box changes. `setPanelState` only schedules a refit when a drawer
+is `116px` (bar bottom 106 + gap). **ADR-195:** opening a panel no longer folds
+anything — the Playlist Editor is a modal above the drawers. **View refit
+(ADR-176):** `_refitViews()` re-publishes the playlist top wall
+(`_syncViewTopInset`) then `cy.resize()`/`cy.fit()` and
+`window.refitRagaWheel()` — the wheel's state-preserving redraw (a bare
+`drawRagaWheel()` would clear the open WDP); rAF-debounced as
+`window.refitViewWindow`, which `media_player.js` calls when the bar's box
+changes. `setPanelState` only schedules a refit when a drawer
 actually opened or closed. **First visit (mobile):** `empty_tutorials.js`
 `_bootHelloWorld()` populates both demo subjects (Reetigowla / Ramnad Krishnan)
 but suppresses the auto-open — `triggerBaniSearch(..., {suppressPanelOpen:true})`

@@ -2,9 +2,9 @@
 test_fixed_dock_player.py — ADR-183 guard for the fixed, docked content player.
 
 The video player is no longer a floating window: it cannot be dragged or
-resized, it always rests magnetically beneath the Playlist UI, and the playlist
-editor is height-capped so the video's own minimize/close controls can never be
-pushed off-screen.
+resized, it always rests magnetically beneath the Playlist Bar, and (ADR-195)
+the editor is a modal — there is no bar-docked popdown to height-cap and no
+surface beneath the editor to reserve room for.
 
 Failure here means the fixed-dock contract drifted; update media_player.js /
 base.html (and UIMAP.md §5) in the same commit.
@@ -63,6 +63,19 @@ def test_player_width_always_matches_the_playlist_ui():
     assert "el.style.width" in body
 
 
+def test_window_controls_group_at_the_top_right():
+    """Minimize + close read as an OS title-bar pair: grouped at the top-right,
+    not split across the two top corners."""
+    css = BASE.read_text(encoding="utf-8")
+    block = re.search(r"\.mp-player-controls\s*\{(.*?)\}", css, re.DOTALL)
+    assert block, "missing .mp-player-controls rule"
+    body = block.group(1)
+    assert "justify-content: flex-end" in body, (
+        "minimize + close must both sit at the top-right"
+    )
+    assert "gap:" in body, "the two window buttons need a visible gap"
+
+
 def test_player_controls_are_always_shown():
     body = _function_body(_mp(), "_syncPlayerControls")
     assert "overlay.style.display = 'flex'" in body, (
@@ -73,25 +86,24 @@ def test_player_controls_are_always_shown():
     )
 
 
-def test_editor_height_is_clamped_before_docking_and_on_resize():
+def test_editor_height_cap_and_popdown_are_retired():
+    """ADR-195: the editor is a modal, so the bar-docked popdown and its
+    runtime height cap are gone — the dialog body owns the scroll."""
     src = _mp()
-    assert "function _clampPlaylistEditorHeight" in src
-    # The clamp must run in every path that positions the player or reflows the
-    # layout, so the editor never pushes the video out of the viewport.
-    for fn in ("_dockPlayer", "_repositionPlayers", "_renderPlaylistBar"):
-        assert "_clampPlaylistEditorHeight()" in _function_body(src, fn), (
-            f"{fn} must re-clamp the playlist editor height"
-        )
-
-
-def test_editor_height_cap_reserves_the_docked_player():
-    body = _function_body(_mp(), "_clampPlaylistEditorHeight")
-    assert "playerH" in body and "innerHeight" in body, (
-        "the cap must reserve the docked player's height within the viewport"
+    assert "function _clampPlaylistEditorHeight" not in src
+    assert "mp-queue-bar" not in src, "the bar-docked editor is retired"
+    css = BASE.read_text(encoding="utf-8")
+    assert ".mp-queue-bar" not in css, "the popdown CSS is retired"
+    assert re.search(r"#hd-body\s*\{[^}]*overflow-y:\s*auto", css, re.DOTALL), (
+        "the modal body must own the vertical scroll"
     )
-    assert "maxHeight" in body, "the cap must set the editor's max-height"
-    assert "window.innerWidth <= 768" in body, (
-        "the docked geometry is desktop-only; mobile keeps the sheet layout"
+
+
+def test_dock_target_is_the_bar_alone():
+    """The player docks under the Playlist Bar; the editor no longer unions in."""
+    body = _function_body(_mp(), "_playlistUiRect")
+    assert "mp-queue" not in body, (
+        "ADR-195: the editor is a modal, so _playlistUiRect must not merge it"
     )
 
 
@@ -102,13 +114,4 @@ def test_wdp_adjacent_positioning_is_retired():
     )
 
 
-def test_playlist_editor_scrolls_when_capped():
-    css = BASE.read_text(encoding="utf-8")
-    # `.mp-queue` owns the overflow; `.mp-queue-bar` inherits it and gets a
-    # runtime max-height from _clampPlaylistEditorHeight().
-    assert re.search(r"\.mp-queue\s*\{[^}]*overflow-y:\s*auto", css, re.DOTALL), (
-        "the playlist editor must scroll vertically when capped"
-    )
-    assert "max-height" in re.search(
-        r"#playlist-bar\s+\.mp-queue-bar\s*\{[^}]*\}", css, re.DOTALL
-    ).group(0), "the playlist editor needs a max-height fallback"
+

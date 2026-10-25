@@ -116,14 +116,10 @@ def test_wheel_switchview_does_not_touch_iife_private_cache():
     assert "window._wdpDataReady = true;" in js
 
 
-def test_opening_a_panel_folds_the_mobile_playlist_editor():
+def test_opening_a_panel_no_longer_folds_the_playlist_editor():
+    # ADR-195: the Playlist Editor is a modal above the drawers, so the ADR-175
+    # mobile fold (which existed only for the full-width popdown) is retired.
     js = MOBILE.read_text(encoding="utf-8")
-    # The fold lives in setPanelState, guarded by _isMobilePlayer() and panelOpen.
-    assert "MediaQueue.setPanelOpen(false)" in js, (
-        "opening a panel on mobile must fold the playlist editor so the "
-        "full-width bar/editor never covers the panel"
+    assert "MediaQueue.setPanelOpen(false)" not in js, (
+        "ADR-195 removed the mobile editor fold from setPanelState"
     )
-    assert re.search(
-        r"newState !== 'IDLE'[\s\S]{0,400}MediaQueue\.setPanelOpen\(false\)", js
-    ), "the editor fold must be part of the open-panel branch of setPanelState"
-    assert "_isMobilePlayer()" in js

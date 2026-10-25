@@ -43,8 +43,8 @@ CLAIMS: dict[str, list[str]] = {
         'id="mp-copy-toast"',
         # §5 media player — ADR-184 grand track search
         'id="search-bar"', 'id="track-search-input"', 'id="track-search-dropdown"',
-        # §5 media player — ADR-175 persistent Playlist Bar
-        'id="playlist-bar"', 'id="pb-summary"', 'id="pb-editor-toggle"',
+        # §5 media player — ADR-175 persistent Playlist Bar + ADR-195 editor
+        'id="playlist-bar"', 'id="pb-summary"', 'id="pb-count"',
         'id="pb-prev"', 'id="pb-next"', 'id="pb-play"', 'id="pb-stop"',
         'id="pb-copy"', 'id="pb-share"', 'id="pb-watch"', 'id="pb-volume"',
         # §5 media player — ADR-186 film-strip video toggle
@@ -118,7 +118,9 @@ CLAIMS: dict[str, list[str]] = {
         "function _playlistUiRect", "function _avoidUIOverlap",
         "function _uiObstacleRects", "function _resolveNonOverlap",
         "function _clampPlayerWidthToColumn", "function _repositionPlayers",
-        "function _syncViewTopInset", "function _clampPlaylistEditorHeight",
+        "function _syncViewTopInset",
+        "function _openPlaylistEditor", "function _closePlaylistEditor",
+        "function _togglePlaylistEditor",
         "function _syncPlayerControls",
         "function _pbSetPaused", "function _isCurrentPlaying",
         "function _pbCopyLink", "function _pbShareLink", "function _pbWatchOnYouTube",
