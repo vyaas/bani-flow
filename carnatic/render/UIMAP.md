@@ -479,7 +479,7 @@ row/bar height.
 
 **ADR-196: a playlist row is capped at two lines.** `_renderQueuePanel` builds
 each row as exactly two non-wrapping flex groups — `.mp-queue-meta`
-(grip · pos · reorder · chips) and `.mp-queue-actions` (play · stop · operators ·
+(grip · reorder · chips) and `.mp-queue-actions` (play · stop · operators ·
 video-toggle · volume · remove, with the copy / permalink / watch trio present
 only on the current row — ADR-197). The outer `.mp-queue-item`
 (`flex-wrap: wrap`) can wrap only *between* the groups, so the row is at most
@@ -593,8 +593,9 @@ registry: `parseMediaUrl`, `mediaKey`, `embedSource`, `resolveMedia` — ADR-154
 **CSS hooks:** `.mp-*` classes; `.mp-toggle-btn[aria-pressed="true"]` — the
 reusable depressed-toggle primitive (ADR-161) for any state-holding button;
 upward-surface pattern (`bottom:100%`, flip-down near viewport top);
-`.mp-queue.playlist-editor` (the modal form rows) with `.mp-queue-grip` /
-`.mp-queue-pos` / `.mp-queue-dragging` / `.mp-queue-drop-before/-after`.
+`.mp-queue.playlist-editor` (the modal form rows) with `.mp-queue-grip` (a
+compact six-dot handle; rows carry no ordinal badge) / `.mp-queue-dragging` /
+`.mp-queue-drop-before/-after`.
 **ADR-179:**
 playlist-track chips are a single non-wrapping scroll line; a playlist row's
 count badge right-aligns ahead of its two-slot `.trail-acts` column.

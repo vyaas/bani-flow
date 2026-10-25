@@ -147,7 +147,8 @@ def test_editor_is_a_modal_with_draggable_rows():
     assert "helpdialogclosed" in mp, "the dialog close must sync MediaQueue.panelOpen"
     assert "draggable = true" in mp, "editor rows must be draggable entities"
     assert "MediaQueue.move(from, to)" in mp, "drop must reuse the queue move()"
-    assert "mp-queue-grip" in mp and "mp-queue-pos" in mp
+    assert "mp-queue-grip" in mp, "the row keeps its drag affordance"
+    assert "mp-queue-pos" not in mp, "rows no longer carry a numeric ordinal badge"
 
 
 def test_queue_label_chips_follow_the_same_chip_contract():

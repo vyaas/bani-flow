@@ -2450,10 +2450,10 @@ function _renderQueuePanel(panel) {
     li.dataset.i = i;
     li.setAttribute('role', 'listitem');
 
-    // ADR-196: a row is at most two flex lines. All metadata (grip · position ·
-    // reorder · chips) is one non-wrapping group; every action button is the
-    // other. The outer row wraps between the two groups only, so a row can
-    // never balloon past the metadata line + the action line.
+    // ADR-196: a row is at most two flex lines. All metadata (grip · reorder ·
+    // chips) is one non-wrapping group; every action button is the other. The
+    // outer row wraps between the two groups only, so a row can never balloon
+    // past the metadata line + the action line.
     const meta = document.createElement('div');
     meta.className = 'mp-queue-meta';
     const actions = document.createElement('div');
@@ -2475,12 +2475,6 @@ function _renderQueuePanel(panel) {
     grip.addEventListener('mousedown', e => e.stopPropagation());
     grip.addEventListener('click', e => e.stopPropagation());
     meta.appendChild(grip);
-
-    const pos = document.createElement('span');
-    pos.className = 'mp-queue-pos';
-    pos.textContent = i + 1;
-    pos.setAttribute('aria-label', 'Track ' + (i + 1) + ' of ' + total);
-    meta.appendChild(pos);
 
     const reorder = document.createElement('span');
     reorder.className = 'mp-queue-reorder';

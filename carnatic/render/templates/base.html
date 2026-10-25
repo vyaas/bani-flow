@@ -3281,22 +3281,20 @@
     flex: 0 1 auto; min-width: 0; max-width: 100%;
     flex-wrap: nowrap;
   }
-  /* CSS-drawn grip (no font dependency) — the row's drag affordance. */
+  /* CSS-drawn grip (no font dependency) — the row's drag affordance. A
+     compact six-dot handle, not a bar: the whole row is draggable, so the
+     grip only needs to whisper that it can be moved. Revealed on hover/focus
+     for a fine pointer; kept faint but visible otherwise. */
   .mp-queue-grip {
-    flex-shrink: 0; width: 14px; height: 22px; cursor: grab;
-    background-image: radial-gradient(circle, var(--fg-muted) 1.1px, transparent 1.4px);
-    background-size: 6px 6px; background-position: 1px 3px;
-    opacity: 0.55;
+    flex-shrink: 0; width: 8px; height: 14px; cursor: grab;
+    background-image: radial-gradient(circle, var(--fg-muted) 1px, transparent 1.3px);
+    background-size: 4px 4px; background-position: 0 0;
+    opacity: 0.4;
+    transition: opacity 0.12s;
   }
-  .playlist-editor .mp-queue-item:hover .mp-queue-grip { opacity: 1; }
+  .playlist-editor .mp-queue-item:hover .mp-queue-grip,
+  .playlist-editor .mp-queue-item:focus-within .mp-queue-grip { opacity: 1; }
   .mp-queue-grip:active { cursor: grabbing; }
-  /* Position badge — the track's ordinal in the current playlist. */
-  .mp-queue-pos {
-    flex-shrink: 0; min-width: 1.4em; text-align: right;
-    font-size: 0.68rem; font-variant-numeric: tabular-nums;
-    color: var(--fg-muted);
-  }
-  .playlist-editor .mp-queue-current .mp-queue-pos { color: var(--accent); font-weight: bold; }
   /* ADR-196: chips keep the single-line scroll even in the modal, so a row
      never grows taller than its metadata line. This supersedes ADR-195 D3's
      chip-wrap clause — the two-line ceiling is the priority. */
