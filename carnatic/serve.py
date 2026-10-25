@@ -22,9 +22,22 @@ from pathlib import Path
 ROOT = Path(__file__).parent
 
 
+class ReusableTCPServer(socketserver.TCPServer):
+    # A killed/restarted dev server must rebind immediately; without this,
+    # TIME_WAIT on the previous socket makes the restart fail with EADDRINUSE.
+    allow_reuse_address = True
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, format, *args):  # noqa: A002
         pass  # silence request logs — keep terminal clean
+
+    def end_headers(self):
+        # The rendered graph.html is rebuilt in place; a cached copy makes
+        # "refresh after bani-render" show stale chrome. Local dev only, so
+        # no-store is safe and removes the hard-refresh guesswork.
+        self.send_header("Cache-Control", "no-store")
+        super().end_headers()
 
 
 def main() -> None:
@@ -35,7 +48,7 @@ def main() -> None:
     print(f"  open     {url}")
     print(f"  stop     Ctrl+C\n")
     webbrowser.open(url)
-    with socketserver.TCPServer(("", port), Handler) as httpd:
+    with ReusableTCPServer(("", port), Handler) as httpd:
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
