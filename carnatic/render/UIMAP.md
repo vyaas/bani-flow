@@ -43,12 +43,12 @@ trail, "her trail".
 `#bani-info` → subject chip row (`#bani-subject-header`, `#bani-subject-name`,
 `#bani-subject-popup-btn` → popup `#bani-subject-popup`) whose right-justified
 anchor is the add (`#bani-add-btn`, single-click raga-or-composition picker,
-ADR-202).
+ADR-202; hidden on mobile, where editing is blocked).
 Below it the content filter row `#trail-filter-row` = `#trail-filter` (placeholder
 "Filter content…", ADR-178) + play/enqueue pair. The filter/transport hide when
-empty (`.panel-empty`), the add remains on the chip row. The panel search is
-retired — the grand track search (§5, ADR-184) is the lookup surface. The old
-BANI FLOW title banner is also retired.
+empty (`.panel-empty`), the add remains on the chip row (desktop only). The
+panel search is retired — the grand track search (§5, ADR-184) is the lookup
+surface. The old BANI FLOW title banner is also retired.
 Scroll zone `#bani-scroll`: `#bani-tutorial`, `#bani-playlists`,
 `#bani-lecdem-strip`, `#listening-trail`. Mobile controls only (ADR-203): the
 `#left-panel-toggle` / `#desktop-left-handle` toggles are retired on desktop
@@ -127,12 +127,13 @@ recordings panel.
 **DOM:** `#right-sidebar` → sticky zone `#right-sticky` → `#musician-panel`
 header: `#node-info` → `#node-header` → `#node-name`, `#node-shape-icon`,
 `#node-wiki-link`, `#lineage-popup-btn`, whose right-justified anchor is the add
-(`#panel-add-btn`, single-click add-musician form, ADR-202). Below it the content
+(`#panel-add-btn`, single-click add-musician form, ADR-202; hidden on mobile,
+where editing is blocked). Below it the content
 filter row `#rec-filter-row` = `#rec-filter` (placeholder "Filter content…",
 ADR-178) + `#rec-play-all-btn`, `#rec-enqueue-btn`. Filter/transport hide when a
-node is not selected (`.panel-empty`), the add remains on the chip row. The
-panel search is retired — the grand track search (§5, ADR-184) is the lookup
-surface. The old MUSICIAN title banner is also retired.
+node is not selected (`.panel-empty`), the add remains on the chip row (desktop
+only). The panel search is retired — the grand track search (§5, ADR-184) is
+the lookup surface. The old MUSICIAN title banner is also retired.
 Scroll zone `#right-scroll` → `#recordings-panel` →
 `#recordings-list`; `#edge-info` (selected-edge readout); `#musician-tutorial`.
 Mobile controls only (ADR-203): `#right-panel-toggle` / `#desktop-right-handle`

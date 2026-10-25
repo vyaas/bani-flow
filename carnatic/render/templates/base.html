@@ -551,7 +551,9 @@
   #bani-flow-panel.panel-empty #trail-play-acts,
   #musician-panel.panel-empty #rec-filter,
   #musician-panel.panel-empty #rec-play-acts { display: none; }
-  /* With no subject loaded, the bani chip row keeps only its add anchor. */
+  /* With no subject loaded, the bani chip row keeps only its add anchor (on
+     mobile the add is hidden too, so the row collapses and the empty-panel
+     tutorial takes the whole sticky zone). */
   #bani-flow-panel.panel-empty #bani-subject-name-row > :not(.panel-add-btn),
   #bani-flow-panel.panel-empty #bani-notes-row,
   #bani-flow-panel.panel-empty #bani-subject-sub { display: none; }
@@ -4445,6 +4447,12 @@
     }
     /* ADR-040: filter toggle button removed on mobile */
     #filter-toggle-btn {
+      display: none;
+    }
+    /* Mobile edit is unavailable — entry_forms.js blocks the form via
+       showMobileEditBlockedMessage() — so the chip-row add anchor is dead
+       weight. Hide it in both panels and let the subject chips breathe. */
+    .panel-add-btn {
       display: none;
     }
     /* ADR-140: WDP left/top are set by JS — no CSS position override on mobile. */

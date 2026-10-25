@@ -142,3 +142,26 @@ def test_opening_a_panel_no_longer_folds_the_playlist_editor():
     assert "MediaQueue.setPanelOpen(false)" not in js, (
         "ADR-195 removed the mobile editor fold from setPanelState"
     )
+
+
+def test_mobile_hides_the_chip_row_add_buttons():
+    """Mobile editing is blocked (showMobileEditBlockedMessage shows the blocked
+    overlay), so the chip-row add anchors are dead weight and must be hidden on
+    mobile — both panels share the ``.panel-add-btn`` class, so one rule covers
+    them."""
+    css = BASE.read_text(encoding="utf-8")
+    # Both panel add anchors carry the class the hide rule targets.
+    assert css.count('class="panel-nav-btn panel-add-btn"') == 2, (
+        "both chip-row add anchors must share the .panel-add-btn class"
+    )
+    # The hide rule must live inside a ≤768px media block, matching the
+    # matchMedia('(max-width: 768px)') guard that blocks mobile editing.
+    blocks = re.findall(
+        r"@media \(max-width: 768px\) \{(.*?)\n  \}", css, re.DOTALL
+    )
+    assert any(
+        re.search(r"\.panel-add-btn\s*\{[^}]*display:\s*none", b, re.DOTALL)
+        for b in blocks
+    ), (
+        "the chip-row add must be display:none inside a mobile media query"
+    )
