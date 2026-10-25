@@ -546,6 +546,21 @@
        push the transport pair off the section rows' right edge. */
     padding: 0 0 8px; margin-top: 0; flex-shrink: 0;
   }
+  /* ADR-179/ADR-180 alignment: the filter row's transport pair must share one
+     vertical with the section/row columns below. The sticky zone (filter row)
+     spans the full panel width, while the scroll zone is narrowed by its
+     scrollbar — so reserve the same platform-defined scrollbar gutter on both
+     zones. The gutter width is UA-defined (thin scrollbars differ per OS), so
+     both sides must reserve it rather than hardcode a px offset. */
+  #bani-scroll, #right-scroll,
+  #bani-sticky, #right-sticky {
+    scrollbar-gutter: stable;
+  }
+  /* The sticky zone never scrolls; `hidden` reserves the gutter without
+     painting a scrollbar. `auto` would add one whenever the header is tall. */
+  #bani-sticky, #right-sticky {
+    overflow-y: hidden;
+  }
   /* Empty panels keep the add control, hide the filter and transport pair. */
   #bani-flow-panel.panel-empty #trail-filter,
   #bani-flow-panel.panel-empty #trail-play-acts,
