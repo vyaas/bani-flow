@@ -28,7 +28,10 @@
     --bg-pressed:             rgba(0, 0, 0, 0.28);
     /* ADR-129: safe-zone tokens — panel/canvas insets that clear the floating chrome */
     --chrome-top:             56px;   /* bottom of the grand search bar + gap (ADR-185: the Playlist Bar is ephemeral chrome, absent when empty) */
-    --chrome-bottom:          64px;   /* top of bottom-chrome (panel toggles + bundle) + gap */
+    --chrome-bottom:          64px;   /* clearance for the floating patch/edit hint (ADR-203: no longer reserves a panel floor) */
+    /* ADR-203: frozen desktop bays — the central view window's frame */
+    --frame-border-width:     2px;
+    --frame-radius:           8px;
     /* ADR-063: uniform first-class chip appearance */
     --chip-raga-border:       var(--accent-match, #6ec6a8);   /* teal/green accent */
     --chip-raga-bg:           color-mix(in srgb, var(--chip-raga-border) 12%, transparent);
@@ -4516,17 +4519,18 @@
     }
   }
 
-  /* ── Desktop drawer-with-pin layout ─────────────────────────────────── */
-  /* Panels are fixed drawers by default; pinning a panel brings it into the  */
-  /* CSS grid so it holds its 280px column without overlapping the canvas.     */
+  /* ── ADR-203: frozen desktop bays ───────────────────────────────────── */
+  /* On desktop the layout never changes: Bani Flow, the view, and the        */
+  /* Musician panel are three permanent bays. Both sidebars are always open    */
+  /* (no pin/unpin, no drawers); the central bay is the framed view window.    */
   @media (min-width: 769px) {
 
-    /* Grid default: unpinned columns are 0-wide (panels float over canvas) */
+    /* Fixed three-column grid — the two panels always own their columns. */
     #main {
       display: grid;
-      grid-template-columns: 0px 1fr 0px;
+      grid-template-columns: var(--left-panel-width, 280px) 1fr var(--right-panel-width, 280px);
       grid-template-rows: 1fr;
-      transition: grid-template-columns 0.22s ease;
+      transition: none;
     }
     /* Explicitly place each column — sidebars may be position:fixed (out-of-flow)
        so CSS auto-placement would skip them and land canvas-wrap in col 1 (0px). */
@@ -4534,68 +4538,36 @@
     #canvas-wrap   { grid-column: 2; grid-row: 1; }
     #right-sidebar { grid-column: 3; grid-row: 1; }
 
-    /* Pin-state variants driven by classes set in mobile.js */
-    /* Left panel always overlays the canvas (never pushes it into the grid). */
-    /* Only the right panel allocates a grid column when pinned. */
-    #main.right-pinned { grid-template-columns: 0px 1fr var(--right-panel-width, 280px); }
-
-    /* ADR-129: Inset floating (unpinned) panels so they never overlap the top/bottom chrome */
-    #left-sidebar:not(.panel-pinned),
-    #right-sidebar:not(.panel-pinned) {
-      top: var(--chrome-top);
-      bottom: var(--chrome-bottom);
-    }
-
-    /* Pinned panels become static in-flow grid items */
-    /* height is NOT set; grid stretch (align-items: stretch default) auto-sizes it */
-    /* margin-top/bottom keep the panel background clear of the floating chrome zones */
-    #left-sidebar.panel-pinned,
-    #right-sidebar.panel-pinned {
+    /* Both sidebars are permanent in-flow bays, flush under the top chrome and
+       extending to the bottom of the frame. ADR-203 retires the pin/drawer
+       split: the .panel-pinned / .right-pinned classes are inert here. The
+       inner edge carries no border — the view window's own border is the wall. */
+    #left-sidebar,
+    #right-sidebar {
       position: static;
       transform: none !important;
       top: auto; bottom: auto; left: auto; right: auto;
+      width: auto;
       z-index: auto;
       box-shadow: none;
       margin-top: var(--chrome-top);
-      margin-bottom: var(--chrome-bottom);
+      margin-bottom: 0;
       overflow-y: auto;
+      border: none;
     }
-    #right-sidebar.panel-pinned { border-left:  2px solid var(--border-strong); border-right: none; }
+    #left-sidebar.drawer-open,
+    #right-sidebar.drawer-open { transform: none !important; }
 
-    /* Left panel: always overlay even when "pinned" — never enters grid flow.
-       Overrides the shared panel-pinned rule above (same specificity, later wins).
-       position and transform need !important to beat the shared rule's declarations. */
-    #left-sidebar.panel-pinned {
-      position: absolute !important;
-      transform: translateX(0) !important;
-      top: var(--chrome-top); bottom: var(--chrome-bottom);
-      left: 0; z-index: 200;
-      box-shadow: 4px 0 16px rgba(0,0,0,0.3);
-      margin-top: 0; margin-bottom: 0;
-    }
-
-    /* Canvas column must not collapse below a usable width */
-    /* ADR-176 (view window): the canvas/view lives entirely inside the four
-       walls — below the playlist bar, between the open panels, above the bottom
-       floor. Margins (not grid columns) inset it: the left panel is an absolute
-       overlay, so the vacated margin IS the panel's footprint. The right panel
-       only needs a margin while it is a drawer; pinned, it already owns a grid
-       column. The controls (#layout-controls-float) sit at the top of this
-       inset view, so the playlist bar can never cover them. */
+    /* The central bay is the framed view window. ADR-176 still governs the
+       dynamic top wall so a live Playlist Bar pushes the view (and its
+       controls) down; the four borders make the frame's boundary explicit. */
     #canvas-wrap {
       min-width: 200px;
-      /* ADR-176: the top wall is the bottom of the playlist UI (bar + open
-         editor). --playlist-ui-bottom is published by media_player.js, so the
-         view is pushed lower as the editor deepens (never higher than the
-         bar's chrome gap). */
       margin-top: max(var(--chrome-top), calc(var(--playlist-ui-bottom, 0px) + 10px));
-      margin-bottom: var(--chrome-bottom);
-    }
-    #main:has(#left-sidebar.drawer-open) #canvas-wrap {
-      margin-left: var(--left-panel-width, 280px);
-    }
-    #main:has(#right-sidebar.drawer-open):not(.right-pinned) #canvas-wrap {
-      margin-right: var(--right-panel-width, 280px);
+      margin-bottom: 0;
+      border: var(--frame-border-width, 2px) solid var(--border-strong);
+      border-radius: var(--frame-radius, 8px);
+      overflow: hidden;
     }
 
     /* ADR-140: WDP left/top are set by JS — no CSS position overrides on desktop. */
@@ -4621,9 +4593,11 @@
       display: none !important;
     }
 
-    /* ADR-129 D2: Show floating panel toggles and bundle button on desktop */
+    /* ADR-129 D2 / ADR-203: the desktop bays are frozen, so the Bani Flow and
+       Musician pin toggles are retired here. Panel switching on mobile lives in
+       #mobile-tab-bar, which is untouched. The patch button remains. */
     #left-panel-toggle,
-    #right-panel-toggle,
+    #right-panel-toggle { display: none !important; }
     #bundle-download-btn { display: inline-flex; }
     .pc-notice { display: flex; }
   }

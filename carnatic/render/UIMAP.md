@@ -50,8 +50,10 @@ empty (`.panel-empty`), the add remains on the chip row. The panel search is
 retired — the grand track search (§5, ADR-184) is the lookup surface. The old
 BANI FLOW title banner is also retired.
 Scroll zone `#bani-scroll`: `#bani-tutorial`, `#bani-playlists`,
-`#bani-lecdem-strip`, `#listening-trail`. Toggles: `#left-panel-toggle`,
-`#desktop-left-handle`, scrim `#left-drawer-scrim`.
+`#bani-lecdem-strip`, `#listening-trail`. Mobile controls only (ADR-203): the
+`#left-panel-toggle` / `#desktop-left-handle` toggles are retired on desktop
+(where the panel is a permanent bay) and the scrim `#left-drawer-scrim` is
+mobile-only.
 
 **Owns:** `templates/bani_flow.js` (~2000 ln) — filter + trail. Supporting:
 `empty_tutorials.js` (`#bani-tutorial`
@@ -133,7 +135,8 @@ panel search is retired — the grand track search (§5, ADR-184) is the lookup
 surface. The old MUSICIAN title banner is also retired.
 Scroll zone `#right-scroll` → `#recordings-panel` →
 `#recordings-list`; `#edge-info` (selected-edge readout); `#musician-tutorial`.
-Toggles: `#right-panel-toggle`, `#desktop-right-handle`. Popup:
+Mobile controls only (ADR-203): `#right-panel-toggle` / `#desktop-right-handle`
+are retired on desktop (the panel is a permanent bay). Popup:
 `#lineage-popup` (ADR-137).
 
 **Owns — THE SPLIT (the #1 gotcha):** the panel is built by *two* modules.
@@ -235,11 +238,14 @@ timeline_view.js, read by raga_wheel.js's `switchView`);
 
 **CSS hooks:** canvas colors come from `THEME`/Python `graph_builder.py`
 (`ERA_COLORS`, `INSTRUMENT_SHAPES`, `NODE_SIZES`) — change them in Python, not
-JS. Overlay chips use chip classes. **View window (ADR-176):** `#canvas-wrap`
-is inset on desktop to the four walls (between the open panels, above the bottom
-floor); its top wall is `max(--chrome-top, --playlist-ui-bottom + gap)` —
-`media_player.js` `_syncViewTopInset()` publishes the playlist UI's live bottom
-so a deepening editor pushes the view (and `#layout-controls-float`) lower.
+JS. Overlay chips use chip classes. **View window (ADR-203):** the desktop layout is frozen — both sidebars are
+permanent grid columns and `#canvas-wrap` is a bordered, rounded central bay
+(`--frame-border-width` / `--frame-radius`, color `--border-strong`) that
+fills the height between the top chrome and the viewport bottom. ADR-176 still
+governs the dynamic top wall (`max(--chrome-top, --playlist-ui-bottom + gap)`),
+so `media_player.js` `_syncViewTopInset()` publishes the playlist UI's live
+bottom and a deepening editor pushes the view (and `#layout-controls-float`)
+lower.
 **(ADR-185:** the static `--chrome-top` now clears only the grand search bar
 (desktop `56px`), and the ephemeral Playlist Bar is `display:none` when empty,
 so `_playlistUiRect()` collapses to `null` and the view reclaims the second
@@ -255,7 +261,8 @@ tap → `selectNode` → §2. Bani filter dims non-matching nodes.
 **ADRs:** 018, 027, 028 (theme), 033/034, 044, 046, 055 (content-bearing),
 058, 064/066, 068/069/070, 074 (DOM label chips), 078 (lecdem), 080/081, 086,
 110 (composers as musicians), 114, 134, 137, 151, 163, 165/166, 172
-(instrument glyphs), 173 (scholar cap), 176 (inset view window).
+(instrument glyphs), 173 (scholar cap), 176 (inset view window), 203 (frozen
+desktop bays + framed central view).
 
 ---
 
@@ -718,9 +725,13 @@ permalink.js    LAST — restores state using every global above
 ### 6.4 Panel/drawer state machine
 
 `mobile.js`: `setPanelState(newState)` — opens/closes `#left-sidebar` /
-`#right-sidebar` via `.drawer-open`; desktop toggles `#left-panel-toggle` /
-`#right-panel-toggle` (`.float-toggle-active`); `peekBottomSheet()` /
-`dismissBottomSheet()` exposed as globals. **Mobile geometry (ADR-200):** the
+`#right-sidebar` via `.drawer-open`; `peekBottomSheet()` /
+`dismissBottomSheet()` exposed as globals. **ADR-203:** the desktop bays are
+frozen — `mobile.js` forces both panels pinned (`leftPinned`/`rightPinned`
+true, ignoring any stale stored value), the `#left-panel-toggle` /
+`#right-panel-toggle` buttons are hidden on desktop, and the panels are static
+grid bays, so `setPanelState` no longer changes the desktop layout. Panel
+switching lives in the mobile bottom tab bar (`#mobile-tab-bar`). **Mobile geometry (ADR-200):** the
 drawers are `position:fixed` with `top: var(--chrome-top)` — the search bar's
 bottom edge + 8px gap (`--search-height` derived, ≈ 92px). The full-width
 Playlist Bar shares that line at `z-index: 210`, so an open drawer draws **over**
@@ -739,8 +750,8 @@ actually opened or closed. **First visit (mobile):** `empty_tutorials.js`
 `_bootHelloWorld()` populates both demo subjects (Reetigowla / Ramnad Krishnan)
 but suppresses the auto-open — `triggerBaniSearch(..., {suppressPanelOpen:true})`
 and `selectNode(n, {revealPanel:false})` — so mobile lands on the bare
-Mela-Janya wheel with both drawers withdrawn. Desktop keeps its pinned-open
-panels (the pin restore in `mobile.js` runs first).
+Mela-Janya wheel with both drawers withdrawn. Desktop starts on its
+frozen-open bays (ADR-203; `mobile.js` forces both panels pinned).
 
 ### 6.5 Chips (the shared atom)
 

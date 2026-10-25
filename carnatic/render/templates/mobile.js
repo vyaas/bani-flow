@@ -333,14 +333,14 @@
     }
   }
 
-  // Restore pin state — localStorage persists across sessions.
-  // Both panels default pinned open on first visit (desktop).
+  // Restore pin state — desktop bays are frozen open (ADR-203).
+  // Both bays always open on desktop; the mobile tab bar still switches panels.
   if (isDesktop()) {
     try {
-      var _lp = localStorage.getItem('baniLeftPinned');
-      leftPinned  = _lp !== null ? _lp === 'true' : true;
-      var _rp = localStorage.getItem('baniRightPinned');
-      rightPinned = _rp !== null ? _rp === 'true' : true;
+      // ADR-203: ignore any stale stored pin value — the floating toggles are
+      // retired, so a previously-closed panel must not stay hidden.
+      leftPinned  = true;
+      rightPinned = true;
       _applyLeftPinState();
       _applyPinState();
       panelState = 'TRAIL';

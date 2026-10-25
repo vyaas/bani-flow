@@ -38,10 +38,13 @@ BANI = TEMPLATES / "bani_flow.js"
 
 def test_mobile_drawers_ride_the_search_bar_chrome_line():
     css = BASE.read_text(encoding="utf-8")
+    # ADR-203 adds a desktop rule using `margin-top: var(--chrome-top)`; match a
+    # real `top:` declaration, not the substring inside `margin-top:`.
+    top_wall = re.compile(r"(?:^|;)\s*top:\s*var\(--chrome-top\)")
     for sel in ("#left-sidebar", "#right-sidebar"):
         blocks = re.findall(re.escape(sel) + r"\s*\{(.*?)\}", css, re.DOTALL)
         assert blocks, f"{sel} rule missing"
-        mobile = [b for b in blocks if "top: var(--chrome-top)" in b]
+        mobile = [b for b in blocks if top_wall.search(b)]
         assert mobile, (
             f"{sel} must ride the mobile chrome line (top: var(--chrome-top))"
         )

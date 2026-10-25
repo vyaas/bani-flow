@@ -1,11 +1,13 @@
 """
-test_view_window_layout.py — ADR-176 guard for the inset "view window".
+test_view_window_layout.py — ADR-176 / ADR-203 guard for the framed view window.
 
 The guru-shishya canvas and the mela-janya wheel must live entirely inside the
 four walls — below the playlist bar, between the two panels, above the bottom
-floor — so the playlist bar can never occlude the layout/filter controls. This
-pins the desktop CSS contract; it fails if the inset or the controls' placement
-drifts back into the top chrome band.
+floor — so the playlist bar can never occlude the layout/filter controls. As of
+ADR-203 the desktop layout is frozen: both sidebars are permanent grid bays and
+the central window is an explicit bordered frame (the bottom floor is the frame
+edge, not a chrome band). This pins that desktop CSS contract; it fails if the
+dynamic top wall or the controls' placement drifts back into the top chrome band.
 
 Failure means the layout drifted: update base.html (and UIMAP.md §3/§4/§5) in
 the same commit.
@@ -27,17 +29,23 @@ def _base() -> str:
 
 
 def test_view_window_is_inset_inside_the_four_walls():
+    """ADR-203: the desktop view is a framed bay between the two permanent
+    sidebars. ADR-176's dynamic top wall still pushes it below a live Playlist
+    Bar; the bay's four borders make the frame boundary explicit."""
     css = _base()
     block = re.search(
-        r"#canvas-wrap\s*\{([^}]*margin-bottom:\s*var\(--chrome-bottom\)[^}]*)\}",
+        r"#canvas-wrap\s*\{([^}]*--playlist-ui-bottom[^}]*)\}",
         css, re.DOTALL,
     )
-    assert block, "#canvas-wrap must be inset above the bottom floor"
+    assert block, "#canvas-wrap must carry the dynamic top wall"
     body = block.group(1)
     # Top wall tracks the playlist editor's bottom, never higher than the bar gap.
-    assert "--playlist-ui-bottom" in body and "max(var(--chrome-top)" in body, (
+    assert "max(var(--chrome-top)" in body, (
         "the view's top wall must be max(--chrome-top, playlist-ui-bottom + gap) "
         "so a deepening editor pushes the view (and its controls) lower"
+    )
+    assert re.search(r"border:\s*[^;]*var\(--border-strong\)", body), (
+        "ADR-203: the central view window must be framed by a border"
     )
 
 
@@ -55,17 +63,23 @@ def test_mobile_view_top_wall_clears_the_playlist_bar():
     )
 
 
-def test_view_window_is_inset_by_open_panels():
+def test_view_window_is_inset_by_the_frozen_panel_columns():
+    """ADR-203: on desktop both sidebars own fixed grid columns, so the view is
+    inset by construction rather than by a margin that appears when a drawer
+    opens. Both bays are permanent in-flow panels."""
     css = _base()
+    block = re.search(
+        r"#main\s*\{([^}]*grid-template-columns:[^}]*)\}", css, re.DOTALL
+    )
+    assert block, "the desktop #main grid must declare its columns"
+    body = block.group(1)
+    assert "--left-panel-width" in body and "--right-panel-width" in body, (
+        "both sidebars must own a fixed column so the view is always inset"
+    )
     assert re.search(
-        r"#main:has\(#left-sidebar\.drawer-open\)\s*#canvas-wrap\s*\{[^}]*margin-left:",
+        r"#left-sidebar,\s*#right-sidebar\s*\{[^}]*position:\s*static",
         css, re.DOTALL,
-    ), "the left panel must inset #canvas-wrap when open"
-    assert re.search(
-        r"#main:has\(#right-sidebar\.drawer-open\):not\(\.right-pinned\)\s*#canvas-wrap"
-        r"\s*\{[^}]*margin-right:",
-        css, re.DOTALL,
-    ), "the right drawer must inset #canvas-wrap (the pinned grid column already excludes it)"
+    ), "the desktop panels must be static grid bays, not drawers"
 
 
 def test_layout_controls_live_inside_the_view_not_the_top_chrome():
