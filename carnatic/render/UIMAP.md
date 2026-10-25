@@ -467,10 +467,23 @@ operators `#pb-copy` / `#pb-share` / `#pb-watch` / `#pb-video-toggle` /
 volume-less (iframe) providers. **ADR-184:** the ADR-162 "Up Next" head
 (`.mp-queue-head`) is retired — the editor is the list alone. **Chip geometry:**
 the bar's `#pb-summary` scrolls its capsules on one line (ADR-179); the editor
-rows wrap (`.playlist-editor .mp-queue-chips`), because the modal has the width.
-The bare-label fallback (`_buildQueueRowChips`'s `.yt-label-chip`) is overridden
-in both contexts to the same natural-width, centred chip contract, so a label
-item never balloons a row/bar height.
+rows keep the same single-line scroll (`#hd-body .playlist-editor .mp-queue-chips`
+— ADR-196 supersedes ADR-195's chip-wrap clause). The bare-label fallback
+(`_buildQueueRowChips`'s `.yt-label-chip`) is overridden in both contexts to the
+same natural-width, centred chip contract, so a label item never balloons a
+row/bar height.
+
+**ADR-196: a playlist row is capped at two lines.** `_renderQueuePanel` builds
+each row as exactly two non-wrapping flex groups — `.mp-queue-meta`
+(grip · pos · reorder · chips) and `.mp-queue-actions` (play · stop · operators ·
+video-toggle · volume · enqueue · remove). The outer `.mp-queue-item`
+(`flex-wrap: wrap`) can wrap only *between* the groups, so the row is at most
+`metadata + actions`. Desktop: `.mp-queue-meta { flex: 1 1 0 }` yields width so
+the current row collapses to the non-current single-line form. Mobile
+(≤ 768px): `.mp-queue-current .mp-queue-meta { flex-basis: 100% }` gives the
+current item a metadata row + action row, while a non-current item's smaller set
+stays inline (one row); `.mp-queue-reorder` lies flat so its 44px touch targets
+do not stack.
 
 **ADR-184: the now-playing overlay.** `_syncNowPlayingOverlays()` (called from
 `_refreshQueuePanels`) paints `_buildQueueRowChips(item, activeChapter)` into
@@ -618,7 +631,8 @@ height cap), 184 (grand track search, thin editor bar, now-playing overlay),
 189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
 shell across grand + both panels), 194 (bottom placard + vertical operator rail
 on the video surface), 195 (Playlist Editor is a modal form — bar chevron
-retired, `#pb-count` opens it; draggable rows).
+retired, `#pb-count` opens it; draggable rows), 196 (playlist rows capped at two
+lines — meta + actions groups, chips scroll, mobile current wraps).
 AUDITs: 013 (chip pencil
 leak), 014 (player-source coupling), 015 (mute click-pause), 016 (playlist
 overlay), 018 (concert queue end boundary), 019 (trail end-seconds).

@@ -3269,6 +3269,18 @@
     border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
     border-left-color: var(--accent);
   }
+  /* ADR-196: the row's two — and only two — flex children. Each group is a
+     single non-wrapping line, so the row's height is capped at metadata +
+     actions no matter how many operators the current item owns. */
+  .mp-queue-meta {
+    display: flex; align-items: center; gap: 6px;
+    flex: 1 1 0; min-width: 0;
+  }
+  .mp-queue-actions {
+    display: flex; align-items: center; gap: 6px;
+    flex: 0 1 auto; min-width: 0; max-width: 100%;
+    flex-wrap: nowrap;
+  }
   /* CSS-drawn grip (no font dependency) — the row's drag affordance. */
   .mp-queue-grip {
     flex-shrink: 0; width: 14px; height: 22px; cursor: grab;
@@ -3285,11 +3297,13 @@
     color: var(--fg-muted);
   }
   .playlist-editor .mp-queue-current .mp-queue-pos { color: var(--accent); font-weight: bold; }
-  /* Chips WRAP in the form (the bar's one-line scroll is overridden here). */
+  /* ADR-196: chips keep the single-line scroll even in the modal, so a row
+     never grows taller than its metadata line. This supersedes ADR-195 D3's
+     chip-wrap clause — the two-line ceiling is the priority. */
   #hd-body .playlist-editor .mp-queue-chips {
-    flex: 1 1 220px; min-width: 0;
-    flex-wrap: wrap; overflow-x: visible; white-space: normal;
-    row-gap: 3px;
+    flex: 1 1 auto; min-width: 0;
+    flex-wrap: nowrap; overflow-x: auto; white-space: nowrap;
+    scrollbar-width: thin;
   }
   /* Drag states. */
   .playlist-editor .mp-queue-item.mp-queue-dragging { opacity: 0.4; }
@@ -3300,8 +3314,13 @@
     box-shadow: 0 3px 0 -1px var(--accent);
   }
   @media (max-width: 768px) {
-    /* The operator rail drops below the chips so neither is squeezed. */
-    #hd-body .playlist-editor .mp-queue-chips { flex-basis: 100%; }
+    /* ADR-196: on a phone the current item's wider operator set (stop ·
+       video-toggle · volume) wraps to a second line, so the metadata row
+       (chips) stays whole. A non-current item's smaller set stays inline.
+       The reorder pair lies flat so the 44px touch targets don't stack into
+       an 89px column that would inflate the metadata row. */
+    .playlist-editor .mp-queue-current .mp-queue-meta { flex-basis: 100%; }
+    .playlist-editor .mp-queue-reorder { flex-direction: row; }
   }
 
   /* Mobile (ADR-175): the bar is a second top band, top-centre full-width.

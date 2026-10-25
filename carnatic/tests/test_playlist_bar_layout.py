@@ -13,7 +13,9 @@ Pins three layout contracts that a previous revision got wrong:
    overflow, and the chips keep their natural width (no squashing).
 
 ADR-195 adds the modal-editor contract: #pb-count is the only editor control
-(the chevron is retired) and the editor's draggable rows wrap their chips.
+(the chevron is retired) and the editor rows are draggable. ADR-196 caps a row
+at two lines: chips scroll on one line and the row is split into a metadata
+group and an action group.
 
 The on-screen "Carnatic Music Explorer" title is retired; only the help button
 remains in the top-right cluster.
@@ -83,23 +85,43 @@ def test_summary_scrolls_with_thin_scrollbar_and_fixed_chips():
     ), "chips must keep their natural width so the strip scrolls, not squashes"
 
 
-def test_editor_rows_wrap_while_the_bar_scrolls():
-    """ADR-195: the modal form has the width, so its chip cluster WRAPS; the
-    bar keeps the ADR-179 single-line scroll (its base .mp-queue-chips rule)."""
+def test_playlist_rows_are_capped_at_two_lines():
+    """ADR-196: a row is exactly two non-wrapping groups (metadata + actions),
+    so it can never exceed two lines. Chips scroll on one line in the modal too
+    (this supersedes ADR-195's chip-wrap clause)."""
     css = _base()
+    # Shared chip base keeps its single-line scroll.
     row = _rule(css, ".mp-queue-chips")
     assert "flex-wrap: nowrap" in row, "the shared row base still scrolls"
     assert re.search(
         r"\.mp-queue-chips\s*>\s*\*\s*\{[^}]*flex-shrink:\s*0", css, re.DOTALL
     ), "chips keep their natural width so the strip scrolls, not squashes"
+    # The modal chip override is now a single-line scroll too (ADR-196).
     editor = re.search(
         r"#hd-body \.playlist-editor \.mp-queue-chips\s*\{(.*?)\}",
         css, re.DOTALL,
     )
-    assert editor, "missing the modal chip-wrap override (ADR-195)"
+    assert editor, "missing the modal chip override"
     block = editor.group(1)
-    assert "flex-wrap: wrap" in block, "the modal editor rows must wrap chips"
-    assert "overflow-x: visible" in block, "the modal editor must not scroll chips"
+    assert "flex-wrap: nowrap" in block, "the modal editor chips must not wrap"
+    assert "overflow-x: auto" in block, "the modal editor chips must scroll"
+    # The two groups each stay on one line.
+    meta = _rule(css, ".mp-queue-meta")
+    actions = _rule(css, ".mp-queue-actions")
+    assert "nowrap" in meta or "flex-wrap" not in meta
+    assert "nowrap" in actions, "the action group must never wrap"
+    # Mobile: the current item's metadata takes its own line.
+    assert re.search(
+        r"@media \(max-width: 768px\)\s*\{[^}]*"
+        r"\.playlist-editor \.mp-queue-current \.mp-queue-meta\s*\{\s*flex-basis: 100%",
+        css, re.DOTALL,
+    ), "the mobile current row must wrap its metadata to its own line"
+    # JS builds both groups.
+    mp = (
+        PROJECT_ROOT / "carnatic" / "render" / "templates" / "media_player.js"
+    ).read_text(encoding="utf-8")
+    assert "meta.className = 'mp-queue-meta'" in mp
+    assert "actions.className = 'mp-queue-actions'" in mp
 
 
 def test_bar_count_is_the_only_editor_control():

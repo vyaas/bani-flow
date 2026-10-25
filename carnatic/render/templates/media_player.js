@@ -2450,6 +2450,17 @@ function _renderQueuePanel(panel) {
     li.dataset.i = i;
     li.setAttribute('role', 'listitem');
 
+    // ADR-196: a row is at most two flex lines. All metadata (grip · position ·
+    // reorder · chips) is one non-wrapping group; every action button is the
+    // other. The outer row wraps between the two groups only, so a row can
+    // never balloon past the metadata line + the action line.
+    const meta = document.createElement('div');
+    meta.className = 'mp-queue-meta';
+    const actions = document.createElement('div');
+    actions.className = 'mp-queue-actions';
+    li.appendChild(meta);
+    li.appendChild(actions);
+
     const isCurrent = (i === MediaQueue.index);
     const isCurrentPlaying = isCurrent && _isCurrentPlaying();
 
@@ -2463,13 +2474,13 @@ function _renderQueuePanel(panel) {
     grip.setAttribute('aria-hidden', 'true');
     grip.addEventListener('mousedown', e => e.stopPropagation());
     grip.addEventListener('click', e => e.stopPropagation());
-    li.appendChild(grip);
+    meta.appendChild(grip);
 
     const pos = document.createElement('span');
     pos.className = 'mp-queue-pos';
     pos.textContent = i + 1;
     pos.setAttribute('aria-label', 'Track ' + (i + 1) + ' of ' + total);
-    li.appendChild(pos);
+    meta.appendChild(pos);
 
     const reorder = document.createElement('span');
     reorder.className = 'mp-queue-reorder';
@@ -2482,12 +2493,12 @@ function _renderQueuePanel(panel) {
     down.disabled = (i === total - 1);
     down.addEventListener('click', e => { e.stopPropagation(); MediaQueue.move(i, i + 1); });
     reorder.appendChild(up); reorder.appendChild(down);
-    li.appendChild(reorder);
+    meta.appendChild(reorder);
 
     const chips = document.createElement('span');
     chips.className = 'mp-queue-chips';
     chips.appendChild(_buildQueueRowChips(item, isCurrent ? MediaQueue.activeChapter : null));
-    li.appendChild(chips);
+    meta.appendChild(chips);
 
     // ADR-188: the row's primary transport is a PLAY/PAUSE toggle — while the
     // item sounds it shows ❚❚ and pauses; otherwise ▶ and plays/resumes. Stop
@@ -2504,7 +2515,7 @@ function _renderQueuePanel(panel) {
       if (isCurrent) _pbPlayPauseCurrent();
       else MediaQueue.jumpTo(i);
     });
-    li.appendChild(playBtn);
+    actions.appendChild(playBtn);
     // ADR-188: stop is its own control for the current item (stop ≠ pause — it
     // tears the controller down). It is always ■, never a play/stop toggle.
     if (isCurrent) {
@@ -2515,7 +2526,7 @@ function _renderQueuePanel(panel) {
       stopBtn.textContent = '\u25a0';   // ■
       stopBtn.disabled = !_currentPlayerInst();
       stopBtn.addEventListener('click', e => { e.stopPropagation(); _pbStopCurrent(); });
-      li.appendChild(stopBtn);
+      actions.appendChild(stopBtn);
     }
 
     // ADR-184: every row owns the operator set — copy · permalink · watch act
@@ -2529,9 +2540,9 @@ function _renderQueuePanel(panel) {
       b.addEventListener('click', e => { e.stopPropagation(); fn(); });
       return b;
     };
-    li.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
-    li.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
-    li.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', () => _openMediaOnYouTube(item)));
+    actions.appendChild(mkOp('mp-queue-copy',  'Copy YouTube link', '\u29c9', () => _copyMediaLink(item)));
+    actions.appendChild(mkOp('mp-queue-share', 'Copy permalink',    '#',      () => _copyMediaPermalink(item)));
+    actions.appendChild(mkOp('mp-queue-watch', 'Watch on YouTube',  '\u2197', () => _openMediaOnYouTube(item)));
     // ADR-186: the current row owns the film-strip video toggle (the Playlist
     // Bar inherits it when the editor folds). Restores a minimized docked video.
     if (isCurrent) {
@@ -2545,7 +2556,7 @@ function _renderQueuePanel(panel) {
       vt.setAttribute('aria-label', vt.title);
       vt.setAttribute('aria-pressed', shown ? 'true' : 'false');
       vt.addEventListener('click', e => { e.stopPropagation(); _toggleVideoVisibility(); });
-      li.appendChild(vt);
+      actions.appendChild(vt);
     }
     if (isCurrent) {
       const vol = document.createElement('input');
@@ -2554,7 +2565,7 @@ function _renderQueuePanel(panel) {
       vol.title = 'Volume'; vol.setAttribute('aria-label', 'Volume');
       vol.addEventListener('input', e => { e.stopPropagation(); _setPlayerVolume(vol.value / 100); });
       vol.addEventListener('click', e => e.stopPropagation());
-      li.appendChild(vol);
+      actions.appendChild(vol);
     }
 
     // + affordance — secondary: add to playlist or session queue
@@ -2566,14 +2577,14 @@ function _renderQueuePanel(panel) {
         artistName: _item.artistName || '', meta: _item.meta || {},
       });
     })());
-    li.appendChild(qplus);
+    actions.appendChild(qplus);
 
     const rm = document.createElement('button');
     rm.type = 'button'; rm.className = 'mp-queue-remove';
     rm.title = 'Remove from queue'; rm.setAttribute('aria-label', 'Remove from queue');
     rm.textContent = '✕';
     rm.addEventListener('click', e => { e.stopPropagation(); MediaQueue.removeAt(i); });
-    li.appendChild(rm);
+    actions.appendChild(rm);
 
     // ADR-195: drag-and-drop reorder. Drop marks paint an accent edge on the
     // hovered row's leading or trailing side.
