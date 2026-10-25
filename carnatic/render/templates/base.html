@@ -2283,6 +2283,17 @@
      panel-title header). Editing is only offered in the sidebar panels. */
   .media-player [data-editable]:hover { outline: none; }
   .media-player [data-editable]::after { display: none; }
+  /* Scroll-surface subject chips (ADR-180/198): #bani-subject-name is itself the
+     horizontal-scroll container, and #node-name scrolls its inner chip. The
+     exterior pencil at right:-5px extends the scroll area by 5px, so a
+     horizontal scrollbar appeared even when the label fit — and its height
+     vertically offset the flex-centred text. Pin the pencil just inside the
+     chip edge on these two surfaces; every other chip keeps the exterior look. */
+  #bani-subject-name[data-editable]::after,
+  #node-name > [data-editable]::after {
+    right: 1px;
+    top: 1px;
+  }
 
   /* ── ADR-142 Phase E: first-use double-click discoverability hint ───────────
      Appears once on first chip dblclick gesture; dismissed by click/keydown
