@@ -99,15 +99,20 @@ def test_mobile_first_visit_lands_on_the_wheel_with_both_drawers_withdrawn():
     subjects, but on mobile the page must land on the bare Mela-Janya wheel —
     both drawers withdrawn. The panel-open side effects are suppressed:
     ``triggerBaniSearch`` skips the TRAIL drawer when ``suppressPanelOpen`` is
-    set, and ``selectNode`` is called with ``revealPanel: false``.
+    set, and ``selectNode`` is called with ``revealPanel: false``. Both boot
+    calls also pass ``fromHistory: true`` so the demo does not pollute the
+    unified PanelNav history (ADR-201) — Back stays disabled on first load.
     """
     js = EMPTY.read_text(encoding="utf-8")
     assert "const isMobile = window.matchMedia('(max-width: 768px)').matches;" in js
     assert "{ suppressPanelOpen: isMobile }" in js, (
         "the boot's bani search must suppress the TRAIL drawer on mobile"
     )
-    assert "selectNode(n, { revealPanel: !isMobile })" in js, (
-        "the boot's musician select must not reveal the MUSICIAN drawer on mobile"
+    assert "selectNode(n, { revealPanel: !isMobile, fromHistory: true })" in js, (
+        "the boot's musician select must not reveal the drawer nor record history"
+    )
+    assert "triggerBaniSearch(baniSubject.kind || 'raga', baniSubject.id, true," in js, (
+        "the boot's bani search must be history-suppressed (ADR-201)"
     )
 
     bani = BANI.read_text(encoding="utf-8")

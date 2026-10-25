@@ -929,40 +929,89 @@ cy.on('mousemove', 'edge[kind != "transitive"]', function (evt) {
   popover.style.top  = (y + 16 + ph > window.innerHeight ? y - ph - 10 : y + 16) + 'px';
 });
 
-// ── Panel history (ADR-066) ──────────────────────────────────────────────────
+// ── Unified panel history (ADR-201) ─────────────────────────────────────────
+// One chronological stack spans BOTH sidebars: the panels are populated one at
+// a time, so a single ordering is enough to walk back and forth through every
+// item the user has searched. Each entry is tagged:
+//   {kind:'bani', type, id}  — a Bani-flow subject
+//   {kind:'node', id}        — a musician panel subject
+// The single top-right nav pair (left of the help button) walks this stack.
 let _currentPanelNodeId = null;
-const panelHistory = { back: [], forward: [] };
-const PANEL_HISTORY_MAX = 5;
+const PANEL_HISTORY_MAX = 8;
 
-function _updatePanelNavButtons() {
-  const backBtn = document.getElementById('panel-back-btn');
-  const fwdBtn  = document.getElementById('panel-fwd-btn');
-  if (backBtn) backBtn.disabled = panelHistory.back.length === 0;
-  if (fwdBtn)  fwdBtn.disabled  = panelHistory.forward.length === 0;
-}
+window.PanelNav = (function () {
+  var back = [], forward = [], current = null;
 
-function panelBack() {
-  if (!panelHistory.back.length) return;
-  const targetId = panelHistory.back.pop();
-  if (_currentPanelNodeId) {
-    panelHistory.forward.unshift(_currentPanelNodeId);
-    if (panelHistory.forward.length > PANEL_HISTORY_MAX) panelHistory.forward.pop();
+  function _key(it) {
+    if (!it) return '';
+    return it.kind + ':' + (it.type || '') + ':' + (it.id || '');
   }
-  const n = cy.getElementById(targetId);
-  if (n && n.length) selectNode(n, { fromHistory: true });
-}
-
-function panelForward() {
-  if (!panelHistory.forward.length) return;
-  const targetId = panelHistory.forward.shift();
-  if (_currentPanelNodeId) {
-    panelHistory.back.push(_currentPanelNodeId);
-    if (panelHistory.back.length > PANEL_HISTORY_MAX) panelHistory.back.shift();
+  function update() {
+    var b = document.getElementById('panel-back-btn');
+    var f = document.getElementById('panel-fwd-btn');
+    if (b) b.disabled = back.length === 0;
+    if (f) f.disabled  = forward.length === 0;
   }
-  const n = cy.getElementById(targetId);
-  if (n && n.length) selectNode(n, { fromHistory: true });
-}
+  // Record a completed navigation to `item`. The previously-current item, if
+  // any and different, becomes the back target and invalidates forward.
+  function record(item) {
+    if (!item) return;
+    if (current && _key(current) !== _key(item)) {
+      back.push(current);
+      if (back.length > PANEL_HISTORY_MAX) back.shift();
+      forward = [];
+    }
+    current = item;
+    update();
+  }
+  function reset() { back = []; forward = []; current = null; update(); }
+  function _dispatch(it) {
+    if (!it) return;
+    if (it.kind === 'bani') {
+      if (typeof triggerBaniSearch === 'function') triggerBaniSearch(it.type, it.id, true);
+    } else if (it.kind === 'node') {
+      var n = (typeof cy !== 'undefined') ? cy.getElementById(it.id) : null;
+      if (n && n.length) {
+        selectNode(n, { fromHistory: true });
+      } else if (typeof _openMusicianPanelForTransit === 'function') {
+        _openMusicianPanelForTransit(it.id);
+      }
+    }
+  }
+  function goBack() {
+    if (!back.length) return;
+    var target = back.pop();
+    if (current) {
+      forward.unshift(current);
+      if (forward.length > PANEL_HISTORY_MAX) forward.pop();
+    }
+    current = target;
+    update();
+    _dispatch(target);
+  }
+  function goForward() {
+    if (!forward.length) return;
+    var target = forward.shift();
+    if (current) {
+      back.push(current);
+      if (back.length > PANEL_HISTORY_MAX) back.shift();
+    }
+    current = target;
+    update();
+    _dispatch(target);
+  }
+  return {
+    record: record, reset: reset, update: update,
+    back: goBack, forward: goForward,
+    current: function () { return current; },
+    backEntries: function () { return back.slice(); },
+    forwardEntries: function () { return forward.slice(); },
+  };
+})();
 
+// Kept as named wrappers: UIMAP/drift guard and the top-right buttons bind here.
+function panelBack() { window.PanelNav.back(); }
+function panelForward() { window.PanelNav.forward(); }
 document.getElementById('panel-back-btn').addEventListener('click', panelBack);
 document.getElementById('panel-fwd-btn').addEventListener('click', panelForward);
 
@@ -1152,14 +1201,10 @@ function buildLineagePanel(nodeId) {
 function selectNode(node, { fromHistory = false, revealPanel = true } = {}) {
   const d = node.data();
   if (!fromHistory) {
-    if (_currentPanelNodeId && _currentPanelNodeId !== node.id()) {
-      panelHistory.back.push(_currentPanelNodeId);
-      if (panelHistory.back.length > PANEL_HISTORY_MAX) panelHistory.back.shift();
-      panelHistory.forward = [];
-    }
+    window.PanelNav.record({ kind: 'node', id: node.id() });
   }
   _currentPanelNodeId = node.id();
-  _updatePanelNavButtons();
+  window.PanelNav.update();
 
   // Collapsed single-line header — build an era-tinted musician-chip
   const nameEl = document.getElementById('node-name');
@@ -1265,7 +1310,7 @@ function _openMusicianPanelForTransit(transitId) {
   const d = el.data;
 
   _currentPanelNodeId = transitId;
-  _updatePanelNavButtons();
+  window.PanelNav.update();
 
   const nameEl = document.getElementById('node-name');
   nameEl.innerHTML = '';

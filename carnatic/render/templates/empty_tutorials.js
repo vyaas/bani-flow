@@ -1527,7 +1527,9 @@
     const baniSubject = baniBlock && baniBlock.subject;
     if (baniSubject && baniSubject.id && typeof triggerBaniSearch === 'function') {
       try {
-        triggerBaniSearch(baniSubject.kind || 'raga', baniSubject.id, false,
+        // ADR-201: fromHistory suppresses unified-history recording — the boot
+        // demo is not a user search, so Back must stay disabled on first load.
+        triggerBaniSearch(baniSubject.kind || 'raga', baniSubject.id, true,
                           { suppressPanelOpen: isMobile });
       } catch (_) {}
     }
@@ -1542,7 +1544,7 @@
         typeof selectNode === 'function') {
       const n = cy.getElementById(muSubject.id);
       if (n && n.length) {
-        try { selectNode(n, { revealPanel: !isMobile }); } catch (_) {}
+        try { selectNode(n, { revealPanel: !isMobile, fromHistory: true }); } catch (_) {}
       }
     }
   }

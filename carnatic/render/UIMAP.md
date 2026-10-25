@@ -41,16 +41,14 @@ trail, "her trail".
 
 **DOM:** `#left-sidebar` → `#bani-flow-panel`. Sticky zone `#bani-sticky`:
 `#bani-info` → subject chip row (`#bani-subject-header`, `#bani-subject-name`,
-`#bani-subject-popup-btn` → popup `#bani-subject-popup`) with pinned
-`.panel-chip-actions` = nav group (`#bani-back-btn`, `#bani-fwd-btn`, square).
-Below it the content filter row `#trail-filter-row` = add (`#bani-add-btn`,
-single-click raga-or-composition picker) + `#trail-filter` (placeholder "Filter
-content…", ADR-178) + play/enqueue pair; the add stays leftmost so the filter
-reads as indented under the chip. The filter/transport hide when empty
-(`.panel-empty`), the add remains. The panel search is retired — the grand track
-search (§5, ADR-184) is the lookup surface. The old BANI FLOW title banner is
-also retired; `#bani-info` is always present so the chip row can host nav even
-when empty.
+`#bani-subject-popup-btn` → popup `#bani-subject-popup`) whose right-justified
+anchor is the add (`#bani-add-btn`, single-click raga-or-composition picker,
+ADR-202).
+Below it the content filter row `#trail-filter-row` = `#trail-filter` (placeholder
+"Filter content…", ADR-178) + play/enqueue pair. The filter/transport hide when
+empty (`.panel-empty`), the add remains on the chip row. The panel search is
+retired — the grand track search (§5, ADR-184) is the lookup surface. The old
+BANI FLOW title banner is also retired.
 Scroll zone `#bani-scroll`: `#bani-tutorial`, `#bani-playlists`,
 `#bani-lecdem-strip`, `#listening-trail`. Toggles: `#left-panel-toggle`,
 `#desktop-left-handle`, scrim `#left-drawer-scrim`.
@@ -73,8 +71,11 @@ lives in `panel_components.js` and is shared with the musician panel (ADR-178).
   — secondary strips. `_renderBaniFlowPlaylists` passes `{type, id}` to
   `buildPlaylistsSection` so each playlist row shows only the items matching
   the subject (ADR-189).
-- `baniBack()` / `baniForward()` / `_updateBaniNavButtons()` — history.
-- `window.getBaniTrail()` — read current trail from other modules.
+- `window.PanelNav` (defined in graph_view.js, ADR-201) — the single unified
+  back/forward history spanning both panels; `record({kind:'bani',type,id})`
+  is called from `triggerBaniSearch`. `window.getBaniTrail()` projects the
+  bani entries for permalink serialization.
+- `window.getBaniTrail()` — read current trail for permalink serialization.
 - `window.openCategoryHelp(slot, kind)` (empty_tutorials.js) — ADR-177: opens
   the category help card in `#help-dialog`; wired from `.section-help-btn` on
   every section header (buildSection, panel_components.js).
@@ -110,8 +111,9 @@ tutorials), 128 (panel components), 138, 142/144 (chip interactions), 148,
 (unified content filter), 180 (ribbon rows), 181 (transport buttons + meta chips),
 182 (themeable meta badges), 189 (context-scoped playlist rows + ⓘ info dialog),
 190 (shared search-field shell, now grand-only), 191 (panel top row — banners
-retired, square nav + add), 198 (panel searches retired; nav/add move into the
-content-filter command row).
+retired, square nav + add), 198 (panel searches retired), 201 (unified panel
+history; single nav pair in the top-right chrome), 202 (panel add anchors the
+subject chip row).
 
 ---
 
@@ -122,15 +124,13 @@ recordings panel.
 
 **DOM:** `#right-sidebar` → sticky zone `#right-sticky` → `#musician-panel`
 header: `#node-info` → `#node-header` → `#node-name`, `#node-shape-icon`,
-`#node-wiki-link`, `#lineage-popup-btn`, with pinned `.panel-chip-actions` =
-nav group (`#panel-back-btn`, `#panel-fwd-btn`, square). Below it the content
-filter row `#rec-filter-row` = add (`#panel-add-btn`, single-click add-musician
-form) + `#rec-filter` (placeholder "Filter content…", ADR-178) +
-`#rec-play-all-btn`, `#rec-enqueue-btn`; the add stays leftmost so the filter
-reads as indented under the chip. Filter/transport hide when a node is not
-selected (`.panel-empty`), the add remains. The panel search is retired — the
-grand track search (§5, ADR-184) is the lookup surface. The old MUSICIAN title
-banner is also retired.
+`#node-wiki-link`, `#lineage-popup-btn`, whose right-justified anchor is the add
+(`#panel-add-btn`, single-click add-musician form, ADR-202). Below it the content
+filter row `#rec-filter-row` = `#rec-filter` (placeholder "Filter content…",
+ADR-178) + `#rec-play-all-btn`, `#rec-enqueue-btn`. Filter/transport hide when a
+node is not selected (`.panel-empty`), the add remains on the chip row. The
+panel search is retired — the grand track search (§5, ADR-184) is the lookup
+surface. The old MUSICIAN title banner is also retired.
 Scroll zone `#right-scroll` → `#recordings-panel` →
 `#recordings-list`; `#edge-info` (selected-edge readout); `#musician-tutorial`.
 Toggles: `#right-panel-toggle`, `#desktop-right-handle`. Popup:
@@ -150,7 +150,9 @@ owns the recordings body. A "musician panel" task usually touches both.
   `buildConcertBracket` / `buildCompNode` / `buildMiscLeaf` /
   `buildPlaylistsSection` (context-scoped, ADR-189) / `_buildLecdemBracket`.
 - `window.clearMusicianPanel()` — reset (also hides `#recordings-panel`).
-- `panelBack()` / `panelForward()` / `window.getCurrentPanelNode()`.
+- `panelBack()` / `panelForward()` — thin wrappers over `window.PanelNav`
+  (ADR-201); the single top-right chrome pair binds to them.
+  `window.getCurrentPanelNode()`.
 - `gurusOf(nodeId)` / `shishyasOf(nodeId)` / `_makeLineageChip(d)` —
   lineage chips; `_setupLineagePopupBtn` → `#lineage-popup`.
 - `_openMusicianPanelForTransit(transitId)` — cross-view open (defined in
@@ -159,8 +161,8 @@ owns the recordings body. A "musician panel" task usually touches both.
   textContent filter bound to `#rec-filter`; searches lecdems + segment names,
   subject chips, misc recordings, raga/composition groups, playlists, notes.
 
-**State globals:** `_currentPanelNodeId` (graph_view.js); panel history stack;
-`_focusedGraphNode`.
+**State globals:** `_currentPanelNodeId` (graph_view.js); the unified history
+stack `window.PanelNav` (ADR-201); `_focusedGraphNode`.
 
 **CSS hooks:** `--right-panel-width` (derived, ADR-128 D7); `.panel`;
 `.section-collapse-btn` (ADR-180: retired); `.section-play-acts` (play-all/enqueue pair);
@@ -194,8 +196,8 @@ section), 177 (category help dialog), 178 (unified content filter), 179
 181 (transport buttons + left-aligned meta chips), 182 (themeable meta badges),
 189 (context-scoped playlist rows + ⓘ info dialog), 190 (shared search-field
 shell, now grand-only), 191 (panel top row — banners retired, square nav +
-add), 198 (panel searches retired; nav/add move into the content-filter
-command row).
+add), 198 (panel searches retired), 201 (unified panel history; single nav pair
+in the top-right chrome), 202 (panel add anchors the subject chip row).
 
 ---
 

@@ -224,38 +224,46 @@ def test_grand_search_owns_the_shared_search_shell():
     assert "dispatchEvent(new Event('input'" in src
 
 
-def test_chip_rows_keep_nav_and_filter_rows_lead_with_add():
-    """Nav rides the chip row; add is the filter row's leftmost control."""
+def test_nav_in_top_chrome_and_add_anchors_the_chip_row():
+    """ADR-201/202: one unified nav pair sits in the top-right chrome, left of
+    help; each panel's add is the right-justified anchor of its chip row, and
+    the filter rows hold only content-filter controls."""
     css = _base()
     for needle in (
         'id="trail-filter-row"', 'id="rec-filter-row"',
-        'id="bani-back-btn"', 'id="bani-fwd-btn"',
         'id="panel-back-btn"', 'id="panel-fwd-btn"',
         'id="bani-add-btn"', 'id="panel-add-btn"',
         'class="panel panel-empty"',
     ):
         assert needle in css
-    assert css.count('class="panel-chip-actions"') == 2
-    # Left panel: nav in the chip row, add in the filter row.
-    left_chip = css[css.index('id="bani-subject-name-row"'):css.index('id="trail-filter-row"')]
-    left_filter = css[css.index('id="trail-filter-row"'):css.index('id="bani-scroll"')]
-    for needle in ('id="bani-back-btn"', 'id="bani-fwd-btn"'):
-        assert needle in left_chip
-        assert needle not in left_filter
-    assert 'id="bani-add-btn"' in left_filter
-    assert 'id="bani-add-btn"' not in left_chip
-    # Right panel: same split — nav above, add leads the filter row.
-    right_chip = css[css.index('id="node-header-chip-row"'):css.index('id="rec-filter-row"')]
-    right_filter = css[css.index('id="rec-filter-row"'):css.index('id="right-scroll"')]
+    # The old bani-specific nav ids are retired in favour of the shared pair.
+    assert 'id="bani-back-btn"' not in css
+    assert 'id="bani-fwd-btn"' not in css
+    assert 'class="panel-chip-actions"' not in css
+    # The single nav pair lives in #app-title-float, immediately left of help.
+    chrome = css[css.index('id="app-title-float"'):css.index('id="help-btn"')]
     for needle in ('id="panel-back-btn"', 'id="panel-fwd-btn"'):
-        assert needle in right_chip
-        assert needle not in right_filter
-    assert 'id="panel-add-btn"' in right_filter
-    assert 'id="panel-add-btn"' not in right_chip
-    # Add is the first control in each filter row.
-    assert left_filter.index('id="bani-add-btn"') < left_filter.index('id="trail-filter"')
-    assert right_filter.index('id="panel-add-btn"') < right_filter.index('id="rec-filter"')
-    # The filter row still carries the transport pair aligned to section rows.
+        assert needle in chrome
+    # Each chip row carries its add as the last child; neither carries nav.
+    left_chip = css[css.index('id="bani-subject-name-row"'):css.index('id="trail-filter-row"')]
+    right_chip = css[css.index('id="node-header-chip-row"'):css.index('id="rec-filter-row"')]
+    assert 'id="bani-add-btn"' in left_chip
+    assert 'id="panel-add-btn"' in right_chip
+    for needle in ('id="panel-back-btn"', 'id="panel-fwd-btn"'):
+        assert needle not in left_chip
+        assert needle not in right_chip
+    # Add is the last control in each chip row (after the subject chip/name).
+    assert left_chip.index('id="bani-subject-name"') < left_chip.index('id="bani-add-btn"')
+    assert right_chip.index('id="node-name"') < right_chip.index('id="panel-add-btn"')
+    # The add is right-justified by its rule.
+    add_rule = re.search(r"\.panel-add-btn\s*\{([^}]*)\}", css, re.DOTALL).group(1)
+    assert "margin-left: auto" in add_rule
+    # The filter rows keep the content filter and transport, but no add.
+    left_filter = css[css.index('id="trail-filter-row"'):css.index('id="bani-scroll"')]
+    right_filter = css[css.index('id="rec-filter-row"'):css.index('id="right-scroll"')]
+    assert 'id="bani-add-btn"' not in left_filter
+    assert 'id="panel-add-btn"' not in right_filter
+    assert 'id="trail-filter"' in left_filter and 'id="rec-filter"' in right_filter
     for needle in ('id="trail-play-acts"', 'id="rec-play-acts"'):
         assert needle in left_filter or needle in right_filter
     # No standalone top row, and no retired panel search chrome.

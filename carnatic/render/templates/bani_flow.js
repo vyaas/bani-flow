@@ -62,50 +62,21 @@ function showGraphAbsentToast(name) {
 
 let activeBaniFilter = null; // { type: 'comp'|'raga'|'perf'|'yt', id: string }
 
-// ── Bani Flow panel history (ADR-148) ────────────────────────────────────────
+// ── Bani Flow subject state (ADR-148 / ADR-201) ──────────────────────────────
+// Navigation history now lives in the unified PanelNav (graph_view.js); the
+// Bani half only tracks the subject currently shown and exposes it for links.
 let _currentBaniSubject = { type: null, id: null };
-const baniHistory = { back: [], forward: [] };
-const BANI_HISTORY_MAX = 5;
 
-function _updateBaniNavButtons() {
-  const backBtn = document.getElementById('bani-back-btn');
-  const fwdBtn  = document.getElementById('bani-fwd-btn');
-  if (backBtn) backBtn.disabled = baniHistory.back.length === 0;
-  if (fwdBtn)  fwdBtn.disabled  = baniHistory.forward.length === 0;
-}
-
-function baniBack() {
-  if (!baniHistory.back.length) return;
-  const target = baniHistory.back.pop();
-  if (_currentBaniSubject.type) {
-    baniHistory.forward.unshift({ type: _currentBaniSubject.type, id: _currentBaniSubject.id });
-    if (baniHistory.forward.length > BANI_HISTORY_MAX) baniHistory.forward.pop();
-  }
-  triggerBaniSearch(target.type, target.id, true);
-}
-
-function baniForward() {
-  if (!baniHistory.forward.length) return;
-  const target = baniHistory.forward.shift();
-  if (_currentBaniSubject.type) {
-    baniHistory.back.push({ type: _currentBaniSubject.type, id: _currentBaniSubject.id });
-    if (baniHistory.back.length > BANI_HISTORY_MAX) baniHistory.back.shift();
-  }
-  triggerBaniSearch(target.type, target.id, true);
-}
-
-(function() {
-  const _baniBackBtn = document.getElementById('bani-back-btn');
-  const _baniFwdBtn  = document.getElementById('bani-fwd-btn');
-  if (_baniBackBtn) _baniBackBtn.addEventListener('click', baniBack);
-  if (_baniFwdBtn)  _baniFwdBtn.addEventListener('click', baniForward);
-})();
-
-// ── ADR-151: expose bani trail for permalink serialization ───────────────────
+// ── ADR-151 / ADR-201: expose the bani portion of the unified nav for ────────
+// permalink serialization. The back stack is chronological across both panels;
+// only bani subjects are replayable through triggerBaniSearch.
 window.getBaniTrail = function() {
+  var bani = (window.PanelNav ? window.PanelNav.backEntries() : [])
+    .filter(function(e) { return e && e.kind === 'bani'; })
+    .map(function(e) { return { type: e.type, id: e.id }; });
   return {
     current: { type: _currentBaniSubject.type, id: _currentBaniSubject.id },
-    back:    baniHistory.back.map(function(e) { return { type: e.type, id: e.id }; }),
+    back:    bani,
   };
 };
 
@@ -1508,11 +1479,8 @@ function clearBaniFilter(opts) {
   if (_bfPopup) { _bfPopup.style.display = 'none'; _bfPopup.innerHTML = ''; }
   const _clearHerPrefix = document.getElementById('bani-her-prefix');
   if (_clearHerPrefix) _clearHerPrefix.style.display = 'none';
-  // ADR-148: reset navigation history
-  baniHistory.back = [];
-  baniHistory.forward = [];
+  // ADR-148: reset the Bani subject (history is unified in PanelNav).
   _currentBaniSubject = { type: null, id: null };
-  _updateBaniNavButtons();
   applyZoomLabels();
   // ADR-086: subject cleared → restore empty-panel tutorial
   if (typeof window.showPanelTutorial === 'function') window.showPanelTutorial('bani');
@@ -1854,16 +1822,12 @@ function _positionBaniPopup(btn) {
  *     panels start withdrawn over the Mela-Janya wheel (ADR-177 refinement).
  */
 function triggerBaniSearch(type, id, fromHistory = false, opts = {}) {
-  // ADR-148: push current subject to history before navigating.
-  // Guard: skip if navigating to the same subject (e.g. clicking the panel-title chip).
-  if (!fromHistory && _currentBaniSubject.type &&
-      !(_currentBaniSubject.type === type && _currentBaniSubject.id === id)) {
-    baniHistory.back.push({ type: _currentBaniSubject.type, id: _currentBaniSubject.id });
-    if (baniHistory.back.length > BANI_HISTORY_MAX) baniHistory.back.shift();
-    baniHistory.forward = [];
+  // ADR-201: record into the unified panel history. Skipped when replaying
+  // from history (back/forward/permalink); PanelNav de-dupes repeats.
+  if (!fromHistory && window.PanelNav) {
+    window.PanelNav.record({ kind: 'bani', type: type, id: id });
   }
   _currentBaniSubject = { type, id };
-  _updateBaniNavButtons();
 
   // The current subject is shown in #bani-subject-name (populated by
   // applyBaniFilter below); the retired panel search used to write labels back

@@ -68,7 +68,7 @@
   /* pointer-events: none on wrapper so transparent gaps pass clicks to canvas */
   #app-title-float {
     position: fixed; top: 10px; right: 14px;
-    display: flex; align-items: center;
+    display: flex; align-items: center; gap: 6px;
     pointer-events: none; z-index: 72;
   }
   #app-title-float > * { pointer-events: auto; }
@@ -377,9 +377,8 @@
     font-size: 0.72rem; color: var(--fg-sub);
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
   }
-  /* ADR-198: panel search bars are retired (the grand track search owns lookup).
-     Back/forward nav and the panel add control now ride in the content-filter
-     row, so the panel's first row is useful content instead of chrome. Nav
+  /* ADR-201: history nav lives in the top-right chrome (left of the help
+     button); the panel add control keeps this square button primitive. Nav
      buttons stay square (chip radius) and sized to the search-field height. */
   .panel-nav-group {
     display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
@@ -400,7 +399,12 @@
     position: relative;
     transition: opacity 0.15s, border-color 0.15s, color 0.15s, background 0.15s;
   }
-  .panel-add-btn { color: var(--fg); font-size: 1.15rem; line-height: 1; }
+  /* ADR-202: the add is the chip row's right-justified anchor, so a short
+     subject name still leaves it flush to the panel's right edge. */
+  .panel-add-btn {
+    color: var(--fg); font-size: 1.15rem; line-height: 1;
+    margin-left: auto;
+  }
   .panel-nav-btn::after { content: ''; position: absolute; inset: -8px; }
   .panel-nav-btn:disabled {
     opacity: 0.25;
@@ -529,27 +533,9 @@
     font-family: inherit; font-size: 0.72rem; border-radius: 2px;
     margin-top: 6px; display: none; box-sizing: border-box;
   }
-  /* ADR-198: nav + add live on the chip row; the filter row beneath it is a
-     pure content-filter affordance, present only once a subject is loaded.
-     Its transport pair shares the right edge of the section rows below. */
-  .panel-chip-actions {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-left: auto; flex-shrink: 0; justify-content: flex-end;
-  }
-  /* ADR-198: history nav is the chip row's right-hand anchor, whatever the
-     subject-name width. These explicit hooks keep it right-justified against
-     the same content edge as the section/filter-row actions. */
-  #bani-subject-name-row > .panel-chip-actions,
-  #node-header-chip-row > .panel-chip-actions {
-    margin-left: auto;
-    justify-content: flex-end;
-  }
-  /* The musician panel's history pair hugs the panel's right edge (the Bani
-     panel's 14px inset reads correctly against the canvas; the right sidebar
-     borders the viewport, so it gets the tighter gutter). */
-  #right-sidebar #node-header-chip-row > .panel-chip-actions {
-    margin-right: -12px;
-  }
+  /* ADR-198 / ADR-202: the filter row is a pure content-filter affordance,
+     present only once a subject is loaded. Its transport pair shares the right
+     edge of the section rows below. */
   #rec-filter-row,
   #trail-filter-row {
     display: flex; flex-wrap: nowrap; align-items: center; gap: 6px;
@@ -562,8 +548,8 @@
   #bani-flow-panel.panel-empty #trail-play-acts,
   #musician-panel.panel-empty #rec-filter,
   #musician-panel.panel-empty #rec-play-acts { display: none; }
-  /* With no subject loaded, the bani chip row keeps only its nav cluster. */
-  #bani-flow-panel.panel-empty #bani-subject-name-row > :not(.panel-chip-actions),
+  /* With no subject loaded, the bani chip row keeps only its add anchor. */
+  #bani-flow-panel.panel-empty #bani-subject-name-row > :not(.panel-add-btn),
   #bani-flow-panel.panel-empty #bani-notes-row,
   #bani-flow-panel.panel-empty #bani-subject-sub { display: none; }
   #rec-filter, #trail-filter { flex: 1; min-width: 0; width: auto; margin-top: 0; display: block; }
@@ -6118,7 +6104,12 @@
 </svg>
 
 <!-- ADR-129 D1: Floating help button (top-right) — no backing bar -->
+<!-- ADR-201: the single unified panel history pair lives to the left of help. -->
 <div id="app-title-float">
+  <span class="panel-nav-group" role="group" aria-label="Panel history">
+    <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
+    <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
+  </span>
   <button id="help-btn" class="help-btn" title="About this project" aria-label="Help">?</button>
 </div>
 
@@ -6199,13 +6190,10 @@
                 <a id="bani-subject-link" class="yt-ext-link panel-hdr-ext-link" href="#"
                    target="_blank" style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
               </div>
-              <!-- ADR-198: history rides the subject chip row -->
-              <span class="panel-chip-actions">
-                <span class="panel-nav-group">
-                  <button id="bani-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-                  <button id="bani-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-                </span>
-              </span>
+              <!-- ADR-202: the panel add is the chip row's right-justified anchor. -->
+              <button id="bani-add-btn" class="panel-nav-btn panel-add-btn"
+                      title="Add raga or composition" aria-label="Add raga or composition"
+                      onclick="openEntryForm('bani-flow-picker')">+</button>
             </div>
             <!-- notes[] section (ADR-097 §7, shown when entity has notes array) -->
             <div id="bani-notes-row" style="display:none"></div>
@@ -6213,12 +6201,8 @@
             <div id="bani-subject-sub" style="display:none"></div>
           </div>
         </div>
-        <!-- ADR-198: add stays leftmost; the filter reads as indented under the
-             subject chip and disappears when the panel is empty. -->
+        <!-- ADR-202: the filter row is content-only; the add lives on the chip row. -->
         <div id="trail-filter-row">
-          <button id="bani-add-btn" class="panel-nav-btn panel-add-btn"
-                  title="Add raga or composition" aria-label="Add raga or composition"
-                  onclick="openEntryForm('bani-flow-picker')">+</button>
           <input id="trail-filter" type="text" placeholder="Filter content&#8230;"
                  autocomplete="off" spellcheck="false" />
           <span id="trail-play-acts" class="section-play-acts">
@@ -6316,22 +6300,15 @@
             <!-- wiki link inline with chip row (birth/death years removed) -->
             <a id="node-wiki-link" class="yt-ext-link panel-hdr-ext-link" href="#" target="_blank"
                style="display:none" title="Open Wikipedia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3z"/><path d="M19 19H5V5h7V3H3v18h18v-9h-2z"/></svg></a>
-            <!-- ADR-198: history rides the subject chip row -->
-            <span class="panel-chip-actions">
-              <span class="panel-nav-group">
-                <button id="panel-back-btn" class="panel-nav-btn" title="Back" disabled>&#8592;</button>
-                <button id="panel-fwd-btn" class="panel-nav-btn" title="Forward" disabled>&#8594;</button>
-              </span>
-            </span>
+            <!-- ADR-202: the panel add is the chip row's right-justified anchor. -->
+            <button id="panel-add-btn" class="panel-nav-btn panel-add-btn"
+                    title="Add musician" aria-label="Add musician"
+                    onclick="openEntryForm('musician')">+</button>
           </div>
         </div>
       </div>
-      <!-- ADR-198: add stays leftmost; the filter reads as indented under the
-           subject chip and disappears when the panel is empty. -->
+      <!-- ADR-202: the filter row is content-only; the add lives on the chip row. -->
       <div id="rec-filter-row">
-        <button id="panel-add-btn" class="panel-nav-btn panel-add-btn"
-                title="Add musician" aria-label="Add musician"
-                onclick="openEntryForm('musician')">+</button>
         <input id="rec-filter" type="text" placeholder="Filter content&#8230;"
                autocomplete="off" spellcheck="false" />
         <span id="rec-play-acts" class="section-play-acts">
