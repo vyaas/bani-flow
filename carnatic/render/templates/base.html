@@ -1445,7 +1445,10 @@
   #wheel-rec-panel .wdp-header { border-bottom-color: var(--chip-raga-border); }
   #wheel-rec-panel .wdp-chip.wdp-parent { cursor: default; }
   /* Scrollable body below the sticky header */
-  .wdp-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-top: 5px; }
+  .wdp-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 5px; padding-top: 5px; }
+  /* ADR-193: the recordings leaf re-renders the Bani-flow trail; the row itself
+     owns horizontal scroll (ADR-180), so the leaf never grows its own. */
+  #wheel-rec-panel .wdp-body > .trail-list { min-width: 0; max-width: 100%; }
   .wdp-header {
     display: flex; align-items: flex-start; justify-content: space-between; gap: 6px;
     border-bottom: 1px solid var(--border-strong); padding-bottom: 6px;
@@ -1476,10 +1479,14 @@
      colour schemes. The pair is one clickable entity that explodes the
      recordings leaf; the composer chip keeps its own navigation. */
   .wdp-comp-row {
-    display: flex; align-items: center; gap: 5px;
-    padding: 3px 4px; border-radius: 5px;
+    display: flex; align-items: center; gap: var(--chip-gap, 6px);
+    padding: 2px 4px; border-radius: 5px;
     border: 1px solid transparent;
     cursor: pointer;
+    /* The ROW is the horizontal scroll surface, not the panel (ADR-180). */
+    overflow-x: auto; overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: thin;
     transition: background 0.12s, border-color 0.12s;
   }
   .wdp-comp-row:hover { background: var(--bg-input); border-color: var(--border-strong); }
@@ -1487,18 +1494,13 @@
     background: var(--chip-comp-bg);
     border-color: var(--chip-comp-border);
   }
-  /* Both chips share the bani-flow shrink/ellipsize contract (ADR-180). */
+  /* Composition and composer are peer chips: same height, same font size, each
+     sized to its own text. The row scrolls sideways when the pair is wide. */
   .wdp-comp-row > .comp-chip,
   .wdp-comp-row > .composer-chip {
-    flex: 0 1 auto; min-width: 0;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 0 0 auto;
   }
-  .wdp-comp-row > .comp-chip { flex-grow: 1; }
-  .wdp-comp-row > .composer-chip {
-    max-width: 48%;
-    font-size: 0.62rem; padding: 1px 5px;
-    opacity: 0.9;
-  }
+  .wdp-comp-row > .composer-chip { opacity: 0.9; }
   .wdp-comp-row.wdp-active > .composer-chip { filter: brightness(1.25); }
 
   /* ADR-135: layout-controls-float — single row, all controls inline */
@@ -5668,24 +5670,15 @@
 
   /* 2. One fixed-height, non-wrapping flex ribbon for every row container.
         The row clips; a dedicated .*-main child owns the horizontal scroll. */
-  #left-sidebar .row-accordion-header,
-  #right-sidebar .row-accordion-header,
-  #left-sidebar .tree-comp-header,
-  #right-sidebar .tree-comp-header,
-  #left-sidebar .tree-group-header,
-  #right-sidebar .tree-group-header,
-  #left-sidebar .tree-leaf-primary,
-  #right-sidebar .tree-leaf-primary,
-  #left-sidebar .trail-row2,
-  #right-sidebar .trail-row2,
-  #left-sidebar .concert-title-row,
-  #right-sidebar .concert-title-row,
-  #left-sidebar .concert-perf-item,
-  #right-sidebar .concert-perf-item,
-  #left-sidebar .rec-row1,
-  #right-sidebar .rec-row1,
-  #left-sidebar .mp-playlist-track,
-  #right-sidebar .mp-playlist-track {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-header,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-comp-header,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-group-header,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-leaf-primary,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-row2,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-title-row,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-perf-item,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .rec-row1,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .mp-playlist-track {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -5700,28 +5693,17 @@
 
   /* 3. The single scroll surface of a ribbon: identity/context chips scroll
         sideways while the action column stays put. */
-  #left-sidebar .row-accordion-scroll,
-  #right-sidebar .row-accordion-scroll,
-  #left-sidebar .tree-comp-main,
-  #right-sidebar .tree-comp-main,
-  #left-sidebar .concert-title-main,
-  #right-sidebar .concert-title-main,
-  #left-sidebar .concert-perf-main,
-  #right-sidebar .concert-perf-main,
-  #left-sidebar .trail-chips,
-  #right-sidebar .trail-chips,
-  #left-sidebar .tree-header-text,
-  #right-sidebar .tree-header-text,
-  #left-sidebar .concert-performers,
-  #right-sidebar .concert-performers,
-  #left-sidebar .mp-playlist-track-chips,
-  #right-sidebar .mp-playlist-track-chips,
-  #left-sidebar .lecdem-subjects-inline,
-  #right-sidebar .lecdem-subjects-inline,
-  #left-sidebar .lecdem-subjects,
-  #right-sidebar .lecdem-subjects,
-  #left-sidebar .lecdem-musician,
-  #right-sidebar .lecdem-musician {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-scroll,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-comp-main,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-title-main,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-perf-main,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-chips,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-header-text,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-performers,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .mp-playlist-track-chips,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .lecdem-subjects-inline,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .lecdem-subjects,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .lecdem-musician {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -5734,28 +5716,19 @@
     white-space: nowrap;
     scrollbar-width: thin;
   }
-  #left-sidebar .row-accordion-scroll > *,
-  #right-sidebar .row-accordion-scroll > *,
-  #left-sidebar .tree-comp-main > *,
-  #right-sidebar .tree-comp-main > *,
-  #left-sidebar .concert-title-main > *,
-  #right-sidebar .concert-title-main > *,
-  #left-sidebar .concert-perf-main > *,
-  #right-sidebar .concert-perf-main > *,
-  #left-sidebar .trail-chips > *,
-  #right-sidebar .trail-chips > *,
-  #left-sidebar .tree-header-text > *,
-  #right-sidebar .tree-header-text > * {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-scroll > *,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-comp-main > *,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-title-main > *,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-perf-main > *,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-chips > *,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-header-text > * {
     flex-shrink: 0;
   }
   /* Nested joints: any row class that appears inside a row-accordion scroll
      surface is just content there, never a second scroller. */
-  #left-sidebar .row-accordion-scroll .tree-group-header,
-  #right-sidebar .row-accordion-scroll .tree-group-header,
-  #left-sidebar .row-accordion-scroll .trail-row2,
-  #right-sidebar .row-accordion-scroll .trail-row2,
-  #left-sidebar .row-accordion-scroll .tree-leaf-primary,
-  #right-sidebar .row-accordion-scroll .tree-leaf-primary {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-scroll .tree-group-header,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-scroll .trail-row2,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-scroll .tree-leaf-primary {
     display: flex !important;
     flex: 0 0 auto !important;
     min-height: 0 !important;
@@ -5766,34 +5739,27 @@
      row's scroll surface — a nested flex item whose content overflowed could
      otherwise keep its container width and let the co-performer chips overlap
      the label. The parent's uniform `--chip-gap` then spaces them all. */
-  #left-sidebar .row-accordion-scroll .tree-leaf-primary,
-  #right-sidebar .row-accordion-scroll .tree-leaf-primary {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-scroll .tree-leaf-primary {
     display: contents !important;
   }
   /* The concert header is just a wrapper; .concert-title-row is the ribbon. */
-  #left-sidebar .concert-header,
-  #right-sidebar .concert-header {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-header {
     display: block !important;
     min-height: 0 !important;
     overflow: visible !important;
   }
   /* Co-performers nested inside the title scroll surface ride along with it
      (no second scroller). */
-  #left-sidebar .concert-title-main .concert-performers,
-  #right-sidebar .concert-title-main .concert-performers {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-title-main .concert-performers {
     flex: 0 0 auto !important;
     overflow: visible !important;
   }
 
   /* 4. Actions and counts are the fixed right-hand column — never scrolled. */
-  #left-sidebar .trail-acts,
-  #right-sidebar .trail-acts,
-  #left-sidebar .tree-comp-acts,
-  #right-sidebar .tree-comp-acts,
-  #left-sidebar .section-play-acts,
-  #right-sidebar .section-play-acts,
-  #left-sidebar .section-hdr-right,
-  #right-sidebar .section-hdr-right {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-acts,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-comp-acts,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .section-play-acts,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .section-hdr-right {
     flex: 0 0 auto;
     flex-shrink: 0;
     margin-left: auto;
@@ -5801,23 +5767,17 @@
   /* ADR-180: within a fixed action strip the play button must sit in the FIRST
      (play) slot. Its global margin-left:auto would otherwise push a lone play
      into the enqueue column and break the shared vertical. */
-  #left-sidebar .trail-acts .rec-play-btn,
-  #right-sidebar .trail-acts .rec-play-btn,
-  #left-sidebar .tree-comp-acts .rec-play-btn,
-  #right-sidebar .tree-comp-acts .rec-play-btn {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-acts .rec-play-btn,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-comp-acts .rec-play-btn {
     margin-left: 0;
   }
 
   /* 4b. When a label chip is the row's only content (flat lecdem rows have no
          .trail-chips wrapper) it must shrink and scroll like any other surface. */
-  #left-sidebar .trail-row2 > .lecdem-label-chip,
-  #right-sidebar .trail-row2 > .lecdem-label-chip,
-  #left-sidebar .trail-row2 > .yt-label-chip,
-  #right-sidebar .trail-row2 > .yt-label-chip,
-  #left-sidebar .trail-row2 > .lecdem-label,
-  #right-sidebar .trail-row2 > .lecdem-label,
-  #left-sidebar .trail-row2 > .rec-title,
-  #right-sidebar .trail-row2 > .rec-title {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-row2 > .lecdem-label-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-row2 > .yt-label-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-row2 > .lecdem-label,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-row2 > .rec-title {
     flex: 1 1 auto;
     min-width: 0;
     overflow-x: auto;
@@ -5826,20 +5786,13 @@
   }
 
   /* 5. Single-line labels: drop every clamp/wrap and let the row scroll. */
-  #left-sidebar .lecdem-label,
-  #right-sidebar .lecdem-label,
-  #left-sidebar .tree-unmatched-title,
-  #right-sidebar .tree-unmatched-title,
-  #left-sidebar .rec-title,
-  #right-sidebar .rec-title,
-  #left-sidebar .yt-label-chip,
-  #right-sidebar .yt-label-chip,
-  #left-sidebar .rec-version-label,
-  #right-sidebar .rec-version-label,
-  #left-sidebar .lecdem-label-chip,
-  #right-sidebar .lecdem-label-chip,
-  #left-sidebar .concert-title,
-  #right-sidebar .concert-title {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .lecdem-label,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-unmatched-title,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .rec-title,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .yt-label-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .rec-version-label,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .lecdem-label-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-title {
     white-space: nowrap !important;
     overflow-wrap: normal !important;
     word-break: normal !important;
@@ -5851,44 +5804,35 @@
   }
 
   /* 6. Bracket bodies are always visible — the fold is retired. */
-  #left-sidebar .concert-perf-list,
-  #right-sidebar .concert-perf-list { display: block !important; }
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-perf-list,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-perf-list { display: block !important; }
 
   /* 7. Uniform row height: strip vertical padding from every panel list item so
         the ribbon is the only thing defining height. */
-  #left-sidebar li.tree-group,
-  #right-sidebar li.tree-group,
-  #left-sidebar li.tree-leaf,
-  #right-sidebar li.tree-leaf,
-  #left-sidebar li.tree-comp-node,
-  #right-sidebar li.tree-comp-node,
-  #left-sidebar .lecdem-row,
-  #right-sidebar .lecdem-row,
-  #left-sidebar .concert-header,
-  #right-sidebar .concert-header,
-  #left-sidebar .concert-perf-item,
-  #right-sidebar .concert-perf-item,
-  #left-sidebar .tree-group-header,
-  #right-sidebar .tree-group-header,
-  #left-sidebar .tree-misc-leaf,
-  #right-sidebar .tree-misc-leaf,
-  #left-sidebar .tree-rec-list .tree-leaf,
-  #right-sidebar .tree-rec-list .tree-leaf {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) li.tree-group,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) li.tree-leaf,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) li.tree-comp-node,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .lecdem-row,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-header,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-perf-item,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-group-header,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-misc-leaf,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-rec-list .tree-leaf {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
-  #left-sidebar .trail-chips,
-  #right-sidebar .trail-chips { gap: 6px; }
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-chips,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-chips { gap: 6px; }
 
   /* 8. Chips are immutable: they never shrink, clamp, or ellipsize. The row
         scrolls to reveal the full chip set. Applies to every identity/label
         chip atom in both panels. */
-  #left-sidebar :is(.comp-chip, .raga-chip, .musician-chip, .composer-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) :is(.comp-chip, .raga-chip, .musician-chip, .composer-chip,
       .composer-label, .lecdem-chip, .neutral-chip, .lineage-chip, .yt-label-chip,
       .lecdem-label-chip, .lecdem-label, .rec-title, .rec-version-label,
       .trail-version, .trail-label, .trail-context, .tree-unmatched-title,
       .concert-title, .concert-performers, .playlist-chip, .rec-year, .rec-group-label),
-  #right-sidebar :is(.comp-chip, .raga-chip, .musician-chip, .composer-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) :is(.comp-chip, .raga-chip, .musician-chip, .composer-chip,
       .composer-label, .lecdem-chip, .neutral-chip, .lineage-chip, .yt-label-chip,
       .lecdem-label-chip, .lecdem-label, .rec-title, .rec-version-label,
       .trail-version, .trail-label, .trail-context, .tree-unmatched-title,
@@ -5904,16 +5848,11 @@
 
   /* The uniform chip gap owns inter-chip spacing; clear the ad-hoc composer
      indent inside row scroll surfaces so every gap is equal. */
-  #left-sidebar .tree-header-text .composer-chip,
-  #right-sidebar .tree-header-text .composer-chip,
-  #left-sidebar .trail-chips .composer-chip,
-  #right-sidebar .trail-chips .composer-chip,
-  #left-sidebar .tree-comp-main .composer-chip,
-  #right-sidebar .tree-comp-main .composer-chip,
-  #left-sidebar .concert-title-main .composer-chip,
-  #right-sidebar .concert-title-main .composer-chip,
-  #left-sidebar .concert-perf-main .composer-chip,
-  #right-sidebar .concert-perf-main .composer-chip {
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-header-text .composer-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .trail-chips .composer-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .tree-comp-main .composer-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-title-main .composer-chip,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .concert-perf-main .composer-chip {
     margin-left: 0;
   }
 
@@ -5922,28 +5861,23 @@
      transparent value on the sidebar hides every descendant scrollbar; the
      `:hover` rule (which matches the hovered element AND all its ancestors, i.e.
      the scroll surface) reveals it. */
-  #left-sidebar, #left-sidebar *,
-  #right-sidebar, #right-sidebar *,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel), :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) *,
   #playlist-bar, #playlist-bar * {
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
   }
-  #left-sidebar *:hover,
-  #right-sidebar *:hover,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) *:hover,
   #playlist-bar *:hover {
     scrollbar-color: var(--fg-muted) transparent;
   }
   /* WebKit fallback (Safari): transparent thumb until hover. */
-  #left-sidebar ::-webkit-scrollbar,
-  #right-sidebar ::-webkit-scrollbar,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar,
   #playlist-bar ::-webkit-scrollbar {
     width: 3px; height: 3px; background: transparent;
   }
-  #left-sidebar ::-webkit-scrollbar-thumb,
-  #right-sidebar ::-webkit-scrollbar-thumb,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar-thumb,
   #playlist-bar ::-webkit-scrollbar-thumb { background: transparent; }
-  #left-sidebar *:hover::-webkit-scrollbar-thumb,
-  #right-sidebar *:hover::-webkit-scrollbar-thumb,
+  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) *:hover::-webkit-scrollbar-thumb,
   #playlist-bar *:hover::-webkit-scrollbar-thumb {
     background: var(--fg-muted); border-radius: 2px;
   }

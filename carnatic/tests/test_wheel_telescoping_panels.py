@@ -113,6 +113,23 @@ def test_recordings_leaf_reuses_the_bani_flow_trail():
     )
 
 
+def test_rows_own_the_horizontal_scroll_not_the_panels():
+    html = BASE.read_text(encoding="utf-8")
+    # The pair row is the scroll surface; its chips are intrinsic-size peers.
+    assert ".wdp-comp-row > .comp-chip," in html
+    assert ".wdp-comp-row > .composer-chip" in html
+    assert "flex: 0 0 auto;" in html
+    # Panel bodies never grow a horizontal scrollbar — the rows do.
+    assert "overflow-y: auto; overflow-x: hidden;" in html, (
+        "the detail-panel body must not scroll horizontally"
+    )
+    # The leaf reuses the ADR-180 ribbon rules (scroll surface + pinned acts).
+    assert ":is(#left-sidebar, #right-sidebar, #wheel-rec-panel) .row-accordion-scroll" in html, (
+        "the leaf must share the sidebar per-row scroll/pinned-acts rules"
+    )
+    assert "#wheel-rec-panel .wdp-body > .trail-list" in html
+
+
 def test_recordings_leaf_pins_beside_the_composition_card():
     pos = _fn(_wheel_src(), "_positionRecPanel")
     assert "wheel-rec-panel" in pos

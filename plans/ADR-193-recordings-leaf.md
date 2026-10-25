@@ -54,13 +54,23 @@ selected pair row and clamped to the view window. Direction is inherited from
 the composition card's side of the raga panel, so the chain always fans away
 from the wheel.
 
-**Layering / sizing:** the composition card widens to `268px` so the title and
-composer chip can genuinely sit side by side; the raga card stays `228px` and
-the recordings card is `244px`. All three remain desktop-only — on ≤768px a raga
-tap draws the Bani-flow drawer, whose trail already carries compositions and
-recordings. After the leaf opens, `_panChainIntoView()` nudges the wheel pan
-(220 ms) just enough to bring the whole open chain inside the visible window
-between the two sidebars, so the leaf is never stranded under a drawer.
+**Layout — the row scrolls, not the panel.** Composition and composer are peer
+chips of equal height and font size, each sized to its own text; the pair row is
+the horizontal scroll surface, so a long pair scrolls inside its row rather than
+truncating or growing the card. The leaf inherits this and the whole ADR-180
+ribbon grammar by adding `#wheel-rec-panel` to the sidebar-scoped
+`:is(#left-sidebar, #right-sidebar, …)` rules: each musician is one fixed-height
+row whose chips scroll sideways while the ▶/enqueue column stays pinned and
+visible. Panel `.wdp-body`s set `overflow-x: hidden` so they never take the
+scrollbar themselves.
+
+**Sizing:** the composition card widens to `268px` so the pair can sit side by
+side; the raga card stays `228px` and the recordings card is `244px`. All three
+remain desktop-only — on ≤768px a raga tap draws the Bani-flow drawer, whose
+trail already carries compositions and recordings. After the leaf opens,
+`_panChainIntoView()` nudges the wheel pan (220 ms) just enough to bring the
+whole open chain inside the visible window between the two sidebars, so the leaf
+is never stranded under a drawer.
 
 Closing the chain cascades: closing the raga panel (or the composition panel)
 also closes the recordings card. `_openCompPanel` auto-opens the recordings card

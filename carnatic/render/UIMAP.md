@@ -326,7 +326,12 @@ mutated only via `_applyTransform()` (`window._wheelApplyTransform`).
 `getCakraColor`) and chip tokens via `_readChipTokens()` /
 `_readChipSpacingK()` — never hardcode hex in wheel code. The wheel is drawn
 into the same inset view window (ADR-176); `mobile.js` `_refitViews()` calls
-`window.refitRagaWheel()` after a panel re-insets the SVG.
+`window.refitRagaWheel()` after a panel re-insets the SVG. ADR-193: the
+recordings leaf tree carries `class="trail-list"`, and `#wheel-rec-panel` is
+added to the ADR-180 `:is(#left-sidebar, #right-sidebar, …)` ribbon rules, so
+leaf rows inherit the panel's per-row horizontal scroll with the play/enqueue
+column pinned; detail-panel `.wdp-body`s set `overflow-x: hidden` so the scroll
+lives on the row, not the card.
 
 **Connects to:** `switchView('raga')` re-applies `activeBaniFilter` (§1) via
 `syncRagaWheelToFilter`, resolves `window._pendingWheelSubject`, and draws so
