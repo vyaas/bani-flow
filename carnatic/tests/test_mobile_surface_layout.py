@@ -32,6 +32,8 @@ TEMPLATES = (
 BASE = TEMPLATES / "base.html"
 MOBILE = TEMPLATES / "mobile.js"
 WHEEL = TEMPLATES / "raga_wheel.js"
+EMPTY = TEMPLATES / "empty_tutorials.js"
+BANI = TEMPLATES / "bani_flow.js"
 
 
 def test_mobile_drawers_start_below_the_playlist_bar():
@@ -77,6 +79,31 @@ def test_mela_click_ignores_programmatic_sync_when_dismissing_panels():
         "!window._wheelPreviewNoPanel so a programmatic _triggerMelaExpand "
         "(sync/refit) cannot withdraw the panel that just opened"
     )
+
+
+def test_mobile_first_visit_lands_on_the_wheel_with_both_drawers_withdrawn():
+    """First-visit hello-world boot must not draw a panel out on mobile.
+
+    ``_bootHelloWorld`` populates the Reetigowla / Ramnad Krishnan demo
+    subjects, but on mobile the page must land on the bare Mela-Janya wheel —
+    both drawers withdrawn. The panel-open side effects are suppressed:
+    ``triggerBaniSearch`` skips the TRAIL drawer when ``suppressPanelOpen`` is
+    set, and ``selectNode`` is called with ``revealPanel: false``.
+    """
+    js = EMPTY.read_text(encoding="utf-8")
+    assert "const isMobile = window.matchMedia('(max-width: 768px)').matches;" in js
+    assert "{ suppressPanelOpen: isMobile }" in js, (
+        "the boot's bani search must suppress the TRAIL drawer on mobile"
+    )
+    assert "selectNode(n, { revealPanel: !isMobile })" in js, (
+        "the boot's musician select must not reveal the MUSICIAN drawer on mobile"
+    )
+
+    bani = BANI.read_text(encoding="utf-8")
+    assert re.search(
+        r"typeof window\.setPanelState === 'function' && !opts\.suppressPanelOpen",
+        bani,
+    ), "triggerBaniSearch must honour the suppressPanelOpen option"
 
 
 def test_wheel_switchview_does_not_touch_iife_private_cache():

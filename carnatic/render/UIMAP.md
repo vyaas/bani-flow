@@ -637,7 +637,12 @@ the bar cannot drop over the panel column. **View refit (ADR-176):**
 state-preserving redraw (a bare `drawRagaWheel()` would clear the open WDP);
 rAF-debounced as `window.refitViewWindow`, which `media_player.js` calls when
 the editor box changes. `setPanelState` only schedules a refit when a drawer
-actually opened or closed.
+actually opened or closed. **First visit (mobile):** `empty_tutorials.js`
+`_bootHelloWorld()` populates both demo subjects (Reetigowla / Ramnad Krishnan)
+but suppresses the auto-open — `triggerBaniSearch(..., {suppressPanelOpen:true})`
+and `selectNode(n, {revealPanel:false})` — so mobile lands on the bare
+Mela-Janya wheel with both drawers withdrawn. Desktop keeps its pinned-open
+panels (the pin restore in `mobile.js` runs first).
 
 ### 6.5 Chips (the shared atom)
 

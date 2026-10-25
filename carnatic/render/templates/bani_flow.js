@@ -1818,8 +1818,13 @@ function _positionBaniPopup(btn) {
  *   - 'comp': composition id
  *   - 'perf': "recording_id::performance_index"
  *   - 'yt':   "vid::ragaId"
+ * @param {boolean} fromHistory
+ * @param {object} [opts]
+ *   - `suppressPanelOpen`: populate the panel without drawing the left drawer
+ *     out. Used by the first-visit hello-world boot on mobile, where both
+ *     panels start withdrawn over the Mela-Janya wheel (ADR-177 refinement).
  */
-function triggerBaniSearch(type, id, fromHistory = false) {
+function triggerBaniSearch(type, id, fromHistory = false, opts = {}) {
   // ADR-148: push current subject to history before navigating.
   // Guard: skip if navigating to the same subject (e.g. clicking the panel-title chip).
   if (!fromHistory && _currentBaniSubject.type &&
@@ -1855,7 +1860,7 @@ function triggerBaniSearch(type, id, fromHistory = false) {
   // immediately closes the panel with setPanelState('IDLE').
   // The 50 ms delay lets the native click resolve against the pre-open DOM.
   // ADR-046: open Bani Flow (left) drawer on all screen widths
-  if (typeof window.setPanelState === 'function') {
+  if (typeof window.setPanelState === 'function' && !opts.suppressPanelOpen) {
     setTimeout(function () { window.setPanelState('TRAIL'); }, 50);
   }
 

@@ -1518,11 +1518,18 @@
     // already populated both panels synchronously. Proceeding would overwrite
     // the restored state with the demo subjects.
     if (window.location.hash && window.location.hash.startsWith('#s=')) return;
+    // First-visit mobile opens on the bare Mela-Janya wheel: populate both
+    // panels but leave both drawers withdrawn (desktop keeps its pinned-open
+    // panels — mobile.js restores the pin state before this runs).
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
     // Bani subject (reetigowla by default — kind='raga')
     const baniBlock = helpEmptyPanels.bani_flow_panel || null;
     const baniSubject = baniBlock && baniBlock.subject;
     if (baniSubject && baniSubject.id && typeof triggerBaniSearch === 'function') {
-      try { triggerBaniSearch(baniSubject.kind || 'raga', baniSubject.id); } catch (_) {}
+      try {
+        triggerBaniSearch(baniSubject.kind || 'raga', baniSubject.id, false,
+                          { suppressPanelOpen: isMobile });
+      } catch (_) {}
     }
     // Musician subject (ramnad_krishnan by default). Use selectNode
     // directly rather than _orientToMusician — the latter forces a
@@ -1535,7 +1542,7 @@
         typeof selectNode === 'function') {
       const n = cy.getElementById(muSubject.id);
       if (n && n.length) {
-        try { selectNode(n); } catch (_) {}
+        try { selectNode(n, { revealPanel: !isMobile }); } catch (_) {}
       }
     }
   }
