@@ -2935,6 +2935,9 @@ function _syncVolumeControls() {
   document.querySelectorAll('#pb-volume, .mp-queue-vol').forEach(sl => {
     sl.value = pct;
     sl.disabled = !supported;
+    // Paint the filled (left) portion of the track up to the current level so
+    // the slider reads its value at a glance, not just by the thumb position.
+    sl.style.setProperty('--vol-fill', pct + '%');
   });
 }
 
@@ -5655,6 +5658,12 @@ function _openMobilePlayer(mediaArg, trackLabel, artistName, startSeconds, conce
   const mpNowPlaying = document.createElement('div');
   mpNowPlaying.className = 'mp-now-playing';
   mp.videoWrap.appendChild(mpNowPlaying);
+  // ADR-194: the operator rail travels with the video on mobile too — the
+  // external-play / copy-YouTube-link / copy-permalink set the desktop player
+  // shows. Filled by _syncNowPlayingOverlays for the current queue item.
+  const mpOps = document.createElement('div');
+  mpOps.className = 'mp-player-ops';
+  mp.videoWrap.appendChild(mpOps);
   // Live playhead so share/copy capture the real position (AUDIT-014 F-04).
   // Also advance the header rail and mini-strip when the playhead crosses a
   // segment boundary (mirrors the desktop createPlayer path).

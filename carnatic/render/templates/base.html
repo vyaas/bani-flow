@@ -3069,7 +3069,12 @@
   }
   #pb-volume::-webkit-slider-runnable-track,
   .mp-queue-vol::-webkit-slider-runnable-track {
-    height: 3px; border-radius: 2px; background: var(--border-strong);
+    height: 3px; border-radius: 2px;
+    /* ADR-184: the level left of the thumb is accent-filled (--vol-fill is set
+       by _syncVolumeControls), the remainder stays the neutral rail. */
+    background: linear-gradient(to right,
+      var(--accent) 0 var(--vol-fill, 100%),
+      var(--border-strong) var(--vol-fill, 100%) 100%);
   }
   #pb-volume::-webkit-slider-thumb,
   .mp-queue-vol::-webkit-slider-thumb {
@@ -3079,7 +3084,10 @@
   }
   #pb-volume::-moz-range-track,
   .mp-queue-vol::-moz-range-track {
-    height: 3px; border-radius: 2px; background: var(--border-strong);
+    height: 3px; border-radius: 2px;
+    background: linear-gradient(to right,
+      var(--accent) 0 var(--vol-fill, 100%),
+      var(--border-strong) var(--vol-fill, 100%) 100%);
   }
   #pb-volume::-moz-range-thumb,
   .mp-queue-vol::-moz-range-thumb {
@@ -3360,6 +3368,10 @@
          above the mobile player (205) and the drawer scrim (199). */
       z-index: 210;
     }
+    /* ADR-175 mobile: the volume slider spills out of the phone-width bar and
+       volume is directly controllable in the video (and elsewhere), so the bar
+       drops it and lets the remaining buttons breathe. */
+    #playlist-bar .pb-volume { display: none; }
   }
 
   /* ── ADR-163: PLAYLISTS rendered as tree nodes (buildRowAccordion) so a
@@ -4888,6 +4900,9 @@
     .media-player.full-mobile .mp-video-wrap.mp-has-plyr .plyr {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     }
+    /* ADR-194: reserve the operator rail's column on the right of the placard,
+       mirroring the desktop player, so chips never run under the buttons. */
+    .media-player.full-mobile .mp-now-playing { right: 56px; }
     /* ADR-161: tracklist is in-flow between the bar and the video (not an
        overlay), so opening it pushes the video down instead of covering it.
        The bottom-anchored sheet grows upward (.mp-tl-expanded) to make room. */

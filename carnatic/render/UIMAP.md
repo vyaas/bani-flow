@@ -491,7 +491,10 @@ operators `#pb-copy` / `#pb-share` / `#pb-watch` / `#pb-video-toggle` /
 `#pb-volume`. The volume slider sets the current player's output level via
 `_setPlayerVolume` and is persisted across queue items (`_volumeLevel`);
 `_syncVolumeControls` mirrors it between bar and editor row and disables it for
-volume-less (iframe) providers. **ADR-184:** the ADR-162 "Up Next" head
+volume-less (iframe) providers. The track's filled (left) portion is painted
+accent via the `--vol-fill` custom property set by `_syncVolumeControls`.
+**Mobile:** the bar drops `#pb-volume` (no room at phone width; volume stays
+controllable in the video itself). **ADR-184:** the ADR-162 "Up Next" head
 (`.mp-queue-head`) is retired — the editor is the list alone. **Chip geometry:**
 the bar's `#pb-summary` scrolls its capsules on one line (ADR-179); the editor
 rows keep the same single-line scroll (`#hd-body .playlist-editor .mp-queue-chips`
@@ -534,7 +537,9 @@ close — speaks **Plyr's control language**: borderless, an 18px `currentColor`
 glyph on a 4px-radius hit target, accent hover (`--accent` chip, `--bg-deep`
 glyph). The external-play button is the vendored Plyr sprite's own
 `#plyr-logo-youtube` symbol (`_ICON_PLAYER_WATCH`), so the overlay is literally
-part of the player's icon set. On a fine pointer both surfaces are
+part of the player's icon set. The same placard and operator rail are built on
+the mobile sheet (`_openMobilePlayer`), so external-play / copy / permalink are
+present there too. On a fine pointer both surfaces are
 hover-revealed (YouTube-style) and also shown on `:focus-within`; touch/coarse
 pointers keep them visible. The window's own minimize/close stay in
 `.mp-player-controls` grouped at the **top-right** (minimize · close, the
