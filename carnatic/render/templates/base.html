@@ -6079,24 +6079,27 @@
      the pointer is over the panel/row. `scrollbar-color` is inherited, so a
      transparent value on the sidebar hides every descendant scrollbar; the
      `:hover` rule (which matches the hovered element AND all its ancestors, i.e.
-     the scroll surface) reveals it. */
-  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel), :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) *,
+     the scroll surface) reveals it.
+     The wheel's raga panel (#wheel-detail-panel) carries the mela+janya list
+     whose .wdp-body is the vertical scroller — it belongs here too, or its body
+     falls back to the UA scrollbar (which is why Chrome looked unlike Firefox). */
+  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel), :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *,
   #playlist-bar, #playlist-bar * {
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
   }
-  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) *:hover,
+  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *:hover,
   #playlist-bar *:hover {
     scrollbar-color: var(--fg-muted) transparent;
   }
   /* WebKit fallback (Safari): transparent thumb until hover. */
-  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar,
+  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar,
   #playlist-bar ::-webkit-scrollbar {
     width: 3px; height: 3px; background: transparent;
   }
-  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar-thumb,
+  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar-thumb,
   #playlist-bar ::-webkit-scrollbar-thumb { background: transparent; }
-  :is(#left-sidebar, #right-sidebar, #wheel-rec-panel, #wheel-comp-panel) *:hover::-webkit-scrollbar-thumb,
+  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *:hover::-webkit-scrollbar-thumb,
   #playlist-bar *:hover::-webkit-scrollbar-thumb {
     background: var(--fg-muted); border-radius: 2px;
   }
