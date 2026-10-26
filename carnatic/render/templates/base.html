@@ -1552,8 +1552,11 @@
     padding: 2px 4px; border-radius: 5px;
     border: 1px solid transparent;
     cursor: pointer;
-    /* The ROW is the horizontal scroll surface, not the panel (ADR-180). */
-    overflow-x: auto; overflow-y: hidden;
+    /* The ROW is the horizontal scroll surface, not the panel (ADR-180).
+       `scroll` (not `auto`) reserves the thin bar on every row, so a pair that
+       fits is exactly as tall as one that scrolls: the composition rows keep a
+       uniform pitch instead of the overflowing ones growing by the bar. */
+    overflow-x: scroll; overflow-y: hidden;
     white-space: nowrap;
     scrollbar-width: thin;
     transition: background 0.12s, border-color 0.12s;
@@ -2969,7 +2972,8 @@
   .mp-queue-chips {
     flex: 1; min-width: 0;
     display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
-    overflow-x: auto; white-space: nowrap;
+    /* `scroll` reserves the bar on every strip so rows keep a uniform pitch. */
+    overflow-x: scroll; white-space: nowrap;
     scrollbar-width: thin;
   }
   .mp-queue-chips > * { flex-shrink: 0; }
@@ -3224,7 +3228,9 @@
   .track-result-chips {
     flex: 1; min-width: 0;
     display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
-    overflow-x: auto; white-space: nowrap;
+    /* `scroll` reserves the bar on every result row so the list keeps a
+       uniform pitch regardless of which chips overflow. */
+    overflow-x: scroll; white-space: nowrap;
     /* ADR-205: the horizontal scrollbar is an affordance, not chrome — it stays
        invisible until the pointer is over the strip or the strip is being
        thumbed (`.is-scrolling`, toggled by search.js). */
@@ -3369,7 +3375,7 @@
      chip-wrap clause — the two-line ceiling is the priority. */
   #hd-body .playlist-editor .mp-queue-chips {
     flex: 1 1 auto; min-width: 0;
-    flex-wrap: nowrap; overflow-x: auto; white-space: nowrap;
+    flex-wrap: nowrap; overflow-x: scroll; white-space: nowrap;
     scrollbar-width: thin;
   }
   /* Drag states. */
@@ -6082,21 +6088,47 @@
      the scroll surface) reveals it.
      The wheel's raga panel (#wheel-detail-panel) carries the mela+janya list
      whose .wdp-body is the vertical scroller — it belongs here too, or its body
-     falls back to the UA scrollbar (which is why Chrome looked unlike Firefox). */
-  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel), :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *,
-  #playlist-bar, #playlist-bar * {
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
+     falls back to the UA scrollbar (which is why Chrome looked unlike Firefox).
+
+     Engine split: Chromium 121+ implements `scrollbar-color`/`scrollbar-width`
+     but, per spec, setting either makes it ignore `::-webkit-scrollbar`. Its
+     "thin" standard bar is still ~11px and keeps the platform arrow buttons —
+     the obnoxious, browser-dependent look in Chromium. So the standard
+     properties are gated to Firefox (which lacks `::-webkit-scrollbar`) and
+     Chromium gets the 3px pseudo-element bar below. Never set both on the same
+     engine; the `@supports` selectors partition them cleanly. */
+  @supports not selector(::-webkit-scrollbar) {
+    :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel), :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *,
+    #playlist-bar, #playlist-bar * {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *:hover,
+    #playlist-bar *:hover {
+      scrollbar-color: var(--fg-muted) transparent;
+    }
   }
-  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *:hover,
-  #playlist-bar *:hover {
-    scrollbar-color: var(--fg-muted) transparent;
+
+  /* Chromium/Safari: the standard scrollbar properties must be at their
+     initial value or they suppress the pseudo-element bar. Reset them
+     everywhere (Firefox never reads this block), then re-assert the one
+     deliberate hide. */
+  @supports selector(::-webkit-scrollbar) {
+    * { scrollbar-width: auto !important; scrollbar-color: auto !important; }
+    .mp-now-playing { scrollbar-width: none !important; }
   }
-  /* WebKit fallback (Safari): transparent thumb until hover. */
+
+  /* WebKit/Blink: a 3px sliver, transparent until the pointer is over the
+     scroll surface. Suppressing `::-webkit-scrollbar-button` is what actually
+     tames the bar — without it the platform arrows inflate it regardless of
+     the declared height. */
+  ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
   :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar,
   #playlist-bar ::-webkit-scrollbar {
     width: 3px; height: 3px; background: transparent;
   }
+  :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar-track,
+  #playlist-bar ::-webkit-scrollbar-track { background: transparent; }
   :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) ::-webkit-scrollbar-thumb,
   #playlist-bar ::-webkit-scrollbar-thumb { background: transparent; }
   :is(#left-sidebar, #right-sidebar, #wheel-detail-panel, #wheel-rec-panel, #wheel-comp-panel) *:hover::-webkit-scrollbar-thumb,
