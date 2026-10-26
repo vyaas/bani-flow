@@ -111,7 +111,9 @@ def test_playlist_rows_are_capped_at_two_lines():
     assert editor, "missing the modal chip override"
     block = editor.group(1)
     assert "flex-wrap: nowrap" in block, "the modal editor chips must not wrap"
-    assert "overflow-x: auto" in block, "the modal editor chips must scroll"
+    # `scroll`, not `auto`: the reserved bar keeps every row on a uniform pitch
+    # (ADR-180 scrollbar affordance) instead of overflowing rows growing taller.
+    assert "overflow-x: scroll" in block, "the modal editor chips must scroll"
     # The two groups each stay on one line.
     meta = _rule(css, ".mp-queue-meta")
     actions = _rule(css, ".mp-queue-actions")
