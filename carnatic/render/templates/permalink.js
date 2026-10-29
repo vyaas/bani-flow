@@ -75,14 +75,22 @@
     var state = await decodePermalinkHash(window.location.hash);
     if (!state) return;
 
+    // Mobile lands player-first: a shared link must show what is playing and
+    // where it came from, not a drawer covering the video. Both panels are
+    // populated but left withdrawn, then withdrawn again after the player
+    // expands (the player path already forces IDLE; the explicit step makes
+    // the guarantee independent of open order).
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+
     try {
       // 1. Replay the left-panel (Bani Flow) trail, oldest entry first.
       //    fromHistory=true preserves the forward stack (no invalidation).
+      //    Mobile suppresses the drawer reveal so the player stays visible.
       if (state.trail && state.trail.length) {
         for (var i = 0; i < state.trail.length; i++) {
           var entry = state.trail[i];
           if (entry.tp && entry.id) {
-            try { triggerBaniSearch(entry.tp, entry.id, true); }
+            try { triggerBaniSearch(entry.tp, entry.id, true, { suppressPanelOpen: isMobile }); }
             catch (e) { console.warn('[permalink] trail entry skipped:', entry, e); }
           }
         }
@@ -94,9 +102,9 @@
           // Try cy graph first (main musicians); fall back to transit panel.
           var n = (typeof cy !== 'undefined') ? cy.getElementById(state.panel) : null;
           if (n && n.length) {
-            selectNode(n);
+            selectNode(n, { revealPanel: !isMobile });
           } else {
-            _openMusicianPanelForTransit(state.panel);
+            _openMusicianPanelForTransit(state.panel, { revealPanel: !isMobile });
           }
         } catch (e) {
           console.warn('[permalink] panel open skipped:', state.panel, e);
@@ -158,24 +166,31 @@
 
       // 4. Open the player with the restored state — skipped when the queue
       //    restore already opened it (the queue head IS the current item).
-      if (queueRestored) return;
-      var meta = state.meta || {};
-      // ADR-154: prefer the media_key (v2); fall back to the bare vid (v1).
-      // openOrFocusPlayer.resolveMedia() accepts a media_key, vid, or url.
-      openOrFocusPlayer(
-        state.m || state.vid,
-        meta.cid || null,          // trackLabel: composition title if known
-        meta.nid || null,          // artistName: node id used as display fallback
-        state.t   || undefined,    // startSeconds
-        null,                      // concertTitle: not stored in v1 (irrelevant to restoration)
-        undefined,                 // tracks: single-track restore; full tracklist not encoded
-        {
-          nodeId:        meta.nid || null,
-          ragaId:        meta.rid || null,
-          compositionId: meta.cid || null,
-          recId:         meta.rec || null,
-        }
-      );
+      if (!queueRestored) {
+        var meta = state.meta || {};
+        // ADR-154: prefer the media_key (v2); fall back to the bare vid (v1).
+        // openOrFocusPlayer.resolveMedia() accepts a media_key, vid, or url.
+        openOrFocusPlayer(
+          state.m || state.vid,
+          meta.cid || null,          // trackLabel: composition title if known
+          meta.nid || null,          // artistName: node id used as display fallback
+          state.t   || undefined,    // startSeconds
+          null,                      // concertTitle: not stored in v1 (irrelevant to restoration)
+          undefined,                 // tracks: single-track restore; full tracklist not encoded
+          {
+            nodeId:        meta.nid || null,
+            ragaId:        meta.rid || null,
+            compositionId: meta.cid || null,
+            recId:         meta.rec || null,
+          }
+        );
+      }
+
+      // 5. Mobile landing: withdraw any restored panel so the player is the
+      //    focus. A no-op on desktop (the frozen bays stay open, ADR-203).
+      if (isMobile && typeof window.setPanelState === 'function') {
+        window.setPanelState('IDLE');
+      }
     } catch (err) {
       console.warn('[permalink] restoration failed:', err);
     }

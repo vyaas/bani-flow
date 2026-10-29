@@ -1512,12 +1512,20 @@
   //   4. Load the musician subject via selectNode — populates the
   //      sticky-zone musician chip + wiki link, fills the scroll-zone
   //      recordings panel.
+  //
+  // ADR-151/ADR-170: a permalink hash — legacy `#s=` or compressed `#z=` —
+  // means restoreStateFromHash() owns the landing state. The demo boot must
+  // stand down or it will clobber the restored subjects/sections.
+  function _hasPermalinkHash() {
+    var h = window.location.hash;
+    return !!h && (h.startsWith('#s=') || h.startsWith('#z='));
+  }
   function _bootHelloWorld() {
     if (!helpEmptyPanels) return;
     // ADR-151: if a permalink hash is present, restoreStateFromHash() has
     // already populated both panels synchronously. Proceeding would overwrite
     // the restored state with the demo subjects.
-    if (window.location.hash && window.location.hash.startsWith('#s=')) return;
+    if (_hasPermalinkHash()) return;
     // First-visit mobile opens on the bare Mela-Janya wheel: populate both
     // panels but leave both drawers withdrawn (desktop keeps its pinned-open
     // panels — mobile.js restores the pin state before this runs).
@@ -1562,7 +1570,7 @@
     var attempts = 0;
     (function tick() {
       // ADR-151: stop polling immediately if a permalink is active.
-      if (window.location.hash && window.location.hash.startsWith('#s=')) return;
+      if (_hasPermalinkHash()) return;
       const cyReady = (typeof cy !== 'undefined') && cy.nodes && cy.nodes().length > 0;
       if (cyReady || attempts >= 100) {  // ≈5 s cap
         _bootHelloWorld();

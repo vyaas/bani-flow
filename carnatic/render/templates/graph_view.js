@@ -1304,7 +1304,7 @@ function orientToNode(nodeId) {
 // used directly. This helper populates the right-sidebar panel from the raw
 // elements array instead. It mirrors the panel-population logic in selectNode
 // without the cy graph-highlight side-effects.
-function _openMusicianPanelForTransit(transitId) {
+function _openMusicianPanelForTransit(transitId, { revealPanel = true } = {}) {
   const el = elements.find(function (e) { return !e.data.source && e.data.id === transitId; });
   if (!el) return;
   const d = el.data;
@@ -1348,7 +1348,9 @@ function _openMusicianPanelForTransit(transitId) {
   // ADR-137: populate Gurus / Shishyas lineage sections
   buildLineagePanel(transitId);
 
-  if (typeof window.setPanelState === 'function') window.setPanelState('MUSICIAN');
+  // Callers that are populating rather than navigating (permalink mobile
+  // restore, first-visit boot) pass revealPanel:false to keep the drawer shut.
+  if (revealPanel && typeof window.setPanelState === 'function') window.setPanelState('MUSICIAN');
 }
 
 // ADR-166: rec-filter-row ▶/⊕ buttons — harvest from #recordings-list

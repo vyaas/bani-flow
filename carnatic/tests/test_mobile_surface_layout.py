@@ -34,6 +34,8 @@ MOBILE = TEMPLATES / "mobile.js"
 WHEEL = TEMPLATES / "raga_wheel.js"
 EMPTY = TEMPLATES / "empty_tutorials.js"
 BANI = TEMPLATES / "bani_flow.js"
+PERMALINK = TEMPLATES / "permalink.js"
+GRAPH = TEMPLATES / "graph_view.js"
 
 
 def test_mobile_drawers_ride_the_search_bar_chrome_line():
@@ -164,4 +166,54 @@ def test_mobile_hides_the_chip_row_add_buttons():
         for b in blocks
     ), (
         "the chip-row add must be display:none inside a mobile media query"
+    )
+
+
+def test_mobile_permalink_restore_lands_player_first():
+    """A shared permalink opened on mobile must show the player, not a drawer.
+
+    ``restoreStateFromHash`` fills both panels but must not reveal either on
+    mobile: the bani trail's deferred TRAIL open is suppressed
+    (``suppressPanelOpen``) and both musician paths pass ``revealPanel: false``.
+    A final ``setPanelState('IDLE')`` makes the guarantee independent of the
+    order in which the player expands.
+    """
+    js = PERMALINK.read_text(encoding="utf-8")
+    assert "var isMobile = window.matchMedia('(max-width: 768px)').matches;" in js
+    assert "triggerBaniSearch(entry.tp, entry.id, true, { suppressPanelOpen: isMobile })" in js, (
+        "the permalink trail replay must suppress the mobile TRAIL drawer"
+    )
+    assert "selectNode(n, { revealPanel: !isMobile })" in js, (
+        "the permalink musician select must not reveal the mobile drawer"
+    )
+    assert "_openMusicianPanelForTransit(state.panel, { revealPanel: !isMobile })" in js, (
+        "the transit-panel fallback must not reveal the mobile drawer"
+    )
+    assert re.search(
+        r"if \(isMobile && typeof window\.setPanelState === 'function'\) \{\s*"
+        r"window\.setPanelState\('IDLE'\);\s*\}",
+        js,
+    ), "mobile permalink restore must withdraw any panel after the player opens"
+
+    graph = GRAPH.read_text(encoding="utf-8")
+    assert "function _openMusicianPanelForTransit(transitId, { revealPanel = true } = {})" in graph
+    assert "if (revealPanel && typeof window.setPanelState === 'function') window.setPanelState('MUSICIAN');" in graph, (
+        "the transit-panel builder must honour revealPanel"
+    )
+
+
+def test_demo_boot_stands_down_for_both_permalink_transports():
+    """ADR-170 added the compressed ``#z=`` transport but the demo-boot guard
+    only recognised legacy ``#s=``, so a compressed share was clobbered by the
+    Reetigowla/Ramnad Krishnan demo. Both transports must be treated as a
+    permalink."""
+    js = EMPTY.read_text(encoding="utf-8")
+    assert "function _hasPermalinkHash()" in js, (
+        "the permalink guard must be shared by the boot function and the cy poll"
+    )
+    assert "h.startsWith('#s=') || h.startsWith('#z=')" in js, (
+        "the boot must stand down for compressed (#z=) permalinks too"
+    )
+    assert js.count("if (_hasPermalinkHash()) return;") == 2, (
+        "both the synchronous boot and the cy-ready poll must use the guard"
     )

@@ -778,7 +778,19 @@ actually opened or closed. **First visit (mobile):** `empty_tutorials.js`
 but suppresses the auto-open — `triggerBaniSearch(..., {suppressPanelOpen:true})`
 and `selectNode(n, {revealPanel:false})` — so mobile lands on the bare
 Mela-Janya wheel with both drawers withdrawn. Desktop starts on its
-frozen-open bays (ADR-203; `mobile.js` forces both panels pinned).
+frozen-open bays (ADR-203; `mobile.js` forces both panels pinned). The boot's
+`_hasPermalinkHash()` guard stands down for **both** permalink transports
+(`#s=` and compressed `#z=`, ADR-170) so the demo cannot clobber a restored
+state.
+
+**Permalink landing (mobile, ADR-151/ADR-170):** `permalink.js`
+`restoreStateFromHash()` is *player-first*: it populates the trail
+(`triggerBaniSearch(..., {suppressPanelOpen: isMobile})`) and the musician
+(`selectNode(n, {revealPanel: !isMobile})` / `_openMusicianPanelForTransit(id,
+{revealPanel: !isMobile})`) but never draws a drawer, then forces
+`setPanelState('IDLE')` after opening the player. Opening a shared track link
+must show what is playing and where it came from, not a panel covering the
+video. Desktop is unchanged (both bays stay pinned).
 
 ### 6.5 Chips (the shared atom)
 

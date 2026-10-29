@@ -58,6 +58,8 @@ const sandbox = {
   URLSearchParams, URL,
   btoa, atob, isNaN, parseInt, parseFloat, encodeURIComponent, decodeURIComponent,
   unescape, escape,
+  // permalink restore picks the mobile player-first landing via matchMedia.
+  matchMedia: () => ({ matches: false }),
 };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
