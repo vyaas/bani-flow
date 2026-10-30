@@ -134,6 +134,10 @@ const THEME = (() => {
     chipMetaFg:     P.fg,    // #ebdbb2 — high-contrast badge text
     chipMetaBorder: P.bg3,   // #665c54 — subtle chip frame
 
+    // ADR-045/177/189: the bare ⓘ info affordance — one containerless glyph
+    // shared by the floating help button, section help, and playlist info.
+    infoIconSize: '0.95rem',
+
     // ADR-190: the search field — ONE shell for the grand track search and both
     // panel searches, so they read as the same affordance at different reach.
     searchFieldBg:     P.bg0,   // #282828 — raised field surface
@@ -251,6 +255,7 @@ const THEME = (() => {
         '--chip-meta-bg':     tokens.chipMetaBg,
         '--chip-meta-fg':     tokens.chipMetaFg,
         '--chip-meta-border': tokens.chipMetaBorder,
+        '--info-icon-size':   tokens.infoIconSize,
         // ADR-190: shared search-field geometry + surfaces
         '--search-bg':        tokens.searchFieldBg,
         '--search-border':    tokens.searchFieldBorder,

@@ -127,6 +127,12 @@ TOKENS = {
     "chipMetaFg":     _P["fg"],    # #ebdbb2 — high-contrast badge text
     "chipMetaBorder": _P["bg3"],   # #665c54 — subtle chip frame
 
+    # ADR-045/177/189: the bare ⓘ info affordance — ONE glyph with no container
+    # (no box, border or fill) shared by the floating help button, per-section
+    # category help, and the playlist info button, so info reads identically
+    # everywhere. Colour does the state work (fg-muted → accent on hover).
+    "infoIconSize": "0.95rem",
+
     # ADR-190: the search field — ONE shell for the grand track search and both
     # panel searches, so they read as the same affordance at different reach.
     # A slightly raised surface (bg0 over the bg_h panel/canvas) plus a hairline
@@ -252,6 +258,7 @@ def css_vars() -> str:
         "--chip-meta-bg":     TOKENS["chipMetaBg"],
         "--chip-meta-fg":     TOKENS["chipMetaFg"],
         "--chip-meta-border": TOKENS["chipMetaBorder"],
+        "--info-icon-size":   TOKENS["infoIconSize"],
         # ADR-190: shared search-field geometry + surfaces
         "--search-bg":        TOKENS["searchFieldBg"],
         "--search-border":    TOKENS["searchFieldBorder"],

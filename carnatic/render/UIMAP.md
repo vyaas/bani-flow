@@ -91,8 +91,9 @@ bus** read by the wheel and view-switcher. `_currentBaniSubject = {type, id}`.
 **CSS hooks:** `--left-panel-width` (derived from data in `html_generator.py`,
 ADR-128 D7 — never hardcode); `.trail-*` classes; `.panel` base class; chip
 classes (`.raga-chip`, `.comp-chip`, `.musician-chip`); `.section-help-btn`
-(ADR-177 category help trigger — ADR-181: gray meta chip; ADR-199: the only
-chip beside a category label). **ADR-180:** fixed `--row-height` ribbons —
+(ADR-177 category help trigger — ADR-045/181: the bare `ⓘ` info mark, no
+container, sized by `--info-icon-size`; ADR-199: the only affordance beside a
+category label). **ADR-180:** fixed `--row-height` ribbons —
 `.row-accordion-scroll` / `.tree-header-text` / `.trail-chips` are the
 horizontal-scroll surfaces; `.trail-acts` / `.tree-comp-acts` are the pinned
 two-slot action column; fold chevrons are retired. The subject chip row
@@ -170,9 +171,9 @@ stack `window.PanelNav` (ADR-201); `_focusedGraphNode`.
 
 **CSS hooks:** `--right-panel-width` (derived, ADR-128 D7); `.panel`;
 `.section-collapse-btn` (ADR-180: retired); `.section-play-acts` (play-all/enqueue pair);
-`.section-help-btn` (ADR-177 category help trigger — ADR-181: a gray meta chip
-grouped with the section label; ADR-199: the only chip beside a category
-label);
+`.section-help-btn` (ADR-177 category help trigger — ADR-045/181: the bare `ⓘ`
+info mark grouped with the section label; ADR-199: the only affordance beside a
+category label);
 `#recordings-panel { padding-top: 0 }` (ADR-011). **ADR-179:** all row action
 groups (`.trail-acts`, `.tree-comp-acts`) reserve a fixed two-slot column and
 section headers (`.section-hdr-right`) two; play/enqueue badges share
@@ -653,8 +654,9 @@ subject — `buildPlaylistRow(pl, context)` filters items by raga / composition 
 musician; the row ▶ plays the subset while `+` enqueues the whole list, and
 both are dimmed when their respective set is empty (ADR-199). The name reads
 as a `.concert-title` (no pill),
-tracks indent by `--hier-indent-step`, and `ⓘ` (`.mp-playlist-info-btn`) opens
-the full playlist in `#help-dialog` as a `.playlist-info-card` with a **Play
+tracks indent by `--hier-indent-step`, and the bare `ⓘ` (`.mp-playlist-info-btn`,
+same glyph as every other info affordance) opens the full playlist in
+`#help-dialog` as a `.playlist-info-card` with a **Play
 all** `▶` / enqueue-all `+`.
 
 **Connects to:** everything plays through here — trail play-acts (§1),
@@ -796,13 +798,15 @@ video. Desktop is unchanged (both bays stay pinned).
 
 `panel_components.js`: `buildPanelHeader`, `buildSection({playable, helpKind,
 helpSlot, …})` (the play-acts pair comes free with `playable:true`; `helpKind` +
-`helpSlot` add the `.section-help-btn`; ADR-181/182: the `?` is a gray meta
-chip inside `.rec-section-hdr-label-wrap`; ADR-199: it is the only chip beside
-the category label — `[CHIP] [?] ······ [▶ +]` — leaving `.section-hdr-right`
-with only the transport pair. `syncSectionTransportStates(root)` dims that
-pair whenever the section's filter-visible harvest is empty. The remaining
-meta chip (plus `.trail-version`) shares the `--chip-meta-*` tokens for a
-high-contrast, themeable badge),
+`helpSlot` add the `.section-help-btn`; ADR-045/177: the `ⓘ` is the
+containerless info mark inside `.rec-section-hdr-label-wrap` — the SAME glyph,
+size (`--info-icon-size`) and colour (fg-muted → accent on hover) as the
+floating `#help-btn` and `.mp-playlist-info-btn`, so info is uniform
+platform-wide; ADR-199: it is the only affordance beside the category label —
+`[CHIP] [ⓘ] ······ [▶ +]` — leaving `.section-hdr-right` with only the
+transport pair. `syncSectionTransportStates(root)` dims that pair whenever the
+section's filter-visible harvest is empty. `.trail-version` remains the only
+`.trail-*` badge on `--chip-meta-*`),
 `buildSubjectGroup`,
 `buildRowAccordion` (ADR-180: no longer folds — its body chips lay inline on
 one `.row-accordion-scroll` line), `tagUntaggedChips` / `applyChipRole`. Also the unified

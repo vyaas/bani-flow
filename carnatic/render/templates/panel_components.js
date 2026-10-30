@@ -78,8 +78,8 @@ function buildPanelHeader({ titleNode, subtitleContent, externalUrl, externalLab
 //   addTitle         string (optional) — tooltip for + button
 //   helpKind         string (optional) — help-card key (e.g. 'lecdems', 'concerts')
 //   helpSlot         string (optional) — panel slot ('bani' | 'musician') owning the card
-// ADR-177: helpKind + helpSlot render a `?` button beside the section chip that
-// opens the dedicated category help card (replaces the retired panel-help overlay).
+// ADR-177: helpKind + helpSlot render an `ⓘ` info button beside the section chip
+// that opens the dedicated category help card (replaces the retired panel-help overlay).
 // ADR-166: when playable is true, the header gains ▶ (Play all visible) and
 // ⊕ (Add visible to queue) buttons. Both harvest lazily at click time via
 // collectQueueItems(bodyEl). ADR-199: both are disabled when count is zero (and
@@ -105,7 +105,7 @@ function buildSection({ headerChip, headerSuffixText, count, addTitle, defaultCo
     const helpBtn = document.createElement('button');
     helpBtn.type = 'button';
     helpBtn.className = 'section-help-btn';
-    helpBtn.textContent = '?';
+    helpBtn.textContent = 'ⓘ';
     helpBtn.title = 'What is this section?';
     helpBtn.setAttribute('aria-label', 'Help — what is this section');
     helpBtn.addEventListener('click', function (e) {
