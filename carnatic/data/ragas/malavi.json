@@ -6,14 +6,19 @@
     "Malavī"
   ],
   "melakarta": null,
-  "parent_raga": "mayamalavagowla",
+  "parent_raga": "harikambhoji",
   "sources": [
     {
       "url": "https://en.wikipedia.org/wiki/Malavi",
       "label": "Wikipedia",
       "type": "wikipedia"
+    },
+    {
+      "url": "https://guruguha.org/raga-malavi-a-misnomer/",
+      "label": "Guruguha — \"Raga Malavi – A Misnomer?\" (2018)",
+      "type": "article"
     }
   ],
-  "notes": "Janya of Mayamalavagowla (15th melakarta); audava raga (5 notes ascending and descending); ārohana S R1 M1 P N3 S, avarohana S N3 P M1 R1 S; evokes pathos and longing; associated with Tyagaraja's 'Nenarunchinanu'",
+  "notes": "Janya of Harikambhoji (mela 28); sampurna and vakra — arohana S R G M P N M D N S, avarohana S N D N P M G M R S; a melody created by Tyagaraja, whose 'Nenarunchinanu' (Adi) is its sole exemplar and the source of its lakshana in the Sangraha Cudamani (its cittasvara is a later addition by Tirukkodikaval Krishna Iyer); jiva svaras Ri, Da and Ni. The name is a misnomer: Tulaja's Saramruta (c. 1732) records a melodically unrelated Malavi under mela 15 (Malavagaula), and that dead name was reassigned to Tyagaraja's mela-28 melody after 1850. Later contributors include Patnam Subramanya Iyer, Muthiah Bhagavatar, Jayachamaraja Wodeyar and GNB.",
   "is_melakarta": false
 }
