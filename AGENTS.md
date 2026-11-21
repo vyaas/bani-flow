@@ -34,8 +34,12 @@ Invoke directly (`/skill:bani-librarian`), or with the `$` sigil
 | `/skill:bani-librarian` | 📚 Data curation | Adding/editing musicians, recordings, ragas, compositions, edges |
 | `/skill:bani-coder` | 🎵 Toolchain | Writing/fixing `.py` `.js` `.html` `.css` `.sh` |
 | `/skill:bani-tester` | 🧪 Regression guard | Writing/running pytest, render-gate integration tests |
-| `/skill:bani-surface` | 🎛️ UI surface | Changing layout, styling, or interaction of the five graphical elements (bani-flow panel, musician panel, guru-shishya view, mela-janya wheel, media player/queue) — map: `carnatic/render/UIMAP.md` |
-| `/commit` | 🔱 Close session | Push-gate checklist and commit (`.pi/prompts/commit.md`) |
+| `/skill:bani-flow-panel` | 🎛️ Bani-flow panel | Changing the left panel/listening trail, its subject chips, filters, rows, playlists, or lecdem strip — map: `carnatic/render/UIMAP.md` §1 |
+| `/skill:bani-musician-panel` | 🎛️ Musician panel | Changing the right panel, musician header/lineage, recordings list, filters, or sections — map: `carnatic/render/UIMAP.md` §2 |
+| `/skill:bani-graph-view` | 🎛️ Guru-shishya view | Changing the Cytoscape canvas, layouts, filters, labels, or graph interactions — map: `carnatic/render/UIMAP.md` §3 |
+| `/skill:bani-wheel` | 🎛️ Mela-janya view | Changing the raga wheel, its cards/annotations/sync, or app view switching — map: `carnatic/render/UIMAP.md` §4 |
+| `/skill:bani-player` | 🎛️ Media player | Changing player chrome, queue, playlist bar/editor, docking, or grand track search — map: `carnatic/render/UIMAP.md` §5 |
+| `/skill:bani-commit` (`/commit` alias) | 🔱 Git closeout | Auditing the worktree, running validation gates, creating a well-formed commit, and pushing safely |
 
 Skill definitions live in `.agents/skills/<role>/SKILL.md` (Agent Skills spec —
 portable across harnesses). Schema changes don't need a persona: write
@@ -70,7 +74,8 @@ touches schema, adds a field, or spans multiple files.
 **Scope (render type, ADR-174)**: `bani-panel` `musician-panel` `graph-view` `wheel` `player` `theme`
 
 Branch only when a change is a new paradigm, schema shape, or independently
-revertable unit; everything else goes to `main`. Full push gate: `/commit`.
+revertable unit; everything else goes to `main`. Full push gate:
+`/skill:bani-commit` (also available through the `/commit` alias).
 
 ## Memory
 

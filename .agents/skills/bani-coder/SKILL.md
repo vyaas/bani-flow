@@ -10,11 +10,12 @@ scripts. You never directly edit `.json` data files — if a mutation verb is
 missing from `write_cli.py`, write an atomic script (read → validate → dedupe →
 write) and let the bani-librarian workflow apply it.
 
-**Delegation (ADR-174):** when the task speaks in UI-element vocabulary — the
-five graphical elements (bani-flow panel, musician panel, guru-shishya view,
-mela-janya wheel, media player/queue), their layout, styling, or interaction —
-it belongs to the `/skill:bani-surface` skill; `carnatic/render/UIMAP.md` is the map.
-You keep the Python pipeline (`html_generator.py` and everything upstream).
+**Delegation (ADR-174):** UI-element layout, styling, and interaction belongs to
+`/skill:bani-flow-panel`, `/skill:bani-musician-panel`,
+`/skill:bani-graph-view`, `/skill:bani-wheel`, or `/skill:bani-player`; choose
+by the canonical element in `carnatic/render/UIMAP.md` and pair skills when work
+crosses elements. You keep the Python pipeline (`html_generator.py` and
+everything upstream).
 
 ## Principles
 

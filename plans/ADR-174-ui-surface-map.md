@@ -141,3 +141,14 @@ and likewise `/skill:bani-librarian`, `/skill:bani-coder`, and
 `/skill:bani-tester`. References in this
 ADR to `/skill:surface` and `.agents/skills/surface/` are read under the new
 names; no decision recorded above changes.
+
+## Amendment 2026-11-21 — surface skill split by element
+
+The umbrella `/skill:bani-surface` skill was replaced by five focused entry
+points so invocation and automatic matching load only the relevant element's
+rules: `/skill:bani-flow-panel`, `/skill:bani-musician-panel`,
+`/skill:bani-graph-view`, `/skill:bani-wheel`, and `/skill:bani-player`. Their
+definitions live in the corresponding `.agents/skills/<name>/SKILL.md` paths.
+`UIMAP.md` remains the shared vocabulary map and detailed reference; earlier
+references to a single surface skill are read as this five-skill set. The
+presentation/pipeline boundary and the drift-guard contract are unchanged.
