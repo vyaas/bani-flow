@@ -130,3 +130,14 @@ renamed or removed. This is what keeps abstract prompts fast *permanently*.
 6. Render gate (`bani-render` + `cli.py validate`) + full pytest.
 7. Commit `tool(config): add UI surface map and surface skill [ADR: ADR-174]`;
    flip this ADR to Accepted.
+
+---
+
+## Amendment 2026-11-21 — project skills namespaced with `bani-`
+
+The four project skills were renamed for unambiguous identification:
+`/skill:surface` → `/skill:bani-surface` (`.agents/skills/bani-surface/`),
+and likewise `/skill:bani-librarian`, `/skill:bani-coder`, and
+`/skill:bani-tester`. References in this
+ADR to `/skill:surface` and `.agents/skills/surface/` are read under the new
+names; no decision recorded above changes.

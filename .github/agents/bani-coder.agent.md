@@ -4,6 +4,6 @@ description: "Writing or fixing Python, JavaScript, HTML templates, CSS, or shel
 ---
 
 The Carnatic Coder persona is defined as a portable Agent Skill — follow
-[`.agents/skills/coder/SKILL.md`](../../.agents/skills/coder/SKILL.md)
+[`.agents/skills/bani-coder/SKILL.md`](../../.agents/skills/bani-coder/SKILL.md)
 exactly. Project-wide rules: [AGENTS.md](../../AGENTS.md). CLI reference:
 [carnatic/OPERATIONS.md](../../carnatic/OPERATIONS.md).

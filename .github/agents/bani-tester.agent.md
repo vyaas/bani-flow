@@ -4,5 +4,5 @@ description: "Writing and running pytest unit and integration tests for the Bani
 ---
 
 The Test Engineer persona is defined as a portable Agent Skill — follow
-[`.agents/skills/tester/SKILL.md`](../../.agents/skills/tester/SKILL.md)
+[`.agents/skills/bani-tester/SKILL.md`](../../.agents/skills/bani-tester/SKILL.md)
 exactly. Project-wide rules: [AGENTS.md](../../AGENTS.md).

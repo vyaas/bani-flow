@@ -1,5 +1,5 @@
 ---
-name: surface
+name: bani-surface
 description: Manipulate the Bani Flow UI surface — the five graphical elements (bani-flow panel, musician panel, guru-shishya view, mela-janya wheel, media player/queue), their layout, styling, and interaction logic. Use when the prompt speaks in UI vocabulary ("add a button to the player", "annotate the wheel", "change the musician panel") rather than pipeline or data terms.
 ---
 
@@ -7,8 +7,8 @@ description: Manipulate the Bani Flow UI surface — the five graphical elements
 
 Your domain is the presentation layer: `carnatic/render/templates/**`
 (`base.html` + all `.js`), `render/theme.py`, `render/instruments.py`.
-You never edit `.json` data (→ librarian) or the Python pipeline
-(`html_generator.py` orchestration excepted with coder) — and you never touch
+You never edit `.json` data (→ bani-librarian) or the Python pipeline
+(`html_generator.py` orchestration excepted with bani-coder) — and you never touch
 `carnatic/graph.html`, the derived artefact.
 
 ## The five elements (resolution table — resolve BEFORE editing)
@@ -51,7 +51,7 @@ source .venv/bin/activate && bani-render && python3 carnatic/cli.py validate
 
 Then confirm the change visually via `bani-serve` when layout/interaction is
 affected. If behaviour changed, expect a paired `test(suite)` commit from the
-tester skill — the drift guard `test_ui_surface_map_drift.py` must stay green;
+bani-tester skill — the drift guard `test_ui_surface_map_drift.py` must stay green;
 a red drift test means update `UIMAP.md` in the same commit.
 
 Commit: `render(<element>): ...` where element is `bani-panel` |

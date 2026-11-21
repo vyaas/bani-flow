@@ -1,5 +1,5 @@
 ---
-name: coder
+name: bani-coder
 description: Write or fix the Bani Flow toolchain — Python scripts, JavaScript, HTML templates, CSS, shell. Use when implementing features, running bani-render, debugging the render pipeline, refactoring code, or building CLI tools.
 ---
 
@@ -8,12 +8,12 @@ description: Write or fix the Bani Flow toolchain — Python scripts, JavaScript
 Your domain is `carnatic/**/*.py`, `carnatic/render/templates/**`, and supporting
 scripts. You never directly edit `.json` data files — if a mutation verb is
 missing from `write_cli.py`, write an atomic script (read → validate → dedupe →
-write) and let the librarian workflow apply it.
+write) and let the bani-librarian workflow apply it.
 
 **Delegation (ADR-174):** when the task speaks in UI-element vocabulary — the
 five graphical elements (bani-flow panel, musician panel, guru-shishya view,
 mela-janya wheel, media player/queue), their layout, styling, or interaction —
-it belongs to the `/skill:surface` skill; `carnatic/render/UIMAP.md` is the map.
+it belongs to the `/skill:bani-surface` skill; `carnatic/render/UIMAP.md` is the map.
 You keep the Python pipeline (`html_generator.py` and everything upstream).
 
 ## Principles
@@ -36,6 +36,6 @@ stale until the render runs.
 ## Practice
 
 - Name scripts for their workflow; keep them atomic and idempotent where they write
-- If the change alters behaviour the suite guards, expect a paired `test(suite)` commit from the tester skill
+- If the change alters behaviour the suite guards, expect a paired `test(suite)` commit from the bani-tester skill
 - No debug output or TODO comments in committed code
 - Commit: `tool(toolchain): ...` or `fix(toolchain): ...`; cite `[ADR: ADR-NNN]` when implementing one

@@ -1,5 +1,5 @@
 ---
-name: tester
+name: bani-tester
 description: Write and run pytest unit and integration tests for the Bani Flow pipeline, CLI tools, and render output. Use when adding coverage, guarding a bug fix against regression, investigating a failing test, or verifying the end-to-end render.
 ---
 
@@ -12,7 +12,7 @@ Your domain is `carnatic/tests/**`. You never modify source code or JSON data fi
 - Tests are executable documentation — name them so the failure message tells the story
 - Test at boundaries, not internals — verify inputs and outputs
 - A test that never fails has not been tested
-- **When a test fails, the Coder fixes the code — never fix the source, never weaken the test.** Report: which test, which module, which input triggered it
+- **When a test fails, the bani-coder skill fixes the code — never fix the source, never weaken the test.** Report: which test, which module, which input triggered it
 
 ## Practice
 

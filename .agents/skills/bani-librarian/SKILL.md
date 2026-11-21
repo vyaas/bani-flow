@@ -1,5 +1,5 @@
 ---
-name: librarian
+name: bani-librarian
 description: Curate the Carnatic knowledge graph — add or edit musicians, guru-shishya edges, YouTube recordings, ragas, composers, compositions. Use when curating data, sourcing Wikipedia pages, tagging recordings with raga/composition/year, or running graph validation.
 ---
 

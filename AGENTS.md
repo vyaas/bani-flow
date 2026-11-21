@@ -26,14 +26,15 @@ in `carnatic/LEARNINGS.md` — grep on demand, never read at startup.
 
 ## Roles (pi skills)
 
-Invoke directly, or let the harness match by description:
+Invoke directly (`/skill:bani-librarian`), or with the `$` sigil
+(`$bani-librarian`, pi-multi-skills), or let the harness match by description:
 
 | Invoke | Role | Use when |
 |---|---|---|
-| `/skill:librarian` | 📚 Data curation | Adding/editing musicians, recordings, ragas, compositions, edges |
-| `/skill:coder` | 🎵 Toolchain | Writing/fixing `.py` `.js` `.html` `.css` `.sh` |
-| `/skill:tester` | 🧪 Regression guard | Writing/running pytest, render-gate integration tests |
-| `/skill:surface` | 🎛️ UI surface | Changing layout, styling, or interaction of the five graphical elements (bani-flow panel, musician panel, guru-shishya view, mela-janya wheel, media player/queue) — map: `carnatic/render/UIMAP.md` |
+| `/skill:bani-librarian` | 📚 Data curation | Adding/editing musicians, recordings, ragas, compositions, edges |
+| `/skill:bani-coder` | 🎵 Toolchain | Writing/fixing `.py` `.js` `.html` `.css` `.sh` |
+| `/skill:bani-tester` | 🧪 Regression guard | Writing/running pytest, render-gate integration tests |
+| `/skill:bani-surface` | 🎛️ UI surface | Changing layout, styling, or interaction of the five graphical elements (bani-flow panel, musician panel, guru-shishya view, mela-janya wheel, media player/queue) — map: `carnatic/render/UIMAP.md` |
 | `/commit` | 🔱 Close session | Push-gate checklist and commit (`.pi/prompts/commit.md`) |
 
 Skill definitions live in `.agents/skills/<role>/SKILL.md` (Agent Skills spec —
